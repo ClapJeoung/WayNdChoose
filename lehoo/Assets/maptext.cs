@@ -8,9 +8,9 @@ using UnityEngine.Tilemaps;
 
 public class maptext : MonoBehaviour
 {
-    public Tilemap Tilemap_bottom, Tilemap_top;
-    public TilePrefabs MyTiles;
-  public SettleCountdeg Mydeg;
+   public Tilemap Tilemap_bottom, Tilemap_top;
+   public TilePrefabs MyTiles;
+   public SettleCountdeg Mydeg;
     public int DefaultSize = 13;
     private int[,] MapData_b,Mapdata_t;
     [Space(10)]
@@ -30,7 +30,8 @@ public class maptext : MonoBehaviour
             color = Color.white,
             transform = _trans
         };
-        StartCoroutine(_simul());
+  //  MakeMap();
+      //  StartCoroutine(_simul());
     }
 
     private void Update()
