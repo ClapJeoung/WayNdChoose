@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Sea:
   - {fileID: 11400000, guid: 13bb74a41b571514ab06f6f139a501fa, type: 2}
+  - {fileID: 11400000, guid: 6b552b6d2380f324199b89df551c7c04, type: 2}
+  - {fileID: 11400000, guid: 49fee194a69d50640bf8d6de3ccd02f5, type: 2}
   Land:
   - {fileID: 11400000, guid: f8388d74104a6e948a6ef855012037e2, type: 2}
   Highland:
@@ -102,6 +104,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b0b8800d0029f394491ff0701c1a4594, type: 2}
   Forest:
   - {fileID: 11400000, guid: 14f5ec4e940695b43abcc3c3e8708194, type: 2}
+  - {fileID: 11400000, guid: 1cc0dd8de59c5fb41b9f536e40f3e5b6, type: 2}
+  - {fileID: 11400000, guid: eb2c13b867c0f054bad014da3ef48a20, type: 2}
   Forest_river:
   - {fileID: 11400000, guid: 291df972045880b4fb3167547b49dd3d, type: 2}
   d_Town:

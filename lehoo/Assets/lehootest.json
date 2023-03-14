@@ -1,0 +1,16 @@
+{
+  "town": {
+    "1": {
+      "Name": "town_lumber",
+      "Description": "나무꾼이어유~"
+    },
+    "2": {
+      "Name": "town_kill",
+      "Description": "살인이에유~"
+    },
+    "3": {
+      "Name": "town_lehoo",
+      "Description": "레후~"
+    }
+  }
+}
