@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
+using TMPro;
 
 public class UI_map : UI_default
 {
   [SerializeField] private Tilemap Tilemap_bottom = null;
   [SerializeField] private Tilemap Tilemap_top = null;
+    [SerializeField] private TextMeshProUGUI SettleName = null;
+    [SerializeField] private Image SettleIllust = null;
+    [SerializeField] private Button SettleButton = null;
   public override void OpenUI()
   {
     base.OpenUI();
@@ -38,4 +42,11 @@ public class UI_map : UI_default
     Tilemap_bottom.color = _color;
     Tilemap_top.color = _color;
   }
+
+    public void UpdatePanel(Settlement _settle)
+    {
+        SettleName.text = _settle.Name;
+        SettleIllust.sprite = null;
+
+    }
 }

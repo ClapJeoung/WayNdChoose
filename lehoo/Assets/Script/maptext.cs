@@ -1998,6 +1998,7 @@ public class maptext : MonoBehaviour
         SaveData.Science_town = new int[SaveData.TownCount];
     SaveData.Town_Open=new bool[SaveData.TownCount];
     SaveData.Town_Names=new string[SaveData.TownCount];
+        SaveData.Town_Index = new int[SaveData.TownCount];
 
     SaveData.Isriver_city = new bool[SaveData.CityCount];
     SaveData.Isforest_city = new bool[SaveData.CityCount];
@@ -2010,8 +2011,9 @@ public class maptext : MonoBehaviour
     SaveData.Science_city = new int[SaveData.CityCount];
     SaveData.City_Open = new bool[SaveData.CityCount];
     SaveData.City_Names = new string[SaveData.CityCount];
+        SaveData.City_Index = new int[SaveData.CityCount];
 
-    SaveData.Isriver_castle = new bool[SaveData.CastleCount];
+        SaveData.Isriver_castle = new bool[SaveData.CastleCount];
     SaveData.Isforest_castle = new bool[SaveData.CastleCount];
     SaveData.Ismine_castle = new bool[SaveData.CastleCount];
     SaveData.Ismountain_castle = new bool[SaveData.CastleCount];
@@ -2022,9 +2024,10 @@ public class maptext : MonoBehaviour
     SaveData.Science_castle = new int[SaveData.CastleCount];
     SaveData.Castle_Open= new bool[SaveData.CastleCount];
     SaveData.Castle_Names= new string[SaveData.CastleCount];
+        SaveData.Castle_Index = new int[SaveData.CastleCount];
 
-    #region 검사 풀
-    List<int> _deserttilepool = new List<int>();
+        #region 검사 풀
+        List<int> _deserttilepool = new List<int>();
     _deserttilepool.Add(MapCode.b_desert); _deserttilepool.Add(MapCode.b_desert_beach); _deserttilepool.Add(MapCode.b_desert_highland);
     _deserttilepool.Add(MapCode.b_desert_river); _deserttilepool.Add(MapCode.b_desert_riverbeach); _deserttilepool.Add(MapCode.b_desert_source);
 
@@ -2177,6 +2180,8 @@ public class maptext : MonoBehaviour
       int _checkcount = _poses.Count;
       List<Settlement> _list = new List<Settlement>();
       List<int> _namelist = new List<int>();
+            List<int> _illlist = new List<int>();
+            int illustCount = 100;
       for (int i = 0; i < _checkcount; i++)
       {
         Settlement _newsetl = new Settlement();
@@ -2217,11 +2222,16 @@ public class maptext : MonoBehaviour
         if (_settletype == 0) _namearray = SettlementName.TownNams;
         else if(_settletype==1) _namearray = SettlementName.CityNames;
         else _namearray = SettlementName.CastleNames;
+
         int _nameindex = Random.Range(0, _namearray.Length);
         while(_namelist.Contains(_nameindex))_nameindex = Random.Range(0, _namearray.Length);
 
-        _namelist.Add(_nameindex);
+                int _illindex = Random.Range(0, illustCount);
+                while (_illlist.Contains(_illindex)) _illindex = Random.Range(0, illustCount);
+
+                _namelist.Add(_nameindex);
         _newsetl.Name = _namearray[_nameindex];
+                _newsetl.IllustIndex = _illindex;
       }
       //  Debug.Log($"ckeckcount : {_checkcount} _list.count : {_list.Count}");
       return _list;

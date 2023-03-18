@@ -15,7 +15,5 @@ public class GameManager : MonoBehaviour
       DontDestroyOnLoad(gameObject);
     }
     else Destroy(gameObject);
-
-    Character = new CharacterData();
   }
 }

@@ -117,4 +117,5 @@ public class UIManager : MonoBehaviour
     _group.alpha = 0.0f;
     IsWorking = false;
   }
+    public void UpdateMapSettlePanel(Settlement _settle) => MyMap.UpdatePanel(_settle);
 }

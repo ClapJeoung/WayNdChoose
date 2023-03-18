@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 public class Settlement
 {
+    public int IllustIndex = 0;
   public string Name;
 
   public bool IsRiver=false;//주변 2칸에 강 여부
@@ -33,6 +34,7 @@ public class MapSaveData
     public Vector3Int[] City_Pos;
     public Vector3Int[] Castle_Pos;
   public string[] Town_Names,City_Names, Castle_Names;
+    public int[] Town_Index, City_Index, Castle_Index;
   public bool[] Town_Open;
   public bool[] City_Open;
   public bool[] Castle_Open;
@@ -73,6 +75,8 @@ public class MapSaveData
       _town.Culture= Culture_town[i];
       _town.Science= Science_town[i];
 
+            _town.IllustIndex = Town_Index[i];
+
       _mapdata.Towns.Add(_town.Name, _town);
     }
     for (int i = 0; i < CityCount; i++)
@@ -93,8 +97,9 @@ public class MapSaveData
       _city.Faith = Faith_city[i];
       _city.Culture = Culture_city[i];
       _city.Science = Science_city[i];
+            _city.IllustIndex = City_Index[i];
 
-      _mapdata.Cities.Add(_city.Name, _city);
+            _mapdata.Cities.Add(_city.Name, _city);
     }
     for (int i = 0; i < CastleCount; i++)
     {
@@ -115,8 +120,9 @@ public class MapSaveData
       _castle.Faith = Faith_castle[i];
       _castle.Culture = Culture_castle[i];
       _castle.Science = Science_castle[i];
+            _castle.IllustIndex = Castle_Index[i];
 
-      _mapdata.Castles.Add(_castle.Name, _castle);
+            _mapdata.Castles.Add(_castle.Name, _castle);
     }
 
     return _mapdata;

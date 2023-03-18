@@ -11,6 +11,7 @@ public enum PenaltyTarget { HP,Sanity,Gold }
 public enum RewardTarget { Experience,GoldAndExperience,Gold,HP,Sanity,Theme,Skill,Trait}
 public class EventData  //기본적인 무작위 풀에서 나오는 이벤트
 {
+    public int EventLevel = 0;
     public string Index = "";
     public string Name = "";
     public string Description = "";
@@ -25,6 +26,7 @@ public class EventData  //기본적인 무작위 풀에서 나오는 이벤트
     public bool Failure_stop;
     public string[] Failure_description;
     public int[] Faillure_penalty;
+    public int[] Failure_penalty_info;
 
     public string[] Success_description;
     public int[] Success_target;
@@ -32,27 +34,30 @@ public class EventData  //기본적인 무작위 풀에서 나오는 이벤트
 }
 public class EventJsonData
 {
+    private string SplitChar = "@";
     public string Index = "";
+    public int EventLevel = 0;
     public string Name = "";
     public string Description = "";
-    public bool[] Season = new bool[4];
+    public int Season = 0;
     public int Settlement = 0;          //0,1,2,3
     public int Place = 0;               //0,1,2,3,4
     public int PlaceLevel = 0;          //0(전부) 1(낮) 2(중) 3(높)
-    public int Environment_Type = 0;         //0,1,2,3,4,5
+    public int EnvironmentType = 0;         //0,1,2,3,4,5
 
     public int Selection_Type;           //0,1,2,3,4
-    public string[] Selection_Description = new string[2];
-    public int[] Selection_Target = new int[2];
-    public int[] Selection_Info= new int[2];
+    public string Selection_Description = "";
+    public int Selection_Target = 0;
+    public int Selection_Info = 0;
 
-    public bool Failure_Stop;
-    public string[] Failure_Description=new string[2];
-    public int[] Failure_Penalty=new int[2];
+    public int Failure_Stop;
+    public string Failure_Description="";
+    public int Failure_Penalty;
+    public int Failure_Penalty_info;
 
-    public string[] Success_Description=new string[2];
-    public int[] Success_Target=new int[2];
-    public int[] Success_Info = new int[2];
+    public string Success_Description="";
+    public int Success_Target =0;
+    public int Success_Info = 0;
 
     public int Quest;
 }

@@ -12,6 +12,7 @@ public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
   List<RectTransform> MyImages=new List<RectTransform>();
   private Button MyButton = null;
   private bool Selected = false;
+    private UI_map MapUI = null;
   public void Setup(Settlement _data)
   {
     _data.IsOpen = true;

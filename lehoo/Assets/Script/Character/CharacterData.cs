@@ -41,8 +41,8 @@ public class CharacterData
     Skills.Add(SkillName.Somatology, _somatology);
     Skills.Add(SkillName.Biology, _biology);
     Skills.Add(SkillName.Survivable, _survivable);
-    Tendency_RF = new Tendency(TendencyType.Rational, TendencyType.Force);
-    Tendency_MM=new Tendency(TendencyType.Mental, TendencyType.Material);
+    Tendency_RF = new Tendency(TDCType.Rational, TDCType.Force);
+    Tendency_MM=new Tendency(TDCType.Mental, TDCType.Material);
   }
 }
 public class GameData
@@ -54,7 +54,7 @@ public enum SkillType { Conversation, Force, Nature, Intelligence }
 public enum SkillName { Speech,Threat,Deception,logic,Martialarts,Bow,Somatology,Survivable,Biology,Knowledge}
 public class SkillTheme
 {
-  public const int Quality_0=0,Quality_1=1,Quality_2=3,Quality_3=5,Quality_4=9,Quality_5=10;
+  public const int Quality_0=0,Quality_1=1,Quality_2=3,Quality_3=6,Quality_4=7;
   public int Quality = 0;
 }
 public class Skill
@@ -63,11 +63,46 @@ public class Skill
   public int Level = 0;
   public Skill(SkillType _a,SkillType _b) { Type_A = _a;Type_B= _b;}
 }
-public enum TendencyType { Rational,Force,Mental,Material}
+public enum TDCType { Rational,Force,Mental,Material}
 public class Tendency
 {
-  public TendencyType Type_foward,Type_back;
+  public TDCType Type_foward,Type_back;
   public int Level = 0;
-  public Tendency(TendencyType _a,TendencyType _b) { Type_foward = _a; Type_back = _b;}
+  public Tendency(TDCType _a, TDCType _b) { Type_foward = _a; Type_back = _b;}
+}
+public enum EXPType { Speech, Threat, Deception, logic, Martialarts, Bow, Somatology, Survivable, Biology, Knowledge,HPLoss,HPRegen,SNLoss,SNGen,MoneyLoss,MoneyGen }
+public class Experience
+{
+    public string Index = "";
+    public string Name = "";
+    public string Description = "";
+    public EXPType Type;
+    public int Info;
+}
+public class ExperienceJsonData
+{
+    public int IsBad;
+    public string Index = "";
+    public string Name = "";
+    public string Description = "";
+    public int Type;    //0~9 : 기술들  10~   체력,정신력,돈 등
+    public int Info;
+}
+public enum TraitType { Speech, Threat, Deception, logic, Martialarts, Bow, Somatology, Survivable, Biology, Knowledge, HPLoss, HPRegen, SNLoss, SNGen, MoneyLoss, MoneyGen }
+public class Trait
+{
+    public string Index = "";
+    public string Name = "";
+    public string Description = "";
+    public TraitType Type;
+    public int Info;
+}
+public class TraitJsonData
+{
+    public string Index = "";
+    public string Name = "";
+    public string Description = "";
+    public int Type;    //0~9 : 기술들  10~   체력,정신력,돈 등
+    public int Info;
 }
 
