@@ -7,7 +7,7 @@ public class Settlement
 {
   public string Name;
 
- public bool IsRiver=false;//주변 2칸에 강 여부
+  public bool IsRiver=false;//주변 2칸에 강 여부
   public bool IsForest = false;//주변 1칸에 숲 여부
   public bool IsMine = false;  //주변 1칸에 언덕 여부
   public bool IsMountain = false;//주변 2칸에 산 여부
