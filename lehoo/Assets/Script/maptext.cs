@@ -44,7 +44,7 @@ public class maptext : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            MakeMap();
+           GameManager.Instance.Map= MakeMap().ConvertToMapData();
         }
     }
   private IEnumerator _simul()
@@ -2313,7 +2313,7 @@ public class maptext : MonoBehaviour
         _images[j].transform.SetParent(_button.transform, false);
         _images[j].transform.localScale = Vector3.one;
       }
-      _button.GetComponent<SettlementIcon>().Setup(Data.Towns[Data.Towns.Keys.ToArray()[i]]);
+      _button.GetComponent<SettlementIcon>().Setup(Data.Towns[i]);
     //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
     for (int i = 0; i < SaveData.CityCount; i++)
@@ -2345,7 +2345,7 @@ public class maptext : MonoBehaviour
         _images[j].transform.SetParent(_button.transform, false);
         _images[j].transform.localScale = Vector3.one;
       }
-      _button.GetComponent<SettlementIcon>().Setup(Data.Cities[Data.Cities.Keys.ToArray()[i]]);
+      _button.GetComponent<SettlementIcon>().Setup(Data.Cities[i]);
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
     for (int i = 0; i < SaveData.CastleCount; i++)
@@ -2378,7 +2378,7 @@ public class maptext : MonoBehaviour
         _images[j].transform.SetParent(_button.transform, false);
         _images[j].transform.localScale = Vector3.one;
       }
-      _button.GetComponent<SettlementIcon>().Setup(Data.Castles[Data.Castles.Keys.ToArray()[i]]);
+      _button.GetComponent<SettlementIcon>().Setup(Data.Castles[i]);
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
 

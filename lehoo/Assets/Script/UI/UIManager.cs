@@ -78,7 +78,6 @@ public class UIManager : MonoBehaviour
   }
   public void CloseAllUI()
   {
-    Debug.Log("·¹ÈÄ");
     StartCoroutine(closeallui());
   }
   private IEnumerator closeallui()
@@ -117,5 +116,7 @@ public class UIManager : MonoBehaviour
     _group.alpha = 0.0f;
     IsWorking = false;
   }
-    public void UpdateMapSettlePanel(Settlement _settle) => MyMap.UpdatePanel(_settle);
+    public void UpdateMap_SettlePanel(Settlement _settle) => MyMap.UpdatePanel(_settle);
+  public void UpdateMap_SettleIcons(List<Settlement> _avail) => MyMap.UpdateIcons(_avail);
+  public void UpdateMap_AddSettle(string _name, SettlementIcon _icon) => MyMap.AddSettleIcon(_name, _icon);
 }

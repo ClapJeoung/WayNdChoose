@@ -47,8 +47,21 @@ public class CharacterData
 }
 public class GameData
 {
-  public int Year, Turn, Maxturn = 12;
-  Vector2Int PlayerPos;
+  public int Year, Turn, Maxturn = 3;
+  public Vector3Int PlayerPos = Vector3Int.zero;
+  public Settlement CurrentSettle;
+  public List<int> LastSettlePlace = new List<int>();
+  public string CurrentEvent;
+  public List<string> ClearEvent = new List<string>();
+  public List<string> RemoveEvent = new List<string>();
+  public List<string> ClearQuest = new List<string>();
+  public List<string> CurrentQuest = new List<string>();
+  public List<int> CurrentQuestProgress = new List<int>();
+  public List<Settlement> AvailableSettle = new List<Settlement>();
+}
+public class SaveData
+{
+
 }
 public enum SkillType { Conversation, Force, Nature, Intelligence }
 public enum SkillName { Speech,Threat,Deception,logic,Martialarts,Bow,Somatology,Survivable,Biology,Knowledge}

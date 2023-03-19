@@ -77,7 +77,8 @@ public class MapSaveData
 
             _town.IllustIndex = Town_Index[i];
 
-      _mapdata.Towns.Add(_town.Name, _town);
+      _mapdata.Towns.Add( _town);
+      _mapdata.AllSettles.Add( _town);
     }
     for (int i = 0; i < CityCount; i++)
     {
@@ -99,7 +100,8 @@ public class MapSaveData
       _city.Science = Science_city[i];
             _city.IllustIndex = City_Index[i];
 
-            _mapdata.Cities.Add(_city.Name, _city);
+            _mapdata.Cities.Add( _city);
+      _mapdata.AllSettles.Add( _city);
     }
     for (int i = 0; i < CastleCount; i++)
     {
@@ -122,7 +124,8 @@ public class MapSaveData
       _castle.Science = Science_castle[i];
             _castle.IllustIndex = Castle_Index[i];
 
-            _mapdata.Castles.Add(_castle.Name, _castle);
+            _mapdata.Castles.Add( _castle);
+      _mapdata.AllSettles.Add( _castle);
     }
 
     return _mapdata;
@@ -132,19 +135,19 @@ public class MapSaveData
     int i = 0;
     foreach(var data in _data.Towns)
     {
-      Town_Open[i] = data.Value.IsOpen;
+      Town_Open[i] = data.IsOpen;
       i++;
     }
     i = 0;
     foreach (var data in _data.Cities)
     {
-      City_Open[i] = data.Value.IsOpen;
+      City_Open[i] = data.IsOpen;
       i++;
     }
     i = 0;
     foreach (var data in _data.Castles)
     {
-      Castle_Open[i] = data.Value.IsOpen;
+      Castle_Open[i] = data.IsOpen;
       i++;
     }
   }
@@ -153,9 +156,10 @@ public class MapData
 {
   public int[,] MapCode_Bottom;
   public int[,] MapCode_Top;
-  public Dictionary<string, Settlement> Towns = new Dictionary<string, Settlement>();
-  public Dictionary<string, Settlement> Cities =new Dictionary<string, Settlement>();
-  public Dictionary<string, Settlement> Castles =new Dictionary<string, Settlement>();
+  public List<Settlement> Towns = new List<Settlement>();
+  public List<Settlement> Cities =new List<Settlement>();
+  public List<Settlement> Castles =new List<Settlement>();
+  public List<Settlement> AllSettles = new List<Settlement>();
 }
 public static class SettlementName
 {

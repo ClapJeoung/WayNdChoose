@@ -7,11 +7,16 @@ using TMPro;
 
 public class UI_map : UI_default
 {
+  [SerializeField] private RectTransform PlayerRect = null;
+  [SerializeField] private float MoveTime = 1.5f;
   [SerializeField] private Tilemap Tilemap_bottom = null;
   [SerializeField] private Tilemap Tilemap_top = null;
     [SerializeField] private TextMeshProUGUI SettleName = null;
     [SerializeField] private Image SettleIllust = null;
     [SerializeField] private Button SettleButton = null;
+  private Dictionary<string,SettlementIcon> SettleIcons = new Dictionary<string,SettlementIcon>();
+  private Settlement SelectedSettle = null;
+  public void AddSettleIcon(string _name, SettlementIcon _icon) => SettleIcons.Add(_name, _icon);
   public override void OpenUI()
   {
     base.OpenUI();
@@ -45,8 +50,37 @@ public class UI_map : UI_default
 
     public void UpdatePanel(Settlement _settle)
     {
-        SettleName.text = _settle.Name;
+    SettleName.text = _settle.Name;
         SettleIllust.sprite = null;
-
+    SettleButton.interactable = true;
+    SelectedSettle = _settle;
+    SettleIcons[SelectedSettle.Name].Selected = true;
     }
+  public void MoveMap()
+  {
+    if (SelectedSettle == null || UIManager.Instance.IsWorking) return;
+    Vector3 _targetpos = SettleIcons[SelectedSettle.Name].Position;
+    Debug.Log($"name : {SelectedSettle.Name}    {_targetpos}");
+    StartCoroutine(moveto(_targetpos));
+  }
+  private IEnumerator moveto(Vector3 targetpos)
+  {
+    UIManager.Instance.IsWorking = true;
+    Vector3 _originpos = PlayerRect.anchoredPosition;
+    float _time = 0.0f;
+    while (_time < MoveTime)
+    {
+      PlayerRect.anchoredPosition=Vector3.Lerp(_originpos, targetpos, _time/MoveTime);
+      _time += Time.deltaTime;yield return null;
+    }
+    SettleIcons[SelectedSettle.Name].Selected = false;
+    UIManager.Instance.IsWorking = false;
+    SelectedSettle = null;
+  }
+  public void UpdateIcons(List<Settlement> _settles)
+  {
+    List<string> _name=new List<string>();
+    foreach (Settlement _settle in _settles) _name.Add(_settle.Name);
+    foreach (string name in _name) {  SettleIcons[name].ActiveButton(); }
+  }
 }
