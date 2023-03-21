@@ -10,14 +10,18 @@ using System.Data;
 using System.IO;
 using UnityEngine.EventSystems;
 
-public class TestScript : MonoBehaviour,IPointerEnterHandler
+public class TestScript : MonoBehaviour
 {
-  public void OnPointerEnter(PointerEventData _data)
+  [SerializeField] private TextAsset MyJson = null;
+  private void Awake()
   {
-    Debug.Log("·¹ÈÄ~");
+    Dictionary<string,lehoojson> _lehoo= new Dictionary<string,lehoojson>();
+    _lehoo = JsonConvert.DeserializeObject<Dictionary<string, lehoojson>>(MyJson.text);
+    foreach (var _data in _lehoo)
+      Debug.Log(_data.Value.qwer);
   }
-  public void ClickEvent()
-  {
-    Debug.Log("Å×Ã­");
-  }
+}
+public class lehoojson
+{
+  public string qwer;
 }
