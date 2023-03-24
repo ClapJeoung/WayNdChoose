@@ -15,7 +15,7 @@ public class EventManager : MonoBehaviour
     {
       instance = this;
       DontDestroyOnLoad(gameObject);
-      LoadEvent();
+   //   LoadEvent();
     }
     else Destroy(gameObject);
   }

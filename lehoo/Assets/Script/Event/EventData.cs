@@ -19,15 +19,19 @@ public class EventHolder
     Data.Description = _data.Description;
     Data.Selection_type = (SelectionType)_data.Selection_Type;
     Data.Selection_description = _data.Selection_Description.Split('@');
-    Data.Selection_target = (CheckTarget)_data.Selection_Target;
-    string[] _temp = _data.Selection_Info.Split('@');
+    string[] _temp = _data.Selection_Target.Split('@');
+    Data.Selection_target = new CheckTarget[_temp.Length];
+    for(int i = 0; i < _temp.Length; i++)Data.Selection_target[i]=(CheckTarget)int.Parse(_temp[i]);
+    _temp = _data.Selection_Info.Split('@');
     Data.Selection_info=new int[_temp.Length];
     for (int i = 0; i < _temp.Length; i++) Data.Selection_info[i] = int.Parse(_temp[i]);
 
-    Data.Failure_stop=_data.Failure_Stop==0?false:true;
     Data.Failure_description=_data.Failure_Description.Split('@');
-    Data.Faillure_penalty = (PenaltyTarget)_data.Failure_Penalty;
-    Data.Failure_penalty_info = _data.Failure_Penalty_info;
+    _temp = _data.Failure_Penalty.Split('@');
+    Data.Failure_penalty=new PenaltyTarget[_temp.Length];
+    for(int i = 0; i < _temp.Length; i++) Data.Failure_penalty[i]=(PenaltyTarget)int.Parse(_temp[i]);
+    _temp = _data.Failure_Penalty_info.Split('@');
+    for (int i = 0; i < _temp.Length; i++) Data.Failure_penalty_info[i] = _temp[i];
 
     Data.Success_description = _data.Success_Description.Split('@');
 
@@ -76,13 +80,12 @@ public class EventJsonData
 
   public int Selection_Type;           //0,1,2,3,4,5
   public string Selection_Description = "";
-  public int Selection_Target = 0;
+  public string Selection_Target;
   public string Selection_Info;
   public int Selection_Difficult;
 
-  public int Failure_Stop;
   public string Failure_Description = "";
-  public int Failure_Penalty;
+  public string Failure_Penalty;
   public string Failure_Penalty_info;
 
   public string Success_Description = "";
@@ -340,13 +343,12 @@ public class EventData  //기본적인 무작위 풀에서 나오는 이벤트
 
     public SelectionType Selection_type;
     public string[] Selection_description;
-    public CheckTarget Selection_target;
+    public CheckTarget[] Selection_target;
     public int[] Selection_info;
 
-    public bool Failure_stop;
     public string[] Failure_description;
-    public PenaltyTarget Faillure_penalty;
-    public string Failure_penalty_info;
+    public PenaltyTarget[] Failure_penalty;
+    public string[] Failure_penalty_info;
 
     public string[] Success_description;
 
