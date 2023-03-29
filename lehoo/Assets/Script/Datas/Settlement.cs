@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Linq;
 public class Settlement
 {
     public int IllustIndex = 0;
@@ -21,6 +22,12 @@ public class Settlement
     public int Faith = 0;       //신앙
     public int Culture = 0;     //문화
     public int Science = 0;     //과학
+  public Vector3Int VectorPos()
+  {
+    Vector3Int _pos = Vector3Int.zero;
+    foreach (var asdf in Pose) _pos += asdf;
+    return _pos / Pose.Count;
+  }
 }
 public class MapSaveData
 {
@@ -160,6 +167,36 @@ public class MapData
   public List<Settlement> Cities =new List<Settlement>();
   public List<Settlement> Castles =new List<Settlement>();
   public List<Settlement> AllSettles = new List<Settlement>();
+  public List<Settlement> GetCloseSettles(Settlement _origin,int _count)
+  {
+    Vector3Int _originpos = _origin.VectorPos();
+
+    List<float> _distance=new List<float>();
+    List<Settlement> _settlement=new List<Settlement>();
+    foreach (Settlement _settle in AllSettles)
+    {
+      if (_settle == _origin) continue;
+
+      float _dis=Vector3Int.Distance(_settle.VectorPos(), _originpos);
+      //  Debug.Log($"_originpos 에서 _settle.VectorPos()까지의 거리 : {_dis}");
+      _distance.Add(_dis);
+      _settlement.Add(_settle);
+    }//모든 정착지로부터 거리,정착지가 담긴 딕셔너리 생성
+
+    List<Settlement> _closest = new List<Settlement>();
+    for (int i = 0; i < _count; i++)
+    {
+      float _min = _distance.Min();
+      int _index = _distance.IndexOf(_min);
+      _closest.Add(_settlement[_index]);
+
+      _distance.RemoveAt(_index); 
+      _settlement.RemoveAt(_index);
+    }
+
+
+    return _closest;
+  }//_origin 정착지로부터 제일 가까운 3개
 }
 public static class SettlementName
 {

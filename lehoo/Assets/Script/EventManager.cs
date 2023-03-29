@@ -5,24 +5,49 @@ using Newtonsoft.Json;
 
 public class EventManager : MonoBehaviour
 {
-  [SerializeField] private TextAsset EventJsonData = null;
   private static EventManager instance;
-  [HideInInspector] public EventHolder EventHolder=new EventHolder();
-  public static EventManager Instance {get {return instance;}}
+  public static EventManager Instance { get { return instance; } }
   private void Awake()
   {
     if (instance == null)
     {
       instance = this;
-      DontDestroyOnLoad(gameObject);
-   //   LoadEvent();
     }
     else Destroy(gameObject);
   }
-  public void LoadEvent()
+  private EventHolder MyEventHolder;
+  private Dictionary<string, Experience> MyEXP = new Dictionary<string, Experience>();  //경험 딕셔너리
+  private Dictionary<string, Trait> MyTrait = new Dictionary<string, Trait>();         //특성 딕셔너리
+
+  private void Start()
   {
-    Dictionary<string,EventJsonData> jsonData = new Dictionary<string,EventJsonData>();
-    jsonData = JsonConvert.DeserializeObject<Dictionary<string, EventJsonData>>(EventJsonData.text);
-    foreach(var _data in jsonData)EventHolder.AddData(_data.Key, _data.Value);
+    MyEventHolder = GameManager.Instance.EventHolder;
+    MyEXP = GameManager.Instance.ExpDic;
+    MyTrait = GameManager.Instance.TraitsDic;
+  }
+  private Settlement CurrentSettle = null;
+  private Event CurrentEvent = null;
+
+  public void SetNewEvent(bool _isriver,bool _isforest,bool _ishighland,bool _ismountain,bool _issea)
+  {
+
+  }//야외 이벤트 산출
+  public void SetNewEvent(Settlement _settle)
+  {
+
+  }//정착지 이벤트 3개 산출
+  public void SetOutsideEvent(bool _river, bool _forest, bool _mine, bool _mountain, bool _sea)
+  {
+    List<EventBasicData> _eventlist=new List<EventBasicData>();
+    //정착지(혹은 타일) 정보를 담은것
+    EventBasicData _all=new EventBasicData();
+    _all.SettlementType = SettlementType.Outer;
+    if (_river == true)
+    {
+      EventBasicData _riverevent=new EventBasicData();
+      _riverevent.SettlementType = SettlementType.Outer;
+      _riverevent.EnvironmentType = EnvironmentType.River;
+
+    }
   }
 }

@@ -11,27 +11,36 @@ public class EventHolder
   public EventHolder_outer Outer =new EventHolder_outer();
   //외부  ->              ->난이도->계절->환경
   public Dictionary<string,EventData> AllEvents=new Dictionary<string,EventData>();
-  public void AddData(string _index, EventJsonData _data)
+  public void AddData(string _id, EventJsonData _data)
   {
     EventData Data = new EventData();
-    Data.Index = _index;
+    Data.ID = _id;
     Data.Name = _data.Name;
     Data.Description = _data.Description;
+    Data.PreDescription = _data.PreDescription;
     Data.Selection_type = (SelectionType)_data.Selection_Type;
+
     Data.Selection_description = _data.Selection_Description.Split('@');
+
     string[] _temp = _data.Selection_Target.Split('@');
     Data.Selection_target = new CheckTarget[_temp.Length];
     for(int i = 0; i < _temp.Length; i++)Data.Selection_target[i]=(CheckTarget)int.Parse(_temp[i]);
+
     _temp = _data.Selection_Info.Split('@');
     Data.Selection_info=new int[_temp.Length];
     for (int i = 0; i < _temp.Length; i++) Data.Selection_info[i] = int.Parse(_temp[i]);
 
-    Data.Failure_description=_data.Failure_Description.Split('@');
-    _temp = _data.Failure_Penalty.Split('@');
-    Data.Failure_penalty=new PenaltyTarget[_temp.Length];
-    for(int i = 0; i < _temp.Length; i++) Data.Failure_penalty[i]=(PenaltyTarget)int.Parse(_temp[i]);
-    _temp = _data.Failure_Penalty_info.Split('@');
-    for (int i = 0; i < _temp.Length; i++) Data.Failure_penalty_info[i] = _temp[i];
+    if (_data.Failure_Description != null)
+    {
+      Data.Failure_description = _data.Failure_Description.Split('@');
+
+      _temp = _data.Failure_Penalty.Split('@');
+      Data.Failure_penalty = new PenaltyTarget[_temp.Length];
+      for (int i = 0; i < _temp.Length; i++) Data.Failure_penalty[i] = (PenaltyTarget)int.Parse(_temp[i]);
+
+      if(_data.Failure_Penalty_info!=null)
+      Data.Failure_penalty_info = _data.Failure_Penalty_info.Split('@');
+    }
 
     Data.Success_description = _data.Success_Description.Split('@');
 
@@ -49,7 +58,7 @@ public class EventHolder
     else if (_data.Settlement == 2) Castle.AddData(Data, _data);
     else Outer.AddData(Data, _data);
 
-    AllEvents.Add(_index, Data);
+    AllEvents.Add(_id, Data);
   }
   public void RemoveEvent(string _index)
   {
@@ -69,8 +78,8 @@ public class EventHolder
 }
 public class EventJsonData
 {
-  public const string SplitChar = "@";
   public string Name = "";
+  public string PreDescription = "";
   public string Description = "";
   public int Season = 0;
   public int Settlement = 0;          //0,1,2,3
@@ -82,7 +91,6 @@ public class EventJsonData
   public string Selection_Description = "";
   public string Selection_Target;
   public string Selection_Info;
-  public int Selection_Difficult;
 
   public string Failure_Description = "";
   public string Failure_Penalty;
@@ -91,7 +99,6 @@ public class EventJsonData
   public string Success_Description = "";
   public string Reward_Target;
   public string Reward_Info;
-  public int Reward_Difficult;
 
   public string SubReward;
 }
@@ -203,44 +210,17 @@ public class EventHolder_place
 }
 public class EventHolder_placelevel
 {
-  public EventHolder_difficulty Chang=new EventHolder_difficulty();
-  public EventHolder_difficulty Middle=new EventHolder_difficulty();
-  public EventHolder_difficulty Hye=new EventHolder_difficulty();
+  public EventHolder_season Whenever = new EventHolder_season();
+  public EventHolder_season Spring = new EventHolder_season();
+  public EventHolder_season Summer = new EventHolder_season();
+  public EventHolder_season Fall = new EventHolder_season();
+  public EventHolder_season Winter = new EventHolder_season();
   public void AddData(EventData _data, EventJsonData _json)
   {
-    int _diff = _json.Reward_Difficult - _json.Selection_Difficult;
-    if (_diff < 0) Hye.AddData(_data, _json);
-    else if (_diff == 0) Middle.AddData(_data, _json);
-    else Chang.AddData(_data, _json);
-  }
-  public void RemoveEvent(EventData _data)
-  {
-    Chang.RemoveEvent(_data);
-    Middle.RemoveEvent(_data);
-    Hye.RemoveEvent(_data);
-  }
-  public List<EventData> ReturnEvent(EventBasicData _data)
-  {
-    List<EventData> _lehoo = null;
-    if(_data.EventLevel==EventLevel.Chang)_lehoo=Chang.ReturnEvent(_data);
-    else if(_data.EventLevel==EventLevel.Middle)_lehoo=Middle.ReturnEvent(_data);
-    else _lehoo=Hye.ReturnEvent(_data);
-    return _lehoo;
-  }
-}
-public class EventHolder_difficulty
-{
-  public EventHolder_season Whenever=new EventHolder_season();
-  public EventHolder_season Spring=new EventHolder_season();
-  public EventHolder_season Summer=new EventHolder_season();
-  public EventHolder_season Fall=new EventHolder_season();
-  public EventHolder_season Winter=new EventHolder_season();
-  public void AddData(EventData _data, EventJsonData _json)
-  {
-    if(_json.Season==0)Whenever.AddData(_data, _json);
-    else if(_json.Season==1)Spring.AddData(_data, _json);
-    else if(_json.Season==2)Summer.AddData(_data, _json);
-    else if(_json.Season==3)Fall.AddData(_data, _json);
+    if (_json.Season == 0) Whenever.AddData(_data, _json);
+    else if (_json.Season == 1) Spring.AddData(_data, _json);
+    else if (_json.Season == 2) Summer.AddData(_data, _json);
+    else if (_json.Season == 3) Fall.AddData(_data, _json);
     else Winter.AddData(_data, _json);
   }
   public void RemoveEvent(EventData _data)
@@ -254,11 +234,11 @@ public class EventHolder_difficulty
   public List<EventData> ReturnEvent(EventBasicData _data)
   {
     List<EventData> _lehoo = null;
-    if(_data.Season==0)_lehoo=Whenever.ReturnEvent(_data);
-    else if(_data.Season==1)_lehoo=Spring.ReturnEvent(_data);
+    if (_data.Season == 0) _lehoo = Whenever.ReturnEvent(_data);
+    else if (_data.Season == 1) _lehoo = Spring.ReturnEvent(_data);
     else if (_data.Season == 2) _lehoo = Summer.ReturnEvent(_data);
     else if (_data.Season == 3) _lehoo = Fall.ReturnEvent(_data);
-    else _lehoo= Winter.ReturnEvent(_data);
+    else _lehoo = Winter.ReturnEvent(_data);
     return _lehoo;
   }
 }
@@ -323,11 +303,9 @@ public class EventBasicData
   public SettlementType SettlementType;
   public PlaceType PlaceType;
   public int PlaceLevel;
-  public EventLevel EventLevel;
   public EnvironmentType EnvironmentType;
   public int Season;
 }
-public enum EventLevel { Chang, Middle, Hye }
 public enum SettlementType { Town,City,Castle,Outer}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Campus}
 public enum EnvironmentType { None,River,Forest,Mine,Mountain,Sea }
@@ -337,9 +315,10 @@ public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTarget { Experience,GoldAndExperience,Gold,HP,Sanity,Theme,Skill,Trait}
 public class EventData  //기본적인 무작위 풀에서 나오는 이벤트
 {
-    public string Index = "";
+    public string ID = "";
     public string Name = "";
     public string Description = "";
+  public string PreDescription = "";
 
     public SelectionType Selection_type;
     public string[] Selection_description;

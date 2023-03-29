@@ -12,16 +12,13 @@ using UnityEngine.EventSystems;
 
 public class TestScript : MonoBehaviour
 {
-  [SerializeField] private TextAsset MyJson = null;
+  public RectTransform RectA = null;
+  public RectTransform RectB = null;
   private void Awake()
   {
-    Dictionary<string,lehoojson> _lehoo= new Dictionary<string,lehoojson>();
-    _lehoo = JsonConvert.DeserializeObject<Dictionary<string, lehoojson>>(MyJson.text);
-    foreach (var _data in _lehoo)
-      Debug.Log(_data.Value.qwer);
+
   }
-}
-public class lehoojson
-{
-  public string qwer;
+  private void Update()
+  {
+  }
 }

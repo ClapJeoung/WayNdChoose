@@ -6,11 +6,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class maptext : MonoBehaviour
 {
-  private MapSaveData SaveData = null;
-  private MapData Data = null;
    public Tilemap Tilemap_bottom, Tilemap_top;
    public TilePrefabs MyTiles;
     public int DefaultSize = 13;
@@ -36,18 +35,12 @@ public class maptext : MonoBehaviour
             color = Color.white,
             transform = _trans
         };
-  //  MakeMap();
-      //  StartCoroutine(_simul());
+    //  MakeMap();
+    //  StartCoroutine(_simul());
+    StartCoroutine(_simul_fatal());
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-           GameManager.Instance.Map= MakeMap().ConvertToMapData();
-        }
-    }
-  private IEnumerator _simul()
+  private IEnumerator _simul_status()
   {
     int town_wealth_max = 0, town_wealth_aver = 0,
       town_faith_max = 0, town_faith_aver = 0;
@@ -277,10 +270,158 @@ public class maptext : MonoBehaviour
     }
         yield return null;
     }
+  private IEnumerator _simul_bool()
+  {
+    float _town_noriver = 0, _town_noforest = 0, _town_nohighland=0, _town_nomountain=0, _town_nosea = 0;
+    float _city_noriver = 0, _city_noforest = 0, _city_nohighland=0, _city_nomountain=0, _city_nosea = 0;
+    float _castle_noriver = 0, _castle_noforest = 0, _castle_nohighland=0, _castle_nomountain=0, _castle_nosea = 0;
+    string _str = "";
+    float _alltowncount = 0.0f, _allcitycount = 0.0f, _allcastlecount = 0.0f;
+    for (int i = 0; i < 1000; i++)
+    {
+      float _noriver = 0, _noforest = 0, _nohighland = 0, _nomountain = 0, _nosea = 0;
+      MapData _data = MakeMap().ConvertToMapData();
+      int _count = 0;
+      _str = $"{i + 1}번 검사\n";
+      foreach(var _town in _data.Towns)
+      {
+        _count++;
+        if (_town.IsRiver == false) _noriver++;
+        if(_town.IsForest == false) _noforest++;
+        if (_town.IsMine == false) _nohighland++;
+        if (_town.IsMountain == false) _nomountain++;
+        if(_town.IsSea==false) _nosea++;
+      }
+      _town_noriver += _noriver;
+      _town_noforest += _noforest;
+      _town_nohighland += _nohighland;
+      _town_nomountain += _nomountain;
+      _town_nosea += _nosea;
+      float _towncount = _data.Towns.Count;
+      _alltowncount += _towncount;
+      _str += $"마을 강 확률 : {(_towncount-_noriver)/_towncount}  숲 확률 : {(_towncount-_noforest)/_towncount}  언덕 확률 : {(_towncount-_nohighland)/_towncount}  산 확률 : {(_towncount-_nomountain)/_towncount}  바다 확률 : {(_towncount-_nosea)/_towncount}\n\n";
+      _noriver = 0; _noforest = 0; _nohighland = 0; _nomountain = 0; _nosea = 0;
+     
+      foreach (var _city in _data.Cities)
+      {
+        _count++;
+        if (_city.IsRiver == false) _noriver++;
+        if (_city.IsForest == false) _noforest++;
+        if (_city.IsMine == false) _nohighland++;
+        if (_city.IsMountain == false) _nomountain++;
+        if (_city.IsSea == false) _nosea++;
+      }
+      _city_noriver += _noriver;
+      _city_noforest += _noforest;
+      _city_nohighland += _nohighland;
+      _city_nomountain += _nomountain;
+      _city_nosea += _nosea;
+      float _citycount = _data.Cities.Count;
+      _allcitycount += _citycount;
+      _str += $"도시 강 확률 : {(_citycount-_noriver) / _citycount}  숲 확률 : {(_citycount-_noforest) / _citycount}  언덕 확률 : {(_citycount-_nohighland) / _citycount}  산 확률 : {(_citycount-_nomountain) / _citycount}  바다 확률 : {(_citycount-_nosea) / _citycount}\n\n";
+      _noriver = 0; _noforest = 0; _nohighland = 0; _nomountain = 0; _nosea = 0;
+      
+      foreach (var _castle in _data.Castles)
+      {
+        _count++;
+        if (_castle.IsRiver == false) _noriver++;
+        if (_castle.IsForest == false) _noforest++;
+        if (_castle.IsMine == false) _nohighland++;
+        if (_castle.IsMountain == false) _nomountain++;
+        if (_castle.IsSea == false) _nosea++;
+      }
+      _castle_noriver += _noriver;
+      _castle_noforest += _noforest;
+      _castle_nohighland += _nohighland;
+      _castle_nomountain += _nomountain;
+      _castle_nosea += _nosea;
+      float _castlecount = _data.Castles.Count;
+      _allcastlecount += _castlecount;
+      _str += $"성채 강 확률 : {(_castlecount-_noriver) / _castlecount}  숲 확률 : {(_castlecount-_noforest) / _castlecount}  언덕 확률 : {(_castlecount-_nohighland) / _castlecount}  산 확률 : {(_castlecount-_nomountain) / _castlecount}  바다 확률 : {(_castlecount-_nosea) / _castlecount}\n\n";
+      _noriver = 0; _noforest = 0; _nohighland = 0; _nomountain = 0; _nosea = 0;
+
+    //  Debug.Log(_str);
+      yield return null;
+    }
+    _str = $"마을 개수 : {_alltowncount}\n" +
+      $"강 확률 : {_town_noriver / _alltowncount}  숲 확률 : {_town_noforest / _alltowncount}  고원 확률 : {_town_nohighland / _alltowncount}  " +
+      $"산 확률 : {_town_nomountain / _alltowncount}  바다 확률 : {_town_nosea / _alltowncount}\n\n" +
+      $"도시 개수 : {_allcitycount}\n" +
+      $"강 확률 : {_city_noriver / _allcitycount}  숲 확률 : {_city_noforest / _allcitycount}  고원 확률 : {_city_nohighland / _allcitycount}  " +
+      $"산 확률 : {_city_nomountain / _allcitycount}  바다 확률 : {_city_nosea / _allcitycount}\n\n" + 
+      $"성채 개수 : {_allcastlecount}\n" +
+      $"강 확률 : {_castle_noriver / _allcastlecount}  숲 확률 : {_castle_noforest / _allcastlecount}  고원 확률 : {_castle_nohighland / _allcastlecount}  " +
+      $"산 확률 : {_castle_nomountain / _allcastlecount}  바다 확률 : {_castle_nosea / _allcastlecount}\n\n";
+    Debug.Log(_str);
+      }
+  private IEnumerator _simul_fatal()
+  {
+    string _str = "";
+    for (int i = 0; i < 1000; i++)
+    {
+      string _temp = "";
+      MapData _data = MakeMap().ConvertToMapData();
+      bool _isriver = false, _isforest = false, _ishighland = false, _ismountain = false, _issea = false;
+      bool _fataltown = false, _fatalcity = false, _fatalcastle = false;
+      foreach (var _town in _data.Towns)
+      {
+        if (_town.IsRiver) _isriver = true;
+        if (_town.IsForest) _isforest = true;
+        if (_town.IsMine) _ishighland = true;
+        if (_town.IsMountain) _ismountain = true;
+        if (_town.IsSea) _issea = true;
+      }
+      if (!_isriver) _temp += "강 ";
+      if (!_isforest) _temp += "숲 ";
+      if (!_ishighland) _temp += "언덕 ";
+      if (!_ismountain) _temp += "산 ";
+      if (!_ismountain) _temp += "바다 ";
+      if (_temp != "") { _str += $"{i + 1}번 모든 마을에 '{_temp}' 없음\n"; _fataltown = true; }
+
+      _isriver = false;_isforest = false;_ishighland = false;_ismountain = false;_issea = false;
+      _temp = "";
+      foreach (var _city in _data.Cities)
+      {
+        if (_city.IsRiver) _isriver = true;
+        if (_city.IsForest) _isforest = true;
+        if (_city.IsMine) _ishighland = true;
+        if (_city.IsMountain) _ismountain = true;
+        if (_city.IsSea) _issea = true;
+      }
+      if (!_isriver) _temp += "강 ";
+      if (!_isforest) _temp += "숲 ";
+      if (!_ishighland) _temp += "언덕 ";
+      if (!_ismountain) _temp += "산 ";
+      if (!_ismountain) _temp += "바다 ";
+      if (_temp != "") { _str += $"{i + 1}번 모든 도시에 '{_temp}' 없음\n"; _fatalcity = true; }
+
+      _isriver = false; _isforest = false; _ishighland = false; _ismountain = false; _issea = false;
+      _temp = "";
+      foreach (var _castle in _data.Castles)
+      {
+        if (_castle.IsRiver) _isriver = true;
+        if (_castle.IsForest) _isforest = true;
+        if (_castle.IsMine) _ishighland = true;
+        if (_castle.IsMountain) _ismountain = true;
+        if (_castle.IsSea) _issea = true;
+      }
+      if (!_isriver) _temp += "강 ";
+      if (!_isforest) _temp += "숲 ";
+      if (!_ishighland) _temp += "언덕 ";
+      if (!_ismountain) _temp += "산 ";
+      if (!_ismountain) _temp += "바다 ";
+      if (_temp != "") { _str += $"{i + 1}번 모든 정착지에 '{_temp}' 없음\n"; _fatalcastle = true; }
+
+      if (_fataltown || _fatalcity || _fatalcastle) _str += "\n";
+      yield return null;
+    }
+    Debug.Log(_str);
+  }
+
     public MapSaveData MakeMap()
     {
-    SaveData = new MapSaveData();
-        SaveData.Size = DefaultSize;
+    MapSaveData _JsonData = new MapSaveData();
+    _JsonData.Size = DefaultSize;
         MapData_b = new int[DefaultSize, DefaultSize];    //지도 크기_바닥
         for (int i = 0; i < DefaultSize; i++)
             for (int j = 0; j < DefaultSize; j++) MapData_b[i, j] = MapCode.b_land;
@@ -680,15 +821,15 @@ public class maptext : MonoBehaviour
                 _count++;
                 _newpos = new Vector3Int(Random.Range(0, DefaultSize), Random.Range(0, DefaultSize), 0);//무작위 좌표
                 if (MapData_b[_newpos.x, _newpos.y] == MapCode.b_sea|| MapData_b[_newpos.x, _newpos.y] == MapCode.b_beach) continue; //해당 좌표가 바다거나
-                if (!CheckAround(_newmountain, _newpos)) continue;   //산 타일 주위 1칸에 겹치는게 있으면 다시
+                if (CheckAround(_newmountain, _newpos)) continue;   //산 타일 주위 1칸에 겹치는게 있으면 다시
                 _newpos_dir_0 = GetNextPos(_newpos, 0);
                 if (!CheckInside(_newpos_dir_0)) continue;                                //범위 벗어나거나
                 if (MapData_b[_newpos_dir_0.x, _newpos_dir_0.y] == MapCode.b_sea || MapData_b[_newpos_dir_0.x, _newpos_dir_0.y] == MapCode.b_beach) continue; //해당 좌표가 바다거나
-                if (!CheckAround(_newmountain, _newpos_dir_0)) continue;   //산 타일 주위 1칸에 겹치는게 있으면 다시
+                if (CheckAround(_newmountain, _newpos_dir_0)) continue;   //산 타일 주위 1칸에 겹치는게 있으면 다시
                 _newpos_dir_1 = GetNextPos(_newpos, 1);
                 if (!CheckInside(_newpos_dir_1)) continue;                                //범위 벗어나거나
                 if (MapData_b[_newpos_dir_1.x, _newpos_dir_1.y] == MapCode.b_sea || MapData_b[_newpos_dir_1.x, _newpos_dir_1.y] == MapCode.b_beach) continue; //해당 좌표가 바다거나
-                if (!CheckAround(_newmountain, _newpos_dir_1)) continue;   //산 타일 주위 1칸에 겹치는게 있으면 다시
+                if (CheckAround(_newmountain, _newpos_dir_1)) continue;   //산 타일 주위 1칸에 겹치는게 있으면 다시
                                                                            // 여기까지 왔으면 멀쩡한 산 3개 뭉치를 확보했다는 것
                 break;  //반복문 종료
             }
@@ -1952,14 +2093,14 @@ public class maptext : MonoBehaviour
         }//pos 좌표 해변의 바다 면 개수, 회전수
     #endregion
     #region 정착지 정보
-    SaveData.BottomMapCode = _mc_b;
-        SaveData.TopMapCode = _mc_t;
-        SaveData.BottomTileCode = _tc_b;
-        SaveData.TopTileCode = _tc_t;
-        SaveData.RotCode = _r;
+    _JsonData.BottomMapCode = _mc_b;
+    _JsonData.TopMapCode = _mc_t;
+    _JsonData.BottomTileCode = _tc_b;
+    _JsonData.TopTileCode = _tc_t;
+    _JsonData.RotCode = _r;
 
-        SaveData.TownCount = _towns.Count;
-        SaveData.Town_Pos = _towns.ToArray();
+    _JsonData.TownCount = _towns.Count;
+    _JsonData.Town_Pos = _towns.ToArray();
 
         int _citycount = 0;
         List<Vector3Int> _citytemp = new List<Vector3Int>();
@@ -1971,60 +2112,60 @@ public class maptext : MonoBehaviour
                 foreach (var _pos in _array) _citytemp.Add(_pos);
             }
         }
-        SaveData.CityCount = _citycount;
-        SaveData.City_Pos = _citytemp.ToArray();
+    _JsonData.CityCount = _citycount;
+    _JsonData.City_Pos = _citytemp.ToArray();
 
-        SaveData.CastleCount = _castles.Count;
+    _JsonData.CastleCount = _castles.Count;
         List<Vector3Int> _castletemp = new List<Vector3Int>();
         foreach (var _array in _castles)
         {
             foreach (var _pos in _array) _castletemp.Add(_pos);
         }
-        SaveData.Castle_Pos = _castletemp.ToArray();
+    _JsonData.Castle_Pos = _castletemp.ToArray();
 
         //나무,마을,도시,성채 넣기
 
         Vector3Int _saintpos = new Vector3Int(Random.Range(_deg, _deg*3), Random.Range(_deg,_deg*3));
     int _MaxFaith = 8;
 
-    SaveData.Isriver_town = new bool[SaveData.TownCount];
-    SaveData.Isforest_town=new bool[SaveData.TownCount];
-    SaveData.Ismine_town= new bool[SaveData.TownCount];
-    SaveData.Ismountain_town= new bool[SaveData.TownCount];
-    SaveData.Issea_town = new bool[SaveData.TownCount];
-        SaveData.Wealth_town = new int[SaveData.TownCount];
-        SaveData.Faith_town = new int[SaveData.TownCount];
-        SaveData.Culture_town = new int[SaveData.TownCount];
-        SaveData.Science_town = new int[SaveData.TownCount];
-    SaveData.Town_Open=new bool[SaveData.TownCount];
-    SaveData.Town_Names=new string[SaveData.TownCount];
-        SaveData.Town_Index = new int[SaveData.TownCount];
+    _JsonData.Isriver_town = new bool[_JsonData.TownCount];
+    _JsonData.Isforest_town=new bool[_JsonData.TownCount];
+    _JsonData.Ismine_town= new bool[_JsonData.TownCount];
+    _JsonData.Ismountain_town= new bool[_JsonData.TownCount];
+    _JsonData.Issea_town = new bool[_JsonData.TownCount];
+        _JsonData.Wealth_town = new int[_JsonData.TownCount];
+        _JsonData.Faith_town = new int[_JsonData.TownCount];
+        _JsonData.Culture_town = new int[_JsonData.TownCount];
+        _JsonData.Science_town = new int[_JsonData.TownCount];
+    _JsonData.Town_Open=new bool[_JsonData.TownCount];
+    _JsonData.Town_Names=new string[_JsonData.TownCount];
+        _JsonData.Town_Index = new int[_JsonData.TownCount];
 
-    SaveData.Isriver_city = new bool[SaveData.CityCount];
-    SaveData.Isforest_city = new bool[SaveData.CityCount];
-    SaveData.Ismine_city = new bool[SaveData.CityCount];
-    SaveData.Ismountain_city = new bool[SaveData.CityCount];
-    SaveData.Issea_city = new bool[SaveData.CityCount];
-    SaveData.Wealth_city = new int[SaveData.CityCount];
-    SaveData.Faith_city = new int[SaveData.CityCount];
-    SaveData.Culture_city = new int[SaveData.CityCount];
-    SaveData.Science_city = new int[SaveData.CityCount];
-    SaveData.City_Open = new bool[SaveData.CityCount];
-    SaveData.City_Names = new string[SaveData.CityCount];
-        SaveData.City_Index = new int[SaveData.CityCount];
+    _JsonData.Isriver_city = new bool[_JsonData.CityCount];
+    _JsonData.Isforest_city = new bool[_JsonData.CityCount];
+    _JsonData.Ismine_city = new bool[_JsonData.CityCount];
+    _JsonData.Ismountain_city = new bool[_JsonData.CityCount];
+    _JsonData.Issea_city = new bool[_JsonData.CityCount];
+    _JsonData.Wealth_city = new int[_JsonData.CityCount];
+    _JsonData.Faith_city = new int[_JsonData.CityCount];
+    _JsonData.Culture_city = new int[_JsonData.CityCount];
+    _JsonData.Science_city = new int[_JsonData.CityCount];
+    _JsonData.City_Open = new bool[_JsonData.CityCount];
+    _JsonData.City_Names = new string[_JsonData.CityCount];
+        _JsonData.City_Index = new int[_JsonData.CityCount];
 
-        SaveData.Isriver_castle = new bool[SaveData.CastleCount];
-    SaveData.Isforest_castle = new bool[SaveData.CastleCount];
-    SaveData.Ismine_castle = new bool[SaveData.CastleCount];
-    SaveData.Ismountain_castle = new bool[SaveData.CastleCount];
-    SaveData.Issea_castle = new bool[SaveData.CastleCount];
-    SaveData.Wealth_castle = new int[SaveData.CastleCount];
-    SaveData.Faith_castle = new int[SaveData.CastleCount];
-    SaveData.Culture_castle = new int[SaveData.CastleCount];
-    SaveData.Science_castle = new int[SaveData.CastleCount];
-    SaveData.Castle_Open= new bool[SaveData.CastleCount];
-    SaveData.Castle_Names= new string[SaveData.CastleCount];
-        SaveData.Castle_Index = new int[SaveData.CastleCount];
+        _JsonData.Isriver_castle = new bool[_JsonData.CastleCount];
+    _JsonData.Isforest_castle = new bool[_JsonData.CastleCount];
+    _JsonData.Ismine_castle = new bool[_JsonData.CastleCount];
+    _JsonData.Ismountain_castle = new bool[_JsonData.CastleCount];
+    _JsonData.Issea_castle = new bool[_JsonData.CastleCount];
+    _JsonData.Wealth_castle = new int[_JsonData.CastleCount];
+    _JsonData.Faith_castle = new int[_JsonData.CastleCount];
+    _JsonData.Culture_castle = new int[_JsonData.CastleCount];
+    _JsonData.Science_castle = new int[_JsonData.CastleCount];
+    _JsonData.Castle_Open= new bool[_JsonData.CastleCount];
+    _JsonData.Castle_Names= new string[_JsonData.CastleCount];
+        _JsonData.Castle_Index = new int[_JsonData.CastleCount];
 
         #region 검사 풀
         List<int> _deserttilepool = new List<int>();
@@ -2059,10 +2200,10 @@ public class maptext : MonoBehaviour
     List<List<Vector3Int>> _poses = new List<List<Vector3Int>>();
     List<Vector3Int> _poslist = new List<Vector3Int>();
     //마을 개수대로 검사
-    for(int i = 0; i < SaveData.TownCount; i++)
+    for(int i = 0; i < _JsonData.TownCount; i++)
     {
       _poslist.Clear();
-      _poslist.Add(SaveData.Town_Pos[i]);
+      _poslist.Add(_JsonData.Town_Pos[i]);
       List<Vector3Int> _temp = new List<Vector3Int>();
       foreach (var _asdf in _poslist) _temp.Add(_asdf);
       _poses.Add(_temp);
@@ -2070,25 +2211,25 @@ public class maptext : MonoBehaviour
     _settles = ClassifySettle(_poses,_desertcount_town,0);
     for(int i = 0; i < _settles.Count; i++)
     {
-      SaveData.Isriver_town[i] = _settles[i].IsRiver;
-      SaveData.Isforest_town[i] = _settles[i].IsForest;
-      SaveData.Ismine_town[i] = _settles[i].IsMine;
-      SaveData.Ismountain_town[i] = _settles[i].IsMountain;
-      SaveData.Issea_town[i]= _settles[i].IsSea;
-      SaveData.Wealth_town[i] = _settles[i].Wealth;
-      SaveData.Faith_town[i] = _settles[i].Faith;
-      SaveData.Culture_town[i] = _settles[i].Culture;
-      SaveData.Science_town[i] = _settles[i].Science;
-      SaveData.Town_Names[i] = _settles[i].Name;
+      _JsonData.Isriver_town[i] = _settles[i].IsRiver;
+      _JsonData.Isforest_town[i] = _settles[i].IsForest;
+      _JsonData.Ismine_town[i] = _settles[i].IsMine;
+      _JsonData.Ismountain_town[i] = _settles[i].IsMountain;
+      _JsonData.Issea_town[i]= _settles[i].IsSea;
+      _JsonData.Wealth_town[i] = _settles[i].Wealth;
+      _JsonData.Faith_town[i] = _settles[i].Faith;
+      _JsonData.Culture_town[i] = _settles[i].Culture;
+      _JsonData.Science_town[i] = _settles[i].Science;
+      _JsonData.Town_Names[i] = _settles[i].Name;
     }
     _poses.Clear();
     _poslist.Clear();
     //도시 2개씩 묶어서 검사
-    for (int i = 0; i < SaveData.CityCount; i++)
+    for (int i = 0; i < _JsonData.CityCount; i++)
     {
       _poslist.Clear();
-      _poslist.Add(SaveData.City_Pos[i*2]);
-      _poslist.Add(SaveData.City_Pos[i * 2+1]);
+      _poslist.Add(_JsonData.City_Pos[i*2]);
+      _poslist.Add(_JsonData.City_Pos[i * 2+1]);
       List<Vector3Int> _temp = new List<Vector3Int>();
       foreach (var _asdf in _poslist) _temp.Add(_asdf);
       _poses.Add(_temp);
@@ -2096,26 +2237,26 @@ public class maptext : MonoBehaviour
     _settles = ClassifySettle(_poses, _desertcount_city,1);
     for (int i = 0; i < _settles.Count; i++)
     {
-      SaveData.Isriver_city[i] = _settles[i].IsRiver;
-      SaveData.Isforest_city[i] = _settles[i].IsForest;
-      SaveData.Ismine_city[i] = _settles[i].IsMine;
-      SaveData.Ismountain_city[i] = _settles[i].IsMountain;
-      SaveData.Issea_city[i]= _settles[i].IsSea;
-      SaveData.Wealth_city[i] = _settles[i].Wealth;
-      SaveData.Faith_city[i] = _settles[i].Faith;
-      SaveData.Culture_city[i] = _settles[i].Culture;
-      SaveData.Science_city[i] = _settles[i].Science;
-      SaveData.City_Names[i] = _settles[i].Name;
+      _JsonData.Isriver_city[i] = _settles[i].IsRiver;
+      _JsonData.Isforest_city[i] = _settles[i].IsForest;
+      _JsonData.Ismine_city[i] = _settles[i].IsMine;
+      _JsonData.Ismountain_city[i] = _settles[i].IsMountain;
+      _JsonData.Issea_city[i]= _settles[i].IsSea;
+      _JsonData.Wealth_city[i] = _settles[i].Wealth;
+      _JsonData.Faith_city[i] = _settles[i].Faith;
+      _JsonData.Culture_city[i] = _settles[i].Culture;
+      _JsonData.Science_city[i] = _settles[i].Science;
+      _JsonData.City_Names[i] = _settles[i].Name;
     }
     _poses.Clear();
     _poslist.Clear();
     //성채 3개씩 묶어서 검사
-    for (int i = 0; i < SaveData.CastleCount; i++)
+    for (int i = 0; i < _JsonData.CastleCount; i++)
     {
       _poslist.Clear();
-      _poslist.Add(SaveData.Castle_Pos[i * 3]);
-      _poslist.Add(SaveData.Castle_Pos[i * 3+ 1]);
-      _poslist.Add(SaveData.Castle_Pos[i * 3 + 2]);
+      _poslist.Add(_JsonData.Castle_Pos[i * 3]);
+      _poslist.Add(_JsonData.Castle_Pos[i * 3+ 1]);
+      _poslist.Add(_JsonData.Castle_Pos[i * 3 + 2]);
       List<Vector3Int> _temp = new List<Vector3Int>();
       foreach (var _asdf in _poslist) _temp.Add(_asdf);
       _poses.Add(_temp);
@@ -2123,16 +2264,16 @@ public class maptext : MonoBehaviour
     _settles = ClassifySettle(_poses, _desertcount_castle,2);
     for (int i = 0; i < _settles.Count; i++)
     {
-      SaveData.Isriver_castle[i] = _settles[i].IsRiver;
-      SaveData.Isforest_castle[i] = _settles[i].IsForest;
-      SaveData.Ismine_castle[i] = _settles[i].IsMine;
-      SaveData.Ismountain_castle[i] = _settles[i].IsMountain;
-      SaveData.Issea_castle[i] = _settles[i].IsSea;
-      SaveData.Wealth_castle[i] = _settles[i].Wealth;
-      SaveData.Faith_castle[i] = _settles[i].Faith;
-      SaveData.Culture_castle[i] = _settles[i].Culture;
-      SaveData.Science_castle[i] = _settles[i].Science;
-      SaveData.Castle_Names[i] = _settles[i].Name;
+      _JsonData.Isriver_castle[i] = _settles[i].IsRiver;
+      _JsonData.Isforest_castle[i] = _settles[i].IsForest;
+      _JsonData.Ismine_castle[i] = _settles[i].IsMine;
+      _JsonData.Ismountain_castle[i] = _settles[i].IsMountain;
+      _JsonData.Issea_castle[i] = _settles[i].IsSea;
+      _JsonData.Wealth_castle[i] = _settles[i].Wealth;
+      _JsonData.Faith_castle[i] = _settles[i].Faith;
+      _JsonData.Culture_castle[i] = _settles[i].Culture;
+      _JsonData.Science_castle[i] = _settles[i].Science;
+      _JsonData.Castle_Names[i] = _settles[i].Name;
     }
 
     List<int> GetAround(int[,] _targetarray, List<Vector3Int> _poslist,int range)
@@ -2238,10 +2379,8 @@ public class maptext : MonoBehaviour
     }
 
     #endregion
-    //  OutputSettleData(SaveData);
-    Data = SaveData.ConvertToMapData();
-    MakeTilemap(SaveData);
-        return SaveData;
+    //  OutputSettleData(_JsonData);
+        return _JsonData;
     }
   public void OutputSettleData(MapSaveData _data)
   {
@@ -2265,7 +2404,7 @@ public class maptext : MonoBehaviour
     }
     Debug.Log(_str);
   }
-  public void MakeTilemap(MapSaveData _data)
+  public void MakeTilemap(MapSaveData _jsondata,MapData _mapdata)
     {
     Vector3 _cellsize = new Vector3(75, 75);
     Debug.Log("맵을 만든 레후~");
@@ -2276,9 +2415,9 @@ public class maptext : MonoBehaviour
       {
         Vector3Int _newpos = new Vector3Int(j, i, 0);
        // Debug.Log($"{_newpos} -> {Tilemap_bottom.CellToWorld(_newpos)}");
-        maketile(GetTile_bottom(_data.BottomTileCode[i * DefaultSize + j]), Tilemap_bottom.CellToWorld(_newpos), _data.RotCode[i * DefaultSize + j]);
+        maketile(GetTile_bottom(_jsondata.BottomTileCode[i * DefaultSize + j]), Tilemap_bottom.CellToWorld(_newpos), _jsondata.RotCode[i * DefaultSize + j]);
 
-        int _topcode = _data.TopTileCode[i * DefaultSize + j];
+        int _topcode = _jsondata.TopTileCode[i * DefaultSize + j];
         if(_topcode==TileCode.forest||_topcode==TileCode.forest_river || _topcode == TileCode.d_forest || _topcode == TileCode.d_forest_river)
           maketile(GetTile_top(_topcode), Tilemap_top.CellToWorld(_newpos),0);
       }
@@ -2286,11 +2425,11 @@ public class maptext : MonoBehaviour
     //이 밑은 정착지를 버튼으로 만드는거
     Vector3 _zeropos = Vector3.zero;
     Vector3 _buttonpos = Vector3.zero;
-        for(int i = 0; i < SaveData.TownCount; i++)
+        for(int i = 0; i < _jsondata.TownCount; i++)
     {
       _buttonpos = Vector3.zero;
       List<Vector3> townpos = new List<Vector3>();
-      townpos.Add(Tilemap_top.CellToWorld(SaveData.Town_Pos[i]) );
+      townpos.Add(Tilemap_top.CellToWorld(_jsondata.Town_Pos[i]) );
       foreach (Vector3 pos in townpos) _buttonpos += pos;
       //위치(Rect로 변환) 집어넣고
       List<GameObject> _images=new List<GameObject>();
@@ -2313,15 +2452,15 @@ public class maptext : MonoBehaviour
         _images[j].transform.SetParent(_button.transform, false);
         _images[j].transform.localScale = Vector3.one;
       }
-      _button.GetComponent<SettlementIcon>().Setup(Data.Towns[i]);
+      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Towns[i]);
     //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
-    for (int i = 0; i < SaveData.CityCount; i++)
+    for (int i = 0; i < _jsondata.CityCount; i++)
     {
       _buttonpos = Vector3.zero;
       List<Vector3> citypos = new List<Vector3>();
-      citypos.Add(Tilemap_top.CellToWorld(SaveData.City_Pos[i*2]) );
-      citypos.Add(Tilemap_top.CellToWorld(SaveData.City_Pos[i * 2+1]) );
+      citypos.Add(Tilemap_top.CellToWorld(_jsondata.City_Pos[i*2]) );
+      citypos.Add(Tilemap_top.CellToWorld(_jsondata.City_Pos[i * 2+1]) );
       foreach (Vector3 pos in citypos) _buttonpos += pos;
       //위치(Rect로 변환) 집어넣고
       List<GameObject> _images = new List<GameObject>();
@@ -2345,16 +2484,16 @@ public class maptext : MonoBehaviour
         _images[j].transform.SetParent(_button.transform, false);
         _images[j].transform.localScale = Vector3.one;
       }
-      _button.GetComponent<SettlementIcon>().Setup(Data.Cities[i]);
+      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Cities[i]);
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
-    for (int i = 0; i < SaveData.CastleCount; i++)
+    for (int i = 0; i < _jsondata.CastleCount; i++)
     {
       _buttonpos = Vector3.zero;
       List<Vector3> castlepos = new List<Vector3>();
-      castlepos.Add(Tilemap_top.CellToWorld(SaveData.Castle_Pos[i * 3]) );
-      castlepos.Add(Tilemap_top.CellToWorld(SaveData.Castle_Pos[i * 3 + 1]) );
-      castlepos.Add(Tilemap_top.CellToWorld(SaveData.Castle_Pos[i * 3 + 2]) );
+      castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3]) );
+      castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3 + 1]) );
+      castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3 + 2]) );
       foreach (Vector3 pos in castlepos) _buttonpos += pos;
       //위치(Rect로 변환) 집어넣고
       List<GameObject> _images = new List<GameObject>();
@@ -2378,7 +2517,7 @@ public class maptext : MonoBehaviour
         _images[j].transform.SetParent(_button.transform, false);
         _images[j].transform.localScale = Vector3.one;
       }
-      _button.GetComponent<SettlementIcon>().Setup(Data.Castles[i]);
+      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Castles[i]);
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
 
@@ -2433,18 +2572,54 @@ public class maptext : MonoBehaviour
     /// <returns></returns>
     public bool CheckAround(List<Vector3Int> check, Vector3Int pos)
     {
-        if (check.Contains(pos)) return false;
+        if (check.Contains(pos)) return true;
         for(int i = 0; i < 6; i++)
         {
-            if (check.Contains(GetNextPos(pos, i))) return false; 
+            if (check.Contains(GetNextPos(pos, i))) return true; 
         }
-        return true;
+        return false;
     }
     public bool CheckInside(Vector3Int pos)
     {
         if (pos.x < 0 || pos.x > DefaultSize - 1 || pos.y < 0 || pos.y > DefaultSize - 1) return false;
         return true;
     }
+  public void GetAroundData(Vector3 _worldpos,ref bool _isriver,ref bool _isforest,ref bool _ishigh,ref bool _ismountain,ref bool _issea)
+  {
+    Vector3Int _tilepos=Tilemap_bottom.WorldToCell(_worldpos);
+    //월드 좌표 -> 타일 좌표
+    List<int> _riverpool=new List<int>();
+    _riverpool.Add(MapCode.b_river);_riverpool.Add(MapCode.b_desert_river);_riverpool.Add(MapCode.b_desert_riverbeach);_riverpool.Add(MapCode.b_riverbeach);
+    List<int> _forestpool = new List<int>();
+    _forestpool.Add(MapCode.t_forest);_forestpool.Add(MapCode.t_desertforest);
+    List<int> _highlandpool=new List<int>();
+    _highlandpool.Add(MapCode.b_highland);_highlandpool.Add(MapCode.b_desert_highland);
+    List<int> _mountainpool=new List<int>();
+    _mountainpool.Add(MapCode.b_mountain);_mountainpool.Add(MapCode.b_desert_mountain);
+    List<int> _seapool=new List<int>();
+    _seapool.Add(MapCode.b_sea);_seapool.Add(MapCode.b_beach);_seapool.Add(MapCode.b_desert_beach);
+    _seapool.Add(MapCode.b_riverbeach);_seapool.Add(MapCode.b_desert_riverbeach);
+    //강,숲,언덕,산,바다 타일 코드 풀
+
+    Check(_riverpool, ref _isriver, true);
+    Check(_forestpool, ref _isforest, false);
+    Check(_highlandpool, ref _ishigh, true);
+    Check(_mountainpool, ref _ismountain, true);
+    Check(_seapool, ref _issea, true);
+
+    void Check(List<int> _pool, ref bool _targetbool,bool isbottom)
+    {
+      int[,] _tilemap = isbottom == true ? GameManager.Instance.MyMapData.MapCode_Bottom : GameManager.Instance.MyMapData.MapCode_Top;
+
+      if (_pool.Contains(_tilemap[_tilepos.x, _tilepos.y])) { _targetbool = true;return; }
+
+      for(int i = 0; i < 6; i++)
+      {
+        Vector3Int _temp = GetNextPos(_tilepos, i);
+        if (_pool.Contains(_tilemap[_temp.x, _temp.y])) { _targetbool = true; return; }
+      }
+    }
+  }//월드 기준 좌표 하나 받아서 그 주위 1칸 강,숲,언덕,산,바다 여부 반환
 }
 public class RiverDirInfo
 {

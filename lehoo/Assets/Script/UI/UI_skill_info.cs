@@ -42,11 +42,11 @@ public class UI_skill_info : UI_default
     IsOpen = true;
     UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);
     CurrentSkills = new Skill[4];
-    Dictionary<SkillName, Skill> _skilldic = GameManager.Instance.Character.Skills;
+    Dictionary<SkillName, Skill> _skilldic = GameManager.Instance.MyCharacterData.Skills;
     switch (CurrentSkillType)
     {
       case SkillType.Conversation:
-        CurrentSkills = new Skill[] { _skilldic[SkillName.Speech], _skilldic[SkillName.Threat], _skilldic[SkillName.Deception], _skilldic[SkillName.logic] };
+        CurrentSkills = new Skill[] { _skilldic[SkillName.Speech], _skilldic[SkillName.Threat], _skilldic[SkillName.Deception], _skilldic[SkillName.Logic] };
         break;
       case SkillType.Force:
         CurrentSkills = new Skill[] { _skilldic[SkillName.Martialarts], _skilldic[SkillName.Threat], _skilldic[SkillName.Bow], _skilldic[SkillName.Somatology] };
@@ -55,7 +55,7 @@ public class UI_skill_info : UI_default
         CurrentSkills = new Skill[] { _skilldic[SkillName.Survivable], _skilldic[SkillName.Deception], _skilldic[SkillName.Bow], _skilldic[SkillName.Biology] };
         break;
       case SkillType.Intelligence:
-        CurrentSkills = new Skill[] { _skilldic[SkillName.Knowledge], _skilldic[SkillName.logic], _skilldic[SkillName.Somatology], _skilldic[SkillName.Biology] };
+        CurrentSkills = new Skill[] { _skilldic[SkillName.Knowledge], _skilldic[SkillName.Logic], _skilldic[SkillName.Somatology], _skilldic[SkillName.Biology] };
         break;
     }
     SetInfoPanel(CurrentSkills);

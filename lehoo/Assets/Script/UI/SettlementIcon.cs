@@ -39,7 +39,6 @@ public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
   }
   public void Setup(Settlement _data)
   {
-    _data.IsOpen = false;
     GetComponent<Image>().enabled = false;
     transform.localScale = Vector3.one;
     Color _disablecolor = Color.grey;

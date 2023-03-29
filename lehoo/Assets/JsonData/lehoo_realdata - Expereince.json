@@ -1,0 +1,37 @@
+{
+  "exp_ddahuhuk": {
+    "IsBad": 1,
+    "Name": "따흐흑",
+    "Description": "띨띠구륿",
+    "Type": 10,
+    "Info": 2
+  },
+  "exp_test0": {
+    "IsBad": 0,
+    "Name": "테스트0",
+    "Description": "테스트0번텍스트",
+    "Type": 1,
+    "Info": 0
+  },
+  "exp_test1": {
+    "IsBad": 0,
+    "Name": "테스트1",
+    "Description": "테스트1번텍스트",
+    "Type": 2,
+    "Info": 0
+  },
+  "exp_hisoka": {
+    "IsBad": 0,
+    "Name": "살아남은 나의 승리네",
+    "Description": "추 하 다 !",
+    "Type": 3,
+    "Info": 1
+  },
+  "exp_changed": {
+    "IsBad": 0,
+    "Name": "몬가 몬가임",
+    "Description": "머임??",
+    "Type": 4,
+    "Info": 1
+  }
+}
