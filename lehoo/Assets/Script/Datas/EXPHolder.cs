@@ -14,6 +14,13 @@ public class Experience
   public EXPType Type;
   public int Info;
 }
+public class EXPAcquireData
+{
+    public int Duration = 0;//남은 턴
+    public int Year = 0;    //획득 년도
+    public int Season = 0;  //획득 턴(계절)
+    public string Place = "";//어디서 얻었는지
+}
 public class ExperienceJsonData
 {
   public int GoodOrBad;

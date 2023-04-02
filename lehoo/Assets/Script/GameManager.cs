@@ -11,8 +11,6 @@ public class GameManager : MonoBehaviour
   private static GameManager instance;
   public static GameManager Instance { get { return instance; } }
 
-  [HideInInspector] public CharacterData MyCharacterData = null;  //캐릭터 데이터(체력,정신력,돈,스킬레벨,특성,경험,성향)
-  private const string CharacterDataName = "CharacterData.json";
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
   private const string GameDataName = "GameData.json";
   [HideInInspector] public MapData MyMapData = null;              //맵 데이터(맵 정보만)
@@ -32,7 +30,7 @@ public class GameManager : MonoBehaviour
   {
     Dictionary<string, EventJsonData> _eventjson = new Dictionary<string, EventJsonData>();
     _eventjson = JsonConvert.DeserializeObject<Dictionary<string, EventJsonData>>(EventData.text);
-    foreach (var _data in _eventjson) EventHolder.AddData(_data.Key, _data.Value);
+    foreach (var _data in _eventjson) EventHolder.AddData_Normal(_data.Value);
     //이벤트 Json -> EventHolder
 
     Dictionary<string,ExperienceJsonData> _expjson = new Dictionary<string,ExperienceJsonData>();
@@ -52,10 +50,7 @@ public class GameManager : MonoBehaviour
       TraitsDic.Add(_data.Key, _trait);
     }
     //특성 Json -> TraitDic
-    string _datapath = Application.persistentDataPath + CharacterDataName;
-
     //일단 데이터 불러오기는 나중에 만들것
-    MyCharacterData = new CharacterData();
     MyGameData = new GameData();
 
 
@@ -68,6 +63,13 @@ public class GameManager : MonoBehaviour
       instance = this;
       DontDestroyOnLoad(gameObject);
       LoadData();
+            string _str = "";
+            foreach(var _data in EventHolder.AvailableNormalEvents)
+            {
+                _str += $"이벤트 ID : {_data.ID}\n이벤트 이름 : {_data.Name}\n간략설명 : {_data.PreDescription}\n설명 : {_data.Description}\n" +
+                    $"\n";
+            }
+            Debug.Log(_str);
     }
     else Destroy(gameObject);
 
@@ -94,11 +96,11 @@ public class GameManager : MonoBehaviour
 
     Settlement _startsettle = MyMapData.AllSettles[Random.Range(0, MyMapData.AllSettles.Count)];
 
-    MyGameData.CurrentSettle = _startsettle;
-    MyGameData.PlayerPos = _startsettle.VectorPos();
+    MyGameData.CurrentSettlement = _startsettle;
+    MyGameData.CurrentPos = _startsettle.VectorPos();
 
-    MyGameData.AvailableSettle = MyMapData.GetCloseSettles(_startsettle, 3);
-    foreach (Settlement _settle in MyGameData.AvailableSettle) _settle.IsOpen = true;
+    MyGameData.AvailableSettlement = MyMapData.GetCloseSettles(_startsettle, 3);
+    foreach (Settlement _settle in MyGameData.AvailableSettlement) _settle.IsOpen = true;
 
     _map.MakeTilemap(MyMapSaveData,MyMapData);
 

@@ -73,9 +73,9 @@ public class UI_map : UI_default
   {
     //이동 도중이니 이동 버튼은 비활성화
     UIManager.Instance.IsWorking = true;
-    Vector3 _currentpos = GameManager.Instance.MyGameData.PlayerPos;          //현재 위치
+    Vector3 _currentpos = GameManager.Instance.MyGameData.CurrentPos;          //현재 위치
     Vector3 _settlepos = SettleIcons[SelectedSettle.Name].Position;           //종점 위치
-    float _currentprogress = GameManager.Instance.MyGameData.PlayerPos_degree;//현재 이동 진행도 0.0f ~ 1.0f
+    float _currentprogress = GameManager.Instance.MyGameData.CurrentMoveDegree;//현재 이동 진행도 0.0f ~ 1.0f
     float _targetprogress = 0.0f;                                             //이번 이동에서 목표로 하는 이동 진행도
     if (_currentprogress == 0.0f) _targetprogress = Random.Range(0.3f, 0.7f);
     else _targetprogress = 1.0f;
@@ -100,8 +100,8 @@ public class UI_map : UI_default
       EventManager.Instance.SetNewEvent(SelectedSettle);
       //캐릭터 목표 지점 정착지 정보 보내줌
       SelectedSettle = null;
-      GameManager.Instance.MyGameData.PlayerPos = _targetpos;
-      GameManager.Instance.MyGameData.PlayerPos_degree = 0.0f;
+      GameManager.Instance.MyGameData.CurrentPos = _targetpos;
+      GameManager.Instance.MyGameData.CurrentMoveDegree = 0.0f;
       //목표에 완전히 도착했으니 이동 관련 정보는 초기화
     }
   }

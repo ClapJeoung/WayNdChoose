@@ -42,7 +42,7 @@ public class UI_skill_info : UI_default
     IsOpen = true;
     UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);
     CurrentSkills = new Skill[4];
-    Dictionary<SkillName, Skill> _skilldic = GameManager.Instance.MyCharacterData.Skills;
+    Dictionary<SkillName, Skill> _skilldic = GameManager.Instance.MyGameData.Skills;
     switch (CurrentSkillType)
     {
       case SkillType.Conversation:

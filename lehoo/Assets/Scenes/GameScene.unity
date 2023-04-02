@@ -1915,7 +1915,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 74232423}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -18326,7 +18326,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 958013566}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -24496,7 +24496,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB808\uD6C4~"
+  m_text: "\uC0C1\uD669\uC124\uBA85"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0eeec072dbc9da444abbfd429e028317, type: 2}
   m_sharedMaterial: {fileID: -9185002521168283775, guid: 0eeec072dbc9da444abbfd429e028317, type: 2}
@@ -33235,7 +33235,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC2DC\uC791\uC778 \uB808\uD6C4~"
+  m_text: "\uC774\uBCA4\uD2B8\uC774\uB984"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0eeec072dbc9da444abbfd429e028317, type: 2}
   m_sharedMaterial: {fileID: -9185002521168283775, guid: 0eeec072dbc9da444abbfd429e028317, type: 2}

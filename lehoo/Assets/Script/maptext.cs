@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using static UnityEditor.Progress;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 
 public class maptext : MonoBehaviour
 {
@@ -35,9 +37,10 @@ public class maptext : MonoBehaviour
             color = Color.white,
             transform = _trans
         };
-    //  MakeMap();
-    //  StartCoroutine(_simul());
-    StartCoroutine(_simul_fatal());
+
+        //  StartCoroutine(_simul());
+        //  StartCoroutine(_simul_fatal());
+        StartCoroutine(makeperfectmap());
     }
 
   private IEnumerator _simul_status()
@@ -371,7 +374,7 @@ public class maptext : MonoBehaviour
         if (_town.IsMountain) _ismountain = true;
         if (_town.IsSea) _issea = true;
       }
-      if (!_isriver) _temp += "강 ";
+    /*  if (!_isriver) _temp += "강 ";
       if (!_isforest) _temp += "숲 ";
       if (!_ishighland) _temp += "언덕 ";
       if (!_ismountain) _temp += "산 ";
@@ -379,7 +382,7 @@ public class maptext : MonoBehaviour
       if (_temp != "") { _str += $"{i + 1}번 모든 마을에 '{_temp}' 없음\n"; _fataltown = true; }
 
       _isriver = false;_isforest = false;_ishighland = false;_ismountain = false;_issea = false;
-      _temp = "";
+      _temp = "";*/
       foreach (var _city in _data.Cities)
       {
         if (_city.IsRiver) _isriver = true;
@@ -388,7 +391,7 @@ public class maptext : MonoBehaviour
         if (_city.IsMountain) _ismountain = true;
         if (_city.IsSea) _issea = true;
       }
-      if (!_isriver) _temp += "강 ";
+   /*   if (!_isriver) _temp += "강 ";
       if (!_isforest) _temp += "숲 ";
       if (!_ishighland) _temp += "언덕 ";
       if (!_ismountain) _temp += "산 ";
@@ -396,7 +399,7 @@ public class maptext : MonoBehaviour
       if (_temp != "") { _str += $"{i + 1}번 모든 도시에 '{_temp}' 없음\n"; _fatalcity = true; }
 
       _isriver = false; _isforest = false; _ishighland = false; _ismountain = false; _issea = false;
-      _temp = "";
+      _temp = "";*/
       foreach (var _castle in _data.Castles)
       {
         if (_castle.IsRiver) _isriver = true;
@@ -405,7 +408,7 @@ public class maptext : MonoBehaviour
         if (_castle.IsMountain) _ismountain = true;
         if (_castle.IsSea) _issea = true;
       }
-      if (!_isriver) _temp += "강 ";
+     if (!_isriver) _temp += "강 ";
       if (!_isforest) _temp += "숲 ";
       if (!_ishighland) _temp += "언덕 ";
       if (!_ismountain) _temp += "산 ";
@@ -417,6 +420,103 @@ public class maptext : MonoBehaviour
     }
     Debug.Log(_str);
   }
+    private IEnumerator makeperfectmap()
+    {
+        int _index = 0;
+        while (true)
+        {
+            _index++;
+            MapData _data = MakeMap().ConvertToMapData();
+            bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
+            bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false, _citysea = false;
+            bool _castleriver = false, _castleforest = false, _castlehighland = false, _castlemountain = false;
+
+            foreach (var _town in _data.Towns)
+            {
+                if (_town.IsRiver) _townriver = true;
+                if (_town.IsForest) _townforest = true;
+                if (_town.IsMine) _townhighland = true;
+                if (_town.IsMountain) _townmountain = true;
+                if (_town.IsSea) _townsea = true;
+            }
+            foreach (var _city in _data.Cities)
+            {
+                if (_city.IsRiver) _cityriver = true;
+                if (_city.IsForest) _cityforest = true;
+                if (_city.IsMine) _cityhighland = true;
+                if (_city.IsMountain) _citymountain = true;
+                if (_city.IsSea) _citysea = true;
+            }
+            foreach (var _castle in _data.Castles)
+            {
+                if (_castle.IsRiver) _castleriver = true;
+                if (_castle.IsForest) _castleforest = true;
+                if (_castle.IsMine) _castlehighland = true;
+                if (_castle.IsMountain) _castlemountain = true;
+            }
+
+            if (!_townriver||!_townforest||!_townhighland||!_townmountain||!_townsea||
+               !_cityriver || !_cityforest || !_cityhighland || !_citymountain || !_citysea ||
+               !_castleriver || !_castleforest || !_castlehighland || !_castlemountain )
+            {
+                string _str = "";
+                if (!_townriver) _str += "마을 강  ";
+                if (!_townforest) _str += "마을 숲  ";
+                if (!_townhighland) _str += "마을 고원  ";
+                if (!_townmountain) _str += "마을 산  ";
+                if (!_townsea) _str += "마을 바다  ";
+                if (!_cityriver) _str += "도시 강  ";
+                if (!_cityforest) _str += "도시 숲  ";
+                if (!_cityhighland) _str += "도시 고원  ";
+                if (!_citymountain) _str += "도시 산  ";
+                if (!_citysea) _str += "도시 바다  ";
+                if (!_castleriver) _str += "성채 강  ";
+                if (!_castleforest) _str += "성채 숲  ";
+                if (!_castlehighland) _str += "성채 고원  ";
+                if (!_castlemountain) _str += "성채 산  ";
+
+                Debug.Log(_index+"번 맵    "+ _str + "없음");
+                yield return null;
+                continue;
+            }
+
+            Debug.Log($"{_index}번째 맵 성공\n");
+            foreach(var _town in _data.Towns)
+            {
+                string _str = "";
+                _str += _town.Name+"  ";
+                _str += _town.IsRiver ? "강 " : "";
+                _str += _town.IsForest ? "숲 " : "";
+                _str += _town.IsMine ? "고원 " : "";
+                _str += _town.IsMountain ? "산 " : "";
+                _str += _town.IsSea ? "바다 " : "";
+                Debug.Log(_str + "\n");
+            }
+            foreach (var _city in _data.Cities)
+            {
+                string _str = "";
+                _str += _city.Name + "  ";
+                _str += _city.IsRiver ? "강 " : "";
+                _str += _city.IsForest ? "숲 " : "";
+                _str += _city.IsMine ? "고원 " : "";
+                _str += _city.IsMountain ? "산 " : "";
+                _str += _city.IsSea ? "바다 " : "";
+                Debug.Log(_str + "\n");
+            }
+            foreach (var _castle in _data.Castles)
+            {
+                string _str = "";
+                _str += _castle.Name + "  ";
+                _str += _castle.IsRiver ? "강 " : "";
+                _str += _castle.IsForest ? "숲 " : "";
+                _str += _castle.IsMine ? "고원 " : "";
+                _str += _castle.IsMountain ? "산 " : "";
+                Debug.Log(_str + "\n");
+            }
+            break;
+            yield return null;
+        }
+    }
 
     public MapSaveData MakeMap()
     {
@@ -2437,24 +2537,27 @@ public class maptext : MonoBehaviour
       {
         GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _temp.GetComponent<RectTransform>().localScale = Vector3.one;
-        _temp.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0);
-        _temp.GetComponent<RectTransform>().sizeDelta = _cellsize;
+                _temp.GetComponent<RectTransform>().anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
+                _temp.GetComponent<RectTransform>().sizeDelta = _cellsize;
         _temp.GetComponent<Image>().sprite = Townsprite;
         _temp.transform.SetParent(SettlerHolder);
         _images.Add(_temp);
       }//이미지 만들고 위치,스프라이트 넣기
-
       GameObject _button=new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),typeof(Button),typeof(SettlementIcon) });
-      _button.transform.SetParent(SettlerHolder);
-      _button.GetComponent<RectTransform>().anchoredPosition3D =  _zeropos;
-      for (int j = 0; j < _images.Count; j++)
+      //버튼 오브젝트
+      _button.GetComponent<RectTransform>().anchoredPosition3D = _buttonpos;
+            _button.transform.SetParent(SettlerHolder);
+            for (int j = 0; j < _images.Count; j++)
       {
-        _images[j].transform.SetParent(_button.transform, false);
+        _images[j].transform.SetParent(_button.transform, true);
         _images[j].transform.localScale = Vector3.one;
       }
-      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Towns[i]);
+            
+            _button.GetComponent<SettlementIcon>().Setup(_mapdata.Towns[i]);
     //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
+
+        _zeropos = Vector3.zero;
     for (int i = 0; i < _jsondata.CityCount; i++)
     {
       _buttonpos = Vector3.zero;
@@ -2462,32 +2565,41 @@ public class maptext : MonoBehaviour
       citypos.Add(Tilemap_top.CellToWorld(_jsondata.City_Pos[i*2]) );
       citypos.Add(Tilemap_top.CellToWorld(_jsondata.City_Pos[i * 2+1]) );
       foreach (Vector3 pos in citypos) _buttonpos += pos;
-      //위치(Rect로 변환) 집어넣고
-      List<GameObject> _images = new List<GameObject>();
+            _buttonpos /= 2;
+            //위치(Rect로 변환) 집어넣고
+            List<GameObject> _images = new List<GameObject>();
       foreach (Vector3 _pos in citypos)
       {
         GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _temp.GetComponent<RectTransform>().localScale = Vector3.one;
-        _temp.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0);
+        _temp.GetComponent<RectTransform>().anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
         _temp.GetComponent<RectTransform>().sizeDelta = _cellsize;
         _temp.GetComponent<Image>().sprite = Citysprite;
         _temp.transform.SetParent(SettlerHolder);
         _images.Add(_temp);
-      }//이미지 만들고 위치,스프라이트 넣기
-      _buttonpos /= 2;
+                _zeropos += _pos;
+            }//이미지 만들고 위치,스프라이트 넣기
 
       GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(SettlementIcon) });
-      _button.transform.SetParent(SettlerHolder);
-      _button.GetComponent<RectTransform>().anchoredPosition3D = _zeropos;
-      for (int j = 0; j < _images.Count; j++)
+            //버튼 오브젝트
+      _button.GetComponent<RectTransform>().anchoredPosition3D = _buttonpos;
+            _button.transform.SetParent(SettlerHolder);
+            for (int j = 0; j < _images.Count; j++)
       {
-        _images[j].transform.SetParent(_button.transform, false);
-        _images[j].transform.localScale = Vector3.one;
+                //     Debug.Log($"원 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
+                Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _button.GetComponent<RectTransform>().anchoredPosition;
+        _images[j].transform.SetParent(_button.transform, true);
+         //       Debug.Log($"부모 변경 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
+                _images[j].transform.localScale = Vector3.one;
+                _images[j].GetComponent<RectTransform>().anchoredPosition = _newpos;
       }
-      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Cities[i]);
+            
+            _button.GetComponent<SettlementIcon>().Setup(_mapdata.Cities[i]);
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
-    for (int i = 0; i < _jsondata.CastleCount; i++)
+
+        _zeropos = Vector3.zero;
+        for (int i = 0; i < _jsondata.CastleCount; i++)
     {
       _buttonpos = Vector3.zero;
       List<Vector3> castlepos = new List<Vector3>();
@@ -2495,27 +2607,31 @@ public class maptext : MonoBehaviour
       castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3 + 1]) );
       castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3 + 2]) );
       foreach (Vector3 pos in castlepos) _buttonpos += pos;
-      //위치(Rect로 변환) 집어넣고
-      List<GameObject> _images = new List<GameObject>();
+            _buttonpos /= 3;
+            //위치(Rect로 변환) 집어넣고
+            List<GameObject> _images = new List<GameObject>();
       foreach (Vector3 _pos in castlepos)
       {
         GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _temp.GetComponent<RectTransform>().localScale = Vector3.one;
-        _temp.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0);
+        _temp.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0) ;
         _temp.GetComponent<RectTransform>().sizeDelta = _cellsize;
         _temp.GetComponent<Image>().sprite = Castlesprite;
         _temp.transform.SetParent(SettlerHolder);
         _images.Add(_temp);
-      }//이미지 만들고 위치,스프라이트 넣기
-      _buttonpos /= 3;
+                _zeropos += _pos;
+            }//이미지 만들고 위치,스프라이트 넣기
 
       GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(SettlementIcon) });
-      _button.transform.SetParent(SettlerHolder);
-      _button.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-      for(int j=0;j<_images.Count;j++)
+            //버튼 오브젝트
+      _button.GetComponent<RectTransform>().anchoredPosition3D = _buttonpos;
+            _button.transform.SetParent(SettlerHolder);
+            for (int j=0;j<_images.Count;j++)
       {
-        _images[j].transform.SetParent(_button.transform, false);
+                Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _button.GetComponent<RectTransform>().anchoredPosition;
+                _images[j].transform.SetParent(_button.transform, true);
         _images[j].transform.localScale = Vector3.one;
+                _images[j].GetComponent<RectTransform>().anchoredPosition = _newpos;
       }
       _button.GetComponent<SettlementIcon>().Setup(_mapdata.Castles[i]);
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
@@ -2527,7 +2643,7 @@ public class maptext : MonoBehaviour
       GameObject _tile = new GameObject("_tile", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
       _tile.GetComponent<Image>().sprite = spr;
       _tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,-60.0f*rot));
-      _tile.GetComponent<RectTransform>().anchoredPosition3D = _newpos-Vector3.forward*_newpos.z;
+      _tile.GetComponent<RectTransform>().anchoredPosition = _newpos-Vector3.forward*_newpos.z;
       _tile.GetComponent<RectTransform>().sizeDelta = _cellsize;
       _tile.transform.SetParent(TileHolder);
       _tile.transform.localScale = Vector3.one;

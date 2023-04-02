@@ -1,20 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using Unity.VisualScripting.ReorderableList;
 using UnityEngine;
 
 public class EventHolder
 {
-  public EventHolder_settle Town =new EventHolder_settle();
-  public EventHolder_settle City =new EventHolder_settle();
-  public EventHolder_settle Castle =new EventHolder_settle();
-  //정착지->장소->장소 등급->난이도->계절->환경
-  public EventHolder_outer Outer =new EventHolder_outer();
-  //외부  ->              ->난이도->계절->환경
-  public Dictionary<string,EventData> AllEvents=new Dictionary<string,EventData>();
-  public void AddData(string _id, EventJsonData _data)
+    public List<EventData> AvailableNormalEvents=new List<EventData>();
+  public void AddData_Normal(EventJsonData _data)
   {
     EventData Data = new EventData();
-    Data.ID = _id;
+    Data.ID = _data.ID;
+        Data.IllustID = _data.IllustID;
     Data.Name = _data.Name;
     Data.Description = _data.Description;
     Data.PreDescription = _data.PreDescription;
@@ -26,9 +23,12 @@ public class EventHolder
     Data.Selection_target = new CheckTarget[_temp.Length];
     for(int i = 0; i < _temp.Length; i++)Data.Selection_target[i]=(CheckTarget)int.Parse(_temp[i]);
 
-    _temp = _data.Selection_Info.Split('@');
-    Data.Selection_info=new int[_temp.Length];
-    for (int i = 0; i < _temp.Length; i++) Data.Selection_info[i] = int.Parse(_temp[i]);
+        if (_data.Selection_Info != null)
+        {
+            _temp = _data.Selection_Info.Split('@');
+            Data.Selection_info = new int[_temp.Length];
+            for (int i = 0; i < _temp.Length; i++) Data.Selection_info[i] = int.Parse(_temp[i]);
+        }
 
     if (_data.Failure_Description != null)
     {
@@ -47,60 +47,127 @@ public class EventHolder
     _temp = _data.Reward_Target.Split('@');
     Data.Reward_Target = new RewardTarget[_temp.Length];
     for (int i = 0; i < _temp.Length; i++) Data.Reward_Target[i] = (RewardTarget)int.Parse(_temp[i]);
+
+    if(_data.Reward_Info!=null)
     Data.Reward_info= _data.Reward_Info.Split('@');
 
     _temp = _data.SubReward.Split('@');
     Data.SubReward_target =new int[_temp.Length];
     for(int i=0;i<_temp.Length;i++) Data.SubReward_target[i] = int.Parse(_temp[i]);
 
-    if (_data.Settlement == 0) Town.AddData(Data, _data);
-    else if(_data.Settlement == 1) City.AddData(Data, _data);
-    else if (_data.Settlement == 2) Castle.AddData(Data, _data);
-    else Outer.AddData(Data, _data);
-
-    AllEvents.Add(_id, Data);
+        AvailableNormalEvents.Add(Data);
   }
-  public void RemoveEvent(string _index)
+  public void RemoveEvent(string _ID)
   {
-    AllEvents.Remove(_index);
+    foreach(var _data in AvailableNormalEvents)
+        {
+            if (_data.ID.Equals(_ID))
+            {
+                AvailableNormalEvents.Remove(_data);
+                break;
+            }
+        }
   }
   public EventData ReturnEvent(EventBasicData _data)
   {
     List<EventData> _events = new List<EventData>();
 
-    if(_data.SettlementType==SettlementType.Town)_events=Town.ReturnEvent(_data);
-    else if(_data.SettlementType==SettlementType.City)_events=City.ReturnEvent(_data);
-    else if(_data.SettlementType ==SettlementType.Castle) _events=Castle.ReturnEvent(_data);
-    else _events=Outer.ReturnEvent(_data);
+    //레후~
 
     return _events[Random.Range(0, _events.Count)];
   }
 }
 public class EventJsonData
 {
-  public string Name = "";
-  public string PreDescription = "";
-  public string Description = "";
-  public int Season = 0;
-  public int Settlement = 0;          //0,1,2,3
-  public int Place = 0;               //0,1,2,3,4
-  public int Place_Level = 0;          //0(전부) 1(낮) 2(중) 3(높)
-  public int Environment_Type = 0;         //0,1,2,3,4,5
+    public string ID = "";              //ID
+    public string IllustID = "";        //일러스트 ID
+  public string Name = "";              //이름
+  public string PreDescription = "";    //미리보기 텍스트
+    public int Settlement = 0;          //0,1,2,3
+    public int Place = 0;               //0,1,2,3,4
+    public int Place_Level = 0;          //0(전부) 1(낮) 2(중) 3(높)
+    public int Season = 0;              //전역,봄,여름,가을,겨울
+    public string Description = "";       //설명 텍스트
+    public int Environment_Type = 0;         //전역,숲,강,언덕,산,바다
 
-  public int Selection_Type;           //0,1,2,3,4,5
-  public string Selection_Description = "";
-  public string Selection_Target;
-  public string Selection_Info;
+    public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
+    public string Selection_Description = ""; //선택지 별 텍스트
+  public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
+  public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
+                                            //2:대화,무력,생존,정신
+                                            //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
 
-  public string Failure_Description = "";
-  public string Failure_Penalty;
-  public string Failure_Penalty_info;
+  public string Failure_Description = "";   //선택지 별 실패 텍스트
+  public string Failure_Penalty;            //없음,손실,경험
+  public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
 
-  public string Success_Description = "";
-  public string Reward_Target;
-  public string Reward_Info;
+  public string Success_Description = "";   //선택지 별 성공 텍스트
+  public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
+  public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
 
-  public string SubReward;
+  public string SubReward;                  //없음,돈,정신력,돈+정신력
+}
+public class FollowEventJsonData
+{
+    public string ID = "";              //ID
+    public int FollowType = 0;              //이벤트,경험,특성,테마,기술
+    public int FollowTarget = 0;            //해당 ID 혹은 0,1,2,3 혹은 0~9
+    public int FollowResult = 0;            //이벤트일 경우 성공,실패
+    public int FollowTendency = 0;          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
+    public string Name = "";              //이름
+    public string PreDescription = "";    //미리보기 텍스트
+    public string Description = "";       //설명 텍스트
+    public int Season = 0;              //전역,봄,여름,가을,겨울
+    public int Settlement = 0;          //0,1,2,3
+    public int Place = 0;               //0,1,2,3,4
+    public int Place_Level = 0;          //0(전부) 1(낮) 2(중) 3(높)
+    public int Environment_Type = 0;         //전역,숲,강,언덕,산,바다
+
+    public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
+    public string Selection_Description = ""; //선택지 별 텍스트
+    public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
+    public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
+                                              //2:대화,무력,생존,정신
+                                              //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
+
+    public string Failure_Description = "";   //선택지 별 실패 텍스트
+    public string Failure_Penalty;            //없음,손실,경험
+    public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
+
+    public string Success_Description = "";   //선택지 별 성공 텍스트
+    public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
+    public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
+
+    public string SubReward;                  //없음,돈,정신력,돈+정신력
+}
+public class QuestEventDataJson
+{
+    public string QuestId = "";                 //퀘스트 ID
+    public string ID = "";
+    public int QuestIndex = 0;                   //자기 퀘스트에서 순서
+    public string Name = "";              //이름
+    public string PreDescription = "";    //미리보기 텍스트
+    public string Description_first = "";       //설명 텍스트(최초)
+    public string Description_after = "";       //설명 텍스트
+    public int Settlement = 0;          //0(아무 정착지),1,2,3,4(외부)
+    public int Place = 0;               //0,1,2,3,4
+
+    public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
+    public string Selection_Description = ""; //선택지 별 텍스트
+    public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
+    public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
+                                              //2:대화,무력,생존,정신
+                                              //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
+
+    public string Failure_Description = "";   //선택지 별 실패 텍스트
+    public string Failure_Penalty;            //없음,손실,경험
+    public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
+
+    public string Success_Description = "";   //선택지 별 성공 텍스트
+    public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
+    public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
+
+    public string SubReward;                  //없음,돈,정신력,돈+정신력
 }
 public class EventHolder_settle
 {
@@ -313,9 +380,11 @@ public enum SelectionType { Single,Verticla, Horizontal,Tendency,Experience,Skil
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTarget { Experience,GoldAndExperience,Gold,HP,Sanity,Theme,Skill,Trait}
+public enum EventSequence { Sugguest,Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
 public class EventData  //기본적인 무작위 풀에서 나오는 이벤트
 {
     public string ID = "";
+    public string IllustID = "";
     public string Name = "";
     public string Description = "";
   public string PreDescription = "";
