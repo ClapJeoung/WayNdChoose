@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum EXPType { Speech, Threat, Deception, logic, Martialarts, Bow, Somatology, Survivable, Biology, Knowledge,
+public enum EXPType {Conversation,Forece,Survive,Intelligence
+    , Speech, Threat, Deception, logic, Martialarts, Bow, Somatology, Survivable, Biology, Knowledge,
   HPLoss, HPRegen,
   SNLoss, SNGen,
   MoneyLoss, MoneyGen }
+
 public class Experience
 {
   public bool GoodExp = false;

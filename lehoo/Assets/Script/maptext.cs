@@ -40,7 +40,7 @@ public class maptext : MonoBehaviour
 
         //  StartCoroutine(_simul());
         //  StartCoroutine(_simul_fatal());
-        StartCoroutine(makeperfectmap());
+     //   StartCoroutine(makeperfectmap());
     }
 
   private IEnumerator _simul_status()

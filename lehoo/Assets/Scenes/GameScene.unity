@@ -8089,7 +8089,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ImageHolder: {fileID: 11400000, guid: 393cfdf7457d7f749a8a7f8ab53550b6, type: 2}
-  EventData: {fileID: 4900000, guid: 7052163081133c24688a7024f6798197, type: 3}
+  NormalEventData: {fileID: 4900000, guid: ec0fb59ec34eb5f42aba2190f26f98ac, type: 3}
+  FollowEventData: {fileID: 4900000, guid: 3f8b320078e99b94c84132abb562fb27, type: 3}
+  QuestEventData: {fileID: 4900000, guid: 9503c393b8ea5ee4298dcc992eaba846, type: 3}
   EXPData: {fileID: 4900000, guid: 7ebe90233c1e0f74596c00d986bac6f5, type: 3}
   TraitData: {fileID: 4900000, guid: 877aaa94a02ab004d92f3f1bf3d6a121, type: 3}
 --- !u!4 &356797343

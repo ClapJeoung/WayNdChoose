@@ -95,6 +95,9 @@ public class GameData   //게임 진행도 데이터
     public List<string> ClearEvent_Force = new List<string>();  //육체 선택지 클리어한 이벤트
     public List<string> ClearEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트
     public List<string> ClearEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트
+  public List<string> ClearQuest=new List<string>();
+  public QuestHolder CurrentQuest = null; //현재 진행 중인 퀘스트
+
     public GameData()
     {
         HP = 100;
