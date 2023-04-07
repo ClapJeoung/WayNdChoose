@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class ImageHolder : ScriptableObject
 {
-  public List<Sprite> EventSprites=new List<Sprite>();
-  public List<Sprite> TownSprites=new List<Sprite>();
-  public List<Sprite> CitySprites=new List<Sprite>();
-  public List<Sprite> CastleSprites=new List<Sprite>();
-  public List<Sprite> SkillSprites_Speech = new List<Sprite>();
+  public List<Sprite> TownSprites=new List<Sprite>();                 //마을 일러스트
+  public List<Sprite> CitySprites=new List<Sprite>();                 //도시 일러스트
+  public List<Sprite> CastleSprites=new List<Sprite>();               //성채 일러스트
+
+  public List<Sprite> SkillSprites_Speech = new List<Sprite>();       
   public List<Sprite> SkillSprites_Threat = new List<Sprite>();
   public List<Sprite> SkillSprites_Deception = new List<Sprite>();
   public List<Sprite> SkillSprites_Logic = new List<Sprite>();
@@ -20,29 +20,53 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> SkillSprites_Survivable = new List<Sprite>();
   public List<Sprite> SkillSprites_Biology = new List<Sprite>();
   public List<Sprite> SkillSprites_Knowledge = new List<Sprite>();
+
   public List<Sprite> TendencySprites=new List<Sprite>();
-  public List<Sprite> EXPSprites=new List<Sprite>();
-  public Sprite DefaultSprite = null;
-  public Sprite GetEventSprite(string _index)
+
+  public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
+  public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
+  public List<Sprite> TraitIllust = new List<Sprite>();                //모든 특성 일러스트
+  public Sprite DefaultSprite = null;                                 //빈 일러스트
+  public Sprite GetTownSprite(int _name)
   {
-    foreach (Sprite _sprite in EventSprites) if (_sprite.name == _index) return _sprite;
-    return DefaultSprite;
-  }
-  public Sprite GetTownSprite(int _index)
+    Sprite _targetsprite = DefaultSprite;
+    foreach (Sprite _spr in TownSprites)
+    {
+      if (_spr.name.Equals(_name))
+      {
+        _targetsprite = _spr;
+        break;
+      }
+    }
+    return _targetsprite;
+  }//마을 이름에 해당하는 일러스트 가져오기
+  public Sprite GetCitySprite(int _name)
   {
-    if(TownSprites.Count<_index)return DefaultSprite;
-    return TownSprites[_index-1];
-  }
-  public Sprite GetCitySprite(int _index)
+    Sprite _targetsprite = DefaultSprite;
+    foreach (Sprite _spr in CitySprites)
+    {
+      if (_spr.name.Equals(_name))
+      {
+        _targetsprite = _spr;
+        break;
+      }
+    }
+    return _targetsprite;
+  }//도시 이름에 해당하는 일러스트 가져오기
+  public Sprite GetCastleSprite(int _name)
   {
-    if (CitySprites.Count < _index) return DefaultSprite;
-    return CitySprites[_index - 1];
-  }
-  public Sprite GetCastleSprite(int _index)
-  {
-    if (CastleSprites.Count < _index) return DefaultSprite;
-    return CastleSprites[_index - 1];
-  }
+    Sprite _targetsprite = DefaultSprite;
+    foreach (Sprite _spr in CastleSprites)
+    {
+      if (_spr.name.Equals(_name))
+      {
+        _targetsprite = _spr;
+        break;
+      }
+    }
+    return _targetsprite;
+  }//성채 이름에 해당하는 일러스트 가져오기
+
   public Sprite GetSkillSprite(SkillName _skillname,int _level)
   {
     List<Sprite> _temp =new List<Sprite>();
@@ -62,9 +86,43 @@ public class ImageHolder : ScriptableObject
     if (_temp.Count < _level) return DefaultSprite;
     return _temp[_level - 1];
   }
-  public Sprite GetEXPSprite(string _index)
+  public Sprite GetEventIllust(string _illustid)
   {
-    foreach (Sprite _sprite in EXPSprites) if (_sprite.name == _index) return _sprite;
-    return DefaultSprite;
-  }
+    Sprite _targetsprite = DefaultSprite;
+    foreach (Sprite _spr in EventIllust)
+    {
+      if (_spr.name.Equals(_illustid))
+      {
+        _targetsprite = _spr;
+        break;
+      }
+    }
+    return _targetsprite;
+  }//ID로 이벤트 일러스트 가져오기
+  public Sprite GetEXPIllust(string _illustid)
+  {
+    Sprite _targetsprite = DefaultSprite;
+    foreach (Sprite _spr in EXPIllust)
+    {
+      if (_spr.name.Equals(_illustid))
+      {
+        _targetsprite = _spr;
+        break;
+      }
+    }
+    return _targetsprite;
+  }//ID로 경험 일러스트 가져오기
+  public Sprite GetTraitIllust(string _illustid)
+  {
+    Sprite _targetsprite = DefaultSprite;
+    foreach (Sprite _spr in TraitIllust)
+    {
+      if (_spr.name.Equals(_illustid))
+      {
+        _targetsprite = _spr;
+        break;
+      }
+    }
+    return _targetsprite;
+  }//ID로 특성 일러스트 가져오기
 }

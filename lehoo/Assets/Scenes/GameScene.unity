@@ -8801,7 +8801,7 @@ MonoBehaviour:
   NameText: {fileID: 1769471908}
   Illust: {fileID: 868232610}
   DialogueText: {fileID: 1316755736}
-  MapButton: {fileID: 0}
+  MapButton: {fileID: 749332181}
 --- !u!1 &394479890
 GameObject:
   m_ObjectHideFlags: 0

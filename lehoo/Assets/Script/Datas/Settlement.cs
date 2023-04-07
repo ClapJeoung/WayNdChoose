@@ -7,10 +7,30 @@ using System.Linq;
 public class Settlement
 {
     public int IllustIndex = 0;
-  public string Name;
+  public SettlementType Type;
+  public int NameIndex;
+  private string name;
+  public string Name { 
+    get
+    {
+      switch (Type)
+      {
+        case SettlementType.Town:
+          return SettlementName.TownNams[NameIndex];
+          break;
+        case SettlementType.City:
+          return SettlementName.CityNames[NameIndex];
+          break;
+        case SettlementType.Castle:
+          return SettlementName.CastleNames[NameIndex];
+          break;
+      }
+      return "이럴 일이 없는 레후...!";
+    }
+  }
 
-  public bool IsRiver=false;//주변 2칸에 강 여부
   public bool IsForest = false;//주변 1칸에 숲 여부
+  public bool IsRiver=false;//주변 2칸에 강 여부
   public bool IsMine = false;  //주변 1칸에 언덕 여부
   public bool IsMountain = false;//주변 2칸에 산 여부
   public bool IsSea = false;    //주변 1칸에 바다 여부
@@ -28,6 +48,35 @@ public class Settlement
     foreach (var asdf in Pose) _pos += asdf;
     return _pos / Pose.Count;
   }
+  public EventBasicData GetTileData()
+  {
+    EventBasicData _temp=new EventBasicData();
+    _temp.SettlementType = Type;
+    _temp.PlaceData.Add(PlaceType.Residence, Wealth);
+    _temp.PlaceData.Add(PlaceType.Marketplace, Wealth);
+    _temp.PlaceData.Add(PlaceType.Temple, Faith);
+    switch (Type)
+    {
+      case SettlementType.Town:
+        break;
+      case SettlementType.City:
+        _temp.PlaceData.Add(PlaceType.Library, Culture);
+        break;
+      case SettlementType.Castle:
+        _temp.PlaceData.Add(PlaceType.Theater, Culture);
+        _temp.PlaceData.Add(PlaceType.Academy, Science);
+        break;
+    }
+    _temp.EnvironmentType.Add(EnvironmentType.None);
+    if(IsRiver)_temp.EnvironmentType.Add(EnvironmentType.River);
+    if (IsForest) _temp.EnvironmentType.Add(EnvironmentType.Forest);
+    if (IsMine) _temp.EnvironmentType.Add(EnvironmentType.Mine);
+    if (IsMountain) _temp.EnvironmentType.Add(EnvironmentType.Mountain);
+    if (IsSea) _temp.EnvironmentType.Add(EnvironmentType.Sea);
+    _temp.Season = GameManager.Instance.MyGameData.Turn+1;
+
+    return _temp;
+  }
 }
 public class MapSaveData
 {
@@ -40,7 +89,7 @@ public class MapSaveData
     public Vector3Int[] Town_Pos;
     public Vector3Int[] City_Pos;
     public Vector3Int[] Castle_Pos;
-  public string[] Town_Names,City_Names, Castle_Names;
+  public int[] Town_NameIndex,City_NameIndex, Castle_NameIndex;
     public int[] Town_Index, City_Index, Castle_Index;
   public bool[] Town_Open;
   public bool[] City_Open;
@@ -67,7 +116,8 @@ public class MapSaveData
     for(int i = 0; i < TownCount; i++)
     {
       Settlement _town = new Settlement();
-      _town.Name = Town_Names[i];
+      _town.NameIndex = Town_NameIndex[i];
+      _town.Type = SettlementType.Town;
       _town.IsRiver = Isriver_town[i];
       _town.IsForest= Isforest_town[i];
       _town.IsMountain= Ismountain_town[i];
@@ -90,7 +140,8 @@ public class MapSaveData
     for (int i = 0; i < CityCount; i++)
     {
       Settlement _city = new Settlement();
-      _city.Name = City_Names[i];
+      _city.NameIndex = City_NameIndex[i];
+      _city.Type = SettlementType.City;
       _city.IsRiver = Isriver_city[i];
       _city.IsForest = Isforest_city[i];
       _city.IsMountain = Ismountain_city[i];
@@ -113,7 +164,8 @@ public class MapSaveData
     for (int i = 0; i < CastleCount; i++)
     {
       Settlement _castle = new Settlement();
-      _castle.Name = Castle_Names[i];
+      _castle.NameIndex = Castle_NameIndex[i];
+      _castle.Type = SettlementType.Castle;
       _castle.IsRiver = Isriver_castle[i];
       _castle.IsForest = Isforest_castle[i];
       _castle.IsMountain = Ismountain_castle[i];

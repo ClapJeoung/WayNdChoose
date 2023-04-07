@@ -10,11 +10,13 @@ public enum EXPType {Conversation,Forece,Survive,Intelligence
 
 public class Experience
 {
+  public string ID = "";
   public bool GoodExp = false;
   public string Name = "";
   public string Description = "";
   public EXPType Type;
   public int Info;
+  public EXPAcquireData AcquireData=null;
 }
 public class EXPAcquireData
 {
@@ -22,9 +24,11 @@ public class EXPAcquireData
     public int Year = 0;    //획득 년도
     public int Season = 0;  //획득 턴(계절)
     public string Place = "";//어디서 얻었는지
+  public string EventID = "";//무슨 이벤트에서 얻었는지
 }
 public class ExperienceJsonData
 {
+  public string ID = "";
   public int GoodOrBad;
   public string Name = "";
   public string Description = "";
@@ -33,6 +37,7 @@ public class ExperienceJsonData
   public Experience ReturnEXPClass()
   {
     Experience _exp = new Experience();
+    _exp.ID= ID;
     _exp.GoodExp = GoodOrBad == 0 ? false : true;
     _exp.Name = Name;
     _exp.Description = Description;

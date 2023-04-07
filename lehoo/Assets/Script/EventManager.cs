@@ -38,16 +38,7 @@ public class EventManager : MonoBehaviour
   }//정착지 이벤트 3개 산출
   public void SetOutsideEvent(bool _river, bool _forest, bool _mine, bool _mountain, bool _sea)
   {
-    List<EventBasicData> _eventlist=new List<EventBasicData>();
+    List<EventBasicData> _eventlist = new List<EventBasicData>();
     //정착지(혹은 타일) 정보를 담은것
-    EventBasicData _all=new EventBasicData();
-    _all.SettlementType = SettlementType.Outer;
-    if (_river == true)
-    {
-      EventBasicData _riverevent=new EventBasicData();
-      _riverevent.SettlementType = SettlementType.Outer;
-      _riverevent.EnvironmentType = EnvironmentType.River;
-
-    }
   }
 }

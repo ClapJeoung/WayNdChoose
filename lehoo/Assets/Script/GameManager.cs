@@ -14,10 +14,12 @@ public class GameManager : MonoBehaviour
   [HideInInspector] public GameData MyGameData = new GameData();            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
   private const string GameDataName = "GameData.json";
   [HideInInspector] public MapData MyMapData = null;              //맵 데이터(맵 정보만)
-  private MapSaveData MyMapSaveData = new MapSaveData();
+  private MapSaveData MyMapSaveData = null;
   private const string MapDataName = "MapData.json";
+  [HideInInspector] public ProgressData MyProgressData = new ProgressData();
+  private const string ProgressDataName = "ProgressData.json";
 
-  [SerializeField] private ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
+  public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
 
   [SerializeField] private TextAsset NormalEventData = null;  //이벤트 Json
   [SerializeField] private TextAsset FollowEventData = null;  //연계 이벤트 Json
@@ -76,17 +78,65 @@ public class GameManager : MonoBehaviour
       instance = this;
       DontDestroyOnLoad(gameObject);
       LoadData();
-    //  DebugAllEvents();
+      OpenAllQuest();
+      //  DebugAllEvents();
     }
     else Destroy(gameObject);
 
+  }
+  private void Update()
+  {
+    if (Input.GetKeyDown(KeyCode.Backspace))
+    {
+      CreateNewMap();
+      StartCoroutine(_eventtest());
+    }
+  }
+  private IEnumerator _eventtest()
+  {
+    yield return new WaitUntil(() => (MyMapData != null));
+    foreach (var _settle in MyMapData.AllSettles)
+    {
+      string _str = $"정착지 이름 : {_settle.Name}  정착지 환경: ";
+      if (_settle.IsForest) _str += "숲 ";
+      if (_settle.IsRiver) _str += "강 ";
+      if (_settle.IsMine) _str += "언덕 ";
+      if (_settle.IsMountain) _str += "산 ";
+      if (_settle.IsSea) _str += "바다 ";
+      _str += "\n";
+      _str += $"마을 레벨 : {_settle.Wealth}  시장 레벨 : {_settle.Wealth}  사원 레벨 : {_settle.Faith}  ";
+      switch (_settle.Type)
+      {
+        case SettlementType.Town:
+          break;
+        case SettlementType.City:
+          _str += $"도서관 레벨 : {_settle.Culture}";
+          break;
+        case SettlementType.Castle:
+          _str += $"극장 레벨 : {_settle.Culture} 아카데미 레벨 : {_settle.Science}";
+          break;
+      }
+      _str += "\n\n";
+      EventBasicData _tiledata = _settle.GetTileData();
+      List<EventDataDefulat> _results = EventHolder.ReturnEvent(_tiledata);
+      foreach (var _event in _results)
+      {
+        _str += $"이벤트 이름 : {_event.Name} 이벤트 종류 : ";
+        _str += _event.GetType().Equals(typeof(QuestEventData)) ? "퀘스트 " : _event.GetType().Equals(typeof(FollowEventData)) ? "연계 " : "일반 ";
+        _str += "\n";
+        _str += $"등장 장소 : {_event.PlaceType}  등장 레벨 : {(_event.PlaceLevel == 0 ? "전역" : _event.PlaceLevel == 1 ? "1" : _event.PlaceLevel == 2 ? 2 : 3)}";
+        _str += "\n";
+      }
+      Debug.Log(_str);
+    }
+    yield return null;
   }
   public void DebugAllEvents()
   {
     string _str = "";
     foreach (var _data in EventHolder.AvailableNormalEvents)
     {
-      _str += $"이벤트 ID : {_data.ID}\n이벤트 이름 : {_data.Name}\n간략설명 : {_data.PreDescription}\n설명 : {_data.Description}\n" +
+      _str += $"이벤트 ID : {_data.ID}\n이벤트 이름 : {_data.Name}\n설명 : {_data.Description}\n" +
           $"\n";
     }
     _str += "\n";
@@ -100,17 +150,24 @@ public class GameManager : MonoBehaviour
       _str += $"퀘스트 {_data.Key} 시작 문구 : {_data.Value.StartDialogue}\n승 이벤트\n";
       foreach(var _rising in _data.Value.Eventlist_Rising)
       {
-        _str += $"이벤트 ID : {_rising.ID}\n이벤트 이름 : {_rising.Name}\n간략설명 : {_rising.PreDescription}\n설명 : {_rising.Description}\n" +
+        _str += $"이벤트 ID : {_rising.ID}\n이벤트 이름 : {_rising.Name}\n설명 : {_rising.Description}\n" +
             $"\n";
       }
       foreach (var _climax in _data.Value.Eventlist_Climax)
       {
-        _str += $"이벤트 ID : {_climax.ID}\n이벤트 이름 : {_climax.Name}\n간략설명 : {_climax.PreDescription}\n설명 : {_climax.Description}\n" +
+        _str += $"이벤트 ID : {_climax.ID}\n이벤트 이름 : {_climax.Name}\n설명 : {_climax.Description}\n" +
             $"\n";
       }
     }
 
     Debug.Log(_str);
+  }
+  public void OpenAllQuest()
+  {
+    foreach(var _data in EventHolder.AllQuests)
+    {
+      MyProgressData.TotalFoundQuest.Add(_data.Key);
+    }
   }
   public void LoadGameScene()
   {
@@ -127,9 +184,15 @@ public class GameManager : MonoBehaviour
   }
   public void CreateNewMap()
   {
+    StartCoroutine(createnewmap());
+  }
+  private IEnumerator createnewmap()
+  {
     maptext _map = FindObjectOfType<maptext>().GetComponent<maptext>();
 
-    MyMapSaveData = _map.MakeMap();
+    _map.MakePerfectMap();
+    //  MyMapSaveData = _map.MakeMap();
+    yield return new WaitUntil(()=>(MyMapSaveData != null));
     MyMapData = MyMapSaveData.ConvertToMapData();
 
     Settlement _startsettle = MyMapData.AllSettles[Random.Range(0, MyMapData.AllSettles.Count)];
@@ -140,10 +203,11 @@ public class GameManager : MonoBehaviour
     MyGameData.AvailableSettlement = MyMapData.GetCloseSettles(_startsettle, 3);
     foreach (Settlement _settle in MyGameData.AvailableSettlement) _settle.IsOpen = true;
 
-    _map.MakeTilemap(MyMapSaveData,MyMapData);
+    _map.MakeTilemap(MyMapSaveData, MyMapData);
 
 
     UIManager.Instance.UpdateMap_PlayerPos(_startsettle);
     UIManager.Instance.SetStartDialogue();
+    yield return null;
   }
 }

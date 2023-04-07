@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0243efb5b6eeda4894a0e0cacf0e556, type: 3}
   m_Name: ImageHolder
   m_EditorClassIdentifier: 
-  EventSprites: []
   TownSprites: []
   CitySprites: []
   CastleSprites: []
@@ -27,5 +26,7 @@ MonoBehaviour:
   SkillSprites_Biology: []
   SkillSprites_Knowledge: []
   TendencySprites: []
-  EXPSprites: []
-  DefaultSprite: {fileID: 21300000, guid: 6462db76e3e8d4d4bb178eb32a7384ac, type: 3}
+  EventIllust: []
+  EXPIllust: []
+  TraitIllust: []
+  DefaultSprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}

@@ -420,6 +420,10 @@ public class maptext : MonoBehaviour
     }
     Debug.Log(_str);
   }
+  public void MakePerfectMap()
+  {
+    StartCoroutine(makeperfectmap());
+  }
     private IEnumerator makeperfectmap()
     {
         int _index = 0;
@@ -475,13 +479,16 @@ public class maptext : MonoBehaviour
                 if (!_castlehighland) _str += "성채 고원  ";
                 if (!_castlemountain) _str += "성채 산  ";
 
-                Debug.Log(_index+"번 맵    "+ _str + "없음");
+            //    Debug.Log(_index+"번 맵    "+ _str + "없음");
                 yield return null;
                 continue;
             }
+      if (_data.Towns.Count != 4) { yield return null;continue; }
+      if (_data.Cities.Count != 2) { yield return null; continue; }
+      if (_data.Castles.Count != 2) {  yield return null; continue; }
 
-            Debug.Log($"{_index}번째 맵 성공\n");
-            foreach(var _town in _data.Towns)
+      Debug.Log($"{_index}번째 맵 성공\n");
+   /*         foreach(var _town in _data.Towns)
             {
                 string _str = "";
                 _str += _town.Name+"  ";
@@ -513,6 +520,8 @@ public class maptext : MonoBehaviour
                 _str += _castle.IsMountain ? "산 " : "";
                 Debug.Log(_str + "\n");
             }
+   */
+            GameManager.Instance.MyMapData= _data;
             break;
             yield return null;
         }
@@ -765,7 +774,7 @@ public class maptext : MonoBehaviour
             }
         }
         #endregion
-        Debug.Log("바다 생성 완료");
+   //     Debug.Log("바다 생성 완료");
         //해안선 만들기
         for (int i = 0; i < DefaultSize; i++)
         {
@@ -907,7 +916,7 @@ public class maptext : MonoBehaviour
         }//해당 위치 사막/사막 해변으로 변환
       */
         #endregion
-        Debug.Log("사막 생성 완료");  
+     //   Debug.Log("사막 생성 완료");  
         #region 산
         List<Vector3Int> _newmountain = new List<Vector3Int>(); //산 위치 리스트
         while (_newmountain.Count < Count_mountain * 3)   //산 타일 개수가 9개(3*3) 될 때까지 반복
@@ -941,7 +950,7 @@ public class maptext : MonoBehaviour
             MapData_b[pos.x, pos.y] = MapData_b[pos.x, pos.y] == MapCode.b_desert ? MapCode.b_desert_mountain : MapCode.b_mountain;
         //해당 위치가 이미 사막이라면 사막 산으로, 아니면 일반 산으로 변경
         #endregion
-        Debug.Log("산 생성 완료");
+   //     Debug.Log("산 생성 완료");
 
         #region 강
         int _maxrivercount = 3; //강 개수는 3개(산 하나당 한개)
@@ -1401,7 +1410,7 @@ public class maptext : MonoBehaviour
 
                                 if (k == _rivercell.Count - 1)
                                 {
-                                    Debug.Log($"{_currentpos}위치의 {MapData_b[_currentpos.x,_currentpos.y]} 여기서 지다!");
+ //                                   Debug.Log($"{_currentpos}위치의 {MapData_b[_currentpos.x,_currentpos.y]} 여기서 지다!");
                                     MapData_b[_riverdatas[i].Sourcepos.x, _riverdatas[i].Sourcepos.y] = _originsource;
                                     _isfail = true;
                                     _riverdatas[i].Sourcepos = Vector3Int.zero;
@@ -1457,7 +1466,7 @@ public class maptext : MonoBehaviour
             }
         }
         #endregion
-        Debug.Log("강 생성 완료");
+    //    Debug.Log("강 생성 완료");
 
         #region 고원
         int _highlandmaxcount = Mathf.CeilToInt((float)DefaultSize * (float)DefaultSize * Ratio_highland);//고원 최대 개수
@@ -1540,7 +1549,7 @@ public class maptext : MonoBehaviour
             }//맵 밖이거나, 발원지,강,바다,고원,산이면 False 아니면 True
         }
         #endregion
-        Debug.Log("고원 생성 완료");
+   //     Debug.Log("고원 생성 완료");
 
         #region 숲
         int _forestmaxcount = Mathf.CeilToInt((float)DefaultSize * (float)DefaultSize * Ratio_forest);    //숲 최대 개수
@@ -1682,7 +1691,7 @@ public class maptext : MonoBehaviour
          //  Debug.Log($"숲 최대 개수 : {_forestmaxcount}  현재 숲 개수 : {_forests.Count}");
 
         #endregion
-        Debug.Log("숲 생성 완료");
+    //   Debug.Log("숲 생성 완료");
 
         #region 성채
         Vector3Int[] _castleoriginpos = new Vector3Int[2];
@@ -1761,7 +1770,7 @@ public class maptext : MonoBehaviour
             foreach (Vector3Int _pos in _castles[i]) Mapdata_t[_pos.x, _pos.y] = MapCode.t_castle;
         }
         #endregion
-        Debug.Log("성채 생성 완료");
+     //   Debug.Log("성채 생성 완료");
 
         #region 도시
     int _additional = Random.Range(0, Count_castle);
@@ -1789,7 +1798,7 @@ public class maptext : MonoBehaviour
                         _failcode.Remove(MapCode.b_mountain); _failcode.Remove(MapCode.b_desert_mountain);
                         _loopcount = 0;
                     }
-                    else { if (_loopcount > 1000) { Debug.Log("도시 하나 실패"); break; } }
+                    else { if (_loopcount > 1000) { break; } }
                 }
 
                 Vector3Int _rndpos = _castles[i][0] + new Vector3Int(Random.Range(-_randomrange, _randomrange - 1), Random.Range(-_randomrange, _randomrange - 1));
@@ -1845,7 +1854,7 @@ public class maptext : MonoBehaviour
         }
 
         #endregion
-        Debug.Log("도시 생성 완료");
+  //      Debug.Log("도시 생성 완료");
 
         #region 마을
         int _towndefaultcount = 1;
@@ -1904,7 +1913,7 @@ public class maptext : MonoBehaviour
             }
         }
         #endregion
-        Debug.Log("마을 생성 완료");
+    //    Debug.Log("마을 생성 완료");
 
         string _str = "";
         Stack<string> _strq = new Stack<string>();
@@ -2011,7 +2020,7 @@ public class maptext : MonoBehaviour
             }//강 제외한 모든 타일들
 
         }
-        Debug.Log("강 제외 타일화 완료");
+      //  Debug.Log("강 제외 타일화 완료");
 
         for (int j = 0; j < _riverdatas.Length; j++)
         {
@@ -2145,7 +2154,7 @@ public class maptext : MonoBehaviour
                 _currentpos = GetNextPos(_currentpos, _riverdatas[j].Dir[k + 1]);
             }//발원지 이후 끝까지
         }//강 발원지부터 연결된 모든 타일 입력
-        Debug.Log("강 타일화 완료");
+    //    Debug.Log("강 타일화 완료");
 
         int _Rotateddir(int origin,int rotcount)
         {
@@ -2238,7 +2247,7 @@ public class maptext : MonoBehaviour
         _JsonData.Culture_town = new int[_JsonData.TownCount];
         _JsonData.Science_town = new int[_JsonData.TownCount];
     _JsonData.Town_Open=new bool[_JsonData.TownCount];
-    _JsonData.Town_Names=new string[_JsonData.TownCount];
+    _JsonData.Town_NameIndex=new int[_JsonData.TownCount];
         _JsonData.Town_Index = new int[_JsonData.TownCount];
 
     _JsonData.Isriver_city = new bool[_JsonData.CityCount];
@@ -2251,7 +2260,7 @@ public class maptext : MonoBehaviour
     _JsonData.Culture_city = new int[_JsonData.CityCount];
     _JsonData.Science_city = new int[_JsonData.CityCount];
     _JsonData.City_Open = new bool[_JsonData.CityCount];
-    _JsonData.City_Names = new string[_JsonData.CityCount];
+    _JsonData.City_NameIndex = new int[_JsonData.CityCount];
         _JsonData.City_Index = new int[_JsonData.CityCount];
 
         _JsonData.Isriver_castle = new bool[_JsonData.CastleCount];
@@ -2264,7 +2273,7 @@ public class maptext : MonoBehaviour
     _JsonData.Culture_castle = new int[_JsonData.CastleCount];
     _JsonData.Science_castle = new int[_JsonData.CastleCount];
     _JsonData.Castle_Open= new bool[_JsonData.CastleCount];
-    _JsonData.Castle_Names= new string[_JsonData.CastleCount];
+    _JsonData.Castle_NameIndex= new int[_JsonData.CastleCount];
         _JsonData.Castle_Index = new int[_JsonData.CastleCount];
 
         #region 검사 풀
@@ -2320,7 +2329,7 @@ public class maptext : MonoBehaviour
       _JsonData.Faith_town[i] = _settles[i].Faith;
       _JsonData.Culture_town[i] = _settles[i].Culture;
       _JsonData.Science_town[i] = _settles[i].Science;
-      _JsonData.Town_Names[i] = _settles[i].Name;
+      _JsonData.Town_NameIndex[i] = _settles[i].NameIndex;
     }
     _poses.Clear();
     _poslist.Clear();
@@ -2346,7 +2355,7 @@ public class maptext : MonoBehaviour
       _JsonData.Faith_city[i] = _settles[i].Faith;
       _JsonData.Culture_city[i] = _settles[i].Culture;
       _JsonData.Science_city[i] = _settles[i].Science;
-      _JsonData.City_Names[i] = _settles[i].Name;
+      _JsonData.City_NameIndex[i] = _settles[i].NameIndex;
     }
     _poses.Clear();
     _poslist.Clear();
@@ -2373,7 +2382,7 @@ public class maptext : MonoBehaviour
       _JsonData.Faith_castle[i] = _settles[i].Faith;
       _JsonData.Culture_castle[i] = _settles[i].Culture;
       _JsonData.Science_castle[i] = _settles[i].Science;
-      _JsonData.Castle_Names[i] = _settles[i].Name;
+      _JsonData.Castle_NameIndex[i] = _settles[i].NameIndex;
     }
 
     List<int> GetAround(int[,] _targetarray, List<Vector3Int> _poslist,int range)
@@ -2421,8 +2430,8 @@ public class maptext : MonoBehaviour
       int _checkcount = _poses.Count;
       List<Settlement> _list = new List<Settlement>();
       List<int> _namelist = new List<int>();
-            List<int> _illlist = new List<int>();
-            int illustCount = 100;
+      List<int> _illlist = new List<int>();
+      int illustCount = 100;
       for (int i = 0; i < _checkcount; i++)
       {
         Settlement _newsetl = new Settlement();
@@ -2432,9 +2441,9 @@ public class maptext : MonoBehaviour
         List<int> _aroundbottom = GetAround(MapData_b, _pos, 1);  //마을 주위 1칸 (지형)
         List<int> _aroundtop = GetAround(Mapdata_t, _pos, 1);     //마을 주위 1칸 (지상)
 
-        _newsetl.IsRiver = CheckCount(GetAround(MapData_b, _pos, 2), _fertilepool)>0?true:false;
-        _newsetl.IsSea = CheckCount(_aroundbottom, new List<int> { MapCode.b_sea })>0?true:false;
-        _newsetl.IsForest =CheckCount(_aroundtop,_frstpool)>0?true:false;
+        _newsetl.IsRiver = CheckCount(GetAround(MapData_b, _pos, 2), _fertilepool) > 0 ? true : false;
+        _newsetl.IsSea = CheckCount(_aroundbottom, new List<int> { MapCode.b_sea }) > 0 ? true : false;
+        _newsetl.IsForest = CheckCount(_aroundtop, _frstpool) > 0 ? true : false;
         _newsetl.IsMine = CheckCount(_aroundbottom, _mindustpool) > 0 ? true : false;
         //강,바다,숲,광산 검사
         _newsetl.Wealth = CheckCount(GetAround(Mapdata_t, _pos, 2), _commerpool);
@@ -2451,7 +2460,7 @@ public class maptext : MonoBehaviour
         }
         //신앙 수치 측량
         _newsetl.IsMountain = CheckCount(GetAround(MapData_b, _pos, 2), _mountainpool) > 0 ? true : false;
-        if (_newsetl.IsMountain) _newsetl.Faith+=2;
+        if (_newsetl.IsMountain) _newsetl.Faith += 2;
         //산 여부 검사+신앙 증가
         _newsetl.Culture = CheckCount(GetAround(Mapdata_t, _pos, 3), _cultulrepool);
         //문화 측량
@@ -2460,19 +2469,39 @@ public class maptext : MonoBehaviour
         _list.Add(_newsetl);
 
         string[] _namearray;
-        if (_settletype == 0) _namearray = SettlementName.TownNams;
-        else if(_settletype==1) _namearray = SettlementName.CityNames;
-        else _namearray = SettlementName.CastleNames;
+        if (_settletype == 0) { _namearray = SettlementName.TownNams; _newsetl.Type = SettlementType.Town; }
+        else if (_settletype == 1) { _namearray = SettlementName.CityNames; _newsetl.Type = SettlementType.City; }
+        else {  _namearray = SettlementName.CastleNames; _newsetl.Type = SettlementType.Castle; }
 
         int _nameindex = Random.Range(0, _namearray.Length);
         while(_namelist.Contains(_nameindex))_nameindex = Random.Range(0, _namearray.Length);
 
-                int _illindex = Random.Range(0, illustCount);
-                while (_illlist.Contains(_illindex)) _illindex = Random.Range(0, illustCount);
+        int _illindex = Random.Range(0, illustCount);
+        while (_illlist.Contains(_illindex)) _illindex = Random.Range(0, illustCount);
 
-                _namelist.Add(_nameindex);
-        _newsetl.Name = _namearray[_nameindex];
-                _newsetl.IllustIndex = _illindex;
+        _namelist.Add(_nameindex);
+        _newsetl.NameIndex = _nameindex;
+        _newsetl.IllustIndex = _illindex;
+
+        if (_settletype.Equals(0))
+        {
+          _newsetl.Wealth = _newsetl.Wealth <= SettleCountdeg.Town_Wealth_Low ? 1 : _newsetl.Wealth <= SettleCountdeg.Town_Wealth_Middle ? 2 : 3;
+          _newsetl.Faith = _newsetl.Faith <= SettleCountdeg.Town_Faith_Low ? 1 : _newsetl.Faith <= SettleCountdeg.Town_Faith_Middle ? 2 : 3;
+        }
+        else if (_settletype.Equals(1))
+        {
+          _newsetl.Wealth = _newsetl.Wealth <= SettleCountdeg.City_Wealth_Low ? 1 : _newsetl.Wealth <= SettleCountdeg.City_Wealth_Middle ? 2 : 3;
+          _newsetl.Faith = _newsetl.Faith <= SettleCountdeg.City_Faith_Low ? 1 : _newsetl.Faith <= SettleCountdeg.City_Faith_Middle ? 2 : 3;
+          _newsetl.Culture = _newsetl.Culture <= SettleCountdeg.City_Culture_Low ? 1 : _newsetl.Culture <= SettleCountdeg.City_Culture_Middle ? 2 : 3;
+          _newsetl.Science = _newsetl.Science <= SettleCountdeg.City_Science_Low ? 1 : _newsetl.Science <= SettleCountdeg.City_Science_Middle ? 2 : 3;
+        }
+        else
+        {
+          _newsetl.Wealth = _newsetl.Wealth <= SettleCountdeg.Caslte_Wealth_Low ? 1 : _newsetl.Wealth <= SettleCountdeg.Caslte_Wealth_Low ? 2 : 3;
+          _newsetl.Faith = _newsetl.Faith <= SettleCountdeg.Caslte_Faith_Low ? 1 : _newsetl.Faith <= SettleCountdeg.Caslte_Faith_Middle ? 2 : 3;
+          _newsetl.Culture = _newsetl.Culture <= SettleCountdeg.Caslte_Culture_Low ? 1 : _newsetl.Culture <= SettleCountdeg.Caslte_Culture_Middle ? 2 : 3;
+          _newsetl.Science = _newsetl.Science <= SettleCountdeg.Castle_Science_Low ? 1 : _newsetl.Science <= SettleCountdeg.Castle_Science_Middle ? 2 : 3;
+        }
       }
       //  Debug.Log($"ckeckcount : {_checkcount} _list.count : {_list.Count}");
       return _list;

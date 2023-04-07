@@ -13,7 +13,7 @@ public class GameData   //게임 진행도 데이터
     public int CurrentSanity = 0;//현재 정신력
     public int MaxSanity = 0;   //최대 정신력
 
-    public List<int> Traits = new List<int>();//가지고 있는 특성 목록
+    public List<Trait> Traits = new List<Trait>();//가지고 있는 특성 목록
     public Dictionary<SkillName, Skill> Skills = new Dictionary<SkillName, Skill>();//기술들
     private int conversationlevel, force, nature, intelligence;
     public int ConversationLevel { get
@@ -74,9 +74,9 @@ public class GameData   //게임 진행도 데이터
     public Tendency Tendency_RF = null;//(-)이성-육체(+)
     public Tendency Tendency_MM = null;//(-)정신-물질(+)
 
-    public Dictionary<int, Dictionary<EventData, EXPAcquireData>> LongTermEXP = new Dictionary<int, Dictionary<EventData, EXPAcquireData>>();
+    public List<Experience> LongTermEXP = new List<Experience>();
     //장기 기억 슬롯 0,1
-    public Dictionary<int, Dictionary<EventData, EXPAcquireData>> ShortTempEXP = new Dictionary<int, Dictionary<EventData, EXPAcquireData>>();
+    public List<Experience> ShortTempEXP = new List<Experience>();
     //단기 기억 슬롯 0,1,2,3
 
     public Vector3 CurrentPos = Vector3.zero;//맵 상 현재 좌표
@@ -84,26 +84,33 @@ public class GameData   //게임 진행도 데이터
 
     public List<Settlement> AvailableSettlement = new List<Settlement>();   //현재 이동 가능한 정착지들
     public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
-    public Dictionary<string, int> SettlementDebuff = new Dictionary<string, int>();//정착지 이름과 디버프 진척도
+    public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
+    public List<PlaceType> LastPlaceTypes=new List<PlaceType>();            //직전에 들렸던 정착지에서 사용했던 이벤트의 장소들
 
     public string CurrentEventID = "";  //현재 진행중인 이벤트 ID
     public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
-    public List<string> RemoveEvent = new List<string>();//이벤트 풀에서 사라질 이벤트들
-    public List<string> ClearEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트
-    public List<string> ClearEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트
-    public List<string> ClearEvent_Force = new List<string>();  //육체 선택지 클리어한 이벤트
-    public List<string> ClearEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트
-    public List<string> ClearEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트
-  public List<string> ClearQuest=new List<string>();
-  public QuestHolder CurrentQuest = null; //현재 진행 중인 퀘스트
+    public List<string> RemoveEvent = new List<string>();//이벤트 풀에서 사라질 이벤트들(일반,연계)
+    public List<string> ClearEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
+    public List<string> ClearEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
+  public List<string> ClearEvent_Force = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
+  public List<string> ClearEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
+  public List<string> ClearEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트(일반,연계)
 
+  public List<string> FailEvent_None = new List<string>();//단일,성향,경험,기술 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Rational = new List<string>();//이성 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Force = new List<string>();  //육체 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Mental = new List<string>(); //정신 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
+
+  public List<string> ClearQuest=new List<string>();//현재 게임에서 클리어한 퀘스트 ID
+  public QuestHolder CurrentQuest = null; //현재 진행 중인 퀘스트
     public GameData()
     {
         HP = 100;
         CurrentSanity = MaxSanity;
         Gold = 0;
-        Traits = new List<int>();
+        Traits = new List<Trait>();
         Skill _speech = new Skill(SkillType.Conversation, SkillType.Conversation);
         Skill _treat = new Skill(SkillType.Conversation, SkillType.Force);
         Skill _deception = new Skill(SkillType.Conversation, SkillType.Nature);
@@ -126,8 +133,7 @@ public class GameData   //게임 진행도 데이터
         Skills.Add(SkillName.Survivable, _survivable);
         Tendency_RF = new Tendency(TDCType.Rational, TDCType.Force);
         Tendency_MM = new Tendency(TDCType.Mental, TDCType.Material);
-        LongTermEXP.Add(0, null);LongTermEXP.Add(1, null);
-        ShortTempEXP.Add(0, null); ShortTempEXP.Add(1, null); ShortTempEXP.Add(2, null); ShortTempEXP.Add(3, null);
+        
     }
 }
 public class GameJsonData
@@ -149,4 +155,8 @@ public class Tendency
   public int Level = 0;
   public Tendency(TDCType _a, TDCType _b) { Type_foward = _a; Type_back = _b;}
 }
+public class ProgressData
+{
+  public List<string> TotalFoundQuest = new List<string>();//게임 하면서 만난 모든 퀘스트
+}//게임 외부 진척도 데이터
 
