@@ -17,13 +17,10 @@ public class Settlement
       {
         case SettlementType.Town:
           return SettlementName.TownNams[NameIndex];
-          break;
         case SettlementType.City:
           return SettlementName.CityNames[NameIndex];
-          break;
         case SettlementType.Castle:
           return SettlementName.CastleNames[NameIndex];
-          break;
       }
       return "이럴 일이 없는 레후...!";
     }
@@ -31,7 +28,7 @@ public class Settlement
 
   public bool IsForest = false;//주변 1칸에 숲 여부
   public bool IsRiver=false;//주변 2칸에 강 여부
-  public bool IsMine = false;  //주변 1칸에 언덕 여부
+  public bool IsHighland = false;  //주변 1칸에 언덕 여부
   public bool IsMountain = false;//주변 2칸에 산 여부
   public bool IsSea = false;    //주변 1칸에 바다 여부
 
@@ -48,9 +45,9 @@ public class Settlement
     foreach (var asdf in Pose) _pos += asdf;
     return _pos / Pose.Count;
   }
-  public EventBasicData GetTileData()
+  public TargetTileEventData GetSettleTileEventData()
   {
-    EventBasicData _temp=new EventBasicData();
+    TargetTileEventData _temp=new TargetTileEventData();
     _temp.SettlementType = Type;
     _temp.PlaceData.Add(PlaceType.Residence, Wealth);
     _temp.PlaceData.Add(PlaceType.Marketplace, Wealth);
@@ -70,7 +67,7 @@ public class Settlement
     _temp.EnvironmentType.Add(EnvironmentType.None);
     if(IsRiver)_temp.EnvironmentType.Add(EnvironmentType.River);
     if (IsForest) _temp.EnvironmentType.Add(EnvironmentType.Forest);
-    if (IsMine) _temp.EnvironmentType.Add(EnvironmentType.Mine);
+    if (IsHighland) _temp.EnvironmentType.Add(EnvironmentType.Highland);
     if (IsMountain) _temp.EnvironmentType.Add(EnvironmentType.Mountain);
     if (IsSea) _temp.EnvironmentType.Add(EnvironmentType.Sea);
     _temp.Season = GameManager.Instance.MyGameData.Turn+1;
@@ -121,7 +118,7 @@ public class MapSaveData
       _town.IsRiver = Isriver_town[i];
       _town.IsForest= Isforest_town[i];
       _town.IsMountain= Ismountain_town[i];
-      _town.IsMine= Ismine_town[i];
+      _town.IsHighland= Ismine_town[i];
       _town.IsSea = Issea_town[i];
 
       _town.Pose.Add(Town_Pos[i]);
@@ -145,7 +142,7 @@ public class MapSaveData
       _city.IsRiver = Isriver_city[i];
       _city.IsForest = Isforest_city[i];
       _city.IsMountain = Ismountain_city[i];
-      _city.IsMine = Ismine_city[i];
+      _city.IsHighland = Ismine_city[i];
       _city.IsSea = Issea_city[i];
 
       _city.Pose.Add(City_Pos[i*2]);
@@ -169,7 +166,7 @@ public class MapSaveData
       _castle.IsRiver = Isriver_castle[i];
       _castle.IsForest = Isforest_castle[i];
       _castle.IsMountain = Ismountain_castle[i];
-      _castle.IsMine = Ismine_castle[i];
+      _castle.IsHighland = Ismine_castle[i];
       _castle.IsSea = Issea_castle[i];
 
       _castle.Pose.Add(Castle_Pos[i * 3]);

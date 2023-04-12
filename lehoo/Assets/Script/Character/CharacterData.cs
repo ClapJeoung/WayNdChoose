@@ -80,13 +80,14 @@ public class GameData   //게임 진행도 데이터
     //단기 기억 슬롯 0,1,2,3
 
     public Vector3 CurrentPos = Vector3.zero;//맵 상 현재 좌표
-    public float CurrentMoveDegree = 0.0f;  //0.0f면 현재 정착지, 그 외면 정착지에서 출발해 야외 이벤트를 만난 상황
+    public float MoveProgress = 0.0f;  //0.0f면 현재 정착지, 그 외면 정착지에서 출발해 야외 이벤트를 만난 상황
 
     public List<Settlement> AvailableSettlement = new List<Settlement>();   //현재 이동 가능한 정착지들
     public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
     public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
     public List<PlaceType> LastPlaceTypes=new List<PlaceType>();            //직전에 들렸던 정착지에서 사용했던 이벤트의 장소들
 
+  public List<EventDataDefulat> CurrentSuggestingEvents = new List<EventDataDefulat>(); //현재 정착지에서 제시 중인 이벤트
     public string CurrentEventID = "";  //현재 진행중인 이벤트 ID
     public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
@@ -131,10 +132,18 @@ public class GameData   //게임 진행도 데이터
         Skills.Add(SkillName.Somatology, _somatology);
         Skills.Add(SkillName.Biology, _biology);
         Skills.Add(SkillName.Survivable, _survivable);
-        Tendency_RF = new Tendency(TDCType.Rational, TDCType.Force);
-        Tendency_MM = new Tendency(TDCType.Mental, TDCType.Material);
-        
+        Tendency_RF = new Tendency(TendencyType.Rational, TendencyType.Force);
+        Tendency_MM = new Tendency(TendencyType.Mental, TendencyType.Material);
     }
+  /// <summary>
+  /// 이전 정착지 제시 리스트, 이전 이벤트 지우기
+  /// </summary>
+  public void ClearBeforeEvents()
+  {
+    CurrentSettlement = null;
+    CurrentSuggestingEvents.Clear();
+    CurrentEventID = null;
+  }
 }
 public class GameJsonData
 {
@@ -148,12 +157,12 @@ public class Skill
   public int Level = 0;
   public Skill(SkillType _a,SkillType _b) { Type_A = _a;Type_B= _b;}
 }
-public enum TDCType { Rational,Force,Mental,Material}
+public enum TendencyType {None, Rational,Force,Mental,Material}
 public class Tendency
 {
-  public TDCType Type_foward,Type_back;
+  public TendencyType Type_foward,Type_back;
   public int Level = 0;
-  public Tendency(TDCType _a, TDCType _b) { Type_foward = _a; Type_back = _b;}
+  public Tendency(TendencyType _a, TendencyType _b) { Type_foward = _a; Type_back = _b;}
 }
 public class ProgressData
 {

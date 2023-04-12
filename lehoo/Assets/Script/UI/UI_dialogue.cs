@@ -10,10 +10,19 @@ public class UI_dialogue : MonoBehaviour
   [SerializeField] private Image Illust = null;
   [SerializeField] private TextMeshProUGUI DialogueText = null;
   [SerializeField] private CanvasGroup MapButton = null;
+  [SerializeField] private UI_Selection Selection_None = null;
+  [SerializeField] private UI_Selection Selection_Rational = null;
+  [SerializeField] private UI_Selection Selection_Force = null;
+  [SerializeField] private UI_Selection Selection_Mental = null;
+  [SerializeField] private UI_Selection Selection_Material = null;
 
-  public void SetStartDialoue()
+  public void SetEventDialogue(EventDataDefulat _event)
   {
     ResetPanel();
+    //√ ±‚»≠
+    NameText.text = _event.Name;
+    Illust.sprite = _event.Illust;
+    DialogueText.text = _event.Description;
     StartCoroutine(setdialogue());
   }
   private IEnumerator setdialogue()

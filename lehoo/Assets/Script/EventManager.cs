@@ -28,17 +28,17 @@ public class EventManager : MonoBehaviour
   private Settlement CurrentSettle = null;
   private Event CurrentEvent = null;
 
-  public void SetNewEvent(bool _isriver,bool _isforest,bool _ishighland,bool _ismountain,bool _issea)
+  public void SetSettleEvent(TargetTileEventData _settledata)
   {
-
-  }//야외 이벤트 산출
-  public void SetNewEvent(Settlement _settle)
+    List<EventDataDefulat> _eventlist = new List<EventDataDefulat>();
+    _eventlist = MyEventHolder.ReturnEvent(_settledata);
+    //이벤트 3개를 받아와 UIManager에 전달한다
+  }//외부 -> 정착지
+  public void SetOutsideEvent(TargetTileEventData _tiledata)
   {
-
-  }//정착지 이벤트 3개 산출
-  public void SetOutsideEvent(bool _river, bool _forest, bool _mine, bool _mountain, bool _sea)
-  {
-    List<EventBasicData> _eventlist = new List<EventBasicData>();
-    //정착지(혹은 타일) 정보를 담은것
-  }
+    List<EventDataDefulat> _eventlist = new List<EventDataDefulat>();
+    _eventlist = MyEventHolder.ReturnEvent(_tiledata);
+    EventDataDefulat _outerevent = _eventlist[Random.Range(0, _eventlist.Count)];
+    //이벤트 1개를 받아와 UIManager에 전달한다
+  }//정착지 -> 외부
 }

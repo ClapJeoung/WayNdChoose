@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
   [HideInInspector] public GameData MyGameData = new GameData();            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
   private const string GameDataName = "GameData.json";
   [HideInInspector] public MapData MyMapData = null;              //맵 데이터(맵 정보만)
-  private MapSaveData MyMapSaveData = null;
+  [HideInInspector] public MapSaveData MyMapSaveData = null;
   private const string MapDataName = "MapData.json";
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
   private const string ProgressDataName = "ProgressData.json";
@@ -90,6 +90,7 @@ public class GameManager : MonoBehaviour
     {
       CreateNewMap();
       StartCoroutine(_eventtest());
+
     }
   }
   private IEnumerator _eventtest()
@@ -100,7 +101,7 @@ public class GameManager : MonoBehaviour
       string _str = $"정착지 이름 : {_settle.Name}  정착지 환경: ";
       if (_settle.IsForest) _str += "숲 ";
       if (_settle.IsRiver) _str += "강 ";
-      if (_settle.IsMine) _str += "언덕 ";
+      if (_settle.IsHighland) _str += "언덕 ";
       if (_settle.IsMountain) _str += "산 ";
       if (_settle.IsSea) _str += "바다 ";
       _str += "\n";
@@ -117,7 +118,7 @@ public class GameManager : MonoBehaviour
           break;
       }
       _str += "\n\n";
-      EventBasicData _tiledata = _settle.GetTileData();
+      TargetTileEventData _tiledata = _settle.GetSettleTileEventData();
       List<EventDataDefulat> _results = EventHolder.ReturnEvent(_tiledata);
       foreach (var _event in _results)
       {
@@ -127,7 +128,7 @@ public class GameManager : MonoBehaviour
         _str += $"등장 장소 : {_event.PlaceType}  등장 레벨 : {(_event.PlaceLevel == 0 ? "전역" : _event.PlaceLevel == 1 ? "1" : _event.PlaceLevel == 2 ? 2 : 3)}";
         _str += "\n";
       }
-      Debug.Log(_str);
+  //    Debug.Log(_str);  
     }
     yield return null;
   }
@@ -191,8 +192,8 @@ public class GameManager : MonoBehaviour
     maptext _map = FindObjectOfType<maptext>().GetComponent<maptext>();
 
     _map.MakePerfectMap();
-    //  MyMapSaveData = _map.MakeMap();
-    yield return new WaitUntil(()=>(MyMapSaveData != null));
+
+    yield return new WaitUntil(()=>MyMapSaveData != null);
     MyMapData = MyMapSaveData.ConvertToMapData();
 
     Settlement _startsettle = MyMapData.AllSettles[Random.Range(0, MyMapData.AllSettles.Count)];
@@ -206,8 +207,7 @@ public class GameManager : MonoBehaviour
     _map.MakeTilemap(MyMapSaveData, MyMapData);
 
 
-    UIManager.Instance.UpdateMap_PlayerPos(_startsettle);
-    UIManager.Instance.SetStartDialogue();
+    UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle);
     yield return null;
   }
 }

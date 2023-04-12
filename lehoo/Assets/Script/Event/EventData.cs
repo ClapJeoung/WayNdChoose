@@ -335,7 +335,7 @@ public class EventHolder
     }
     foreach (var _deletedata in _eventdatas) AvailableNormalEvents.Remove(_deletedata);
   }
-  public List<EventDataDefulat> ReturnEvent(EventBasicData _tiledata)
+  public List<EventDataDefulat> ReturnEvent(TargetTileEventData _tiledata)
   {
     List<EventDataDefulat> _ResultEvents = new List<EventDataDefulat>();
     List<EventDataDefulat> _followevents=new List<EventDataDefulat>();
@@ -812,7 +812,7 @@ public class EventHolder
     }//normallist랑 followlist를 활용해 normalcount,followcount 개수에 맞게 합쳐서 리스트 반환
   }
 }
-public class EventBasicData
+public class TargetTileEventData
 {
   public SettlementType SettlementType; //정착지 타입
   public Dictionary<PlaceType, int> PlaceData = new Dictionary<PlaceType, int>(); //(정착지일 경우) 장소 타입과 장소 레벨
@@ -823,18 +823,25 @@ public class EventBasicData
 public enum FollowType { Event,EXP,Trait,Theme,Skill}
 public enum SettlementType { Town,City,Castle,Outer,None}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Academy}
-public enum EnvironmentType { None,River,Forest,Mine,Mountain,Sea }
+public enum EnvironmentType { None,River,Forest,Highland,Mountain,Sea }
 public enum SelectionType { Single,Verticla, Horizontal,Tendency,Experience,Skill }//Horizontal : 좌 물질 우 정신     Vertical : 위 이성 아래 육체
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTarget { Experience,GoldAndExperience,Gold,HP,Sanity,Theme,Skill,Trait}
-public enum EventSequence { Sugguest,Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
+public enum EventSequence { Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
 public enum QuestSequence { Start,Rising,Climax,Falling}
 #endregion
 public class EventDataDefulat
 {
   public string ID = "";
-  public string IllustID = "";
+  public string IllustID = "";  //안씀
+  public Sprite Illust
+  {
+    get 
+    { 
+        return GameManager.Instance.ImageHolder.GetEventIllust(ID);
+    }
+  }
   public string Name = "";
   public string Description = "";
   public int Season = 0;  //0: 전역  1,2,3,4

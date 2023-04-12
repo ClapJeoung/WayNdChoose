@@ -75,7 +75,7 @@ public class UI_map : UI_default
     UIManager.Instance.IsWorking = true;
     Vector3 _currentpos = GameManager.Instance.MyGameData.CurrentPos;          //현재 위치
     Vector3 _settlepos = SettleIcons[SelectedSettle.Name].Position;           //종점 위치
-    float _currentprogress = GameManager.Instance.MyGameData.CurrentMoveDegree;//현재 이동 진행도 0.0f ~ 1.0f
+    float _currentprogress = GameManager.Instance.MyGameData.MoveProgress;//현재 이동 진행도 0.0f ~ 1.0f
     float _targetprogress = 0.0f;                                             //이번 이동에서 목표로 하는 이동 진행도
     if (_currentprogress == 0.0f) _targetprogress = Random.Range(0.3f, 0.7f);
     else _targetprogress = 1.0f;
@@ -83,26 +83,32 @@ public class UI_map : UI_default
 
     if (_currentprogress == 0.0f)
     {
+      GameManager.Instance.MyGameData.ClearBeforeEvents();
+      GameManager.Instance.MyGameData.CurrentPos = _targetpos;
+      GameManager.Instance.MyGameData.MoveProgress = _targetprogress;
+      //이전 정착지의 이벤트 관련 데이터 초기화
+
       //currentprogress==0.0f면 정착지에서 중간 이벤트 지점까지 이동
       yield return StartCoroutine(movecharacter(PlayerRect.anchoredPosition, _targetpos, _settlepos, _targetprogress));
       //캐릭터 이동시킴
-      bool _isriver = false, _isforest = false, _ishighland = false, _ismountain = false, _issea = false;
-      MapCreater.GetAroundData(_targetpos, ref _isriver, ref _isforest, ref _ishighland,ref _ismountain ,ref _issea);
-      EventManager.Instance.SetNewEvent(_isriver, _isforest, _ishighland, _ismountain, _issea);
+      MapCreater.GetSingleTileData(_targetpos);
+      EventManager.Instance.SetSettleEvent(MapCreater.GetSingleTileData(_targetpos));
       //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
       //도중에 멈춘거니까 이동 버튼 활성화는 안함
     }
     else
     {
+      SelectedSettle = null;
+      GameManager.Instance.MyGameData.CurrentEventID = null;
+      GameManager.Instance.MyGameData.CurrentPos = _targetpos;
+      GameManager.Instance.MyGameData.MoveProgress = 0.0f;
+      //목표에 완전히 도착했으니 이동 관련 정보는 초기화
+
       //currentprogress!=0.0f면 외부에서 이벤트 클리어하고 가던 정착지를 향해 다시 출발
       yield return StartCoroutine(movecharacter(_currentpos, _targetpos, _currentprogress));
       //캐릭터 이동시킨
-      EventManager.Instance.SetNewEvent(SelectedSettle);
+      EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetpos));
       //캐릭터 목표 지점 정착지 정보 보내줌
-      SelectedSettle = null;
-      GameManager.Instance.MyGameData.CurrentPos = _targetpos;
-      GameManager.Instance.MyGameData.CurrentMoveDegree = 0.0f;
-      //목표에 완전히 도착했으니 이동 관련 정보는 초기화
     }
   }
   private IEnumerator movecharacter(Vector3 _originpos,Vector3 _targetpos,Vector3 _maxpos, float _targetprogress)

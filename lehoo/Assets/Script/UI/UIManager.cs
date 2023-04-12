@@ -193,6 +193,13 @@ public class UIManager : MonoBehaviour
   public void UpdateMap_SettlePanel(Settlement _settle) => MyMap.UpdatePanel(_settle);
   public void UpdateMap_SettleIcons(List<Settlement> _avail) => MyMap.UpdateIcons(_avail);
   public void UpdateMap_AddSettle(string _name, SettlementIcon _icon) => MyMap.AddSettleIcon(_name, _icon);
-  public void UpdateMap_PlayerPos(Settlement _settle)=>MyMap.SetPlayerPos(_settle);
-  public void SetStartDialogue() => MyDialogue.SetStartDialoue();
+  public void UpdateMap_SetPlayerPos(Settlement _settle)=>MyMap.SetPlayerPos(_settle);
+  public void SetSuggestUI(List<EventDataDefulat> _eventlist)
+  {
+
+  }
+  public void SetOuterEventUI(EventDataDefulat _event)
+  {
+    MyMap.CloseUI();
+  }
 }

@@ -88,10 +88,18 @@ public class ImageHolder : ScriptableObject
   }
   public Sprite GetEventIllust(string _illustid)
   {
+    string _id = _illustid;
+    switch (GameManager.Instance.MyGameData.Turn)
+    {
+      case 0: _id += "_spring";break;
+      case 1: _id += "_summer"; break;
+      case 2: _id += "_fall"; break;
+      case 3: _id += "_winter"; break;
+    }
     Sprite _targetsprite = DefaultSprite;
     foreach (Sprite _spr in EventIllust)
     {
-      if (_spr.name.Equals(_illustid))
+      if (_spr.name.Equals(_id))
       {
         _targetsprite = _spr;
         break;

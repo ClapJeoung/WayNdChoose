@@ -291,7 +291,7 @@ public class maptext : MonoBehaviour
         _count++;
         if (_town.IsRiver == false) _noriver++;
         if(_town.IsForest == false) _noforest++;
-        if (_town.IsMine == false) _nohighland++;
+        if (_town.IsHighland == false) _nohighland++;
         if (_town.IsMountain == false) _nomountain++;
         if(_town.IsSea==false) _nosea++;
       }
@@ -310,7 +310,7 @@ public class maptext : MonoBehaviour
         _count++;
         if (_city.IsRiver == false) _noriver++;
         if (_city.IsForest == false) _noforest++;
-        if (_city.IsMine == false) _nohighland++;
+        if (_city.IsHighland == false) _nohighland++;
         if (_city.IsMountain == false) _nomountain++;
         if (_city.IsSea == false) _nosea++;
       }
@@ -329,7 +329,7 @@ public class maptext : MonoBehaviour
         _count++;
         if (_castle.IsRiver == false) _noriver++;
         if (_castle.IsForest == false) _noforest++;
-        if (_castle.IsMine == false) _nohighland++;
+        if (_castle.IsHighland == false) _nohighland++;
         if (_castle.IsMountain == false) _nomountain++;
         if (_castle.IsSea == false) _nosea++;
       }
@@ -370,7 +370,7 @@ public class maptext : MonoBehaviour
       {
         if (_town.IsRiver) _isriver = true;
         if (_town.IsForest) _isforest = true;
-        if (_town.IsMine) _ishighland = true;
+        if (_town.IsHighland) _ishighland = true;
         if (_town.IsMountain) _ismountain = true;
         if (_town.IsSea) _issea = true;
       }
@@ -387,7 +387,7 @@ public class maptext : MonoBehaviour
       {
         if (_city.IsRiver) _isriver = true;
         if (_city.IsForest) _isforest = true;
-        if (_city.IsMine) _ishighland = true;
+        if (_city.IsHighland) _ishighland = true;
         if (_city.IsMountain) _ismountain = true;
         if (_city.IsSea) _issea = true;
       }
@@ -404,7 +404,7 @@ public class maptext : MonoBehaviour
       {
         if (_castle.IsRiver) _isriver = true;
         if (_castle.IsForest) _isforest = true;
-        if (_castle.IsMine) _ishighland = true;
+        if (_castle.IsHighland) _ishighland = true;
         if (_castle.IsMountain) _ismountain = true;
         if (_castle.IsSea) _issea = true;
       }
@@ -430,7 +430,9 @@ public class maptext : MonoBehaviour
         while (true)
         {
             _index++;
-            MapData _data = MakeMap().ConvertToMapData();
+      MapSaveData _savedata = MakeMap();
+      if (_savedata == null) continue;
+            MapData _data = _savedata.ConvertToMapData();
             bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
             bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false, _citysea = false;
             bool _castleriver = false, _castleforest = false, _castlehighland = false, _castlemountain = false;
@@ -439,7 +441,7 @@ public class maptext : MonoBehaviour
             {
                 if (_town.IsRiver) _townriver = true;
                 if (_town.IsForest) _townforest = true;
-                if (_town.IsMine) _townhighland = true;
+                if (_town.IsHighland) _townhighland = true;
                 if (_town.IsMountain) _townmountain = true;
                 if (_town.IsSea) _townsea = true;
             }
@@ -447,7 +449,7 @@ public class maptext : MonoBehaviour
             {
                 if (_city.IsRiver) _cityriver = true;
                 if (_city.IsForest) _cityforest = true;
-                if (_city.IsMine) _cityhighland = true;
+                if (_city.IsHighland) _cityhighland = true;
                 if (_city.IsMountain) _citymountain = true;
                 if (_city.IsSea) _citysea = true;
             }
@@ -455,7 +457,7 @@ public class maptext : MonoBehaviour
             {
                 if (_castle.IsRiver) _castleriver = true;
                 if (_castle.IsForest) _castleforest = true;
-                if (_castle.IsMine) _castlehighland = true;
+                if (_castle.IsHighland) _castlehighland = true;
                 if (_castle.IsMountain) _castlemountain = true;
             }
 
@@ -521,7 +523,7 @@ public class maptext : MonoBehaviour
                 Debug.Log(_str + "\n");
             }
    */
-            GameManager.Instance.MyMapData= _data;
+            GameManager.Instance.MyMapSaveData = _savedata;
             break;
             yield return null;
         }
@@ -1465,6 +1467,10 @@ public class maptext : MonoBehaviour
                 if (_isfail) continue;
             }
         }
+
+    bool _tooshort = true;
+    foreach (var _riverinfo in _riverdatas) if (_riverinfo.Dir.Count > 10) _tooshort = false;
+    if (_tooshort) return null;
         #endregion
     //    Debug.Log("강 생성 완료");
 
@@ -2322,7 +2328,7 @@ public class maptext : MonoBehaviour
     {
       _JsonData.Isriver_town[i] = _settles[i].IsRiver;
       _JsonData.Isforest_town[i] = _settles[i].IsForest;
-      _JsonData.Ismine_town[i] = _settles[i].IsMine;
+      _JsonData.Ismine_town[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_town[i] = _settles[i].IsMountain;
       _JsonData.Issea_town[i]= _settles[i].IsSea;
       _JsonData.Wealth_town[i] = _settles[i].Wealth;
@@ -2348,7 +2354,7 @@ public class maptext : MonoBehaviour
     {
       _JsonData.Isriver_city[i] = _settles[i].IsRiver;
       _JsonData.Isforest_city[i] = _settles[i].IsForest;
-      _JsonData.Ismine_city[i] = _settles[i].IsMine;
+      _JsonData.Ismine_city[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_city[i] = _settles[i].IsMountain;
       _JsonData.Issea_city[i]= _settles[i].IsSea;
       _JsonData.Wealth_city[i] = _settles[i].Wealth;
@@ -2375,7 +2381,7 @@ public class maptext : MonoBehaviour
     {
       _JsonData.Isriver_castle[i] = _settles[i].IsRiver;
       _JsonData.Isforest_castle[i] = _settles[i].IsForest;
-      _JsonData.Ismine_castle[i] = _settles[i].IsMine;
+      _JsonData.Ismine_castle[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_castle[i] = _settles[i].IsMountain;
       _JsonData.Issea_castle[i] = _settles[i].IsSea;
       _JsonData.Wealth_castle[i] = _settles[i].Wealth;
@@ -2384,6 +2390,7 @@ public class maptext : MonoBehaviour
       _JsonData.Science_castle[i] = _settles[i].Science;
       _JsonData.Castle_NameIndex[i] = _settles[i].NameIndex;
     }
+    #endregion
 
     List<int> GetAround(int[,] _targetarray, List<Vector3Int> _poslist,int range)
         {
@@ -2444,13 +2451,13 @@ public class maptext : MonoBehaviour
         _newsetl.IsRiver = CheckCount(GetAround(MapData_b, _pos, 2), _fertilepool) > 0 ? true : false;
         _newsetl.IsSea = CheckCount(_aroundbottom, new List<int> { MapCode.b_sea }) > 0 ? true : false;
         _newsetl.IsForest = CheckCount(_aroundtop, _frstpool) > 0 ? true : false;
-        _newsetl.IsMine = CheckCount(_aroundbottom, _mindustpool) > 0 ? true : false;
+        _newsetl.IsHighland = CheckCount(_aroundbottom, _mindustpool) > 0 ? true : false;
         //강,바다,숲,광산 검사
         _newsetl.Wealth = CheckCount(GetAround(Mapdata_t, _pos, 2), _commerpool);
         if (_newsetl.IsRiver) _newsetl.Wealth++;
         if (_newsetl.IsSea) _newsetl.Wealth++;
         if (_newsetl.IsForest) _newsetl.Wealth++;
-        if (_newsetl.IsMine) _newsetl.Wealth++;
+        if (_newsetl.IsHighland) _newsetl.Wealth++;
         //부 수치 측량
         int _faith = 0;
         foreach (var __pos in _pos)
@@ -2506,8 +2513,6 @@ public class maptext : MonoBehaviour
       //  Debug.Log($"ckeckcount : {_checkcount} _list.count : {_list.Count}");
       return _list;
     }
-
-    #endregion
     //  OutputSettleData(_JsonData);
         return _JsonData;
     }
@@ -2729,9 +2734,11 @@ public class maptext : MonoBehaviour
         if (pos.x < 0 || pos.x > DefaultSize - 1 || pos.y < 0 || pos.y > DefaultSize - 1) return false;
         return true;
     }
-  public void GetAroundData(Vector3 _worldpos,ref bool _isriver,ref bool _isforest,ref bool _ishigh,ref bool _ismountain,ref bool _issea)
+  public TargetTileEventData GetSingleTileData(Vector3 _worldpos)
   {
     Vector3Int _tilepos=Tilemap_bottom.WorldToCell(_worldpos);
+    TargetTileEventData _data=new TargetTileEventData();
+    _data.SettlementType = SettlementType.Outer;
     //월드 좌표 -> 타일 좌표
     List<int> _riverpool=new List<int>();
     _riverpool.Add(MapCode.b_river);_riverpool.Add(MapCode.b_desert_river);_riverpool.Add(MapCode.b_desert_riverbeach);_riverpool.Add(MapCode.b_riverbeach);
@@ -2746,25 +2753,27 @@ public class maptext : MonoBehaviour
     _seapool.Add(MapCode.b_riverbeach);_seapool.Add(MapCode.b_desert_riverbeach);
     //강,숲,언덕,산,바다 타일 코드 풀
 
-    Check(_riverpool, ref _isriver, true);
-    Check(_forestpool, ref _isforest, false);
-    Check(_highlandpool, ref _ishigh, true);
-    Check(_mountainpool, ref _ismountain, true);
-    Check(_seapool, ref _issea, true);
+    if (checkenvir(_forestpool, GameManager.Instance.MyMapData.MapCode_Top)) _data.EnvironmentType.Add(EnvironmentType.Forest);
+    if (checkenvir(_riverpool, GameManager.Instance.MyMapData.MapCode_Bottom)) _data.EnvironmentType.Add(EnvironmentType.River);
+    if (checkenvir(_highlandpool, GameManager.Instance.MyMapData.MapCode_Bottom)) _data.EnvironmentType.Add(EnvironmentType.Highland);
+    if (checkenvir(_mountainpool, GameManager.Instance.MyMapData.MapCode_Bottom)) _data.EnvironmentType.Add(EnvironmentType.Mountain);
+    if (checkenvir(_seapool, GameManager.Instance.MyMapData.MapCode_Bottom)) _data.EnvironmentType.Add(EnvironmentType.Sea);
 
-    void Check(List<int> _pool, ref bool _targetbool,bool isbottom)
+    _data.Season = GameManager.Instance.MyGameData.Turn + 1;
+
+    return _data;
+    bool checkenvir(List<int> _pool, int[,] _checktilemap)
     {
-      int[,] _tilemap = isbottom == true ? GameManager.Instance.MyMapData.MapCode_Bottom : GameManager.Instance.MyMapData.MapCode_Top;
 
-      if (_pool.Contains(_tilemap[_tilepos.x, _tilepos.y])) { _targetbool = true;return; }
-
+      if (_pool.Contains(_checktilemap[_tilepos.x, _tilepos.y])) return true;
       for(int i = 0; i < 6; i++)
       {
         Vector3Int _temp = GetNextPos(_tilepos, i);
-        if (_pool.Contains(_tilemap[_temp.x, _temp.y])) { _targetbool = true; return; }
+        if (_pool.Contains(_checktilemap[_temp.x, _temp.y])) return true;
       }
+      return false;
     }
-  }//월드 기준 좌표 하나 받아서 그 주위 1칸 강,숲,언덕,산,바다 여부 반환
+  }//월드 기준 타일 1개 좌표 하나 받아서 그 주위 1칸 강,숲,언덕,산,바다 여부 반환
 }
 public class RiverDirInfo
 {
