@@ -1,15 +1,11 @@
 {
   "0": {
     "ID": "trait_lehoo",
-    "Name": "특성테스트",
-    "Description": "테스트텍스트",
     "Type": 0,
     "Info": 1
   },
   "1": {
     "ID": "trait_beasthunter",
-    "Name": "괴물 사냥꾼",
-    "Description": "괴물을잡았다개꿀~",
     "Type": "2@8",
     "Info": "2@2"
   }

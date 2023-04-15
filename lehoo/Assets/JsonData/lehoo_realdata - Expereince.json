@@ -2,88 +2,66 @@
   "0": {
     "ID": "exp_ddahuhuk",
     "GoodOrBad": 1,
-    "Name": "따흐흑",
-    "Description": "구와악",
     "Type": 14,
     "Info": 2
   },
   "1": {
     "ID": "exp_test0",
     "GoodOrBad": 0,
-    "Name": "테스트0",
-    "Description": "테스트0번텍스트",
     "Type": 1,
     "Info": 0
   },
   "2": {
     "ID": "exp_test1",
     "GoodOrBad": 0,
-    "Name": "테스트1",
-    "Description": "테스트1번텍스트",
     "Type": 2,
     "Info": 0
   },
   "3": {
     "ID": "exp_hisoka",
     "GoodOrBad": 0,
-    "Name": "살아남은 나의 승리네",
-    "Description": "추 하 다 !",
     "Type": 3,
     "Info": 1
   },
   "4": {
     "ID": "exp_changed",
     "GoodOrBad": 0,
-    "Name": "몬가 몬가임",
-    "Description": "머임??",
     "Type": 4,
     "Info": 1
   },
   "5": {
     "ID": "exp_monsterstory",
     "GoodOrBad": 0,
-    "Name": "괴물이야기",
-    "Description": "설명",
     "Type": 12,
     "Info": 1
   },
   "6": {
     "ID": "exp_polyphagy",
     "GoodOrBad": 0,
-    "Name": "잡식괴물",
-    "Description": "설명",
     "Type": 15,
     "Info": 1
   },
   "7": {
     "ID": "exp_spookymonster",
     "GoodOrBad": 1,
-    "Name": "무서운괴물",
-    "Description": "설명",
     "Type": 16,
     "Info": -1
   },
   "8": {
     "ID": "exp_goodhunter",
     "GoodOrBad": 0,
-    "Name": "패기넘치는사냥꾼",
-    "Description": "설명",
     "Type": 9,
     "Info": 1
   },
   "9": {
     "ID": "exp_beastphycology",
     "GoodOrBad": 0,
-    "Name": "짐승심리학",
-    "Description": "설명",
     "Type": 6,
     "Info": 1
   },
   "10": {
     "ID": "exp_beastweekpoint",
     "GoodOrBad": 0,
-    "Name": "짐승약점분석가",
-    "Description": "설",
     "Type": 8,
     "Info": 1
   }

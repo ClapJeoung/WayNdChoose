@@ -2,20 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TraitType {
-  Conversation, Forece, Survive, Intelligence
-    , Speech, Threat, Deception, logic, Martialarts, Bow, Somatology, Survivable, Biology, Knowledge,
-  HPLoss, HPRegen,
-  SNLoss, SNGen,
-  MoneyLoss, MoneyGen
-}
 public class Trait
 {
   public string ID = "";
   public string Name = "";
   public string Description = "";
-  public TraitType[] Type;
-  public int[] Info;
+    public Dictionary<EffectType, int> Effects=new Dictionary<EffectType, int>();
 }
 public class TraitJsonData
 {
@@ -30,14 +22,19 @@ public class TraitJsonData
     _mytrait.ID = ID;
     _mytrait.Name = Name;
     _mytrait.Description = Description;
+
     string[] _temp = Type.Split('@');
-    _mytrait.Type=new TraitType[_temp.Length];
-    for (int i = 0; i < _temp.Length; i++) _mytrait.Type[i] =(TraitType)int.Parse(_temp[i]);
+        EffectType[] _type=new EffectType[_temp.Length];
+    for (int i = 0; i < _temp.Length; i++) _type[i] =(EffectType)int.Parse(_temp[i]);
 
     _temp = Info.Split('@');
-    _mytrait.Info = new int[_temp.Length];
-    for (int i = 0; i < _temp.Length; i++) _mytrait.Info[i] =int.Parse(_temp[i]);
+    int[] _info = new int[_temp.Length];
+    for (int i = 0; i < _temp.Length; i++) _info[i] =int.Parse(_temp[i]);
 
+        for(int i = 0; i < _temp.Length; i++)
+        {
+            _mytrait.Effects.Add(_type[i], _info[i]);
+        }
     return _mytrait;
   }
 }

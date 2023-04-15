@@ -286,6 +286,7 @@ public class EventHolder
     switch (_data.Sequence)
     {
       case 0://기
+                _quest.QuestID = _data.QuestId;
         _quest.QuestName = _data.Name;
         _quest.StartDialogue = _data.Description;
         _quest.PreDescription = _data.PreDescription;
@@ -422,18 +423,21 @@ public class EventHolder
           break;
         case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
           int _targetlevel = 0;
+                    ThemeType _type = ThemeType.Conversation; ;
           switch (_follow.FollowTarget)
           {
             case "0"://대화 테마
-              _targetlevel = GameManager.Instance.MyGameData.ConversationLevel;break;
+                            _type = ThemeType.Conversation;  break;
             case "1"://무력 테마
-              _targetlevel = GameManager.Instance.MyGameData.ForceLevel; break;
+ _type = ThemeType.Force;break;
             case "2"://생존 테마
-              _targetlevel = GameManager.Instance.MyGameData.NatureLevel; break;
+                            _type = ThemeType.Nature;break;
             case "3"://학식 테마
-              _targetlevel = GameManager.Instance.MyGameData.IntelligenceLevel; break;
+                            _type = ThemeType.Intelligence;break;
           }
-          if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
+                    _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type) + GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_type) +
+                                GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
+                    if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
           break;
         case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
           SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
@@ -833,7 +837,7 @@ public enum QuestSequence { Start,Rising,Climax,Falling}
 #endregion
 public class EventDataDefulat
 {
-  public string ID = "";
+  public string ID = "";        //계절 별로 분화된 ID(ID_(계절))
   public string IllustID = "";  //안씀
   public Sprite Illust
   {
@@ -866,6 +870,16 @@ public class EventDataDefulat
 
   public int[] SubReward_target;
 }
+public class SelectionData
+{
+    public SelectionTargetType ThisSelectionType = SelectionTargetType.None;
+    public string SubDescription = "";
+    public PayTarget SelectionPayTarget = PayTarget.HP;
+    public ThemeType SelectionCheckTheme = ThemeType.Conversation;
+    public SkillName SelectionCheckSkill = SkillName.Speech;
+}
+public enum SelectionTargetType { None, Pay, Check_Theme, Check_Skill, Exp, Skill, Tendency }//선택지 개별 내용
+public enum PayTarget { HP,Sanity,Gold}
 public class EventData:EventDataDefulat
 {}//기본 이벤트
 public class FollowEventData:EventDataDefulat
@@ -884,9 +898,12 @@ public class QuestEventData : EventDataDefulat
 }
 public class QuestHolder
 {
+    public string QuestID = "";     //퀘스트 ID
   public string QuestName = "";     //퀘스트의 이름
+
   public QuestSequence CurrentSequence=QuestSequence.Start; //현재 퀘스트 단계
   public int CurrentClimaxIndex = 0;  //현재 퀘스트 단계가 Climax일 경우 그 이벤트의 진행 순서
+
   public string StartDialogue = "";   //게임 내부에서 퀘스트 조우할 시 나오는 텍스트
   public string PreDescription = "";  //시작 화면 미리보기 텍스트
   public string StartIllustID = "";   //대표 일러스트
@@ -898,28 +915,21 @@ public class QuestHolder
 public class EventJsonData
 {
   public string ID = "";              //ID
-  public string IllustID = "";        //일러스트 ID
-  public string Name = "";              //이름
-  public string PreDescription = "";    //미리보기 텍스트
   public int Settlement = 0;          //0,1,2,3
   public int Place = 0;               //0,1,2,3,4
-  public int Place_Level = 0;          //0(전부) 1(낮) 2(중) 3(높)
+    public int TileCondition = 0;       //0: 조건없음  1: 환경  2: 레벨
+    public int TileCondition_info = 0;  //환경 : 숲,강,언덕,산,바다      레벨: 0,1,2
   public int Season = 0;              //전역,봄,여름,가을,겨울,사계절
-  public string Description = "";       //설명 텍스트
-  public int Environment_Type = 0;         //전역,숲,강,언덕,산,바다
 
   public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
-  public string Selection_Description = ""; //선택지 별 텍스트
   public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
   public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
                                             //2:대화,무력,생존,정신
                                             //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
 
-  public string Failure_Description = "";   //선택지 별 실패 텍스트
   public string Failure_Penalty;            //없음,손실,경험
   public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
 
-  public string Success_Description = "";   //선택지 별 성공 텍스트
   public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
   public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
 
@@ -933,15 +943,9 @@ public class FollowEventJsonData
   public int FollowTargetSuccess = 0;            //(이벤트) 성공/실패
   public int FollowTendency = 0;          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
 
-  public string IllustID = "";
-  public string Name = "";              //이름
-  public string PreDescription = "";    //미리보기 텍스트
-  public string Description = "";       //설명 텍스트
   public int Season = 0;              //전역,봄,여름,가을,겨울
   public int Settlement = 0;          //0,1,2,3
   public int Place = 0;               //0,1,2,3,4
-  public int Place_Level = 0;          //0(전부) 1(낮) 2(중) 3(높)
-  public int Environment_Type = 0;         //전역,숲,강,언덕,산,바다
 
   public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
   public string Selection_Description = ""; //선택지 별 텍스트
@@ -949,12 +953,12 @@ public class FollowEventJsonData
   public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
                                             //2:대화,무력,생존,정신
                                             //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
+    public int TileCondition = 0;       //0: 조건없음  1: 환경  2: 레벨
+    public int TileCondition_info = 0;  //환경 : 숲,강,언덕,산,바다      레벨: 0,1,2
 
-  public string Failure_Description = "";   //선택지 별 실패 텍스트
   public string Failure_Penalty;            //없음,손실,경험
   public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
 
-  public string Success_Description = "";   //선택지 별 성공 텍스트
   public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
   public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
 
@@ -968,24 +972,19 @@ public class QuestEventDataJson
 
   public string IllustID = "";
   public string Name = "";              //이름
-  public string PreDescription = "";    //미리보기 텍스트
-  public string Description = "";       //설명
   public int Settlement = 0;          //0(아무 정착지),1,2,3,4(외부)
   public int Place = 0;               //0,1,2,3,4
   public int Environment_Type = 0;    //0:전역 1:숲 2:강 3:언덕 4:산 5:바다
 
   public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
-  public string Selection_Description = ""; //선택지 별 텍스트
   public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
   public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
                                             //2:대화,무력,생존,정신
                                             //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
 
-  public string Failure_Description = "";   //선택지 별 실패 텍스트
   public string Failure_Penalty;            //없음,손실,경험
   public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
 
-  public string Success_Description = "";   //선택지 별 성공 텍스트
   public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
   public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
 

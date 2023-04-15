@@ -17,7 +17,7 @@ public class UI_map : UI_default
   [SerializeField] private maptext MapCreater = null;
   private Dictionary<string,SettlementIcon> SettleIcons = new Dictionary<string,SettlementIcon>();
   private Settlement SelectedSettle = null;
-  private bool CanMove = false;
+  public bool CanMove = false;
   public void AddSettleIcon(string _name, SettlementIcon _icon) => SettleIcons.Add(_name, _icon);
   public override void OpenUI()
   {

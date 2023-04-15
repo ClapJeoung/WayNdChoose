@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
     else Destroy(gameObject);
   }
   [SerializeField] private UI_dialogue MyDialogue = null;
-  [SerializeField] private UI_map MyMap = null;
+  public UI_map MyMap = null;
   public bool IsWorking = false;
   public float UIActionDuration = 0.5f;
   public float UIMoveDegree = 0.3f;

@@ -9,7 +9,7 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> TownSprites=new List<Sprite>();                 //마을 일러스트
   public List<Sprite> CitySprites=new List<Sprite>();                 //도시 일러스트
   public List<Sprite> CastleSprites=new List<Sprite>();               //성채 일러스트
-
+    [Space(10)]
   public List<Sprite> SkillSprites_Speech = new List<Sprite>();       
   public List<Sprite> SkillSprites_Threat = new List<Sprite>();
   public List<Sprite> SkillSprites_Deception = new List<Sprite>();
@@ -20,14 +20,22 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> SkillSprites_Survivable = new List<Sprite>();
   public List<Sprite> SkillSprites_Biology = new List<Sprite>();
   public List<Sprite> SkillSprites_Knowledge = new List<Sprite>();
-
-  public List<Sprite> TendencySprites=new List<Sprite>();
-
-  public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
+    [Space(10)]
+    public List<Sprite> TendencySprites=new List<Sprite>();
+    public Sprite TendencyIcon_Rational = null, TendencyIcon_Force = null, TendencyIcon_Mental = null, TendencyIcon_Material = null;
+    [Space(10)]
+    public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
   public List<Sprite> TraitIllust = new List<Sprite>();                //모든 특성 일러스트
   public Sprite DefaultSprite = null;                                 //빈 일러스트
-  public Sprite GetTownSprite(int _name)
+    [Space(10)]
+    public Sprite SpringSprite = null;
+    public Sprite SummerSprite = null;
+    public Sprite FallSprite = null;
+    public Sprite WinterSprite = null;
+    [Space(10)]
+    public Sprite NothingQuestIllust = null;
+    public Sprite GetTownSprite(string _name)
   {
     Sprite _targetsprite = DefaultSprite;
     foreach (Sprite _spr in TownSprites)
@@ -40,7 +48,7 @@ public class ImageHolder : ScriptableObject
     }
     return _targetsprite;
   }//마을 이름에 해당하는 일러스트 가져오기
-  public Sprite GetCitySprite(int _name)
+  public Sprite GetCitySprite(string _name)
   {
     Sprite _targetsprite = DefaultSprite;
     foreach (Sprite _spr in CitySprites)
@@ -53,7 +61,7 @@ public class ImageHolder : ScriptableObject
     }
     return _targetsprite;
   }//도시 이름에 해당하는 일러스트 가져오기
-  public Sprite GetCastleSprite(int _name)
+  public Sprite GetCastleSprite(string _name)
   {
     Sprite _targetsprite = DefaultSprite;
     foreach (Sprite _spr in CastleSprites)
@@ -133,4 +141,15 @@ public class ImageHolder : ScriptableObject
     }
     return _targetsprite;
   }//ID로 특성 일러스트 가져오기
+    public Sprite GetTendencyIcon(TendencyType _type)
+    {
+        switch (_type)
+        {
+            case TendencyType.Rational:return TendencyIcon_Rational;
+            case TendencyType.Physical:return TendencyIcon_Force;
+            case TendencyType.Mental:return TendencyIcon_Force;
+            case TendencyType.Material:return TendencyIcon_Material;
+            default:return DefaultSprite;
+        }
+    }
 }

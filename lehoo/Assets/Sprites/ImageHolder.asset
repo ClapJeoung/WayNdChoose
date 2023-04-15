@@ -30,3 +30,8 @@ MonoBehaviour:
   EXPIllust: []
   TraitIllust: []
   DefaultSprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  SpringSprite: {fileID: 21300000, guid: 2a47dfcfbb78c4b4a914bcda048c0462, type: 3}
+  SummerSprite: {fileID: 21300000, guid: 7f15263c0c7ccc34b917bec7654b0f4b, type: 3}
+  FallSprite: {fileID: 21300000, guid: be6540b91c14e2c408ffded789d5eb50, type: 3}
+  WinterSprite: {fileID: 21300000, guid: e2063c92facfa624a91e5a57175b716b, type: 3}
+  NothingQuestIllust: {fileID: 0}

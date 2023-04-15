@@ -26,10 +26,17 @@ public class GameManager : MonoBehaviour
   [SerializeField] private TextAsset QuestEventData = null;   //퀘스트 이벤트 Json
   [SerializeField] private TextAsset EXPData = null;    //경험 Json
   [SerializeField] private TextAsset TraitData = null;  //특성 Json
+    [SerializeField] private TextAsset TextData = null;
   public EventHolder EventHolder = new EventHolder();                               //이벤트 저장할 홀더
   public Dictionary<string, Experience> ExpDic = new Dictionary<string, Experience>();  //경험 딕셔너리
   public Dictionary<string, Trait> TraitsDic = new Dictionary<string, Trait>();         //특성 딕셔너리
-
+    public Dictionary<string, TextData> TextDic = new Dictionary<string, TextData>();   //각종 텍스트 딕셔터리
+    public TextData NullText = null;
+    public TextData GetTextData(string _id)
+    {
+        if (!TextDic.ContainsKey(_id)) return NullText;
+        return TextDic[_id];
+    }
   public void LoadData()
   {
     Dictionary<string, EventJsonData> _eventjson = new Dictionary<string, EventJsonData>();
@@ -63,7 +70,9 @@ public class GameManager : MonoBehaviour
       Trait _trait=_data.Value.ReturnTraitClass();
       TraitsDic.Add(_data.Key, _trait);
     }
-    //특성 Json -> TraitDic
+        //특성 Json -> TraitDic
+
+        TextDic = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
     //일단 데이터 불러오기는 나중에 만들것
     MyGameData = new GameData();
 
@@ -73,6 +82,12 @@ public class GameManager : MonoBehaviour
 
   private void Awake()
   {
+        NullText = new TextData();
+        NullText.Name = "NullName";
+        NullText.Description = "NullDescription";
+        NullText.SelectionDescription = "NullSelection@NullSelection";
+        NullText.FailDescription = "NullFail";
+        NullText.SuccessDescription = "NullSuccess";
     if(instance == null)
     {
       instance = this;

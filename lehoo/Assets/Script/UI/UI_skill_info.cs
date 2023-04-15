@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 public class UI_skill_info : UI_default
 {
-  private SkillType CurrentSkillType;
+  private ThemeType CurrentThemeType;
   private Skill[] CurrentSkills;
   public UI_Skill SkillUI = null;
   public UI_skill_info_info SkillInfoInfoUI = null;
@@ -19,42 +19,42 @@ public class UI_skill_info : UI_default
   //레벨 이미지?
   public void OpenSkillInfo_Conv()
   {
-    OpenSkillInfo(SkillType.Conversation);
+    OpenSkillInfo(ThemeType.Conversation);
   }
   public void OpenSkillInfo_Forc()
   {
-    OpenSkillInfo(SkillType.Force);
+    OpenSkillInfo(ThemeType.Force);
   }
   public void OpenSkillInfo_Natu()
   {
-    OpenSkillInfo(SkillType.Nature);
+    OpenSkillInfo(ThemeType.Nature);
   }
   public void OpenSkillInfo_Intel()
   {
-    OpenSkillInfo(SkillType.Intelligence);
+    OpenSkillInfo(ThemeType.Intelligence);
   }
-  public void OpenSkillInfo(SkillType _type)
+  public void OpenSkillInfo(ThemeType _type)
   {
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen) { CloseUI(); return; }
     transform.SetSiblingIndex(SkillUI.transform.GetSiblingIndex() + 1);
-    CurrentSkillType = _type;
+    CurrentThemeType = _type;
     IsOpen = true;
     UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);
     CurrentSkills = new Skill[4];
     Dictionary<SkillName, Skill> _skilldic = GameManager.Instance.MyGameData.Skills;
-    switch (CurrentSkillType)
+    switch (CurrentThemeType)
     {
-      case SkillType.Conversation:
+      case ThemeType.Conversation:
         CurrentSkills = new Skill[] { _skilldic[SkillName.Speech], _skilldic[SkillName.Threat], _skilldic[SkillName.Deception], _skilldic[SkillName.Logic] };
         break;
-      case SkillType.Force:
+      case ThemeType.Force:
         CurrentSkills = new Skill[] { _skilldic[SkillName.Martialarts], _skilldic[SkillName.Threat], _skilldic[SkillName.Bow], _skilldic[SkillName.Somatology] };
         break;
-      case SkillType.Nature:
+      case ThemeType.Nature:
         CurrentSkills = new Skill[] { _skilldic[SkillName.Survivable], _skilldic[SkillName.Deception], _skilldic[SkillName.Bow], _skilldic[SkillName.Biology] };
         break;
-      case SkillType.Intelligence:
+      case ThemeType.Intelligence:
         CurrentSkills = new Skill[] { _skilldic[SkillName.Knowledge], _skilldic[SkillName.Logic], _skilldic[SkillName.Somatology], _skilldic[SkillName.Biology] };
         break;
     }
@@ -65,19 +65,19 @@ public class UI_skill_info : UI_default
   {
     for(int i = 0; i < skills.Length; i++)
     {
-      SkillType _a=skills[i].Type_A,_b=skills[i].Type_B;
-      if (_b == CurrentSkillType) { var _temp = _a;_a=_b; _b=_temp; }
+      ThemeType _a=skills[i].Type_A,_b=skills[i].Type_B;
+      if (_b == CurrentThemeType) { var _temp = _a;_a=_b; _b=_temp; }
       Icon_A[i].sprite=GetSkillSprite(_a);
       Icon_B[i].sprite=GetSkillSprite(_b);
       //이름 넣기
       //퀄리티 넣기
     }
   }
-  private Sprite GetSkillSprite(SkillType _type)
+  private Sprite GetSkillSprite(ThemeType _type)
   {
-    if (_type == SkillType.Conversation) return Sprite_Conversation;
-    else if (_type == SkillType.Force) return Sprite_Force;
-    else if (_type == SkillType.Intelligence) return Sprite_Intelligence;
+    if (_type == ThemeType.Conversation) return Sprite_Conversation;
+    else if (_type == ThemeType.Force) return Sprite_Force;
+    else if (_type == ThemeType.Intelligence) return Sprite_Intelligence;
     else return Sprite_Nature;
   }
   public void OpenSkillInfoInfo(int index)

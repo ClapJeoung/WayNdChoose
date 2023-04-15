@@ -1,0 +1,731 @@
+{
+  "0": {
+    "ID": "spring",
+    "Name": "봄",
+    "Description": "봄 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "1": {
+    "ID": "summer",
+    "Name": "여름",
+    "Description": "여름 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "2": {
+    "ID": "fall",
+    "Name": "가을",
+    "Description": "가을 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "3": {
+    "ID": "winter",
+    "Name": "겨울",
+    "Description": "겨울 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "4": {
+    "ID": "turndescription",
+    "Name": "턴이 어떻게 흘러가는지 설명",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "5": {
+    "ID": "movedescription",
+    "Name": null,
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": "진행 중인 이벤트가 있습니다!",
+    "SuccessDescription": "다른 정착지로 이동 가능"
+  },
+  "6": {
+    "ID": "donthaveanyquest",
+    "Name": "현재 퀘스트가 없습니다!",
+    "Description": "지도를 이동해 퀘스트를 찾으세요.",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "7": {
+    "ID": "hp",
+    "Name": "체력",
+    "Description": "체력 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": "체력 소보",
+    "SuccessDescription": "체력 회복"
+  },
+  "8": {
+    "ID": "sanity",
+    "Name": "정신력",
+    "Description": "정신력 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": "정신력 소모",
+    "SuccessDescription": "정신력 회복"
+  },
+  "9": {
+    "ID": "gold",
+    "Name": "골드",
+    "Description": "골드 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": "골드 소모",
+    "SuccessDescription": "골드 획득"
+  },
+  "10": {
+    "ID": "conversation",
+    "Name": "대화",
+    "Description": "대화 테마 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "11": {
+    "ID": "force",
+    "Name": "무력",
+    "Description": "무력 테마 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "12": {
+    "ID": "nature",
+    "Name": "자연",
+    "Description": "자연 테마 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "13": {
+    "ID": "intelligence",
+    "Name": "지성",
+    "Description": "지성 테마 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "14": {
+    "ID": "speech",
+    "Name": "화술",
+    "Description": "화술 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "15": {
+    "ID": "threat",
+    "Name": "협박",
+    "Description": "협박 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "16": {
+    "ID": "deception",
+    "Name": "기만",
+    "Description": "기만 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "17": {
+    "ID": "logic",
+    "Name": "논리",
+    "Description": "논리 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "18": {
+    "ID": "martialarts",
+    "Name": "격투술",
+    "Description": "격투술 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "19": {
+    "ID": "bow",
+    "Name": "궁술",
+    "Description": "궁술 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "20": {
+    "ID": "somatology",
+    "Name": "인체학",
+    "Description": "인체학 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "21": {
+    "ID": "survivable",
+    "Name": "생존기술",
+    "Description": "생존기술 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "22": {
+    "ID": "biology",
+    "Name": "생물학",
+    "Description": "생물학 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "23": {
+    "ID": "knowledge",
+    "Name": "학식",
+    "Description": "학식 기술 설명",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "24": {
+    "ID": "byskill",
+    "Name": "기술에서",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "25": {
+    "ID": "bytrait",
+    "Name": "특성에서",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "26": {
+    "ID": "byexp",
+    "Name": "경험에서",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "27": {
+    "ID": "bytendency",
+    "Name": "성향에서",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "28": {
+    "ID": "durationscript",
+    "Name": "턴 후 망각",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "29": {
+    "ID": "rational",
+    "Name": "이성적",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "30": {
+    "ID": "physical",
+    "Name": "육체적",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "31": {
+    "ID": "mental",
+    "Name": "정신적",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "32": {
+    "ID": "material",
+    "Name": "물질적",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "33": {
+    "ID": "increase",
+    "Name": "증가",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "34": {
+    "ID": "decrease",
+    "Name": "감소",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "35": {
+    "ID": "rationalselection",
+    "Name": "이성 선택지",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "36": {
+    "ID": "physicalselection",
+    "Name": "육체 선택지",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "37": {
+    "ID": "mentalselection",
+    "Name": "정신 선택지",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "38": {
+    "ID": "materialselection",
+    "Name": "물질 선택지",
+    "Description": null,
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "39": {
+    "ID": "fevent_lehoo",
+    "Name": "마을거주지연계이벤트",
+    "Description": "마을거주지연계이벤트에요",
+    "SelectionDescription": "선택지내용은없어요",
+    "SelectionSubDescription": "진짜없어요",
+    "FailDescription": null,
+    "SuccessDescription": "힘들었지만 해냈네요"
+  },
+  "40": {
+    "ID": "ev_townrestest0_spring",
+    "Name": "마을거주지봄",
+    "Description": "뚜르보작",
+    "SelectionDescription": "선택지에요",
+    "SelectionSubDescription": "부연설명입니다",
+    "FailDescription": null,
+    "SuccessDescription": "우왓,,"
+  },
+  "41": {
+    "ID": "ev_townrestest0_summer",
+    "Name": "마을거주지여름",
+    "Description": "뚜르보작",
+    "SelectionDescription": "선택지에요",
+    "SelectionSubDescription": "부연설명입니다",
+    "FailDescription": null,
+    "SuccessDescription": "우왓,,"
+  },
+  "42": {
+    "ID": "ev_townrestest0_fall",
+    "Name": "마을거주지가을",
+    "Description": "뚜르보작",
+    "SelectionDescription": "선택지에요",
+    "SelectionSubDescription": "부연설명입니다",
+    "FailDescription": null,
+    "SuccessDescription": "우왓,,"
+  },
+  "43": {
+    "ID": "ev_townrestest0_winter",
+    "Name": "마을거주지겨울",
+    "Description": "뚜르보작",
+    "SelectionDescription": "선택지에요",
+    "SelectionSubDescription": "부연설명입니다",
+    "FailDescription": null,
+    "SuccessDescription": "우왓,,"
+  },
+  "44": {
+    "ID": "ev_townmarkettest0",
+    "Name": "마을시장",
+    "Description": "마을시장",
+    "SelectionDescription": "이성선택지@육체선택지",
+    "SelectionSubDescription": "체력팔아요@정신력팔아요",
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "45": {
+    "ID": "ev_towntempletest0",
+    "Name": "마을사원",
+    "Description": "마을사원",
+    "SelectionDescription": "정신선택지@물질선택지",
+    "SelectionSubDescription": "잡학검사@격투검사",
+    "FailDescription": "잡학실패띠@끄악ㅡ! 당했다ㅡ!",
+    "SuccessDescription": "척척박사@적장 물리쳤다!"
+  },
+  "46": {
+    "ID": "ev_cityrestest0",
+    "Name": "도시거주지",
+    "Description": "도시거주지",
+    "SelectionDescription": "생존테마검사",
+    "SelectionSubDescription": "생존테마를검사해요",
+    "FailDescription": "따흐흑",
+    "SuccessDescription": "살아남은 나의 승리네"
+  },
+  "47": {
+    "ID": "ev_citymarkettest0",
+    "Name": "도시시장",
+    "Description": "도시시장",
+    "SelectionDescription": "조건없음",
+    "SelectionSubDescription": "그냥진행해요",
+    "FailDescription": null,
+    "SuccessDescription": "공짜특성게또다제~"
+  },
+  "48": {
+    "ID": "ev_citytempletest0",
+    "Name": "도시사원",
+    "Description": "도시사원",
+    "SelectionDescription": "뭐라도 바꿔보겠습니다 눈물의 쇼",
+    "SelectionSubDescription": "구오오옷",
+    "FailDescription": null,
+    "SuccessDescription": "몬가...몬가 있음..."
+  },
+  "49": {
+    "ID": "ev_citylibrarytest0",
+    "Name": "도시도서관",
+    "Description": "도시도서관",
+    "SelectionDescription": "이성@육체",
+    "SelectionSubDescription": "협박체크@격투체크",
+    "FailDescription": "협박실패요@격투실패요",
+    "SuccessDescription": "협박에 성공했습니다.\\n쓰레기 같으니.@사람을 두들겨 팼습니다.\\n시원하네요!"
+  },
+  "50": {
+    "ID": "ev_castlerestest0",
+    "Name": "성채거주지",
+    "Description": "성채거주지",
+    "SelectionDescription": "내용없어요",
+    "SelectionSubDescription": "아무내용없는",
+    "FailDescription": null,
+    "SuccessDescription": "공짜성공"
+  },
+  "51": {
+    "ID": "ev_castlemarkettest0",
+    "Name": "성채시장",
+    "Description": "성채시장",
+    "SelectionDescription": "진짜내용없어요",
+    "SelectionSubDescription": "아무조건없는",
+    "FailDescription": null,
+    "SuccessDescription": "세세하게다른텍스트"
+  },
+  "52": {
+    "ID": "ev_castletempletest0",
+    "Name": "성채사원",
+    "Description": "성채사원",
+    "SelectionDescription": "쓸게없네",
+    "SelectionSubDescription": "공짜이벤트",
+    "FailDescription": null,
+    "SuccessDescription": "뭐라도다른텍스트"
+  },
+  "53": {
+    "ID": "ev_castletheatertest0",
+    "Name": "성채극장",
+    "Description": "성채극장",
+    "SelectionDescription": "빈칸은좀그렇고",
+    "SelectionSubDescription": "모두이렇진않아요",
+    "FailDescription": null,
+    "SuccessDescription": "아무튼성공함"
+  },
+  "54": {
+    "ID": "ev_castlearcademytest0",
+    "Name": "성채아카데미",
+    "Description": "성채아카데미",
+    "SelectionDescription": "뚜르보작",
+    "SelectionSubDescription": "감자가 보이는가?",
+    "FailDescription": null,
+    "SuccessDescription": "당신은 최고에요"
+  },
+  "55": {
+    "ID": "ev_outlandtest0",
+    "Name": "야외 봄",
+    "Description": "야외 봄",
+    "SelectionDescription": "이건봄에만나옴",
+    "SelectionSubDescription": "감자만세",
+    "FailDescription": null,
+    "SuccessDescription": "당신의 힘으로 해냈어요"
+  },
+  "56": {
+    "ID": "fevent_lehoo",
+    "Name": "야외전역",
+    "Description": "야외전역",
+    "SelectionDescription": "사계절 다 나오네요",
+    "SelectionSubDescription": "감자만세만만세",
+    "FailDescription": null,
+    "SuccessDescription": "정말 대단해"
+  },
+  "57": {
+    "ID": "exp_ddahuhuk",
+    "Name": "따흐흑",
+    "Description": "뭐라도실패했나보네요",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "58": {
+    "ID": "exp_test0",
+    "Name": "연습용경험",
+    "Description": "무슨내용이려나",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "59": {
+    "ID": "exp_test1",
+    "Name": "연슷ㅂ용경험2",
+    "Description": "무슨무슨내용일까요",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "60": {
+    "ID": "exp_hisoka",
+    "Name": "살아남은 나의 승리네",
+    "Description": "강 하 다 !",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "61": {
+    "ID": "exp_changed",
+    "Name": "뭐라도바뀐듯",
+    "Description": "동일할 수록 그 차이는 더 커진답니다",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "62": {
+    "ID": "exp_monsterstory",
+    "Name": "괴물이야기를들었네요",
+    "Description": "꺄아악~",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "63": {
+    "ID": "exp_polyphagy",
+    "Name": "이거도어짜피임시임",
+    "Description": "ㄹㅇㅋㅋ",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "64": {
+    "ID": "exp_spookymonster",
+    "Name": "귀찮으니까대충때우기",
+    "Description": "부두교에 너무 심취하지는 말게",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "65": {
+    "ID": "exp_goodhunter",
+    "Name": "감자감자감감자",
+    "Description": "감감자감자",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "66": {
+    "ID": "exp_beastphycology",
+    "Name": "감자는하늘을날아요",
+    "Description": "내눈으로봤는데",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "67": {
+    "ID": "exp_beastweekpoint",
+    "Name": "감자는엔트로피를돌립니다",
+    "Description": "무한감자궤도완성",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "68": {
+    "ID": "ev_findingmonster_start",
+    "Name": "괴물찾기시작",
+    "Description": "선택지없고내용밖에없음",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "69": {
+    "ID": "ev_findingmonster_askingmonster",
+    "Name": "괴물을찾아봐요",
+    "Description": "텍스트가 너무 부실해도 어쩔수 없어요",
+    "SelectionDescription": "물어보기",
+    "SelectionSubDescription": "간단한물어보기검사",
+    "FailDescription": "물어보는것도못하네요\\n그럴수도있어요",
+    "SuccessDescription": "성공하고어쩌구저쩌구"
+  },
+  "70": {
+    "ID": "ev_findingmonster_monsterstory",
+    "Name": "괴물이야기탐문",
+    "Description": "논리검사랑생물검사",
+    "SelectionDescription": "논리검사@생물검사",
+    "SelectionSubDescription": "논리검사하기@생물검사하기",
+    "FailDescription": "논리검사실패@생물검사실패",
+    "SuccessDescription": "어휴쓰기귀찮다@으휴쓰기귀찮다"
+  },
+  "71": {
+    "ID": "ev_findingmonster_howtokill",
+    "Name": "괴물죽이는법배우기",
+    "Description": "돈내놔",
+    "SelectionDescription": "돈을내야해요",
+    "SelectionSubDescription": "얼마면될까",
+    "FailDescription": null,
+    "SuccessDescription": "거절하기엔 너무나 많은 돈이었다"
+  },
+  "72": {
+    "ID": "ev_findingmonster_giantfootpring",
+    "Name": "발자국이다",
+    "Description": "생물체크를합시다",
+    "SelectionDescription": "생물체크하기",
+    "SelectionSubDescription": "생물체크수치",
+    "FailDescription": "모르나요?",
+    "SuccessDescription": "이거지~"
+  },
+  "73": {
+    "ID": "ev_findingmonster_peasant",
+    "Name": "슬픈농민",
+    "Description": "지성체크를할시간",
+    "SelectionDescription": "이게뭘까요",
+    "SelectionSubDescription": "지성검사",
+    "FailDescription": "못알아봐도어쩔수없죠",
+    "SuccessDescription": "모를수가없다!"
+  },
+  "74": {
+    "ID": "ev_findingmonster_delivery",
+    "Name": "시체가떠내려오네",
+    "Description": "그냥선택만하면돼요",
+    "SelectionDescription": "정신선택지@물질선택지",
+    "SelectionSubDescription": "조건없음@진짜조건없음",
+    "FailDescription": null,
+    "SuccessDescription": "정신선택지성공~@물질선택지성공~"
+  },
+  "75": {
+    "ID": "ev_findingmonster_wanted",
+    "Name": "현상수배시작",
+    "Description": "여기선 크게 나가야할때",
+    "SelectionDescription": "의의있소!",
+    "SelectionSubDescription": "대화테마검사",
+    "FailDescription": "혀라도 깨물었나요?",
+    "SuccessDescription": "동해물과백두산이마르고닳도록하느님이보우하사우리나라만세무궁화삼천리화려강산대한사람대한으로길이보전하세"
+  },
+  "76": {
+    "ID": "ev_findingmonster_startfinding",
+    "Name": "추적시작",
+    "Description": "이성육체둘다조건없어요",
+    "SelectionDescription": "이성무조건@육체무조건",
+    "SelectionSubDescription": "진짜별거없음~@진짜진짜내용없음",
+    "FailDescription": null,
+    "SuccessDescription": "아무튼성공했내요@난 믿고있었다구"
+  },
+  "77": {
+    "ID": "ev_findingmonster_cave",
+    "Name": "동굴발견",
+    "Description": "정신물질둘다조건없음",
+    "SelectionDescription": "뼈뒤적이기였나@흔적살피는거였나",
+    "SelectionSubDescription": "그냥하면돼요@쓰기너무귀찮네",
+    "FailDescription": null,
+    "SuccessDescription": "자세한내용은생략합니다@성공했으면 됐죠"
+  },
+  "78": {
+    "ID": "ev_findingmonster_monster",
+    "Name": "괴물찾았띠",
+    "Description": "퀘스트마지막이네요",
+    "SelectionDescription": "죽어라 괴물아!",
+    "SelectionSubDescription": "죽어라괴물아가 여기 들어가야 할 듯 하지만 일단 그냥 넘어갈게요",
+    "FailDescription": "후게ㅡ엑!",
+    "SuccessDescription": "게임을 완료하거나 계속 이어할수 있어요"
+  },
+  "79": {
+    "ID": "trait_lehoo",
+    "Name": "특성이름테스트",
+    "Description": "특성설명테스트",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  },
+  "80": {
+    "ID": "trait_beasthunter",
+    "Name": "괴물사냥꾼",
+    "Description": "괴물을 죽이려는 자 자신이 괴물이 되지 않도록 주의해야 한다",
+    "SelectionDescription": null,
+    "SelectionSubDescription": null,
+    "FailDescription": null,
+    "SuccessDescription": null
+  }
+}
