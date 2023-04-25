@@ -10,14 +10,25 @@ public class UI_default : MonoBehaviour
   public UIMoveDir MyDir = UIMoveDir.Horizontal;
   public virtual void OpenUI()
   {
-    if (UIManager.Instance.IsWorking) return;
     if (IsOpen) { CloseUI();IsOpen = false; return; }
     IsOpen = true;
     UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir,true);
   }
+  public virtual void OpenUI(bool _stopwhileother)
+  {
+    if (_stopwhileother && UIManager.Instance.IsWorking) return;
+    if (IsOpen) { CloseUI(); IsOpen = false; return; }
+    IsOpen = true;
+    UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true);
+  }
   public virtual void CloseUI()
   {
-    if (UIManager.Instance.IsWorking) return;
+    UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir);
+    IsOpen = false;
+  }
+  public virtual void CloseUI(bool _stopwhileother)
+  {
+    if (_stopwhileother && UIManager.Instance.IsWorking) return;
     UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir);
     IsOpen = false;
   }

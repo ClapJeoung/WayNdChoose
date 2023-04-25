@@ -9,22 +9,59 @@ public class Settlement
     public int IllustIndex = 0;
   public SettlementType Type;
   public int NameIndex;
+  public string OriginName = "";
+  private TextData NameTextData = null;
   private string name;
   public string Name { 
     get
     {
-      switch (Type)
+      if (NameTextData == null)
       {
-        case SettlementType.Town:
-          return SettlementName.TownNams[NameIndex];
-        case SettlementType.City:
-          return SettlementName.CityNames[NameIndex];
-        case SettlementType.Castle:
-          return SettlementName.CastleNames[NameIndex];
       }
-      return "이럴 일이 없는 레후...!";
+      return NameTextData.Name;
     }
   }
+  public void Setup()
+  {
+    switch (Type)
+    {
+      case SettlementType.Town:
+        OriginName = SettlementName.TownNams[NameIndex];
+        NameTextData = GameManager.Instance.GetTextData(OriginName);
+        SpringIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_spring");
+        SummerIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_summer");
+        FallIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_fall");
+        WinterIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_winter"); 
+        break;
+      case SettlementType.City:
+        OriginName = SettlementName.CityNames[NameIndex];
+        NameTextData = GameManager.Instance.GetTextData(OriginName);
+        SpringIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_spring");
+        SummerIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_summer");
+        FallIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_fall");
+        WinterIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_winter"); break;
+      case SettlementType.Castle:
+        OriginName = SettlementName.CastleNames[NameIndex]; 
+        NameTextData = GameManager.Instance.GetTextData(OriginName);
+        SpringIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_spring");
+        SummerIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_summer");
+        FallIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_fall");
+        WinterIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_winter"); break;
+    }
+  }
+  public Sprite SpringIllust = null, SummerIllust = null, FallIllust = null, WinterIllust = null;
+  public Sprite Illust { get
+    {
+      switch (GameManager.Instance.MyGameData.Turn)
+      {
+        case 0:
+          return SpringIllust;
+        case 1:return SummerIllust;
+        case 2:return FallIllust;
+        case 3:return WinterIllust;
+        default:return GameManager.Instance.ImageHolder.DefaultIllust;
+      }
+    } }
 
   public bool IsForest = false;//주변 1칸에 숲 여부
   public bool IsRiver=false;//주변 2칸에 강 여부
@@ -32,18 +69,21 @@ public class Settlement
   public bool IsMountain = false;//주변 2칸에 산 여부
   public bool IsSea = false;    //주변 1칸에 바다 여부
 
-  public List<Vector3Int> Pose=new List<Vector3Int>();
+  public List<Vector3Int> Pose=new List<Vector3Int>();//일반 타일맵 기준
   public bool IsOpen = false;
 
     public int Wealth = 0;      //부
     public int Faith = 0;       //신앙
     public int Culture = 0;     //문화
     public int Science = 0;     //과학
-  public Vector3Int VectorPos()
+  public Vector3Int VectorPos
   {
-    Vector3Int _pos = Vector3Int.zero;
-    foreach (var asdf in Pose) _pos += asdf;
-    return _pos / Pose.Count;
+    get
+    {
+      Vector3Int _pos = Vector3Int.zero;
+      foreach (var asdf in Pose) _pos += asdf;
+      return _pos / Pose.Count;
+    }
   }
   public TargetTileEventData GetSettleTileEventData()
   {
@@ -64,7 +104,7 @@ public class Settlement
         _temp.PlaceData.Add(PlaceType.Academy, Science);
         break;
     }
-    _temp.EnvironmentType.Add(EnvironmentType.None);
+    _temp.EnvironmentType.Add(EnvironmentType.River);
     if(IsRiver)_temp.EnvironmentType.Add(EnvironmentType.River);
     if (IsForest) _temp.EnvironmentType.Add(EnvironmentType.Forest);
     if (IsHighland) _temp.EnvironmentType.Add(EnvironmentType.Highland);
@@ -184,6 +224,7 @@ public class MapSaveData
       _mapdata.AllSettles.Add( _castle);
     }
 
+    foreach (var _settle in _mapdata.AllSettles) _settle.Setup();
     return _mapdata;
   }
   public void UpdateSaveData(MapData _data)
@@ -218,7 +259,7 @@ public class MapData
   public List<Settlement> AllSettles = new List<Settlement>();
   public List<Settlement> GetCloseSettles(Settlement _origin,int _count)
   {
-    Vector3Int _originpos = _origin.VectorPos();
+    Vector3Int _originpos = _origin.VectorPos;
 
     List<float> _distance=new List<float>();
     List<Settlement> _settlement=new List<Settlement>();
@@ -226,7 +267,7 @@ public class MapData
     {
       if (_settle == _origin) continue;
 
-      float _dis=Vector3Int.Distance(_settle.VectorPos(), _originpos);
+      float _dis=Vector3Int.Distance(_settle.VectorPos, _originpos);
       //  Debug.Log($"_originpos 에서 _settle.VectorPos()까지의 거리 : {_dis}");
       _distance.Add(_dis);
       _settlement.Add(_settle);
@@ -251,15 +292,15 @@ public static class SettlementName
 {
   public static string[] TownNams =
   {
-    "마을0","마을1","마을2","마을3","마을4","마을5","마을6","마을7","마을8","마을9","마을10","마을11","마을12"
+    "alion","amberfort","arthurstone","ashbrook","brigelis","calibria","eldermist","elvendom","evergreenvale","galania","ironcliff","raia","rappland","sellier","silberia","sunridge","synodia","windmere"
   };
   public static string[] CityNames =
   {
-    "도시0","도시1","도시2","도시3","도시4","도시5","도시6","도시7","도시8","도시9","도시10","도시11","도시12"
+    "albace","avalomia","ellsworth","emael","iberton","lumia","niverdale","solaria","sylveria","valtar"
   };
   public static string[] CastleNames =
   {
-    "성채0","성채1","성채2","성채3","성채4","성채5","성채6","성채7","성채8","성채9","성채10","성채11","성채12"
+    "aberstead","arcadimia","catrua","lugrea","mabrel","meridina","penbrite","solanum","tryon","udrium"
   };
 }
 

@@ -15,12 +15,10 @@ public class UI_Experience : UI_default
   public void OpenLongterm(int index)
   {
     //장기 index번 정보 가져오기
-    ExperienceInfo.OpenExperience();
   }
   public void OpenShortterm(int index)
   {
     //단기 index번 정보 가져오기
-    ExperienceInfo.OpenExperience();
   }
   public override void CloseUI()
   {

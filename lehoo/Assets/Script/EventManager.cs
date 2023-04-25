@@ -30,15 +30,23 @@ public class EventManager : MonoBehaviour
 
   public void SetSettleEvent(TargetTileEventData _settledata)
   {
+    if (GameManager.Instance.MyGameData.CurrentQuest == null)
+    {
+      //현재 퀘스트가 없다면 퀘스트 검사를 먼저 하고 퀘스트가 낚인다면 이벤트 대신 퀘스트를 보낸다
+    }
+
+
     List<EventDataDefulat> _eventlist = new List<EventDataDefulat>();
     _eventlist = MyEventHolder.ReturnEvent(_settledata);
-    //이벤트 3개를 받아와 UIManager에 전달한다
+    //이벤트 3개를 받아와 GameManager에 전달한다
+    GameManager.Instance.SetSettleEventList(_eventlist);
   }//외부 -> 정착지
   public void SetOutsideEvent(TargetTileEventData _tiledata)
   {
     List<EventDataDefulat> _eventlist = new List<EventDataDefulat>();
     _eventlist = MyEventHolder.ReturnEvent(_tiledata);
     EventDataDefulat _outerevent = _eventlist[Random.Range(0, _eventlist.Count)];
-    //이벤트 1개를 받아와 UIManager에 전달한다
+    //이벤트 1개를 받아와 GameManager에 전달한다
+    GameManager.Instance.SetOuterEvent(_outerevent);
   }//정착지 -> 외부
 }

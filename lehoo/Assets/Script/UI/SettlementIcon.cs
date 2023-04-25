@@ -8,7 +8,7 @@ public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
 {
   private float UpSize = 1.2f;
   private float OriginSIze = 1.0f;
-  private Settlement SettlementData = null;
+  public Settlement SettlementData = null;
   List<RectTransform> MyImages=new List<RectTransform>();
   private Button MyButton = null;
   private bool selected;
@@ -18,8 +18,6 @@ public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
     set { selected = value;if (selected == true) SizeUp(); else SizeDown(); }
   }
     private UI_map MapUI = null;
-  private Vector2 position;
-  public Vector2 Position { get { Vector2 _pos = Vector2.zero;foreach (var _rect in MyImages) _pos += _rect.anchoredPosition; return _pos / MyImages.Count; } }
   public void ActiveButton()
   {
     SettlementData.IsOpen = true;
@@ -28,15 +26,15 @@ public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
     foreach(var _image in MyImages)_image.GetComponent<Image>().color = _availablecolor;
     MyButton.interactable = true;
     SizeDown();
-  }
+  }//활성화 시키기
   public void DeActiveButton()
   {
     Color _disablecolor = Color.grey;
     _disablecolor.a = 0.2f;
     foreach (var _image in MyImages) _image.GetComponent<Image>().color = _disablecolor;
     MyButton.interactable = false;
-    SizeUp();
-  }
+    SizeDown();
+  }//비활성화 시키기
   public void Setup(Settlement _data)
   {
     GetComponent<Image>().enabled = false;
@@ -45,7 +43,7 @@ public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
     _disablecolor.a = 0.2f;
     MyButton=GetComponent<Button>();
       SettlementData = _data;
-    UIManager.Instance.UpdateMap_AddSettle(SettlementData.Name, this);
+    UIManager.Instance.UpdateMap_AddSettle(SettlementData.OriginName, this);
     MyButton.onClick.AddListener(SendData);
     for(int i = 0; i < transform.childCount; i++)
     {

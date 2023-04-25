@@ -21,7 +21,7 @@ public class MainUIManager : MonoBehaviour
   [SerializeField] private Image QuestIllust = null;
   [SerializeField] private TextMeshProUGUI QuestDescription = null;
 
-  private string SelectQuestID = "";
+  [HideInInspector]public string SelectQuestID = "";
   private void Start()
   {
     SetQuestDropdown();
@@ -29,7 +29,10 @@ public class MainUIManager : MonoBehaviour
   public void SetQuestDropdown()
   {
     QuestDropdown.options.Clear();
-    foreach(var _data in GameManager.Instance.MyProgressData.TotalFoundQuest)
+    TMP_Dropdown.OptionData _nullthing = new TMP_Dropdown.OptionData();
+    _nullthing.text = "null";
+    QuestDropdown.options.Add(_nullthing);
+    foreach (var _data in GameManager.Instance.MyProgressData.TotalFoundQuest)
     {
       TMP_Dropdown.OptionData _temp = new TMP_Dropdown.OptionData();
       _temp.text = GameManager.Instance.EventHolder.AllQuests[_data].QuestName;
@@ -38,11 +41,20 @@ public class MainUIManager : MonoBehaviour
   }
   public void SetQuestInfo(int _index)
   {
-    SelectQuestID = GameManager.Instance.MyProgressData.TotalFoundQuest[_index];  //해당 index번 퀘스트 ID
-    QuestHolder _targetquest = GameManager.Instance.EventHolder.AllQuests[SelectQuestID];//해당 퀘스트 정보
+    if (_index == 0)
+    {
+      SelectQuestID = "";
+      QuestIllust.sprite = GameManager.Instance.ImageHolder.DefaultIllust;
+      QuestDescription.text = "Heil Gamja";
+    }
+    else
+    {
+      SelectQuestID = GameManager.Instance.MyProgressData.TotalFoundQuest[_index - 1];  //해당 index번 퀘스트 ID
+      QuestHolder _targetquest = GameManager.Instance.EventHolder.AllQuests[SelectQuestID];//해당 퀘스트 정보
 
-    Debug.Log($"Id : {SelectQuestID}  spriteID : {_targetquest.StartIllustID}   Description : {_targetquest.PreDescription}");
-    QuestIllust.sprite = GameManager.Instance.ImageHolder.GetEventIllust(_targetquest.StartIllustID);
-    QuestDescription.text = _targetquest.PreDescription;
+ //     Debug.Log($"Id : {SelectQuestID}  Description : {_targetquest.PreDescription}");
+      QuestIllust.sprite = _targetquest.Illust;
+      QuestDescription.text = _targetquest.PreDescription;
+    }
   }
 }

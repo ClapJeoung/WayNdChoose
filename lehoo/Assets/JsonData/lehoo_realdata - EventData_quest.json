@@ -45,7 +45,7 @@
     "Failure_Penalty_info": "1@exp_spookymonster",
     "Reward_Target": "4@4",
     "Reward_Info": "2@2",
-    "SubReward": 0
+    "SubReward": "0@0"
   },
   "3": {
     "QuestID": "quest_findingmonster",
@@ -109,7 +109,7 @@
     "Failure_Penalty_info": 0,
     "Reward_Target": "5@5",
     "Reward_Info": "4@8",
-    "SubReward": 0
+    "SubReward": "0@0"
   },
   "7": {
     "QuestID": "quest_findingmonster",
@@ -141,7 +141,7 @@
     "Failure_Penalty_info": 0,
     "Reward_Target": "0@0",
     "Reward_Info": "exp_beastphycology@exp_beastweekpoint",
-    "SubReward": 0
+    "SubReward": "0@0"
   },
   "9": {
     "QuestID": "quest_findingmonster",
@@ -157,7 +157,7 @@
     "Failure_Penalty_info": 0,
     "Reward_Target": "3@2",
     "Reward_Info": 0,
-    "SubReward": 0
+    "SubReward": "0@0"
   },
   "10": {
     "QuestID": "quest_findingmonster",

@@ -75,7 +75,7 @@
     "Selection_Info": 0,
     "Failure_Penalty": 0,
     "Failure_Penalty_info": 0,
-    "Reward_Target": 5,
+    "Reward_Target": 6,
     "Reward_Info": "trait_lehoo",
     "SubReward": 0
   },

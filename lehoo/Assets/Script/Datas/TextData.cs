@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class TextData
 {
-    public string Name;
-    public string Description;
-    public string SelectionDescription;
-    public string SelectionSubDescription;
-    public string SuccessDescription;
-    public string FailDescription;
+  public string ID="";
+    public string Name = "";
+    public string Description = "";
+    public string SelectionDescription = "";
+    public string SelectionSubDescription = "";
+    public string SuccessDescription = "";
+    public string FailDescription = "";
     public void Debugtext()
     {
         string _str = "";

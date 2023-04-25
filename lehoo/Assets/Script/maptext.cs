@@ -7,8 +7,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using static UnityEditor.Progress;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 
 public class maptext : MonoBehaviour
 {
@@ -1444,7 +1442,7 @@ public class maptext : MonoBehaviour
                       //      Debug.Log($"땅끝 {pos}에서 정지\n{_riverdatas[i].Sourcepos}에서 시작");
                             return true;
                         }
-                        if (pos.x < 0 || pos.y < 0 || pos.x > DefaultSize - 1 || pos.y > DefaultSize - 1) { Debug.Log("아니싯팔뭐냐고~~~"); return false; }
+                        if (pos.x < 0 || pos.y < 0 || pos.x > DefaultSize - 1 || pos.y > DefaultSize - 1) { return false; }
                         if (MapData_b[pos.x, pos.y] == MapCode.b_beach || MapData_b[pos.x, pos.y] == MapCode.b_desert_beach)
                         {
                      //      Debug.Log($"해변 {pos}에서 정지\n{_riverdatas[i].Sourcepos}에서 시작\"");
@@ -1890,7 +1888,7 @@ public class maptext : MonoBehaviour
                                 _failcode.Remove(MapCode.b_mountain); _failcode.Remove(MapCode.b_desert_mountain);
                                 _loopcount = 0;
                             }
-                            if (_loopcount > 300) { Debug.Log("마을 하나 실패"); break; }
+                            if (_loopcount > 300) { break; }
                         }
                         Vector3Int _townpos = new Vector3Int(Random.Range(_startpos.x, _endpos.x), Random.Range(_startpos.y, _endpos.y));
 
@@ -2570,20 +2568,24 @@ public class maptext : MonoBehaviour
       foreach(Vector3 _pos in townpos)
       {
         GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        _temp.GetComponent<RectTransform>().localScale = Vector3.one;
-                _temp.GetComponent<RectTransform>().anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
-                _temp.GetComponent<RectTransform>().sizeDelta = _cellsize;
+        RectTransform _rect = _temp.GetComponent<RectTransform>();
+        _rect.localScale = Vector3.one;
+        _rect.anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
+        _rect.sizeDelta = _cellsize;
         _temp.GetComponent<Image>().sprite = Townsprite;
         _temp.transform.SetParent(SettlerHolder);
+        _rect.anchoredPosition3D=new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
         _images.Add(_temp);
       }//이미지 만들고 위치,스프라이트 넣기
       GameObject _button=new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),typeof(Button),typeof(SettlementIcon) });
       //버튼 오브젝트
-      _button.GetComponent<RectTransform>().anchoredPosition3D = _buttonpos;
+      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x,_buttonpos.y,0.0f);
             _button.transform.SetParent(SettlerHolder);
-            for (int j = 0; j < _images.Count; j++)
+      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_button.GetComponent<RectTransform>().anchoredPosition3D.x, _button.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
+      for (int j = 0; j < _images.Count; j++)
       {
         _images[j].transform.SetParent(_button.transform, true);
+        _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_images[j].GetComponent<RectTransform>().anchoredPosition.x, _images[j].GetComponent<RectTransform>().anchoredPosition.y, 0.0f);
         _images[j].transform.localScale = Vector3.one;
       }
             
@@ -2605,27 +2607,30 @@ public class maptext : MonoBehaviour
       foreach (Vector3 _pos in citypos)
       {
         GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        _temp.GetComponent<RectTransform>().localScale = Vector3.one;
-        _temp.GetComponent<RectTransform>().anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
-        _temp.GetComponent<RectTransform>().sizeDelta = _cellsize;
+        RectTransform _rect = _temp.GetComponent<RectTransform>();
+        _rect.localScale = Vector3.one;
+        _rect.anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
+        _rect.sizeDelta = _cellsize;
         _temp.GetComponent<Image>().sprite = Citysprite;
         _temp.transform.SetParent(SettlerHolder);
+        _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
         _images.Add(_temp);
                 _zeropos += _pos;
             }//이미지 만들고 위치,스프라이트 넣기
 
       GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(SettlementIcon) });
-            //버튼 오브젝트
-      _button.GetComponent<RectTransform>().anchoredPosition3D = _buttonpos;
-            _button.transform.SetParent(SettlerHolder);
-            for (int j = 0; j < _images.Count; j++)
+      //버튼 오브젝트
+      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
+      _button.transform.SetParent(SettlerHolder);
+      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_button.GetComponent<RectTransform>().anchoredPosition3D.x, _button.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
+      for (int j = 0; j < _images.Count; j++)
       {
                 //     Debug.Log($"원 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
                 Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _button.GetComponent<RectTransform>().anchoredPosition;
         _images[j].transform.SetParent(_button.transform, true);
          //       Debug.Log($"부모 변경 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
                 _images[j].transform.localScale = Vector3.one;
-                _images[j].GetComponent<RectTransform>().anchoredPosition = _newpos;
+                _images[j].GetComponent<RectTransform>().anchoredPosition3D=new Vector3(_newpos.x,_newpos.y,0.0f);
       }
             
             _button.GetComponent<SettlementIcon>().Setup(_mapdata.Cities[i]);
@@ -2647,25 +2652,28 @@ public class maptext : MonoBehaviour
       foreach (Vector3 _pos in castlepos)
       {
         GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        _temp.GetComponent<RectTransform>().localScale = Vector3.one;
-        _temp.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0) ;
-        _temp.GetComponent<RectTransform>().sizeDelta = _cellsize;
+        RectTransform _rect = _temp.GetComponent<RectTransform>();
+        _rect.localScale = Vector3.one;
+        _rect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0) ;
+        _rect.sizeDelta = _cellsize;
         _temp.GetComponent<Image>().sprite = Castlesprite;
         _temp.transform.SetParent(SettlerHolder);
+        _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
         _images.Add(_temp);
                 _zeropos += _pos;
             }//이미지 만들고 위치,스프라이트 넣기
 
       GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(SettlementIcon) });
-            //버튼 오브젝트
-      _button.GetComponent<RectTransform>().anchoredPosition3D = _buttonpos;
-            _button.transform.SetParent(SettlerHolder);
-            for (int j=0;j<_images.Count;j++)
+      //버튼 오브젝트
+      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
+      _button.transform.SetParent(SettlerHolder);
+      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_button.GetComponent<RectTransform>().anchoredPosition3D.x, _button.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
+      for (int j=0;j<_images.Count;j++)
       {
                 Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _button.GetComponent<RectTransform>().anchoredPosition;
                 _images[j].transform.SetParent(_button.transform, true);
         _images[j].transform.localScale = Vector3.one;
-                _images[j].GetComponent<RectTransform>().anchoredPosition = _newpos;
+                _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x,_newpos.y,0.0f);
       }
       _button.GetComponent<SettlementIcon>().Setup(_mapdata.Castles[i]);
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
@@ -2677,9 +2685,11 @@ public class maptext : MonoBehaviour
       GameObject _tile = new GameObject("_tile", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
       _tile.GetComponent<Image>().sprite = spr;
       _tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,-60.0f*rot));
-      _tile.GetComponent<RectTransform>().anchoredPosition = _newpos-Vector3.forward*_newpos.z;
-      _tile.GetComponent<RectTransform>().sizeDelta = _cellsize;
+      RectTransform _rect = _tile.GetComponent<RectTransform>();
+      _rect.anchoredPosition3D =new Vector3(_newpos.x,_newpos.y,0.0f);
+      _rect.sizeDelta = _cellsize;
       _tile.transform.SetParent(TileHolder);
+      _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition3D.x, _rect.anchoredPosition3D.y, 0.0f);
       _tile.transform.localScale = Vector3.one;
     }
 
@@ -2734,9 +2744,9 @@ public class maptext : MonoBehaviour
         if (pos.x < 0 || pos.x > DefaultSize - 1 || pos.y < 0 || pos.y > DefaultSize - 1) return false;
         return true;
     }
-  public TargetTileEventData GetSingleTileData(Vector3 _worldpos)
+  public TargetTileEventData GetSingleTileData(Vector3 _tilepos)
   {
-    Vector3Int _tilepos=Tilemap_bottom.WorldToCell(_worldpos);
+    Vector3Int _tileintpos = new Vector3Int(Mathf.RoundToInt(_tilepos.x), Mathf.RoundToInt(_tilepos.y), 0);
     TargetTileEventData _data=new TargetTileEventData();
     _data.SettlementType = SettlementType.Outer;
     //월드 좌표 -> 타일 좌표
@@ -2765,10 +2775,11 @@ public class maptext : MonoBehaviour
     bool checkenvir(List<int> _pool, int[,] _checktilemap)
     {
 
-      if (_pool.Contains(_checktilemap[_tilepos.x, _tilepos.y])) return true;
+      if (CheckInside(_tileintpos)&&_pool.Contains(_checktilemap[_tileintpos.x, _tileintpos.y])) return true;
       for(int i = 0; i < 6; i++)
       {
-        Vector3Int _temp = GetNextPos(_tilepos, i);
+        Vector3Int _temp = GetNextPos(_tileintpos, i);
+        if (!CheckInside(_temp)) continue;
         if (_pool.Contains(_checktilemap[_temp.x, _temp.y])) return true;
       }
       return false;
