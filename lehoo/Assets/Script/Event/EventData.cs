@@ -635,7 +635,24 @@ public class EventHolder
       Data.Illust = GameManager.Instance.ImageHolder.GetEventIllust(Data.ID);
       Data.Description = _textdata.Description;
       Data.Season = _season;
-      Data.SettlementType = (SettlementType)_data.Settlement;
+      switch (_data.Settlement)
+      {
+        case 0:
+          Data.SettlementType = SettlementType.None;
+          break;
+        case 1:
+          Data.SettlementType = SettlementType.Town;
+          break;
+        case 2:
+          Data.SettlementType = SettlementType.City;
+          break;
+        case 3:
+          Data.SettlementType = SettlementType.Castle;
+          break;
+        case 4:
+          Data.SettlementType = SettlementType.Outer;
+          break;
+      }
       switch (_data.Place)
       {
         case 0: Data.PlaceType = PlaceType.Residence; break;
@@ -923,15 +940,26 @@ public class EventHolder
   }//Gamemanager.instance.GameData를 기반으로 이미 클리어한 이벤트 빼고 다 활성화 리스트에 넣기
   public void RemoveEvent(string _ID)
   {
-    List<EventData> _eventdatas = new List<EventData>();
-    foreach (var _data in AvailableNormalEvents)
+    string _defaultid = "";
+    if (_ID.Contains("spring") || _ID.Contains("summer") || _ID.Contains("fall") || _ID.Contains("winter"))
     {
-      if (_data.ID.Equals(_ID))
-      {
-        _eventdatas.Add(_data);
-      }
+      string[] _temp = _ID.Split("_");
+      for (int i = 0; i < _temp.Length - 2; i++) _defaultid += _temp[i];
     }
-    foreach (var _deletedata in _eventdatas) AvailableNormalEvents.Remove(_deletedata);
+    else _defaultid = _ID;
+    List<EventData> _normals = new List<EventData>();
+    List<FollowEventData> _follows=new List<FollowEventData>();
+
+    foreach (var _data in AvailableNormalEvents)
+      if (_data.ID.Contains(_defaultid))
+        _normals.Add(_data);
+
+    foreach (var _data in AvailableFollowEvents)
+      if (_data.ID.Contains(_defaultid))
+        _follows.Add(_data);
+
+    foreach (var _deletenormal in _normals) AvailableNormalEvents.Remove(_deletenormal);
+    foreach(var _deletfollow in _follows)AvailableFollowEvents.Remove(_deletfollow);
   }
   public List<EventDataDefulat> ReturnEvent(TargetTileEventData _tiledata)
   {
@@ -949,20 +977,20 @@ public class EventHolder
           List<EventDataDefulat> _temptemp = new List<EventDataDefulat>();
           foreach (var _risingevent in _currentquest.Eventlist_Rising)
           {
-            if (SimpleCheck(_risingevent))_temp.Add(_risingevent);    //간단히 검사해서 _temp에 추가
+            if (SimpleCheck(_risingevent)&&_risingevent.Season.Equals(_tiledata.Season))_temp.Add(_risingevent);    //간단히 검사해서 _temp에 추가
           }
 
           break;
         case QuestSequence.Climax:  //'전' 단계 이벤트를 해야 할 때
 
           EventDataDefulat _climaxevent = _currentquest.Eventlist_Climax[_currentquest.CurrentClimaxIndex];
-          if (SimpleCheck(_climaxevent)) _temp.Add(_climaxevent);    //간단히 검사해서 _temp에 추가
+          if (SimpleCheck(_climaxevent) && _climaxevent.Season.Equals(_tiledata.Season)) _temp.Add(_climaxevent);    //간단히 검사해서 _temp에 추가
 
           break;
         case QuestSequence.Falling: //마지막 이벤트를 해야 할 때
 
           EventDataDefulat _falling = _currentquest.Event_Falling;
-          if (SimpleCheck(_falling)) _temp.Add(_falling);    //간단히 검사해서 _temp에 추가
+          if (SimpleCheck(_falling) && _falling.Season.Equals(_tiledata.Season)) _temp.Add(_falling);    //간단히 검사해서 _temp에 추가
 
           break;
       }
@@ -973,7 +1001,7 @@ public class EventHolder
     }//현재 보유 중인 퀘스트가 있다면 채우기
 
     if (_tiledata.SettlementType.Equals(SettlementType.Outer) && _ResultEvents.Count.Equals(1)) return _ResultEvents;
-    //야외 이벤트라면, 하나 채워지자마자 바로 반환
+    //야외 이벤트라면, 퀘스트 하나 채워지자마자 바로 반환
   //  Debug.Log($"가능한 퀘스트 이벤트 {_ResultEvents.Count}개");
 
     //가능한 연계 이벤트 모두 가져오기
@@ -1049,9 +1077,22 @@ public class EventHolder
   //  Debug.Log($"가능한 연계 이벤트 {_followevents.Count}개");
     if (_tiledata.SettlementType.Equals(SettlementType.Outer) && _followevents.Count > 0)
     {
-      _ResultEvents.Add(_followevents[Random.Range(0, _followevents.Count)]);
+      int _normalcount = 0;
+      while (_ResultEvents.Count < 0)
+      {
+        _normalcount++;
+        EventDataDefulat _eventtmep = _followevents[Random.Range(0, _normalevents.Count)];
+        if (_eventtmep.Season != _tiledata.Season)
+        {
+          if (_normalcount > _normalevents.Count)
+          {
+            if (_eventtmep.Season.Equals(0)) _ResultEvents.Add(_eventtmep);
+          }//루프 초과 했다면 목록에 추가
+        }
+        else _ResultEvents.Add(_eventtmep);
+      }
       return _ResultEvents;
-    }//야외 이벤트고 퀘스트 이벤트가 아무것도 없으면 이거 하나 채우고 바로 반환
+    }//야외 이벤트고 퀘스트 이벤트가 아무것도 없으면 연계 하나 채우고 바로 반환
 
     //가능한 일반 이벤트 모두 가져오기
     _temp.Clear();
@@ -1062,14 +1103,27 @@ public class EventHolder
     string _str = $"가능한 일반 이벤트 {_normalevents.Count}개\n";
     foreach(var _event in _normalevents)
     {
-      _str += $"{_event.Name}   ";
+      _str += $"{_event.ID}   ";
     }
-   // Debug.Log(_str);
+    Debug.Log(_str);
     if (_tiledata.SettlementType.Equals(SettlementType.Outer) && _followevents.Count.Equals(0) && _normalevents.Count > 0)
     {
-      _ResultEvents.Add(_normalevents[Random.Range(0, _normalevents.Count)]);
+      int _normalcount = 0;
+      while (_ResultEvents.Count < 0)
+      {
+        _normalcount++;
+        EventDataDefulat _eventtmep = _normalevents[Random.Range(0, _normalevents.Count)];
+        if (_eventtmep.Season != _tiledata.Season)
+        {
+          if (_normalcount > _normalevents.Count)
+          {
+            if (_eventtmep.Season.Equals(0)) _ResultEvents.Add(_eventtmep);
+          }//루프 초과 했다면 목록에 추가
+        }
+        else _ResultEvents.Add(_eventtmep);
+      }
       return _ResultEvents;
-    }//야외 이벤트고 퀘스트,연계 둘 다 없으면 이거 하나 채우고 반환
+    }//야외 이벤트고 퀘스트,연계 둘 다 없으면 일반 하나 채우고 반환
 
     List<PlaceType> _normalfirstplace=new List<PlaceType>();
     List<PlaceType> _normalsecondplace = new List<PlaceType>();
@@ -1145,6 +1199,8 @@ public class EventHolder
 
     bool SimpleCheck(EventDataDefulat _data)
     {
+      Debug.Log($"이 이벤트 정착지 : {_data.SettlementType}  현재 정착지 : {_tiledata.SettlementType}\n" +
+        $"이 이벤트 장소 : {_data.PlaceType}   {_data.ID}");
       if (checkbysettle()&& checkbyplace())
       {
         switch (_data.TileCheckType)
@@ -1214,7 +1270,8 @@ public class EventHolder
         List<EventDataDefulat> _secondseason = new List<EventDataDefulat>();
         foreach (var _event in _firstlist)
         {
-          if (_event.Season.Equals(0)) _secondseason.Add(_event);
+          Debug.Log($"현재 턴 : {GameManager.Instance.MyGameData.Turn}  이 이벤트 턴 : {_event.Season}  타일 턴 : {_tiledata.Season}");
+    if (_event.Season.Equals(0)) _secondseason.Add(_event);
           else if (_event.Season.Equals(_tiledata.Season)) _firstseason.Add(_event);
         }//season이 0이면 전역 계절이니 후순위로
         //   Debug.Log($"시작 데이터(환경) {_firstenvir.Count}개가 계절에 따라 {_firstseason.Count}/{_secondseason.Count}로 분화");
@@ -1272,10 +1329,10 @@ public class EventHolder
       string _availnormalevents = "", _availfollowevents = "";
       foreach (var _event in _normalevents) _availnormalevents += $"{_event.Name} ";
       foreach (var _event in _followevents) _availfollowevents += $"{_event.Name} ";
-   /*   Debug.Log($"요구 일반 개수 : {_normalcount}  요구 연계 개수 : {_followcount}\n" +
+      Debug.Log($"요구 일반 개수 : {_normalcount}  요구 연계 개수 : {_followcount}\n" +
         $"가능 일반 장소 : {_availnormalplaces}  가능 연계 장소 : {_availfollowplaces}\n" +
         $"가능 일반 이벤트 : {_availnormalevents}\n" +
-        $"가능 연계 이벤트 : {_availfollowevents}");*/
+        $"가능 연계 이벤트 : {_availfollowevents}");
       if (_normalfirstplace.Count+_normalsecondplace.Count < _normalcount || _followfirstplace.Count+_followsecondplace.Count < _followcount) return null;
       //장소 개수가 요구하는 이벤트보다 적으면 보나마나 불가능한거니 아웃
 

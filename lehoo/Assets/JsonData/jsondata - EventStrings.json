@@ -1065,7 +1065,7 @@
     "ID": "ev_castlearcademytest0",
     "Name": "성채아카데미",
     "Description": "성채아카데미",
-    "SelectionDescription": "뚜르보작",
+    "SelectionDescription": "아이에에에에",
     "SelectionSubDescription": "감자가 보이는가?",
     "FailDescription": null,
     "SuccessDescription": "당신은 최고에요"
@@ -1108,7 +1108,7 @@
   },
   "123": {
     "ID": "exp_test1",
-    "Name": "연슷ㅂ용경험2",
+    "Name": "연습용경험2",
     "Description": "무슨무슨내용일까요",
     "SelectionDescription": null,
     "SelectionSubDescription": null,
@@ -1645,5 +1645,14 @@
     "SelectionSubDescription": null,
     "FailDescription": null,
     "SuccessDescription": null
+  },
+  "183": {
+    "ID": "ev_outlandtest2",
+    "Name": "야외이벤트테스트3",
+    "Description": "오늘 아침에 추가한거",
+    "SelectionDescription": "둘넷여섯여뎗열",
+    "SelectionSubDescription": "대충 있어보이는 말",
+    "FailDescription": null,
+    "SuccessDescription": "부 럽 다 !"
   }
 }

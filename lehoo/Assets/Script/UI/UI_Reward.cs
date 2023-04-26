@@ -18,6 +18,7 @@ public class UI_Reward : UI_default
   [SerializeField] private RewardButton Reward_Skill = null;
   [Space(10)]
   [SerializeField] private CanvasGroup RewardSkillGroup = null;
+  [SerializeField] private Image RewardSkillThemeImage = null;
   [SerializeField] private PreviewInteractive RewardSkill_Conversation = null;
   [SerializeField] private PreviewInteractive RewardSkill_Force = null;
   [SerializeField] private PreviewInteractive RewardSkill_Nature = null;
@@ -168,6 +169,7 @@ public class UI_Reward : UI_default
   public void OpenRewardSkillPanel(ThemeType _themetype)
   {
     if (UIManager.Instance.IsWorking) return;
+    RewardSkillThemeImage.sprite=GameManager.Instance.ImageHolder.GetThemeIcon(_themetype);
     switch (_themetype)
     {
       case ThemeType.Conversation:

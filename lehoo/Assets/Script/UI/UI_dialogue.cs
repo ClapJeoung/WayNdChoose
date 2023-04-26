@@ -425,6 +425,7 @@ public class UI_dialogue : MonoBehaviour
       }
       GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType);
     }
+    GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.ID);
 
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴(제작중)
   private IEnumerator checkanimation(UI_Selection _selection,bool _issucces,float _percent)

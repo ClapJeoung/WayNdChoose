@@ -19,21 +19,21 @@ public class RewardSkillSelectionButton : MonoBehaviour
   {
     if (UIManager.Instance.IsWorking) return;
     Sprite[] _icons = new Sprite[] { MyIconImage.sprite };
-    Vector2[] _startpos = new Vector2[] { MyIconRect.anchoredPosition };
+    Vector2[] _startpos = new Vector2[] { MyIconRect.position };
     Vector2[] _endpos = new Vector2[1];
     switch (MyUIReward.CurrentSuccesData.Reward_Theme)
     {
       case ThemeType.Conversation:
-        _endpos[0] = ConversationRect.anchoredPosition;
+        _endpos[0] = ConversationRect.position;
         break;
       case ThemeType.Force:
-        _endpos[0] = ForceRect.anchoredPosition;
+        _endpos[0] = ForceRect.position;
         break;
       case ThemeType.Nature:
-        _endpos[0] = NatureRect.anchoredPosition;
+        _endpos[0] = NatureRect.position;
         break;
       case ThemeType.Intelligence:
-        _endpos[0] = IntelligenceRect.anchoredPosition;
+        _endpos[0] = IntelligenceRect.position;
         break;
     }
     SkillName _skill = GameManager.Instance.MyGameData.GetSkillByTheme(MyUIReward.CurrentSuccesData.Reward_Theme, MyTheme);

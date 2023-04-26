@@ -324,12 +324,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ImageHolder: {fileID: 11400000, guid: 393cfdf7457d7f749a8a7f8ab53550b6, type: 2}
-  NormalEventData: {fileID: 4900000, guid: a5258dca2a5a3f34aa2e9ddcc795ef71, type: 3}
+  NormalEventData: {fileID: 4900000, guid: 17c5d0ab7faba1c43957935ccea7c725, type: 3}
   FollowEventData: {fileID: 4900000, guid: 3f8b320078e99b94c84132abb562fb27, type: 3}
   QuestEventData: {fileID: 4900000, guid: 9503c393b8ea5ee4298dcc992eaba846, type: 3}
   EXPData: {fileID: 4900000, guid: 7ebe90233c1e0f74596c00d986bac6f5, type: 3}
   TraitData: {fileID: 4900000, guid: 877aaa94a02ab004d92f3f1bf3d6a121, type: 3}
-  TextData: {fileID: 4900000, guid: 957e2b610dd2f43418a9badfa6541d78, type: 3}
+  TextData: {fileID: 4900000, guid: e72232b03f70db842b97b4459a07fcfd, type: 3}
 --- !u!4 &311089977
 Transform:
   m_ObjectHideFlags: 0

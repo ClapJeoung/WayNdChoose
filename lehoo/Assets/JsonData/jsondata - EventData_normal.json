@@ -222,5 +222,21 @@
     "Reward_Target": 1,
     "Reward_Info": 0,
     "SubReward": 0
+  },
+  "17": {
+    "ID": "ev_outlandtest2",
+    "Settlement": 3,
+    "Place": 0,
+    "TileCondition": 0,
+    "TileCondition_info": 0,
+    "Season": 0,
+    "Selection_Type": 0,
+    "Selection_Target": 0,
+    "Selection_Info": 0,
+    "Failure_Penalty": 0,
+    "Failure_Penalty_info": 0,
+    "Reward_Target": 4,
+    "Reward_Info": 3,
+    "SubReward": 0
   }
 }

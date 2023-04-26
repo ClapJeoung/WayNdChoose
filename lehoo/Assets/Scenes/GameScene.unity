@@ -50409,6 +50409,7 @@ MonoBehaviour:
   Reward_Exp: {fileID: 624490556}
   Reward_Skill: {fileID: 856784908}
   RewardSkillGroup: {fileID: 1115833772}
+  RewardSkillThemeImage: {fileID: 570032014}
   RewardSkill_Conversation: {fileID: 570835303}
   RewardSkill_Force: {fileID: 416357710}
   RewardSkill_Nature: {fileID: 1396897021}
@@ -53713,7 +53714,6 @@ GameObject:
   - component: {fileID: 1022667174}
   - component: {fileID: 1022667177}
   - component: {fileID: 1022667176}
-  - component: {fileID: 1022667175}
   m_Layer: 5
   m_Name: Theme
   m_TagString: Untagged
@@ -53743,25 +53743,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -59.999992}
   m_SizeDelta: {x: 253.44, y: 215.424}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1022667175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1022667173}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9168fa8c1d0755b438828a99bfda38ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PanelType: 8
-  MyTheme: 0
-  MyTendency: 0
-  MySelectionTendency: 0
-  MySkillName: 0
-  RewardValue: 0
-  ExpIndex: 0
 --- !u!114 &1022667176
 MonoBehaviour:
   m_ObjectHideFlags: 0
