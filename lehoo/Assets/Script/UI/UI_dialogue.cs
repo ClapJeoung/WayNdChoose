@@ -83,17 +83,18 @@ public class UI_dialogue : MonoBehaviour
     Selection_Physical.GetComponent<RectTransform>().anchoredPosition = Selection_Physical.OriginPos;
     Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
     Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
-    StartCoroutine(setdialogue());
+
+        UIManager.Instance.AddUIQueue(setdialogue());
   }//이벤트 시작 열기
   public void SetEventDialogue(SuccessData _successdata)
   {
     SuccessData _currensuccess = _successdata;
-    StartCoroutine(updatedialogue(_successdata));
+    UIManager.Instance.AddUIQueue(updatedialogue(_successdata));
   }//성공 데이터를 바탕으로 열기
   public void SetEventDialogue(FailureData _faildata)
   {
     FailureData _currentfail = _faildata;
-    StartCoroutine(updatedialogue(_faildata));
+    UIManager.Instance.AddUIQueue(updatedialogue(_faildata));
 
   }//성공 데이터를 바탕으로 열기
   public void DeleteOtherSelection(TendencyType _selectiontendency)
@@ -133,16 +134,16 @@ public class UI_dialogue : MonoBehaviour
   {
     DeleteOtherSelection(_selection.MyTendencyType);
     //다른거 사라지게 만들고
-    StartCoroutine(selectionanimation(_selection));
+    UIManager.Instance.AddUIQueue(selectionanimation(_selection));
     //선택한 선택지를 중심으로 이동시키고 성공, 실패 검사 실행 
   }//선택지 버튼 클릭했을 시
   private IEnumerator setdialogue()
   {
-    UIManager.Instance.ChangeAlpha(NameText, 1.0f);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NameText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    UIManager.Instance.ChangeAlpha(Illust, 1.0f);
+    yield return StartCoroutine( UIManager.Instance.ChangeAlpha(Illust, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    UIManager.Instance.ChangeAlpha(DialogueText, 1.0f);
+   yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
     EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
@@ -176,46 +177,46 @@ public class UI_dialogue : MonoBehaviour
   }
   private IEnumerator updatedialogue(SuccessData _success)
   {
-    UIManager.Instance.ChangeAlpha(DialogueText, 0.0f);
+    yield return StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     DialogueText.text = _success.Description;
-    UIManager.Instance.ChangeAlpha(DialogueText, 1.0f);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     MyUIReward.SetRewardPanel(_success);
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
-      UIManager.Instance.OpenUI(MapButton, false);
+     StartCoroutine(UIManager.Instance.OpenUI(MapButton, false));
     }
     else
     {
-      UIManager.Instance.OpenUI(KeepmoveButton, false);
+     StartCoroutine(UIManager.Instance.OpenUI(KeepmoveButton, false));
     }
     if (!GameManager.Instance.MyGameData.CurrentEvent.SettlementType.Equals(SettlementType.Outer))
       if (GameManager.Instance.MyGameData.CurrentSuggestingEvents.Count > 0)
-        UIManager.Instance.OpenUI(SuggestButton, false);
+       StartCoroutine(UIManager.Instance.OpenUI(SuggestButton, false));
 
-    OpenButtons(_success);
+    StartCoroutine(openbuttons(_success));
   }
   private IEnumerator updatedialogue(FailureData _faiilure)
   {
-    UIManager.Instance.ChangeAlpha(DialogueText, 0.0f);
+    yield return StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     DialogueText.text = _faiilure.Description;
-    UIManager.Instance.ChangeAlpha(DialogueText, 1.0f);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
-      UIManager.Instance.OpenUI(MapButton, false);
+      StartCoroutine(UIManager.Instance.OpenUI(MapButton, false));
     }
     else
     {
-      UIManager.Instance.OpenUI(KeepmoveButton, false);
+      StartCoroutine(UIManager.Instance.OpenUI(KeepmoveButton, false));
     }
     if (!GameManager.Instance.MyGameData.CurrentEvent.SettlementType.Equals(SettlementType.Outer))
       if (GameManager.Instance.MyGameData.CurrentSuggestingEvents.Count > 0)
-        UIManager.Instance.OpenUI(SuggestButton, false);
+        StartCoroutine(UIManager.Instance.OpenUI(SuggestButton, false));
     OpenButtons(_faiilure);
   }
   public void ResetPanel()
@@ -241,31 +242,31 @@ public class UI_dialogue : MonoBehaviour
   }
   private void OpenButtons(SuccessData _success)
   {
-    StartCoroutine(openbuttons(_success));
+    UIManager.Instance.AddUIQueue(openbuttons(_success));
   }
   private IEnumerator openbuttons(SuccessData _success)
   {
     if (GameManager.Instance.MyGameData.CurrentSuggestingEvents.Count > 0)
     {
       if (SuggestButton.gameObject.activeInHierarchy == false) SuggestButton.gameObject.SetActive(true);
-      UIManager.Instance.OpenUI(SuggestButton, false);
+       StartCoroutine(UIManager.Instance.OpenUI(SuggestButton, false));
     }
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     { if (MapButton.gameObject.activeInHierarchy == false) MapButton.gameObject.gameObject.SetActive(true);
-      UIManager.Instance.OpenUI(MapButton, false);
+      StartCoroutine(UIManager.Instance.OpenUI(MapButton, false));
     }
     else
     {
       if (KeepmoveButton.gameObject.activeInHierarchy == false) KeepmoveButton.gameObject.SetActive(true);
-      UIManager.Instance.OpenUI(KeepmoveButton, false);
+      StartCoroutine(UIManager.Instance.OpenUI(KeepmoveButton, false));
     }
     if (RewardButton.activeInHierarchy == false) RewardButton.gameObject.SetActive(true);
-    UIManager.Instance.OpenUI(RewardButton.GetComponent<CanvasGroup>(), false);
+    StartCoroutine(UIManager.Instance.OpenUI(RewardButton.GetComponent<CanvasGroup>(), false));
     yield return null;
   }
   private void OpenButtons(FailureData _fail)
   {
-    StartCoroutine(openbuttons(_fail));
+    UIManager.Instance.AddUIQueue(openbuttons(_fail));
   }
   private IEnumerator openbuttons(FailureData _fail)
   {

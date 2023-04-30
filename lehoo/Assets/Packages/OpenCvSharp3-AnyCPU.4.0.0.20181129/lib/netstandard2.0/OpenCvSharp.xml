@@ -4027,8 +4027,8 @@
             <summary>
             
             </summary>
-            <param name="signature1"></param>
-            <param name="signature2"></param>
+            <param name="sigwild1"></param>
+            <param name="sigwild2"></param>
             <param name="distType"></param>
             <returns></returns>
         </member>
@@ -4036,8 +4036,8 @@
             <summary>
             
             </summary>
-            <param name="signature1"></param>
-            <param name="signature2"></param>
+            <param name="sigwild1"></param>
+            <param name="sigwild2"></param>
             <param name="distType"></param>
             <param name="cost"></param>
             <returns></returns>
@@ -4046,8 +4046,8 @@
             <summary>
             
             </summary>
-            <param name="signature1"></param>
-            <param name="signature2"></param>
+            <param name="sigwild1"></param>
+            <param name="sigwild2"></param>
             <param name="distType"></param>
             <param name="cost"></param>
             <param name="lowerBound"></param>
@@ -4057,8 +4057,8 @@
             <summary>
             
             </summary>
-            <param name="signature1"></param>
-            <param name="signature2"></param>
+            <param name="sigwild1"></param>
+            <param name="sigwild2"></param>
             <param name="distType"></param>
             <param name="cost"></param>
             <param name="lowerBound"></param>
@@ -26057,7 +26057,7 @@
         <member name="P:OpenCvSharp.Cuda.GpuMat.Flags">
             <summary>
             includes several bit-fields: 
-             1.the magic signature 
+             1.the magic sigwild 
              2.continuity flag 
              3.depth 
              4.number of channels
@@ -35834,7 +35834,7 @@
             GOTURN (@cite GOTURN) is kind of trackers based on Convolutional Neural Networks (CNN). 
             </summary>
             <remarks>
-            * While taking all advantages of CNN trackers, GOTURN is much faster due to offline training without online fine-tuning nature.
+            * While taking all advantages of CNN trackers, GOTURN is much faster due to offline training without online fine-tuning wild.
             * GOTURN tracker addresses the problem of single target tracking: given a bounding box label of an object in the first frame of the video,
             
             * we track that object through the rest of the video.NOTE: Current method of GOTURN does not handle occlusions; however, it is fairly

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Diagnostics.Tracing;
 
 public class UI_EventSuggest : UI_default
 {
@@ -25,21 +26,36 @@ public class UI_EventSuggest : UI_default
     CurrentSanityLoss.text = $"{GameManager.Instance.GetTextData("currentsettlesanityloss").Name} {GameManager.Instance.GetTextData("sanity").Name} " +
       $"{GameManager.Instance.MyGameData.SettleSanityLoss} {GameManager.Instance.GetTextData("decrease").Name}";
 
-    for(int i=0;i<Panel.Length;i++)if(Panel[i].activeInHierarchy)Panel[i].SetActive(false);
+    for(int i=0;i<Panel.Length;i++)if(Panel[i].activeInHierarchy) Panel[i].SetActive(false);
 
     for(int i = 0; i < _eventlist.Count; i++)
     {
       if(Panel[i].activeInHierarchy==false)Panel[i].SetActive(true);
       Panel_Group[i].alpha = 1.0f;
-      Panel_Group[i].interactable = true;
-      Panel_Group[i].blocksRaycasts = true;
+      Panel_Group[i].interactable = false;
+      Panel_Group[i].blocksRaycasts = false;
       Panel_Name[i].text =GameManager.Instance.GetTextData(_eventlist[i].PlaceType).Name;
       Panel_Illust[i].sprite = GameManager.Instance.ImageHolder.GetPlaceIllust(_eventlist[i].PlaceType);
       Panel_Description[i].text = GameManager.Instance.GetTextData(_eventlist[i].GetType()).Name;
       //중요도에 따라서 Panel_Tile[i].sprite를 변경
     }
-    UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);
+
+        MyRect.anchoredPosition = Vector2.zero;
+        MyGroup.alpha = 1.0f;
+        MyGroup.interactable = true;
+        MyGroup.blocksRaycasts = true;
+
   }//정착지에 도착하면 이벤트를 받아온 다음 제시 패널을 세팅한 뒤 등장
+    public void CloseSuggestPanel()
+    {
+        SettleName.text = "";
+        for(int i=0;i < Panel_Group.Length; i++)
+        {
+            Panel_Group[i].alpha = 0.0f;
+            if (Panel[i].activeInHierarchy) Panel[i].SetActive(false);
+        }
+        StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
+    }
   public void SelectEvent(int _index)
   {
     if (UIManager.Instance.IsWorking) return;

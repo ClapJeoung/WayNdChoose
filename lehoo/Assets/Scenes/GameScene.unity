@@ -7954,7 +7954,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10680,7 +10680,7 @@ MonoBehaviour:
   TraitRect: {fileID: 28029739}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
   ExpRect: {fileID: 1576758558}
 --- !u!114 &137007875
@@ -11311,7 +11311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PanelType: 8
-  MyTheme: 0
+  MyTheme: 1
   MyTendency: 0
   MySelectionTendency: 0
   MySkillName: 0
@@ -13160,7 +13160,7 @@ MonoBehaviour:
   SmallPanelFadeTime: 0.5
   TextFadeInTime: 0.7
   TextFadeOutTime: 0.4
-  FadeWaitTime: 1
+  FadeWaitTime: 0.1
   MoveInAlpha: 0.1
   PreviewFadeTime: 0.1
   TextPreviewPrefab: {fileID: 82466337947868693, guid: 4c146397f7b87534bbdd3f1cb8f287fe, type: 3}
@@ -13226,8 +13226,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WholeRect: {fileID: 631456649}
   MainCamera: {fileID: 519420031}
-  PositiveColor: {r: 0.3820755, g: 1, b: 0.42491513, a: 0}
-  NegativeColor: {r: 1, g: 0.3726415, b: 0.3726415, a: 0}
+  PositiveColor: {r: 1, g: 1, b: 1, a: 1}
+  NegativeColor: {r: 1, g: 1, b: 1, a: 1}
   TurnPreview: {fileID: 640109630}
   TurnIcon: {fileID: 1741813739}
   TurnDescription: {fileID: 49508562}
@@ -16889,7 +16889,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17089,7 +17089,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -22929,7 +22929,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 1474, y: -175.49995}
+  m_AnchoredPosition: {x: 821, y: -163}
   m_SizeDelta: {x: 339.27, y: 169.9}
   m_Pivot: {x: 1.3, y: 0.5}
 --- !u!225 &410154432
@@ -23309,7 +23309,7 @@ MonoBehaviour:
   MyIconImage: {fileID: 384303844}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
 --- !u!1 &417463961
 GameObject:
@@ -31288,7 +31288,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0807e96d92f9fd745ac8e876654e9903, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -32218,14 +32218,14 @@ MonoBehaviour:
       - m_Target: {fileID: 1399962245}
         m_TargetAssemblyTypeName: UI_map, Assembly-CSharp
         m_MethodName: OpenUI
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &545531551
 MonoBehaviour:
@@ -32996,7 +32996,7 @@ MonoBehaviour:
   MyIconImage: {fileID: 955469776}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
 --- !u!1 &572770654
 GameObject:
@@ -39525,7 +39525,7 @@ MonoBehaviour:
   TraitRect: {fileID: 28029739}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
   ExpRect: {fileID: 1576758558}
 --- !u!114 &624490557
@@ -39869,7 +39869,7 @@ RectTransform:
   - {fileID: 966532452}
   - {fileID: 410154431}
   m_Father: {fileID: 1842386664}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -39963,7 +39963,7 @@ MonoBehaviour:
   TraitRect: {fileID: 28029739}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
   ExpRect: {fileID: 1576758558}
 --- !u!114 &639197452
@@ -40181,7 +40181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -43115,14 +43115,14 @@ MonoBehaviour:
       - m_Target: {fileID: 1399962245}
         m_TargetAssemblyTypeName: UI_map, Assembly-CSharp
         m_MethodName: OpenUI
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &749332183
 MonoBehaviour:
@@ -44335,7 +44335,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -45096,14 +45096,14 @@ MonoBehaviour:
       - m_Target: {fileID: 1399962245}
         m_TargetAssemblyTypeName: UI_map, Assembly-CSharp
         m_MethodName: OpenUI
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &793837050
 MonoBehaviour:
@@ -46020,7 +46020,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.2901961}
+  m_Color: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 0.2901961}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -46639,7 +46639,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -47189,7 +47189,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0807e96d92f9fd745ac8e876654e9903, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -47956,7 +47956,7 @@ MonoBehaviour:
   TraitRect: {fileID: 28029739}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 1577761858}
   IntelligenceRect: {fileID: 1242538523}
   ExpRect: {fileID: 1576758558}
 --- !u!114 &856784909
@@ -50164,7 +50164,7 @@ MonoBehaviour:
   MyIconImage: {fileID: 20732183}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
 --- !u!1 &913788510
 GameObject:
@@ -50412,7 +50412,7 @@ MonoBehaviour:
   RewardSkillThemeImage: {fileID: 570032014}
   RewardSkill_Conversation: {fileID: 570835303}
   RewardSkill_Force: {fileID: 416357710}
-  RewardSkill_Nature: {fileID: 1396897021}
+  RewardSkill_Wild: {fileID: 1396897021}
   RewardSkill_Intelligence: {fileID: 911866156}
   RewardSkill_Description: {fileID: 1670437632}
   RewardExpGroup: {fileID: 851324885}
@@ -50545,7 +50545,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PanelType: 8
-  MyTheme: 0
+  MyTheme: 3
   MyTendency: 0
   MySelectionTendency: 0
   MySkillName: 0
@@ -50945,82 +50945,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 934813573}
-  m_CullTransparentMesh: 1
---- !u!1 &939341643
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 939341644}
-  - component: {fileID: 939341646}
-  - component: {fileID: 939341645}
-  m_Layer: 5
-  m_Name: A
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &939341644
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 939341643}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1842386664}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -721, y: -98}
-  m_SizeDelta: {x: 1, y: 1}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &939341645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 939341643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &939341646
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 939341643}
   m_CullTransparentMesh: 1
 --- !u!1 &945166576
 GameObject:
@@ -51735,7 +51659,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -54966,7 +54890,7 @@ RectTransform:
   - {fileID: 1906177142}
   - {fileID: 592415870}
   m_Father: {fileID: 1842386664}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -56695,7 +56619,7 @@ MonoBehaviour:
   TraitRect: {fileID: 28029739}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
   ExpRect: {fileID: 1576758558}
 --- !u!114 &1120380570
@@ -56926,7 +56850,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -66005,7 +65929,7 @@ MonoBehaviour:
   MyIconImage: {fileID: 1816400736}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 1577761858}
   IntelligenceRect: {fileID: 1242538523}
 --- !u!1 &1399962240
 GameObject:
@@ -66467,14 +66391,14 @@ MonoBehaviour:
       - m_Target: {fileID: 919428636}
         m_TargetAssemblyTypeName: UI_Reward, Assembly-CSharp
         m_MethodName: OpenUI
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1409655466
 MonoBehaviour:
@@ -66999,7 +66923,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 90e74e12ed187e442aa1e4a392f0bc37, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -69252,7 +69176,7 @@ GameObject:
   - component: {fileID: 1488988706}
   - component: {fileID: 1488988708}
   m_Layer: 5
-  m_Name: Skill_plusnature
+  m_Name: Skill_pluswild
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69333,7 +69257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PanelType: 8
-  MyTheme: 0
+  MyTheme: 2
   MyTendency: 0
   MySelectionTendency: 0
   MySkillName: 0
@@ -70789,9 +70713,9 @@ MonoBehaviour:
   ForceSkillName: {fileID: 595072222}
   ForceSkillLevel: {fileID: 1878089448}
   ForcePreviewData: {fileID: 147511784}
-  NatureSkillName: {fileID: 317399552}
-  NatureSkillLevel: {fileID: 1334474873}
-  NaturePreviewData: {fileID: 1488988708}
+  WildSkillName: {fileID: 317399552}
+  WildSkillLevel: {fileID: 1334474873}
+  WildPreviewData: {fileID: 1488988708}
   IntelligenceSkillName: {fileID: 1426810943}
   IntelligenceSkillLevel: {fileID: 1603807500}
   IntelligencePreviewData: {fileID: 925551149}
@@ -94526,82 +94450,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1791452894}
   m_CullTransparentMesh: 1
---- !u!1 &1795199652
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1795199653}
-  - component: {fileID: 1795199655}
-  - component: {fileID: 1795199654}
-  m_Layer: 5
-  m_Name: B
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1795199653
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1795199652}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1842386664}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 947, y: 507}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1795199654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1795199652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1795199655
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1795199652}
-  m_CullTransparentMesh: 1
 --- !u!1 &1796893230
 GameObject:
   m_ObjectHideFlags: 0
@@ -100889,8 +100737,6 @@ RectTransform:
   - {fileID: 1625050104}
   - {fileID: 8668587}
   - {fileID: 1840307890}
-  - {fileID: 939341644}
-  - {fileID: 1795199653}
   - {fileID: 631456649}
   - {fileID: 1075544417}
   m_Father: {fileID: 0}
@@ -101409,7 +101255,7 @@ MonoBehaviour:
   TraitRect: {fileID: 28029739}
   ConversationRect: {fileID: 875807664}
   ForceRect: {fileID: 1111063679}
-  NatureRect: {fileID: 1577761858}
+  WildRect: {fileID: 0}
   IntelligenceRect: {fileID: 1242538523}
   ExpRect: {fileID: 1576758558}
 --- !u!114 &1859853545
@@ -109532,7 +109378,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0807e96d92f9fd745ac8e876654e9903, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -114250,7 +114096,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0807e96d92f9fd745ac8e876654e9903, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

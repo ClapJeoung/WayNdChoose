@@ -21,7 +21,7 @@ public class UI_Reward : UI_default
   [SerializeField] private Image RewardSkillThemeImage = null;
   [SerializeField] private PreviewInteractive RewardSkill_Conversation = null;
   [SerializeField] private PreviewInteractive RewardSkill_Force = null;
-  [SerializeField] private PreviewInteractive RewardSkill_Nature = null;
+  [SerializeField] private PreviewInteractive RewardSkill_Wild = null;
   [SerializeField] private PreviewInteractive RewardSkill_Intelligence = null;
   [SerializeField] private TextMeshProUGUI RewardSkill_Description = null;
   [Space(10)]
@@ -109,17 +109,21 @@ public class UI_Reward : UI_default
         break;
     }
   }
-  public override void OpenUI()
+  public override void OpenUI(bool _islarge)
   {
     if (UIManager.Instance.IsWorking) return;
 
-    StartCoroutine(fadebackground(true));
-    StartCoroutine(fadereward(true));
+        UIManager.Instance.AddUIQueue(openui());
   }
+    private IEnumerator openui()
+    {
+        StartCoroutine(fadereward(true));
+        StartCoroutine(fadebackground(true));
+        yield return null;
+    }
   private IEnumerator fadereward(bool _isopen)
   {
     float _time = 0.0f;
-    UIManager.Instance.IsWorking = true;
     Vector2 _size = PanelRect.sizeDelta;
     Vector2 _originpos = PanelRect.anchoredPosition;
 
@@ -143,7 +147,6 @@ public class UI_Reward : UI_default
     }
     PanelGroup.alpha = _endalpha;
     PanelRect.anchoredPosition = _targetpos;
-    UIManager.Instance.IsWorking = false;
   }
   private IEnumerator fadebackground(bool _isopen)
   {
@@ -175,35 +178,35 @@ public class UI_Reward : UI_default
       case ThemeType.Conversation:
         RewardSkill_Conversation.MySkillName = SkillName.Speech;
         RewardSkill_Force.MySkillName = SkillName.Threat;
-        RewardSkill_Nature.MySkillName = SkillName.Deception;
+        RewardSkill_Wild.MySkillName = SkillName.Deception;
         RewardSkill_Intelligence.MySkillName = SkillName.Logic;
         break;
       case ThemeType.Force:
         RewardSkill_Conversation.MySkillName = SkillName.Threat;
         RewardSkill_Force.MySkillName = SkillName.Martialarts;
-        RewardSkill_Nature.MySkillName = SkillName.Bow;
+        RewardSkill_Wild.MySkillName = SkillName.Bow;
         RewardSkill_Intelligence.MySkillName = SkillName.Somatology;
         break;
-      case ThemeType.Nature:
+      case ThemeType.Wild:
         RewardSkill_Conversation.MySkillName = SkillName.Deception;
         RewardSkill_Force.MySkillName = SkillName.Bow;
-        RewardSkill_Nature.MySkillName = SkillName.Survivable;
+        RewardSkill_Wild.MySkillName = SkillName.Survivable;
         RewardSkill_Intelligence.MySkillName = SkillName.Biology;
         break;
       case ThemeType.Intelligence:
         RewardSkill_Conversation.MySkillName = SkillName.Logic;
         RewardSkill_Force.MySkillName = SkillName.Somatology;
-        RewardSkill_Nature.MySkillName = SkillName.Biology;
+        RewardSkill_Wild.MySkillName = SkillName.Biology;
         RewardSkill_Intelligence.MySkillName = SkillName.Knowledge;
         break;
     }
     RewardSkill_Description.text = $"{GameManager.Instance.GetTextData("chooseskill")}";
-    StartCoroutine(faderewardsubpanel(RewardSkillGroup, true));
+    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardSkillGroup, true));
   }
   public void CloseRewardSkillPanel()
   {
     if (UIManager.Instance.IsWorking) return;
-    StartCoroutine(faderewardsubpanel(RewardSkillGroup, false));
+    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardSkillGroup, false));
   }
   private IEnumerator faderewardsubpanel(CanvasGroup _group, bool _isopen)
   {
@@ -267,7 +270,7 @@ public class UI_Reward : UI_default
     }
     if (RewardExpQuitButton.activeInHierarchy == false) RewardExpQuitButton.SetActive(true);
     RewardExpDescription.text = GameManager.Instance.GetTextData("savetheexp").Name;
-    StartCoroutine(faderewardsubpanel(RewardExpGroup, true));
+    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardExpGroup, true));
   }
   public void OpenRewardExpPanel_penalty(Experience _badexp)
   {
@@ -312,18 +315,23 @@ public class UI_Reward : UI_default
     }
     if (RewardExpQuitButton.activeInHierarchy == true) RewardExpQuitButton.SetActive(false);
     RewardExpDescription.text = GameManager.Instance.GetTextData("savebadexp").Name;
-    StartCoroutine(faderewardsubpanel(RewardExpGroup, true));
+    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardExpGroup, true));
   }
   public void CloseRewardExpPanel()
   {
     if (UIManager.Instance.IsWorking) return;
-    StartCoroutine(faderewardsubpanel(RewardExpGroup, false));
+    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardExpGroup, false));
   }
   public override void CloseUI()
   {
-    StartCoroutine(fadebackground(false));
-    StartCoroutine(fadereward(false));
+        UIManager.Instance.AddUIQueue(closeui());
   }
+    private IEnumerator closeui()
+    {
+        StartCoroutine(fadebackground(false));
+        StartCoroutine(fadereward(false));
+        yield return null;
+    }
 
   public void AddRewardHP(int _value, Sprite[] _icon,Vector2[] _startpos,Vector2[] _endpos)
   {

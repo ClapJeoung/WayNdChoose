@@ -18,7 +18,7 @@ public class RewardButton : MonoBehaviour
   [SerializeField] private RectTransform TraitRect = null;
   [SerializeField] private RectTransform ConversationRect = null;
   [SerializeField] private RectTransform ForceRect = null;
-  [SerializeField] private RectTransform NatureRect = null;
+  [SerializeField] private RectTransform WildRect = null;
   [SerializeField] private RectTransform IntelligenceRect = null;
   [SerializeField] private RectTransform ExpRect = null;
   private int MyValue = -1;
@@ -63,7 +63,7 @@ public class RewardButton : MonoBehaviour
     {
       case ThemeType.Conversation:TargetThemePos[0]=ConversationRect.anchoredPosition; break;
       case ThemeType.Force: TargetThemePos[0] = ForceRect.anchoredPosition; break;
-      case ThemeType.Nature: TargetThemePos[0] = NatureRect.anchoredPosition; break;
+      case ThemeType.Wild: TargetThemePos[0] = WildRect.anchoredPosition; break;
       case ThemeType.Intelligence: TargetThemePos[0] = IntelligenceRect.anchoredPosition; break;
     }
   }
@@ -81,13 +81,13 @@ public class RewardButton : MonoBehaviour
     {
       case SkillName.Speech: TargetThemePos[0] = ConversationRect.position;TargetThemePos[1] = ConversationRect.position; break;
       case SkillName.Threat: TargetThemePos[0] = ConversationRect.position; TargetThemePos[1] = ForceRect.position; break;
-      case SkillName.Deception: TargetThemePos[0] = ConversationRect.position; TargetThemePos[1] = NatureRect.position; break;
+      case SkillName.Deception: TargetThemePos[0] = ConversationRect.position; TargetThemePos[1] = WildRect.position; break;
       case SkillName.Logic: TargetThemePos[0] = ConversationRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
       case SkillName.Martialarts: TargetThemePos[0] = ForceRect.position; TargetThemePos[1] = ForceRect.position; break;
-      case SkillName.Bow: TargetThemePos[0] = NatureRect.position; TargetThemePos[1] = ForceRect.position; break;
+      case SkillName.Bow: TargetThemePos[0] = WildRect.position; TargetThemePos[1] = ForceRect.position; break;
       case SkillName.Somatology: TargetThemePos[0] = ForceRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
-      case SkillName.Survivable: TargetThemePos[0] = NatureRect.position; TargetThemePos[1] = NatureRect.position; break;
-      case SkillName.Biology: TargetThemePos[0] = NatureRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
+      case SkillName.Survivable: TargetThemePos[0] = WildRect.position; TargetThemePos[1] = WildRect.position; break;
+      case SkillName.Biology: TargetThemePos[0] = WildRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
       case SkillName.Knowledge:  TargetThemePos[0] = IntelligenceRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
     }
   }

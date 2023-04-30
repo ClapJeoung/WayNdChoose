@@ -4,12 +4,12 @@
         <name>Google.Apis.Auth</name>
     </assembly>
     <members>
-        <member name="T:Google.Apis.Auth.GoogleJsonWebSignature">
+        <member name="T:Google.Apis.Auth.GoogleJsonWebSigwild">
             <summary>
-            Google JSON Web Signature as specified in https://developers.google.com/accounts/docs/OAuth2ServiceAccount.
+            Google JSON Web Sigwild as specified in https://developers.google.com/accounts/docs/OAuth2ServiceAccount.
             </summary>
         </member>
-        <member name="M:Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(System.String,Google.Apis.Util.IClock,System.Boolean)">
+        <member name="M:Google.Apis.Auth.GoogleJsonWebSigwild.ValidateAsync(System.String,Google.Apis.Util.IClock,System.Boolean)">
             <summary>
             Validates a Google-issued Json Web Token (JWT).
             Will throw a <see cref="T:Google.Apis.Auth.InvalidJwtException"/> if the passed value is not valid JWT signed by Google.
@@ -27,51 +27,51 @@
             <returns>The JWT payload, if the JWT is valid. Throws an <see cref="T:Google.Apis.Auth.InvalidJwtException"/> otherwise.</returns>
             <exception cref="T:Google.Apis.Auth.InvalidJwtException">Thrown when passed a JWT that is not a valid JWT signed by Google.</exception>
         </member>
-        <member name="T:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings">
+        <member name="T:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings">
             <summary>
-            Settings used when validating a JSON Web Signature.
+            Settings used when validating a JSON Web Sigwild.
             </summary>
         </member>
-        <member name="M:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.#ctor">
+        <member name="M:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.#ctor">
             <summary>
             Create a new instance.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.Audience">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.Audience">
             <summary>
             The trusted audience client IDs; or <c>null</c> to suppress audience validation.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.HostedDomain">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.HostedDomain">
             <summary>
             The required GSuite domain of the user; or <c>null</c> to suppress hosted domain validation.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.Clock">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.Clock">
             <summary>
             Optional. The <see cref="T:Google.Apis.Util.IClock"/> to use for JWT expiration verification. Defaults to the system clock.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.ForceGoogleCertRefresh">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.ForceGoogleCertRefresh">
             <summary>
             Optional. If true forces new certificates to be downloaded from Google. Defaults to false.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.IssuedAtClockTolerance">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.IssuedAtClockTolerance">
             <summary>
             Clock tolerance for the issued-at check.
             Causes a JWT to pass validation up to this duration before it is really valid;
             this is to allow for possible local-client clock skew. Defaults to 30 seconds.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.ExpirationTimeClockTolerance">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.ExpirationTimeClockTolerance">
             <summary>
             Clock tolerance for the expiration check.
             Causes a JWT to pass validation up to this duration after it really expired;
             this is to allow for possible local-client clock skew. Defaults to zero seconds.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.CertificateCache">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.CertificateCache">
             <summary>
             CertificateCache for testing purposes.
             If null, the default CertificateCache
@@ -79,7 +79,7 @@
             be used.
             </summary>
         </member>
-        <member name="M:Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(System.String,Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings)">
+        <member name="M:Google.Apis.Auth.GoogleJsonWebSigwild.ValidateAsync(System.String,Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings)">
             <summary>
             Validates a Google-issued Json Web Token (JWT).
             Will throw a <see cref="T:Google.Apis.Auth.InvalidJwtException"/> if the specified JWT fails any validation check.
@@ -91,7 +91,7 @@
             <para>
             Issued-at validation and expiry validation is performed using the clock on this local client,
             so local clock inaccuracies can lead to incorrect validation results.
-            Use <see cref="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.IssuedAtClockTolerance"/> and <see cref="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.ExpirationTimeClockTolerance"/>
+            Use <see cref="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.IssuedAtClockTolerance"/> and <see cref="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.ExpirationTimeClockTolerance"/>
             to allow for local clock inaccuracy
             <c>IssuedAtClockTolerance</c> defaults to 30 seconds; it is very unlikely a JWT will be issued that isn't already valid.
             <c>ExpirationTimeClockTolerance</c> defaults to zero seconds; in some use-cases it may be useful to set this to a negative
@@ -100,19 +100,19 @@
             from the server.
             </para>
             <para>Google certificates are cached, and refreshed once per hour. This can be overridden by setting
-            <see cref="P:Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings.ForceGoogleCertRefresh"/> to true.</para>
+            <see cref="P:Google.Apis.Auth.GoogleJsonWebSigwild.ValidationSettings.ForceGoogleCertRefresh"/> to true.</para>
             </remarks>
             <param name="jwt">The JWT to validate.</param>
             <param name="validationSettings">Specifies how to carry out the validation.</param>
             <returns>The payload of the verified token.</returns>
             <exception cref="T:Google.Apis.Auth.InvalidJwtException">If the token does not pass verification.</exception>
         </member>
-        <member name="T:Google.Apis.Auth.GoogleJsonWebSignature.Header">
+        <member name="T:Google.Apis.Auth.GoogleJsonWebSigwild.Header">
             <summary>
             The header as specified in https://developers.google.com/accounts/docs/OAuth2ServiceAccount#formingheader.
             </summary>
         </member>
-        <member name="T:Google.Apis.Auth.GoogleJsonWebSignature.Payload">
+        <member name="T:Google.Apis.Auth.GoogleJsonWebSigwild.Payload">
             <summary>
             The payload as specified in 
             https://developers.google.com/accounts/docs/OAuth2ServiceAccount#formingclaimset,
@@ -120,33 +120,33 @@
             https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.Scope">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.Scope">
             <summary>
             A space-delimited list of the permissions the application requests or <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.Prn">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.Prn">
             <summary>
             The email address of the user for which the application is requesting delegated access.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.HostedDomain">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.HostedDomain">
             <summary>
             The hosted GSuite domain of the user. Provided only if the user belongs to a hosted domain.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.Email">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.Email">
             <summary>
             The user's email address. This may not be unique and is not suitable for use as a primary key.
             Provided only if your scope included the string "email".
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.EmailVerified">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.EmailVerified">
             <summary>
             True if the user's e-mail address has been verified; otherwise false.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.Name">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.Name">
             <summary>
             The user's full name, in a displayable form. Might be provided when:
             (1) The request scope included the string "profile"; or
@@ -155,20 +155,20 @@
             Note that this claim is never guaranteed to be present.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.GivenName">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.GivenName">
             <summary>
             Given name(s) or first name(s) of the End-User. Note that in some cultures, people can have multiple given names;
             all can be present, with the names being separated by space characters.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.FamilyName">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.FamilyName">
             <summary>
             Surname(s) or last name(s) of the End-User. Note that in some cultures,
             people can have multiple family names or no family name;
             all can be present, with the names being separated by space characters.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.Picture">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.Picture">
             <summary>
             The URL of the user's profile picture. Might be provided when:
             (1) The request scope included the string "profile"; or
@@ -177,7 +177,7 @@
             Note that this claim is never guaranteed to be present.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.GoogleJsonWebSignature.Payload.Locale">
+        <member name="P:Google.Apis.Auth.GoogleJsonWebSigwild.Payload.Locale">
             <summary>
             End-User's locale, represented as a BCP47 [RFC5646] language tag.
             This is typically an ISO 639-1 Alpha-2 [ISO639‑1] language code in lowercase and an
@@ -196,13 +196,13 @@
             </summary>
             <param name="message">The error message that explains why the JWT was invalid.</param>
         </member>
-        <member name="T:Google.Apis.Auth.JsonWebSignature">
+        <member name="T:Google.Apis.Auth.JsonWebSigwild">
             <summary>
-            JSON Web Signature (JWS) implementation as specified in 
-            http://tools.ietf.org/html/draft-ietf-jose-json-web-signature-11.
+            JSON Web Sigwild (JWS) implementation as specified in 
+            http://tools.ietf.org/html/draft-ietf-jose-json-web-sigwild-11.
             </summary>
         </member>
-        <member name="M:Google.Apis.Auth.JsonWebSignature.VerifySignedTokenAsync(System.String,Google.Apis.Auth.SignedTokenVerificationOptions,System.Threading.CancellationToken)">
+        <member name="M:Google.Apis.Auth.JsonWebSigwild.VerifySignedTokenAsync(System.String,Google.Apis.Auth.SignedTokenVerificationOptions,System.Threading.CancellationToken)">
             <summary>
             Verifies that the given token is a valid, not expired, signed token.
             </summary>
@@ -213,7 +213,7 @@
             <returns>The payload contained by the token.</returns>
             <exception cref="T:Google.Apis.Auth.InvalidJwtException">If the token is invalid or expired.</exception>
         </member>
-        <member name="M:Google.Apis.Auth.JsonWebSignature.VerifySignedTokenAsync``1(System.String,Google.Apis.Auth.SignedTokenVerificationOptions,System.Threading.CancellationToken)">
+        <member name="M:Google.Apis.Auth.JsonWebSigwild.VerifySignedTokenAsync``1(System.String,Google.Apis.Auth.SignedTokenVerificationOptions,System.Threading.CancellationToken)">
             <summary>
             Verifies that the given token is a valid, not expired, signed token.
             </summary>
@@ -224,66 +224,66 @@
             <returns>The payload contained by the token.</returns>
             <exception cref="T:Google.Apis.Auth.InvalidJwtException">If the token is invalid or expired.</exception>
             <typeparam name="TPayload">The type of the payload to return, so user code can validate
-            additional claims. Should extend <see cref="T:Google.Apis.Auth.JsonWebSignature.Payload"/>. Payload information will be deserialized
+            additional claims. Should extend <see cref="T:Google.Apis.Auth.JsonWebSigwild.Payload"/>. Payload information will be deserialized
             using <see cref="P:Google.Apis.Json.NewtonsoftJsonSerializer.Instance"/>.</typeparam>
         </member>
-        <member name="T:Google.Apis.Auth.JsonWebSignature.Header">
+        <member name="T:Google.Apis.Auth.JsonWebSigwild.Header">
             <summary>
-            Header as specified in http://tools.ietf.org/html/draft-ietf-jose-json-web-signature-11#section-4.1.
+            Header as specified in http://tools.ietf.org/html/draft-ietf-jose-json-web-sigwild-11#section-4.1.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.Algorithm">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.Algorithm">
             <summary>
             Gets or set the algorithm header parameter that identifies the cryptographic algorithm used to secure 
             the JWS or <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.JwkUrl">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.JwkUrl">
             <summary>
             Gets or sets the JSON Web Key URL header parameter that is an absolute URL that refers to a resource 
             for a set of JSON-encoded public keys, one of which corresponds to the key that was used to digitally 
             sign the JWS or <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.Jwk">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.Jwk">
             <summary>
             Gets or sets JSON Web Key header parameter that is a public key that corresponds to the key used to 
             digitally sign the JWS or <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.KeyId">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.KeyId">
             <summary>
             Gets or sets key ID header parameter that is a hint indicating which specific key owned by the signer 
-            should be used to validate the digital signature or <c>null</c>.
+            should be used to validate the digital sigwild or <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.X509Url">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.X509Url">
             <summary>
             Gets or sets X.509 URL header parameter that is an absolute URL that refers to a resource for the X.509
             public key certificate or certificate chain corresponding to the key used to digitally sign the JWS or 
             <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.X509Thumbprint">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.X509Thumbprint">
             <summary>
             Gets or sets X.509 certificate thumb print header parameter that provides a base64url encoded SHA-1 
             thumb-print (a.k.a. digest) of the DER encoding of an X.509 certificate that can be used to match the 
             certificate or <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.X509Certificate">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.X509Certificate">
             <summary>
             Gets or sets X.509 certificate chain header parameter contains the X.509 public key certificate or 
             certificate chain corresponding to the key used to digitally sign the JWS or <c>null</c>.
             </summary>
         </member>
-        <member name="P:Google.Apis.Auth.JsonWebSignature.Header.critical">
+        <member name="P:Google.Apis.Auth.JsonWebSigwild.Header.critical">
             <summary>
             Gets or sets array listing the header parameter names that define extensions that are used in the JWS 
             header that MUST be understood and processed or <c>null</c>.
             </summary>
         </member>
-        <member name="T:Google.Apis.Auth.JsonWebSignature.Payload">
+        <member name="T:Google.Apis.Auth.JsonWebSigwild.Payload">
             <summary>JWS Payload.</summary>
         </member>
         <member name="T:Google.Apis.Auth.JsonWebToken">
@@ -845,7 +845,7 @@
             </summary>
             <param name="blob">The blob to sign.</param>
             <param name="cancellationToken">Cancellation token to cancel the operation.</param>
-            <returns>The base64 encoded signature.</returns>
+            <returns>The base64 encoded sigwild.</returns>
             <exception cref="T:System.Net.Http.HttpRequestException">When the signing request fails.</exception>
             <exception cref="T:Newtonsoft.Json.JsonException">When the signing response is not valid JSON.</exception>
             <remarks>
@@ -2060,11 +2060,11 @@
         </member>
         <member name="M:Google.Apis.Auth.OAuth2.IBlobSigner.SignBlobAsync(System.Byte[],System.Threading.CancellationToken)">
             <summary>
-            Returns the base64 encoded signature of the given blob.
+            Returns the base64 encoded sigwild of the given blob.
             </summary>
             <param name="blob">The blob to sign.</param>
             <param name="cancellationToken">The cancellation token.</param>
-            <returns>The base64 encoded signature.</returns>
+            <returns>The base64 encoded sigwild.</returns>
         </member>
         <member name="T:Google.Apis.Auth.OAuth2.ICodeReceiver">
             <summary>OAuth 2.0 verification code receiver.</summary>
@@ -2275,7 +2275,7 @@
             </summary>
             <param name="blob">The blob to sign.</param>
             <param name="cancellationToken">Cancellation token to cancel operation.</param>
-            <returns>The base64 encoded signature.</returns>
+            <returns>The base64 encoded sigwild.</returns>
             <exception cref="T:System.Net.Http.HttpRequestException">When signing request fails.</exception>
             <exception cref="T:Newtonsoft.Json.JsonException">When signing response is not a valid JSON.</exception>
         </member>
@@ -2795,7 +2795,7 @@
             </summary>
         </member>
         <member name="P:Google.Apis.Auth.OAuth2.Requests.GoogleAssertionTokenRequest.Assertion">
-            <summary>Gets or sets the JWT (including signature).</summary>
+            <summary>Gets or sets the JWT (including sigwild).</summary>
         </member>
         <member name="M:Google.Apis.Auth.OAuth2.Requests.GoogleAssertionTokenRequest.#ctor">
             <summary>
@@ -3358,7 +3358,7 @@
         <member name="P:Google.Apis.Auth.OAuth2.ServiceAccountCredential.Initializer.Key">
             <summary>
             Gets or sets the key which is used to sign the request, as specified in
-            https://developers.google.com/accounts/docs/OAuth2ServiceAccount#computingsignature.
+            https://developers.google.com/accounts/docs/OAuth2ServiceAccount#computingsigwild.
             </summary>
         </member>
         <member name="P:Google.Apis.Auth.OAuth2.ServiceAccountCredential.Initializer.KeyId">
@@ -3403,7 +3403,7 @@
         <member name="P:Google.Apis.Auth.OAuth2.ServiceAccountCredential.Key">
             <summary>
             Gets the key which is used to sign the request, as specified in
-            https://developers.google.com/accounts/docs/OAuth2ServiceAccount#computingsignature.
+            https://developers.google.com/accounts/docs/OAuth2ServiceAccount#computingsigwild.
             </summary>
         </member>
         <member name="P:Google.Apis.Auth.OAuth2.ServiceAccountCredential.KeyId">
@@ -3498,18 +3498,18 @@
             <param name="expiryUtc">The expiry time of the JWT.</param>
             </summary>
         </member>
-        <member name="M:Google.Apis.Auth.OAuth2.ServiceAccountCredential.CreateAssertionFromPayload(Google.Apis.Auth.JsonWebSignature.Payload)">
+        <member name="M:Google.Apis.Auth.OAuth2.ServiceAccountCredential.CreateAssertionFromPayload(Google.Apis.Auth.JsonWebSigwild.Payload)">
             <summary>
             Signs JWT token using the private key and returns the serialized assertion.
             </summary>
             <param name="payload">the JWT payload to sign.</param>
         </member>
-        <member name="M:Google.Apis.Auth.OAuth2.ServiceAccountCredential.CreateSignature(System.Byte[])">
+        <member name="M:Google.Apis.Auth.OAuth2.ServiceAccountCredential.CreateSigwild(System.Byte[])">
             <summary>
-            Creates a base64 encoded signature for the SHA-256 hash of the specified data.
+            Creates a base64 encoded sigwild for the SHA-256 hash of the specified data.
             </summary>
             <param name="data">The data to hash and sign. Must not be null.</param>
-            <returns>The base-64 encoded signature.</returns>
+            <returns>The base-64 encoded sigwild.</returns>
         </member>
         <member name="M:Google.Apis.Auth.OAuth2.ServiceAccountCredential.SignBlobAsync(System.Byte[],System.Threading.CancellationToken)">
             <inheritdoc/>
@@ -3940,9 +3940,9 @@
         </member>
         <member name="T:Google.Apis.Auth.SignedToken`2">
             <summary>
-            Represents a signed token, could be a <see cref="T:Google.Apis.Auth.JsonWebSignature"/> or
-            a <see cref="T:Google.Apis.Auth.GoogleJsonWebSignature"/> but this not only holds the payload
-            and headers, but also the signature itself. It's meant to help with signed
+            Represents a signed token, could be a <see cref="T:Google.Apis.Auth.JsonWebSigwild"/> or
+            a <see cref="T:Google.Apis.Auth.GoogleJsonWebSigwild"/> but this not only holds the payload
+            and headers, but also the sigwild itself. It's meant to help with signed
             token verification and with obtaining token information.
             </summary>
         </member>

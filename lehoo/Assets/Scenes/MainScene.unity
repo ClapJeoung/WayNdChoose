@@ -328,7 +328,7 @@ MonoBehaviour:
   FollowEventData: {fileID: 4900000, guid: 3f8b320078e99b94c84132abb562fb27, type: 3}
   QuestEventData: {fileID: 4900000, guid: 9503c393b8ea5ee4298dcc992eaba846, type: 3}
   EXPData: {fileID: 4900000, guid: 7ebe90233c1e0f74596c00d986bac6f5, type: 3}
-  TraitData: {fileID: 4900000, guid: 877aaa94a02ab004d92f3f1bf3d6a121, type: 3}
+  TraitData: {fileID: 4900000, guid: 7ebe90233c1e0f74596c00d986bac6f5, type: 3}
   TextData: {fileID: 4900000, guid: e72232b03f70db842b97b4459a07fcfd, type: 3}
 --- !u!4 &311089977
 Transform:

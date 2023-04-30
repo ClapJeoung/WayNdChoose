@@ -26,7 +26,7 @@ public class UI_trait : UI_default
     TraitDescription.text = _description;
     TraitEffect.text = _effect;
 
-    if(CurrentTrait==null) UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true);
+    if(CurrentTrait==null)UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
     else
     {
       if(CurrentTrait==_trait)CloseUI();

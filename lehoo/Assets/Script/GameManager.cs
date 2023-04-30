@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
     {
       case ThemeType.Conversation: _name = "conversation"; break;
       case ThemeType.Force: _name = "force"; break;
-      case ThemeType.Nature: _name = "nature"; break;
+      case ThemeType.Wild: _name = "wild"; break;
       case ThemeType.Intelligence: _name = "intelligence"; break;
     }
     return GetTextData(_name);
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
     {
       case EffectType.Conversation: return GetTextData("conversation");
       case EffectType.Force: return GetTextData("force");
-      case EffectType.Nature: return GetTextData("nature");
+      case EffectType.Wild: return GetTextData("wild");
       case EffectType.Intelligence: return GetTextData("intelligence");
       case EffectType.Speech: return GetTextData("speech");
       case EffectType.Threat: return GetTextData("threat");
@@ -442,7 +442,7 @@ public class GameManager : MonoBehaviour
     _oper.allowSceneActivation = true;
 
     yield return new WaitUntil(()=> _oper.isDone==true);
-    CreateNewMap();
+        yield return StartCoroutine(createnewmap());
     UIManager.Instance.UpdateAllUI();
 
     if (MyGameData.CurrentEvent == null)

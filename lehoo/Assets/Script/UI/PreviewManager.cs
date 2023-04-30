@@ -521,13 +521,13 @@ public class PreviewManager : MonoBehaviour
         _tendencylevel = GameManager.Instance.MyGameData.Tendency_MM.Level * +1;
         break;
     }
-    string _tendencydescription = GameManager.Instance.MyGameData.GetTendencyEffectString(_type);
+    string _tendencyeffect = GameManager.Instance.MyGameData.GetTendencyEffectString(_type);
 
     _tendencyname = _textdata.Name;
     TendencyIcon.sprite = _tendencyicon;
     TendencyName.text = _tendencyname;
     TendencyLevel.text = _tendencylevel.ToString();
-    TendencyDescription.text = _tendencydescription;
+    TendencyDescription.text = _tendencyeffect;
     TendencySubDescription.text = _textdata.SelectionSubDescription;
 
     CurrentPreview = TendencyPreview.GetComponent<RectTransform>();
@@ -569,12 +569,14 @@ public class PreviewManager : MonoBehaviour
         if (_modify.Equals(0)) _targetdescription = "";
         else if (_modify > 0)
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("hp").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("hp").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+          _targetdescription += $"{GameManager.Instance.GetTextData("hp").FailDescription} {_modify}%";
           _descriptioncolor = NegativeColor;
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("hp").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("hp").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+                    _targetdescription += $"{GameManager.Instance.GetTextData("hp").FailDescription} {_modify}%";
           _descriptioncolor = PositiveColor;
         }//보정치가 0 이하라면 긍정적인것
         break;//체력이라면 지불 기본값, 보정치, 최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
@@ -586,12 +588,14 @@ public class PreviewManager : MonoBehaviour
         if (_modify.Equals(0)) _targetdescription = "";
         else if (_modify > 0)
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("sanity").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("sanity").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+                    _targetdescription += $"{GameManager.Instance.GetTextData("sanity").FailDescription} {_modify}%";
           _descriptioncolor = NegativeColor;
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("sanity").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("sanity").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+                    _targetdescription += $"{GameManager.Instance.GetTextData("sanity").FailDescription} {_modify}%";
           _descriptioncolor = PositiveColor;
         }//보정치가 0 이하라면 긍정적인것
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
@@ -603,12 +607,14 @@ public class PreviewManager : MonoBehaviour
         if (_modify.Equals(0)) _targetdescription = "";
         else if (_modify > 0)
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("gold").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("gold").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+                    _targetdescription += $"{GameManager.Instance.GetTextData("gold").FailDescription} {_modify}%";
           _descriptioncolor = NegativeColor;
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("gold").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("gold").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+                    _targetdescription += $"{GameManager.Instance.GetTextData("gold").FailDescription} {_modify}%";
           _descriptioncolor = PositiveColor;
         }//보정치가 0 이하라면 긍정적인것
         if (_target > GameManager.Instance.MyGameData.Gold) _percent = GameManager.Instance.MyGameData.CheckPercent_money(_target);
@@ -655,7 +661,7 @@ public class PreviewManager : MonoBehaviour
     {
       case ThemeType.Conversation:_name= "conversation";break;
       case ThemeType.Force:_name= "force";break;
-      case ThemeType.Nature:_name= "nature";break;
+      case ThemeType.Wild:_name= "wild";break;
       case ThemeType.Intelligence:_name= "intelligence";break;
     }
     _themeid += _name;
@@ -683,7 +689,7 @@ public class PreviewManager : MonoBehaviour
     _currentlevel = _bytrait + _byskill + _byexp + _bytendency;
     _percent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _targetlevel);
 
-    SelectionCheckName.text = _name;
+    SelectionCheckName.text = GameManager.Instance.GetTextData(_themetype).Name;
     CheckIcon_A.sprite = _icon;
     CheckIcon_B.gameObject.SetActive(false);
     CheckCurrentLevel.text = _currentlevel.ToString();
@@ -932,15 +938,14 @@ public class PreviewManager : MonoBehaviour
     GameManager.Instance.ImageHolder.GetSkillIcons(_skill, ref _icons);
     string _subdescription = _textdata.SelectionSubDescription;
 
-    RewardTSName.text = _name;
-    RewardTSIcon_A.sprite = _icons[0];
-    RewardTSIcon_B.sprite = _icons[1];
-    RewardTSSubdescription.text = _subdescription;
+        SkillSelectName.text = _name;
+        SkillSelectIcon_A.sprite = _icons[0]; SkillSelectIon_B.sprite = _icons[1];
+        SkillSelectionSubdescription.text = _subdescription;
 
-    CurrentPreview = RewardTSPanel.GetComponent<RectTransform>();
+    CurrentPreview = SkillSelectPanel.GetComponent<RectTransform>();
 
     IEnumerator _cor = null;
-    _cor = fadepreview(RewardTSPanel, true);
+    _cor = fadepreview(SkillSelectPanel, true);
     StartCoroutine(_cor);
   }
   public void OpenSkillSelectPreview(SkillName _skill)
@@ -1017,15 +1022,12 @@ ExpSelectEmptyName.text= _name;
   {
     if (CurrentPreview == null) return;
     StopAllCoroutines();
-    foreach (CanvasGroup _group in AllCanvasGroup)
-      if (_group.alpha > 0) StartCoroutine(fadepreview(_group.gameObject, false));
+        CurrentPreview.GetComponent<CanvasGroup>().alpha = 0.0f;
     CurrentPreview = null; 
   }
 
   private IEnumerator fadepreview(GameObject _targetobj, bool _isopen)
   {
-
-    //이 프리뷰가 열리거나 닫이는 코루틴이 실행중이었다면 해당 코루틴을 중단, 제거하고 그 자리에 이 코루틴을 넣는다
     CanvasGroup _mygroup = _targetobj.GetComponent<CanvasGroup>();
     if (_isopen) yield return new WaitForSeconds(0.1f);
 

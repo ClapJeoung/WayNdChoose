@@ -18,7 +18,7 @@ public class ImageHolder : ScriptableObject
   public Sprite UnknownExp = null;
   [Space(10)]
   public Sprite ThemeIllust_Conversation = null;
-  public Sprite ThemeIllust_Force = null, ThemeIllust_Nature = null, ThemeIllust_Intelligence = null;
+  public Sprite ThemeIllust_Force = null, ThemeIllust_Wild = null, ThemeIllust_Intelligence = null;
     [Space(10)]
   public List<Sprite> SkillIllust_Speech = new List<Sprite>();       
   public List<Sprite> SkillIllust_Threat = new List<Sprite>();
@@ -39,7 +39,7 @@ public class ImageHolder : ScriptableObject
   [Space(10)]
   public Sprite ThemeIcon_Conversation = null;
   public Sprite ThemeIcon_Force = null;
-  public Sprite ThemeIcon_Nature = null;
+  public Sprite ThemeIcon_Wild = null;
   public Sprite ThemeIcon_Intelligence = null;
   [Space(10)]
   public Sprite TendencySelectionIcon = null;
@@ -98,7 +98,7 @@ public class ImageHolder : ScriptableObject
     {
       case ThemeType.Conversation:return ThemeIcon_Conversation;
       case ThemeType.Force:return ThemeIcon_Force;
-        case ThemeType.Nature:return ThemeIcon_Nature;
+        case ThemeType.Wild:return ThemeIcon_Wild;
       default:return ThemeIcon_Intelligence;
     }
   }
@@ -108,7 +108,7 @@ public class ImageHolder : ScriptableObject
     {
       case ThemeType.Conversation: return ThemeIllust_Conversation;
       case ThemeType.Force: return ThemeIllust_Force;
-      case ThemeType.Nature: return ThemeIllust_Nature;
+      case ThemeType.Wild: return ThemeIllust_Wild;
       default: return ThemeIllust_Intelligence;
     }
   }
@@ -119,13 +119,13 @@ public class ImageHolder : ScriptableObject
     {
       case SkillName.Speech: _sprites[0] = ThemeIcon_Conversation;_sprites[1] = ThemeIcon_Conversation;break;
       case SkillName.Threat: _sprites[0] = ThemeIcon_Conversation; _sprites[1] = ThemeIcon_Force; break;
-      case SkillName.Deception : _sprites[0] = ThemeIcon_Conversation; _sprites[1] = ThemeIcon_Nature; break;
+      case SkillName.Deception : _sprites[0] = ThemeIcon_Conversation; _sprites[1] = ThemeIcon_Wild; break;
       case SkillName.Logic : _sprites[0] = ThemeIcon_Conversation; _sprites[1] = ThemeIcon_Intelligence; break;
       case SkillName.Martialarts : _sprites[0] = ThemeIcon_Force; _sprites[1] = ThemeIcon_Force; break;
-      case SkillName.Bow : _sprites[0] = ThemeIcon_Force; _sprites[1] = ThemeIcon_Nature; break;
+      case SkillName.Bow : _sprites[0] = ThemeIcon_Force; _sprites[1] = ThemeIcon_Wild; break;
       case SkillName.Somatology: _sprites[0] = ThemeIcon_Force; _sprites[1] = ThemeIcon_Intelligence; break;
-      case SkillName.Survivable : _sprites[0] = ThemeIcon_Nature; _sprites[1] = ThemeIcon_Nature; break;
-      case SkillName.Biology : _sprites[0] = ThemeIcon_Nature; _sprites[1] = ThemeIcon_Intelligence; break;
+      case SkillName.Survivable : _sprites[0] = ThemeIcon_Wild; _sprites[1] = ThemeIcon_Wild; break;
+      case SkillName.Biology : _sprites[0] = ThemeIcon_Wild; _sprites[1] = ThemeIcon_Intelligence; break;
       case SkillName.Knowledge : _sprites[0] = ThemeIcon_Intelligence; _sprites[1] = ThemeIcon_Intelligence; break;
     }
   }

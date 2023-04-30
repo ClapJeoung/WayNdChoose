@@ -11,7 +11,7 @@ public class Trait
   public Sprite Illust = null;
   public Sprite Icon = null;
     public Dictionary<EffectType, int> Effects=new Dictionary<EffectType, int>();
-
+   public bool NormalTrait = true;
   public string EffectString
   {
     get
@@ -27,7 +27,7 @@ public class Trait
         {
           case EffectType.Conversation: 
           case EffectType.Force:
-          case EffectType.Nature:
+          case EffectType.Wild:
           case EffectType.Intelligence: 
           case EffectType.Speech: 
           case EffectType.Threat:
@@ -65,6 +65,7 @@ public class TraitJsonData
   public string ID = "";
   public string Type;    //0~9 : 기술들  10~   체력,정신력,돈 등
   public string Info;
+    public int NormalTrait = 0;
   public Trait ReturnTraitClass()
   {
     Trait _mytrait = new Trait();
@@ -75,6 +76,7 @@ public class TraitJsonData
     _mytrait.SubDescription = _textdata.SelectionSubDescription;
     _mytrait.Illust = GameManager.Instance.ImageHolder.GetTraitIllust(ID);
     _mytrait.Icon = GameManager.Instance.ImageHolder.GetTraitIcon(ID);
+        _mytrait.NormalTrait = NormalTrait.Equals(0) ? true : false;
     string[] _temp = Type.Split('@');
         EffectType[] _type=new EffectType[_temp.Length];
     for (int i = 0; i < _temp.Length; i++) _type[i] =(EffectType)int.Parse(_temp[i]);

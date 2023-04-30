@@ -8,28 +8,15 @@ public class UI_default : MonoBehaviour
   public CanvasGroup MyGroup = null;
   public bool IsOpen = false;
   public UIMoveDir MyDir = UIMoveDir.Horizontal;
-  public virtual void OpenUI()
+  public virtual void OpenUI(bool _islarge)
   {
     if (IsOpen) { CloseUI();IsOpen = false; return; }
     IsOpen = true;
-    UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir,true);
-  }
-  public virtual void OpenUI(bool _stopwhileother)
-  {
-    if (_stopwhileother && UIManager.Instance.IsWorking) return;
-    if (IsOpen) { CloseUI(); IsOpen = false; return; }
-    IsOpen = true;
-    UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true);
+        UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, _islarge));
   }
   public virtual void CloseUI()
   {
-    UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir);
-    IsOpen = false;
-  }
-  public virtual void CloseUI(bool _stopwhileother)
-  {
-    if (_stopwhileother && UIManager.Instance.IsWorking) return;
-    UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir);
+    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
     IsOpen = false;
   }
 }

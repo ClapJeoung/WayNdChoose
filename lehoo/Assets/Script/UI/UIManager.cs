@@ -267,27 +267,37 @@ public class UIManager : MonoBehaviour
     UpdateExpShortTermIcon();
     UpdateTendencyIcon();
   }
-  public void OpenUI(RectTransform _rect,CanvasGroup _group,UIMoveDir _dir, bool _deleteother)
+  private void Update()
   {
-    StartCoroutine(openui(_rect, _group, _dir));
+    if (Input.GetMouseButtonDown(1) && IsWorking == false) StartCoroutine(CloseAllUI());
+    if (Input.GetKeyDown(KeyCode.W)) SanityLossParticle.Play();
   }
-  public void OpenUI(CanvasGroup _group,bool _islarge)
-  {
-    StartCoroutine(openui(_group,_islarge));
-  }
-  public void CloseUI(RectTransform _rect, CanvasGroup _group, UIMoveDir _dir)
-  {
-    LastUI = null;
-    StartCoroutine(closeui(_rect, _group, _dir));
-  }
-  public void CloseUI(CanvasGroup _group,bool _islarge)
-  {
-    StartCoroutine(closeui(_group,_islarge));
-  }
-  private IEnumerator openui(RectTransform _rect,CanvasGroup _group,UIMoveDir _dir)
+    private Queue<IEnumerator> UIAnimationQueue = new Queue<IEnumerator>();
+    public void AddUIQueue(IEnumerator _anim)
+    {
+        UIAnimationQueue.Enqueue(_anim);
+        if (UIAnimationQueue.Count.Equals(1))
+        {
+            StartCoroutine(playanimation());
+        }
+    }
+    private IEnumerator playanimation()
+    {
+        if (IsWorking) yield break;
+        IsWorking = true;
+
+        while (UIAnimationQueue.Count > 0)
+        {
+            yield return StartCoroutine(UIAnimationQueue.Dequeue());
+            yield return null;
+        }
+
+        IsWorking = false;
+        yield return null;
+    }
+   public IEnumerator OpenUI(RectTransform _rect,CanvasGroup _group,UIMoveDir _dir,bool _islarge)
   {
     if(LastUI!=null) _rect.transform.SetSiblingIndex(LastUI.transform.GetSiblingIndex() + 1);
-    IsWorking = true;
     if (_rect.gameObject.activeSelf == false) _rect.gameObject.SetActive(true);
     Vector2 _size = _rect.sizeDelta;
     _group.alpha = MoveInAlpha;
@@ -295,25 +305,25 @@ public class UIManager : MonoBehaviour
     _rect.anchoredPosition = _startpos;
     Vector2 _endpos = Vector2.zero;
     float _time = 0.0f;
-    while (_time < LargePanelFadeTime)
+        float _targetime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
+    while (_time < _targetime)
     {
-      _rect.anchoredPosition=Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time/ LargePanelFadeTime, 0.5f));
-      _group.alpha = Mathf.Lerp(MoveInAlpha, 1.0f, Mathf.Pow(_time / LargePanelFadeTime, 0.5f));
+      _rect.anchoredPosition=Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time/ _targetime, 0.5f));
+      _group.alpha = Mathf.Lerp(MoveInAlpha, 1.0f, Mathf.Pow(_time / _targetime, 0.5f));
       _time += Time.deltaTime;
       yield return null;
     }
+        _rect.anchoredPosition = _endpos;
     _group.blocksRaycasts = true;
     _group.alpha = 1.0f;
     _group.interactable = true;
-    IsWorking = false;
 
     if(LastUI!=null) LastUI.CloseUI();
     if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
     LastUI = _rect.GetComponent<UI_default>();
   }
-  private IEnumerator openui(CanvasGroup _group,bool _islarge)
+    public IEnumerator OpenUI(CanvasGroup _group,bool _islarge)
   {
-    IsWorking = true;
     if (_group.gameObject.activeSelf == false) _group.gameObject.SetActive(true);
 
     _group.alpha = MoveInAlpha;
@@ -331,34 +341,23 @@ public class UIManager : MonoBehaviour
     _group.blocksRaycasts = true;
     _group.alpha = 1.0f;
     _group.interactable = true;
-    IsWorking = false;
 
   }
-  public void CloseAllUI()
-  {
-    StartCoroutine(closeallui());
-  }
-  private void Update()
-  {
-    if (Input.GetMouseButtonDown(1) && IsWorking == false) CloseAllUI();
-    if (Input.GetKeyDown(KeyCode.W)) SanityLossParticle.Play();
-  }
-  private IEnumerator closeallui()
+    public IEnumerator CloseAllUI()
   {
     if (LastUI != null)
     {
       LastUI.CloseUI();
       LastUI = null;
-      IsWorking = false;
       yield return null;
     }
     yield return null;
   }
-  private IEnumerator closeui(RectTransform _rect, CanvasGroup _group, UIMoveDir _dir)
+    public IEnumerator CloseUI(RectTransform _rect, CanvasGroup _group, UIMoveDir _dir)
   {
+        LastUI = null;
     _group.interactable = false;
     _group.blocksRaycasts = false;
-    IsWorking = true;
     Vector2 _size = _rect.sizeDelta;
     _group.alpha = 1.0f;
     Vector2 _startpos = Vector2.zero;
@@ -373,13 +372,12 @@ public class UIManager : MonoBehaviour
       yield return null;
     }
     _group.alpha = 0.0f;
-    IsWorking = false;
   }
-  private IEnumerator closeui(CanvasGroup _group,bool _islarge)
+    public IEnumerator CloseUI(CanvasGroup _group,bool _islarge)
   {
-    _group.interactable = false;
+        LastUI = null;
+        _group.interactable = false;
     _group.blocksRaycasts = false;
-    IsWorking = true;
     _group.alpha = 1.0f;
     float _time = 0.0f;
     float _targettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
@@ -390,21 +388,8 @@ public class UIManager : MonoBehaviour
       yield return null;
     }
     _group.alpha = 0.0f;
-    IsWorking = false;
   }
-  public void ChangeAlpha(Image image,float targetalpha)
-  {
-    StartCoroutine(alpha(image,targetalpha));
-  }
-  public void ChangeAlpha(CanvasGroup group,float targetalpha,bool _islarge)
-  {
-    StartCoroutine(alpha(group,targetalpha, _islarge));
-  }
-  public void ChangeAlpha(TextMeshProUGUI tmp,float targetalpha)
-  {
-    StartCoroutine(alpha(tmp,targetalpha));
-  }
-  private IEnumerator alpha(Image _img, float _targetalpha)
+    public IEnumerator ChangeAlpha(Image _img, float _targetalpha)
   {
     float _startalpha = _targetalpha==1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha==1.0f ? 1.0f : 0.0f;
@@ -425,7 +410,7 @@ public class UIManager : MonoBehaviour
     _color.a = _alpha;
     _img.color= _color;
   }
-  private IEnumerator alpha(CanvasGroup _group, float _targetalpha,bool _islarge)
+    public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha,bool _islarge)
   {
     float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
@@ -447,7 +432,7 @@ public class UIManager : MonoBehaviour
     _group.interactable = true;
     _group.blocksRaycasts = true;
   }
-  private IEnumerator alpha(TextMeshProUGUI _tmp, float _targetalpha)
+    public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha)
   {
     float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
@@ -484,7 +469,7 @@ public class UIManager : MonoBehaviour
   public void ResetEventPanels()
   {
     MyDialogue.ResetPanel();
-    MyEvnetSuggest.CloseUI();
-    MyQuestSuggent.CloseUI();
+    MyEvnetSuggest.CloseSuggestPanel();
+    MyQuestSuggent.CloseQuestUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
 }

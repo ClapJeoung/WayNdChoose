@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EffectType {
-    Conversation,Force,Nature,Intelligence
+    Conversation,Force,Wild,Intelligence
     , Speech, Threat, Deception, Logic, Martialarts, Bow, Somatology, Survivable, Biology, Knowledge,
   HPLoss, HPGen,
   SanityLoss, SanityGen,
@@ -41,7 +41,7 @@ public class Experience
         {
           case EffectType.Conversation:
           case EffectType.Force:
-          case EffectType.Nature:
+          case EffectType.Wild:
           case EffectType.Intelligence:
           case EffectType.Speech:
           case EffectType.Threat:

@@ -24,10 +24,10 @@ public class UI_QuestSuggest : UI_default
     QuestName.text = _quest.QuestName;
     QuestIllust.sprite = _quest.Illust;
     QuestDescription.text = _quest.PreDescription;
-    StartCoroutine(setquestsuggest());
     _quest.CurrentSequence = QuestSequence.Rising;
-  }
-  public void CloseQuestSuggest()
+        UIManager.Instance.AddUIQueue(setquestsuggest());
+    }
+    public void CloseQuestSuggest()
   {
     if (MyGroup.alpha.Equals(1.0f)) return;
     MyGroup.alpha = 0.0f;
@@ -37,20 +37,24 @@ public class UI_QuestSuggest : UI_default
     MapButtonGroup.interactable = false;
     MapButtonGroup.blocksRaycasts = false;
   }
+    public void CloseQuestUI()
+    {
+        StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
+    }
   private IEnumerator setquestsuggest()
   {
     Color _color = Color.white;
     _color.a = 0.0f;
     QuestName.color = _color;
-    UIManager.Instance.ChangeAlpha(QuestName, 1.0f);
+    yield return StartCoroutine( UIManager.Instance.ChangeAlpha(QuestName, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    QuestIllust.color = _color;
-    UIManager.Instance.ChangeAlpha(QuestIllust, 1.0f);
+     QuestIllust.color = _color;
+    yield return StartCoroutine( UIManager.Instance.ChangeAlpha(QuestIllust, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     QuestDescription.color = _color;
-    UIManager.Instance.ChangeAlpha(QuestDescription, 1.0f);
+     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescription, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, true);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, true));
   }
 
 }

@@ -12,7 +12,7 @@ public class UI_skill_info_info : UI_default
     transform.SetSiblingIndex(SkillInfoUI.transform.GetSiblingIndex() + 1);
     if (UIManager.Instance.IsWorking || IsOpen) return;
     IsOpen = true;
-    UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);
+    UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false));
     Icon_a.sprite = icon_a;
     Icon_b.sprite = icon_b;
   }

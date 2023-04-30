@@ -1,0 +1,14 @@
+{
+  "0": {
+    "ID": "trait_lehoo",
+    "Type": 0,
+    "Info": 1,
+    "NormalTrait": 0
+  },
+  "1": {
+    "ID": "trait_beasthunter",
+    "Type": "2@8",
+    "Info": "2@2",
+    "NormalTrait": 0
+  }
+}

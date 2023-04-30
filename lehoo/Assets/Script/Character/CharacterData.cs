@@ -18,8 +18,8 @@ public static class ConstValues
       ConversationByTendency_m1 = -1, ConversationByTendency_m2 = -2, ConversationByTendency_m3 = -4;
   public const int ForceByTendency_1 = 2, ForceByTendency_2 = 3, ForceByTendency_3 = 5,
       ForceByTendency_m1 = -1, ForceByTendency_m2 = -2, ForceByTendency_m3 = -4;
-  public const int NatureByTendency_1 = 2, NatureByTendency_2 = 3, NatureByTendency_3 = 5,
-      NatureByTendency_m1 = -1, NatureByTendency_m2 = -2, NatureByTendency_m3 = -4;
+  public const int WildByTendency_1 = 2, WildByTendency_2 = 3, WildByTendency_3 = 5,
+      WildByTendency_m1 = -1, WildByTendency_m2 = -2, WildByTendency_m3 = -4;
   public const int IntelligenceByTendency_1 = 2, IntelligenceByTendency_2 = 3, IntelligenceByTendency_3 = 5,
       IntelligenceByTendency_m1 = -1, IntelligenceByTendency_m2 = -2, IntelligenceByTendency_m3 = -4;
   //성향 진행도 따라 긍정,부정 값
@@ -49,133 +49,159 @@ public static class ConstValues
   public const int TendencyRegress = 2;
   public const int SettleEventSanity_Min = 5;
   public const int SettleEventUnpleasantExpansion = 3;
+
+    public const int SanityByMadness_0 = 100, SanityByMadness_1 = 80, SanityByMadness_2 = 60, SanityByMadness_3 = 40;
 }
 public class GameData    //게임 진행도 데이터
 {
-  public int Year = 1;//년도
+    public int Year = 1;//년도
 
-  private int turn = 0;
-  public int Turn
-  {
-    get { return turn; }
-    set { if (value > MaxTurn) { turn = 0; Year++;if (UIManager.Instance != null) UIManager.Instance.UpdateYearText(); }
-      else turn = value;
-      if (UIManager.Instance != null) UIManager.Instance.UpdateTurnIcon();
-    }
-  }
-  public const int MaxTurn = 3;//최대 턴(0,1,2,3)
-  public float MinSuccesPer
-  {
-    get
+    private int turn = 0;
+    public int Turn
     {
-      if (Year >= ConstValues.MaxYear) return ConstValues.minsuccesper_min;
-      //10턴 이상이면 최솟값만 반환
-      return Mathf.Lerp(ConstValues.minsuccesper_min, ConstValues.minsuccesper_max, Mathf.Clamp(0, 1, Year / ConstValues.MaxYear));
-      //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
+        get { return turn; }
+        set { if (value > MaxTurn) { turn = 0; Year++; if (UIManager.Instance != null) UIManager.Instance.UpdateYearText(); }
+            else turn = value;
+            if (UIManager.Instance != null) UIManager.Instance.UpdateTurnIcon();
+        }
     }
-  }//스킬 체크, 지불 체크 최소 성공확률
-  private FailureData goldfaildata=null;
-  public FailureData GoldFailData
-  {
-    get
+    public const int MaxTurn = 3;//최대 턴(0,1,2,3)
+    public float MinSuccesPer
     {
-      if (goldfaildata == null)
-      {
-        goldfaildata = new FailureData();
-        goldfaildata.Description = GameManager.Instance.GetTextData("goldfail").Name;
-        goldfaildata.Panelty_target = PenaltyTarget.Status;
-        goldfaildata.Loss_target = PayOrLossTarget.Sanity;
-      }
-      return goldfaildata;
+        get
+        {
+            if (Year >= ConstValues.MaxYear) return ConstValues.minsuccesper_min;
+            //10턴 이상이면 최솟값만 반환
+            return Mathf.Lerp(ConstValues.minsuccesper_min, ConstValues.minsuccesper_max, Mathf.Clamp(0, 1, Year / ConstValues.MaxYear));
+            //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
+        }
+    }//스킬 체크, 지불 체크 최소 성공확률
+    private FailureData goldfaildata = null;
+    public FailureData GoldFailData
+    {
+        get
+        {
+            if (goldfaildata == null)
+            {
+                goldfaildata = new FailureData();
+                goldfaildata.Description = GameManager.Instance.GetTextData("goldfail").Name;
+                goldfaildata.Panelty_target = PenaltyTarget.Status;
+                goldfaildata.Loss_target = PayOrLossTarget.Sanity;
+            }
+            return goldfaildata;
+        }
     }
-  }
-  public int MoveSanityValue { get { return (int)Mathf.Lerp(ConstValues.MoveSanity_min,ConstValues.MoveSanity_max,Year/ConstValues.MaxYear); } }
-  public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
-  public int PaySanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear); } }
-  public int PayGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear); } }
-  public int CheckThemeValue { get { return (int)Mathf.Lerp(ConstValues.CheckTheme_min, ConstValues.CheckTheme_max, Year / ConstValues.MaxYear); } }
-  public int CheckSkillValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_min, ConstValues.CheckSkill_max, Year / ConstValues.MaxYear); } }
-  public int FailHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear); } }
-  public int FailSanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear); } }
-  public int FailGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear); } }
-  public int RewardHPValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardHP_min, ConstValues.RewardHP_max); } }
-  public int RewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max); } }
-  public int RewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max); } }
-  public int SubRewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardSanity_min, ConstValues.SubRewardSanity_max); } }
-  public int SubRewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardGold_min, ConstValues.SubRewardGold_max); } }
-  public int SettleSanityLoss 
-  { get { return (int)(ConstValues.SettleEventSanity_Min *Mathf.Pow(ConstValues.SettleEventUnpleasantExpansion,AllSettleUnpleasant[CurrentSettlement])); } }
-  public int PayHPValue_modified 
-  { get { return (int)(PayHPValue_origin * GetHPLossModify(true)); } }
-  public int PaySanityValue_modified 
-  { get { return (int)(PaySanityValue_origin * GetSanityLossModify(true)); } }
-  public int PayGoldValue_modified 
-  { get { return (int)(PayGoldValue_origin * GetGoldPayModify(true)); } }
-  public int FailHPValue_modified 
-  { get { return (int)(FailHPValue_origin * GetHPLossModify(true)); } }
-  public int FailSanityValue_modified 
-  { get { return (int)(FailSanityValue_origin * GetSanityLossModify(true)); } }
-  public int FailGoldValue_modified 
-  { get { return (int)(FailGoldValue_origin * GetGoldPayModify(true)); } }
-  public int RewardHPValue_modified 
-  { get { return (int)(RewardHPValue_origin * GetHPGenModify(true)); } }
-  public int RewardSanityValue_modified 
-  { get { return (int)(RewardSanityValue_origin * GetSanityGenModify(true)); } }
-  public int RewardGoldValue_modified 
-  { get { return (int)(RewardGoldValue_origin * GetGoldGenModify(true)); } }
-  public int SubRewardSanityValue_modified 
-  { get { return (int)(SubRewardSanityValue_origin * GetSanityGenModify(true)); } }
-  public int SubRewardGoldValue_modified 
-  { get { return (int)(SubRewardGoldValue_origin * GetGoldGenModify(true)); } }
+    #region 값 프로퍼티
+    public int MoveSanityValue { get { return (int)Mathf.Lerp(ConstValues.MoveSanity_min, ConstValues.MoveSanity_max, Year / ConstValues.MaxYear); } }
+    public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
+    public int PaySanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear); } }
+    public int PayGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear); } }
+    public int CheckThemeValue { get { return (int)Mathf.Lerp(ConstValues.CheckTheme_min, ConstValues.CheckTheme_max, Year / ConstValues.MaxYear); } }
+    public int CheckSkillValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_min, ConstValues.CheckSkill_max, Year / ConstValues.MaxYear); } }
+    public int FailHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear); } }
+    public int FailSanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear); } }
+    public int FailGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear); } }
+    public int RewardHPValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardHP_min, ConstValues.RewardHP_max); } }
+    public int RewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max); } }
+    public int RewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max); } }
+    public int SubRewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardSanity_min, ConstValues.SubRewardSanity_max); } }
+    public int SubRewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardGold_min, ConstValues.SubRewardGold_max); } }
+    public int SettleSanityLoss
+    { get { return (int)(ConstValues.SettleEventSanity_Min * Mathf.Pow(ConstValues.SettleEventUnpleasantExpansion, AllSettleUnpleasant[CurrentSettlement])); } }
+    public int PayHPValue_modified
+    { get { return (int)(PayHPValue_origin * GetHPLossModify(true)); } }
+    public int PaySanityValue_modified
+    { get { return (int)(PaySanityValue_origin * GetSanityLossModify(true)); } }
+    public int PayGoldValue_modified
+    { get { return (int)(PayGoldValue_origin * GetGoldPayModify(true)); } }
+    public int FailHPValue_modified
+    { get { return (int)(FailHPValue_origin * GetHPLossModify(true)); } }
+    public int FailSanityValue_modified
+    { get { return (int)(FailSanityValue_origin * GetSanityLossModify(true)); } }
+    public int FailGoldValue_modified
+    { get { return (int)(FailGoldValue_origin * GetGoldPayModify(true)); } }
+    public int RewardHPValue_modified
+    { get { return (int)(RewardHPValue_origin * GetHPGenModify(true)); } }
+    public int RewardSanityValue_modified
+    { get { return (int)(RewardSanityValue_origin * GetSanityGenModify(true)); } }
+    public int RewardGoldValue_modified
+    { get { return (int)(RewardGoldValue_origin * GetGoldGenModify(true)); } }
+    public int SubRewardSanityValue_modified
+    { get { return (int)(SubRewardSanityValue_origin * GetSanityGenModify(true)); } }
+    public int SubRewardGoldValue_modified
+    { get { return (int)(SubRewardGoldValue_origin * GetGoldGenModify(true)); } }
+    #endregion
 
-  public int CheckPercent_themeorskill(int _origin,int _target)
-  {
-    if (_origin >= _target) return 100;
-    float _per=_origin/ _target;
-    return Mathf.CeilToInt((1-MinSuccesPer)*Mathf.Pow(_per,1.5f) +MinSuccesPer);
-  }//origin : 대상 레벨   target : 목표 레벨
-  public int CheckPercent_money(int _target)
-  {
-    float _per =Gold / _target;
-    //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
-    return Mathf.CeilToInt(Mathf.Pow(_per, Mathf.Lerp(ConstValues.MoneyCheck_min, ConstValues.MoneyCheck_max, Year / ConstValues.MaxYear)));
-    //좌상향 곡선 ~ 우상향 곡선
-  }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
-  public Dictionary<Settlement,int> AllSettleUnpleasant=new Dictionary<Settlement,int>();
-  public void CreateSettleUnpleasant(List<Settlement> _allsettle)
-  {
-    foreach (var _settlement in _allsettle) AllSettleUnpleasant.Add(_settlement, 0);
-  }
-
-  private int hp = 0;
-  public int HP
-  {
-    get { return hp; }
-    set { 
-      hp = value;
-      if (hp > 100) hp = 100;
-      if (hp < 0) { Debug.Log("지벳"); }
+    public int CheckPercent_themeorskill(int _origin, int _target)
+    {
+        if (_origin >= _target) return 100;
+        float _per = _origin / _target;
+        return Mathf.CeilToInt((1 - MinSuccesPer) * Mathf.Pow(_per, 1.5f) + MinSuccesPer);
+    }//origin : 대상 레벨   target : 목표 레벨
+    public int CheckPercent_money(int _target)
+    {
+        float _per = Gold / _target;
+        //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
+        return Mathf.CeilToInt(Mathf.Pow(_per, Mathf.Lerp(ConstValues.MoneyCheck_min, ConstValues.MoneyCheck_max, Year / ConstValues.MaxYear)));
+        //좌상향 곡선 ~ 우상향 곡선
+    }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
+    public Dictionary<Settlement, int> AllSettleUnpleasant = new Dictionary<Settlement, int>();
+    public void CreateSettleUnpleasant(List<Settlement> _allsettle)
+    {
+        foreach (var _settlement in _allsettle) AllSettleUnpleasant.Add(_settlement, 0);
     }
-  }
-  private int gold = 0;
-  public int Gold
-  {
-    get { return gold; }
-    set { gold = value; }
-  }
-  private int currentsanity = 0;
-  public int CurrentSanity
-  {
-    get { return currentsanity; }
-    set {
-      currentsanity = value; 
-      if(currentsanity>MaxSanity) currentsanity = MaxSanity;
-      if (currentsanity < 0) { Debug.Log("파킨"); }
-    }
-  }
-  public int MaxSanity = 100;   //최대 정신력
 
-  public List<Trait> Traits = new List<Trait>();//가지고 있는 특성 목록
+    private int hp = 0;
+    public int HP
+    {
+        get { return hp; }
+        set {
+            hp = value;
+            if (hp > 100) hp = 100;
+            if (hp < 0) { Debug.Log("지벳"); }
+        }
+    }
+    private int gold = 0;
+    public int Gold
+    {
+        get { return gold; }
+        set { gold = value; }
+    }
+    private int currentsanity = 0;
+    public int CurrentSanity
+    {
+        get { return currentsanity; }
+        set {
+            currentsanity = value;
+            if (currentsanity > MaxSanity) currentsanity = MaxSanity;
+            if (currentsanity < 0) { Debug.Log("파킨"); }
+        }
+    }
+    public int MaxSanity
+    {
+        get
+        {
+            switch (MadnessCount)
+            {
+                case 0:return ConstValues.SanityByMadness_0;
+                case 1:return ConstValues.SanityByMadness_1;
+                case 2:return ConstValues.SanityByMadness_2;
+                case 3:return ConstValues.SanityByMadness_3;
+                default:return 0;
+            }
+        }
+    }//최대 정신력(현재 광기 특성 개수에 따라)
+    public int MadnessCount
+    {
+        get
+        {
+            int _madnesscount = 0;
+            foreach (var _trait in Traits)
+                if (_trait.NormalTrait.Equals(false)) _madnesscount++;
+            return _madnesscount;
+        }
+    }//현재 광기 특성 개수
+    public List<Trait> Traits = new List<Trait>();//가지고 있는 특성 목록
   public Dictionary<SkillName, Skill> Skills = new Dictionary<SkillName, Skill>();//기술들
   public void AssembleSkill()
   {
@@ -236,11 +262,11 @@ public class GameData    //게임 진행도 데이터
       return _onlyskill + _onlytrait + _onlyexp + _onlytendency;
     }
   }
-  public int NatureLevel
+  public int WildLevel
   {
     get
     {
-      ThemeType _theme = ThemeType.Nature;
+      ThemeType _theme = ThemeType.Wild;
       int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
       //기술로부터 나온 값
       int _onlytrait = GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_theme);
@@ -272,7 +298,7 @@ public class GameData    //게임 진행도 데이터
     {
       case ThemeType.Conversation:return ConversationLevel;
       case ThemeType.Force:return ForceLevel;
-      case ThemeType.Nature:return NatureLevel;
+      case ThemeType.Wild:return WildLevel;
       case ThemeType.Intelligence:return IntelligenceLevel;
     }
     return -1;
@@ -296,7 +322,7 @@ public class GameData    //게임 진행도 데이터
             return SkillName.Speech;
           case ThemeType.Force:
             return SkillName.Threat;
-          case ThemeType.Nature:
+          case ThemeType.Wild:
             return SkillName.Deception;
           case ThemeType.Intelligence:
             return SkillName.Logic;
@@ -310,21 +336,21 @@ public class GameData    //게임 진행도 데이터
             return SkillName.Threat;
           case ThemeType.Force:
             return SkillName.Threat;
-          case ThemeType.Nature:
+          case ThemeType.Wild:
             return SkillName.Bow;
           case ThemeType.Intelligence:
             return SkillName.Somatology;
           default: return SkillName.Speech;
         }
 
-      case ThemeType.Nature:
+      case ThemeType.Wild:
         switch (_second)
         {
           case ThemeType.Conversation:
             return SkillName.Deception;
           case ThemeType.Force:
             return SkillName.Bow;
-          case ThemeType.Nature:
+          case ThemeType.Wild:
             return SkillName.Survivable;
           case ThemeType.Intelligence:
             return SkillName.Biology;
@@ -338,7 +364,7 @@ public class GameData    //게임 진행도 데이터
             return SkillName.Logic;
           case ThemeType.Force:
             return SkillName.Somatology;
-          case ThemeType.Nature:
+          case ThemeType.Wild:
             return SkillName.Biology;
           case ThemeType.Intelligence:
             return SkillName.Knowledge;
@@ -382,13 +408,13 @@ public class GameData    //게임 진행도 데이터
         _value_3 = ConstValues.ForceByTendency_3;
         _sign = 1;
         break;
-      case ThemeType.Nature:
-        _value_m3 = ConstValues.NatureByTendency_m3;
-        _value_m2 = ConstValues.NatureByTendency_m2;
-        _value_m1 = ConstValues.NatureByTendency_m1;
-        _value_1 = ConstValues.NatureByTendency_1;
-        _value_2 = ConstValues.NatureByTendency_2;
-        _value_3 = ConstValues.NatureByTendency_3;
+      case ThemeType.Wild:
+        _value_m3 = ConstValues.WildByTendency_m3;
+        _value_m2 = ConstValues.WildByTendency_m2;
+        _value_m1 = ConstValues.WildByTendency_m1;
+        _value_1 = ConstValues.WildByTendency_1;
+        _value_2 = ConstValues.WildByTendency_2;
+        _value_3 = ConstValues.WildByTendency_3;
         _sign = 1;
         break;
       case ThemeType.Intelligence:
@@ -452,7 +478,7 @@ public class GameData    //게임 진행도 데이터
           case 3:
           case 2:
           case 1:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("force").Name}, {GameManager.Instance.GetTextData("nature").Name} " +
+            _tendencydescription = $"{GameManager.Instance.GetTextData("force").Name}, {GameManager.Instance.GetTextData("wild").Name} " +
              $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Force)} {GameManager.Instance.GetTextData("increase").Name}";
             break;
           case 0: //Physical 기준 RP -3: (-2)+육체 관련 스탯 패널티  -2: 육체 선택지에 패널티  1,2,3: 무력,자연 증가
@@ -464,7 +490,7 @@ public class GameData    //게임 진행도 데이터
             break;
           case -3:
             _tendencydescription = $"{GameManager.Instance.GetTextData("physicalselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}\n" +
-           $"{GameManager.Instance.GetTextData("force").Name}, {GameManager.Instance.GetTextData("nature").Name} " +
+           $"{GameManager.Instance.GetTextData("force").Name}, {GameManager.Instance.GetTextData("wild").Name} " +
            $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Force)} {GameManager.Instance.GetTextData("decrease").Name}";
             break;
         }
@@ -695,9 +721,9 @@ public class GameData    //게임 진행도 데이터
         _targeteffects.Add(EffectType.Bow);
         _targeteffects.Add(EffectType.Somatology);
         break;
-      case ThemeType.Nature:
-        _targettheme = EffectType.Nature;
-        _targeteffects.Add(EffectType.Nature);
+      case ThemeType.Wild:
+        _targettheme = EffectType.Wild;
+        _targeteffects.Add(EffectType.Wild);
         _targeteffects.Add(EffectType.Survivable);
         _targeteffects.Add(EffectType.Bow);
         _targeteffects.Add(EffectType.Deception);
@@ -785,9 +811,9 @@ public class GameData    //게임 진행도 데이터
         _targeteffects.Add(EffectType.Bow);
         _targeteffects.Add(EffectType.Somatology);
         break;
-      case ThemeType.Nature:
-        _targettheme = EffectType.Nature;
-        _targeteffects.Add(EffectType.Nature);
+      case ThemeType.Wild:
+        _targettheme = EffectType.Wild;
+        _targeteffects.Add(EffectType.Wild);
         _targeteffects.Add(EffectType.Survivable);
         _targeteffects.Add(EffectType.Bow);
         _targeteffects.Add(EffectType.Deception);
@@ -996,13 +1022,13 @@ public class GameData    //게임 진행도 데이터
     Traits = new List<Trait>();
     Skill _speech = new Skill(ThemeType.Conversation, ThemeType.Conversation);
     Skill _treat = new Skill(ThemeType.Conversation, ThemeType.Force);
-    Skill _deception = new Skill(ThemeType.Conversation, ThemeType.Nature);
+    Skill _deception = new Skill(ThemeType.Conversation, ThemeType.Wild);
     Skill _Logic = new Skill(ThemeType.Conversation, ThemeType.Intelligence);
     Skill _martialarts = new Skill(ThemeType.Force, ThemeType.Force);
-    Skill _bow = new Skill(ThemeType.Force, ThemeType.Nature);
+    Skill _bow = new Skill(ThemeType.Force, ThemeType.Wild);
     Skill _somatology = new Skill(ThemeType.Force, ThemeType.Intelligence);
-    Skill _survivable = new Skill(ThemeType.Nature, ThemeType.Nature);
-    Skill _biology = new Skill(ThemeType.Nature, ThemeType.Intelligence);
+    Skill _survivable = new Skill(ThemeType.Wild, ThemeType.Wild);
+    Skill _biology = new Skill(ThemeType.Wild, ThemeType.Intelligence);
     Skill _knowledge = new Skill(ThemeType.Intelligence, ThemeType.Intelligence);
     Skills.Add(SkillName.Speech, _speech);
     Skills.Add(SkillName.Threat, _treat);
@@ -1031,7 +1057,7 @@ public class GameJsonData
 {
 
 }
-public enum ThemeType { Conversation, Force, Nature, Intelligence }
+public enum ThemeType { Conversation, Force, Wild, Intelligence }
 public enum SkillName { Speech,Threat,Deception,Logic,Martialarts,Bow,Somatology,Survivable,Biology,Knowledge}
 public class Skill
 {

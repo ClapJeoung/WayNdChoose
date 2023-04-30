@@ -32,7 +32,7 @@ public class UI_Expereince_info : UI_default
     ExpEffect.text = _effect;
     ExpTurn.text = _exp.Duration.ToString();
 
-    if(CurrentExp==null) UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);
+    if(CurrentExp==null)UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
     else
     {
       if (CurrentExp == _exp) CloseUI();
@@ -62,7 +62,7 @@ public class UI_Expereince_info : UI_default
     ExpEffect.text = _effect;
     ExpTurn.text = _exp.Duration.ToString();
 
-    if (CurrentExp==null) UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);//경험 창 처음 열때
+    if (CurrentExp==null) UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));//경험 창 처음 열때
     else
     {
       if (CurrentExp == _exp) CloseUI();

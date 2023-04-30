@@ -72,7 +72,7 @@ public class UI_Tendency : UI_default
         break;
     }
 
-    if(CurrentTendency==TendencyType.None) UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true);
+    if(CurrentTendency==TendencyType.None) UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
 
     CurrentTendency = _targettendency;
   }

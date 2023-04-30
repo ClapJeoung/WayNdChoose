@@ -19,9 +19,9 @@ public class UI_skill_info : UI_default
   [SerializeField] private TextMeshProUGUI ForceSkillLevel = null;
   [SerializeField] private PreviewInteractive ForcePreviewData = null;
   [Space(10)]
-  [SerializeField] private TextMeshProUGUI NatureSkillName = null;
-  [SerializeField] private TextMeshProUGUI NatureSkillLevel = null;
-  [SerializeField] private PreviewInteractive NaturePreviewData = null;
+  [SerializeField] private TextMeshProUGUI WildSkillName = null;
+  [SerializeField] private TextMeshProUGUI WildSkillLevel = null;
+  [SerializeField] private PreviewInteractive WildPreviewData = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI IntelligenceSkillName = null;
   [SerializeField] private TextMeshProUGUI IntelligenceSkillLevel = null;
@@ -53,7 +53,7 @@ public class UI_skill_info : UI_default
         _skills[0] = SkillName.Threat; _skills[1] = SkillName.Martialarts; _skills[2] = SkillName.Bow; _skills[3] = SkillName.Somatology;
         break;
 
-      case ThemeType.Nature:
+      case ThemeType.Wild:
         _skills[0] = SkillName.Deception; _skills[1] = SkillName.Bow; _skills[2] = SkillName.Survivable; _skills[3] = SkillName.Biology;
         break;
 
@@ -81,9 +81,9 @@ public class UI_skill_info : UI_default
           ForcePreviewData.MySkillName = _skills[i];
           break;
         case 2:
-          NatureSkillName.text = _skillnames[i];
-          NatureSkillLevel.text = _skilllevels[i].ToString();
-          NaturePreviewData.MySkillName = _skills[i];
+          WildSkillName.text = _skillnames[i];
+          WildSkillLevel.text = _skilllevels[i].ToString();
+          WildPreviewData.MySkillName = _skills[i];
           break;
         case 3:
           IntelligenceSkillName.text = _skillnames[i];
@@ -101,7 +101,7 @@ public class UI_skill_info : UI_default
       MainThemeIllust.sprite = _themeillust;
       MainThemeDescription.text = _themedescription;
       SkillLevelSum.text = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_themetype).ToString();
-      UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, false);
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
     }//닫혀 있던 상태에서 처음으로 열었을때면 UI 열기 이펙트
     else
     {

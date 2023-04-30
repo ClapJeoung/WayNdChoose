@@ -473,7 +473,19 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+
+                    break;
 
         case SelectionType.Verticla:
         case SelectionType.Horizontal:
@@ -541,8 +553,19 @@ public class EventHolder
               case RewardTarget.Skill: Data.SuccessDatas[j].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info.Split('@')[j]); break;
             }
             Data.SuccessDatas[j].SubReward_target = int.Parse(_data.SubReward.Split('@')[j]);
-          }
-          break;
+                        Data.SelectionDatas[j].SelectionSuccesRewards.Add(Data.SuccessDatas[j].Reward_Target);
+                        switch (Data.SuccessDatas[j].SubReward_target)
+                        {
+                            case 0: break;
+                            case 1: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                            case 2: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                            case 3:
+                                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                                break;
+                        }
+                    }
+                    break;
 
         case SelectionType.Tendency:
           Data.SelectionDatas = new SelectionData[1];
@@ -566,7 +589,18 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+                    break;
 
         case SelectionType.Skill:
           Data.SelectionDatas = new SelectionData[1];
@@ -588,7 +622,18 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+                    break;
 
         case SelectionType.Experience:
           Data.SelectionDatas = new SelectionData[1];
@@ -611,7 +656,18 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+                    break;
       }
 
       AvailableFollowEvents.Add(Data);
@@ -744,7 +800,18 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+                    break;
 
         case SelectionType.Verticla:
         case SelectionType.Horizontal:
@@ -812,8 +879,19 @@ public class EventHolder
               case RewardTarget.Skill: Data.SuccessDatas[j].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info.Split('@')[j]); break;
             }
             Data.SuccessDatas[j].SubReward_target = int.Parse(_data.SubReward.Split('@')[j]);
-          }
-          break;
+                        Data.SelectionDatas[j].SelectionSuccesRewards.Add(Data.SuccessDatas[j].Reward_Target);
+                        switch (Data.SuccessDatas[j].SubReward_target)
+                        {
+                            case 0: break;
+                            case 1: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                            case 2: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                            case 3:
+                                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                                break;
+                        }
+                    }
+                    break;
 
         case SelectionType.Tendency:
           Data.SelectionDatas = new SelectionData[1];
@@ -837,7 +915,18 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+                    break;
 
         case SelectionType.Skill:
           Data.SelectionDatas = new SelectionData[1];
@@ -859,7 +948,18 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+                    break;
 
         case SelectionType.Experience:
           Data.SelectionDatas = new SelectionData[1];
@@ -882,7 +982,18 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          break;
+                    Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+                    switch (Data.SuccessDatas[0].SubReward_target)
+                    {
+                        case 0: break;
+                        case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                        case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                        case 3:
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                            break;
+                    }
+                    break;
       }
 
       QuestHolder _quest = null;
@@ -1056,7 +1167,7 @@ public class EventHolder
             case "1"://무력 테마
  _type = ThemeType.Force;break;
             case "2"://생존 테마
-                            _type = ThemeType.Nature;break;
+                            _type = ThemeType.Wild;break;
             case "3"://학식 테마
                             _type = ThemeType.Intelligence;break;
           }

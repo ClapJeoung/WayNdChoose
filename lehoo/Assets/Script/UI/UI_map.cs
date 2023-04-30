@@ -20,16 +20,14 @@ public class UI_map : UI_default
   private Settlement SelectedSettle = null;
 
   public void AddSettleIcon(string _name, SettlementIcon _icon) => SettleIcons.Add(_name, _icon);
-  public override void OpenUI()
+  public override void OpenUI(bool _islarge)
   {
-    base.OpenUI(true);
-    StartCoroutine(tilemapalpha(UIManager.Instance.MoveInAlpha, 1.0f));
+    base.OpenUI(_islarge);
     if (GameManager.Instance.MyGameData.CanMove) MoveButton.interactable = true;
   }
   public override void CloseUI()
   {
     base.CloseUI();
-    StartCoroutine(tilemapalpha(1.0f, 0.0f));
   }
   private IEnumerator tilemapalpha(float _startalpha,float _endalpha)
   {
@@ -64,17 +62,18 @@ public class UI_map : UI_default
     }
   public void KeepMove()
   {
-    if (!GameManager.Instance.MyGameData.CanMove) return;
+        if (UIManager.Instance.IsWorking) return;
+        if (!GameManager.Instance.MyGameData.CanMove) return;
     base.OpenUI(true);
-    StartCoroutine(keepmove());
+    UIManager.Instance.AddUIQueue(keepmove());
     UIManager.Instance.PreviewManager.ClosePreview();
   }
   private IEnumerator keepmove()
   {
-    yield return StartCoroutine(tilemapalpha(UIManager.Instance.MoveInAlpha, 1.0f));
     MoveButton.interactable = false;
-    MoveMap();
-    yield return null;
+        UIManager.Instance.ResetEventPanels();
+        yield return StartCoroutine(movemap());
+        yield return null;
   }
   public void MoveMap()
   {
@@ -86,12 +85,11 @@ public class UI_map : UI_default
     if (SelectedSettle == null) return;
     //움직일 수 있는 상황에서, 정착지에서 출발할 때 목표 정착지를 선택하지 않은 경우 목표 방향이 없다는 UI 출력
     UIManager.Instance.ResetEventPanels();
-    StartCoroutine(movemap());
+    UIManager.Instance.AddUIQueue(movemap());
   }
   private IEnumerator movemap()
   {
     //이동 도중이니 이동 버튼은 비활성화
-    UIManager.Instance.IsWorking = true;
     MoveButton.interactable = false;
     Vector3 _playerrectpos = PlayerRect.anchoredPosition;          //현재 위치(UI)
     Vector3 _settlerectpos = SettleIcons[SelectedSettle.OriginName].GetComponent<RectTransform>().anchoredPosition;           //종점 위치(UI)
@@ -118,8 +116,9 @@ public class UI_map : UI_default
       yield return StartCoroutine(movecharacter(PlayerRect.anchoredPosition, _targetrectpos, _settlerectpos, _targetprogress));
       //캐릭터 이동시킴
       EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetrectpos));
-      //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
-      CloseUI();
+            //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
+            yield return StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
+            IsOpen = false;
       SettleIcons[SelectedSettle.OriginName].GetComponent<Button>().interactable = false;
       foreach (var _settle in GameManager.Instance.MyGameData.AvailableSettlement) 
       { 
@@ -156,10 +155,11 @@ public class UI_map : UI_default
       SelectedSettle = null;
       UpdateIcons(GameManager.Instance.MyGameData.AvailableSettlement);
 
-      CloseUI();
-      //멈췄으면 바로 맵 닫기
+            yield return StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
+            IsOpen = false;
+            //멈췄으면 바로 맵 닫기
+        }
     }
-  }
   private IEnumerator movecharacter(Vector3 _originrectpos,Vector3 _targetrectpos,Vector3 _maxpos, float _targetprogress)
   {
     float _time = 0.0f;

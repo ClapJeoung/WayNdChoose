@@ -175,7 +175,7 @@ MonoBehaviour:
   UnknownExp: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
   ThemeIllust_Conversation: {fileID: 21300000, guid: 16d47ffe49052184faaa7e7e94904eca, type: 3}
   ThemeIllust_Force: {fileID: 21300000, guid: 903ee6b4757198440a9d6b2890df78ce, type: 3}
-  ThemeIllust_Nature: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
+  ThemeIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
   ThemeIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
   SkillIllust_Speech: []
   SkillIllust_Threat: []
@@ -225,7 +225,7 @@ MonoBehaviour:
   TendencyIllust_Material: {fileID: 21300000, guid: a89f38520a7344f4cb85dded99581892, type: 3}
   ThemeIcon_Conversation: {fileID: 21300000, guid: 23ca849e003173640b0fc92c8fbfe4a3, type: 3}
   ThemeIcon_Force: {fileID: 21300000, guid: 7ed566b75ea65214bbdb01b7b2be6c7c, type: 3}
-  ThemeIcon_Nature: {fileID: 21300000, guid: 339416ec68700d94fa1fb1a62f4172bc, type: 3}
+  ThemeIcon_Wild: {fileID: 21300000, guid: 339416ec68700d94fa1fb1a62f4172bc, type: 3}
   ThemeIcon_Intelligence: {fileID: 21300000, guid: 90e74e12ed187e442aa1e4a392f0bc37, type: 3}
   TendencySelectionIcon: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
   ExpSelectionIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}

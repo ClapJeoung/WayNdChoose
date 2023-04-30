@@ -12,7 +12,7 @@ public class RewardSkillSelectionButton : MonoBehaviour
   [SerializeField] private Image MyIconImage = null;
   [SerializeField] private RectTransform ConversationRect = null;
   [SerializeField] private RectTransform ForceRect = null;
-  [SerializeField] private RectTransform NatureRect = null;
+  [SerializeField] private RectTransform WildRect = null;
   [SerializeField] private RectTransform IntelligenceRect = null;
 
   public void GetReward()
@@ -29,8 +29,8 @@ public class RewardSkillSelectionButton : MonoBehaviour
       case ThemeType.Force:
         _endpos[0] = ForceRect.position;
         break;
-      case ThemeType.Nature:
-        _endpos[0] = NatureRect.position;
+      case ThemeType.Wild:
+        _endpos[0] = WildRect.position;
         break;
       case ThemeType.Intelligence:
         _endpos[0] = IntelligenceRect.position;
