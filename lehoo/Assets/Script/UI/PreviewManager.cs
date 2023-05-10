@@ -197,38 +197,36 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenTurnPreview()
   {
-    int _currentturn = GameManager.Instance.MyGameData.Turn;
-    TextData _textdata = new TextData();
-    Sprite _turnsprite = null;
-    switch (_currentturn)
-    {
-      case 0: _turnsprite = GameManager.Instance.ImageHolder.SpringIcon_active;_textdata = GameManager.Instance.GetTextData("spring"); break;
-      case 1: _turnsprite = GameManager.Instance.ImageHolder.SummerIcon_active; _textdata = GameManager.Instance.GetTextData("summer"); break;
-      case 2: _turnsprite = GameManager.Instance.ImageHolder.FallIcon_active; _textdata = GameManager.Instance.GetTextData("fall"); break;
-      case 3: _turnsprite = GameManager.Instance.ImageHolder.WinterIcon_active; _textdata = GameManager.Instance.GetTextData("winter"); break;
-    }
-    TurnIcon.sprite = _turnsprite;
-    TurnDescription.text = _textdata.Description;
-    TurnSubDescription.text = GameManager.Instance.GetTextData("turndescription").Name;
+      int _currentturn = GameManager.Instance.MyGameData.Turn;
+      TextData _textdata = new TextData();
+      Sprite _turnsprite = null;
+      switch (_currentturn)
+      {
+        case 0: _turnsprite = GameManager.Instance.ImageHolder.SpringIcon_active; _textdata = GameManager.Instance.GetTextData("spring"); break;
+        case 1: _turnsprite = GameManager.Instance.ImageHolder.SummerIcon_active; _textdata = GameManager.Instance.GetTextData("summer"); break;
+        case 2: _turnsprite = GameManager.Instance.ImageHolder.FallIcon_active; _textdata = GameManager.Instance.GetTextData("fall"); break;
+        case 3: _turnsprite = GameManager.Instance.ImageHolder.WinterIcon_active; _textdata = GameManager.Instance.GetTextData("winter"); break;
+      }
+      TurnIcon.sprite = _turnsprite;
+      TurnDescription.text = _textdata.Description;
+      TurnSubDescription.text = GameManager.Instance.GetTextData("turndescription").Name;
     CurrentPreview = TurnPreview.GetComponent<RectTransform>();
-
     IEnumerator _cor = null;
     _cor= fadepreview(TurnPreview, true);
     StartCoroutine(_cor);
   }//턴 미리보기 패널 세팅 후 열기
   public void OpenHPPreview()
   {
-    TextData _textddata = GameManager.Instance.GetTextData("hp");
-    string _str = _textddata.Description;
-    HPDescription.text = _str;
-    int _genvalue = ((int)GameManager.Instance.MyGameData.GetHPGenModify(false));
-    _str = _genvalue != 0 ? $"{_textddata.SuccessDescription} {(_genvalue > 0 ? "+" : "-")}{_genvalue}%" : "";
-    HPGenDescriptoin.text = _str;
-    int _lossvalue = ((int)GameManager.Instance.MyGameData.GetHPLossModify(false));
-    _str = _lossvalue != 0 ? $"{_textddata.FailDescription} {(_lossvalue>0?"+":"-")}{_lossvalue}%": "";
-    HPDecreaseDescription.text = _str;
-    HpSubDescription.text = _textddata.SelectionSubDescription;
-
+      TextData _textddata = GameManager.Instance.GetTextData("hp");
+      string _str = _textddata.Description;
+      HPDescription.text = _str;
+      int _genvalue = ((int)GameManager.Instance.MyGameData.GetHPGenModify(false));
+      _str = _genvalue != 0 ? $"{_textddata.SuccessDescription} {(_genvalue > 0 ? "+" : "-")}{_genvalue}%" : "";
+      HPGenDescriptoin.text = _str;
+      int _lossvalue = ((int)GameManager.Instance.MyGameData.GetHPLossModify(false));
+      _str = _lossvalue != 0 ? $"{_textddata.FailDescription} {(_lossvalue > 0 ? "+" : "-")}{_lossvalue}%" : "";
+      HPDecreaseDescription.text = _str;
+      HpSubDescription.text = _textddata.SelectionSubDescription;
     CurrentPreview = HPPreview.GetComponent<RectTransform>();
  
     IEnumerator _cor = null;
@@ -237,17 +235,16 @@ public class PreviewManager : MonoBehaviour
   }//체력 설명, 증감량 표기 후 열기
   public void OpenSanityPreview()
   {
-    TextData _textddata = GameManager.Instance.GetTextData("sanity");
-    string _str = _textddata.Description;
-    SanityDescription.text = _str;
-    int _genvalue = ((int)GameManager.Instance.MyGameData.GetSanityGenModify(false));
-    _str = _genvalue != 0 ? $"{_textddata.SuccessDescription} {(_genvalue>0?"+":"-")}{_genvalue}%": "";
-    SanityGenDescriptoin.text = _str;
-    int _lossvalue = ((int)GameManager.Instance.MyGameData.GetSanityLossModify(false));
-    _str = _lossvalue != 0 ? $"{_textddata.FailDescription} {(_lossvalue>0?"+":"-")}{_lossvalue}%": "";
-    SanityDecreaseDescription.text = _str;
-    SanitySubDescription.text = _textddata.SelectionSubDescription;
-
+      TextData _textddata = GameManager.Instance.GetTextData("sanity");
+      string _str = _textddata.Description;
+      SanityDescription.text = _str;
+      int _genvalue = ((int)GameManager.Instance.MyGameData.GetSanityGenModify(false));
+      _str = _genvalue != 0 ? $"{_textddata.SuccessDescription} {(_genvalue > 0 ? "+" : "-")}{_genvalue}%" : "";
+      SanityGenDescriptoin.text = _str;
+      int _lossvalue = ((int)GameManager.Instance.MyGameData.GetSanityLossModify(false));
+      _str = _lossvalue != 0 ? $"{_textddata.FailDescription} {(_lossvalue > 0 ? "+" : "-")}{_lossvalue}%" : "";
+      SanityDecreaseDescription.text = _str;
+      SanitySubDescription.text = _textddata.SelectionSubDescription;
     CurrentPreview = SanityPreview.GetComponent<RectTransform>();
 
     IEnumerator _cor = null;
@@ -308,7 +305,7 @@ public class PreviewManager : MonoBehaviour
           _strid += "rising";
           break;//퀘스트id_rising을 부 설명으로
         case QuestSequence.Climax:
-          _strid += $"climax_{_currentquest.CurrentClimaxIndex.ToString()}";
+          _strid += $"climax_{_currentquest.FinishedClimaxCount.ToString()}";
           break;//id_climax_순서 를 부 설명으로
         case QuestSequence.Falling:
           _strid += "falling";

@@ -47,6 +47,7 @@ public class UIManager : MonoBehaviour
   public float GenTextMoveDegree = 1.5f;
   public float GenTextMoveTime = 2.0f;
   public float CharacterWaitTime = 2.0f;
+  public int IllustSoftness_start = 800, IllustSoftness_end = 50;
   public PreviewManager PreviewManager = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI YearText = null;
@@ -237,21 +238,31 @@ public class UIManager : MonoBehaviour
     MaterialIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
   }
   [SerializeField] private Image[] LongTermIcon = new Image[2];
+  [SerializeField] private TextMeshProUGUI[] LongTermTurn=new TextMeshProUGUI[2];
   public void UpdateExpLongTermIcon()
   {
     for(int i=0; i < LongTermIcon.Length; i++)
     {
-      if (GameManager.Instance.MyGameData.LongTermEXP[i] == null) LongTermIcon[i].sprite = GameManager.Instance.ImageHolder.EmptyExpIcon;
-      else LongTermIcon[i].sprite = GameManager.Instance.ImageHolder.ExistExpIcon;
+      if (GameManager.Instance.MyGameData.LongTermEXP[i] == null) LongTermIcon[i].sprite = GameManager.Instance.ImageHolder.EmptyLongExpIcon;
+      else
+      {
+        LongTermIcon[i].sprite = null;
+        LongTermTurn[i].text = GameManager.Instance.MyGameData.LongTermEXP[i].Duration.ToString();
+      }
     }
   }
   [SerializeField] private Image[] ShortTermIcon = new Image[4];
+  [SerializeField] private TextMeshProUGUI[] ShortTermTurn=new TextMeshProUGUI[4];
   public void UpdateExpShortTermIcon()
   {
     for (int i = 0; i < ShortTermIcon.Length; i++)
     {
-      if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null) ShortTermIcon[i].sprite = GameManager.Instance.ImageHolder.EmptyExpIcon;
-      else ShortTermIcon[i].sprite = GameManager.Instance.ImageHolder.ExistExpIcon;
+      if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null) ShortTermIcon[i].sprite = GameManager.Instance.ImageHolder.EmptyShortExpIcon;
+      else
+      {
+        ShortTermIcon[i].sprite = null;
+        LongTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
+      }
     }
   }
   private UI_default LastUI = null;
@@ -295,6 +306,19 @@ public class UIManager : MonoBehaviour
         IsWorking = false;
         yield return null;
     }
+  public IEnumerator OpenSoftness(RectMask2D _rectmask)
+  {
+    float _time = 0.0f, _endtime = SmallPanelFadeTime;
+    float _startsoft=IllustSoftness_start,_endsoft=IllustSoftness_end;
+    Vector2Int _soft = _rectmask.softness;
+    while (_time < _endtime)
+    {
+      _soft.x = (int)(Mathf.Lerp(_startsoft, _endsoft, _time / _endtime));
+      _rectmask.softness = _soft;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+  }
    public IEnumerator OpenUI(RectTransform _rect,CanvasGroup _group,UIMoveDir _dir,bool _islarge)
   {
     if(LastUI!=null) _rect.transform.SetSiblingIndex(LastUI.transform.GetSiblingIndex() + 1);

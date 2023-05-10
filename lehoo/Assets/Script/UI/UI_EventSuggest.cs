@@ -52,6 +52,8 @@ public class UI_EventSuggest : UI_default
         for(int i=0;i < Panel_Group.Length; i++)
         {
             Panel_Group[i].alpha = 0.0f;
+      Panel_Group[i].interactable = false;
+      Panel_Group[i].blocksRaycasts = false;
             if (Panel[i].activeInHierarchy) Panel[i].SetActive(false);
         }
         StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));

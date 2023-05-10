@@ -137,6 +137,13 @@ public class GameManager : MonoBehaviour
     Dictionary<string, TextData> _temp = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
     foreach (var _data in _temp)
     {
+      TextData _texttemp = _data.Value;
+     if(_texttemp.Name.Contains("\\n")) _texttemp.Name=_texttemp.Name.Replace("\\n", "\n");
+      if (_texttemp.Description.Contains("\\n")) _texttemp.Description = _texttemp.Description.Replace("\\n", "\n");
+      if (_texttemp.SelectionDescription.Contains("\\n")) _texttemp.SelectionDescription = _texttemp.SelectionDescription.Replace("\\n", "\n");
+      if (_texttemp.SelectionSubDescription.Contains("\\n")) _texttemp.SelectionSubDescription = _texttemp.SelectionSubDescription.Replace("\\n", "\n");
+      if (_texttemp.FailDescription.Contains("\\n")) _texttemp.FailDescription = _texttemp.FailDescription.Replace("\\n", "\n");
+      if (_texttemp.SuccessDescription.Contains("\\n")) _texttemp.SuccessDescription = _texttemp.SuccessDescription.Replace("\\n", "\n");
       TextDic.Add(_data.Value.ID, _data.Value);
     }
 
@@ -183,19 +190,21 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   public void SuccessCurrentEvent(TendencyType _tendencytype)
   {
+    EventHolder.RemoveEvent(MyGameData.CurrentEvent.ID);
     switch (_tendencytype)
     {
       case TendencyType.None:
-        MyGameData.ClearEvent_None.Add(MyGameData.CurrentEvent.ID); break;
+        MyGameData.SuccessEvent_None.Add(MyGameData.CurrentEvent.ID); break;
       case TendencyType.Rational:
-        MyGameData.ClearEvent_Rational.Add(MyGameData.CurrentEvent.ID); break;
+        MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.ID); break;
       case TendencyType.Mental:
-        MyGameData.ClearEvent_Mental.Add(MyGameData.CurrentEvent.ID); break;
+        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.ID); break;
       case TendencyType.Physical:
-        MyGameData.ClearEvent_Physical.Add(MyGameData.CurrentEvent.ID); break;
+        MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.ID); break;
       case TendencyType.Material:
-        MyGameData.ClearEvent_Material.Add(MyGameData.CurrentEvent.ID); break;
+        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.ID); break;
     }
+    MyGameData.SuccessEvent_All.Add(MyGameData.CurrentEvent.ID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -218,6 +227,7 @@ public class GameManager : MonoBehaviour
       case TendencyType.Material:
         MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.ID); break;
     }
+    MyGameData.FailEvent_All.Add(MyGameData.CurrentEvent.ID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -253,6 +263,7 @@ public class GameManager : MonoBehaviour
   }
   public void SetOuterEvent(EventDataDefulat _event)
   {
+    if (_event.GetType().Equals(typeof(QuestEventData))) MyGameData.LastQuestCount = 0;
     MyGameData.CurrentEvent = _event;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
@@ -273,6 +284,7 @@ public class GameManager : MonoBehaviour
   }//정착지 도착을 통해 이벤트 리스트를 받은 경우
   public void SelectEvent(EventDataDefulat _targetevent)
   {
+    if (_targetevent.GetType().Equals(typeof(QuestEventData))) MyGameData.LastQuestCount = 0;
     MyGameData.CurrentSanity -= MyGameData.SettleSanityLoss;
     UIManager.Instance.UpdateSanityText();
     Dictionary<Settlement,int> _temp=new Dictionary<Settlement,int>();
@@ -324,7 +336,6 @@ public class GameManager : MonoBehaviour
         break;
     }
   }
-
   private void Awake()
   {
         NullText = new TextData();
@@ -469,18 +480,18 @@ public class GameManager : MonoBehaviour
       {
         string _id = MyGameData.CurrentEvent.ID;
         SuccessData _success = null;
-        if (MyGameData.ClearEvent_None.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
-        else if(MyGameData.ClearEvent_Rational.Contains(_id))_success = MyGameData.CurrentEvent.SuccessDatas[0];
-        else if(MyGameData.ClearEvent_Mental.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
-        else if(MyGameData.ClearEvent_Physical.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[1];
+        if (MyGameData.SuccessEvent_None.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
+        else if(MyGameData.SuccessEvent_Rational.Contains(_id))_success = MyGameData.CurrentEvent.SuccessDatas[0];
+        else if(MyGameData.SuccessEvent_Mental.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
+        else if(MyGameData.SuccessEvent_Physical.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[1];
         else _success=MyGameData.CurrentEvent.SuccessDatas[1];
         if (_success != null) { UIManager.Instance.OpenSuccessDialogue(_success); yield break; }
 
         FailureData _fail = null;
-        if (MyGameData.ClearEvent_None.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
-        else if (MyGameData.ClearEvent_Rational.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
-        else if (MyGameData.ClearEvent_Mental.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
-        else if (MyGameData.ClearEvent_Physical.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[1];
+        if (MyGameData.FailEvent_None.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
+        else if (MyGameData.FailEvent_Rational.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
+        else if (MyGameData.FailEvent_Mental.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
+        else if (MyGameData.FailEvent_Physical.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[1];
         else _fail = MyGameData.CurrentEvent.FailureDatas[1];
         if (_fail != null) { UIManager.Instance.OpenFailDialogue(_fail); yield break; }
         

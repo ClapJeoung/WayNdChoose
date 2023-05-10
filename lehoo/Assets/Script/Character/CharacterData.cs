@@ -56,16 +56,35 @@ public class GameData    //게임 진행도 데이터
 {
     public int Year = 1;//년도
 
-    private int turn = 0;
-    public int Turn
+    private int turn = -1;
+  public int Turn
+  {
+    get { return turn; }
+    set
     {
-        get { return turn; }
-        set { if (value > MaxTurn) { turn = 0; Year++; if (UIManager.Instance != null) UIManager.Instance.UpdateYearText(); }
-            else turn = value;
-            if (UIManager.Instance != null) UIManager.Instance.UpdateTurnIcon();
+      if (turn.Equals(-1))
+      {
+        turn = value;
+      }
+      else
+      {
+        if (value > MaxTurn)
+        { turn = 0; Year++; if (UIManager.Instance != null) UIManager.Instance.UpdateYearText(); }
+        else turn = value;
+
+        if (UIManager.Instance != null)
+        {
+          UIManager.Instance.UpdateTurnIcon();
         }
+        for(int i = 0; i < LongTermEXP.Length; i++) if (LongTermEXP[i] != null) LongTermEXP[i].Duration--;
+        for(int i=0;i<ShortTermEXP.Length;i++)if(ShortTermEXP[i] != null) ShortTermEXP[i].Duration--;
+
+        UIManager.Instance.UpdateExpLongTermIcon();
+        UIManager.Instance.UpdateExpShortTermIcon();
+      }
     }
-    public const int MaxTurn = 3;//최대 턴(0,1,2,3)
+  }
+  public const int MaxTurn = 3;//최대 턴(0,1,2,3)
     public float MinSuccesPer
     {
         get
@@ -87,8 +106,13 @@ public class GameData    //게임 진행도 데이터
                 goldfaildata.Description = GameManager.Instance.GetTextData("goldfail").Name;
                 goldfaildata.Panelty_target = PenaltyTarget.Status;
                 goldfaildata.Loss_target = PayOrLossTarget.Sanity;
-            }
-            return goldfaildata;
+        goldfaildata.Illust_spring = GameManager.Instance.ImageHolder.NoGoldIllust;
+        goldfaildata.Illust_summer = GameManager.Instance.ImageHolder.NoGoldIllust;
+        goldfaildata.Illust_fall = GameManager.Instance.ImageHolder.NoGoldIllust;
+        goldfaildata.Illust_winter = GameManager.Instance.ImageHolder.NoGoldIllust;
+
+      }
+      return goldfaildata;
         }
     }
     #region 값 프로퍼티
@@ -674,20 +698,35 @@ public class GameData    //게임 진행도 데이터
   public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
   public List<string> RemoveEvent = new List<string>();//이벤트 풀에서 사라질 이벤트들(일반,연계)
-  public List<string> ClearEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
-  public List<string> ClearEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
-  public List<string> ClearEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
-  public List<string> ClearEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
-  public List<string> ClearEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_All=new List<string>();
 
   public List<string> FailEvent_None = new List<string>();//단일,성향,경험,기술 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Rational = new List<string>();//이성 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Physical = new List<string>();  //육체 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Mental = new List<string>(); //정신 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_All= new List<string>();
 
   public List<string> ClearQuest = new List<string>();//현재 게임에서 클리어한 퀘스트 ID
   public QuestHolder CurrentQuest = null; //현재 진행 중인 퀘스트
+  public int LastQuestCount = 0;          //퀘스트 이벤트를 실행한지 얼마나 지났는지
+  public bool QuestAble
+  {
+    get
+    {
+      int _per = 0;
+      if (LastQuestCount < 1) _per = 10;
+      else if (LastQuestCount < 2) _per = 30;
+      else _per = 100;
+      if (UnityEngine.Random.Range(0, 100) < _per) return true;
+      else return false;
+    }
+  }
 
   public Tuple<int, int> GetEffectModifyCount_Trait(EffectType _modify)
   {

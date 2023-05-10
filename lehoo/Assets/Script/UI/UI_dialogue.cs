@@ -4,16 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UI_dialogue : MonoBehaviour
+public class UI_dialogue : UI_default
 {
+  [SerializeField] private CanvasGroup NameGroup = null;
   [SerializeField] private TextMeshProUGUI NameText = null;
+  [SerializeField] private CanvasGroup IllustGroup = null;
   [SerializeField] private Image Illust = null;
+  [SerializeField] private CanvasGroup DescriptionGroup = null;
   [SerializeField] private TextMeshProUGUI DialogueText = null;
   [SerializeField] private UI_Reward MyUIReward = null;
   [SerializeField] private CanvasGroup SuggestButton = null;
   [SerializeField] private CanvasGroup MapButton = null;
   [SerializeField] private GameObject RewardButton = null;
   [SerializeField] private CanvasGroup KeepmoveButton=null;
+  [SerializeField] private CanvasGroup CenterGroup = null;
   [SerializeField] private RectTransform SelectionHolder = null;
   [SerializeField] private UI_Selection Selection_None = null;
   [SerializeField] private UI_Selection Selection_Rational = null;
@@ -62,29 +66,9 @@ public class UI_dialogue : MonoBehaviour
   public void SetEventDialogue()
   {
 
-    EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
     ResetPanel();
     //초기화
-    Color _col = Color.white;
-    _col.a = 0.0f;
-    NameText.color = _col;
-    Illust.color = _col;
-    DialogueText.color = _col;
-    NameText.text = _currentevent.Name;
-    Illust.sprite = _currentevent.Illust;
-    DialogueText.text = _currentevent.Description;
-    if(Selection_None.gameObject.activeInHierarchy==true)Selection_None.gameObject.SetActive(false);
-    if (Selection_Rational.gameObject.activeInHierarchy == true) Selection_Rational.gameObject.SetActive(false);
-    if (Selection_Physical.gameObject.activeInHierarchy == true) Selection_Physical.gameObject.SetActive(false);
-    if (Selection_Mental.gameObject.activeInHierarchy == true) Selection_Mental.gameObject.SetActive(false);
-    if (Selection_Material.gameObject.activeInHierarchy == true) Selection_Material.gameObject.SetActive(false);
-    Selection_None.GetComponent<RectTransform>().anchoredPosition = Selection_None.OriginPos;
-    Selection_Rational.GetComponent<RectTransform>().anchoredPosition = Selection_Rational.OriginPos;
-    Selection_Physical.GetComponent<RectTransform>().anchoredPosition = Selection_Physical.OriginPos;
-    Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
-    Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
-
-        UIManager.Instance.AddUIQueue(setdialogue());
+        UIManager.Instance.AddUIQueue(setnewdialogue());
   }//이벤트 시작 열기
   public void SetEventDialogue(SuccessData _successdata)
   {
@@ -132,21 +116,59 @@ public class UI_dialogue : MonoBehaviour
   }//선택지 선택한 후 다른 선택지들 닫기
   public void SelectSelection(UI_Selection _selection)
   {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, true));
+    switch (_selection.MyTendencyType)
+    {
+      case TendencyType.Rational:
+      case TendencyType.Physical:
+        GameManager.Instance.MyGameData.Tendency_RP.AddCount(_selection.MyTendencyType);
+        break;
+      case TendencyType.Mental:
+      case TendencyType.Material:
+        GameManager.Instance.MyGameData.Tendency_MM.AddCount(_selection.MyTendencyType);
+        break;
+    }
     DeleteOtherSelection(_selection.MyTendencyType);
     //다른거 사라지게 만들고
     UIManager.Instance.AddUIQueue(selectionanimation(_selection));
     //선택한 선택지를 중심으로 이동시키고 성공, 실패 검사 실행 
   }//선택지 버튼 클릭했을 시
-  private IEnumerator setdialogue()
+  private IEnumerator setnewdialogue()
   {
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NameText, 1.0f));
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    yield return StartCoroutine( UIManager.Instance.ChangeAlpha(Illust, 1.0f));
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-   yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
+    yield return StartCoroutine(UIManager.Instance.OpenUI(MyGroup, true));
     EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
+    Color _col = Color.white;
+    _col.a = 0.0f;
+    NameText.color = _col;
+    Illust.color = _col;
+    DialogueText.color = _col;
+    NameText.text = _currentevent.Name;
+    Illust.sprite = _currentevent.Illust;
+    string _dialogetemp = _currentevent.Description;
+    if (_dialogetemp.Contains("#settle")) _dialogetemp = _currentevent.Description.Replace("#settle#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
+    DialogueText.text = _dialogetemp;
+
+    if (Selection_None.gameObject.activeInHierarchy == true) Selection_None.gameObject.SetActive(false);
+    if (Selection_Rational.gameObject.activeInHierarchy == true) Selection_Rational.gameObject.SetActive(false);
+    if (Selection_Physical.gameObject.activeInHierarchy == true) Selection_Physical.gameObject.SetActive(false);
+    if (Selection_Mental.gameObject.activeInHierarchy == true) Selection_Mental.gameObject.SetActive(false);
+    if (Selection_Material.gameObject.activeInHierarchy == true) Selection_Material.gameObject.SetActive(false);
+    Selection_None.GetComponent<RectTransform>().anchoredPosition = Selection_None.OriginPos;
+    Selection_Rational.GetComponent<RectTransform>().anchoredPosition = Selection_Rational.OriginPos;
+    Selection_Physical.GetComponent<RectTransform>().anchoredPosition = Selection_Physical.OriginPos;
+    Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
+    Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
+
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NameGroup, 1.0f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(NameText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 1.0f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
+    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
+
     switch (_currentevent.Selection_type)
     {
       case SelectionType.Single:
@@ -154,6 +176,7 @@ public class UI_dialogue : MonoBehaviour
         Selection_None.Active(_currentevent.SelectionDatas[0]);
         break;
       case SelectionType.Verticla:
+        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 1.0f, false));
         Selection_Rational.gameObject.SetActive(true);
         Selection_Rational.Active(_currentevent.SelectionDatas[0]);
         yield return new WaitForSeconds(0.3f);
@@ -161,6 +184,7 @@ public class UI_dialogue : MonoBehaviour
         Selection_Physical.Active(_currentevent.SelectionDatas[1]);
         break;
       case SelectionType.Horizontal:
+        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 1.0f, false));
         Selection_Mental.gameObject.SetActive(true);
         Selection_Mental.Active(_currentevent.SelectionDatas[0]);
         yield return new WaitForSeconds(0.3f);
@@ -177,9 +201,14 @@ public class UI_dialogue : MonoBehaviour
   }
   private IEnumerator updatedialogue(SuccessData _success)
   {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 0.0f));
     yield return StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    DialogueText.text = _success.Description;
+    string _dialogetemp = _success.Description;
+    if (_dialogetemp.Contains("#settle")) _dialogetemp = _success.Description.Replace("#settle#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
+    DialogueText.text = _dialogetemp;
+    Illust.sprite = _success.Illust;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
@@ -200,9 +229,14 @@ public class UI_dialogue : MonoBehaviour
   }
   private IEnumerator updatedialogue(FailureData _faiilure)
   {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 0.0f));
     yield return StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    DialogueText.text = _faiilure.Description;
+    string _dialogetemp = _faiilure.Description;
+    if (_dialogetemp.Contains("#settle")) _dialogetemp = _faiilure.Description.Replace("#settle#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
+    DialogueText.text = _dialogetemp;
+    Illust.sprite = _faiilure.Illust_spring;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
@@ -221,6 +255,10 @@ public class UI_dialogue : MonoBehaviour
   }
   public void ResetPanel()
   {
+    NameGroup.alpha = 0.0f;
+    IllustGroup.alpha = 0.0f;
+    DescriptionGroup.alpha = 0.0f;
+    CenterGroup.alpha = 0.0f;
     Color _col = Color.white;
     _col.a = 0.0f;
     NameText.color = _col;
@@ -493,12 +531,16 @@ public class UI_dialogue : MonoBehaviour
     CheckSuccessParticle.Play();
     MyUIReward.SetRewardPanel(_success);
     SetEventDialogue(_success);
-  }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체
+    if (GameManager.Instance.MyGameData.CurrentEvent.GetType().Equals(typeof(QuestEventData)))
+      GameManager.Instance.MyGameData.CurrentQuest.AddClearEvent((QuestEventData)GameManager.Instance.MyGameData.CurrentEvent);
+  }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체, 퀘스트 이벤트일 경우 진행도 ++
   public void SetFail(FailureData _fail)
   {
     CheckFailParticle.Play();
     SetPenalty(_fail);
     SetEventDialogue(_fail);
+    if (GameManager.Instance.MyGameData.CurrentEvent.GetType().Equals(typeof(QuestEventData)))
+      GameManager.Instance.MyGameData.CurrentQuest.AddFailEvent((QuestEventData)GameManager.Instance.MyGameData.CurrentEvent);
   }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
   public void DeleteRewardButton()
   {

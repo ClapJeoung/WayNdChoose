@@ -70,9 +70,10 @@ public class ImageHolder : ScriptableObject
   [Space(10)]
     public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
+  public Sprite NoGoldIllust = null;
   public Sprite EmptyExpIllust = null;
-  public Sprite ExistExpIcon = null;
-  public Sprite EmptyExpIcon = null;
+  public Sprite EmptyShortExpIcon = null;
+  public Sprite EmptyLongExpIcon = null;
   public List<Sprite> TraitIcons=new List<Sprite>();
   public List<Sprite> TraitIllust = new List<Sprite>();                //모든 특성 일러스트
   public Sprite DefaultIllust = null;                                 //빈 일러스트
@@ -188,27 +189,78 @@ public class ImageHolder : ScriptableObject
     if (_temp.Count < _level) return DefaultIllust;
     return _temp[_level - 1];
   }
-  public Sprite GetEventIllust(string _illustid)
+  public Sprite[] GetEventStartIllust(string _illustid)
   {
-    string _id = _illustid;
-    switch (GameManager.Instance.MyGameData.Turn)
+    //계절 적용된 id
+    Sprite[] _illusts = new Sprite[4];
+    for(int i=0;i< _illusts.Length; i++)
     {
-      case 0: _id += "_spring";break;
-      case 1: _id += "_summer"; break;
-      case 2: _id += "_fall"; break;
-      case 3: _id += "_winter"; break;
-    }
-    Sprite _targetsprite = DefaultIllust;
-    foreach (Sprite _spr in EventIllust)
-    {
-      if (_spr.name.Equals(_id))
+     string _temp = _illustid;
+      _illusts[i] = DefaultIllust;
+      foreach(Sprite _spr in EventIllust)
       {
-        _targetsprite = _spr;
-        break;
+        if (_spr.name.Equals(_temp))
+        {
+          _illusts[i] = _spr;
+          break;
+        }
       }
     }
-    return _targetsprite;
+    return _illusts;
   }//ID로 이벤트 일러스트 가져오기
+  public Sprite[] GetEventFailIllusts(string _illustid, string _index)
+  {
+    //계절 적용된 id
+    Sprite[] _illusts = new Sprite[4];
+    for (int i = 0; i < _illusts.Length; i++)
+    {
+      string _temp = _illustid  + "_" + _index + "_fail";
+      foreach (Sprite _spr in EventIllust)
+      {
+        if (_spr.name.Equals(_temp))
+        {
+          _illusts[i] = _spr;
+          break;
+        }
+      }
+
+      if (_illusts[i] == null)
+      {
+        _temp = _illustid + "_" + _index + "_fail";
+        foreach (Sprite _spr in EventIllust)
+        {
+          if (_spr.name.Equals(_temp))
+          {
+            _illusts[i] = _spr;
+            break;
+          }
+        }
+        if (_illusts[i] == null) _illusts[i] = DefaultIllust;
+      }
+
+    }
+    return _illusts;
+  }
+  public Sprite[] GetEventSuccessIllusts(string _illustid, string _index)
+  {
+    //계절 적용된 id
+    Sprite[] _illusts = new Sprite[4];
+    for (int i = 0; i < _illusts.Length; i++)
+    {
+      string _temp = _illustid + "_" + _index + "_success";
+      foreach (Sprite _spr in EventIllust)
+      {
+        if (_spr.name.Equals(_temp))
+        {
+          _illusts[i] = _spr;
+          break;
+        }
+      }
+        if (_illusts[i] == null) _illusts[i] = DefaultIllust;
+    }
+    return _illusts;
+  }
+
   public Sprite GetEXPIllust(string _illustid)
   {
     Sprite _targetsprite = DefaultIllust;
