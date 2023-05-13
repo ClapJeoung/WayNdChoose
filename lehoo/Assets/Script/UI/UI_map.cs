@@ -89,7 +89,8 @@ public class UI_map : UI_default
   }
   private IEnumerator movemap()
   {
-    //이동 도중이니 이동 버튼은 비활성화
+        //이동 도중이니 이동 버튼은 비활성화
+        GameManager.Instance.MyGameData.VisitedPlaces.Clear();
     MoveButton.interactable = false;
     Vector3 _playerrectpos = PlayerRect.anchoredPosition;          //현재 위치(UI)
     Vector3 _settlerectpos = SettleIcons[SelectedSettle.OriginName].GetComponent<RectTransform>().anchoredPosition;           //종점 위치(UI)
@@ -114,8 +115,11 @@ public class UI_map : UI_default
       //이전 정착지의 이벤트 관련 데이터 초기화
       //currentprogress==0.0f면 정착지에서 중간 이벤트 지점까지 이동
       yield return StartCoroutine(movecharacter(PlayerRect.anchoredPosition, _targetrectpos, _settlerectpos, _targetprogress));
-      //캐릭터 이동시킴
-      EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetrectpos));
+            //캐릭터 이동시킴
+            //멈췄으면 바로 맵 닫기
+            CloseUI();
+
+            EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetrectpos));
             //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
             yield return StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
             IsOpen = false;
@@ -128,8 +132,6 @@ public class UI_map : UI_default
       }
       GameManager.Instance.MyGameData.AvailableSettlement.Clear();
       GameManager.Instance.MyGameData.AvailableSettlement.Add(SelectedSettle);
-      //멈췄으면 바로 맵 닫기
-
       //도중에 멈춘거니까 이동 버튼 활성화는 안함
     }
     else//야외 ~ 정착지
@@ -143,8 +145,12 @@ public class UI_map : UI_default
 
       //currentprogress!=0.0f면 외부에서 이벤트 클리어하고 가던 정착지를 향해 다시 출발
       yield return StartCoroutine(movecharacter(_playerrectpos, _settlerectpos, _currentprogress));
-      //캐릭터 이동시킨
-      EventManager.Instance.SetSettleEvent(SelectedSettle.GetSettleTileEventData());
+            //캐릭터 이동시킨
+            CloseUI();
+            IsOpen = false;
+            //멈췄으면 바로 맵 닫기
+
+            EventManager.Instance.SetSettleEvent(SelectedSettle.GetSettleTileEventData());
       //캐릭터 목표 지점 정착지 정보 보내줌
       GameManager.Instance.MyGameData.Turn++;
       UIManager.Instance.UpdateTurnIcon();
@@ -155,9 +161,6 @@ public class UI_map : UI_default
       SelectedSettle = null;
       UpdateIcons(GameManager.Instance.MyGameData.AvailableSettlement);
 
-            yield return StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
-            IsOpen = false;
-            //멈췄으면 바로 맵 닫기
         }
     }
   private IEnumerator movecharacter(Vector3 _originrectpos,Vector3 _targetrectpos,Vector3 _maxpos, float _targetprogress)

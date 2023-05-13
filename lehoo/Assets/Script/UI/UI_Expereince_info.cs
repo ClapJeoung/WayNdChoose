@@ -21,58 +21,73 @@ public class UI_Expereince_info : UI_default
 
     IsOpen = true;
 
-    string _name = _exp.Name;
-    Sprite _illust = _exp.Illust;
-    string _description = _exp.Description;
-    string _effect = _exp.EffectString;
+        string _name = _exp.Name;
+        Sprite _illust = _exp.Illust;
+        string _description = _exp.Description;
+        string _effect = _exp.EffectString;
+        if (CurrentExp == null)
+        {
 
-    ExpName.text = _name;
-    ExpIllust.sprite = _illust;
-    ExpDescription.text = _description;
-    ExpEffect.text = _effect;
-    ExpTurn.text = _exp.Duration.ToString();
+            ExpName.text = _name;
+            ExpIllust.sprite = _illust;
+            ExpDescription.text = _description;
+            ExpEffect.text = _effect;
+            ExpTurn.text = _exp.Duration.ToString();
 
-    if(CurrentExp==null)UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
-    else
+            UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
+        }//최초는 아무 경험이나 클릭하면 열기
+        else
+        {
+            if (CurrentExp == _exp) CloseUI();    //같은 경험 클릭하면 닫기
+            else
+            {
+                ExpName.text = _name;
+                ExpIllust.sprite = _illust;
+                ExpDescription.text = _description;
+                ExpEffect.text = _effect;
+                ExpTurn.text = _exp.Duration.ToString();
+
+            }//다른 경험 클릭하면 해당 경험 정보로 대체
+        }
+  }
+    public void OpenShortExpUI(int _index)
     {
-      if (CurrentExp == _exp) CloseUI();
-      else
-      {
+        Experience _exp = GameManager.Instance.MyGameData.ShortTermEXP[_index];
+        //나중에 인수도 받아야함
+        if (UIManager.Instance.IsWorking || _exp == null) return;
+        if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
 
-      }
+        IsOpen = true;
+
+        string _name = _exp.Name;
+        Sprite _illust = _exp.Illust;
+        string _description = _exp.Description;
+        string _effect = _exp.EffectString;
+        if (CurrentExp == null)
+        {
+            ExpName.text = _name;
+            ExpIllust.sprite = _illust;
+            ExpDescription.text = _description;
+            ExpEffect.text = _effect;
+            ExpTurn.text = _exp.Duration.ToString();
+
+            UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
+        }//최초는 아무 경험이나 클릭하면 열기
+        else
+        {
+            if (CurrentExp == _exp) CloseUI();    //같은 경험 클릭하면 닫기
+            else
+            {
+                ExpName.text = _name;
+                ExpIllust.sprite = _illust;
+                ExpDescription.text = _description;
+                ExpEffect.text = _effect;
+                ExpTurn.text = _exp.Duration.ToString();
+
+            }//다른 경험 클릭하면 해당 경험 정보로 대체
+        }
     }
-  }
-  public void OpenShortExpUI(int _index)
-  {
-    Experience _exp = GameManager.Instance.MyGameData.ShortTermEXP[_index];
-    //나중에 인수도 받아야함
-    if (UIManager.Instance.IsWorking || _exp == null) return;
-    if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
-
-    IsOpen = true;
-
-    string _name = _exp.Name;
-    Sprite _illust = _exp.Illust;
-    string _description = _exp.Description;
-    string _effect = _exp.EffectString;
-
-    ExpName.text = _name;
-    ExpIllust.sprite = _illust;
-    ExpDescription.text = _description;
-    ExpEffect.text = _effect;
-    ExpTurn.text = _exp.Duration.ToString();
-
-    if (CurrentExp==null) UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));//경험 창 처음 열때
-    else
-    {
-      if (CurrentExp == _exp) CloseUI();
-      else
-      {
-
-      }
-    }//이미 열린 상태에서 다른 경험 클릭했을때
-  }
-public override void CloseUI()
+    public override void CloseUI()
   {
     base.CloseUI();
   }

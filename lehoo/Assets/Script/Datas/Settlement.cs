@@ -4,6 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
+using static UnityEditor.Progress;
+
 public class Settlement
 {
     public int IllustIndex = 0;
@@ -114,6 +116,35 @@ public class Settlement
 
     return _temp;
   }
+    public List<PlaceType> AvailabePlaces
+    {
+        get
+        {
+            if (availabeplaces.Count.Equals(0))
+            {
+                List<PlaceType> _places = new List<PlaceType>();
+
+                _places.Add(PlaceType.Residence);
+                _places.Add(PlaceType.Marketplace);
+                _places.Add(PlaceType.Temple);
+                switch (Type)
+                {
+                    case SettlementType.Town:
+                        break;
+                    case SettlementType.City:
+                        _places.Add(PlaceType.Library);
+                        break;
+                    case SettlementType.Castle:
+                        _places.Add(PlaceType.Theater);
+                        _places.Add(PlaceType.Academy);
+                        break;
+                }
+                availabeplaces = _places;
+            }
+            return availabeplaces;
+        }
+    }
+    private List<PlaceType> availabeplaces = new List<PlaceType>();
 }
 public class MapSaveData
 {

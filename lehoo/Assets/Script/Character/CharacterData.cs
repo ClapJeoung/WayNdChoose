@@ -51,6 +51,13 @@ public static class ConstValues
   public const int SettleEventUnpleasantExpansion = 3;
 
     public const int SanityByMadness_0 = 100, SanityByMadness_1 = 80, SanityByMadness_2 = 60, SanityByMadness_3 = 40;
+
+    public const int PlaceEffectMaxTurn = 3;
+    public const float PlaceEffect_residence = 0.3f;
+    public const int PlaceEffect_marketplace = 20;
+    public const int PlaceEffect_temple = 1;
+    public const int PlaceEffect_theater = 3;
+    public const int PlaceEffect_acardemy = 10;
 }
 public class GameData    //게임 진행도 데이터
 {
@@ -81,6 +88,16 @@ public class GameData    //게임 진행도 데이터
 
         UIManager.Instance.UpdateExpLongTermIcon();
         UIManager.Instance.UpdateExpShortTermIcon();
+
+                List<PlaceType> _deleteplace = new List<PlaceType>();
+                List<PlaceType> _downplace = new List<PlaceType>();
+                foreach(var _data in PlaceEffects)
+                {
+                    if (_data.Value.Equals(1)) _deleteplace.Add(_data.Key);
+                    else _downplace.Add(_data.Key);
+                }
+                foreach (var _place in _deleteplace) PlaceEffects.Remove(_place);
+                foreach (var _place in _downplace) PlaceEffects[_place]--;
       }
     }
   }
@@ -180,6 +197,8 @@ public class GameData    //게임 진행도 데이터
     {
         get { return hp; }
         set {
+            if (value < hp && PlaceEffects.ContainsKey(PlaceType.Residence)) PlaceEffects.Remove(PlaceType.Residence);
+            //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
             hp = value;
             if (hp > 100) hp = 100;
             if (hp < 0) { Debug.Log("지벳"); }
@@ -691,9 +710,61 @@ public class GameData    //게임 진행도 데이터
   public List<Settlement> AvailableSettlement = new List<Settlement>();   //현재 이동 가능한 정착지들
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
   public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
-  public List<PlaceType> LastPlaceTypes = new List<PlaceType>();            //직전에 들렸던 정착지에서 사용했던 이벤트의 장소들
+  public List<PlaceType> VisitedPlaces = new List<PlaceType>();     //현재 정착지에서 사용한 장소 목록
+    public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
+    public ThemeType PlaceEffectTheme = ThemeType.Conversation;     //도서관 방문으로 증가한 테마
+    public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
+    {
+        switch (placetype)
+        {
+            case PlaceType.Residence:
 
-  public List<EventDataDefulat> CurrentSuggestingEvents = new List<EventDataDefulat>(); //현재 정착지에서 제시 중인 이벤트
+                if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
+                else PlaceEffects.Add(placetype, 3);
+                //이후 연출
+                break;//정착지- 다음 체력 감소 완화(3턴지속)
+
+            case PlaceType.Marketplace:
+                Gold += ConstValues.PlaceEffect_marketplace;
+                break;//시장- 일시불 골드 획득
+
+            case PlaceType.Temple:
+                foreach (var _settle in AllSettleUnpleasant.Keys)
+                    if (!AllSettleUnpleasant[_settle].Equals(0)) AllSettleUnpleasant[_settle]--;
+                break;//사원- 모든 불쾌 1 감소
+
+            case PlaceType.Library:
+                if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
+                else PlaceEffects.Add(placetype, 3);
+                switch(UnityEngine.Random.Range(0,4))
+                {
+                    case 0:PlaceEffectTheme = ThemeType.Conversation;break;
+                    case 1:PlaceEffectTheme = ThemeType.Force;break;
+                    case 2:PlaceEffectTheme = ThemeType.Wild;break;
+                    case 3:PlaceEffectTheme = ThemeType.Intelligence;break;
+                }
+
+                break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(3턴지속)
+
+            case PlaceType.Theater:
+
+                for (int i = 0; i < LongTermEXP.Length; i++)
+                    if (LongTermEXP[i] != null) LongTermEXP[i].Duration =
+                            LongTermEXP[i].Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP[i].Duration + 2;
+                for (int i = 0; i < ShortTermEXP.Length; i++)
+                    if (ShortTermEXP[i] != null) ShortTermEXP[i].Duration =
+                            ShortTermEXP[i].Duration + 2 > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortTermEXP[i].Duration + 2;
+
+                break;//극장- 모든 경험 2턴 증가
+
+            case PlaceType.Academy:
+                if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
+                else PlaceEffects.Add(placetype, 3);
+                break;//아카데미- 다음 체크 확률 증가(3턴 지속, 성공할 때 까지)
+        }
+    }
+
+    public List<EventDataDefulat> CurrentSuggestingEvents = new List<EventDataDefulat>(); //현재 정착지에서 제시 중인 이벤트
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
@@ -953,6 +1024,7 @@ public class GameData    //게임 진행도 데이터
     //튜플의 item1은 부정적 효과(감소증가) 개수
     for (int i = 0; i < _traittuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.HPLoss_Trait;
     for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.HPLoss_Exp;
+        if (PlaceEffects.ContainsKey(PlaceType.Residence)) _minusamount += (100 - _minusamount) * ConstValues.PlaceEffect_residence;
     //튜플의 item2는 긍정적 효과(감소감소) 개수
 
     _amount = _plusamount - _minusamount;
@@ -1101,7 +1173,20 @@ public enum SkillName { Speech,Threat,Deception,Logic,Martialarts,Bow,Somatology
 public class Skill
 {
   public ThemeType Type_A, Type_B;
-  public int Level = 0;
+    private int level = 0;
+  public int Level
+    {
+        set { level = value; }
+        get
+        {
+            if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Library))
+            {
+                if (GameManager.Instance.MyGameData.PlaceEffectTheme == Type_A || GameManager.Instance.MyGameData.PlaceEffectTheme == Type_B)
+                    return level + 1;
+            }
+            return level;
+        }
+    }
   public Skill(ThemeType _a, ThemeType _b) { Type_A = _a;Type_B= _b;}
 }
 public enum TendencyType {None, Rational,Physical,Mental,Material}
@@ -1169,7 +1254,7 @@ public class Tendency
       if(UIManager.Instance!=null) UIManager.Instance.UpdateTendencyIcon();
     }
   }
-  public Tendency(TendencyType _a, TendencyType _b) { Type_foward = _a; Type_back = _b;}
+  public Tendency(TendencyType _a, TendencyType _b) { Type_back = _a; Type_foward = _b;}
 }
 public class ProgressData
 {

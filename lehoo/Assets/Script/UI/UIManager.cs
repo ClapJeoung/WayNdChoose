@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using TMPro;
 
 public enum UIMoveDir { Horizontal, Vertical }
+public enum UIFadeMoveDir { Left, Right, Up, Down }
+//등장 시 우->좌, 좌->우, 하->상, 상->하
+//퇴장 시 왼쪽, 오른쪽, 위쪽, 아래쪽으로 이동
 public class UIManager : MonoBehaviour
 {
     private static UIManager instance;
@@ -48,6 +51,7 @@ public class UIManager : MonoBehaviour
   public float GenTextMoveTime = 2.0f;
   public float CharacterWaitTime = 2.0f;
   public int IllustSoftness_start = 800, IllustSoftness_end = 50;
+    public float FadeMoveDegree = 40.0f;
   public PreviewManager PreviewManager = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI YearText = null;
@@ -346,27 +350,6 @@ public class UIManager : MonoBehaviour
     if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
     LastUI = _rect.GetComponent<UI_default>();
   }
-    public IEnumerator OpenUI(CanvasGroup _group,bool _islarge)
-  {
-    if (_group.gameObject.activeSelf == false) _group.gameObject.SetActive(true);
-
-    _group.alpha = MoveInAlpha;
-    _group.blocksRaycasts = false;
-    _group.interactable = false;
-
-    float _time = 0.0f;
-    float _tagettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
-    while (_time < _tagettime)
-    {
-      _group.alpha = Mathf.Lerp(MoveInAlpha, 1.0f, Mathf.Pow(_time / _tagettime, 0.5f));
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    _group.blocksRaycasts = true;
-    _group.alpha = 1.0f;
-    _group.interactable = true;
-
-  }
     public IEnumerator CloseAllUI()
   {
     if (LastUI != null)
@@ -415,7 +398,7 @@ public class UIManager : MonoBehaviour
   }
     public IEnumerator ChangeAlpha(Image _img, float _targetalpha)
   {
-    float _startalpha = _targetalpha==1.0f ? 0.0f : 1.0f;
+    float _startalpha = _targetalpha==1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha==1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     Color _color = Color.white; 
@@ -436,7 +419,7 @@ public class UIManager : MonoBehaviour
   }
     public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha,bool _islarge)
   {
-    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
+    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     float _targettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
@@ -456,9 +439,50 @@ public class UIManager : MonoBehaviour
     _group.interactable = true;
     _group.blocksRaycasts = true;
   }
+    public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, bool _islarge, UIFadeMoveDir _movedir)
+    {
+        Vector2 _dir = Vector2.zero;
+        switch (_movedir)
+        {
+            case UIFadeMoveDir.Left: _dir = Vector2.left; break;
+            case UIFadeMoveDir.Right: _dir = Vector2.right; break;
+            case UIFadeMoveDir.Up: _dir = Vector2.up; break;
+            case UIFadeMoveDir.Down: _dir = Vector2.down; break;
+        }
+        RectTransform _rect = _group.transform.GetComponent<RectTransform>();
+        Vector2 _originpos = _rect.anchoredPosition3D;
+        Vector2 _startpos = _targetalpha.Equals(1.0f) ? _originpos - _dir * FadeMoveDegree : _originpos;
+        Vector2 _endpos = _targetalpha.Equals(1.0f) ? _originpos : _originpos + _dir * FadeMoveDegree;
+        Vector2 _currentpos = _startpos;
+        //movedir 설정했으면 해당 방향대로 목표, 종료 위치 설정
+
+        float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+        float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
+        float _time = 0.0f;
+        float _targettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
+        float _alpha = _startalpha;
+        _group.alpha = _alpha;
+        _group.interactable = false;
+        _group.blocksRaycasts = false;
+        _rect.anchoredPosition3D = _currentpos;
+        while (_time < _targettime)
+        {
+            _currentpos = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targettime, 0.4f));
+            _rect.anchoredPosition3D = _currentpos;
+            _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.6f));
+            _group.alpha = _alpha;
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        _alpha = _endalpha;
+        _group.alpha = _alpha;
+        _rect.anchoredPosition3D = _originpos;
+        _group.interactable = true;
+        _group.blocksRaycasts = true;
+    }
     public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha)
   {
-    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
+    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     Color _color = Color.white;
@@ -479,21 +503,29 @@ public class UIManager : MonoBehaviour
     _tmp.color = _color;
   }
 
-  public void UpdateMap_SettlePanel(Settlement _settle) => MyMap.UpdatePanel(_settle);
+    public void UpdateMap_SettlePanel(Settlement _settle) => MyMap.UpdatePanel(_settle);
   public void UpdateMap_SettleIcons(List<Settlement> _avail) => MyMap.UpdateIcons(_avail);
   public void UpdateMap_AddSettle(string _name, SettlementIcon _icon) => MyMap.AddSettleIcon(_name, _icon);
   public void UpdateMap_SetPlayerPos(Settlement _settle)=>MyMap.SetPlayerPos(_settle);
   public void OpenSuggestUI() => MyEvnetSuggest.OpenSuggest();
   public void OpenBadExpUI(Experience _badexp) => MyUIReward.OpenRewardExpPanel_penalty(_badexp);
-  public void OpenDialogue() =>MyDialogue.SetEventDialogue();
+    public void OpenDialogue()
+    {
+        //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
+
+        //정착지에서 이벤트 선택하는 경우도 이미 EventSugest에서 닫기 메소드를 실행한 상태
+
+        MyDialogue.SetEventDialogue();
+    }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void OpenSuccessDialogue(SuccessData _success) => MyDialogue.SetEventDialogue(_success);
   public void OpenFailDialogue(FailureData _fail) => MyDialogue.SetEventDialogue(_fail);
 
   public void OpenQuestDialogue() => MyQuestSuggent.OpenQuestSuggestUI();
   public void ResetEventPanels()
   {
-    MyDialogue.ResetPanel();
-    MyEvnetSuggest.CloseSuggestPanel();
+    MyDialogue.ClosePanel_quick();
+    MyEvnetSuggest.CloseSuggestPanel_quick();
     MyQuestSuggent.CloseQuestUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
+    public void CloseSuggestPanel_normal() => MyEvnetSuggest.CloseSuggestPanel_normal();
 }

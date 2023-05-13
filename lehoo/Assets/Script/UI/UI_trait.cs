@@ -12,6 +12,7 @@ public class UI_trait : UI_default
   [SerializeField] private TextMeshProUGUI TraitEffect = null;
   public void OpenUI(Trait _trait)
   {
+        Debug.Log("특성창열기");
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen&&CurrentTrait.Equals(_trait)) { CloseUI(); IsOpen = false; return; }
     IsOpen = true;
@@ -21,20 +22,26 @@ public class UI_trait : UI_default
     string _description = _trait.Description;
     string _effect = _trait.EffectString;
 
-    TraitName.text = _name;
-    TraitIllust.sprite=_illust;
-    TraitDescription.text = _description;
-    TraitEffect.text = _effect;
 
-    if(CurrentTrait==null)UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
-    else
-    {
-      if(CurrentTrait==_trait)CloseUI();
-      else
-      {
-
-      }
-    }
+        if (CurrentTrait == null)
+        {
+            TraitName.text = _name;
+            TraitIllust.sprite = _illust;
+            TraitDescription.text = _description;
+            TraitEffect.text = _effect;
+            UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
+        }
+        else
+        {
+            if (CurrentTrait == _trait) CloseUI();
+            else
+            {
+                TraitName.text = _name;
+                TraitIllust.sprite = _illust;
+                TraitDescription.text = _description;
+                TraitEffect.text = _effect;
+            }
+        }
 
     CurrentTrait = _trait;
   }

@@ -25,28 +25,36 @@ public class EventManager : MonoBehaviour
     MyEXP = GameManager.Instance.ExpDic;
     MyTrait = GameManager.Instance.TraitsDic;
   }
-  private Settlement CurrentSettle = null;
-  private Event CurrentEvent = null;
-
   public void SetSettleEvent(TargetTileEventData _settledata)
   {
-    if (GameManager.Instance.MyGameData.CurrentQuest == null)
+        if (GameManager.Instance.MyGameData.CurrentQuest != null)
+        {
+            EventDataDefulat _questevent = MyEventHolder.ReturnQuestEvent(_settledata);
+            if (_questevent != null)
+            {
+                GameManager.Instance.SelectEvent(_questevent);
+                return;
+            }
+        }//현재 퀘스트가 있다면 하나 가져와 바로 실행
+
+        GameManager.Instance.SetSettlementPlace();
+  }//외부 -> 정착지 도착
+    public void SetSettleEvent(PlaceType place)
     {
-      //현재 퀘스트가 없다면 퀘스트 검사를 먼저 하고 퀘스트가 낚인다면 이벤트 대신 퀘스트를 보낸다
-    }
+        TargetTileEventData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.GetSettleTileEventData();
+        EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.SettlementType, place, _tiledta.PlaceData[place], _tiledta.EnvironmentType);
+        GameManager.Instance.SelectEvent( _event );
+        GameManager.Instance.MyGameData.AddPlaceEffectBeforeStartEvent(place);
 
-
-    List<EventDataDefulat> _eventlist = new List<EventDataDefulat>();
-    _eventlist = MyEventHolder.ReturnEvent(_settledata);
-    //이벤트 3개를 받아와 GameManager에 전달한다
-    GameManager.Instance.SetSettleEventList(_eventlist);
-  }//외부 -> 정착지
-  public void SetOutsideEvent(TargetTileEventData _tiledata)
+    }//정착지에서 장소를 선택
+    public void SetOutsideEvent(TargetTileEventData _tiledata)
   {
-    List<EventDataDefulat> _eventlist = new List<EventDataDefulat>();
-    _eventlist = MyEventHolder.ReturnEvent(_tiledata);
-    EventDataDefulat _outerevent = _eventlist[Random.Range(0, _eventlist.Count)];
-    //이벤트 1개를 받아와 GameManager에 전달한다
-    GameManager.Instance.SetOuterEvent(_outerevent);
-  }//정착지 -> 외부
+        EventDataDefulat _event = null;
+        if (GameManager.Instance.MyGameData.CurrentQuest != null) _event = MyEventHolder.ReturnQuestEvent(_tiledata);
+        if (_event == null) _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvironmentType);
+        //퀘스트가 존재한다면 해당 퀘스트 이벤트를 받아오고 적합한 퀘스트 이벤트가 없을 시 평범한 이벤트를
+
+        GameManager.Instance.SetOuterEvent(_event);
+
+    }//정착지 -> 외부
 }

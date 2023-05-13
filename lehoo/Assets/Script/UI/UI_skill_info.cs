@@ -5,11 +5,15 @@ using UnityEngine.UI;
 using TMPro;
 public class UI_skill_info : UI_default
 {
-  [SerializeField] private Image MainThemeIcon = null;
   [SerializeField] private TextMeshProUGUI MainThemeName;
   [SerializeField] private Image MainThemeIllust = null;
   [SerializeField] private TextMeshProUGUI MainThemeDescription = null;
   [SerializeField] private TextMeshProUGUI SkillLevelSum = null;
+    [SerializeField] private List<Image> ThemeIcons_a = new List<Image>();
+    [SerializeField] private List<RectTransform> ThemeRect_a = new List<RectTransform>();
+    [SerializeField] private List<Image> ThemeIcons_b= new List<Image>();
+    [SerializeField] private List<RectTransform> ThemeRect_b = new List<RectTransform>();
+    private float MainIconStart = 100.0f, SkillIconStart = 70.0f;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI ConversationSkillName = null;
   [SerializeField] private TextMeshProUGUI ConversationSkillLevel = null;
@@ -96,7 +100,14 @@ public class UI_skill_info : UI_default
 
     if (CurrentThemeIndex.Equals(-1))
     {
-      MainThemeIcon.sprite = _themeicon;
+            for (int i = 0; i < ThemeIcons_a.Count; i++)
+            {
+                ThemeIcons_a[i].sprite = _themeicon;
+                ThemeRect_a[i].anchoredPosition3D = Vector3.zero;
+                if (i.Equals(0))
+                    ThemeRect_b[i].anchoredPosition3D = Vector3.right * MainIconStart;
+                else ThemeRect_b[i].anchoredPosition3D = Vector3.right * SkillIconStart;
+            }
       MainThemeName.text = _themename;
       MainThemeIllust.sprite = _themeillust;
       MainThemeDescription.text = _themedescription;
@@ -105,7 +116,13 @@ public class UI_skill_info : UI_default
     }//닫혀 있던 상태에서 처음으로 열었을때면 UI 열기 이펙트
     else
     {
-      MainThemeIcon.sprite = _themeicon;
+      for(int i = 0; i < ThemeIcons_a.Count; i++)
+            {
+                float _degree = i.Equals(0) ? MainIconStart : SkillIconStart;
+                if (ThemeRect_a[i].anchoredPosition3D.x.Equals(0))
+                    StartCoroutine(moveicon(ThemeRect_a[i], ThemeIcons_b[i], ThemeRect_b[i], _themeicon, _degree));
+                else StartCoroutine(moveicon(ThemeRect_b[i], ThemeIcons_a[i], ThemeRect_a[i], _themeicon, _degree));
+            }
       MainThemeName.text = _themename;
       MainThemeIllust.sprite = _themeillust;
       MainThemeDescription.text = _themedescription;
@@ -114,7 +131,26 @@ public class UI_skill_info : UI_default
     }//열린 상태에서 다른 테마 아이콘 클릭한거면 내용물만 바꾸기
     CurrentThemeIndex = _index;
   }
+    private IEnumerator moveicon(RectTransform originrect,Image targetimage,RectTransform targetrect,Sprite targeticon,float movedegree)
+    {
+        float _time = 0.0f, _targettime = 0.3f;
+        Vector2 _origin_originpos = Vector2.zero, _origin_targetpos = Vector2.left * movedegree;
+        Vector2 _target_originpos = Vector2.right * movedegree, _target_targetpos = Vector2.zero;
+        Vector2 _origin_currentpos = _origin_originpos, _target_currentpos = _target_originpos;
+        targetimage.sprite = targeticon;
+        while (_time < _targettime)
+        {
+            _origin_currentpos = Vector2.Lerp(_origin_originpos, _origin_targetpos, Mathf.Pow(_time / _targettime, 1.4f));
+            _target_currentpos = Vector2.Lerp(_target_originpos, _target_targetpos, Mathf.Pow(_time / _targettime, 0.6f));
+            originrect.anchoredPosition3D = _origin_currentpos;
+            targetrect.anchoredPosition3D = _target_currentpos;
 
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        targetrect.anchoredPosition3D = Vector3.zero;
+        originrect.anchoredPosition3D = _target_originpos;
+    }//originrect를 왼쪽으로 옮기고 targetrect를 가운데로 위치시키기
   
   public override void CloseUI()
   {

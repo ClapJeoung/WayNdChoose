@@ -270,18 +270,15 @@ public class GameManager : MonoBehaviour
     MyGameData.RemoveEvent.Add(_event.ID);
     //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
-    MyGameData.LastPlaceTypes.Add(_event.PlaceType);
     //다이어로그 열기
   }//야외 이동을 통해 이벤트를 받은 경우
-  public void SetSettleEventList(List<EventDataDefulat> _list)
+  public void SetSettlementPlace()
   {
-    MyGameData.CurrentSuggestingEvents = _list;
-//    foreach (var _data in MyGameData.CurrentSuggestingEvents) Debug.Log(_data.Name);
-    //현재 제시 목록 최산화
+    
     UIManager.Instance.OpenSuggestUI();
     //제시 UI 열기
     SaveData();
-  }//정착지 도착을 통해 이벤트 리스트를 받은 경우
+  }//정착지의 장소 세팅
   public void SelectEvent(EventDataDefulat _targetevent)
   {
     if (_targetevent.GetType().Equals(typeof(QuestEventData))) MyGameData.LastQuestCount = 0;
@@ -309,7 +306,6 @@ public class GameManager : MonoBehaviour
     if (MyGameData.CurrentSuggestingEvents.Contains(_targetevent)) MyGameData.CurrentSuggestingEvents.Remove(_targetevent);
     //현재 제시 리스트에서 제거
     UIManager.Instance.OpenDialogue();
-    MyGameData.LastPlaceTypes.Add(_targetevent.PlaceType);
     SaveData();
   }//제시 패널에서 이벤트를 선택한 경우
   public void SetNewQuest(QuestHolder _quest)
@@ -360,48 +356,8 @@ public class GameManager : MonoBehaviour
     if (Input.GetKeyDown(KeyCode.Backspace))
     {
       CreateNewMap();
-      StartCoroutine(_eventtest());
 
     }
-  }
-  private IEnumerator _eventtest()
-  {
-    yield return new WaitUntil(() => (MyMapData != null));
-    foreach (var _settle in MyMapData.AllSettles)
-    {
-      string _str = $"정착지 이름 : {_settle.Name}  정착지 환경: ";
-      if (_settle.IsForest) _str += "숲 ";
-      if (_settle.IsRiver) _str += "강 ";
-      if (_settle.IsHighland) _str += "언덕 ";
-      if (_settle.IsMountain) _str += "산 ";
-      if (_settle.IsSea) _str += "바다 ";
-      _str += "\n";
-      _str += $"마을 레벨 : {_settle.Wealth}  시장 레벨 : {_settle.Wealth}  사원 레벨 : {_settle.Faith}  ";
-      switch (_settle.Type)
-      {
-        case SettlementType.Town:
-          break;
-        case SettlementType.City:
-          _str += $"도서관 레벨 : {_settle.Culture}";
-          break;
-        case SettlementType.Castle:
-          _str += $"극장 레벨 : {_settle.Culture} 아카데미 레벨 : {_settle.Science}";
-          break;
-      }
-      _str += "\n\n";
-      TargetTileEventData _tiledata = _settle.GetSettleTileEventData();
-      List<EventDataDefulat> _results = EventHolder.ReturnEvent(_tiledata);
-      foreach (var _event in _results)
-      {
-        _str += $"이벤트 이름 : {_event.Name} 이벤트 종류 : ";
-        _str += _event.GetType().Equals(typeof(QuestEventData)) ? "퀘스트 " : _event.GetType().Equals(typeof(FollowEventData)) ? "연계 " : "일반 ";
-        _str += "\n";
-        _str += $"등장 장소 : {_event.PlaceType}  등장 레벨 : {(_event.PlaceLevel == 0 ? "전역" : _event.PlaceLevel == 1 ? "1" : _event.PlaceLevel == 2 ? 2 : 3)}";
-        _str += "\n";
-      }
-  //    Debug.Log(_str);  
-    }
-    yield return null;
   }
   public void DebugAllEvents()
   {

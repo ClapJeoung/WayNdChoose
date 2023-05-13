@@ -4,74 +4,127 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Diagnostics.Tracing;
+using Google.Apis.Json;
 
 public class UI_EventSuggest : UI_default
 {
 
-  [SerializeField] private TextMeshProUGUI SettleName = null;
+    [SerializeField] private CanvasGroup SettleNameGroup = null;
+    [SerializeField] private TextMeshProUGUI SettleName = null;
+    //정착지 주위 환경 설명 요소
+    [SerializeField] private CanvasGroup UnPleasantGroup = null;
   [SerializeField] private TextMeshProUGUI CurrentUnPlesant = null;
-  [SerializeField] private TextMeshProUGUI CurrentSanityLoss = null;
-  [SerializeField] private GameObject[] Panel = null;
-  [SerializeField] private TextMeshProUGUI[] Panel_Name = null;
-  [SerializeField] private Image[] Panel_Illust = null;
-  [SerializeField] private TextMeshProUGUI[] Panel_Description = null;
-  [SerializeField] private Image[] Panel_Title = null;
-  [SerializeField] private CanvasGroup[] Panel_Group = null;
-
+    [SerializeField] private List<PlaceButton> MyPlaceButtons = new List<PlaceButton>();
+    private PlaceType CurrentPlace = PlaceType.NULL;
+    [SerializeField] private CanvasGroup PlacePanelGroup = null;
+    [SerializeField] private Image IllustImage = null;
+    [SerializeField] private TextMeshProUGUI PlaceDescription = null;
+    [SerializeField] private TextMeshProUGUI PlaceEffect = null;
+    [SerializeField] private CanvasGroup StartButtonGroup = null;
+    [SerializeField] private Button StartButton = null;
   public void OpenSuggest()
   {
-    SettleName.text = GameManager.Instance.MyGameData.CurrentSettlement.Name;
-    List<EventDataDefulat> _eventlist = GameManager.Instance.MyGameData.CurrentSuggestingEvents;
-    CurrentUnPlesant.text = $"{GameManager.Instance.GetTextData("currentunpleasant").Name}  {GameManager.Instance.MyGameData.AllSettleUnpleasant[GameManager.Instance.MyGameData.CurrentSettlement]}";
-    CurrentSanityLoss.text = $"{GameManager.Instance.GetTextData("currentsettlesanityloss").Name} {GameManager.Instance.GetTextData("sanity").Name} " +
-      $"{GameManager.Instance.MyGameData.SettleSanityLoss} {GameManager.Instance.GetTextData("decrease").Name}";
 
-    for(int i=0;i<Panel.Length;i++)if(Panel[i].activeInHierarchy) Panel[i].SetActive(false);
-
-    for(int i = 0; i < _eventlist.Count; i++)
-    {
-      if(Panel[i].activeInHierarchy==false)Panel[i].SetActive(true);
-      Panel_Group[i].alpha = 1.0f;
-      Panel_Group[i].interactable = false;
-      Panel_Group[i].blocksRaycasts = false;
-      Panel_Name[i].text =GameManager.Instance.GetTextData(_eventlist[i].PlaceType).Name;
-      Panel_Illust[i].sprite = GameManager.Instance.ImageHolder.GetPlaceIllust(_eventlist[i].PlaceType);
-      Panel_Description[i].text = GameManager.Instance.GetTextData(_eventlist[i].GetType()).Name;
-      //중요도에 따라서 Panel_Tile[i].sprite를 변경
+        UIManager.Instance.AddUIQueue(opensuggest());
     }
+    private IEnumerator opensuggest()
+    {
+        WaitForSeconds _wait = new WaitForSeconds(0.1f);
 
-        MyRect.anchoredPosition = Vector2.zero;
-        MyGroup.alpha = 1.0f;
+        SettleName.text = GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.CurrentSettlement.OriginName).Name;
+        StartCoroutine(UIManager.Instance.ChangeAlpha(SettleNameGroup, 1.0f, false, UIFadeMoveDir.Right));
+        yield return _wait;
+        //환경 미리보기 설정 해야됨
+        string _currentunpleasant = GameManager.Instance.GetTextData("currentunpleasant").Name
+            .Replace("#unp#", GameManager.Instance.MyGameData.AllSettleUnpleasant[GameManager.Instance.MyGameData.CurrentSettlement].ToString());
+        //이 정착지의 불쾌 지수는 #unp#
+        string _currentvalue = GameManager.Instance.GetTextData("currentsettlesanityloss").Name;
+        _currentvalue = _currentvalue.Replace("#value#", GameManager.Instance.MyGameData.SettleSanityLoss.ToString());
+        _currentvalue = _currentvalue.Replace("#sanity#", GameManager.Instance.GetTextData("sanity").Name);
+        //장소 진입 시 #value# #sanity# 감소
+        CurrentUnPlesant.text = _currentunpleasant + "\n" + _currentvalue;
+        StartCoroutine(UIManager.Instance.ChangeAlpha(UnPleasantGroup, 1.0f, false, UIFadeMoveDir.Right));
+        yield return _wait;
+
+        StartCoroutine(UIManager.Instance.ChangeAlpha(PlacePanelGroup, 1.0f, false, UIFadeMoveDir.Left));
+        yield return _wait;
+
+        List<PlaceType> _currentplaces = GameManager.Instance.MyGameData.CurrentSettlement.AvailabePlaces;
+        for(int i = 0; i < _currentplaces.Count; i++)
+        {
+            MyPlaceButtons[i].gameObject.SetActive(true);
+            MyPlaceButtons[i].Setup(_currentplaces[i]);
+            yield return _wait;
+        }
+
         MyGroup.interactable = true;
         MyGroup.blocksRaycasts = true;
-
-  }//정착지에 도착하면 이벤트를 받아온 다음 제시 패널을 세팅한 뒤 등장
-    public void CloseSuggestPanel()
+    }
+    public void CloseSuggestPanel_normal()
     {
+        UIManager.Instance.AddUIQueue(closesuggestpanel());
+    }
+    private IEnumerator closesuggestpanel()
+    {
+        MyGroup.interactable = false;
+        MyGroup.blocksRaycasts = false;
+
+        WaitForSeconds _wait = new WaitForSeconds(0.1f);
+        StartCoroutine(UIManager.Instance.ChangeAlpha(SettleNameGroup, 0.0f, false, UIFadeMoveDir.Left));
+        yield return _wait;
+        //환경 탭 제거
+        StartCoroutine(UIManager.Instance.ChangeAlpha(UnPleasantGroup, 0.0f, false, UIFadeMoveDir.Left));
+        yield return _wait;
+
+        StartCoroutine(UIManager.Instance.ChangeAlpha(StartButtonGroup, 0.0f, false, UIFadeMoveDir.Down));
+        yield return _wait;
+
+        for(int i = 0; i < MyPlaceButtons.Count; i++)
+            if (MyPlaceButtons[i].gameObject.activeInHierarchy)
+            {
+                MyPlaceButtons[i].Close();
+                yield return _wait;
+            }
+        yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PlacePanelGroup, 0.0f, false, UIFadeMoveDir.Right));
+
         SettleName.text = "";
-        for(int i=0;i < Panel_Group.Length; i++)
-        {
-            Panel_Group[i].alpha = 0.0f;
-      Panel_Group[i].interactable = false;
-      Panel_Group[i].blocksRaycasts = false;
-            if (Panel[i].activeInHierarchy) Panel[i].SetActive(false);
-        }
-        StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
+        CurrentUnPlesant.text = "";
+        CurrentPlace = PlaceType.NULL;
+        IllustImage.sprite = GameManager.Instance.ImageHolder.NoneIllust;
+        PlaceDescription.text = "";
+        PlaceEffect.text = "";
+
     }
-  public void SelectEvent(int _index)
-  {
-    if (UIManager.Instance.IsWorking) return;
-
-    EventDataDefulat _selectevent = GameManager.Instance.MyGameData.CurrentSuggestingEvents[_index];
-    GameManager.Instance.SelectEvent(_selectevent);
-
-    for(int i = 0; i < Panel.Length; i++)
+    public void CloseSuggestPanel_quick()
     {
-      if (i.Equals(_index)) continue;
-      if (Panel[i].activeInHierarchy == false) continue;
-      UIManager.Instance.CloseUI(Panel_Group[i],true);
+        MyGroup.interactable = false;
+        MyGroup.blocksRaycasts = false;
+
+        SettleNameGroup.alpha = 0.0f;
+        SettleName.text = "";
+        //환경 초기화
+        UnPleasantGroup.alpha = 0.0f;
+        CurrentUnPlesant.text = "";
+        for(int i = 0; i < MyPlaceButtons.Count; i++)
+            if (MyPlaceButtons[i].gameObject.activeInHierarchy) MyPlaceButtons[i].Close();
+        CurrentPlace = PlaceType.NULL;
+        PlacePanelGroup.alpha = 0.0f;
+        IllustImage.sprite = GameManager.Instance.ImageHolder.NoneIllust;
+        PlaceDescription.text = "";
+        PlaceEffect.text = "";
+    }//빠른종료(그냥 초기화만
+  public void SelectPlace(PlaceType _targetplace)
+    {
+        if (CurrentPlace.Equals(_targetplace)) return;
+
+        CurrentPlace = _targetplace;
+        PlaceDescription.text = "";
+        PlaceEffect.text = "";
+        StartButton.interactable = true;
     }
-    CloseUI();
-  }//패널을 클릭하면 현재 이벤트 정보를 갱신하고, 애니메이션 연출, 저장을 실행한다
-  
+    public void StartEvent()
+    {
+        CloseSuggestPanel_normal();
+        EventManager.Instance.SetSettleEvent(CurrentPlace);
+    }//시작 버튼 눌렀을 때 호출
 }

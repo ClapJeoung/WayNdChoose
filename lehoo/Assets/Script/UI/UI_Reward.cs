@@ -26,12 +26,19 @@ public class UI_Reward : UI_default
   [SerializeField] private TextMeshProUGUI RewardSkill_Description = null;
   [Space(10)]
   [SerializeField] private CanvasGroup RewardExpGroup = null;
+    [SerializeField] private CanvasGroup[] RewardLongExpNameGroup = new CanvasGroup[2];
   [SerializeField] private TextMeshProUGUI[] RewardLongExpName = new TextMeshProUGUI[2];
+    [SerializeField] private Image[] RewardLongExpCap = new Image[2];
   [SerializeField] private Image[] RewardLongExpIllust=new Image[2];
+    [SerializeField] private CanvasGroup[] RewardLongExpTurnGroup = new CanvasGroup[2];
   [SerializeField] private TextMeshProUGUI[] RewardLongExpTurn = new TextMeshProUGUI[2];
   [SerializeField] private PreviewInteractive[] RewardLongExpPreview=new PreviewInteractive[2];
+
+    [SerializeField] private CanvasGroup[] RewardShortExpNameGroup = new CanvasGroup[4];
   [SerializeField] private TextMeshProUGUI[] RewardShortExpName = new TextMeshProUGUI[4];
+    [SerializeField] private Image[] RewardShortExpCap = new Image[4];
   [SerializeField] private Image[] RewardShortExpIllust = new Image[4];
+    [SerializeField] private CanvasGroup[] RewardShortExpTurnGroup = new CanvasGroup[4];
   [SerializeField] private TextMeshProUGUI[] RewardShortExpTurn = new TextMeshProUGUI[4];
   [SerializeField] private PreviewInteractive[] RewardShortExpPreview = new PreviewInteractive[4];
   [SerializeField] private GameObject RewardExpQuitButton = null;
@@ -117,58 +124,9 @@ public class UI_Reward : UI_default
   }
     private IEnumerator openui()
     {
-        StartCoroutine(fadereward(true));
-        StartCoroutine(fadebackground(true));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(PanelGroup, 1.0f, true, UIFadeMoveDir.Up));
         yield return null;
     }
-  private IEnumerator fadereward(bool _isopen)
-  {
-    float _time = 0.0f;
-    Vector2 _size = PanelRect.sizeDelta;
-    Vector2 _originpos = PanelRect.anchoredPosition;
-
-    Vector2 _startpos = _isopen ? new Vector2(_size.x, _size.y * (1.0f + UIManager.Instance.LargePanelMoveDegree)) : _originpos;
-    Vector2 _targetpos = _isopen ? _originpos : new Vector2(_size.x, _size.y * (1.0f + UIManager.Instance.LargePanelMoveDegree));
-    Vector2 _newpos = _startpos;
-
-    float _startalpha = _isopen ? 0.0f : 1.0f;
-    float _endalpha = _isopen ? 1.0f : 0.0f;
-    float _currentalpha = _startalpha;
-    PanelGroup.alpha = _currentalpha;
-
-    while (_time < UIManager.Instance.LargePanelFadeTime)
-    {
-      _currentalpha= Mathf.Lerp(0.0f, 1.0f, _time / UIManager.Instance.LargePanelFadeTime);
-      PanelGroup.alpha = _currentalpha;
-      _newpos=Vector2.Lerp(_originpos,_targetpos,_time/UIManager.Instance.LargePanelFadeTime);
-      PanelRect.anchoredPosition = _newpos;
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    PanelGroup.alpha = _endalpha;
-    PanelRect.anchoredPosition = _targetpos;
-  }
-  private IEnumerator fadebackground(bool _isopen)
-  {
-    if (_isopen) MyGroup.blocksRaycasts = true;
-    else { MyGroup.blocksRaycasts = false; MyGroup.interactable = false; }
-    float _time = 0.0f;
-    float _startalpha = _isopen ? 0.0f : 1.0f;
-    float _endalpha = _isopen ? 1.0f : 0.0f;
-    float _currentalpha = _startalpha;
-    MyGroup.alpha = _currentalpha;
-    float _targettime = UIManager.Instance.LargePanelFadeTime / 2.0f;
-    while(_time< _targettime)
-    {
-      _currentalpha= Mathf.Lerp(_startalpha,_endalpha,_time/ _targettime);
-      MyGroup.alpha = _currentalpha;
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    MyGroup.alpha = _endalpha;
-    if(_isopen) { MyGroup.blocksRaycasts = true; MyGroup.interactable = true; }
-
-  }
   public void OpenRewardSkillPanel(ThemeType _themetype)
   {
     if (UIManager.Instance.IsWorking) return;
@@ -201,30 +159,12 @@ public class UI_Reward : UI_default
         break;
     }
     RewardSkill_Description.text = $"{GameManager.Instance.GetTextData("chooseskill")}";
-    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardSkillGroup, true));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardSkillGroup,1.0f,false,UIFadeMoveDir.Up));
   }
   public void CloseRewardSkillPanel()
   {
     if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardSkillGroup, false));
-  }
-  private IEnumerator faderewardsubpanel(CanvasGroup _group, bool _isopen)
-  {
-    UIManager.Instance.IsWorking = true;
-    float _time = 0.0f, _targettime = UIManager.Instance.SmallPanelFadeTime;
-    float _startalpha = _isopen ? 0.0f : 1.0f;
-    float _endalpha = _isopen ? 1.0f : 0.0f;
-    _group.alpha = _startalpha;
-    _group.interactable = false; _group.blocksRaycasts = false; 
-    while (_time < _targettime)
-    {
-      _group.alpha = Mathf.Lerp(_startalpha, _endalpha, _time / _targettime);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    _group.alpha = _endalpha;
-    if (_isopen) { _group.interactable = true; _group.blocksRaycasts = true; }
-    UIManager.Instance.IsWorking = false;
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, false, UIFadeMoveDir.Up));
   }
   public void OpenRewardExpPanel_reward()
   {
@@ -235,16 +175,17 @@ public class UI_Reward : UI_default
       Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP[i];
       if (_longexp == null)
       {
-        if (RewardLongExpName[i].gameObject.activeInHierarchy == true) RewardLongExpName[i].gameObject.SetActive(false);
-        RewardLongExpIllust[i].sprite = GameManager.Instance.ImageHolder.EmptyExpIllust;
-        if (RewardLongExpTurn[i].gameObject.activeInHierarchy == true) RewardLongExpTurn[i].transform.parent.gameObject.SetActive(false);
+                RewardLongExpNameGroup[i].alpha = 0.0f;
+                RewardLongExpCap[i].enabled = true;
+                RewardLongExpTurnGroup[i].alpha = 0.0f;
       }//해당 슬롯이 비었다면 이름, 턴 끄고 닫힌 일러스트
       else
       {
-        if (RewardLongExpName[i].gameObject.activeInHierarchy == false) RewardLongExpName[i].gameObject.SetActive(true);
+                RewardLongExpNameGroup[i].alpha = 1.0f;
         RewardLongExpName[i].text = _longexp.Name;
-        RewardLongExpIllust[i].sprite = _longexp.Illust;
-        if (RewardLongExpTurn[i].gameObject.activeInHierarchy == false) RewardLongExpTurn[i].gameObject.SetActive(true);
+                RewardLongExpCap[i].enabled = false;
+                RewardLongExpIllust[i].sprite = _longexp.Illust;
+                RewardLongExpTurnGroup[i].alpha = 1.0f;
         RewardLongExpTurn[i].text = _longexp.Duration.ToString();
       }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
       RewardLongExpPreview[i].MyEXP = _rewardexperience;
@@ -254,23 +195,24 @@ public class UI_Reward : UI_default
       Experience _shortexp = GameManager.Instance.MyGameData.ShortTermEXP[i];
       if (_shortexp == null)
       {
-        if (RewardShortExpName[i].gameObject.activeInHierarchy == true) RewardShortExpName[i].gameObject.SetActive(false);
-        RewardShortExpIllust[i].sprite = GameManager.Instance.ImageHolder.EmptyExpIllust;
-        if (RewardShortExpTurn[i].gameObject.activeInHierarchy == true) RewardShortExpTurn[i].transform.parent.gameObject.SetActive(false);
-      }//해당 슬롯이 비었다면 이름, 턴 끄고 닫힌 일러스트
-      else
+                RewardShortExpNameGroup[i].alpha = 0.0f;
+                RewardShortExpCap[i].enabled = true;
+                RewardShortExpTurnGroup[i].alpha = 0.0f;
+            }//해당 슬롯이 비었다면 이름, 턴 끄고 닫힌 일러스트
+            else
       {
-        if (RewardShortExpName[i].gameObject.activeInHierarchy == false) RewardShortExpName[i].gameObject.SetActive(true);
-        RewardShortExpName[i].text = _shortexp.Name;
-        RewardShortExpIllust[i].sprite = _shortexp.Illust;
-        if (RewardShortExpTurn[i].gameObject.activeInHierarchy == false) RewardShortExpTurn[i].gameObject.SetActive(true);
-        RewardShortExpTurn[i].text = _shortexp.Duration.ToString();
-      }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
-      RewardShortExpPreview[i].MyEXP = _rewardexperience;
+                RewardShortExpNameGroup[i].alpha = 1.0f;
+                RewardShortExpName[i].text = _shortexp.Name;
+                RewardShortExpCap[i].enabled = false;
+                RewardShortExpIllust[i].sprite = _shortexp.Illust;
+                RewardShortExpTurnGroup[i].alpha = 1.0f;
+                RewardShortExpTurn[i].text = _shortexp.Duration.ToString();
+            }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
+            RewardShortExpPreview[i].MyEXP = _rewardexperience;
     }
     if (RewardExpQuitButton.activeInHierarchy == false) RewardExpQuitButton.SetActive(true);
     RewardExpDescription.text = GameManager.Instance.GetTextData("savetheexp").Name;
-    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardExpGroup, true));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup,1.0f,true,UIFadeMoveDir.Up));
   }
   public void OpenRewardExpPanel_penalty(Experience _badexp)
   {
@@ -280,47 +222,49 @@ public class UI_Reward : UI_default
       Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP[i];
       if (_longexp == null)
       {
-        if (RewardLongExpName[i].gameObject.activeInHierarchy == true) RewardLongExpName[i].gameObject.SetActive(false);
-        RewardLongExpIllust[i].sprite = GameManager.Instance.ImageHolder.EmptyExpIllust;
-        if (RewardLongExpTurn[i].gameObject.activeInHierarchy == true) RewardLongExpTurn[i].transform.parent.gameObject.SetActive(false);
-      }//해당 슬롯이 비었다면 이름, 턴 끄고 닫힌 일러스트
-      else
-      {
-        if (RewardLongExpName[i].gameObject.activeInHierarchy == false) RewardLongExpName[i].gameObject.SetActive(true);
-        RewardLongExpName[i].text = _longexp.Name;
-        RewardLongExpIllust[i].sprite = _longexp.Illust;
-        if (RewardLongExpTurn[i].gameObject.activeInHierarchy == false) RewardLongExpTurn[i].gameObject.SetActive(true);
-        RewardLongExpTurn[i].text = _longexp.Duration.ToString();
-      }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
-      RewardLongExpPreview[i].MyEXP = _rewardexperience;
+                RewardLongExpNameGroup[i].alpha = 0.0f;
+                RewardLongExpCap[i].enabled = true;
+                RewardLongExpTurnGroup[i].alpha = 0.0f;
+            }//해당 슬롯이 비었다면 이름, 턴 끄고 닫힌 일러스트
+            else
+            {
+                RewardLongExpNameGroup[i].alpha = 1.0f;
+                RewardLongExpName[i].text = _longexp.Name;
+                RewardLongExpCap[i].enabled = false;
+                RewardLongExpIllust[i].sprite = _longexp.Illust;
+                RewardLongExpTurnGroup[i].alpha = 1.0f;
+                RewardLongExpTurn[i].text = _longexp.Duration.ToString();
+            }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
+            RewardLongExpPreview[i].MyEXP = _rewardexperience;
     }
     for (int i = 0; i < 4; i++)
     {
       Experience _shortexp = GameManager.Instance.MyGameData.ShortTermEXP[i];
       if (_shortexp == null)
       {
-        if (RewardShortExpName[i].gameObject.activeInHierarchy == true) RewardShortExpName[i].gameObject.SetActive(false);
-        RewardShortExpIllust[i].sprite = GameManager.Instance.ImageHolder.EmptyExpIllust;
-        if (RewardShortExpTurn[i].gameObject.activeInHierarchy == true) RewardShortExpTurn[i].transform.parent.gameObject.SetActive(false);
-      }//해당 슬롯이 비었다면 이름, 턴 끄고 닫힌 일러스트
-      else
-      {
-        if (RewardShortExpName[i].gameObject.activeInHierarchy == false) RewardShortExpName[i].gameObject.SetActive(true);
-        RewardShortExpName[i].text = _shortexp.Name;
-        RewardShortExpIllust[i].sprite = _shortexp.Illust;
-        if (RewardShortExpTurn[i].gameObject.activeInHierarchy == false) RewardShortExpTurn[i].gameObject.SetActive(true);
-        RewardShortExpTurn[i].text = _shortexp.Duration.ToString();
-      }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
-      RewardShortExpPreview[i].MyEXP = _rewardexperience;
-    }
-    if (RewardExpQuitButton.activeInHierarchy == true) RewardExpQuitButton.SetActive(false);
+                RewardShortExpNameGroup[i].alpha = 0.0f;
+                RewardShortExpCap[i].enabled = true;
+                RewardShortExpTurnGroup[i].alpha = 0.0f;
+            }//해당 슬롯이 비었다면 이름, 턴 끄고 닫힌 일러스트
+            else
+            {
+                RewardShortExpNameGroup[i].alpha = 1.0f;
+                RewardShortExpName[i].text = _shortexp.Name;
+                RewardShortExpCap[i].enabled = false;
+                RewardShortExpIllust[i].sprite = _shortexp.Illust;
+                RewardShortExpTurnGroup[i].alpha = 1.0f;
+                RewardShortExpTurn[i].text = _shortexp.Duration.ToString();
+            }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
+            RewardShortExpPreview[i].MyEXP = _rewardexperience;
+        }
+        if (RewardExpQuitButton.activeInHierarchy == true) RewardExpQuitButton.SetActive(false);
     RewardExpDescription.text = GameManager.Instance.GetTextData("savebadexp").Name;
-    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardExpGroup, true));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 1.0f, true, UIFadeMoveDir.Up));
   }
   public void CloseRewardExpPanel()
   {
     if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(faderewardsubpanel(RewardExpGroup, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, false, UIFadeMoveDir.Up));
   }
   public override void CloseUI()
   {
@@ -328,8 +272,7 @@ public class UI_Reward : UI_default
   }
     private IEnumerator closeui()
     {
-        StartCoroutine(fadebackground(false));
-        StartCoroutine(fadereward(false));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(PanelGroup, 0.0f, true, UIFadeMoveDir.Up));
         yield return null;
     }
 

@@ -52,6 +52,7 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> LibraryIllust = null;
   public List<Sprite> TheaterIllust = null;
   public List<Sprite> AcademyIllust = null;
+    public Sprite NoneIllust = null;
   public Sprite GetPlaceIllust(PlaceType _placetype)
   {
     List<Sprite> _list = new List<Sprite>();
@@ -72,8 +73,8 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
   public Sprite NoGoldIllust = null;
   public Sprite EmptyExpIllust = null;
-  public Sprite EmptyShortExpIcon = null;
-  public Sprite EmptyLongExpIcon = null;
+    public Sprite EmptyLongExpIcon = null;
+    public Sprite EmptyShortExpIcon = null;
   public List<Sprite> TraitIcons=new List<Sprite>();
   public List<Sprite> TraitIllust = new List<Sprite>();                //모든 특성 일러스트
   public Sprite DefaultIllust = null;                                 //빈 일러스트
