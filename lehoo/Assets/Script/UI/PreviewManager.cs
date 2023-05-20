@@ -47,30 +47,28 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI NextQuestEventDescription = null;
   [SerializeField] private TextMeshProUGUI QuestSubDescription = null;
   [Space(10)]
-  [SerializeField] private GameObject TraitPreview = null;
-  [SerializeField] private Image TraitIcon = null;
-  [SerializeField] private TextMeshProUGUI TraitName = null;
-  [SerializeField] private TextMeshProUGUI TraitSubDescription = null;
-  [Space(10)]
   [SerializeField] private GameObject ThemePreview = null;
   [SerializeField] private TextMeshProUGUI ThemeName = null;
   [SerializeField] private TextMeshProUGUI ThemeLevel = null;
   [SerializeField] private Image ThemeIcon = null;
-  [SerializeField] private TextMeshProUGUI ThemeLevelDescription_trait = null;
-  [SerializeField] private TextMeshProUGUI ThemeLevelDescription_skill = null;
-  [SerializeField] private TextMeshProUGUI ThemeLevelDescription_exp = null;
-  [SerializeField] private TextMeshProUGUI ThemeLevelDescription_tendency = null;
+  [SerializeField] private TextMeshProUGUI ThemeLevelBySkill = null;
+  [SerializeField] private TextMeshProUGUI ThemeLevelByExp = null;
+  [SerializeField] private TextMeshProUGUI ThemeLevelByTendency = null;
   [SerializeField] private TextMeshProUGUI ThemeSubDescription = null;
   [Space(10)]
   [SerializeField] private GameObject SkillPreview = null;
   [SerializeField] private Image SkillIcon_A=null,SkillIcon_B=null;
   [SerializeField] private TextMeshProUGUI SkillName = null;
   [SerializeField] private TextMeshProUGUI SkillLevel = null;
+  [SerializeField] private TextMeshProUGUI SkillLevelBySkill = null;
+  [SerializeField] private TextMeshProUGUI SkillLevelByExp = null;
+  [SerializeField] private TextMeshProUGUI SkillLevelByPlace = null;
   [SerializeField] private TextMeshProUGUI SkillSubDescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpPreview = null;
   [SerializeField] private TextMeshProUGUI ExpName = null;
   [SerializeField] private TextMeshProUGUI ExpDuration = null;
+  [SerializeField] private TextMeshProUGUI ExpEffect = null;
   [SerializeField] private TextMeshProUGUI ExpSubDescription = null;
   [Space(10)]
   [SerializeField] private GameObject TendencyPreview = null;
@@ -86,7 +84,6 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject SelectionPayPanel = null;
   [SerializeField] private Image PayIcon = null;
-  [SerializeField] private TextMeshProUGUI PayCurrentAmount = null;
   [SerializeField] private TextMeshProUGUI PayTargetAmount = null;
   [SerializeField] private TextMeshProUGUI PayTargetDescription = null;
   [SerializeField] private TextMeshProUGUI PaySuccessPercent = null;
@@ -97,12 +94,8 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI SelectionCheckName = null;
   [SerializeField] private Image CheckIcon_A = null;
   [SerializeField] private Image CheckIcon_B = null;
-  [SerializeField] private TextMeshProUGUI CheckCurrentLevel = null;
-  [SerializeField] private TextMeshProUGUI CheckCurrentDescription_trait = null;
-  [SerializeField] private TextMeshProUGUI CheckCurrentDescription_skill = null;
-  [SerializeField] private TextMeshProUGUI CheckCurrentDescription_exp = null;
-  [SerializeField] private TextMeshProUGUI CheckCurrentDescription_tendency = null;
-  [SerializeField] private TextMeshProUGUI CheckTargetLevel = null; 
+  [SerializeField] private TextMeshProUGUI CheckTargetLevel = null;
+  [SerializeField] private TextMeshProUGUI CheckLevelByOtherSkills = null;
   [SerializeField] private TextMeshProUGUI CheckPercent = null;
   [SerializeField] private Transform CheckRewardIcons = null;
   [SerializeField] private TextMeshProUGUI CheckDescription = null;
@@ -115,35 +108,28 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Image RewardStatusIcon = null;
   [SerializeField] private TextMeshProUGUI RewardStatusAmount = null;
   [SerializeField] private TextMeshProUGUI RewardStatusDescription = null;
-  [SerializeField] private TextMeshProUGUI RewardStatusSubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject RewardTEPanel = null;
   [SerializeField] private TextMeshProUGUI RewardTEName = null;
   [SerializeField] private Image RewardTEIllust = null;
   [SerializeField] private TextMeshProUGUI RewardTEEffect = null;
-  [SerializeField] private TextMeshProUGUI RewardTESubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject RewardTSPanel = null;
   [SerializeField] private TextMeshProUGUI RewardTSName = null;
   [SerializeField] private Image RewardTSIcon_A = null, RewardTSIcon_B = null;
-  [SerializeField] private TextMeshProUGUI RewardTSSubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject SkillSelectPanel = null;
   [SerializeField] private TextMeshProUGUI SkillSelectName = null;
   [SerializeField] private Image SkillSelectIcon_A=null,SkillSelectIon_B=null;
-  [SerializeField] private TextMeshProUGUI SkillSelectionSubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectEmptyPanel = null;
-  [SerializeField] private TextMeshProUGUI ExpSelectEmptyName = null;
-  [SerializeField] private Image ExpSelectEmptyIllust = null;
-  [SerializeField] private TextMeshProUGUI ExpSelectEmptyEffect = null;
+  [SerializeField] private TextMeshProUGUI ExpSelectEmptyTurn = null;
+  [SerializeField] private TextMeshProUGUI ExpSelectEmptyDescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectExistPanel = null;
-  [SerializeField] private TextMeshProUGUI ExpSelectOriginName = null;
-  [SerializeField] private Image ExpSelectOriginIllust = null;
+  [SerializeField] private TextMeshProUGUI ExpSelectOriginTurn = null;
   [SerializeField] private TextMeshProUGUI ExpSelectOriginEffect = null;
-  [SerializeField] private TextMeshProUGUI ExpSelectNewName = null;
-  [SerializeField] private Image ExpSelectNewIllust = null;
+  [SerializeField] private TextMeshProUGUI ExpSelectNewTurn = null;
   [SerializeField] private TextMeshProUGUI ExpSelectNewEffect = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectionBadPanel = null;
@@ -157,7 +143,6 @@ public class PreviewManager : MonoBehaviour
     AllCanvasGroup.Add(GoldPreview.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(MapPreview.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(QuestPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(TraitPreview.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(ThemePreview.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(SkillPreview.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(ExpPreview.GetComponent<CanvasGroup>());
@@ -186,7 +171,6 @@ public class PreviewManager : MonoBehaviour
         case RewardTarget.Sanity:_rewardindex.Add(1);break;
         case RewardTarget.Gold:_rewardindex.Add(2);break;
         case RewardTarget.Theme: case RewardTarget.Skill:_rewardindex.Add(4);break;
-        case RewardTarget.Trait: _rewardindex.Add(3);break;
       }
     for(int i = 0; i < _holder.childCount; i++)
     {
@@ -221,11 +205,21 @@ public class PreviewManager : MonoBehaviour
       string _str = _textddata.Description;
       HPDescription.text = _str;
       int _genvalue = ((int)GameManager.Instance.MyGameData.GetHPGenModify(false));
-      _str = _genvalue != 0 ? $"{_textddata.SuccessDescription} {(_genvalue > 0 ? "+" : "-")}{_genvalue}%" : "";
-      HPGenDescriptoin.text = _str;
+    if (_genvalue.Equals(0)) _str = $"{GameManager.Instance.GetTextData("hpincrease").Name} {GameManager.Instance.GetTextData("nochange").Name}";
+    else
+    {
+      if (_genvalue > 0) _str = $"{GameManager.Instance.GetTextData("hpincrease").SuccessDescription} {ColorText.PositiveColor(_genvalue.ToString())}%";
+      else _str = $"{GameManager.Instance.GetTextData("hpincrease").FailDescription} {ColorText.NegativeColor(Mathf.Abs(_genvalue).ToString())}";
+    }
+    HPGenDescriptoin.text = _str;
       int _lossvalue = ((int)GameManager.Instance.MyGameData.GetHPLossModify(false));
-      _str = _lossvalue != 0 ? $"{_textddata.FailDescription} {(_lossvalue > 0 ? "+" : "-")}{_lossvalue}%" : "";
-      HPDecreaseDescription.text = _str;
+    if (_lossvalue.Equals(0)) _str = $"{GameManager.Instance.GetTextData("hpdecrease").Name} {GameManager.Instance.GetTextData("nochange").Name}";
+    else
+    {
+      if (_lossvalue > 0) _str = $"{GameManager.Instance.GetTextData("hpdecrease").FailDescription} {ColorText.NegativeColor(_lossvalue.ToString())}%";
+      else _str = $"{GameManager.Instance.GetTextData("hpdecrease").SuccessDescription} {ColorText.PositiveColor(Mathf.Abs(_lossvalue).ToString())}";
+    }
+    HPDecreaseDescription.text = _str;
       HpSubDescription.text = _textddata.SelectionSubDescription;
     CurrentPreview = HPPreview.GetComponent<RectTransform>();
  
@@ -239,11 +233,21 @@ public class PreviewManager : MonoBehaviour
       string _str = _textddata.Description;
       SanityDescription.text = _str;
       int _genvalue = ((int)GameManager.Instance.MyGameData.GetSanityGenModify(false));
-      _str = _genvalue != 0 ? $"{_textddata.SuccessDescription} {(_genvalue > 0 ? "+" : "-")}{_genvalue}%" : "";
-      SanityGenDescriptoin.text = _str;
+    if (_genvalue.Equals(0)) _str = $"{GameManager.Instance.GetTextData("sanityincrease").Name} {GameManager.Instance.GetTextData("nochange").Name}";
+    else
+    {
+      if (_genvalue > 0) _str = $"{GameManager.Instance.GetTextData("sanityincrease").SuccessDescription} {ColorText.PositiveColor(_genvalue.ToString())}%";
+      else _str = $"{GameManager.Instance.GetTextData("sanityincrease").FailDescription} {ColorText.NegativeColor(Mathf.Abs(_genvalue).ToString())}";
+    }
+    SanityGenDescriptoin.text = _str;
       int _lossvalue = ((int)GameManager.Instance.MyGameData.GetSanityLossModify(false));
-      _str = _lossvalue != 0 ? $"{_textddata.FailDescription} {(_lossvalue > 0 ? "+" : "-")}{_lossvalue}%" : "";
-      SanityDecreaseDescription.text = _str;
+    if (_lossvalue.Equals(0)) _str = $"{GameManager.Instance.GetTextData("sanitydecrease").Name} {GameManager.Instance.GetTextData("nochange").Name}";
+    else
+    {
+      if (_lossvalue > 0) _str = $"{GameManager.Instance.GetTextData("sanitydecrease").FailDescription} {ColorText.NegativeColor(_lossvalue.ToString())}%";
+      else _str = $"{GameManager.Instance.GetTextData("sanitydecrease").SuccessDescription} {ColorText.PositiveColor(Mathf.Abs(_lossvalue).ToString())}";
+    }
+    SanityDecreaseDescription.text = _str;
       SanitySubDescription.text = _textddata.SelectionSubDescription;
     CurrentPreview = SanityPreview.GetComponent<RectTransform>();
 
@@ -257,10 +261,20 @@ public class PreviewManager : MonoBehaviour
     string _str = _textddata.Description;
     GoldDescription.text = _str;
     int _genvalue = ((int)GameManager.Instance.MyGameData.GetGoldGenModify(false));
-    _str = _genvalue != 0 ? $"{_textddata.SuccessDescription} {(_genvalue>0?"+":"-")}{_genvalue}%": "";
+    if (_genvalue.Equals(0)) _str = $"{GameManager.Instance.GetTextData("goldincrease").Name} {GameManager.Instance.GetTextData("nochange").Name}";
+    else
+    {
+      if (_genvalue > 0) _str = $"{GameManager.Instance.GetTextData("goldincrease").SuccessDescription} {ColorText.PositiveColor(_genvalue.ToString())}%";
+      else _str = $"{GameManager.Instance.GetTextData("goldincrease").FailDescription} {ColorText.NegativeColor(Mathf.Abs(_genvalue).ToString())}";
+    }
     GoldGenDescriptoin.text = _str;
     int _lossvalue = ((int)GameManager.Instance.MyGameData.GetGoldPayModify(false));
-    _str = _lossvalue != 0 ? $"{_textddata.FailDescription} {(_lossvalue>0?"+":"-")}{_lossvalue}%": "";
+    if (_lossvalue.Equals(0)) _str = $"{GameManager.Instance.GetTextData("golddecrease").Name} {GameManager.Instance.GetTextData("nochange").Name}";
+    else
+    {
+      if (_lossvalue > 0) _str = $"{GameManager.Instance.GetTextData("golddecrease").FailDescription} {ColorText.NegativeColor(_lossvalue.ToString())}%";
+      else _str = $"{GameManager.Instance.GetTextData("golddecrease").SuccessDescription} {ColorText.PositiveColor(Mathf.Abs(_lossvalue).ToString())}";
+    }
     GoldDecreaseDescription.text = _str;
     GoldSubDescription.text = _textddata.SelectionSubDescription;
 
@@ -321,18 +335,6 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(QuestPreview, true);
     StartCoroutine(_cor);
   }//현재 퀘스트 이름, 일러스트, 다음 내용
-  public void OpenTraitPreview(Trait _trait)
-  {
-    TraitIcon.sprite = GameManager.Instance.ImageHolder.GetTraitIcon(_trait.ID);
-    TraitName.text = GameManager.Instance.GetTextData(_trait.ID).Name;
-    TraitSubDescription.text=GameManager.Instance.GetTextData(_trait.ID).SelectionSubDescription;
-
-    CurrentPreview = TraitPreview.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(TraitPreview, true);
-    StartCoroutine(_cor);
-  }
   public void OpenThemePreview(ThemeType _theme)
   {
     TextData _themename = null;
@@ -341,48 +343,35 @@ public class PreviewManager : MonoBehaviour
     ThemeName.text = _themename.Name;
     int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
     //기술로부터 나온 값
-    int _onlytrait = GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_theme);
-    //특성에서 얻은 값
     int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
     //경험에서 나온 값
     int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-    int _sum = _onlyskill + _onlytrait + _onlyexp + _onlytendency;
+    int _sum = _onlyskill  + _onlyexp + _onlytendency;
     ThemeLevel.text = _sum.ToString();
-    string _description_trait = "";
-    if (_onlytrait > 0)
-    {
-      _description_trait = $"{GameManager.Instance.GetTextData("bytrait").Name} +{_onlytrait}";
-    }
-    else ThemeLevelDescription_trait.gameObject.SetActive(false);
-    string _description_skill = "";
-    if (_onlyskill > 0)
-    {
-      _description_trait = $"{GameManager.Instance.GetTextData("byskill").Name} +{_onlyskill}";
-    }
-    else ThemeLevelDescription_skill.gameObject.SetActive(false);
-    string _description_exp = "";
-    if (_onlyexp > 0)
-    {
-      _description_trait = $"{GameManager.Instance.GetTextData("byexp").Name} +{_onlyexp}";
-    }
-    else ThemeLevelDescription_exp.gameObject.SetActive(false);
-    string _description_tendency = "";
-    if (_onlytendency > 0)
-    {
-      string _sign = _onlytendency > 0 ? "+" : "-";
-      if (_onlytendency > 0) { ThemeLevelDescription_tendency.color = PositiveColor; }
-      else ThemeLevelDescription_tendency.color = NegativeColor;
-      _description_trait = $"{GameManager.Instance.GetTextData("bytendency").Name} {_sign}{_onlytendency}";
-    }
-    else ThemeLevelDescription_tendency.gameObject.SetActive(false);
+    string _valuestr = "";
+    string _str = "";
 
-    ThemeLevelDescription_trait.text = _description_trait;
-    ThemeLevelDescription_skill.text = _description_skill;
-    ThemeLevelDescription_exp.text = _description_exp;
-    ThemeLevelDescription_tendency.text = _description_tendency;
+    makecolorvalue(_onlyskill);
+    _str= GameManager.Instance.GetTextData("byskill").Name.Replace("#VALUE#", _valuestr);
+    ThemeLevelBySkill.text = _str;
+
+    makecolorvalue(_onlyexp);
+    _str = GameManager.Instance.GetTextData("byexp").Name.Replace("#VALUE#", _valuestr);
+    ThemeLevelByExp.text = _str;
+
+    makecolorvalue(_onlytendency);
+    _str=GameManager.Instance.GetTextData("bytendency").Name.Replace("#VALUE#",_valuestr);
+    ThemeLevelByTendency.text= _str;
+
     ThemeSubDescription.text = _themename.SelectionSubDescription;
     ThemeIcon.sprite = _icon;
 
+    void makecolorvalue(int value)
+    {
+      if (value.Equals(0)) _valuestr = value.ToString();
+      else if (value > 0) _valuestr = ColorText.PositiveColor(value.ToString());
+      else _valuestr=ColorText.NegativeColor(value.ToString());
+    }
     CurrentPreview = ThemePreview.GetComponent<RectTransform>();
 
     IEnumerator _cor = null;
@@ -394,9 +383,28 @@ public class PreviewManager : MonoBehaviour
     TextData _skilltextdata=GameManager.Instance.GetTextData(_skill);
     string _name=_skilltextdata.Name;
     string _subdescription = _skilltextdata.SelectionSubDescription;
-    int _level = GameManager.Instance.MyGameData.Skills[_skill].Level;
+    int _level = GameManager.Instance.MyGameData.Skills[_skill].LevelForPreviewOrTheme;
     Sprite[] _icons = new Sprite[2];
     GameManager.Instance.ImageHolder.GetSkillIcons(_skill, ref _icons);
+    Skill _targetskill = GameManager.Instance.MyGameData.Skills[_skill];
+    string _valuestr = "";
+    string _str = "";
+    int _onlylevel = _targetskill.LevelByOwn;
+    int _onlyexp = _targetskill.LevelByExp;
+    int _onlyplace = _targetskill.LevelByPlace;
+
+    makecolorvalue(_onlylevel);
+    _str = GameManager.Instance.GetTextData("byownlevel").Name.Replace("#VALUE#", _valuestr);
+    SkillLevelBySkill.text = _str;
+
+    makecolorvalue(_onlyexp);
+    _str = GameManager.Instance.GetTextData("byexp").Name.Replace("#VALUE#", _valuestr);
+    SkillLevelByExp.text = _str;
+
+    makecolorvalue(_onlyplace);
+    _str = GameManager.Instance.GetTextData("byplace").Name.Replace("#VALUE#", _valuestr);
+    SkillLevelByPlace.text = _str;
+
 
     SkillIcon_A.sprite= _icons[0];SkillIcon_B.sprite = _icons[1];
     SkillName.text = _name;
@@ -405,14 +413,21 @@ public class PreviewManager : MonoBehaviour
 
     CurrentPreview=SkillPreview.GetComponent<RectTransform>();
 
+    void makecolorvalue(int value)
+    {
+      if (value.Equals(0)) _valuestr = value.ToString();
+      else if (value > 0) _valuestr = ColorText.PositiveColor(value.ToString());
+      else _valuestr = ColorText.NegativeColor(value.ToString());
+    }
     IEnumerator _cor = null;
     _cor = fadepreview(SkillPreview, true);
     StartCoroutine(_cor);
   }
   public void OpenExpPreview(Experience _exp)
   {
-    ExpName.text = GameManager.Instance.GetTextData(_exp.ID).Name;
-    ExpDuration.text = $"{_exp.Duration.ToString()} {GameManager.Instance.GetTextData("expduration").Name})";
+    ExpName.text =_exp.Name;
+    ExpDuration.text = $"{_exp.Duration}";
+    ExpEffect.text = _exp.ShortEffectString;
     ExpSubDescription.text = GameManager.Instance.GetTextData(_exp.ID).SelectionSubDescription;
 
     CurrentPreview = ExpPreview.GetComponent<RectTransform>();
@@ -432,89 +447,21 @@ public class PreviewManager : MonoBehaviour
       case TendencyType.Rational:
         _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type,GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _textdata = GameManager.Instance.GetTextData("rational");
-        switch (GameManager.Instance.MyGameData.Tendency_RP.Level)
-        {
-          case 3:
-            TendencyDescription.color = NegativeColor;
-            break;
-          case 2:
-            TendencyDescription.color = NegativeColor;
-            break;
-          case 1:
-          case 0: //(Rational 기준) RP -3,-2,-1 : 대화,지성 증가   2: 이성 선택지에 패널티  3: 2+이성 관련 스탯 패널티
-            break;
-          case -1:
-          case -2:
-          case -3:
-            TendencyDescription.color = PositiveColor;
-            break;
-        }
         _tendencylevel = GameManager.Instance.MyGameData.Tendency_RP.Level * -1;
         break;
       case TendencyType.Physical:
         _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type, GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _textdata = GameManager.Instance.GetTextData("physical");
-        switch (GameManager.Instance.MyGameData.Tendency_RP.Level)
-        {
-          case 3:
-          case 2:
-          case 1:
-            TendencyDescription.color = PositiveColor;
-            break;
-          case 0: //Physical 기준 RP -3: (-2)+육체 관련 스탯 패널티  -2: 육체 선택지에 패널티  1,2,3: 무력,자연 증가
-          case -1:
-            break;
-          case -2:
-            TendencyDescription.color = NegativeColor;
-            break;
-          case -3:
-            TendencyDescription.color = NegativeColor;
-            break;
-        }
         _tendencylevel = GameManager.Instance.MyGameData.Tendency_RP.Level * +1;
         break;
       case TendencyType.Mental:
         _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type, GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _textdata = GameManager.Instance.GetTextData("mental");
-        switch (GameManager.Instance.MyGameData.Tendency_MM.Level)
-        {
-          case -3:
-          case -2:
-          case -1:
-            TendencyDescription.color = PositiveColor;
-            break;
-          case 0: //Mental 기준 MM -3,-2,-1: 정신력 소모량 감소  2: 정신 선택지 패널티  3:정신력 회복 감소
-          case 1:
-            break;
-          case 2:
-            TendencyDescription.color = NegativeColor;
-            break;
-          case 3:
-            TendencyDescription.color = NegativeColor;
-            break;
-        }
         _tendencylevel = GameManager.Instance.MyGameData.Tendency_MM.Level * -1;
         break;
       case TendencyType.Material:
         _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type, GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _textdata = GameManager.Instance.GetTextData("material");
-        switch (GameManager.Instance.MyGameData.Tendency_MM.Level)
-        {
-          case -3:
-            TendencyDescription.color = NegativeColor;
-            break;
-          case -2:
-            TendencyDescription.color = NegativeColor;
-            break;
-          case -1:
-          case 0://Material 기준 MM -3: 돈 습득 감소  -2: 물질 선택지 패널티  1,2,3: 돈 소모량 감소
-            break;
-          case 1:
-          case 2:
-          case 3:
-            TendencyDescription.color = PositiveColor;
-            break;
-        }
         _tendencylevel = GameManager.Instance.MyGameData.Tendency_MM.Level * +1;
         break;
     }
@@ -558,7 +505,7 @@ public class PreviewManager : MonoBehaviour
     Color _descriptioncolor= Color.white;
     switch (_selection.SelectionPayTarget)
     {
-      case PayOrLossTarget.HP:_icon = GameManager.Instance.ImageHolder.HPIcon;_current = GameManager.Instance.MyGameData.HP;
+      case PayOrLossTarget.HP:_icon = GameManager.Instance.ImageHolder.HPDecreaseIcon;_current = GameManager.Instance.MyGameData.HP;
         _current = GameManager.Instance.MyGameData.HP;
         _target_origin = GameManager.Instance.MyGameData.PayHPValue_origin;
         _modify = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
@@ -577,7 +524,7 @@ public class PreviewManager : MonoBehaviour
           _descriptioncolor = PositiveColor;
         }//보정치가 0 이하라면 긍정적인것
         break;//체력이라면 지불 기본값, 보정치, 최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
-      case PayOrLossTarget.Sanity:_icon = GameManager.Instance.ImageHolder.SanityIcon; _current = GameManager.Instance.MyGameData.HP;
+      case PayOrLossTarget.Sanity:_icon = GameManager.Instance.ImageHolder.SanityDecreaseIcon; _current = GameManager.Instance.MyGameData.CurrentSanity;
         _current = GameManager.Instance.MyGameData.CurrentSanity;
         _target_origin = GameManager.Instance.MyGameData.PaySanityValue_origin;
         _modify = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
@@ -585,18 +532,18 @@ public class PreviewManager : MonoBehaviour
         if (_modify.Equals(0)) _targetdescription = "";
         else if (_modify > 0)
         {
-                    _targetdescription = $"{GameManager.Instance.GetTextData("sanity").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
-                    _targetdescription += $"{GameManager.Instance.GetTextData("sanity").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("sanity").Name} {GameManager.Instance.MyGameData.PaySanityValue_origin}\n";
+                    _targetdescription += $"{GameManager.Instance.GetTextData("sanitydecrease").Name} {_modify}%";
           _descriptioncolor = NegativeColor;
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-                    _targetdescription = $"{GameManager.Instance.GetTextData("sanity").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
-                    _targetdescription += $"{GameManager.Instance.GetTextData("sanity").FailDescription} {_modify}%";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("sanity").Name} {GameManager.Instance.MyGameData.PaySanityValue_origin}\n";
+                    _targetdescription += $"{GameManager.Instance.GetTextData("sanitydecrease").Name} {_modify}%";
           _descriptioncolor = PositiveColor;
         }//보정치가 0 이하라면 긍정적인것
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
-      case PayOrLossTarget.Gold:_icon = GameManager.Instance.ImageHolder.GoldIcon; _current = GameManager.Instance.MyGameData.HP;
+      case PayOrLossTarget.Gold:_icon = GameManager.Instance.ImageHolder.GoldDecreaseIcon; _current = GameManager.Instance.MyGameData.Gold;
         _current = GameManager.Instance.MyGameData.Gold;
         _target_origin = GameManager.Instance.MyGameData.PayGoldValue_origin;
         _modify = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
@@ -604,13 +551,13 @@ public class PreviewManager : MonoBehaviour
         if (_modify.Equals(0)) _targetdescription = "";
         else if (_modify > 0)
         {
-                    _targetdescription = $"{GameManager.Instance.GetTextData("gold").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("gold").Name} {GameManager.Instance.MyGameData.PayGoldValue_origin}\n";
                     _targetdescription += $"{GameManager.Instance.GetTextData("gold").FailDescription} {_modify}%";
           _descriptioncolor = NegativeColor;
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-                    _targetdescription = $"{GameManager.Instance.GetTextData("gold").Name} {GameManager.Instance.MyGameData.PayHPValue_origin}\n";
+                    _targetdescription = $"{GameManager.Instance.GetTextData("gold").Name} {GameManager.Instance.MyGameData.PayGoldValue_origin}\n";
                     _targetdescription += $"{GameManager.Instance.GetTextData("gold").FailDescription} {_modify}%";
           _descriptioncolor = PositiveColor;
         }//보정치가 0 이하라면 긍정적인것
@@ -619,7 +566,6 @@ public class PreviewManager : MonoBehaviour
     }
     
     PayIcon.sprite = _icon;
-    PayCurrentAmount.text = _current.ToString();
     PayTargetAmount.text = (-_target).ToString();
     PayTargetDescription.color= _descriptioncolor;
     PayTargetDescription.text = _targetdescription;
@@ -633,22 +579,18 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionCheckPreview_theme(SelectionData _selection)
   {
+    CheckLevelByOtherSkills.text = "";
     CheckDescription.text = _selection.SubDescription;
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite _icon = null;
     int _currentlevel = 0;
-    int _bytrait = 0, _byskill = 0, _byexp = 0, _bytendency = 0;
+    int  _byskill = 0, _byexp = 0, _bytendency = 0;
     int _targetlevel = GameManager.Instance.MyGameData.CheckThemeValue;
-    string _leveldescription_trait = "";
-    string _leveldescription_skill = "";
-    string _leveldescription_exp = "";
-    string _leveldescription_tendency = "";
     int _percent = -1;
     string _name = "";
     ThemeType _themetype = _selection.SelectionCheckTheme;
 
     _icon = GameManager.Instance.ImageHolder.GetThemeIcon(_themetype);
-    _bytrait = GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_themetype);
     _byskill=GameManager.Instance.MyGameData.GetThemeLevelBySkill(_themetype);
     _byexp=GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_themetype);
     _bytendency=GameManager.Instance.MyGameData.GetThemeLevelByTendency(_themetype);
@@ -662,41 +604,13 @@ public class PreviewManager : MonoBehaviour
       case ThemeType.Intelligence:_name= "intelligence";break;
     }
     _themeid += _name;
-    if (_bytrait > 0)
-    {
-      _leveldescription_trait = $"{GameManager.Instance.GetTextData("bytrait").Name} +{_bytrait}";
-    }
-    else CheckCurrentDescription_trait.gameObject.SetActive(false);
-    if (_byskill > 0)
-    {
-      _leveldescription_skill = $"{GameManager.Instance.GetTextData("byskill").Name} +{_byskill}";
-    }
-    else CheckCurrentDescription_skill.gameObject.SetActive(false);
-    if (_byexp > 0)
-    {
-      _leveldescription_exp = $"{GameManager.Instance.GetTextData("byexp").Name} +{_byexp}";
-    }
-    else CheckCurrentDescription_exp.gameObject.SetActive(false);
-    if (!_bytendency.Equals(0))
-    {
-      string _sign = _bytendency > 0 ? "+" : "-";
-      _leveldescription_tendency = $"{GameManager.Instance.GetTextData("bytendency")} {_sign}{_bytendency}";
-    }
-    else CheckCurrentDescription_tendency.gameObject.SetActive(false);
-    _currentlevel = _bytrait + _byskill + _byexp + _bytendency;
+    _currentlevel = GameManager.Instance.MyGameData.GetThemeLevel(_themetype);
     _percent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _targetlevel);
 
     SelectionCheckName.text = GameManager.Instance.GetTextData(_themetype).Name;
     CheckIcon_A.sprite = _icon;
-    CheckIcon_B.gameObject.SetActive(false);
-    CheckCurrentLevel.text = _currentlevel.ToString();
-    CheckCurrentDescription_trait.text = _leveldescription_trait;
-    CheckCurrentDescription_skill.text = _leveldescription_skill;
-    CheckCurrentDescription_exp.text = _leveldescription_exp;
-    CheckCurrentDescription_tendency.text = _leveldescription_tendency;
-    if (_bytendency > 0) CheckCurrentDescription_tendency.color = PositiveColor;
-    else CheckCurrentDescription_tendency.color= NegativeColor;
-    CheckTargetLevel.text = _targetlevel.ToString();
+    CheckIcon_B.transform.parent.gameObject.SetActive(false);
+    CheckTargetLevel.text = $"{_currentlevel} / {_targetlevel}";
     if(_percent!=-1) CheckPercent.text = _percent.ToString() + "%";
 
     CurrentPreview = SelectionCheckPanel.GetComponent<RectTransform>();
@@ -707,54 +621,32 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionCheckPreview_skill(SelectionData _selection)
   {
-    CheckCurrentDescription_tendency.gameObject.SetActive(false);
     CheckDescription.text = _selection.SubDescription;
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite[] _icons = new Sprite[2];
     int _currentlevel = 0;
-    int _bytrait = 0, _byskill = 0, _byexp = 0;
+    int _byotherskills = 0;
     int _targetlevel = GameManager.Instance.MyGameData.CheckSkillValue;
-    string _leveldescription_trait = "";
-    string _leveldescription_skill = "";
-    string _leveldescription_exp = "";
     int _percent = 0;
     string _name = "";
-    SkillName _skill = _selection.SelectionCheckSkill;
-    GameManager.Instance.ImageHolder.GetSkillIcons(_skill, ref _icons);
-    _name = GameManager.Instance.GetTextData(_skill).Name;
+    Skill _skill = GameManager.Instance.MyGameData.Skills[_selection.SelectionCheckSkill];
+    GameManager.Instance.ImageHolder.GetSkillIcons(_skill.SkillType, ref _icons);
+    _name = GameManager.Instance.GetTextData(_skill.SkillType).Name;
 
-    _bytrait = GameManager.Instance.MyGameData.GetEffectSkillCount_Trait(_skill);
-    _byskill = GameManager.Instance.MyGameData.Skills[_skill].Level;
-    _byexp=GameManager.Instance.MyGameData.GetEffectSkillCount_Exp(_skill);
-    _currentlevel = _bytrait + _byskill + _byexp;
-
-    if (_bytrait > 0)
-    {
-      CheckCurrentDescription_trait.gameObject.SetActive(true);
-      _leveldescription_trait = $"{GameManager.Instance.GetTextData("bytrait").Name} +{_bytrait}";
-    }
-    else CheckCurrentDescription_trait.gameObject.SetActive(false);
-    if (_byskill > 0)
-    {
-      CheckCurrentDescription_skill.gameObject.SetActive(true);
-      _leveldescription_skill = $"{GameManager.Instance.GetTextData("byskill").Name} +{_byskill}";
-    }
-    else CheckCurrentDescription_skill.gameObject.SetActive(false);
-    if (_byexp > 0)
-    {
-      CheckCurrentDescription_exp.gameObject.SetActive(true);
-      _leveldescription_exp = $"{GameManager.Instance.GetTextData("byexp").Name} +{_byexp}";
-    }
-    else CheckCurrentDescription_exp.gameObject.SetActive(false);
-
+    _currentlevel = _skill.LevelForSkillCheck;
+    _byotherskills = _skill.LevelByTheme;
+    string _otherskilllevel = "";
+    if (_byotherskills<=0) _otherskilllevel = "";
+    else _otherskilllevel = GameManager.Instance.GetTextData("byotherskills").Name.Replace("#VALUE#", ColorText.PositiveColor(_otherskilllevel.ToString()));
+    
     _percent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _targetlevel);
 
     SelectionCheckName.text = _name;
     CheckIcon_A.sprite = _icons[0];
-    if (CheckIcon_B.gameObject.activeSelf.Equals(false)) CheckIcon_B.gameObject.SetActive(true);
+    if (CheckIcon_B.transform.parent.gameObject.activeSelf.Equals(false)) CheckIcon_B.transform.parent.gameObject.SetActive(true);
     CheckIcon_B.sprite = _icons[1];
-    CheckCurrentLevel.text = _currentlevel.ToString();
-    CheckTargetLevel.text = _targetlevel.ToString();
+    CheckLevelByOtherSkills.text = _otherskilllevel;
+    CheckTargetLevel.text =$"{_currentlevel} / {_targetlevel}";
     CheckPercent.text = _percent.ToString() + "%";
 
     CurrentPreview = SelectionCheckPanel.GetComponent<RectTransform>();
@@ -786,22 +678,21 @@ public class PreviewManager : MonoBehaviour
     Sprite _icon = null;
     float _modify = 0.0f;
     string _modifydescription = "";
-    string _subdescription = "";
     TextData _textdata = null;
-    Color _descriptioncolor= Color.white;
     _icon = GameManager.Instance.ImageHolder.HPIcon;
     _textdata = GameManager.Instance.GetTextData("hp");
     _modify = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
-    _descriptioncolor=_modify>0?PositiveColor:NegativeColor;
-    _modifydescription = $"{_textdata.SuccessDescription} {_modify}%";
-    if (_modify.Equals(0)) _modifydescription = $"{_textdata.SuccessDescription}%";
-    _subdescription = _textdata.SelectionSubDescription;
+
+    string _changedegree = "";
+    _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + _value.ToString() + "\n";
+    if (_modify.Equals(0.0f)) _changedegree =ColorText.NeutralColor( GameManager.Instance.GetTextData("nochange").Name);
+    else if(_modify>0)_changedegree=ColorText.PositiveColor(_modify.ToString());
+    else _changedegree=ColorText.NegativeColor(_modify.ToString());
+    _modifydescription+=$"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}%";
 
     RewardStatusIcon.sprite = _icon;
     RewardStatusAmount.text ="+ "+ _value.ToString();
     RewardStatusDescription.text = _modifydescription;
-    RewardStatusDescription.color = _descriptioncolor;
-    RewardStatusSubdescription.text = _subdescription;
 
     CurrentPreview = RewardStatusPanel.GetComponent<RectTransform>();
 
@@ -814,22 +705,21 @@ public class PreviewManager : MonoBehaviour
     Sprite _icon = null;
     float _modify = 0.0f;
     string _modifydescription = "";
-    string _subdescription = "";
     TextData _textdata = null;
-    Color _descriptioncolor = Color.white;
     _icon = GameManager.Instance.ImageHolder.SanityIcon;
     _textdata = GameManager.Instance.GetTextData("sanity");
     _modify = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
-    _descriptioncolor = _modify > 0 ? PositiveColor : NegativeColor;
-    _modifydescription = $"{_textdata.SuccessDescription} {_modify}%";
-    if (_modify.Equals(0)) _modifydescription = "";
-    _subdescription = _textdata.SelectionSubDescription;
+
+    string _changedegree = "";
+    _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + _value.ToString() + "\n";
+    if (_modify.Equals(0.0f)) _changedegree = ColorText.NeutralColor(GameManager.Instance.GetTextData("nochange").Name);
+    else if (_modify > 0) _changedegree = ColorText.PositiveColor(_modify.ToString());
+    else _changedegree = ColorText.NegativeColor(_modify.ToString());
+    _modifydescription += $"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}%";
 
     RewardStatusIcon.sprite = _icon;
     RewardStatusAmount.text = _value.ToString();
     RewardStatusDescription.text = _modifydescription;
-    RewardStatusSubdescription.color = _descriptioncolor;
-    RewardStatusSubdescription.text = _subdescription;
 
     CurrentPreview = RewardStatusPanel.GetComponent<RectTransform>();
 
@@ -842,21 +732,21 @@ public class PreviewManager : MonoBehaviour
     Sprite _icon = null;
     float _modify = 0.0f;
     string _modifydescription = "";
-    string _subdescription = "";
     TextData _textdata = null;
-    Color _descriptioncolor = Color.white;
     _icon = GameManager.Instance.ImageHolder.GoldIcon;
     _textdata = GameManager.Instance.GetTextData("gold");
     _modify = (int)GameManager.Instance.MyGameData.GetGoldGenModify(false);
-    _descriptioncolor = _modify > 0 ? PositiveColor : NegativeColor;
-    _modifydescription = $"{_textdata.SuccessDescription} {_modify}%";
-    if (_modify.Equals(0)) _modifydescription = "";
-    _subdescription = _textdata.SelectionSubDescription;
+
+    string _changedegree = "";
+    _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + _value.ToString() + "\n";
+    if (_modify.Equals(0.0f)) _changedegree = ColorText.NeutralColor(GameManager.Instance.GetTextData("nochange").Name);
+    else if (_modify > 0) _changedegree = ColorText.PositiveColor(_modify.ToString());
+    else _changedegree = ColorText.NegativeColor(_modify.ToString());
+    _modifydescription += $"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}%";
+
     RewardStatusIcon.sprite = _icon;
     RewardStatusAmount.text ="+"+ _value.ToString();
     RewardStatusDescription.text = _modifydescription;
-  //  RewardStatusSubdescription.color = _descriptioncolor;
-    RewardStatusSubdescription.text = _subdescription;
 
     CurrentPreview = RewardStatusPanel.GetComponent<RectTransform>();
 
@@ -865,43 +755,18 @@ public class PreviewManager : MonoBehaviour
     StartCoroutine(_cor);
   }
 
-  public void OpenRewardTraitPreview(Trait _trait)
-  {
-    string _name = "";
-    Sprite _illust = null;
-    string _effect = "";
-    string _subdescription = null;
-    _name = _trait.Name;
-    _illust = GameManager.Instance.ImageHolder.GetTraitIllust(_trait.ID);
-    _effect = _trait.EffectString;
-    _subdescription = _trait.SubDescription;
-
-    RewardTEName.text = _name;
-    RewardTEIllust.sprite = _illust;
-    RewardTEEffect.text = _effect;
-    RewardTESubdescription.text = _subdescription;
-
-    CurrentPreview=RewardTEPanel.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(RewardTEPanel, true);
-    StartCoroutine(_cor);
-  }
   public void OpenRewardExpPreview(Experience _exp)
   {
     string _name = "";
     Sprite _illust = null;
     string _effect = "";
-    string _subdescription = null;
     _name = _exp.Name;
     _illust = GameManager.Instance.ImageHolder.GetEXPIllust(_exp.ID);
     _effect = _exp.EffectString;
-    _subdescription = _exp.SubDescription;
 
     RewardTEName.text = _name;
     RewardTEIllust.sprite = _illust;
     RewardTEEffect.text = _effect;
-    RewardTESubdescription.text = _subdescription;
 
     CurrentPreview = RewardTEPanel.GetComponent<RectTransform>();
 
@@ -914,12 +779,10 @@ public class PreviewManager : MonoBehaviour
     TextData _textdata = GameManager.Instance.GetTextData(_themetype);
     string _name = $"{_textdata.Name} {GameManager.Instance.GetTextData("theme").Name} {GameManager.Instance.GetTextData("skill").Name} {GameManager.Instance.GetTextData("choice").Name}";
     Sprite _icon_a = GameManager.Instance.ImageHolder.GetThemeIcon(_themetype);
-    string _subdescription = _textdata.SelectionSubDescription;
 
     RewardTSName.text = _name;
     RewardTSIcon_A.sprite = _icon_a;
     RewardTSIcon_B.sprite = GameManager.Instance.ImageHolder.UnknownTheme;
-    RewardTSSubdescription.text = _subdescription;
 
     CurrentPreview=RewardTSPanel.GetComponent<RectTransform>();
 
@@ -930,14 +793,12 @@ public class PreviewManager : MonoBehaviour
   public void OpenRewardSkillPreview(SkillName _skill)
   {
     TextData _textdata = GameManager.Instance.GetTextData(_skill);
-    string _name = $"{_textdata.Name} {GameManager.Instance.GetTextData("skill").Name}";
+    string _name = $"{_textdata.Name} {GameManager.Instance.GetTextData("defaultlevel").Name}";
     Sprite[] _icons = new Sprite[2];
     GameManager.Instance.ImageHolder.GetSkillIcons(_skill, ref _icons);
-    string _subdescription = _textdata.SelectionSubDescription;
 
         SkillSelectName.text = _name;
         SkillSelectIcon_A.sprite = _icons[0]; SkillSelectIon_B.sprite = _icons[1];
-        SkillSelectionSubdescription.text = _subdescription;
 
     CurrentPreview = SkillSelectPanel.GetComponent<RectTransform>();
 
@@ -952,7 +813,6 @@ public class PreviewManager : MonoBehaviour
     SkillSelectIcon_A.sprite = _icons[0];SkillSelectIon_B.sprite = _icons[1];
     TextData _textdata = GameManager.Instance.GetTextData(_skill);
     SkillSelectName.text= _textdata.Name;
-    SkillSelectionSubdescription.text= _textdata.SelectionSubDescription;
 
     CurrentPreview = SkillSelectPanel.GetComponent<RectTransform>();
 
@@ -960,36 +820,35 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(SkillSelectPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenExpSelectionEmptyPreview(Experience _exp)
+  public void OpenExpSelectionEmptyPreview(Experience _exp,bool islong)
   {
     string _name = _exp.Name;
-    Sprite _illust = _exp.Illust;
-    string _effect = _exp.EffectString;
-ExpSelectEmptyName.text= _name;
-    ExpSelectEmptyIllust.sprite= _illust;
-    ExpSelectEmptyEffect.text= _effect;
+    TextData _textdata = islong ? GameManager.Instance.GetTextData("longtermsave") : GameManager.Instance.GetTextData("shorttermsave");
+    int _turn = islong ? ConstValues.LongTermStartTurn : ConstValues.ShortTermStartTurn;
+    string _description = $"{_textdata.Name}\n\n{_textdata.Description.Replace("#TURN#",_turn.ToString()).Replace("#VALUE#",ConstValues.LongTermChangeCost.ToString())}";
 
+    ExpSelectEmptyTurn.text = _turn.ToString();
+    ExpSelectEmptyDescription.text = _description;
     CurrentPreview=ExpSelectEmptyPanel.GetComponent<RectTransform>();
+
 
     IEnumerator _cor = null;
     _cor = fadepreview(ExpSelectEmptyPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenExpSelectionExistPreview(Experience _origin,Experience _new)
+  public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong)
   {
-    string _originname = _origin.Name;
-    Sprite _originillust = _origin.Illust;
-    string _origineffect = _origin.EffectString;
-    ExpSelectOriginName.text = _originname;
-    ExpSelectOriginIllust.sprite = _originillust;
-    ExpSelectOriginEffect.text = _origineffect;
+    int _turn = islong ? ConstValues.LongTermStartTurn : ConstValues.ShortTermStartTurn;
+    TextData _textdata = islong ? GameManager.Instance.GetTextData("longtermsave") : GameManager.Instance.GetTextData("shorttermsave");
+    string _description = $"{_textdata.Name}\n\n{_textdata.Description.Replace("#TURN#", _turn.ToString()).Replace("#VALUE#", ConstValues.LongTermChangeCost.ToString())}";
 
-    string _newname = _new.Name;
-    Sprite _newillust = _new.Illust;
-    string _neweffect = _new.EffectString;
-    ExpSelectNewName.text = _newname;
-    ExpSelectNewIllust.sprite = _newillust;
+    string _origineffect = _origin.ShortEffectString;
+    ExpSelectOriginEffect.text = _origineffect;
+    ExpSelectOriginTurn.text = _origin.Duration.ToString();
+
+    string _neweffect = _new.ShortEffectString;
     ExpSelectNewEffect.text = _neweffect;
+    ExpSelectNewTurn.text = _new.Duration.ToString();
 
     CurrentPreview = ExpSelectExistPanel.GetComponent<RectTransform>();
 
@@ -999,7 +858,7 @@ ExpSelectEmptyName.text= _name;
   }
   public void OpenExpSelectionBadPreview()
   {
-    ExpSelectionBadText.text = GameManager.Instance.GetTextData("cannotchangeexp").Name;
+    ExpSelectionBadText.text = GameManager.Instance.GetTextData("cannotchangebadexp").Name;
 
     CurrentPreview=ExpSelectionBadPanel.GetComponent<RectTransform>();
 

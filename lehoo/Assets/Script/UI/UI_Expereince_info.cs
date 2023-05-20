@@ -71,9 +71,9 @@ public class UI_Expereince_info : UI_default
             ExpEffect.text = _effect;
             ExpTurn.text = _exp.Duration.ToString();
 
-            UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
-        }//최초는 아무 경험이나 클릭하면 열기
-        else
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+    }//최초는 아무 경험이나 클릭하면 열기
+    else
         {
             if (CurrentExp == _exp) CloseUI();    //같은 경험 클릭하면 닫기
             else
@@ -89,6 +89,7 @@ public class UI_Expereince_info : UI_default
     }
     public override void CloseUI()
   {
-    base.CloseUI();
+    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+    IsOpen = false;
   }
 }

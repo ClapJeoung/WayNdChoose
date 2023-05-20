@@ -15,7 +15,6 @@ public class RewardButton : MonoBehaviour
   [SerializeField] private RectTransform HPRect = null;
   [SerializeField] private RectTransform SanityRect = null;
   [SerializeField] private RectTransform GoldRect = null;
-  [SerializeField] private RectTransform TraitRect = null;
   [SerializeField] private RectTransform ConversationRect = null;
   [SerializeField] private RectTransform ForceRect = null;
   [SerializeField] private RectTransform WildRect = null;
@@ -27,21 +26,17 @@ public class RewardButton : MonoBehaviour
   private ThemeType MyThemeType = ThemeType.Conversation;
   private SkillName MySkillName = SkillName.Speech;
   private Experience MyExp = null;
-  private Trait MyTrait = null;
 
   public void Setup_value(int _value)
   {
     GetComponent<Button>().interactable = true;
      MyValue = _value;
-    RewardInfo.text = MyValue.ToString();
-  }
-  public void Setup_Traitid(string _id)
-  {
-    GetComponent<Button>().interactable = true;
-    RewardType = RewardTarget.Trait;
-    MyID= _id;
-    RewardInfo.text = GameManager.Instance.GetTextData(MyID).Name;
-    MyTrait=GameManager.Instance.TraitsDic[MyID];
+    switch (RewardType)
+    {
+      case RewardTarget.HP: RewardInfo.text = GameManager.Instance.GetTextData("hpincrease").Name + " " + MyValue.ToString();break;
+      case RewardTarget.Sanity: RewardInfo.text = GameManager.Instance.GetTextData("sanityincrease").Name + " " + MyValue.ToString(); break;
+      case RewardTarget.Gold: RewardInfo.text = GameManager.Instance.GetTextData("goldincrease").Name + " " + MyValue.ToString(); break;
+    }
   }
   public void Setup_Expid(string _id)
   {
@@ -117,7 +112,6 @@ public class RewardButton : MonoBehaviour
    TargetThemePos);
         CloseUIButton(); break;
       case RewardTarget.Trait:
-        MyUIReward.AddRewardTrait(MyTrait, new Sprite[] { Icon_A.sprite }, new Vector2[] { Icon_A.rectTransform.position },new Vector2[]{TraitRect.position});
         CloseUIButton();  break;
     }
   }

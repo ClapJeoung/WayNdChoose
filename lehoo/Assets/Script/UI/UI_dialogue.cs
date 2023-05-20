@@ -17,6 +17,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private CanvasGroup MapButton = null;
   [SerializeField] private GameObject RewardButton = null;
   [SerializeField] private CanvasGroup KeepmoveButton=null;
+  [SerializeField] private TextMeshProUGUI KeepMoveText = null;
   [SerializeField] private CanvasGroup CenterGroup = null;
   [SerializeField] private RectTransform SelectionHolder = null;
   [SerializeField] private UI_Selection Selection_None = null;
@@ -24,6 +25,10 @@ public class UI_dialogue : UI_default
   [SerializeField] private UI_Selection Selection_Physical = null;
   [SerializeField] private UI_Selection Selection_Mental = null;
   [SerializeField] private UI_Selection Selection_Material = null;
+  private void Start()
+  {
+    if (KeepMoveText.text.Equals("null")) KeepMoveText.text = GameManager.Instance.GetTextData("keepgoing").Name;
+  }
   private UI_Selection GetUISelection(TendencyType _tendencytype)
   {
     switch (_tendencytype)
@@ -58,9 +63,6 @@ public class UI_dialogue : UI_default
     return null;
   }
   [Space(10)]
-  [SerializeField] private RectTransform HPRect = null;
-  [SerializeField] private RectTransform SanityRect = null;
-  [SerializeField] private RectTransform GoldRect = null;
   [SerializeField] private ParticleSystem CheckSuccessParticle = null;
   [SerializeField] private ParticleSystem CheckFailParticle = null;
   public void SetEventDialogue()
@@ -123,17 +125,6 @@ public class UI_dialogue : UI_default
   public void SelectSelection(UI_Selection _selection)
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, true));
-    switch (_selection.MyTendencyType)
-    {
-      case TendencyType.Rational:
-      case TendencyType.Physical:
-        GameManager.Instance.MyGameData.Tendency_RP.AddCount(_selection.MyTendencyType);
-        break;
-      case TendencyType.Mental:
-      case TendencyType.Material:
-        GameManager.Instance.MyGameData.Tendency_MM.AddCount(_selection.MyTendencyType);
-        break;
-    }
     DeleteOtherSelection(_selection.MyTendencyType);
     //다른거 사라지게 만들고
     UIManager.Instance.AddUIQueue(selectionanimation(_selection));
@@ -141,12 +132,12 @@ public class UI_dialogue : UI_default
   }//선택지 버튼 클릭했을 시
   private IEnumerator setnewdialogue()
   {
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f,true));
+    WaitForSeconds _wait = new WaitForSeconds(0.05f);
     EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
     NameText.text = _currentevent.Name;
     Illust.sprite = _currentevent.Illust;
     string _dialogetemp = _currentevent.Description;
-    if (_dialogetemp.Contains("#settle#")) _dialogetemp = _currentevent.Description.Replace("#settle#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
+    if (_dialogetemp.Contains("#SETTLE#")) _dialogetemp = _currentevent.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
     DialogueText.text = _dialogetemp;
 
     if (Selection_None.gameObject.activeInHierarchy == true) Selection_None.gameObject.SetActive(false);
@@ -159,18 +150,19 @@ public class UI_dialogue : UI_default
     Selection_Physical.GetComponent<RectTransform>().anchoredPosition = Selection_Physical.OriginPos;
     Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
     Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
-        //모든 선택지 위치 초기화 및 숨기기
+    //모든 선택지 위치 초기화 및 숨기기
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, true));
 
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NameGroup, 1.0f, false,UIFadeMoveDir.Right));
+     StartCoroutine(UIManager.Instance.ChangeAlpha(NameGroup, 1.0f, false,UIFadeMoveDir.Right));
     StartCoroutine(UIManager.Instance.ChangeAlpha(NameText, 1.0f));
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, false, UIFadeMoveDir.Right));
+    yield return _wait;
+     StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, false, UIFadeMoveDir.Right));
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 1.0f, false, UIFadeMoveDir.Left));
+    yield return _wait;
+     StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 1.0f, false, UIFadeMoveDir.Left));
     StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-        //이름, 일러스트, 설명 그룹 등장
+    yield return _wait;
+    //이름, 일러스트, 설명 그룹 등장
 
     switch (_currentevent.Selection_type)
     {
@@ -211,14 +203,14 @@ public class UI_dialogue : UI_default
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 0.0f));
         yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-        yield return StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
+        StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     string _dialogetemp = _success.Description;
-    if (_dialogetemp.Contains("#settle")) _dialogetemp = _success.Description.Replace("#settle#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
+    if (_dialogetemp.Contains("#settle")) _dialogetemp = _success.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
     DialogueText.text = _dialogetemp;
     Illust.sprite = _success.Illust;
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     MyUIReward.SetRewardPanel(_success);
@@ -230,23 +222,20 @@ public class UI_dialogue : UI_default
     {
      StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false));
     }
-    if (!GameManager.Instance.MyGameData.CurrentEvent.SettlementType.Equals(SettlementType.Outer))
-      if (GameManager.Instance.MyGameData.CurrentSuggestingEvents.Count > 0)
-       StartCoroutine(UIManager.Instance.ChangeAlpha(SuggestButton, 1.0f, false));
 
-    StartCoroutine(openbuttons(_success));
+    OpenButtons(_success);
   }
   private IEnumerator updatedialogue(FailureData _faiilure)
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 0.0f));
-    yield return StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
+     StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     string _dialogetemp = _faiilure.Description;
-    if (_dialogetemp.Contains("#settle")) _dialogetemp = _faiilure.Description.Replace("#settle#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
+    if (_dialogetemp.Contains("#settle")) _dialogetemp = _faiilure.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
     DialogueText.text = _dialogetemp;
     Illust.sprite = _faiilure.Illust_spring;
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)
@@ -257,9 +246,6 @@ public class UI_dialogue : UI_default
     {
       StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false));
     }
-    if (!GameManager.Instance.MyGameData.CurrentEvent.SettlementType.Equals(SettlementType.Outer))
-      if (GameManager.Instance.MyGameData.CurrentSuggestingEvents.Count > 0)
-        StartCoroutine(UIManager.Instance.ChangeAlpha(SuggestButton, 1.0f, false));
     OpenButtons(_faiilure);
   }
   public void ClosePanel_quick()
@@ -293,17 +279,11 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator openbuttons(SuccessData _success)
   {
-    if (GameManager.Instance.MyGameData.CurrentSuggestingEvents.Count > 0)
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
             SuggestButton.alpha = 0.0f;
       if (SuggestButton.gameObject.activeInHierarchy == false) SuggestButton.gameObject.SetActive(true);
        StartCoroutine(UIManager.Instance.ChangeAlpha(SuggestButton, 1.0f, false));
-    }
-    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
-    {
-            MapButton.alpha = 0.0f;
-            if (MapButton.gameObject.activeInHierarchy == false) MapButton.gameObject.gameObject.SetActive(true);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(MapButton, 1.0f, false));
     }
     else
     {
@@ -311,6 +291,7 @@ public class UI_dialogue : UI_default
       if (KeepmoveButton.gameObject.activeInHierarchy == false) KeepmoveButton.gameObject.SetActive(true);
       StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false));
     }
+
     if (RewardButton.activeInHierarchy == false) RewardButton.gameObject.SetActive(true);
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButton.GetComponent<CanvasGroup>(),1.0f, false));
     yield return null;
@@ -321,19 +302,17 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator openbuttons(FailureData _fail)
   {
-    if (GameManager.Instance.MyGameData.CurrentSuggestingEvents.Count > 0)
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
+      SuggestButton.alpha = 0.0f;
       if (SuggestButton.gameObject.activeInHierarchy == false) SuggestButton.gameObject.SetActive(true);
-      UIManager.Instance.ChangeAlpha(SuggestButton,1.0f, false);
-    }
-      if (GameManager.Instance.MyGameData.CurrentSettlement != null)
-    { if (MapButton.gameObject.activeInHierarchy == false) MapButton.gameObject.gameObject.SetActive(true);
-      UIManager.Instance.ChangeAlpha(MapButton, 1.0f, false);
+      StartCoroutine(UIManager.Instance.ChangeAlpha(SuggestButton, 1.0f, false));
     }
     else
     {
+      KeepmoveButton.alpha = 0.0f;
       if (KeepmoveButton.gameObject.activeInHierarchy == false) KeepmoveButton.gameObject.SetActive(true);
-      UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false);
+      StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false));
     }
     yield return null;
   }
@@ -429,7 +408,7 @@ public class UI_dialogue : UI_default
                 else _issuccess = false;
         break;
       case SelectionTargetType.Check_Skill: //기술 선택지면 확률 검사
-        _currentvalue = GameManager.Instance.MyGameData.Skills[_selectiondata.SelectionCheckSkill].Level;
+        _currentvalue = GameManager.Instance.MyGameData.Skills[_selectiondata.SelectionCheckSkill].LevelForPreviewOrTheme;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillValue;
         _successpercent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
                 if (Random.Range(0, 100) < _successpercent + _pluspercent)

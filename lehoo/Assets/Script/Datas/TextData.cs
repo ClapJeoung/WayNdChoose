@@ -11,6 +11,7 @@ public class TextData
     public string SelectionSubDescription = "";
     public string SuccessDescription = "";
     public string FailDescription = "";
+  public string Icon = "";
     public void Debugtext()
     {
         string _str = "";

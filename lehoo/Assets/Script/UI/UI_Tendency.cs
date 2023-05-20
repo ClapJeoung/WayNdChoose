@@ -8,7 +8,6 @@ public class UI_Tendency : UI_default
 {
     [SerializeField] private RectTransform IconRect_lefttop = null, IconRect_righttop = null,IconRect_leftbottom=null,IconRect_rightbottom=null;
     [SerializeField] private RectTransform InfoPanel = null;
-    [SerializeField] private CanvasGroup Group_lefttop = null, Group_righttop = null, Group_leftbottom = null, Group_rightbottom = null;
     [SerializeField] private TextMeshProUGUI Name_lefttop = null, Name_righttop = null, Name_leftbottom = null, Name_rightbottom = null;
     [SerializeField] private RectTransform TextAreaRect = null;
     [SerializeField] private TextMeshProUGUI Description = null;
@@ -67,45 +66,45 @@ public class UI_Tendency : UI_default
         Vector2 _targettextpos = Vector2.zero;
         TextMeshProUGUI _targettext = null;
         RectTransform _targeticon = null;
-        if (CurrentTendencyType == TendencyType.None)
+    switch (_tendencytype)
+    {
+      case TendencyType.Rational:
+        _targetinfopos = LeftTopPos;
+        _targettextpos = TextPos_left;
+        _targettext = Name_lefttop;
+        _targeticon = IconRect_lefttop;
+        break;
+      case TendencyType.Physical:
+        _targetinfopos = RightTopPos;
+        _targettextpos = TextPos_right;
+        _targettext = Name_righttop;
+        _targeticon = IconRect_righttop;
+        break;
+      case TendencyType.Mental:
+        _targetinfopos = LeftBottomPos;
+        _targettextpos = TextPos_left;
+        _targettext = Name_leftbottom;
+        _targeticon = IconRect_leftbottom;
+        break;
+      case TendencyType.Material:
+        _targetinfopos = RightBottomPos;
+        _targettextpos = TextPos_right;
+        _targettext = Name_rightbottom;
+        _targeticon = IconRect_rightbottom;
+        break;
+    }
+    _targettext.text = _tendencyname;
+    if (CurrentTendencyType == TendencyType.None)
         {
-            switch (_tendencytype)
-            {
-                case TendencyType.Rational:
-                    _targetinfopos = LeftTopPos;
-                    _targettextpos = TextPos_left;
-                    _targettext = Name_lefttop;
-                    _targeticon = IconRect_lefttop;
-                    break;
-                case TendencyType.Physical:
-                    _targetinfopos = RightTopPos;
-                    _targettextpos = TextPos_right;
-                    _targettext = Name_righttop;
-                    _targeticon = IconRect_righttop;
-                    break;
-                case TendencyType.Mental:
-                    _targetinfopos = LeftBottomPos;
-                    _targettextpos = TextPos_left;
-                    _targettext = Name_leftbottom;
-                    _targeticon = IconRect_leftbottom;
-                    break;
-                case TendencyType.Material:
-                    _targetinfopos = RightBottomPos;
-                    _targettextpos = TextPos_right;
-                    _targettext = Name_lefttop;
-                    _targeticon = IconRect_rightbottom;
-                    break;
-            }
 
             InfoPanel.anchoredPosition = _targetinfopos;
             TextAreaRect.anchoredPosition = _targettextpos;
-            _targettext.text = _tendencyname;
             Description.text = _description;
             Effect.text = _effect;
             _targeticon.localScale = Vector3.one * SelectSize;
-            UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
-        }
-        else
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+    }
+    else
         {
             UIManager.Instance.AddUIQueue(movepanel(_tendencytype,_description,_effect));
         }
@@ -141,15 +140,15 @@ public class UI_Tendency : UI_default
                 _targeticon = IconRect_rightbottom;
                 break;
         }
-        Vector2 _infocurrentpos = _infostartpos, _textcurrentpos = _textstartpos;
+    Vector2 _infocurrentpos = _infostartpos, _textcurrentpos = _textstartpos;
         _targeticon.localScale = Vector3.one * SelectSize;
-        float _time = 0.0f, _targettime = UIManager.Instance.SmallPanelFadeTime;
+        float _time = 0.0f, _targettime = 0.3f;
         StartCoroutine(UIManager.Instance.ChangeAlpha(Description, 0.0f));
         StartCoroutine(UIManager.Instance.ChangeAlpha(Effect, 0.0f));
         while (_time < _targettime)
         {
-            _infocurrentpos = Vector2.Lerp(_infostartpos, _infoendpos, Mathf.Pow(_time / _targettime, 0.7f));
-            _textcurrentpos = Vector2.Lerp(_textstartpos, _textendpos, Mathf.Pow(_time / _targettime, 0.6f));
+            _infocurrentpos = Vector2.Lerp(_infostartpos, _infoendpos, Mathf.Pow(_time / _targettime, 0.3f));
+            _textcurrentpos = Vector2.Lerp(_textstartpos, _textendpos, Mathf.Pow(_time / _targettime, 0.5f));
 
             InfoPanel.anchoredPosition = _infocurrentpos;
             TextAreaRect.anchoredPosition = _textcurrentpos;
@@ -165,8 +164,9 @@ public class UI_Tendency : UI_default
     }
     public override void CloseUI()
   {
-    base.CloseUI();
-        CurrentTendency = null;
+    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+    IsOpen = false;
+    CurrentTendency = null;
         CurrentTendencyType = TendencyType.None;
   }
 }

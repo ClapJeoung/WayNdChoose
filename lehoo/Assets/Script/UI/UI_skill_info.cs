@@ -9,11 +9,11 @@ public class UI_skill_info : UI_default
   [SerializeField] private Image MainThemeIllust = null;
   [SerializeField] private TextMeshProUGUI MainThemeDescription = null;
   [SerializeField] private TextMeshProUGUI SkillLevelSum = null;
-    [SerializeField] private List<Image> ThemeIcons_a = new List<Image>();
-    [SerializeField] private List<RectTransform> ThemeRect_a = new List<RectTransform>();
-    [SerializeField] private List<Image> ThemeIcons_b= new List<Image>();
-    [SerializeField] private List<RectTransform> ThemeRect_b = new List<RectTransform>();
-    private float MainIconStart = 100.0f, SkillIconStart = 70.0f;
+  [SerializeField] private Image ThemeIcons_a = null;
+    [SerializeField] private RectTransform ThemeRect_a = null;
+  [SerializeField] private Image ThemeIcons_b= null;
+  [SerializeField] private RectTransform ThemeRect_b = null;
+  private float MainIconStart = 100.0f, SkillIconStart = 70.0f;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI ConversationSkillName = null;
   [SerializeField] private TextMeshProUGUI ConversationSkillLevel = null;
@@ -70,7 +70,7 @@ public class UI_skill_info : UI_default
       TextData _skilltextdatatemp = GameManager.Instance.GetTextData(_skills[i]);
 
       _skillnames[i] = _skilltextdatatemp.Name;
-      _skilllevels[i] = GameManager.Instance.MyGameData.Skills[_skills[i]].Level;
+      _skilllevels[i] = GameManager.Instance.MyGameData.Skills[_skills[i]].LevelForPreviewOrTheme;
 
       switch (i)
       {
@@ -100,29 +100,19 @@ public class UI_skill_info : UI_default
 
     if (CurrentThemeIndex.Equals(-1))
     {
-            for (int i = 0; i < ThemeIcons_a.Count; i++)
-            {
-                ThemeIcons_a[i].sprite = _themeicon;
-                ThemeRect_a[i].anchoredPosition3D = Vector3.zero;
-                if (i.Equals(0))
-                    ThemeRect_b[i].anchoredPosition3D = Vector3.right * MainIconStart;
-                else ThemeRect_b[i].anchoredPosition3D = Vector3.right * SkillIconStart;
-            }
+      ThemeIcons_a.sprite = _themeicon;
+      ThemeRect_a.anchoredPosition3D = Vector3.zero;
+      ThemeRect_b.anchoredPosition3D = Vector3.right * MainIconStart;
       MainThemeName.text = _themename;
       MainThemeIllust.sprite = _themeillust;
       MainThemeDescription.text = _themedescription;
       SkillLevelSum.text = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_themetype).ToString();
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect,MyDir,UIManager.Instance.LargePanelMoveTime));
     }//닫혀 있던 상태에서 처음으로 열었을때면 UI 열기 이펙트
     else
     {
-      for(int i = 0; i < ThemeIcons_a.Count; i++)
-            {
-                float _degree = i.Equals(0) ? MainIconStart : SkillIconStart;
-                if (ThemeRect_a[i].anchoredPosition3D.x.Equals(0))
-                    StartCoroutine(moveicon(ThemeRect_a[i], ThemeIcons_b[i], ThemeRect_b[i], _themeicon, _degree));
-                else StartCoroutine(moveicon(ThemeRect_b[i], ThemeIcons_a[i], ThemeRect_a[i], _themeicon, _degree));
-            }
+      float _degree = MainIconStart;
+      StartCoroutine(moveicon(ThemeRect_a, ThemeIcons_b, ThemeRect_b, _themeicon, _degree));
       MainThemeName.text = _themename;
       MainThemeIllust.sprite = _themeillust;
       MainThemeDescription.text = _themedescription;
@@ -154,7 +144,8 @@ public class UI_skill_info : UI_default
   
   public override void CloseUI()
   {
-    base.CloseUI();
+    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect,MyDir,UIManager.Instance.LargePanelMoveTime));
+    IsOpen = false;
     CurrentThemeIndex = -1;
   }
 }

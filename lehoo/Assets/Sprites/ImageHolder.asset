@@ -170,35 +170,20 @@ MonoBehaviour:
   UnknownHP: {fileID: 0}
   UnknownSanity: {fileID: 0}
   UnknownGold: {fileID: 0}
-  UnknownTrait: {fileID: 21300000, guid: 0807e96d92f9fd745ac8e876654e9903, type: 3}
   UnknownTheme: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   UnknownExp: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
   ThemeIllust_Conversation: {fileID: 21300000, guid: 16d47ffe49052184faaa7e7e94904eca, type: 3}
   ThemeIllust_Force: {fileID: 21300000, guid: 903ee6b4757198440a9d6b2890df78ce, type: 3}
   ThemeIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
   ThemeIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
-  SkillIllust_Speech: []
-  SkillIllust_Threat: []
-  SkillIllust_Deception: []
-  SkillIllust_Logic: []
-  SkillIllust_Martialarts: []
-  SkillIllust_Bow: []
-  SkillIllust_Somatology: []
-  SkillIllust_Survivable: []
-  SkillIllust_Biology: []
-  SkillIllust_Knowledge: []
   TendencyIcon_Rational:
   - {fileID: 21300000, guid: 961d38108516f37418afc8bf3812db23, type: 3}
   - {fileID: 21300000, guid: 6f4d2973a53db4a4091a8e0f2881e10a, type: 3}
   - {fileID: 21300000, guid: 5323d976eba817440a691c0a4705d47d, type: 3}
   - {fileID: 21300000, guid: a5e6eeeb438d55d46a32653ffd9e6105, type: 3}
-  - {fileID: 21300000, guid: a5e6eeeb438d55d46a32653ffd9e6105, type: 3}
-  - {fileID: 21300000, guid: a5e6eeeb438d55d46a32653ffd9e6105, type: 3}
-  - {fileID: 21300000, guid: ccc12d1d3f0944748a5df4c72e34b26f, type: 3}
+  - {fileID: 21300000, guid: 961d38108516f37418afc8bf3812db23, type: 3}
   TendencyIcon_Physical:
   - {fileID: 21300000, guid: 1cb3c5c7c68837c4a862d404d27c7b4f, type: 3}
-  - {fileID: 21300000, guid: 5d0b501218520a04b9affde56a9c8d51, type: 3}
-  - {fileID: 21300000, guid: 5d0b501218520a04b9affde56a9c8d51, type: 3}
   - {fileID: 21300000, guid: 5d0b501218520a04b9affde56a9c8d51, type: 3}
   - {fileID: 21300000, guid: 6d76b02d07fd30144903571587c20c34, type: 3}
   - {fileID: 21300000, guid: b0eefbf8838ac1c469d7923b69855958, type: 3}
@@ -208,13 +193,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 436341cc5f3672b4bbe7b7b2c456af9d, type: 3}
   - {fileID: 21300000, guid: d1eb91140686da44ca9023167455a19c, type: 3}
   - {fileID: 21300000, guid: 7a4ccfa8816b6e34ca5db9e8ea463541, type: 3}
-  - {fileID: 21300000, guid: 7a4ccfa8816b6e34ca5db9e8ea463541, type: 3}
-  - {fileID: 21300000, guid: 7a4ccfa8816b6e34ca5db9e8ea463541, type: 3}
   - {fileID: 21300000, guid: 77cb89db3c5168d48b99bd3ae9686fbe, type: 3}
   TendencyIcon_Material:
   - {fileID: 21300000, guid: 418de3a2ecba3324487daa5a42833097, type: 3}
-  - {fileID: 21300000, guid: 003917e4017919f488cac8c86d965305, type: 3}
-  - {fileID: 21300000, guid: 003917e4017919f488cac8c86d965305, type: 3}
   - {fileID: 21300000, guid: 003917e4017919f488cac8c86d965305, type: 3}
   - {fileID: 21300000, guid: fe55f89eb8bd76f40b2883bcb27bc03f, type: 3}
   - {fileID: 21300000, guid: 7b7cf11ef1ec379499cc92fb9c2d7974, type: 3}
@@ -223,10 +204,10 @@ MonoBehaviour:
   TendencyIllust_Physical: {fileID: 21300000, guid: 0c19233e57ebce1458d2f1677f92cdc9, type: 3}
   TendencyIllust_Mental: {fileID: 21300000, guid: db64b1b41faf2ba4580f7640153d58a6, type: 3}
   TendencyIllust_Material: {fileID: 21300000, guid: a89f38520a7344f4cb85dded99581892, type: 3}
-  ThemeIcon_Conversation: {fileID: 21300000, guid: 23ca849e003173640b0fc92c8fbfe4a3, type: 3}
-  ThemeIcon_Force: {fileID: 21300000, guid: 7ed566b75ea65214bbdb01b7b2be6c7c, type: 3}
-  ThemeIcon_Wild: {fileID: 21300000, guid: 339416ec68700d94fa1fb1a62f4172bc, type: 3}
-  ThemeIcon_Intelligence: {fileID: 21300000, guid: 90e74e12ed187e442aa1e4a392f0bc37, type: 3}
+  ThemeIcon_Conversation: {fileID: 21300000, guid: 5e8c997a1b7b5474092af4cae2dfd4e0, type: 3}
+  ThemeIcon_Force: {fileID: 21300000, guid: a6c6025bb56840c4aa49efb919f654db, type: 3}
+  ThemeIcon_Wild: {fileID: 21300000, guid: a68439f4dc29cc248817106ccf7c64c5, type: 3}
+  ThemeIcon_Intelligence: {fileID: 21300000, guid: 6803d618801df4249a1cd12feaa3da23, type: 3}
   TendencySelectionIcon: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
   ExpSelectionIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
   SkillSelectionIcon: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
@@ -236,6 +217,7 @@ MonoBehaviour:
   LibraryIllust: []
   TheaterIllust: []
   AcademyIllust: []
+  NoneIllust: {fileID: 0}
   EventIllust:
   - {fileID: 21300000, guid: 118454cf19c33244eae50960de27fc16, type: 3}
   - {fileID: 21300000, guid: 72b082cba3858754d99b87f7bbad72d9, type: 3}
@@ -600,8 +582,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b1dfd4d2cc23ff24cad53fa6e4048ed1, type: 3}
   EXPIllust:
   - {fileID: 21300000, guid: 72b5cb0d1bf3d4d4cbfb588305636045, type: 3}
+  - {fileID: 21300000, guid: 0406bff0d857dd24cb28e886736e8794, type: 3}
   - {fileID: 21300000, guid: 25c42252a579f1443a545e979c88fdcc, type: 3}
   - {fileID: 21300000, guid: 71b1eec504fb61f44ab8e539a7727910, type: 3}
+  - {fileID: 21300000, guid: 7c98ac4ab230e4040a8a0dcb8f731599, type: 3}
   - {fileID: 21300000, guid: a9714a3aff6799d4faac7bb608d0a809, type: 3}
   - {fileID: 21300000, guid: 6fb60a478a796da42a43fa89faca08a1, type: 3}
   - {fileID: 21300000, guid: bbecd4f193891104eb6c0e97d59c5273, type: 3}
@@ -611,6 +595,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 96286c3196c68be4383c10d9200c578d, type: 3}
   - {fileID: 21300000, guid: 1835de5f3ecce2540aefe26b4f50908e, type: 3}
   - {fileID: 21300000, guid: 2c04521d0b937aa418a5f59f7399c360, type: 3}
+  - {fileID: 21300000, guid: fd5e44f0e7012e44cb7d46257f215bab, type: 3}
   - {fileID: 21300000, guid: 4dbb29ea5f3f86b4fbb1415c8d2496d6, type: 3}
   - {fileID: 21300000, guid: 9a8c081a55c7e064f9bf9a8992d6340a, type: 3}
   - {fileID: 21300000, guid: c44753252a6654146870d9e9944c1e52, type: 3}
@@ -621,20 +606,15 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 96a83c65e8281f24991ef21aedc0cbb5, type: 3}
   - {fileID: 21300000, guid: 264d315a6c58d45449afbdb1935e2f22, type: 3}
   - {fileID: 21300000, guid: 66c537f367a1a344e9dbc831b298ec07, type: 3}
+  - {fileID: 21300000, guid: 53d44d9e90a2b1e42a08ac7b00ef9e67, type: 3}
   - {fileID: 21300000, guid: c719b3935cf706c479ac57e824fcf938, type: 3}
   - {fileID: 21300000, guid: 5e3486711d3201b42a86b121edbe80fd, type: 3}
   - {fileID: 21300000, guid: 4318f44759362d44eb9869ef39253194, type: 3}
   - {fileID: 21300000, guid: 590c0330e80af864fa32bf1f8169a47b, type: 3}
   NoGoldIllust: {fileID: 21300000, guid: 5ce237ac48c060f48a83877139e6918f, type: 3}
   EmptyExpIllust: {fileID: 0}
-  EmptyShortExpIcon: {fileID: 21300000, guid: 909c3af100c69bb48b88201269d8348a, type: 3}
   EmptyLongExpIcon: {fileID: 21300000, guid: c8859889966423244b72eb0209f9a7b0, type: 3}
-  TraitIcons: []
-  TraitIllust:
-  - {fileID: 21300000, guid: 0406bff0d857dd24cb28e886736e8794, type: 3}
-  - {fileID: 21300000, guid: 7c98ac4ab230e4040a8a0dcb8f731599, type: 3}
-  - {fileID: 21300000, guid: fd5e44f0e7012e44cb7d46257f215bab, type: 3}
-  - {fileID: 21300000, guid: 53d44d9e90a2b1e42a08ac7b00ef9e67, type: 3}
+  EmptyShortExpIcon: {fileID: 21300000, guid: 909c3af100c69bb48b88201269d8348a, type: 3}
   DefaultIllust: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
   DefaultIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
   SpringIcon_active: {fileID: 21300000, guid: 7f4699aae6a48f548815bbfc1037ae17, type: 3}
@@ -647,5 +627,15 @@ MonoBehaviour:
   WinterIcon_deactive: {fileID: 21300000, guid: b3624b99b5b396c4087d760e8e88f770, type: 3}
   NothingQuestIllust: {fileID: 0}
   HPIcon: {fileID: 21300000, guid: 129c86f1e6e975a4b8c82a05cc851a81, type: 3}
+  HPIncreaseIcon: {fileID: -1220776246, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  HPDecreaseIcon: {fileID: 1283086613, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   SanityIcon: {fileID: 21300000, guid: a53d7ae234547b34b9414626b5c33560, type: 3}
+  SanityIncreaseIcon: {fileID: -765305855, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  SanityDecreaseIcon: {fileID: 836738539, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   GoldIcon: {fileID: 21300000, guid: d0bf0653c07a0f3479a402fb6c35fb50, type: 3}
+  GoldIncreaseIcon: {fileID: -1776737468, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  GoldDecreaseIcon: {fileID: -237304368, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  Quest_risig: {fileID: -1705875917, guid: 3ef652186acb6af4c89d9c478178ba86, type: 3}
+  Quest_climax: {fileID: 581620886, guid: 3ef652186acb6af4c89d9c478178ba86, type: 3}
+  Quest_fall: {fileID: 1409932780, guid: 3ef652186acb6af4c89d9c478178ba86, type: 3}
+  UnPleasant: {fileID: 21300000, guid: b0dcb37931cd8e944b7d1b0f83a0a1cc, type: 3}

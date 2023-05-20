@@ -148,8 +148,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -240,9 +238,6 @@ public class EventHolder
             switch (Data.SuccessDatas[j].Reward_Target)
             {
               case RewardTarget.Experience:
-              case RewardTarget.Trait:
-                Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
-
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
 
               case RewardTarget.Theme: Data.SuccessDatas[j].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info.Split('@')[j]); break;
@@ -287,8 +282,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -326,8 +319,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -365,8 +356,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -529,8 +518,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -618,9 +605,6 @@ public class EventHolder
             switch (Data.SuccessDatas[j].Reward_Target)
             {
               case RewardTarget.Experience:
-              case RewardTarget.Trait:
-                Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
-
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
 
               case RewardTarget.Theme: Data.SuccessDatas[j].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info.Split('@')[j]); break;
@@ -662,8 +646,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -701,8 +683,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -740,8 +720,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -841,13 +819,13 @@ public class EventHolder
         }
       }
 
-      Data.TileCheckType = _data.Environment_Type.Equals(0) ? 0 : 1;
+      Data.TileCheckType = _data.Environment.Equals(0) ? 0 : 1;
       switch (Data.TileCheckType)
       {
         case 0: //검사 없음
           break;
         case 1: //환경
-          Data.EnvironmentType = (EnvironmentType)(_data.Environment_Type + 1);
+          Data.EnvironmentType = (EnvironmentType)(_data.Environment + 1);
           break;
       }
 
@@ -859,7 +837,7 @@ public class EventHolder
           Data.SelectionDatas = new SelectionData[1];
           Data.SelectionDatas[0] = new SelectionData();
           Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
-          Data.SelectionDatas[0].Description = _textdata.Description;
+          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
           Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
           switch (int.Parse(_data.Selection_Target))
           {
@@ -905,8 +883,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -993,8 +969,6 @@ public class EventHolder
             switch (Data.SuccessDatas[j].Reward_Target)
             {
               case RewardTarget.Experience:
-              case RewardTarget.Trait:
-                Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
 
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
 
@@ -1037,8 +1011,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -1075,8 +1047,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -1114,8 +1084,6 @@ public class EventHolder
           switch (Data.SuccessDatas[0].Reward_Target)
           {
             case RewardTarget.Experience:
-            case RewardTarget.Trait:
-              Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -1154,9 +1122,6 @@ public class EventHolder
       {
         case 0://기
           _quest.QuestID = _data.QuestId; //퀘스트 ID는 QuestID
-          _quest.QuestName = _textdata.Name;  //이름은 시작 이벤트의 이름
-          _quest.StartDialogue = _textdata.Description; //설명(게임 내부)는 시작 이벤트의 설명
-          _quest.PreDescription = _textdata.SelectionDescription;//설명(게임 외부)는 시작 이벤트의 선택지 설명
           _quest.Illust = Data.Illust_spring;//대표 일러스트는 퀘스트 ID
 
           _quest.QuestPreview_rising = GameManager.Instance.GetTextData(_quest.QuestID + "rising").Name;
@@ -1231,7 +1196,7 @@ public class EventHolder
     {
       string[] _temp = _defaultid.Split("_");
       _defaultid = "";
-      for (int i = 0; i < _temp.Length - 2; i++)
+      for (int i = 0; i < _temp.Length - 1; i++)
       {
         _defaultid += _temp[i];
         if (i != _temp.Length - 1) _defaultid += "_";
@@ -1239,11 +1204,11 @@ public class EventHolder
       //봄,여름,가을,겨울이 들어가 있는 ID면 계절 텍스트 뺀 아이디를 기준으로 삼음
     }
 
-    if (_defaultid.Contains("town") || _defaultid.Contains("city") || _defaultid.Contains("castke"))
+    if (_defaultid.Contains("town") || _defaultid.Contains("city") || _defaultid.Contains("castle"))
     {
       string[] _temp = _defaultid.Split("_");
       _defaultid = "";
-      for (int i = 0; i < _temp.Length - 2; i++)
+      for (int i = 0; i < _temp.Length - 1; i++)
       {
         _defaultid += _temp[i];
         if (i != _temp.Length - 1) _defaultid += "_";
@@ -1313,10 +1278,6 @@ public class EventHolder
                     foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
                         if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
                     break;
-                case FollowType.Trait://특성 연계일 경우 현재 보유한 특성 ID랑 맞는지 확인
-                    foreach (var _data in GameManager.Instance.MyGameData.Traits)
-                        if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
-                    break;
                 case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
                     int _targetlevel = 0;
                     ThemeType _type = ThemeType.Conversation; ;
@@ -1331,13 +1292,13 @@ public class EventHolder
                         case "3"://학식 테마
                             _type = ThemeType.Intelligence; break;
                     }
-                    _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type) + GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_type) +
-                                GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
+                    _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type)
+                               + GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
                     if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
                     break;
                 case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
                     SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
-                    if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].Level) _temp.Add(_follow);
+                    if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForPreviewOrTheme) _temp.Add(_follow);
                     break;
             }
         }
@@ -1414,10 +1375,6 @@ public class EventHolder
                     foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
                         if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
                     break;
-                case FollowType.Trait://특성 연계일 경우 현재 보유한 특성 ID랑 맞는지 확인
-                    foreach (var _data in GameManager.Instance.MyGameData.Traits)
-                        if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
-                    break;
                 case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
                     int _targetlevel = 0;
                     ThemeType _type = ThemeType.Conversation; ;
@@ -1432,13 +1389,13 @@ public class EventHolder
                         case "3"://학식 테마
                             _type = ThemeType.Intelligence; break;
                     }
-                    _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type) + GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_type) +
+                    _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type)  +
                                 GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
                     if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
                     break;
                 case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
                     SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
-                    if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].Level) _temp.Add(_follow);
+                    if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForPreviewOrTheme) _temp.Add(_follow);
                     break;
             }
         }
@@ -1478,7 +1435,7 @@ public class EventHolder
         }
     }
     /// <summary>
-    /// 해당 정착지에서 사용 가능한 퀘스트 이벤트 하나 반환
+    /// 해당 정착지나 외부에서 사용 가능한 퀘스트 이벤트 하나 반환
     /// </summary>
     /// <param name="tiledata"></param>
     /// <returns></returns>
@@ -1492,19 +1449,18 @@ public class EventHolder
                 if (isenable(_currentquest.Event_Falling))return _currentquest.Event_Falling;
                 else return null;
             case QuestSequence.Climax:
-                EventDataDefulat _targetevent = _currentquest.Eventlist_Climax[_currentquest.FinishedClimaxCount];
+        EventDataDefulat _targetevent = _currentquest.Event_Climax;
                 if (isenable(_targetevent)) return _targetevent;
                 else return null;
             default:
-                List<EventDataDefulat> _temp = new List<EventDataDefulat>();
-                foreach(var _event in _currentquest.Eventlist_Rising)
-                {
-                    if (_currentquest.Eventlist_Rising_clear.Contains(_event.ID)) continue;
-                    if(isenable(_event)) _temp.Add(_event);
-                }
-                if (_temp.Count.Equals(0)) return null;
-                else return _temp[Random.Range(0, _temp.Count)];
-
+        List<QuestEventData> _temp = _currentquest.EventList_Rising_Available;
+        List<QuestEventData> _avail = new List<QuestEventData>();
+        foreach(var _event in _temp)
+        {
+          if(isenable(_event))_avail.Add(_event);
+        }
+        if (_avail.Count.Equals(0)) return null;
+        else return _avail[Random.Range(0,_avail.Count)];
         }
 
         bool isenable(EventDataDefulat eventdata)
@@ -1550,7 +1506,7 @@ public class TargetTileEventData
 public enum FollowType { Event,EXP,Trait,Theme,Skill}
 public enum SettlementType { Town,City,Castle,Outer,None}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Academy,NULL}
-public enum EnvironmentType { River,Forest,Highland,Mountain,Sea }
+public enum EnvironmentType { River,Forest,Highland,Mountain,Sea,NULL}
 public enum SelectionType { Single,Verticla, Horizontal,Tendency,Experience,Skill }// Vertical : 위 이성 아래 육체    Horizontal : 좌 정신 우 물질    
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
@@ -1710,7 +1666,10 @@ public class QuestEventData : EventDataDefulat
 public class QuestHolder
 {
     public string QuestID = "";     //퀘스트 ID
-  public string QuestName = "";     //퀘스트의 이름
+  public string QuestName
+  {
+    get { return QuestTextDatas[0].Name; }
+  }//퀘스트의 이름
   public int QuestClearCount
   {
     get { return SuccessRisingCount + SuccesClimaxCount; }
@@ -1718,6 +1677,13 @@ public class QuestHolder
   public int FinishedRisingCount = 0;  //실패+성공한 Rising 개수
   public int FinishedClimaxCount = 0;  //실패+성공한 Climax 개수
   public int SuccessRisingCount = 0, SuccesClimaxCount = 0;//실패한 Rising,Climax 개수
+  public QuestEventData Event_Climax 
+  { 
+    get { if (!CurrentSequence.Equals(QuestSequence.Climax)) return null;
+      return Eventlist_Climax[FinishedClimaxCount]; } 
+  }
+  public Settlement NextQuestSettlement = null;
+  public EnvironmentType NextQuestEnvir = EnvironmentType.NULL;
   public void AddClearEvent(QuestEventData _eventdata)
   {
     switch (_eventdata.TargetQuestSequence)
@@ -1726,7 +1692,32 @@ public class QuestHolder
         CurrentSequence = QuestSequence.Rising;
         break;
       case QuestSequence.Rising:
-                Eventlist_Rising_clear.Add(_eventdata.ID);
+        string _defaultid = _eventdata.ID;
+        if (_eventdata.ID.Contains("spring") || _eventdata.ID.Contains("summer") || _eventdata.ID.Contains("fall") || _eventdata.ID.Contains("winter"))
+        {
+          string[] _temp = _defaultid.Split("_");
+          _defaultid = "";
+          for (int i = 0; i < _temp.Length - 1; i++)
+          {
+            _defaultid += _temp[i];
+            if (i != _temp.Length - 1) _defaultid += "_";
+          }
+          //봄,여름,가을,겨울이 들어가 있는 ID면 계절 텍스트 뺀 아이디를 기준으로 삼음
+        }
+        if (_defaultid.Contains("town") || _defaultid.Contains("city") || _defaultid.Contains("castle"))
+        {
+          string[] _temp = _defaultid.Split("_");
+          _defaultid = "";
+          for (int i = 0; i < _temp.Length - 1; i++)
+          {
+            _defaultid += _temp[i];
+            if (i != _temp.Length - 1) _defaultid += "_";
+          }
+          //마을,도시,성채가 들어가 있는 ID면 계절 빼고 정착지도 뺀 아이디를 기준으로 삼음
+        }
+
+        foreach(var _event in Eventlist_Rising)
+         if(_event.ID.Contains(_defaultid)) Eventlist_Rising_clear.Add(_event.ID);
         SuccessRisingCount++;
         FinishedRisingCount++;
 
@@ -1738,7 +1729,8 @@ public class QuestHolder
         //슬슬 개수 다 찬듯 하면 높은 확률로 다음장, 개수 꽉 채웠으면 즉시 다음장
         break;
       case QuestSequence.Climax:
-
+        NextQuestSettlement = null;
+        NextQuestEnvir = EnvironmentType.NULL;
         SuccesClimaxCount++;
         FinishedClimaxCount++;
         if (Eventlist_Climax.Count.Equals(FinishedClimaxCount)) CurrentSequence = QuestSequence.Falling;
@@ -1758,9 +1750,34 @@ public class QuestHolder
         CurrentSequence = QuestSequence.Rising;
         break;
       case QuestSequence.Rising:
-                Eventlist_Rising_clear.Add(_eventdata.ID);
+        string _defaultid = _eventdata.ID;
+        if (_eventdata.ID.Contains("spring") || _eventdata.ID.Contains("summer") || _eventdata.ID.Contains("fall") || _eventdata.ID.Contains("winter"))
+        {
+          string[] _temp = _defaultid.Split("_");
+          _defaultid = "";
+          for (int i = 0; i < _temp.Length - 1; i++)
+          {
+            _defaultid += _temp[i];
+            if (i != _temp.Length - 1) _defaultid += "_";
+          }
+          //봄,여름,가을,겨울이 들어가 있는 ID면 계절 텍스트 뺀 아이디를 기준으로 삼음
+        }
+        if (_defaultid.Contains("town") || _defaultid.Contains("city") || _defaultid.Contains("castle"))
+        {
+          string[] _temp = _defaultid.Split("_");
+          _defaultid = "";
+          for (int i = 0; i < _temp.Length - 1; i++)
+          {
+            _defaultid += _temp[i];
+            if (i != _temp.Length - 1) _defaultid += "_";
+          }
+          //마을,도시,성채가 들어가 있는 ID면 계절 빼고 정착지도 뺀 아이디를 기준으로 삼음
+        }
 
-                FinishedRisingCount++;
+        foreach (var _event in Eventlist_Rising)
+          if (_event.ID.Contains(_defaultid)) Eventlist_Rising_clear.Add(_event.ID);
+
+        FinishedRisingCount++;
         if (Eventlist_Rising.Count - 2 < FinishedRisingCount)
         {
           if (Random.Range(0, 100) < 80) CurrentSequence = QuestSequence.Climax;
@@ -1778,8 +1795,54 @@ public class QuestHolder
 
   public QuestSequence CurrentSequence=QuestSequence.Start; //현재 퀘스트 단계
 
-  public string StartDialogue = "";   //게임 내부에서 퀘스트 조우할 시 나오는 텍스트
-  public string PreDescription = "";  //시작 화면 미리보기 텍스트
+  private List<TextData> questtextdatas = new List<TextData>();
+  private List<TextData> QuestTextDatas
+  {
+    get
+    {
+      if (questtextdatas.Count.Equals(0))
+      {
+        questtextdatas.Add(GameManager.Instance.GetTextData(QuestID));
+        questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_rising"));
+        for (int i = 0; i < Eventlist_Climax.Count; i++)
+          questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_climax" + "_" + i.ToString()));
+        questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_falling"));
+      }
+      return questtextdatas;
+    }
+  }
+  public string StartDialogue
+  {
+    get { return QuestTextDatas[0].Description; }
+  }   //게임 내부에서 퀘스트 조우할 시 나오는 텍스트
+  public string PreDescription
+  {
+    get { return QuestTextDatas[0].SelectionDescription; }
+  }  //시작 화면 미리보기 텍스트
+  public string RisingDescription
+  {
+    get { return QuestTextDatas[1].Name; }
+  }
+  public string ClimaxDescription
+  {
+    get { return QuestTextDatas[2 + FinishedClimaxCount].Name; }
+  }
+  public string FallingDescription
+  {
+    get { return QuestTextDatas[QuestTextDatas.Count - 1].Name; }
+  }
+  public string CurrentDescription
+  {
+    get
+    {
+      switch (CurrentSequence)
+      {
+        case QuestSequence.Rising:return RisingDescription;
+          case QuestSequence.Climax:return ClimaxDescription;
+        default:return FallingDescription;
+      }
+    }
+  }
   public Sprite Illust;
 
   public string QuestPreview_rising = "";
@@ -1788,6 +1851,20 @@ public class QuestHolder
   public string StopSelectionName = "", StopSelectionSub = "", ContinueSelectionName = "", ContinueSelectionSub = "";
   public List<QuestEventData> Eventlist_Rising=new List<QuestEventData>();
     public List<string> Eventlist_Rising_clear = new List<string>();
+  public List<QuestEventData> EventList_Rising_Available
+  {
+    get
+    {
+      List<QuestEventData> _temp = new List<QuestEventData>();
+      foreach (var _event in Eventlist_Rising)
+      {
+        if (Eventlist_Rising_clear.Contains(_event.ID)) continue;
+        _temp.Add(_event);
+      }
+      if (_temp.Count.Equals(0)) return null;
+      else return _temp;
+    }
+  }
   public List<QuestEventData> Eventlist_Climax = new List<QuestEventData>();
   public QuestEventData Event_Falling = null;
   public string QuestPreview
@@ -1865,7 +1942,7 @@ public class QuestEventDataJson
   public string Name = "";              //이름
   public int Settlement = 0;          //0(아무 정착지),1,2,3,4(외부)
   public int Place = 0;               //0,1,2,3,4
-  public int Environment_Type = 0;    //0:전역 1:숲 2:강 3:언덕 4:산 5:바다
+  public int Environment = 0;    //0:전역 1:숲 2:강 3:언덕 4:산 5:바다
 
   public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
   public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술

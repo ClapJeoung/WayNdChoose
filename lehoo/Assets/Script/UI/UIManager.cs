@@ -26,9 +26,9 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Transform MyCanvas = null;
   [SerializeField] private UI_dialogue MyDialogue = null;
   [SerializeField] private UI_Reward MyUIReward = null;
-  [SerializeField] private UI_trait MyUITrait = null;
   [SerializeField] private UI_EventSuggest MyEvnetSuggest = null;
   [SerializeField] private UI_QuestSuggest MyQuestSuggent = null;
+  [SerializeField] private UI_Mad MyMadPanel = null;
   [SerializeField] private RectTransform HpRect = null;
   [SerializeField] private RectTransform SanityRect = null;
   [SerializeField] private RectTransform GoldRect = null;
@@ -52,6 +52,8 @@ public class UIManager : MonoBehaviour
   public float CharacterWaitTime = 2.0f;
   public int IllustSoftness_start = 800, IllustSoftness_end = 50;
     public float FadeMoveDegree = 40.0f;
+  public Vector2 RightSidePos = new Vector2(1260.0f, 0.0f);
+  public Vector2 TopSidePos = new Vector2(0.0f, 900.0f);
   public PreviewManager PreviewManager = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI YearText = null;
@@ -198,34 +200,6 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Image PhysicalIcon = null;
   [SerializeField] private Image MentalIcon = null;
   [SerializeField] private Image MaterialIcon = null;
-  [SerializeField] private Transform TraitHolder= null;
-  public void UpdateTraitIcon()
-  {
-    List<Trait> _alltraits = GameManager.Instance.MyGameData.Traits;
-    List<string> _currenticons=new List<string>();
-    for (int i = 0; i < TraitHolder.childCount; i++) _currenticons.Add(TraitHolder.GetChild(i).name);
-    foreach(var _trait in _alltraits)
-    {
-      if (+_currenticons.Count>0&&_currenticons.Contains(_trait.ID)) continue;
-      System.Type[] _buttontype = new System.Type[] 
-      { typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasRenderer),typeof(PreviewInteractive),typeof(TraitIconButton) };
-      Debug.Log(_trait.ID);
-      GameObject _newicon = new GameObject(_trait.ID, _buttontype);
-      Image _image = _newicon.GetComponent<Image>();
-      _image.sprite = _trait.Icon;
-      Button _button = _newicon.GetComponent<Button>();
-      _button.image = _image;
-      TraitIconButton _iconbutton= _newicon.GetComponent<TraitIconButton>();
-      _iconbutton.MyUITrait = MyUITrait;
-      _iconbutton.MyTrait = _trait;
-      _button.onClick.AddListener(_iconbutton.Onclick);
-      PreviewInteractive _previewinteractive = _newicon.GetComponent<PreviewInteractive>();
-      _previewinteractive.PanelType = PreviewPanelType.Trait;
-      _previewinteractive.MyTrait = _trait;
-      _newicon.transform.SetParent(TraitHolder);
-      _newicon.GetComponent<RectTransform>().localScale = Vector3.one;
-    }
-  }
   public void UpdateTendencyIcon()
   {
     TendencyType _tendency = TendencyType.Rational;
@@ -265,7 +239,7 @@ public class UIManager : MonoBehaviour
       else
       {
         ShortTermIcon[i].sprite = null;
-        LongTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
+        ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
       }
     }
   }
@@ -277,7 +251,6 @@ public class UIManager : MonoBehaviour
     UpdateHPText();
     UpdateSanityText();
     UpdateGoldText();
-    UpdateTraitIcon();
     UpdateExpLongTermIcon();
     UpdateExpShortTermIcon();
     UpdateTendencyIcon();
@@ -350,7 +323,35 @@ public class UIManager : MonoBehaviour
     if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
     LastUI = _rect.GetComponent<UI_default>();
   }
-    public IEnumerator CloseAllUI()
+  public IEnumerator OpenUI(RectTransform _rect,UIMoveDir _dir,float _movetime)
+  {
+    if (LastUI != null) _rect.transform.SetSiblingIndex(LastUI.transform.GetSiblingIndex() + 1);
+    if (_rect.gameObject.activeSelf == false) _rect.gameObject.SetActive(true);
+    if (_rect.GetComponent<CanvasGroup>().alpha.Equals(0.0f))
+    {
+      _rect.GetComponent<CanvasGroup>().alpha = 1.0f;
+      _rect.GetComponent<CanvasGroup>().interactable = true;
+      _rect.GetComponent<CanvasGroup>().blocksRaycasts = true;
+    }
+    Vector2 _size = _rect.sizeDelta;
+    Vector2 _startpos = _dir.Equals(UIMoveDir.Horizontal) ? RightSidePos : TopSidePos;
+    _rect.anchoredPosition = _startpos;
+    Vector2 _endpos = Vector2.zero;
+    float _time = 0.0f;
+    float _targetime = _movetime;
+    while (_time < _targetime)
+    {
+      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targetime, 0.4f));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _rect.anchoredPosition = _endpos;
+
+    if (LastUI != null) LastUI.CloseUI();
+    if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
+    LastUI = _rect.GetComponent<UI_default>();
+  }
+  public IEnumerator CloseAllUI()
   {
     if (LastUI != null)
     {
@@ -378,6 +379,7 @@ public class UIManager : MonoBehaviour
       _time += Time.deltaTime;
       yield return null;
     }
+    _rect.anchoredPosition = _endpos;
     _group.alpha = 0.0f;
   }
     public IEnumerator CloseUI(CanvasGroup _group,bool _islarge)
@@ -396,7 +398,25 @@ public class UIManager : MonoBehaviour
     }
     _group.alpha = 0.0f;
   }
-    public IEnumerator ChangeAlpha(Image _img, float _targetalpha)
+  public IEnumerator CloseUI(RectTransform _rect, UIMoveDir _dir, float _movetime)
+  {
+    LastUI = null;
+    Vector2 _size = _rect.sizeDelta;
+    Vector2 _startpos = _rect.anchoredPosition3D;
+    _rect.anchoredPosition = _startpos;
+    Vector2 _endpos = _dir.Equals(UIMoveDir.Horizontal) ? RightSidePos : TopSidePos;
+    float _time = 0.0f;
+    float _targetime = _movetime;
+    while (_time < _targetime)
+    {
+      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targetime, 0.4f));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _rect.anchoredPosition = _endpos;
+
+  }
+  public IEnumerator ChangeAlpha(Image _img, float _targetalpha)
   {
     float _startalpha = _targetalpha==1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha==1.0f ? 1.0f : 0.0f;
@@ -407,7 +427,7 @@ public class UIManager : MonoBehaviour
     _img.color = _color;
     while (_time < IllustFadeTime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / IllustFadeTime, 0.6f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / IllustFadeTime, 0.3f));
       _color.a = _alpha;
       _img.color = _color;
       _time += Time.deltaTime;
@@ -417,7 +437,32 @@ public class UIManager : MonoBehaviour
     _color.a = _alpha;
     _img.color= _color;
   }
-    public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha,bool _islarge)
+  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, float targettime)
+  {
+    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
+    float _time = 0.0f;
+    float _targettime = targettime;
+    float _alpha = _startalpha;
+    _group.alpha = _alpha;
+    _group.interactable = false;
+    _group.blocksRaycasts = false;
+    while (_time < _targettime)
+    {
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
+      _group.alpha = _alpha;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _alpha = _endalpha;
+    _group.alpha = _alpha;
+    if (_targetalpha.Equals(1.0f))
+    {
+      _group.interactable = true;
+      _group.blocksRaycasts = true;
+    }
+  }
+  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha,bool _islarge)
   {
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
@@ -429,15 +474,18 @@ public class UIManager : MonoBehaviour
     _group.blocksRaycasts = false;
     while (_time < _targettime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.6f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
       _group.alpha = _alpha;
       _time += Time.deltaTime;
       yield return null;
     }
     _alpha = _endalpha;
     _group.alpha = _alpha;
-    _group.interactable = true;
-    _group.blocksRaycasts = true;
+    if (_targetalpha.Equals(1.0f))
+    {
+      _group.interactable = true;
+      _group.blocksRaycasts = true;
+    }
   }
     public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, bool _islarge, UIFadeMoveDir _movedir)
     {
@@ -467,9 +515,9 @@ public class UIManager : MonoBehaviour
         _rect.anchoredPosition3D = _currentpos;
         while (_time < _targettime)
         {
-            _currentpos = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targettime, 0.4f));
+            _currentpos = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targettime, 0.3f));
             _rect.anchoredPosition3D = _currentpos;
-            _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.6f));
+            _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.7f));
             _group.alpha = _alpha;
             _time += Time.deltaTime;
             yield return null;
@@ -477,10 +525,13 @@ public class UIManager : MonoBehaviour
         _alpha = _endalpha;
         _group.alpha = _alpha;
         _rect.anchoredPosition3D = _originpos;
-        _group.interactable = true;
-        _group.blocksRaycasts = true;
+    if (_targetalpha.Equals(1.0f))
+    {
+      _group.interactable = true;
+      _group.blocksRaycasts = true;
     }
-    public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha)
+  }
+  public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha)
   {
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
@@ -492,7 +543,7 @@ public class UIManager : MonoBehaviour
     float _targettime=_targetalpha==1.0f?TextFadeInTime:TextFadeOutTime;
     while (_time < _targettime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.6f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
       _color.a = _alpha;
       _tmp.color = _color;
       _time += Time.deltaTime;
@@ -528,4 +579,19 @@ public class UIManager : MonoBehaviour
     MyQuestSuggent.CloseQuestUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MyEvnetSuggest.CloseSuggestPanel_normal();
+}
+public static class ColorText
+{
+  public static string PositiveColor(string str)
+  {
+    return "<#64FE2E>"+str+"</color>";
+  }
+  public static string NegativeColor(string str)
+  {
+    return "<#FF0000>" + str + "</color>";
+  }
+  public static string NeutralColor(string str)
+  {
+    return "<#D8D8D8>" + str + "</color>";
+  }
 }

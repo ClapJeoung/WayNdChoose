@@ -2,12 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class Trait
 {
   public string ID = "";
-  public string Name = "";
-  public string Description = "";
-  public string SubDescription = "";
+  public TextData TextData = null;
+  public string Name
+  {
+    get { return TextData.Name; }
+  }
+  public string Description
+  {
+    get { return TextData.Description; }
+  }
+  public string SubDescription
+  {
+    get { return TextData.SelectionDescription; }
+  }
   public Sprite Illust = null;
   public Sprite Icon = null;
     public Dictionary<EffectType, int> Effects=new Dictionary<EffectType, int>();
@@ -71,9 +82,7 @@ public class TraitJsonData
     Trait _mytrait = new Trait();
     _mytrait.ID = ID;
     TextData _textdata= GameManager.Instance.GetTextData(ID);
-    _mytrait.Name = _textdata.Name;
-    _mytrait.Description = _textdata.Description;
-    _mytrait.SubDescription = _textdata.SelectionSubDescription;
+    _mytrait.TextData=_textdata;
     _mytrait.Illust = GameManager.Instance.ImageHolder.GetTraitIllust(ID);
     _mytrait.Icon = GameManager.Instance.ImageHolder.GetTraitIcon(ID);
         _mytrait.NormalTrait = NormalTrait.Equals(0) ? true : false;
@@ -93,3 +102,5 @@ public class TraitJsonData
   }
 }
 
+
+*/

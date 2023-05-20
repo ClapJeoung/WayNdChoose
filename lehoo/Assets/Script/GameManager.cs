@@ -25,11 +25,10 @@ public class GameManager : MonoBehaviour
   [SerializeField] private TextAsset FollowEventData = null;  //연계 이벤트 Json
   [SerializeField] private TextAsset QuestEventData = null;   //퀘스트 이벤트 Json
   [SerializeField] private TextAsset EXPData = null;    //경험 Json
-  [SerializeField] private TextAsset TraitData = null;  //특성 Json
   [SerializeField] private TextAsset TextData = null;
   public EventHolder EventHolder = new EventHolder();                               //이벤트 저장할 홀더
   public Dictionary<string, Experience> ExpDic = new Dictionary<string, Experience>();  //경험 딕셔너리
-  public Dictionary<string, Trait> TraitsDic = new Dictionary<string, Trait>();         //특성 딕셔너리
+  public Dictionary<string, Experience> MadExpDic = new Dictionary<string, Experience>();
   public Dictionary<string, TextData> TextDic = new Dictionary<string, TextData>();   //각종 텍스트 딕셔터리
   public TextData NullText = null;
   public TextData GetTextData(string _id)
@@ -86,12 +85,12 @@ public class GameManager : MonoBehaviour
       case EffectType.Survivable: return GetTextData("survivable");
       case EffectType.Biology: return GetTextData("biology");
       case EffectType.Knowledge: return GetTextData("knowledge");
-      case EffectType.HPLoss: return GetTextData("hp");
-      case EffectType.HPGen: return GetTextData("hp");
-      case EffectType.SanityLoss: return GetTextData("sanity");
-      case EffectType.SanityGen: return GetTextData("sanity");
-      case EffectType.GoldLoss: return GetTextData("gold");
-      case EffectType.GoldGen: return GetTextData("gold");
+      case EffectType.HPLoss: return GetTextData("hpdecrease");
+      case EffectType.HPGen: return GetTextData("hpincrease");
+      case EffectType.SanityLoss: return GetTextData("sanitydecrease");
+      case EffectType.SanityGen: return GetTextData("sanityincrease");
+      case EffectType.GoldLoss: return GetTextData("golddecrease");
+      case EffectType.GoldGen: return GetTextData("goldincrease");
       default: return NullText;
     }
   }
@@ -171,16 +170,6 @@ public class GameManager : MonoBehaviour
     }
     //경험 Json -> EXPDic
 
-    Dictionary<string, TraitJsonData> _traitjson = new Dictionary<string, TraitJsonData>();
-    _traitjson = JsonConvert.DeserializeObject<Dictionary<string, TraitJsonData>>(TraitData.text);
-    foreach (var _data in _traitjson)
-    {
-      Trait _trait = _data.Value.ReturnTraitClass();
-      TraitsDic.Add(_data.Value.ID, _trait);
-    }
-    //특성 Json -> TraitDic
-
-
     EventHolder.LoadAllEvents();
 
   }//각종 Json 가져와서 변환
@@ -245,6 +234,7 @@ public class GameManager : MonoBehaviour
   {
     _exp.Duration = ConstValues.LongTermStartTurn;
     MyGameData.LongTermEXP[_index] = _exp;
+    MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;
     UIManager.Instance.UpdateExpLongTermIcon();
   }
   public void ShiftShortExp(Experience _exp, int _index)
@@ -259,6 +249,7 @@ public class GameManager : MonoBehaviour
     _exp.Duration = ConstValues.LongTermStartTurn;
     Experience _target = MyGameData.LongTermEXP[_index];
     MyGameData.LongTermEXP[_index] = _exp;
+    MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;
     UIManager.Instance.UpdateExpLongTermIcon();
   }
   public void SetOuterEvent(EventDataDefulat _event)
@@ -358,6 +349,7 @@ public class GameManager : MonoBehaviour
       CreateNewMap();
 
     }
+    if (Input.GetKeyDown(KeyCode.F1)) MyGameData.CurrentSanity = 3;
   }
   public void DebugAllEvents()
   {
@@ -477,7 +469,6 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentPos = _startsettle.VectorPos;
 
     MyGameData.AvailableSettlement = MyMapData.GetCloseSettles(_startsettle, 3);
-    foreach (Settlement _settle in MyGameData.AvailableSettlement) _settle.IsOpen = true;
 
     _map.MakeTilemap(MyMapSaveData, MyMapData);
 

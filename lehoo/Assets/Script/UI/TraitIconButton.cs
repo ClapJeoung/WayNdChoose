@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
 public class TraitIconButton : MonoBehaviour
 {
   public UI_trait MyUITrait = null;
@@ -18,3 +19,4 @@ public class TraitIconButton : MonoBehaviour
     MyUITrait.OpenUI(MyTrait);
   }
 }
+*/

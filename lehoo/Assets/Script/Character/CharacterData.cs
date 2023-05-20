@@ -7,11 +7,11 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const float HPGen_Trait = 0.06f, HPGen_Exp = 0.08f, HPLoss_Trait = 0.08f, HPLoss_Exp = 0.01f;
-  public const float GoldGen_Trait = 0.1f, GoldGen_Exp = 0.15f, GoldLoss_Trait = 0.12f, GoldLoss_Exp = 0.15f;
+  public const float  HPGen_Exp = 0.08f,  HPLoss_Exp = 0.01f;
+  public const float GoldGen_Exp = 0.15f,  GoldLoss_Exp = 0.15f;
   public const float GoldLoss_Tendency_1 = 0.1f, GoldLoss_Tendency_2 = 0.2f, GoldLoss_Tendency_3 = 0.35f, GoldGen_Tendency_3 = 0.3f;
   //물질 1,2,3 : 돈 소모량 감소   정신 3: 돈 습득량 감소
-  public const float SanityGen_Trait = 0.8f, SanityGen_Exp = 0.1f, SanityLoss_Trait = 0.06f, SanityLoss_Exp = 0.08f;
+  public const float  SanityGen_Exp = 0.1f ,SanityLoss_Exp = 0.08f;
   public const float SanityGen_Tendency_3 = 0.3f, SanityLoss_Tendency_1 = 0.05f, SanityLoss_Tendency_2 = 0.1f, SanityLoss_Tendency_3 = 0.2f;
   //물질 3: 정신 회복량 감소       정신 1,2,3: 정신 소모량 감소
   public const int ConversationByTendency_1 = 2, ConversationByTendency_2 = 3, ConversationByTendency_3 = 5,
@@ -28,7 +28,6 @@ public static class ConstValues
   //스킬 체크, 지불 체크 최대~최소
   public const int MaxYear = 10;
   //보정치 최대 년도
-  public const int MoveSanity_min = 8, MoveSanity_max = 20;//이동 정신력 지불 최소~최대(1년~10년)
   public const int PayHP_min = 10, PayHP_max = 20;        //체력 지불 최소~최대   (1년~10년)
   public const int PaySanity_min = 15, PaySanity_max = 30;//정신력 지불 최소~최대 (1년~10년)
   public const int PayGold_min = 20, PayGold_max = 30;  //돈 지불 최소~최대     (1년~10년)
@@ -58,6 +57,13 @@ public static class ConstValues
     public const int PlaceEffect_temple = 1;
     public const int PlaceEffect_theater = 3;
     public const int PlaceEffect_acardemy = 10;
+
+  public const int AmplifiedLengthMin = 6;
+  public const float LengthAmplifiedValue = 1.2f;
+  public const int MoveSanity_Default_min = 5, MoveSanity_Default_max = 15;
+  public const float MoveSanity_Value_min=10,MoveSanity_Value_max=15;
+
+  public const int LongTermChangeCost = 15;
 }
 public class GameData    //게임 진행도 데이터
 {
@@ -133,7 +139,14 @@ public class GameData    //게임 진행도 데이터
         }
     }
     #region 값 프로퍼티
-    public int MoveSanityValue { get { return (int)Mathf.Lerp(ConstValues.MoveSanity_min, ConstValues.MoveSanity_max, Year / ConstValues.MaxYear); } }
+    public int GetMoveSanityValue(float length)
+  { 
+    int _defaultvalue= (int)Mathf.Lerp(ConstValues.MoveSanity_Default_min, ConstValues.MoveSanity_Default_max, Year / ConstValues.MaxYear);
+    float _currentvalue = Mathf.Lerp(ConstValues.MoveSanity_Value_min, ConstValues.MoveSanity_Value_max, Year / ConstValues.MaxYear);
+    float _changedvalue = length <= 6.0f ? _currentvalue * (length / ConstValues.AmplifiedLengthMin) : _currentvalue * Mathf.Pow(length / ConstValues.AmplifiedLengthMin, ConstValues.LengthAmplifiedValue);
+
+    return _defaultvalue + (int)_changedvalue;
+  } 
     public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
     public int PaySanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear); } }
     public int PayGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear); } }
@@ -187,6 +200,7 @@ public class GameData    //게임 진행도 데이터
         //좌상향 곡선 ~ 우상향 곡선
     }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
     public Dictionary<Settlement, int> AllSettleUnpleasant = new Dictionary<Settlement, int>();
+  public Vector2 MoveTargetPos = Vector2.zero;
     public void CreateSettleUnpleasant(List<Settlement> _allsettle)
     {
         foreach (var _settlement in _allsettle) AllSettleUnpleasant.Add(_settlement, 0);
@@ -217,7 +231,13 @@ public class GameData    //게임 진행도 데이터
         set {
             currentsanity = value;
             if (currentsanity > MaxSanity) currentsanity = MaxSanity;
-            if (currentsanity < 0) { Debug.Log("파킨"); }
+      if (currentsanity < 0)
+      {
+        List<string> _madnesskeys=GameManager.Instance.MadExpDic.Keys.ToList();
+        Experience _madness = GameManager.Instance.MadExpDic[_madnesskeys[UnityEngine.Random.Range(0, _madnesskeys.Count)]];
+        currentsanity = MaxSanity;
+        //광기 경험 채우는거로 대체되야 함
+      }
         }
     }
     public int MaxSanity
@@ -234,24 +254,14 @@ public class GameData    //게임 진행도 데이터
             }
         }
     }//최대 정신력(현재 광기 특성 개수에 따라)
-    public int MadnessCount
-    {
-        get
-        {
-            int _madnesscount = 0;
-            foreach (var _trait in Traits)
-                if (_trait.NormalTrait.Equals(false)) _madnesscount++;
-            return _madnesscount;
-        }
-    }//현재 광기 특성 개수
-    public List<Trait> Traits = new List<Trait>();//가지고 있는 특성 목록
+  public int MadnessCount = 0;
   public Dictionary<SkillName, Skill> Skills = new Dictionary<SkillName, Skill>();//기술들
   public void AssembleSkill()
   {
     List<SkillName> _availableskills = new List<SkillName>();
     foreach (var _data in Skills)
-      if (_data.Value.Level > 0) _availableskills.Add(_data.Key);
-
+      if (_data.Value.LevelByOwn > 0) _availableskills.Add(_data.Key);
+    //원본 레벨 0 이상만 리스트에 포함
     if (_availableskills.Count < 4)
     {
       while (_availableskills.Count < 4)
@@ -261,6 +271,7 @@ public class GameData    //게임 진행도 데이터
         _availableskills.Add(_temp);
       }
     }
+    //선택된 개수가 부족하면 0레벨도 징집
     List<SkillName> _targetskills=new List<SkillName>();
     while(_targetskills.Count < 4)
     {
@@ -268,12 +279,15 @@ public class GameData    //게임 진행도 데이터
       if(_targetskills.Contains(_temp)) continue;
       _targetskills.Add(_temp);
     }
+    //순서 무작위로 섞기
     int _sum = 0;
-    foreach (var _skill in _availableskills) _sum += Skills[_skill].Level;
+    foreach (var _skill in _availableskills) _sum += Skills[_skill].LevelByOwn;
     int _value = _sum / 4;
     int _else = _sum % 4;
-    foreach (var _skill in _availableskills) Skills[_skill].Level=_value;
-    for (int i = 0; i < _else; i++) Skills[_targetskills[UnityEngine.Random.Range(0, _targetskills.Count)]].Level += _else;
+    foreach (var _skill in _availableskills) Skills[_skill].LevelByOwn=_value;
+    //평균값 넣기
+    for (int i = 0; i < _else; i++) Skills[_targetskills[UnityEngine.Random.Range(0, _targetskills.Count)]].LevelByOwn += _else;
+    //넣고 남은건 순서대로 넣기
   }
   public int ConversationLevel
   {
@@ -282,12 +296,11 @@ public class GameData    //게임 진행도 데이터
       ThemeType _theme = ThemeType.Conversation;
       int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
       //기술로부터 나온 값
-      int _onlytrait = GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_theme);
       //특성에서 얻은 값
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill + _onlytrait + _onlyexp + _onlytendency;
+      return _onlyskill  + _onlyexp + _onlytendency;
     }
   }
   public int ForceLevel
@@ -297,12 +310,11 @@ public class GameData    //게임 진행도 데이터
       ThemeType _theme = ThemeType.Force;
       int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
       //기술로부터 나온 값
-      int _onlytrait = GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_theme);
       //특성에서 얻은 값
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill + _onlytrait + _onlyexp + _onlytendency;
+      return _onlyskill + _onlyexp + _onlytendency;
     }
   }
   public int WildLevel
@@ -312,12 +324,11 @@ public class GameData    //게임 진행도 데이터
       ThemeType _theme = ThemeType.Wild;
       int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
       //기술로부터 나온 값
-      int _onlytrait = GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_theme);
       //특성에서 얻은 값
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill + _onlytrait + _onlyexp + _onlytendency;
+      return _onlyskill + _onlyexp + _onlytendency;
     }
   }
   public int IntelligenceLevel
@@ -327,12 +338,11 @@ public class GameData    //게임 진행도 데이터
       ThemeType _theme = ThemeType.Intelligence;
       int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
       //기술로부터 나온 값
-      int _onlytrait = GameManager.Instance.MyGameData.GetEffectThemeCount_Trait(_theme);
       //특성에서 얻은 값
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill + _onlytrait + _onlyexp + _onlytendency;
+      return _onlyskill  + _onlyexp + _onlytendency;
     }
   }
   public int GetThemeLevel(ThemeType _themetype)
@@ -351,7 +361,9 @@ public class GameData    //게임 진행도 데이터
     get
     {
       if (CurrentEvent!=null&& CurrentEventSequence.Equals(EventSequence.Progress)) return false;
+      //현재 진행 중인 이벤트가 있으면 "이동할 수 없습니다"
       return true;
+      //그 외엔 가능
     }
   }
   public SkillName GetSkillByTheme(ThemeType _first,ThemeType _second)
@@ -421,8 +433,8 @@ public class GameData    //게임 진행도 데이터
     int _level = 0;
     foreach (var _skill in Skills)
     {
-      if (_skill.Value.Type_A == _theme) _level += _skill.Value.Level;
-      if (_skill.Value.Type_B == _theme) _level += _skill.Value.Level;
+      if (_skill.Value.Type_A == _theme) _level += _skill.Value.LevelForPreviewOrTheme;
+      if (_skill.Value.Type_B == _theme) _level += _skill.Value.LevelForPreviewOrTheme;
     }
     return _level;
   }
@@ -483,6 +495,36 @@ public class GameData    //게임 진행도 데이터
       default: return 0;
     }
   }//해당 테마가 현재 성향으로부터 얻는 보정치 반환(이성-육체 성향만 사용)
+  public int GetSkillLevelByTheme(SkillName name)
+  {
+    List<SkillName> _skills = GetOtherSkillsBySkill(name);
+    int _sum = 0;
+    foreach (var _skillname in _skills)
+    {
+      _sum += Skills[_skillname].LevelForPreviewOrTheme;
+    }
+    _sum += GetThemeLevelByTendency(Skills[name].Type_A);
+    _sum += GetThemeLevelByTendency(Skills[name].Type_B);
+    return _sum / 6;
+    //기술들의 레벨(원본+경험+장소) + 성향 보정치
+  }//스킬 테마를 공유하는 타 스킬들로부터 얻는 보정치(스킬 체크에만 사용됨)
+  public List<SkillName> GetSkillsByTheme(ThemeType type)
+  {
+    List<SkillName> _temp = new List<SkillName>();
+    foreach(var _skill in Skills)
+      if(_skill.Value.Type_A.Equals(type)||_skill.Value.Type_B.Equals(type)&&!_temp.Contains(_skill.Key))_temp.Add(_skill.Key);
+    return _temp;
+  }//해당 테마에 속하는 모든 기술들
+  public List<SkillName> GetOtherSkillsBySkill(SkillName name)
+  {
+    List<SkillName> _skill_a = GetSkillsByTheme(Skills[name].Type_A);
+    List<SkillName> _skill_b = GetSkillsByTheme(Skills[name].Type_B);
+    List<SkillName> _temp = new List<SkillName>();
+    foreach(var _name in _skill_a)if(!_temp.Contains(_name))_temp.Add(_name);
+    foreach (var _name in _skill_b) if (!_temp.Contains(_name)) _temp.Add(_name);
+
+    return _temp;
+  }//해당 기술의 테마에 속하는 다른 기술들
 
   public Tendency Tendency_RP = null;//(-)이성-육체(+)
   public Tendency Tendency_MM = null;//(-)정신-물질(+)
@@ -495,13 +537,13 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_RP.Level)
         {
           case 3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("rationalselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}\n" +
+            _tendencydescription = $"{GameManager.Instance.GetTextData("rationalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n" +
                 $"{GameManager.Instance.GetTextData("conversation").Name}, {GameManager.Instance.GetTextData("intelligence")} " +
                 $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Conversation)} {GameManager.Instance.GetTextData("decrease").Name}";
             //육체 선택지 정신력 소모\n육체, 자연 (성향으로 인한 육체 감소량) 감소
             break;
           case 2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("rationalselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}\n";
+            _tendencydescription = $"{GameManager.Instance.GetTextData("rationalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n";
             break;
           case 1:
           case 0: //(Rational 기준) RP -3,-2,-1 : 대화,지성 증가   2: 이성 선택지에 패널티  3: 2+이성 관련 스탯 패널티
@@ -529,10 +571,10 @@ public class GameData    //게임 진행도 데이터
             _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
             break;
           case -2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("physicalselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}\n";
+            _tendencydescription = $"{GameManager.Instance.GetTextData("physicalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n";
             break;
           case -3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("physicalselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}\n" +
+            _tendencydescription = $"{GameManager.Instance.GetTextData("physicalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n" +
            $"{GameManager.Instance.GetTextData("force").Name}, {GameManager.Instance.GetTextData("wild").Name} " +
            $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Force)} {GameManager.Instance.GetTextData("decrease").Name}";
             break;
@@ -544,30 +586,22 @@ public class GameData    //게임 진행도 데이터
           case -3:
           case -2:
           case -1:
-            _tendencydescription = $"{ GameManager.Instance.GetTextData("sanity").FailDescription} { GameManager.Instance.GetTextData("decrease").Name}";
+            _tendencydescription = $"{ GameManager.Instance.GetTextData("sanitydecrease").FailDescription}";
             break;
           case 0: //Mental 기준 MM -3,-2,-1: 정신력 소모량 감소  2: 정신 선택지 패널티  3:정신력 회복 감소
           case 1:
             _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
             break;
           case 2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("mentalselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}";
-            break;
-          case 3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("mentalselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}\n" +
-                $"{GameManager.Instance.GetTextData("sanity").SuccessDescription} {GameManager.Instance.GetTextData("decrease").Name}";
+            _tendencydescription = $"{GameManager.Instance.GetTextData("sanityincrease").FailDescription}";
             break;
         }
         break;
       case TendencyType.Material:
         switch (GameManager.Instance.MyGameData.Tendency_MM.Level)
         {
-          case -3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("materialselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}\n" +
-        $"{GameManager.Instance.GetTextData("sanity").SuccessDescription} {GameManager.Instance.GetTextData("decrease")}";
-            break;
           case -2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("materialselection").Name} {GameManager.Instance.GetTextData("sanity").FailDescription}";
+            _tendencydescription = $"{GameManager.Instance.GetTextData("goldincrease").FailDescription}";
             break;
           case -1:
           case 0://Material 기준 MM -3: 돈 습득 감소  -2: 물질 선택지 패널티  1,2,3: 돈 소모량 감소
@@ -576,7 +610,7 @@ public class GameData    //게임 진행도 데이터
           case 1:
           case 2:
           case 3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("gold").FailDescription} {GameManager.Instance.GetTextData("decrease").Name}";
+            _tendencydescription = $"{GameManager.Instance.GetTextData("golddecrease").FailDescription}";
             break;
         }
         break;
@@ -699,7 +733,7 @@ public class GameData    //게임 진행도 데이터
     else if (LongTermEXP.Contains(_exp))
     {
       for (int i = 0; i < LongTermEXP.Length; i++)
-        if (LongTermEXP[i] == _exp) LongTermEXP[i] = null;
+        if (LongTermEXP[i] == _exp) { LongTermEXP[i] = null; CurrentSanity -= ConstValues.LongTermChangeCost;UIManager.Instance.UpdateSanityText(); }
       UIManager.Instance.UpdateExpLongTermIcon();
     }
 
@@ -713,58 +747,52 @@ public class GameData    //게임 진행도 데이터
   public List<PlaceType> VisitedPlaces = new List<PlaceType>();     //현재 정착지에서 사용한 장소 목록
     public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
     public ThemeType PlaceEffectTheme = ThemeType.Conversation;     //도서관 방문으로 증가한 테마
-    public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
+  public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
+  {
+    switch (placetype)
     {
-        switch (placetype)
-        {
-            case PlaceType.Residence:
+      case PlaceType.Residence:
 
-                if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
-                else PlaceEffects.Add(placetype, 3);
-                //이후 연출
-                break;//정착지- 다음 체력 감소 완화(3턴지속)
+        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
+        else PlaceEffects.Add(placetype, 3);
+        //이후 연출
+        break;//정착지- 다음 체력 감소 완화(3턴지속)
 
-            case PlaceType.Marketplace:
-                Gold += ConstValues.PlaceEffect_marketplace;
-                break;//시장- 일시불 골드 획득
+      case PlaceType.Marketplace:
+        Gold += ConstValues.PlaceEffect_marketplace;
+        break;//시장- 일시불 골드 획득
 
-            case PlaceType.Temple:
-                foreach (var _settle in AllSettleUnpleasant.Keys)
-                    if (!AllSettleUnpleasant[_settle].Equals(0)) AllSettleUnpleasant[_settle]--;
-                break;//사원- 모든 불쾌 1 감소
+      case PlaceType.Temple:
+        foreach (var _settle in AllSettleUnpleasant.Keys)
+          if (!AllSettleUnpleasant[_settle].Equals(0)) AllSettleUnpleasant[_settle]--;
+        break;//사원- 모든 불쾌 1 감소
 
-            case PlaceType.Library:
-                if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
-                else PlaceEffects.Add(placetype, 3);
-                switch(UnityEngine.Random.Range(0,4))
-                {
-                    case 0:PlaceEffectTheme = ThemeType.Conversation;break;
-                    case 1:PlaceEffectTheme = ThemeType.Force;break;
-                    case 2:PlaceEffectTheme = ThemeType.Wild;break;
-                    case 3:PlaceEffectTheme = ThemeType.Intelligence;break;
-                }
+      case PlaceType.Library:
+        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
+        else PlaceEffects.Add(placetype, 3);
+        PlaceEffectTheme = CurrentSettlement.LibraryType;
 
-                break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(3턴지속)
+        break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(3턴지속)
 
-            case PlaceType.Theater:
+      case PlaceType.Theater:
 
-                for (int i = 0; i < LongTermEXP.Length; i++)
-                    if (LongTermEXP[i] != null) LongTermEXP[i].Duration =
-                            LongTermEXP[i].Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP[i].Duration + 2;
-                for (int i = 0; i < ShortTermEXP.Length; i++)
-                    if (ShortTermEXP[i] != null) ShortTermEXP[i].Duration =
-                            ShortTermEXP[i].Duration + 2 > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortTermEXP[i].Duration + 2;
+        for (int i = 0; i < LongTermEXP.Length; i++)
+          if (LongTermEXP[i] != null) LongTermEXP[i].Duration =
+                  LongTermEXP[i].Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP[i].Duration + 2;
+        for (int i = 0; i < ShortTermEXP.Length; i++)
+          if (ShortTermEXP[i] != null) ShortTermEXP[i].Duration =
+                  ShortTermEXP[i].Duration + 2 > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortTermEXP[i].Duration + 2;
 
-                break;//극장- 모든 경험 2턴 증가
+        break;//극장- 모든 경험 2턴 증가
 
-            case PlaceType.Academy:
-                if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
-                else PlaceEffects.Add(placetype, 3);
-                break;//아카데미- 다음 체크 확률 증가(3턴 지속, 성공할 때 까지)
-        }
+      case PlaceType.Academy:
+        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
+        else PlaceEffects.Add(placetype, 3);
+        break;//아카데미- 다음 체크 확률 증가(3턴 지속, 성공할 때 까지)
     }
+  }
 
-    public List<EventDataDefulat> CurrentSuggestingEvents = new List<EventDataDefulat>(); //현재 정착지에서 제시 중인 이벤트
+  public List<EventDataDefulat> CurrentSuggestingEvents = new List<EventDataDefulat>(); //현재 정착지에서 제시 중인 이벤트
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
@@ -799,93 +827,6 @@ public class GameData    //게임 진행도 데이터
     }
   }
 
-  public Tuple<int, int> GetEffectModifyCount_Trait(EffectType _modify)
-  {
-    int _plus = 0, _minus = 0;
-    foreach (var _trait in Traits)
-      if (_trait.Effects.ContainsKey(_modify))
-        if (_trait.Effects[_modify].Equals(1)) _plus++; else _minus++;//찾은 값이 양수면 +, 음수면 -
-    var _amount = Tuple.Create<int, int>(_plus, _minus);
-    return _amount;
-  }//현재 특성들 중에서 해당 증감 효과 가진 특성 개수 바환
-  public int GetEffectThemeCount_Trait(ThemeType _theme)
-  {
-    int amount = 0;     //반환 값
-    EffectType _targettheme = EffectType.Conversation;          //테마
-    List<EffectType> _targeteffects = new List<EffectType>();   //테마+스킬
-    switch (_theme)
-    {
-      case ThemeType.Conversation:
-        _targettheme = EffectType.Conversation;
-        _targeteffects.Add(EffectType.Conversation);
-        _targeteffects.Add(EffectType.Speech);
-        _targeteffects.Add(EffectType.Threat);
-        _targeteffects.Add(EffectType.Deception);
-        _targeteffects.Add(EffectType.Logic);
-        break;
-      case ThemeType.Force:
-        _targettheme = EffectType.Force;
-        _targeteffects.Add(EffectType.Force);
-        _targeteffects.Add(EffectType.Martialarts);
-        _targeteffects.Add(EffectType.Threat);
-        _targeteffects.Add(EffectType.Bow);
-        _targeteffects.Add(EffectType.Somatology);
-        break;
-      case ThemeType.Wild:
-        _targettheme = EffectType.Wild;
-        _targeteffects.Add(EffectType.Wild);
-        _targeteffects.Add(EffectType.Survivable);
-        _targeteffects.Add(EffectType.Bow);
-        _targeteffects.Add(EffectType.Deception);
-        _targeteffects.Add(EffectType.Biology);
-        break;
-      case ThemeType.Intelligence:
-        _targettheme = EffectType.Intelligence;
-        _targeteffects.Add(EffectType.Intelligence);
-        _targeteffects.Add(EffectType.Knowledge);
-        _targeteffects.Add(EffectType.Somatology);
-        _targeteffects.Add(EffectType.Biology);
-        _targeteffects.Add(EffectType.Logic);
-        break;
-      default: Debug.Log("뎃?"); break;
-    }
-    foreach (var _trait in Traits)
-      foreach (var _effect in _targeteffects)
-      {
-        if (_trait.Effects.ContainsKey(_effect))
-        {
-          int _value = _effect != _targettheme ? 1 : 2;
-          //해당 효과가 테마라면 반환값을 2배로
-          amount += _trait.Effects[_effect] * _value;
-          //그 외라면 그 값을 더함
-        }
-      }
-    return amount;
-  }//현재 특성들 중에서 테마 값 합 반환
-  public int GetEffectSkillCount_Trait(SkillName _skill)
-  {
-    int amount = 0;     //반환 값
-    EffectType _targeteffect = EffectType.Logic;
-    switch (_skill)
-    {
-      case SkillName.Biology: _targeteffect = EffectType.Biology; break;
-      case SkillName.Bow: _targeteffect = EffectType.Bow; break;
-      case SkillName.Deception: _targeteffect = EffectType.Deception; break;
-      case SkillName.Knowledge: _targeteffect = EffectType.Knowledge; break;
-      case SkillName.Martialarts: _targeteffect = EffectType.Martialarts; break;
-      case SkillName.Logic: _targeteffect = EffectType.Logic; break;
-      case SkillName.Somatology: _targeteffect = EffectType.Somatology; break;
-      case SkillName.Speech: _targeteffect = EffectType.Speech; break;
-      case SkillName.Survivable: _targeteffect = EffectType.Survivable; break;
-      case SkillName.Threat: _targeteffect = EffectType.Threat; break;
-      default: Debug.Log("뎃?"); break;
-    }
-    foreach (var _trait in Traits)
-      if (_trait.Effects.ContainsKey(_targeteffect))
-        amount += _trait.Effects[_targeteffect];
-    return amount;
-
-  }//현재 특성들 중에서 해당 기술의 값 합 반환
   public Tuple<int, int> GetEffectModifyCount_Exp(EffectType _modify)
   {
     int _plus = 0, _minus = 0;
@@ -963,7 +904,7 @@ public class GameData    //게임 진행도 데이터
       }
     return amount;
   }//현재 특성들 중에서 테마 값 합 반환
-  public int GetEffectSkillCount_Exp(SkillName _skill)
+  public int GetEffectSkillLevel_Exp(SkillName _skill)
   {
     int amount = 0;     //반환 값
     EffectType _targeteffect = EffectType.Logic;
@@ -990,157 +931,145 @@ public class GameData    //게임 진행도 데이터
 
     return amount;
 
-  }//현재 특성들 중에서 해당 기술의 값 합 반환
+  }//현재 경험들 중에서 해당 기술의 값 합 반환
   public float GetHPGenModify(bool _formultiply)
   {
     float _amount = 0;
 
-    var _traittuple = GetEffectModifyCount_Trait(EffectType.HPGen);
     var _exptuple = GetEffectModifyCount_Exp(EffectType.HPGen);
     float _plusamount = 0, _minusamount = 0;
 
-    for (int i = 0; i < _traittuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.HPGen_Trait;
-    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.HPGen_Exp;
+    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.HPGen_Exp;
     //튜플의 item1은 긍정적 효과(회복증가) 개수
-    for (int i = 0; i < _traittuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.HPGen_Trait;
-    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.HPGen_Exp;
+    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.HPGen_Exp;
     //튜플의 item2는 부정적 효과(회복감소) 개수
 
+    Debug.Log($"체력 지불    증가 값 : {_plusamount}%  감소 값 : {_minusamount}");
     _amount = _plusamount - _minusamount;
     //plus : 체력 회복 증가%(긍정적)  minus : 체력 회복 감소%(부정적)
     if (!_formultiply) return _amount;
-    else return (100 + _amount)/100.0f;
+    else return (100.0f+ _amount)/100.0f;
   }// 체력 회복 변화량(특성,경험)
   public float GetHPLossModify(bool _formultiply)
   {
     float _amount = 0;
 
-    var _traittuple = GetEffectModifyCount_Trait(EffectType.HPLoss);
     var _exptuple = GetEffectModifyCount_Exp(EffectType.HPLoss);
     float _plusamount = 0, _minusamount = 0;
 
-    for (int i = 0; i < _traittuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.HPLoss_Trait;
-    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.HPLoss_Exp;
+    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.HPLoss_Exp;
     //튜플의 item1은 부정적 효과(감소증가) 개수
-    for (int i = 0; i < _traittuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.HPLoss_Trait;
-    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.HPLoss_Exp;
-        if (PlaceEffects.ContainsKey(PlaceType.Residence)) _minusamount += (100 - _minusamount) * ConstValues.PlaceEffect_residence;
+    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.HPLoss_Exp;
+        if (PlaceEffects.ContainsKey(PlaceType.Residence)) _minusamount += (100.0f- _minusamount) * ConstValues.PlaceEffect_residence;
     //튜플의 item2는 긍정적 효과(감소감소) 개수
 
+    Debug.Log($"체력 지불    증가 값 : {_plusamount}%  감소 값 : {_minusamount}");
     _amount = _plusamount - _minusamount;
     //plus : 체력 소모 증가%(부정적)  minus : 체력 소모 감소%(긍정적)
     if (!_formultiply) return _amount;
-    else return (100 + _amount) / 100.0f;
+    else return (100.0f+ _amount) / 100.0f;
   }// 체력 감소 변화량(특성,경험)
   public float GetSanityGenModify(bool _formultiply)
   {
     float _amount = 0;
 
-    var _traittuple = GetEffectModifyCount_Trait(EffectType.SanityGen);
     var _exptuple = GetEffectModifyCount_Exp(EffectType.SanityGen);
     float _plusamount = 0, _minusamount = 0;
     bool _tendencychecked = Tendency_MM.Level >= 3 ? true : false;   //물질 방향 3 이상이면 정신력 회복량 감소(부정적)
-    for (int i = 0; i < _traittuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.SanityGen_Trait;
-    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.SanityGen_Exp;
+    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityGen_Exp;
     //튜플의 item1은 긍정적 효과(회복증가) 개수
-    for (int i = 0; i < _traittuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.SanityGen_Trait;
-    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.SanityGen_Exp;
+    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.SanityGen_Exp;
     //튜플의 item2는 부정적 효과(회복감소) 개수
-    if (_tendencychecked == true) _minusamount += (100 - _minusamount) * ConstValues.SanityGen_Tendency_3;
+    if (_tendencychecked == true) _minusamount += (100.0f- _minusamount) * ConstValues.SanityGen_Tendency_3;
 
+    Debug.Log($"정신력 지불    증가 값 : {_plusamount}%  감소 값 : {_minusamount}");
     _amount = _plusamount - _minusamount;
     //plus : 정신력 회복 증가%(긍정적)  minus : 정신력 회복 감소(부정적)
     if (!_formultiply) return _amount;
-    else return (100 + _amount) / 100.0f;
+    else return (100.0f+ _amount) / 100.0f;
   }// 정신력 회복 변화량(특성,경험,성향)
   public float GetSanityLossModify(bool _formultiply)
   {
     float _amount = 0;
 
-    var _traittuple = GetEffectModifyCount_Trait(EffectType.SanityLoss);
     var _exptuple = GetEffectModifyCount_Exp(EffectType.SanityLoss);
     float _plusamount = 0, _minusamount = 0;
     bool _tendencychecked = Tendency_MM.Level <= -1 ? true : false;   //정신 방향 1 이상이면 정신력 소모량 감소(긍정적)
-    for (int i = 0; i < _traittuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.SanityLoss_Trait;
-    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.SanityLoss_Exp;
+    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityLoss_Exp;
     //튜플의 item1은 부정적 효과(감소증가) 개수
 
-    for (int i = 0; i < _traittuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.SanityLoss_Trait;
-    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.SanityLoss_Exp;
+    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.SanityLoss_Exp;
     //튜플의 item2는 긍정적 효과(감소감소) 개수
     float _sanitylosstendency = 0;
     if (Tendency_MM.Level <= -3) _sanitylosstendency = ConstValues.SanityLoss_Tendency_3;
     else if (Tendency_MM.Level <= -2) _sanitylosstendency = ConstValues.SanityLoss_Tendency_2;
     else _sanitylosstendency = ConstValues.SanityLoss_Tendency_1;
-    if (_tendencychecked == true) _minusamount += (100 - _minusamount) * _sanitylosstendency;
+    if (_tendencychecked == true) _minusamount += (100.0f- _minusamount) * _sanitylosstendency;
 
+    Debug.Log($"정신 지불    증가 값 : {_plusamount}%  감소 값 : {_minusamount}");
     _amount = _plusamount - _minusamount;
     //plus : 정신력 소모 증가%(부정적)  minus : 정신력 소모 감소%(긍정적)
     if (!_formultiply) return _amount;
-    else return (100 + _amount) / 100.0f;
+    else return (100.0f+ _amount) / 100.0f;
   }// 정신력 소모 변환량(특성,경험,성향)
   public float GetGoldGenModify(bool _formultiply)
   {
     float _amount = 0;
-    var _traittuple = GetEffectModifyCount_Trait(EffectType.GoldGen);
     var _exptuple = GetEffectModifyCount_Exp(EffectType.GoldGen);
     float _plusamount = 0, _minusamount = 0;
     bool _tendencychecked = Tendency_MM.Level <= -3 ? true : false;   //정신 3 이상이면 돈 회복량 감소(부정적)
-    for (int i = 0; i < _traittuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.GoldGen_Trait;
-    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.GoldGen_Exp;
+    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.GoldGen_Exp;
     //튜플의 item1은 긍정적 효과(증가증가) 개수
 
-    for (int i = 0; i < _traittuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.GoldGen_Trait;
-    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.GoldGen_Exp;
+    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.GoldGen_Exp;
     //튜플의 item2는 부정적 효과(증가감소) 개수
-    if (_tendencychecked == true) _minusamount += (100 - _minusamount) * ConstValues.GoldGen_Tendency_3;
+    if (_tendencychecked == true) _minusamount += (100.0f- _minusamount) * ConstValues.GoldGen_Tendency_3;
 
+    Debug.Log($"골드 획득    증가 값 : {_plusamount}%  감소 값 : {_minusamount}");
     _amount = _plusamount - _minusamount;
     //plus : 골드 획득 증가%(긍정적)  minus : 골드 획득 감소%(부정적)
     if (!_formultiply) return _amount;
-    else return (100 + _amount) / 100.0f;
+    else return (100.0f+ _amount) / 100.0f;
   }// 돈 습득 변환량(특성,경험,성향)
   public float GetGoldPayModify(bool _formultiply)
   {
     float _amount = 0;
-    var _traittuple = GetEffectModifyCount_Trait(EffectType.GoldLoss);
     var _exptuple = GetEffectModifyCount_Exp(EffectType.GoldLoss);
     float _plusamount = 0, _minusamount = 0;
     bool _tendencychecked = Tendency_MM.Level >= 1 ? true : false;   //물질 1 이상이면 돈 소모량 감소(긍정적)
-    for (int i = 0; i < _traittuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.GoldLoss_Trait;
-    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100 - _plusamount) * ConstValues.GoldLoss_Exp;
+    for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.GoldLoss_Exp;
     //튜플의 item1은 긍정적 효과(감소감소) 개수
     float _goldlosstendency = 0;
     if (Tendency_MM.Level >= 3) _goldlosstendency = ConstValues.GoldLoss_Tendency_3;
     else if (Tendency_MM.Level >= 2) _goldlosstendency = ConstValues.GoldLoss_Tendency_2;
     else _goldlosstendency = ConstValues.GoldLoss_Tendency_1;
-    if (_tendencychecked == true) _plusamount += (100 - _plusamount) * _goldlosstendency;
 
-    for (int i = 0; i < _traittuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.GoldLoss_Trait;
-    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100 - _minusamount) * ConstValues.GoldLoss_Exp;
+    for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.GoldLoss_Exp;
+    if (_tendencychecked == true) _minusamount += (100.0f- _minusamount) * _goldlosstendency;
     //튜플의 item2는 부정적 효과(감소증가) 개수
 
+    Debug.Log($"골드 지불    증가 값 : {_plusamount}%  감소 값 : {_minusamount}");
     _amount = _plusamount - _minusamount;
     //plus : 골드 소모 증가%(부정적)  minus : 골드 소모 감소%(긍정적)
     if (!_formultiply) return _amount;
-    else return (100 + _amount) / 100.0f;
+    else return (100.0f+ _amount) / 100.0f;
   }// 돈 소모 변화량(특성,경험,성향)
   public GameData()
   {
+    Turn = 0;
     HP = 100;
     CurrentSanity = MaxSanity;
     Gold = 0;
-    Traits = new List<Trait>();
-    Skill _speech = new Skill(ThemeType.Conversation, ThemeType.Conversation);
-    Skill _treat = new Skill(ThemeType.Conversation, ThemeType.Force);
-    Skill _deception = new Skill(ThemeType.Conversation, ThemeType.Wild);
-    Skill _Logic = new Skill(ThemeType.Conversation, ThemeType.Intelligence);
-    Skill _martialarts = new Skill(ThemeType.Force, ThemeType.Force);
-    Skill _bow = new Skill(ThemeType.Force, ThemeType.Wild);
-    Skill _somatology = new Skill(ThemeType.Force, ThemeType.Intelligence);
-    Skill _survivable = new Skill(ThemeType.Wild, ThemeType.Wild);
-    Skill _biology = new Skill(ThemeType.Wild, ThemeType.Intelligence);
-    Skill _knowledge = new Skill(ThemeType.Intelligence, ThemeType.Intelligence);
+    Skill _speech = new Skill(ThemeType.Conversation, ThemeType.Conversation,SkillName.Speech);
+    Skill _treat = new Skill(ThemeType.Conversation, ThemeType.Force, SkillName.Threat);
+    Skill _deception = new Skill(ThemeType.Conversation, ThemeType.Wild, SkillName.Deception);
+    Skill _Logic = new Skill(ThemeType.Conversation, ThemeType.Intelligence, SkillName.Logic);
+    Skill _martialarts = new Skill(ThemeType.Force, ThemeType.Force, SkillName.Martialarts);
+    Skill _bow = new Skill(ThemeType.Force, ThemeType.Wild, SkillName.Bow);
+    Skill _somatology = new Skill(ThemeType.Force, ThemeType.Intelligence, SkillName.Somatology);
+    Skill _survivable = new Skill(ThemeType.Wild, ThemeType.Wild, SkillName.Survivable);
+    Skill _biology = new Skill(ThemeType.Wild, ThemeType.Intelligence, SkillName.Biology);
+    Skill _knowledge = new Skill(ThemeType.Intelligence, ThemeType.Intelligence, SkillName.Knowledge);
     Skills.Add(SkillName.Speech, _speech);
     Skills.Add(SkillName.Threat, _treat);
     Skills.Add(SkillName.Deception, _deception);
@@ -1172,33 +1101,47 @@ public enum ThemeType { Conversation, Force, Wild, Intelligence }
 public enum SkillName { Speech,Threat,Deception,Logic,Martialarts,Bow,Somatology,Survivable,Biology,Knowledge}
 public class Skill
 {
+  public SkillName SkillType = SkillName.Speech;
   public ThemeType Type_A, Type_B;
-    private int level = 0;
-  public int Level
-    {
-        set { level = value; }
-        get
-        {
-            if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Library))
-            {
-                if (GameManager.Instance.MyGameData.PlaceEffectTheme == Type_A || GameManager.Instance.MyGameData.PlaceEffectTheme == Type_B)
-                    return level + 1;
-            }
-            return level;
-        }
+    public int LevelByOwn = 0;  //오리지널 레벨 값
+  public int LevelByExp
+  {
+    get { return GameManager.Instance.MyGameData.GetEffectSkillLevel_Exp(SkillType); }
+  }//경험으로 인한 값
+  public int LevelByTheme
+  {
+    get { return GameManager.Instance.MyGameData.GetSkillLevelByTheme(SkillType); }
+  }//테마에 속한 다른 기술들로 인한 값(스킬 체크에만 사용됨)
+  public int LevelByPlace
+  {
+    get { if (GameManager.Instance.MyGameData.PlaceEffects.Keys.Contains(PlaceType.Library)&& GameManager.Instance.MyGameData.PlaceEffectTheme == Type_A || GameManager.Instance.MyGameData.PlaceEffectTheme == Type_B) return 1;
+      else return 0;
     }
-  public Skill(ThemeType _a, ThemeType _b) { Type_A = _a;Type_B= _b;}
+  }
+  public int LevelForPreviewOrTheme
+  {
+    get
+    {
+      int level = LevelByOwn + LevelByExp+LevelByPlace;
+      return level;
+    }
+  }
+  public int LevelForSkillCheck
+  {
+    get { return LevelByOwn + LevelByExp + LevelByPlace + LevelByTheme; }
+  }
+  public Skill(ThemeType _a, ThemeType _b,SkillName name) { Type_A = _a;Type_B= _b;SkillType = name; }
 }
 public enum TendencyType {None, Rational,Physical,Mental,Material}
 public class Tendency
 {
   public TendencyType Type_foward,Type_back;
   public int count = 0;
+  private const int MaxLevel = 2;
   public void AddCount(TendencyType _type)
   {
     if (_type.Equals(TendencyType.Physical)||_type.Equals(TendencyType.Material))
     {//육체나 물질이면 양수 진행
-      if (Level == 3) return;//레벨 3단계면 더 진행 불가
 
       if (count <= 0) count = 1;
       else count++;
@@ -1206,9 +1149,7 @@ public class Tendency
       int _abs=Mathf.Abs(count);
       switch (Level)
       {
-        case 2:
-          if (_abs.Equals(ConstValues.Tendency2to3)) Level = 3; //2레벨일때 count 개수를 충족하면 3레벨로
-          break;
+        case 2:count = 0;break;
         case 1:
           if (_abs.Equals(ConstValues.Tendency1to2)) Level = 2; //1레벨일때 count 개수를 충족하면 2레벨로
           break;
@@ -1216,13 +1157,12 @@ public class Tendency
           if (_abs.Equals(ConstValues.Tendency0to1)) Level = 1; //0단계일때 count 개수를 충족하면 1레벨로
           break;
         default:
-          if (_abs.Equals(ConstValues.TendencyRegress)) Level++;  //음수 단계일때 count 개수를 충족하면 양수 레벨로 끌어오기
+          if ( _abs.Equals(ConstValues.TendencyRegress)) Level++;  //음수 단계일때 count 개수를 충족하면 양수 레벨로 끌어오기
           break;
       }
     }
     else if (_type.Equals(TendencyType.Rational) || _type.Equals(TendencyType.Mental))
     {//이성이나 정신이면 음수 진행
-      if (Level == -3) return;//레벨 -3단계면 더 진행 불가
 
       if (count >= 0) count = -1;
       else count--;
@@ -1230,9 +1170,7 @@ public class Tendency
       int _abs = Mathf.Abs(count);
       switch (Level)
       {
-        case -2:
-          if (_abs.Equals(ConstValues.Tendency2to3)) Level = -3; //-2레벨일때 count 개수를 충족하면 -3레벨로
-          break;
+        case -2:count = 0;break;
         case -1:
           if (_abs.Equals(ConstValues.Tendency1to2)) Level = -2; //-1레벨일때 count 개수를 충족하면 -2레벨로
           break;

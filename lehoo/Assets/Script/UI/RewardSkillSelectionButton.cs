@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class RewardSkillSelectionButton : MonoBehaviour
+public class RewardSkillSelectionButton : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
   [SerializeField] private UI_Reward MyUIReward = null;
 
@@ -14,6 +15,17 @@ public class RewardSkillSelectionButton : MonoBehaviour
   [SerializeField] private RectTransform ForceRect = null;
   [SerializeField] private RectTransform WildRect = null;
   [SerializeField] private RectTransform IntelligenceRect = null;
+
+  [SerializeField] private TMPro.TextMeshProUGUI SkillNameText = null;
+
+  public void OnPointerEnter(PointerEventData data)
+  {
+    SkillNameText.text = GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.GetSkillByTheme(MyUIReward.CurrentSuccesData.Reward_Theme, MyTheme)).Name;
+  }
+  public void OnPointerExit(PointerEventData data)
+  {
+    SkillNameText.text = "";
+  }
 
   public void GetReward()
   {

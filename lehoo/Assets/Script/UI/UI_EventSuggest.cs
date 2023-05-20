@@ -36,13 +36,15 @@ public class UI_EventSuggest : UI_default
         yield return _wait;
         //환경 미리보기 설정 해야됨
         string _currentunpleasant = GameManager.Instance.GetTextData("currentunpleasant").Name
-            .Replace("#unp#", GameManager.Instance.MyGameData.AllSettleUnpleasant[GameManager.Instance.MyGameData.CurrentSettlement].ToString());
-        //이 정착지의 불쾌 지수는 #unp#
+            .Replace("#UNP#", GameManager.Instance.MyGameData.AllSettleUnpleasant[GameManager.Instance.MyGameData.CurrentSettlement].ToString());
+        //이 정착지의 불쾌 지수는 #UNP#
         string _currentvalue = GameManager.Instance.GetTextData("currentsettlesanityloss").Name;
-        _currentvalue = _currentvalue.Replace("#value#", GameManager.Instance.MyGameData.SettleSanityLoss.ToString());
+        _currentvalue = _currentvalue.Replace("#VALUE#", GameManager.Instance.MyGameData.SettleSanityLoss.ToString());
         _currentvalue = _currentvalue.Replace("#sanity#", GameManager.Instance.GetTextData("sanity").Name);
-        //장소 진입 시 #value# #sanity# 감소
+        //장소 진입 시 #VALUE# #sanity# 감소
         CurrentUnPlesant.text = _currentunpleasant + "\n" + _currentvalue;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, true));
+
         StartCoroutine(UIManager.Instance.ChangeAlpha(UnPleasantGroup, 1.0f, false, UIFadeMoveDir.Right));
         yield return _wait;
 
@@ -114,15 +116,42 @@ public class UI_EventSuggest : UI_default
         PlaceEffect.text = "";
     }//빠른종료(그냥 초기화만
   public void SelectPlace(PlaceType _targetplace)
-    {
-        if (CurrentPlace.Equals(_targetplace)) return;
+  {
+    if (CurrentPlace.Equals(_targetplace)) return;
 
-        CurrentPlace = _targetplace;
-        PlaceDescription.text = "";
-        PlaceEffect.text = "";
-        StartButton.interactable = true;
+    CurrentPlace = _targetplace;
+    string _description = GameManager.Instance.GetTextData(_targetplace).Description;
+    string _effect = "";
+    switch (_targetplace)
+    {
+      case PlaceType.Residence:
+        _effect = GameManager.Instance.GetTextData("residenceeffect").Name.Replace("#VALUE#", ConstValues.PlaceEffect_residence.ToString());
+        break;
+      case PlaceType.Marketplace:
+        _effect=GameManager.Instance.GetTextData("marketeffect").Name.Replace("#VALUE",ConstValues.PlaceEffect_marketplace.ToString());
+        break;
+      case PlaceType.Temple:
+        _effect = GameManager.Instance.GetTextData("templeeffect").Name;
+        break;
+      case PlaceType.Library:
+        ThemeType _theme = GameManager.Instance.MyGameData.CurrentSettlement.LibraryType;
+        string _themeicon = GameManager.Instance.GetTextData(_theme).Icon;
+        _effect=GameManager.Instance.GetTextData("libraryeffect").Name.Replace("#THEMEICON#", _themeicon).Replace("#THEME#",GameManager.Instance.GetTextData(_theme).Name);
+        break;
+      case PlaceType.Theater:
+        _effect = GameManager.Instance.GetTextData("theatereffect").Name;
+        break;
+      case PlaceType.Academy:
+        _effect=GameManager.Instance.GetTextData("academyeffect").Name.Replace("#VALUE#",ConstValues.PlaceEffect_acardemy.ToString());
+        break;
     }
-    public void StartEvent()
+
+
+    PlaceDescription.text = _description;
+    PlaceEffect.text = _effect;
+    StartButton.interactable = true;
+  }
+  public void StartEvent()
     {
         CloseSuggestPanel_normal();
         EventManager.Instance.SetSettleEvent(CurrentPlace);

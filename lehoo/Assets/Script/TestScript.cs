@@ -16,7 +16,6 @@ public class TestScript : MonoBehaviour
   public RectTransform RectB = null;
   private void Awake()
   {
-
   }
   private void Update()
   {

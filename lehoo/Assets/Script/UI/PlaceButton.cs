@@ -24,12 +24,14 @@ public class PlaceButton : MonoBehaviour
     }
     public void Close()
     {
-        MyGroup.alpha = 0.0f;
-        MyGroup.interactable = false;
-        MyGroup.blocksRaycasts = false;
-        gameObject.SetActive(false);
+    StartCoroutine(close());
     }
-    public void OnClick()
+  private IEnumerator close()
+  {
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, false));
+    gameObject.SetActive(false);
+  }
+  public void OnClick()
     {
         MyEventSuggest.SelectPlace(MyPlaceType);
     }

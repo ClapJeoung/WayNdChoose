@@ -13,23 +13,11 @@ public class ImageHolder : ScriptableObject
   public Sprite UnknownHP = null;
   public Sprite UnknownSanity = null;
   public Sprite UnknownGold = null;
-  public Sprite UnknownTrait = null;
   public Sprite UnknownTheme = null;
   public Sprite UnknownExp = null;
   [Space(10)]
   public Sprite ThemeIllust_Conversation = null;
   public Sprite ThemeIllust_Force = null, ThemeIllust_Wild = null, ThemeIllust_Intelligence = null;
-    [Space(10)]
-  public List<Sprite> SkillIllust_Speech = new List<Sprite>();       
-  public List<Sprite> SkillIllust_Threat = new List<Sprite>();
-  public List<Sprite> SkillIllust_Deception = new List<Sprite>();
-  public List<Sprite> SkillIllust_Logic = new List<Sprite>();
-  public List<Sprite> SkillIllust_Martialarts = new List<Sprite>();
-  public List<Sprite> SkillIllust_Bow = new List<Sprite>();
-  public List<Sprite> SkillIllust_Somatology = new List<Sprite>();
-  public List<Sprite> SkillIllust_Survivable = new List<Sprite>();
-  public List<Sprite> SkillIllust_Biology = new List<Sprite>();
-  public List<Sprite> SkillIllust_Knowledge = new List<Sprite>();
   [Space(10)]
   public Sprite[] TendencyIcon_Rational=new Sprite[7];
   public Sprite[] TendencyIcon_Physical = new Sprite[7], TendencyIcon_Mental = new Sprite[7], TendencyIcon_Material = new Sprite[7];
@@ -75,8 +63,6 @@ public class ImageHolder : ScriptableObject
   public Sprite EmptyExpIllust = null;
     public Sprite EmptyLongExpIcon = null;
     public Sprite EmptyShortExpIcon = null;
-  public List<Sprite> TraitIcons=new List<Sprite>();
-  public List<Sprite> TraitIllust = new List<Sprite>();                //모든 특성 일러스트
   public Sprite DefaultIllust = null;                                 //빈 일러스트
   public Sprite DefaultIcon = null;
     [Space(10)]
@@ -92,8 +78,20 @@ public class ImageHolder : ScriptableObject
     public Sprite NothingQuestIllust = null;
   [Space(10)]
   public Sprite HPIcon = null;
+  public Sprite HPIncreaseIcon = null;
+  public Sprite HPDecreaseIcon = null;
   public Sprite SanityIcon = null;
+  public Sprite SanityIncreaseIcon = null;
+  public Sprite SanityDecreaseIcon = null;
   public Sprite GoldIcon = null;
+  public Sprite GoldIncreaseIcon = null;
+  public Sprite GoldDecreaseIcon = null;
+  [Space(10)]
+  public Sprite Quest_risig = null;
+  public Sprite Quest_climax = null;
+  public Sprite Quest_fall = null;
+  [Space(10)]
+  public Sprite UnPleasant = null;
   public Sprite GetThemeIcon(ThemeType _type)
   {
     switch (_type)
@@ -171,25 +169,6 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//성채 이름에 해당하는 일러스트 가져오기
 
-  public Sprite GetSkillSprite(SkillName _skillname,int _level)
-  {
-    List<Sprite> _temp =new List<Sprite>();
-    switch (_skillname)
-    {
-      case SkillName.Biology:_temp = SkillIllust_Biology;break;
-      case SkillName.Bow: _temp = SkillIllust_Bow; break;
-      case SkillName.Deception: _temp = SkillIllust_Deception; break;
-      case SkillName.Knowledge: _temp = SkillIllust_Knowledge; break;
-      case SkillName.Logic: _temp = SkillIllust_Logic; break;
-      case SkillName.Martialarts: _temp = SkillIllust_Martialarts; break;
-      case SkillName.Somatology: _temp = SkillIllust_Somatology; break;
-      case SkillName.Speech: _temp = SkillIllust_Speech; break;
-      case SkillName.Survivable: _temp = SkillIllust_Survivable; break;
-      case SkillName.Threat: _temp = SkillIllust_Threat; break;
-    }
-    if (_temp.Count < _level) return DefaultIllust;
-    return _temp[_level - 1];
-  }
   public Sprite[] GetEventStartIllust(string _illustid)
   {
     //계절 적용된 id
@@ -275,32 +254,6 @@ public class ImageHolder : ScriptableObject
     }
     return _targetsprite;
   }//ID로 경험 일러스트 가져오기
-  public Sprite GetTraitIcon(string _illustid)
-  {
-    Sprite _targetsprite = DefaultIcon;
-    foreach (Sprite _spr in TraitIcons)
-    {
-      if (_spr.name.Equals(_illustid))
-      {
-        _targetsprite = _spr;
-        break;
-      }
-    }
-    return _targetsprite;
-  }
-  public Sprite GetTraitIllust(string _illustid)
-  {
-    Sprite _targetsprite = DefaultIllust;
-    foreach (Sprite _spr in TraitIllust)
-    {
-      if (_spr.name.Equals(_illustid))
-      {
-        _targetsprite = _spr;
-        break;
-      }
-    }
-    return _targetsprite;
-  }//ID로 특성 일러스트 가져오기
   public Sprite GetTendencyIcon(TendencyType _type,int _level)
   {
     int _index = 0;

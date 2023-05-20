@@ -17,13 +17,11 @@ public class EventManager : MonoBehaviour
   }
   private EventHolder MyEventHolder;
   private Dictionary<string, Experience> MyEXP = new Dictionary<string, Experience>();  //°æÇè µñ¼Å³Ê¸®
-  private Dictionary<string, Trait> MyTrait = new Dictionary<string, Trait>();         //Æ¯¼º µñ¼Å³Ê¸®
 
   private void Start()
   {
     MyEventHolder = GameManager.Instance.EventHolder;
     MyEXP = GameManager.Instance.ExpDic;
-    MyTrait = GameManager.Instance.TraitsDic;
   }
   public void SetSettleEvent(TargetTileEventData _settledata)
   {
@@ -41,7 +39,7 @@ public class EventManager : MonoBehaviour
   }//¿ÜºÎ -> Á¤ÂøÁö µµÂø
     public void SetSettleEvent(PlaceType place)
     {
-        TargetTileEventData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.GetSettleTileEventData();
+        TargetTileEventData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileData;
         EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.SettlementType, place, _tiledta.PlaceData[place], _tiledta.EnvironmentType);
         GameManager.Instance.SelectEvent( _event );
         GameManager.Instance.MyGameData.AddPlaceEffectBeforeStartEvent(place);

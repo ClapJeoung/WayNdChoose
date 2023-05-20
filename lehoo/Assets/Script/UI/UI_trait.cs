@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+/*
 public class UI_trait : UI_default
 {
   private Trait CurrentTrait = null;
@@ -29,9 +30,9 @@ public class UI_trait : UI_default
             TraitIllust.sprite = _illust;
             TraitDescription.text = _description;
             TraitEffect.text = _effect;
-            UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, true));
-        }
-        else
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+    }
+    else
         {
             if (CurrentTrait == _trait) CloseUI();
             else
@@ -47,7 +48,9 @@ public class UI_trait : UI_default
   }
   public override void CloseUI()
   {
-    base.CloseUI();
+    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+    IsOpen = false;
     CurrentTrait = null;
   }
 }
+*/

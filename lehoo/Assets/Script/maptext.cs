@@ -2577,7 +2577,7 @@ public class maptext : MonoBehaviour
         _rect.anchoredPosition3D=new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
         _images.Add(_temp);
       }//이미지 만들고 위치,스프라이트 넣기
-      GameObject _button=new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),typeof(Button),typeof(SettlementIcon) });
+      GameObject _button =new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),typeof(Button),typeof(SettlementIcon) });
       //버튼 오브젝트
       _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x,_buttonpos.y,0.0f);
             _button.transform.SetParent(SettlerHolder);
@@ -2588,8 +2588,13 @@ public class maptext : MonoBehaviour
         _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_images[j].GetComponent<RectTransform>().anchoredPosition.x, _images[j].GetComponent<RectTransform>().anchoredPosition.y, 0.0f);
         _images[j].transform.localScale = Vector3.one;
       }
-            
-            _button.GetComponent<SettlementIcon>().Setup(_mapdata.Towns[i]);
+      GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+      _questicon.GetComponent<Image>().enabled = false;
+      _questicon.transform.SetParent(_button.transform);
+      _questicon.transform.localScale = Vector3.one;
+      _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+      _questicon.GetComponent<RectTransform>().sizeDelta=Vector3.one*45.0f;
+      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Towns[i],_questicon.GetComponent<Image>());
     //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
 
@@ -2632,8 +2637,13 @@ public class maptext : MonoBehaviour
                 _images[j].transform.localScale = Vector3.one;
                 _images[j].GetComponent<RectTransform>().anchoredPosition3D=new Vector3(_newpos.x,_newpos.y,0.0f);
       }
-            
-            _button.GetComponent<SettlementIcon>().Setup(_mapdata.Cities[i]);
+      GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+      _questicon.GetComponent<Image>().enabled = false;
+      _questicon.transform.SetParent(_button.transform);
+      _questicon.transform.localScale = Vector3.one;
+      _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+      _questicon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
+      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Cities[i], _questicon.GetComponent<Image>());
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
 
@@ -2675,7 +2685,13 @@ public class maptext : MonoBehaviour
         _images[j].transform.localScale = Vector3.one;
                 _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x,_newpos.y,0.0f);
       }
-      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Castles[i]);
+      GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+      _questicon.GetComponent<Image>().enabled = false;
+      _questicon.transform.SetParent(_button.transform);
+      _questicon.transform.localScale = Vector3.one;
+      _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+      _questicon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
+      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Castles[i], _questicon.GetComponent<Image>());
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
 

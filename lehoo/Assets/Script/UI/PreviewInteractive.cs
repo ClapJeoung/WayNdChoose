@@ -9,7 +9,6 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
     [Space(15)]
-  public Trait MyTrait = null;
     public ThemeType MyTheme = ThemeType.Conversation;
     public TendencyType MyTendency = TendencyType.None;
   public TendencyType MySelectionTendency= TendencyType.None;
@@ -28,7 +27,6 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         case PreviewPanelType.Gold:UIManager.Instance.PreviewManager.OpenGoldPreview();break;
       case PreviewPanelType.Map:UIManager.Instance.PreviewManager.OpenMapPreview();break;
       case PreviewPanelType.Quest:UIManager.Instance.PreviewManager.OpenQuestPreview();break;
-      case PreviewPanelType.Trait: UIManager.Instance.PreviewManager.OpenTraitPreview(MyTrait);break;
       case PreviewPanelType.Theme:UIManager.Instance.PreviewManager.OpenThemePreview(MyTheme);break;
       case PreviewPanelType.Skill:UIManager.Instance.PreviewManager.OpenSkillPreview(MySkillName);break;
       case PreviewPanelType.EXP_long:
@@ -75,8 +73,6 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenRewardSanityPreview(RewardValue); break;
       case PreviewPanelType.RewardGold:
         UIManager.Instance.PreviewManager.OpenRewardGoldPreview(RewardValue); break;
-      case PreviewPanelType.RewardTrait:
-        UIManager.Instance.PreviewManager.OpenRewardTraitPreview(MyTrait); break;
       case PreviewPanelType.RewardTheme:
         UIManager.Instance.PreviewManager.OpenRewardThemePreview(MyTheme); break;
       case PreviewPanelType.RewardSkill:
@@ -87,19 +83,19 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenSkillSelectPreview(MySkillName);break;
       case PreviewPanelType.RewardExpSelect_long:
         _exp = GameManager.Instance.MyGameData.LongTermEXP[ExpIndex];
-        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP);
+        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,true);
         else
         {
-          if (_exp.GoodExp == true) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP);
+          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP,true);
           else UIManager.Instance.PreviewManager.OpenExpSelectionBadPreview();
         }
         break;
       case PreviewPanelType.RewardExpSelect_short:
         _exp = GameManager.Instance.MyGameData.ShortTermEXP[ExpIndex];
-        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP);
+        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,false);
         else
         {
-          if (_exp.GoodExp == true) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP);
+          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP,false);
           else UIManager.Instance.PreviewManager.OpenExpSelectionBadPreview();
         }
         break;
