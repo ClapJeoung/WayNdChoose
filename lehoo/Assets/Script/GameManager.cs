@@ -224,14 +224,46 @@ public class GameManager : MonoBehaviour
       UIManager.Instance.UpdateTurnIcon();
     }
   }
+  public void AddBadExp(Experience badexp)
+  {
+    int _targetslot = 0;
+    List<int> _emptylist = new List<int>();
+    for (int i = 0; i < MyGameData.ShortTermEXP.Length; i++)
+      if (MyGameData.ShortTermEXP[i] == null) _emptylist.Add(i);
+    //단기 슬롯에서 빈 칸 가져오기
+    if (_emptylist.Count > 0)
+    {
+      _targetslot=Random.Range(0,_emptylist.Count);
+      return;
+    } //단기 슬롯 중 빈 칸이 있다면 무작위로 악경험 삽입하고 종료
+
+    for (int i = 0; i < MyGameData.LongTermEXP.Length; i++)
+      if (MyGameData.LongTermEXP[i] == null) _emptylist.Add(i);
+    if (_emptylist.Count > 0)
+    {
+      _targetslot = Random.Range(0, _emptylist.Count);
+      return;
+    } //단기 슬롯에 빈 칸이 없다면 장기 슬롯 중 무작위로 악경험 삽입하고 종료
+
+    if (Random.Range(0, 100) < 75)
+    {
+      _targetslot = Random.Range(0, 4);
+    } //장기,단기 둘 다 꽉 차있다면 75% 확률로 단기 경험 하나 대체
+    else
+    {
+      _targetslot = Random.Range(0, 2);
+    } //15% 확률로 장기 경험 하나 대체
+  }
   public void AddShortExp(Experience _exp, int _index)
   {
+    if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
     _exp.Duration = ConstValues.ShortTermStartTurn;
     MyGameData.ShortTermEXP[_index] = _exp;
     UIManager.Instance.UpdateExpShortTermIcon();
   }
   public void AddLongExp(Experience _exp, int _index)
   {
+    if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
     _exp.Duration = ConstValues.LongTermStartTurn;
     MyGameData.LongTermEXP[_index] = _exp;
     MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;

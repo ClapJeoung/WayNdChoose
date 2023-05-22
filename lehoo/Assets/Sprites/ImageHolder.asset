@@ -635,7 +635,7 @@ MonoBehaviour:
   GoldIcon: {fileID: 21300000, guid: d0bf0653c07a0f3479a402fb6c35fb50, type: 3}
   GoldIncreaseIcon: {fileID: -1776737468, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   GoldDecreaseIcon: {fileID: -237304368, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
-  Quest_risig: {fileID: -1705875917, guid: 3ef652186acb6af4c89d9c478178ba86, type: 3}
-  Quest_climax: {fileID: 581620886, guid: 3ef652186acb6af4c89d9c478178ba86, type: 3}
-  Quest_fall: {fileID: 1409932780, guid: 3ef652186acb6af4c89d9c478178ba86, type: 3}
-  UnPleasant: {fileID: 21300000, guid: b0dcb37931cd8e944b7d1b0f83a0a1cc, type: 3}
+  Quest_risig: {fileID: 21300000, guid: 0d58313d00cc8cd46bf57ccfe780485c, type: 3}
+  Quest_climax: {fileID: 21300000, guid: 05d24a6df66b71b4a8cb5a1628a77811, type: 3}
+  Quest_fall: {fileID: 21300000, guid: e6ec370da0fec434d936dad7fd7c7553, type: 3}
+  UnPleasant: {fileID: 21300000, guid: b2a0bb0e9a8d0664a91e3295a415268a, type: 3}

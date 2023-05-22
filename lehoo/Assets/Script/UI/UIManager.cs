@@ -120,6 +120,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private ParticleSystem HPGenParticle = null;
   [SerializeField] private ParticleSystem SanityGenParticle = null;
   [SerializeField] private ParticleSystem GoldGenParticle = null;
+  
   private IEnumerator lossstatus(int _value,Vector3 _startpos)
   {
     if (_value == 0) yield break;
@@ -221,10 +222,13 @@ public class UIManager : MonoBehaviour
   {
     for(int i=0; i < LongTermIcon.Length; i++)
     {
-      if (GameManager.Instance.MyGameData.LongTermEXP[i] == null) LongTermIcon[i].sprite = GameManager.Instance.ImageHolder.EmptyLongExpIcon;
+      if (GameManager.Instance.MyGameData.LongTermEXP[i] == null)
+      {
+        LongTermIcon[i].enabled = true;
+      }
       else
       {
-        LongTermIcon[i].sprite = null;
+        LongTermIcon[i].enabled = false;
         LongTermTurn[i].text = GameManager.Instance.MyGameData.LongTermEXP[i].Duration.ToString();
       }
     }
@@ -235,10 +239,13 @@ public class UIManager : MonoBehaviour
   {
     for (int i = 0; i < ShortTermIcon.Length; i++)
     {
-      if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null) ShortTermIcon[i].sprite = GameManager.Instance.ImageHolder.EmptyShortExpIcon;
+      if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null)
+      {
+        ShortTermTurn[i].enabled = true;
+      }
       else
       {
-        ShortTermIcon[i].sprite = null;
+        ShortTermIcon[i].enabled = false;
         ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
       }
     }
@@ -579,6 +586,7 @@ public class UIManager : MonoBehaviour
     MyQuestSuggent.CloseQuestUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MyEvnetSuggest.CloseSuggestPanel_normal();
+  public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
 }
 public static class ColorText
 {

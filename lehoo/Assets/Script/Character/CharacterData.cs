@@ -235,6 +235,7 @@ public class GameData    //게임 진행도 데이터
       {
         List<string> _madnesskeys=GameManager.Instance.MadExpDic.Keys.ToList();
         Experience _madness = GameManager.Instance.MadExpDic[_madnesskeys[UnityEngine.Random.Range(0, _madnesskeys.Count)]];
+        UIManager.Instance.GetMad(_madness);
         currentsanity = MaxSanity;
         //광기 경험 채우는거로 대체되야 함
       }

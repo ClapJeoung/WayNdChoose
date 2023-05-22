@@ -14,14 +14,28 @@ public class UI_EventSuggest : UI_default
     //정착지 주위 환경 설명 요소
     [SerializeField] private CanvasGroup UnPleasantGroup = null;
   [SerializeField] private TextMeshProUGUI CurrentUnPlesant = null;
-    [SerializeField] private List<PlaceButton> MyPlaceButtons = new List<PlaceButton>();
-    private PlaceType CurrentPlace = PlaceType.NULL;
+  public PlaceButton Place_residence = null;
+  public PlaceButton Place_marketplace = null;
+  public PlaceButton Place_temple = null;
+  public PlaceButton Place_library = null;
+  public PlaceButton Place_theater = null;
+  public PlaceButton Place_academy = null;
+  private PlaceType CurrentPlace = PlaceType.NULL;
     [SerializeField] private CanvasGroup PlacePanelGroup = null;
     [SerializeField] private Image IllustImage = null;
     [SerializeField] private TextMeshProUGUI PlaceDescription = null;
     [SerializeField] private TextMeshProUGUI PlaceEffect = null;
     [SerializeField] private CanvasGroup StartButtonGroup = null;
     [SerializeField] private Button StartButton = null;
+  private void Start()
+  {
+    Place_residence.MyText.name = GameManager.Instance.GetTextData(Place_residence.MyPlaceType).Name;
+    Place_marketplace.MyText.name = GameManager.Instance.GetTextData(Place_marketplace.MyPlaceType).Name;
+    Place_temple.MyText.name = GameManager.Instance.GetTextData(Place_temple.MyPlaceType).Name;
+    Place_library.MyText.name = GameManager.Instance.GetTextData(Place_library.MyPlaceType).Name;
+    Place_theater.MyText.name = GameManager.Instance.GetTextData(Place_theater.MyPlaceType).Name;
+    Place_academy.MyText.name = GameManager.Instance.GetTextData(Place_academy.MyPlaceType).Name;
+  }
   public void OpenSuggest()
   {
 
@@ -51,13 +65,27 @@ public class UI_EventSuggest : UI_default
         StartCoroutine(UIManager.Instance.ChangeAlpha(PlacePanelGroup, 1.0f, false, UIFadeMoveDir.Left));
         yield return _wait;
 
-        List<PlaceType> _currentplaces = GameManager.Instance.MyGameData.CurrentSettlement.AvailabePlaces;
-        for(int i = 0; i < _currentplaces.Count; i++)
-        {
-            MyPlaceButtons[i].gameObject.SetActive(true);
-            MyPlaceButtons[i].Setup(_currentplaces[i]);
-            yield return _wait;
-        }
+    switch (GameManager.Instance.MyGameData.CurrentSettlement.Type)
+    {
+      case SettlementType.Town:
+        Place_residence.Setup();
+        Place_marketplace.Setup();
+        Place_temple.Setup();
+        break;
+      case SettlementType.City:
+        Place_residence.Setup();
+        Place_marketplace.Setup();
+        Place_temple.Setup();
+        Place_library.Setup();
+        break;
+      case SettlementType.Castle:
+        Place_residence.Setup();
+        Place_marketplace.Setup();
+        Place_temple.Setup();
+        Place_theater.Setup();
+        Place_academy.Setup();
+        break;
+    }
 
         MyGroup.interactable = true;
         MyGroup.blocksRaycasts = true;
@@ -81,13 +109,9 @@ public class UI_EventSuggest : UI_default
         StartCoroutine(UIManager.Instance.ChangeAlpha(StartButtonGroup, 0.0f, false, UIFadeMoveDir.Down));
         yield return _wait;
 
-        for(int i = 0; i < MyPlaceButtons.Count; i++)
-            if (MyPlaceButtons[i].gameObject.activeInHierarchy)
-            {
-                MyPlaceButtons[i].Close();
-                yield return _wait;
-            }
-        yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PlacePanelGroup, 0.0f, false, UIFadeMoveDir.Right));
+
+    
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PlacePanelGroup, 0.0f, false, UIFadeMoveDir.Right));
 
         SettleName.text = "";
         CurrentUnPlesant.text = "";
@@ -96,7 +120,7 @@ public class UI_EventSuggest : UI_default
         PlaceDescription.text = "";
         PlaceEffect.text = "";
 
-    }
+  }
     public void CloseSuggestPanel_quick()
     {
         MyGroup.interactable = false;
@@ -107,9 +131,28 @@ public class UI_EventSuggest : UI_default
         //환경 초기화
         UnPleasantGroup.alpha = 0.0f;
         CurrentUnPlesant.text = "";
-        for(int i = 0; i < MyPlaceButtons.Count; i++)
-            if (MyPlaceButtons[i].gameObject.activeInHierarchy) MyPlaceButtons[i].Close();
-        CurrentPlace = PlaceType.NULL;
+    switch (GameManager.Instance.MyGameData.CurrentSettlement.Type)
+    {
+      case SettlementType.Town:
+        Place_residence.Close();
+        Place_marketplace.Close();
+        Place_temple.Close();
+        break;
+      case SettlementType.City:
+        Place_residence.Close();
+        Place_marketplace.Close();
+        Place_temple.Close();
+        Place_library.Close();
+        break;
+      case SettlementType.Castle:
+        Place_residence.Close();
+        Place_marketplace.Close();
+        Place_temple.Close();
+        Place_theater.Close();
+        Place_academy.Close();
+        break;
+    }
+    CurrentPlace = PlaceType.NULL;
         PlacePanelGroup.alpha = 0.0f;
         IllustImage.sprite = GameManager.Instance.ImageHolder.NoneIllust;
         PlaceDescription.text = "";

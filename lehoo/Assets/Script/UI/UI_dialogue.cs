@@ -576,32 +576,7 @@ public class UI_dialogue : UI_default
         }
         break;
       case PenaltyTarget.EXP:
-        List<int> _emptylist=new List<int>();
-        for (int i = 0; i < GameManager.Instance.MyGameData.ShortTermEXP.Length; i++)
-          if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null) _emptylist.Add(i);
-        if (_emptylist.Count > 0)
-        {
-          GameManager.Instance.AddShortExp(GameManager.Instance.ExpDic[_fail.ExpID], Random.Range(0, _emptylist.Count));
-          break;
-        } //단기 슬롯 중 무작위로 악경험 삽입
-
-        for (int i = 0; i < GameManager.Instance.MyGameData.LongTermEXP.Length; i++)
-          if (GameManager.Instance.MyGameData.LongTermEXP[i] == null) _emptylist.Add(i);
-        if (_emptylist.Count > 0)
-        {
-          GameManager.Instance.AddLongExp(GameManager.Instance.ExpDic[_fail.ExpID], Random.Range(0, _emptylist.Count));
-          break;
-        } //단기 슬롯에 빈 칸이 없다면 장기 슬롯 중 무작위로 악경험 삽입
-
-        if (Random.Range(0, 100) < 75)
-        {
-          GameManager.Instance.ShiftShortExp(GameManager.Instance.ExpDic[_fail.ExpID], Random.Range(0, GameManager.Instance.MyGameData.ShortTermEXP.Length));
-        } //장기,단기 둘 다 꽉 차있다면 75% 확률로 단기 경험 하나 대체
-        else
-        {
-          GameManager.Instance.ShiftLongExp(GameManager.Instance.ExpDic[_fail.ExpID], Random.Range(0, GameManager.Instance.MyGameData.LongTermEXP.Length));
-        } //15% 확률로 장기 경험 하나 대체
-        //UIManager.Instance.OpenBadExpUI(GameManager.Instance.ExpDic[_fail.ExpID]);
+        GameManager.Instance.AddBadExp(GameManager.Instance.ExpDic[_fail.ExpID]);
         break;
     }
   }//실패할 경우 패널티 부과하는 연출
