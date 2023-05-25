@@ -403,7 +403,7 @@ MonoBehaviour:
   NormalEventData: {fileID: 4900000, guid: e16099a1c8deb6948a8fcb3e0e5251f6, type: 3}
   FollowEventData: {fileID: 4900000, guid: 9e0b2a35e953add4f92621d38fe6cbbd, type: 3}
   QuestEventData: {fileID: 4900000, guid: 36ca1f749a3cd3747976dfbf7f42cd02, type: 3}
-  EXPData: {fileID: 4900000, guid: d4387f9686a799e4fa6753c104a1bf83, type: 3}
+  EXPData: {fileID: 4900000, guid: eb07869c6ff6a7e4682b2162a26e342f, type: 3}
   TextData: {fileID: 4900000, guid: c6b131f3a9f098949b9a37c5bfeaed90, type: 3}
 --- !u!4 &311089977
 Transform:

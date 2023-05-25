@@ -33,9 +33,9 @@ public class RewardButton : MonoBehaviour
      MyValue = _value;
     switch (RewardType)
     {
-      case RewardTarget.HP: RewardInfo.text = GameManager.Instance.GetTextData("hpincrease").Name + " " + MyValue.ToString();break;
-      case RewardTarget.Sanity: RewardInfo.text = GameManager.Instance.GetTextData("sanityincrease").Name + " " + MyValue.ToString(); break;
-      case RewardTarget.Gold: RewardInfo.text = GameManager.Instance.GetTextData("goldincrease").Name + " " + MyValue.ToString(); break;
+      case RewardTarget.HP: RewardInfo.text =  MyValue.ToString();break;
+      case RewardTarget.Sanity: RewardInfo.text = MyValue.ToString(); break;
+      case RewardTarget.Gold: RewardInfo.text =  MyValue.ToString(); break;
     }
   }
   public void Setup_Expid(string _id)
@@ -43,7 +43,7 @@ public class RewardButton : MonoBehaviour
     GetComponent<Button>().interactable = true;
     RewardType = RewardTarget.Experience;
     MyID = _id;
-    RewardInfo.text = GameManager.Instance.GetTextData(MyID).Name;
+    RewardInfo.text =$"{GameManager.Instance.GetTextData("exp").Name}: {GameManager.Instance.GetTextData(MyID).Name}";
     MyExp=GameManager.Instance.ExpDic[MyID];
   }
   public void Setup_theme(ThemeType _theme)

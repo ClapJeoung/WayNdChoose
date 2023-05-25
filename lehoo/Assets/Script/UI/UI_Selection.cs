@@ -12,6 +12,7 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private TextMeshProUGUI MyDescription = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
   public TendencyType MyTendencyType = TendencyType.None;
+  public int Index = 0;
   //현재 이 선택지가 가지는 설명문
   public SelectionData MySelectionData = null;
   public Vector2 OriginPos= Vector2.zero;
@@ -73,6 +74,6 @@ public class UI_Selection : MonoBehaviour
   {
     MyUIDialogue.SelectSelection(this);
     if (MyTendencyType.Equals(TendencyType.None)) return;
-    GameManager.Instance.AddTendencyCount(MyTendencyType);
+    GameManager.Instance.AddTendencyCount(MyTendencyType,Index);
   }
 }

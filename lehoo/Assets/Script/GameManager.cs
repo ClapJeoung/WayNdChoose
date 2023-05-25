@@ -67,6 +67,20 @@ public class GameManager : MonoBehaviour
     }
     return GetTextData(_name);
   }
+  public TextData GetTextData(ThemeType theme,bool isup,bool isstrong)
+  {
+    string _name = "";
+    switch (theme)
+    {
+      case ThemeType.Conversation: _name = "conversation"; break;
+      case ThemeType.Force: _name = "force"; break;
+      case ThemeType.Wild: _name = "wild"; break;
+      case ThemeType.Intelligence: _name = "intelligence"; break;
+    }
+    _name += isstrong ? "double" : "";
+    _name += isup ? "up" : "down";
+    return GetTextData(_name);
+  }
   public TextData GetTextData(EffectType _effect)
   {
     switch (_effect)
@@ -85,29 +99,28 @@ public class GameManager : MonoBehaviour
       case EffectType.Survivable: return GetTextData("survivable");
       case EffectType.Biology: return GetTextData("biology");
       case EffectType.Knowledge: return GetTextData("knowledge");
-      case EffectType.HPLoss: return GetTextData("hpdecrease");
-      case EffectType.HPGen: return GetTextData("hpincrease");
-      case EffectType.SanityLoss: return GetTextData("sanitydecrease");
-      case EffectType.SanityGen: return GetTextData("sanityincrease");
-      case EffectType.GoldLoss: return GetTextData("golddecrease");
-      case EffectType.GoldGen: return GetTextData("goldincrease");
+      case EffectType.HPLoss: return GetTextData(StatusType.HP, false);
+      case EffectType.HPGen: return GetTextData(StatusType.HP, true);
+      case EffectType.SanityLoss: return GetTextData(StatusType.Sanity, false);
+      case EffectType.SanityGen: return GetTextData(StatusType.Sanity, true);
+      case EffectType.GoldLoss: return GetTextData(StatusType.Gold, false);
+      case EffectType.GoldGen: return GetTextData(StatusType.Gold, true);
       default: return NullText;
     }
   }
-  public TextData GetTextData(TendencyType _tendency)
+  public TextData GetTextData(TendencyType tendency,int level)
   {
-    switch (_tendency)
+    string _name = tendency.Equals(TendencyType.Body) ? "tendency_body_" : "tendency_head_";
+    string _level = "";
+    switch (level)
     {
-      case TendencyType.Rational:
-        return GetTextData("rational");
-      case TendencyType.Physical:
-        return GetTextData("physical");
-      case TendencyType.Mental:
-        return GetTextData("mental");
-      case TendencyType.Material:
-        return GetTextData("material");
-      default: return NullText;
+      case -2:_level = "m2";break;
+      case -1:_level = "m1";break;
+      case 0:_level = "0";break;
+      case 1:_level = "p1";break;
+      case 2:_level = "p2";break;
     }
+    return GetTextData(_name + _level);
   }
   public TextData GetTextData(PlaceType _place)
   {
@@ -128,7 +141,66 @@ public class GameManager : MonoBehaviour
     else if (_eventtype == typeof(FollowEventData)) return GetTextData("followeventpredescription");
     else return GetTextData("questeventpredescription");
   }
-  public void LoadData()
+  public TextData GetTextData(StatusType type)
+  {
+    switch (type)
+    {
+      case StatusType.HP:return GetTextData("hp");
+      case StatusType.Sanity:return GetTextData("sanity");
+      default:return GetTextData("gold");
+    }
+  }
+  public TextData GetTextData(StatusType type,bool isincrease)
+  {
+    switch (type)
+    {
+      case StatusType.HP: if (isincrease) return GetTextData("hpincrease"); else return GetTextData("hpdecrease");
+      case StatusType.Sanity: if (isincrease) return GetTextData("sanityincrease"); else return GetTextData("sanitydecrease");
+      default: if (isincrease) return GetTextData("goldincrease"); else return GetTextData("golddecrease");
+    }
+  }
+  /// <summary>
+  /// 레벨은 1/2
+  /// </summary>
+  /// <param name="type"></param>
+  /// <param name="isup"></param>
+  /// <param name="level"></param>
+  /// <returns></returns>
+  public TextData GetTextData(StatusType type,bool isincrease,bool isup, int value)
+  {
+    string _targetname = "";
+    switch (type)
+    {
+      case StatusType.HP:
+        _targetname = "hp";break;
+      case StatusType.Sanity:
+        _targetname = "sanity";break;
+      case StatusType.Gold:
+        _targetname = "gold";break;
+    }
+    _targetname += isincrease ? "increase" : "decrease";
+    _targetname += Mathf.Abs(value)>ConstValues.DoubleValue ? "" : "double";
+    _targetname += isup ? "up" : "down";
+    return GetTextData(_targetname);
+  }
+  public TextData GetTextData(StatusType type, bool isincrease, bool isup, bool isstrong)
+  {
+    string _targetname = "";
+    switch (type)
+    {
+      case StatusType.HP:
+        _targetname = "hp"; break;
+      case StatusType.Sanity:
+        _targetname = "sanity"; break;
+      case StatusType.Gold:
+        _targetname = "gold"; break;
+    }
+    _targetname += isincrease ? "increase" : "decrease";
+    _targetname += isstrong ? "" : "double";
+    _targetname += isup ? "up" : "down";
+    return GetTextData(_targetname);
+  }
+    public void LoadData()
   {
     MyGameData = new GameData();
     //데이터가 있으면 데이터 불러오고, 데이터가 없다면 새로 만들기
@@ -177,21 +249,25 @@ public class GameManager : MonoBehaviour
   {
 
   }//현재 데이터 저장
-  public void SuccessCurrentEvent(TendencyType _tendencytype)
+  public void SuccessCurrentEvent(TendencyType _tendencytype,int index)
   {
-    EventHolder.RemoveEvent(MyGameData.CurrentEvent.ID);
+    EventHolder.RemoveEvent(MyGameData.CurrentEvent.OriginID);
     switch (_tendencytype)
     {
       case TendencyType.None:
         MyGameData.SuccessEvent_None.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Rational:
-        MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Mental:
-        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Physical:
-        MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Material:
-        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.ID); break;
+      case TendencyType.Body:
+        if(index.Equals(0))
+          MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.ID); 
+        else
+          MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.ID); 
+        break;
+      case TendencyType.Head:
+        if(index.Equals(0))
+        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.ID);
+        else
+        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.ID); 
+        break;
     }
     MyGameData.SuccessEvent_All.Add(MyGameData.CurrentEvent.ID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
@@ -201,20 +277,24 @@ public class GameManager : MonoBehaviour
       UIManager.Instance.UpdateTurnIcon();
     }
   }
-  public void FailCurrentEvent(TendencyType _tendencytype)
+  public void FailCurrentEvent(TendencyType _tendencytype, int index)
   {
     switch (_tendencytype)
     {
       case TendencyType.None:
         MyGameData.FailEvent_None.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Rational:
-        MyGameData.FailEvent_Rational.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Mental:
-        MyGameData.FailEvent_Mental.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Physical:
-        MyGameData.FailEvent_Physical.Add(MyGameData.CurrentEvent.ID); break;
-      case TendencyType.Material:
-        MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.ID); break;
+      case TendencyType.Body:
+        if (index.Equals(0))
+          MyGameData.FailEvent_Rational.Add(MyGameData.CurrentEvent.ID);
+        else
+          MyGameData.FailEvent_Physical.Add(MyGameData.CurrentEvent.ID);
+        break;
+      case TendencyType.Head:
+        if (index.Equals(0))
+          MyGameData.FailEvent_Mental.Add(MyGameData.CurrentEvent.ID);
+        else
+          MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.ID);
+        break;
     }
     MyGameData.FailEvent_All.Add(MyGameData.CurrentEvent.ID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
@@ -337,21 +417,15 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.OpenQuestDialogue();
     SaveData();
   }//정착지 도착을 통해 퀘스트를 받은 경우
-  public void AddTendencyCount(TendencyType _tendencytype)
+  public void AddTendencyCount(TendencyType _tendencytype,int index)
   {
     switch (_tendencytype)
     {
-      case TendencyType.Rational:
-        MyGameData.Tendency_RP.AddCount(_tendencytype);
+      case TendencyType.Body:
+        MyGameData.Tendency_Body.AddCount(index.Equals(0) ? false : true);
         break;
-      case TendencyType.Physical:
-        MyGameData.Tendency_RP.AddCount(_tendencytype);
-        break;
-      case TendencyType.Mental:
-        MyGameData.Tendency_MM.AddCount(_tendencytype);
-        break;
-      case TendencyType.Material:
-        MyGameData.Tendency_MM.AddCount(_tendencytype);
+      case TendencyType.Head:
+        MyGameData.Tendency_Head.AddCount(index.Equals(0) ? false : true);
         break;
     }
   }
@@ -507,7 +581,8 @@ public class GameManager : MonoBehaviour
     MyGameData.CreateSettleUnpleasant(MyMapData.AllSettles);
 
     UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle);
-    MyGameData.Tendency_MM.Level = 2;
+    MyGameData.Tendency_Body.Level = 2;
+    MyGameData.Tendency_Head.Level = -1;
     yield return null;
   }
 }

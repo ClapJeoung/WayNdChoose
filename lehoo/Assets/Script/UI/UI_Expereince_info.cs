@@ -7,6 +7,7 @@ public class UI_Expereince_info : UI_default
 {
 
   private Experience CurrentExp = null;
+  [SerializeField] private Image TouchBlock = null;
   [SerializeField] private TextMeshProUGUI ExpName = null;
   [SerializeField] private Image ExpIllust = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
@@ -19,6 +20,7 @@ public class UI_Expereince_info : UI_default
     if (UIManager.Instance.IsWorking||_exp==null) return;
     if (IsOpen&&CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
 
+    TouchBlock.enabled = true;
     IsOpen = true;
 
         string _name = _exp.Name;
@@ -57,7 +59,8 @@ public class UI_Expereince_info : UI_default
         if (UIManager.Instance.IsWorking || _exp == null) return;
         if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
 
-        IsOpen = true;
+    TouchBlock.enabled = true;
+    IsOpen = true;
 
         string _name = _exp.Name;
         Sprite _illust = _exp.Illust;
@@ -89,6 +92,7 @@ public class UI_Expereince_info : UI_default
     }
     public override void CloseUI()
   {
+    TouchBlock.enabled = false;
     UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
     IsOpen = false;
   }

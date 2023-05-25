@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 public class UI_skill_info : UI_default
 {
+  [SerializeField] private Image TouchBlock = null;
   [SerializeField] private TextMeshProUGUI MainThemeName;
   [SerializeField] private Image MainThemeIllust = null;
   [SerializeField] private TextMeshProUGUI MainThemeDescription = null;
@@ -36,7 +37,7 @@ public class UI_skill_info : UI_default
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen && CurrentThemeIndex.Equals(_index)) { CloseUI(); return; }
     IsOpen = true;
-
+    TouchBlock.enabled = true;
     ThemeType _themetype = (ThemeType)_index;
     Sprite _themeicon = GameManager.Instance.ImageHolder.GetThemeIcon(_themetype);
     Sprite _themeillust = GameManager.Instance.ImageHolder.GetThemeIllust(_themetype);
@@ -144,6 +145,7 @@ public class UI_skill_info : UI_default
   
   public override void CloseUI()
   {
+    TouchBlock.enabled = false;
     UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect,MyDir,UIManager.Instance.LargePanelMoveTime));
     IsOpen = false;
     CurrentThemeIndex = -1;

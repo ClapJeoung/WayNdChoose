@@ -64,6 +64,9 @@ public static class ConstValues
   public const float MoveSanity_Value_min=10,MoveSanity_Value_max=15;
 
   public const int LongTermChangeCost = 15;
+
+  public const int DoubleValue = 40;
+  public const int MaxTendencyLevel = 2;
 }
 public class GameData    //게임 진행도 데이터
 {
@@ -128,7 +131,7 @@ public class GameData    //게임 진행도 데이터
                 goldfaildata = new FailureData();
                 goldfaildata.Description = GameManager.Instance.GetTextData("goldfail").Name;
                 goldfaildata.Panelty_target = PenaltyTarget.Status;
-                goldfaildata.Loss_target = PayOrLossTarget.Sanity;
+                goldfaildata.Loss_target = StatusType.Sanity;
         goldfaildata.Illust_spring = GameManager.Instance.ImageHolder.NoGoldIllust;
         goldfaildata.Illust_summer = GameManager.Instance.ImageHolder.NoGoldIllust;
         goldfaildata.Illust_fall = GameManager.Instance.ImageHolder.NoGoldIllust;
@@ -441,45 +444,37 @@ public class GameData    //게임 진행도 데이터
   }
   public int GetThemeLevelByTendency(ThemeType _theme)
   {
-    int _value_m3 = 0, _value_m2 = 0, _value_m1 = 0, _value_1 = 0, _value_2 = 0, _value_3 = 0;
+    int _value_m2 = 0, _value_m1 = 0, _value_1 = 0, _value_2 = 0;
     int _sign = 0;
-    int _tendencylevel = Tendency_RP.Level;
+    int _tendencylevel = Tendency_Body.Level;
     switch (_theme)
     {
       case ThemeType.Conversation:
-        _value_m3 = ConstValues.ConversationByTendency_m3;
         _value_m2 = ConstValues.ConversationByTendency_m2;
         _value_m1 = ConstValues.ConversationByTendency_m1;
         _value_1 = ConstValues.ConversationByTendency_1;
         _value_2 = ConstValues.ConversationByTendency_2;
-        _value_3 = ConstValues.ConversationByTendency_3;
         _sign = -1;
         break;
       case ThemeType.Force:
-        _value_m3 = ConstValues.ForceByTendency_m3;
         _value_m2 = ConstValues.ForceByTendency_m2;
         _value_m1 = ConstValues.ForceByTendency_m1;
         _value_1 = ConstValues.ForceByTendency_1;
         _value_2 = ConstValues.ForceByTendency_2;
-        _value_3 = ConstValues.ForceByTendency_3;
         _sign = 1;
         break;
       case ThemeType.Wild:
-        _value_m3 = ConstValues.WildByTendency_m3;
         _value_m2 = ConstValues.WildByTendency_m2;
         _value_m1 = ConstValues.WildByTendency_m1;
         _value_1 = ConstValues.WildByTendency_1;
         _value_2 = ConstValues.WildByTendency_2;
-        _value_3 = ConstValues.WildByTendency_3;
         _sign = 1;
         break;
       case ThemeType.Intelligence:
-        _value_m3 = ConstValues.IntelligenceByTendency_m3;
         _value_m2 = ConstValues.IntelligenceByTendency_m2;
         _value_m1 = ConstValues.IntelligenceByTendency_m1;
         _value_1 = ConstValues.IntelligenceByTendency_1;
         _value_2 = ConstValues.IntelligenceByTendency_2;
-        _value_3 = ConstValues.IntelligenceByTendency_3;
         _sign = -1;
         break;
     }
@@ -487,12 +482,10 @@ public class GameData    //게임 진행도 데이터
     //육체, 자연 : 성향 레벨이 양수면 해당
     switch (_tendencylevel * _sign)
     {
-      case -3: return _value_m3;
       case -2: return _value_m2;
       case -1: return _value_m1;
       case 1: return _value_1;
       case 2: return _value_2;
-      case 3: return _value_3;
       default: return 0;
     }
   }//해당 테마가 현재 성향으로부터 얻는 보정치 반환(이성-육체 성향만 사용)
@@ -527,91 +520,138 @@ public class GameData    //게임 진행도 데이터
     return _temp;
   }//해당 기술의 테마에 속하는 다른 기술들
 
-  public Tendency Tendency_RP = null;//(-)이성-육체(+)
-  public Tendency Tendency_MM = null;//(-)정신-물질(+)
-  public string GetTendencyEffectString(TendencyType _type)
+  public Tendency Tendency_Body = null;//(-)이성-육체(+)
+  public Tendency Tendency_Head = null;//(-)정신-물질(+)
+  public string GetTendencyEffectString_long(TendencyType _type)
   {
     string _tendencydescription = "";
+    TextData _conver, _force, _wild, _intel = null;
+    TextData _sanity, _gold = null;
     switch (_type)
     {
-      case TendencyType.Rational:
-        switch (GameManager.Instance.MyGameData.Tendency_RP.Level)
+      case TendencyType.Body:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
-          case 3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("rationalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n" +
-                $"{GameManager.Instance.GetTextData("conversation").Name}, {GameManager.Instance.GetTextData("intelligence")} " +
-                $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Conversation)} {GameManager.Instance.GetTextData("decrease").Name}";
-            //육체 선택지 정신력 소모\n육체, 자연 (성향으로 인한 육체 감소량) 감소
-            break;
-          case 2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("rationalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n";
-            break;
-          case 1:
-          case 0: //(Rational 기준) RP -3,-2,-1 : 대화,지성 증가   2: 이성 선택지에 패널티  3: 2+이성 관련 스탯 패널티
-            _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
+          case -2:
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, false, false);
+            _intel=GameManager.Instance.GetTextData(ThemeType.Intelligence,false,false);
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, true);
+            _wild=GameManager.Instance.GetTextData(ThemeType.Wild, true, true);
+            _tendencydescription = $"{_force.Name} {_wild.Name}\n{_conver.Name} {_intel.Name}";
             break;
           case -1:
-          case -2:
-          case -3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("conversation").Name}, {GameManager.Instance.GetTextData("intelligence").Name} " +
-            $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Conversation)} {GameManager.Instance.GetTextData("increase").Name}";
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, false);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, false);
+            _tendencydescription = $"{_force.Name} {_wild.Name}";
+            break;
+          case 0:
+            _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
+            break;
+          case 1:
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, false);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, false);
+            _tendencydescription = $"{_conver.Name} {_intel.Name}";
+            break;
+          case 2:
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, true);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, true);
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, false, false);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, false, false);
+            _tendencydescription = $"{_conver.Name} {_intel.Name}\n{_force.Name} {_wild.Name}";
             break;
         }
         break;
-      case TendencyType.Physical:
-        switch (GameManager.Instance.MyGameData.Tendency_RP.Level)
+      case TendencyType.Head:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
-          case 3:
-          case 2:
-          case 1:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("force").Name}, {GameManager.Instance.GetTextData("wild").Name} " +
-             $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Force)} {GameManager.Instance.GetTextData("increase").Name}";
+          case -2:
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, true);
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, true, false, false);
+            _tendencydescription = $"{_sanity.Name}\n{_gold.Name}";
             break;
-          case 0: //Physical 기준 RP -3: (-2)+육체 관련 스탯 패널티  -2: 육체 선택지에 패널티  1,2,3: 무력,자연 증가
           case -1:
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, false);
+            _tendencydescription = _sanity.Name;
+            break;
+          case 0:
             _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
             break;
-          case -2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("physicalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n";
+          case 1:
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, false);
+            _tendencydescription = _gold.Name;
             break;
-          case -3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("physicalselection").Name} {GameManager.Instance.GetTextData("sanitydecrease").Name}\n" +
-           $"{GameManager.Instance.GetTextData("force").Name}, {GameManager.Instance.GetTextData("wild").Name} " +
-           $"{GameManager.Instance.MyGameData.GetThemeLevelByTendency(ThemeType.Force)} {GameManager.Instance.GetTextData("decrease").Name}";
+          case 2:
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, true);
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, true, false, false);
+            _tendencydescription = $"{_gold.Name}\n{_sanity.Name}";
             break;
         }
         break;
-      case TendencyType.Mental:
-        switch (GameManager.Instance.MyGameData.Tendency_MM.Level)
+    }
+    return _tendencydescription;
+  }
+  public string GetTendencyEffectString_short(TendencyType _type)
+  {
+    string _tendencydescription = "";
+    TextData _conver, _force, _wild, _intel = null;
+    TextData _sanity, _gold = null;
+    switch (_type)
+    {
+      case TendencyType.Body:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
-          case -3:
           case -2:
-          case -1:
-            _tendencydescription = $"{ GameManager.Instance.GetTextData("sanitydecrease").FailDescription}";
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, false, false);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, false, false);
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, true);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, true);
+            _tendencydescription = $"{_force.Icon} {_wild.Icon}\n{_conver.Icon} {_intel.Icon}";
             break;
-          case 0: //Mental 기준 MM -3,-2,-1: 정신력 소모량 감소  2: 정신 선택지 패널티  3:정신력 회복 감소
-          case 1:
+          case -1:
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, false);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, false);
+            _tendencydescription = $"{_force.Icon} {_wild.Icon}";
+            break;
+          case 0:
             _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
             break;
+          case 1:
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, false);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, false);
+            _tendencydescription = $"{_conver.Icon} {_intel.Icon}";
+            break;
           case 2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("sanityincrease").FailDescription}";
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, true);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, true);
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, false, false);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, false, false);
+            _tendencydescription = $"{_conver.Icon} {_intel.Icon}\n{_force.Icon} {_wild.Icon}";
             break;
         }
         break;
-      case TendencyType.Material:
-        switch (GameManager.Instance.MyGameData.Tendency_MM.Level)
+      case TendencyType.Head:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("goldincrease").FailDescription}";
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, true);
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, true, false, false);
+            _tendencydescription = $"{_sanity.Icon}\n{_gold.Icon}";
             break;
           case -1:
-          case 0://Material 기준 MM -3: 돈 습득 감소  -2: 물질 선택지 패널티  1,2,3: 돈 소모량 감소
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, false);
+            _tendencydescription = _sanity.Icon;
+            break;
+          case 0:
             _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
             break;
           case 1:
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, false);
+            _tendencydescription = _gold.Icon;
+            break;
           case 2:
-          case 3:
-            _tendencydescription = $"{GameManager.Instance.GetTextData("golddecrease").FailDescription}";
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, true);
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, true, false, false);
+            _tendencydescription = $"{_gold.Icon}\n{_sanity.Icon}";
             break;
         }
         break;
@@ -622,20 +662,16 @@ public class GameData    //게임 진행도 데이터
   {
     switch (_type)
     {
-      case TendencyType.Rational:
-        return Tendency_RP.Level * -1;
-      case TendencyType.Physical:
-        return Tendency_RP.Level * +1;
-      case TendencyType.Mental:
-        return Tendency_MM.Level * -1;
-      case TendencyType.Material:
-        return Tendency_MM.Level * +1;
+      case TendencyType.Body:
+        return Tendency_Body.Level;
+      case TendencyType.Head:
+        return Tendency_Head.Level;
     }
     return 100;
   }
   public void AssembleTendency()
   {
-    Tendency _currenttendency=UnityEngine.Random.Range(0,2)==0?Tendency_RP:Tendency_MM;
+    Tendency _currenttendency=UnityEngine.Random.Range(0,2)==0?Tendency_Head:Tendency_Body;
     bool _changelittle = false;
     if (_currenttendency.Level.Equals(0)) _changelittle = true;  //레벨이 0이라면 반전이 불가능하니 값 증감(changelittle)로 한다
     else _changelittle = UnityEngine.Random.Range(0, 10) < 8 ? true : false;
@@ -976,7 +1012,7 @@ public class GameData    //게임 진행도 데이터
 
     var _exptuple = GetEffectModifyCount_Exp(EffectType.SanityGen);
     float _plusamount = 0, _minusamount = 0;
-    bool _tendencychecked = Tendency_MM.Level >= 3 ? true : false;   //물질 방향 3 이상이면 정신력 회복량 감소(부정적)
+    bool _tendencychecked = Tendency_Head.Level >= 2 ? true : false;   //Head 2 이상이면 정신력 회복량 감소(부정적)
     for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityGen_Exp;
     //튜플의 item1은 긍정적 효과(회복증가) 개수
     for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.SanityGen_Exp;
@@ -995,15 +1031,14 @@ public class GameData    //게임 진행도 데이터
 
     var _exptuple = GetEffectModifyCount_Exp(EffectType.SanityLoss);
     float _plusamount = 0, _minusamount = 0;
-    bool _tendencychecked = Tendency_MM.Level <= -1 ? true : false;   //정신 방향 1 이상이면 정신력 소모량 감소(긍정적)
+    bool _tendencychecked = Tendency_Head.Level <= -1 ? true : false;   //Head -1 이하면 정신력 소모량 감소(긍정적)
     for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityLoss_Exp;
     //튜플의 item1은 부정적 효과(감소증가) 개수
 
     for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.SanityLoss_Exp;
     //튜플의 item2는 긍정적 효과(감소감소) 개수
     float _sanitylosstendency = 0;
-    if (Tendency_MM.Level <= -3) _sanitylosstendency = ConstValues.SanityLoss_Tendency_3;
-    else if (Tendency_MM.Level <= -2) _sanitylosstendency = ConstValues.SanityLoss_Tendency_2;
+ if (Tendency_Head.Level <= -2) _sanitylosstendency = ConstValues.SanityLoss_Tendency_2;
     else _sanitylosstendency = ConstValues.SanityLoss_Tendency_1;
     if (_tendencychecked == true) _minusamount += (100.0f- _minusamount) * _sanitylosstendency;
 
@@ -1018,7 +1053,7 @@ public class GameData    //게임 진행도 데이터
     float _amount = 0;
     var _exptuple = GetEffectModifyCount_Exp(EffectType.GoldGen);
     float _plusamount = 0, _minusamount = 0;
-    bool _tendencychecked = Tendency_MM.Level <= -3 ? true : false;   //정신 3 이상이면 돈 회복량 감소(부정적)
+    bool _tendencychecked = Tendency_Head.Level <= -2 ? true : false;   //Head -2면 돈 회복량 감소(부정적)
     for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.GoldGen_Exp;
     //튜플의 item1은 긍정적 효과(증가증가) 개수
 
@@ -1037,12 +1072,11 @@ public class GameData    //게임 진행도 데이터
     float _amount = 0;
     var _exptuple = GetEffectModifyCount_Exp(EffectType.GoldLoss);
     float _plusamount = 0, _minusamount = 0;
-    bool _tendencychecked = Tendency_MM.Level >= 1 ? true : false;   //물질 1 이상이면 돈 소모량 감소(긍정적)
+    bool _tendencychecked = Tendency_Head.Level >= 1 ? true : false;   //Head 1 이상이면 돈 소모량 감소(긍정적)
     for (int i = 0; i < _exptuple.Item1; i++) _plusamount += (100.0f- _plusamount) * ConstValues.GoldLoss_Exp;
     //튜플의 item1은 긍정적 효과(감소감소) 개수
     float _goldlosstendency = 0;
-    if (Tendency_MM.Level >= 3) _goldlosstendency = ConstValues.GoldLoss_Tendency_3;
-    else if (Tendency_MM.Level >= 2) _goldlosstendency = ConstValues.GoldLoss_Tendency_2;
+ if (Tendency_Head.Level >= 2) _goldlosstendency = ConstValues.GoldLoss_Tendency_2;
     else _goldlosstendency = ConstValues.GoldLoss_Tendency_1;
 
     for (int i = 0; i < _exptuple.Item2; i++) _minusamount += (100.0f- _minusamount) * ConstValues.GoldLoss_Exp;
@@ -1081,8 +1115,8 @@ public class GameData    //게임 진행도 데이터
     Skills.Add(SkillName.Somatology, _somatology);
     Skills.Add(SkillName.Biology, _biology);
     Skills.Add(SkillName.Survivable, _survivable);
-    Tendency_RP = new Tendency(TendencyType.Rational, TendencyType.Physical);
-    Tendency_MM = new Tendency(TendencyType.Mental, TendencyType.Material);
+    Tendency_Body = new Tendency(TendencyType.Body);
+    Tendency_Head = new Tendency(TendencyType.Head);
   }
   /// <summary>
   /// 이전 정착지 제시 리스트, 이전 이벤트 지우기
@@ -1133,16 +1167,57 @@ public class Skill
   }
   public Skill(ThemeType _a, ThemeType _b,SkillName name) { Type_A = _a;Type_B= _b;SkillType = name; }
 }
-public enum TendencyType {None, Rational,Physical,Mental,Material}
+public enum TendencyType {None, Body,Head}
 public class Tendency
 {
-  public TendencyType Type_foward,Type_back;
-  public int count = 0;
-  private const int MaxLevel = 2;
-  public void AddCount(TendencyType _type)
+  public TendencyType Type;
+  public Sprite Illust
   {
-    if (_type.Equals(TendencyType.Physical)||_type.Equals(TendencyType.Material))
-    {//육체나 물질이면 양수 진행
+    get
+    {
+     return GameManager.Instance.ImageHolder.GettendencyIllust(Type, Level);
+    }
+  }
+  public Sprite Icon
+  {
+    get
+    {
+      return GameManager.Instance.ImageHolder.GetTendencyIcon(Type,level);
+    }
+  }
+  public TextData MyTextData
+  {
+    get
+    {
+      return GameManager.Instance.GetTextData(Type, Level);
+    }
+  }
+  public string Name
+  {
+    get
+    {
+     return MyTextData.Name;
+    }
+  }
+  public string Description
+  {
+    get { return MyTextData.Description; }
+  }
+  public string SubDescription
+  {
+    get { return MyTextData.SelectionSubDescription; }
+  }
+  public int count = 0;
+  public int MaxTendencyLevel { get { return ConstValues.MaxTendencyLevel; } }
+  /// <summary>
+  /// false: 마이너스     true: 플러스
+  /// </summary>
+  /// <param name="_type"></param>
+  /// <param name="dir"></param>
+  public void AddCount(bool dir)
+  {
+    if (dir.Equals(true))
+    {//true면 양수 진행
 
       if (count <= 0) count = 1;
       else count++;
@@ -1162,8 +1237,8 @@ public class Tendency
           break;
       }
     }
-    else if (_type.Equals(TendencyType.Rational) || _type.Equals(TendencyType.Mental))
-    {//이성이나 정신이면 음수 진행
+    else if (dir.Equals(false))
+    {//false면 음수 진행
 
       if (count >= 0) count = -1;
       else count--;
@@ -1193,7 +1268,7 @@ public class Tendency
       if(UIManager.Instance!=null) UIManager.Instance.UpdateTendencyIcon();
     }
   }
-  public Tendency(TendencyType _a, TendencyType _b) { Type_back = _a; Type_foward = _b;}
+  public Tendency(TendencyType type) { Type = type; }
 }
 public class ProgressData
 {

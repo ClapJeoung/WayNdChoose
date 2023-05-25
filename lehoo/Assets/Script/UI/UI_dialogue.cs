@@ -29,27 +29,31 @@ public class UI_dialogue : UI_default
   {
     if (KeepMoveText.text.Equals("null")) KeepMoveText.text = GameManager.Instance.GetTextData("keepgoing").Name;
   }
-  private UI_Selection GetUISelection(TendencyType _tendencytype)
+  private UI_Selection GetUISelection(TendencyType _tendencytype,int index)
   {
     switch (_tendencytype)
     {
       case TendencyType.None:return Selection_None;
-        case TendencyType.Rational:return Selection_Rational;
-      case TendencyType.Physical:return Selection_Physical;
-        case TendencyType.Mental:return Selection_Mental;
-        case TendencyType.Material:return Selection_Material;
+      case TendencyType.Body:
+        if (index == 0) return Selection_Rational;
+        else return Selection_Physical;
+      case TendencyType.Head:
+        if(index==0) return Selection_Mental;
+        else return Selection_Material;
       default:return null;
     }
   }
-  private UI_Selection GetOppositeSelection(TendencyType _tendencytype)
+  private UI_Selection GetOppositeSelection(TendencyType _tendencytype,int index)
   {
     switch (_tendencytype)
     {
-      case TendencyType.None: return null;
-      case TendencyType.Rational: return Selection_Physical;
-      case TendencyType.Physical: return Selection_Rational;
-      case TendencyType.Mental: return Selection_Material;
-      case TendencyType.Material: return Selection_Mental;
+      case TendencyType.None: return Selection_None;
+      case TendencyType.Body:
+        if (index == 1) return Selection_Rational;
+        else return Selection_Physical;
+      case TendencyType.Head:
+        if (index == 1) return Selection_Mental;
+        else return Selection_Material;
       default: return null;
     }
   }
@@ -83,18 +87,18 @@ public class UI_dialogue : UI_default
     UIManager.Instance.AddUIQueue(updatedialogue(_faildata));
 
   }//성공 데이터를 바탕으로 열기
-  public void DeleteOtherSelection(TendencyType _selectiontendency)
+  public void DeleteOtherSelection(int index)
   {
     EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
     switch (_currentevent.Selection_type)
     {
       case SelectionType.Single:
         break;
-      case SelectionType.Verticla:
-                StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, false));
-                //가운데 장식품 제거
+      case SelectionType.Body:
+        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, false));
+        //가운데 장식품 제거
 
-        if (_selectiontendency.Equals(TendencyType.Rational))
+        if (index.Equals(0))
         {
           Selection_Physical.DeActive();
         }
@@ -103,11 +107,11 @@ public class UI_dialogue : UI_default
           Selection_Rational.DeActive();
         }
         break;
-      case SelectionType.Horizontal:
-                StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, false));
-                //가운데 장식품 제거
+      case SelectionType.Head:
+        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, false));
+        //가운데 장식품 제거
 
-                if (_selectiontendency.Equals(TendencyType.Mental))
+        if (index.Equals(0))
         {
           Selection_Material.DeActive();
         }
@@ -125,7 +129,7 @@ public class UI_dialogue : UI_default
   public void SelectSelection(UI_Selection _selection)
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, true));
-    DeleteOtherSelection(_selection.MyTendencyType);
+    DeleteOtherSelection(_selection.Index);
     //다른거 사라지게 만들고
     UIManager.Instance.AddUIQueue(selectionanimation(_selection));
     //선택한 선택지를 중심으로 이동시키고 성공, 실패 검사 실행 
@@ -170,7 +174,7 @@ public class UI_dialogue : UI_default
         Selection_None.gameObject.SetActive(true);
         Selection_None.Active(_currentevent.SelectionDatas[0]);
         break;
-      case SelectionType.Verticla:
+      case SelectionType.Body:
         StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 1.0f, false));
                 //가운데 있는 장식품
 
@@ -180,7 +184,7 @@ public class UI_dialogue : UI_default
         Selection_Physical.gameObject.SetActive(true);
         Selection_Physical.Active(_currentevent.SelectionDatas[1]);
         break;
-      case SelectionType.Horizontal:
+      case SelectionType.Head:
         StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 1.0f, false));
                 //가운데 있는 장식품
 
@@ -263,13 +267,28 @@ public class UI_dialogue : UI_default
     MapButton.interactable = false;
     KeepmoveButton.alpha = 0.0f;
     KeepmoveButton.interactable = false;
-    for(int i = 0; i < 5; i++)
-    {
-      CanvasGroup _group=GetUISelection((TendencyType)i).GetComponent<CanvasGroup>();
-      _group.alpha = 0.0f;
-      _group.interactable = false;
-      _group.blocksRaycasts = false;
-    }
+
+      CanvasGroup _none=Selection_None.GetComponent<CanvasGroup>();
+    _none.alpha = 0.0f;
+    _none.interactable = false;
+    _none.blocksRaycasts = false;
+    CanvasGroup _ra = Selection_Rational.GetComponent<CanvasGroup>();
+    _ra.alpha = 0.0f;
+    _ra.interactable = false;
+    _ra.blocksRaycasts = false;
+    CanvasGroup _ph = Selection_Physical.GetComponent<CanvasGroup>();
+    _ph.alpha = 0.0f;
+    _ph.interactable = false;
+    _ph.blocksRaycasts = false;
+    CanvasGroup _me = Selection_Mental.GetComponent<CanvasGroup>();
+    _me.alpha = 0.0f;
+    _me.interactable = false;
+    _me.blocksRaycasts = false;
+    CanvasGroup _ma = Selection_Material.GetComponent<CanvasGroup>();
+    _ma.alpha = 0.0f;
+    _ma.interactable = false;
+    _ma.blocksRaycasts = false;
+
 
     CloseButtons();
   }//빠르게 닫기
@@ -349,13 +368,13 @@ public class UI_dialogue : UI_default
         _issuccess = true;
         break;
       case SelectionTargetType.Pay:
-        if (_selectiondata.SelectionPayTarget.Equals(PayOrLossTarget.HP))
+        if (_selectiondata.SelectionPayTarget.Equals(StatusType.HP))
         {
           _issuccess = true;
           GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.PayHPValue_modified;
           UIManager.Instance.UpdateHPText();
         }
-        else if (_selectiondata.SelectionPayTarget.Equals(PayOrLossTarget.Sanity))
+        else if (_selectiondata.SelectionPayTarget.Equals(StatusType.Sanity))
         {
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
           GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.PaySanityValue_modified;
@@ -436,41 +455,16 @@ public class UI_dialogue : UI_default
     if (_issuccess) //성공하면 성공
     {
       Debug.Log("성공함");
-      switch (_selection.MyTendencyType)
-      {
-        case TendencyType.None:
-          SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[0]);
-          break;
-        case TendencyType.Rational:
-          SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[0]); break;
-        case TendencyType.Mental:
-          SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[0]); break;
-        case TendencyType.Physical:
-          SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[1]); break;
-        case TendencyType.Material:
-          SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[1]); break;
-      }
-      GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType);
+      SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[_selection.Index]);
+      GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType,_selection.Index);
     }
     else            //실패하면 실패
     {
       Debug.Log("실패함");
-      switch (_selection.MyTendencyType)
-      {
-        case TendencyType.None:
-          SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[0]); break;
-        case TendencyType.Rational:
-          SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[0]); break;
-        case TendencyType.Mental:
-          SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[0]); break;
-        case TendencyType.Physical:
-          SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[1]); break;
-        case TendencyType.Material:
-          SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[1]); break;
-      }
-      GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType);
+      SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[_selection.Index]);
+      GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
-    GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.ID);
+    GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.OriginID);
 
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴(제작중)
   private IEnumerator checkanimation(UI_Selection _selection,bool _issucces,float _percent)
@@ -561,15 +555,15 @@ public class UI_dialogue : UI_default
       case PenaltyTarget.Status:
         switch (_fail.Loss_target)
         {
-          case PayOrLossTarget.HP:
+          case StatusType.HP:
             GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.FailHPValue_modified;
             UIManager.Instance.UpdateHPText();
             break;
-          case PayOrLossTarget.Sanity:
+          case StatusType.Sanity:
             GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.FailSanityValue_modified;
             UIManager.Instance.UpdateSanityText();
             break;
-          case PayOrLossTarget.Gold:
+          case StatusType.Gold:
             GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.FailGoldValue_modified;
             UIManager.Instance.UpdateGoldText();
             break;

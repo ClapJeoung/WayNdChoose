@@ -12,6 +12,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
     public ThemeType MyTheme = ThemeType.Conversation;
     public TendencyType MyTendency = TendencyType.None;
   public TendencyType MySelectionTendency= TendencyType.None;
+  public int MySelectionTendencyIndex = 0;
   public SkillName MySkillName = SkillName.Speech;
   public int RewardValue = 0;
   public int ExpIndex = 0;
@@ -45,17 +46,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           case TendencyType.None:
             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[0];
             break;
-          case TendencyType.Rational:
-             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[0];
+          case TendencyType.Head:
+             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyIndex];
             break;
-          case TendencyType.Physical:
-            _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[1];
-            break;
-          case TendencyType.Mental:
-            _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[0];
-            break;
-          case TendencyType.Material:
-            _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[1];
+          case TendencyType.Body:
+            _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyIndex];
             break;
         }
         switch (_selection.ThisSelectionType)

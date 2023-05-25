@@ -176,30 +176,30 @@ MonoBehaviour:
   ThemeIllust_Force: {fileID: 21300000, guid: 903ee6b4757198440a9d6b2890df78ce, type: 3}
   ThemeIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
   ThemeIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
-  TendencyIcon_Rational:
-  - {fileID: 21300000, guid: 961d38108516f37418afc8bf3812db23, type: 3}
-  - {fileID: 21300000, guid: 6f4d2973a53db4a4091a8e0f2881e10a, type: 3}
-  - {fileID: 21300000, guid: 5323d976eba817440a691c0a4705d47d, type: 3}
-  - {fileID: 21300000, guid: a5e6eeeb438d55d46a32653ffd9e6105, type: 3}
-  - {fileID: 21300000, guid: 961d38108516f37418afc8bf3812db23, type: 3}
-  TendencyIcon_Physical:
-  - {fileID: 21300000, guid: 1cb3c5c7c68837c4a862d404d27c7b4f, type: 3}
-  - {fileID: 21300000, guid: 5d0b501218520a04b9affde56a9c8d51, type: 3}
-  - {fileID: 21300000, guid: 6d76b02d07fd30144903571587c20c34, type: 3}
-  - {fileID: 21300000, guid: b0eefbf8838ac1c469d7923b69855958, type: 3}
-  - {fileID: 21300000, guid: 30bf2c8290c415a4190f79480f422c66, type: 3}
-  TendencyIcon_Mental:
-  - {fileID: 21300000, guid: 77765702c5cba4c43b0977297130839e, type: 3}
-  - {fileID: 21300000, guid: 436341cc5f3672b4bbe7b7b2c456af9d, type: 3}
-  - {fileID: 21300000, guid: d1eb91140686da44ca9023167455a19c, type: 3}
-  - {fileID: 21300000, guid: 7a4ccfa8816b6e34ca5db9e8ea463541, type: 3}
-  - {fileID: 21300000, guid: 77cb89db3c5168d48b99bd3ae9686fbe, type: 3}
-  TendencyIcon_Material:
-  - {fileID: 21300000, guid: 418de3a2ecba3324487daa5a42833097, type: 3}
-  - {fileID: 21300000, guid: 003917e4017919f488cac8c86d965305, type: 3}
-  - {fileID: 21300000, guid: fe55f89eb8bd76f40b2883bcb27bc03f, type: 3}
-  - {fileID: 21300000, guid: 7b7cf11ef1ec379499cc92fb9c2d7974, type: 3}
-  - {fileID: 21300000, guid: 61ed8d51e00eb8e42a42cc567be3d0de, type: 3}
+  TendencyIcon_Body:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  TendencyIllust_Body:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  TendencyIcon_Head:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  TendencyIllust_Head:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   TendencyIllust_Rational: {fileID: 21300000, guid: 42808f26c7927784fa6762c27e00d377, type: 3}
   TendencyIllust_Physical: {fileID: 21300000, guid: 0c19233e57ebce1458d2f1677f92cdc9, type: 3}
   TendencyIllust_Mental: {fileID: 21300000, guid: db64b1b41faf2ba4580f7640153d58a6, type: 3}
@@ -627,15 +627,17 @@ MonoBehaviour:
   WinterIcon_deactive: {fileID: 21300000, guid: b3624b99b5b396c4087d760e8e88f770, type: 3}
   NothingQuestIllust: {fileID: 0}
   HPIcon: {fileID: 21300000, guid: 129c86f1e6e975a4b8c82a05cc851a81, type: 3}
-  HPIncreaseIcon: {fileID: -1220776246, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
-  HPDecreaseIcon: {fileID: 1283086613, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  HPIncreaseIcon: {fileID: 789177023, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  HPDecreaseIcon: {fileID: -765305855, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   SanityIcon: {fileID: 21300000, guid: a53d7ae234547b34b9414626b5c33560, type: 3}
-  SanityIncreaseIcon: {fileID: -765305855, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
-  SanityDecreaseIcon: {fileID: 836738539, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  SanityIncreaseIcon: {fileID: -1776737468, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  SanityDecreaseIcon: {fileID: 902524600, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   GoldIcon: {fileID: 21300000, guid: d0bf0653c07a0f3479a402fb6c35fb50, type: 3}
-  GoldIncreaseIcon: {fileID: -1776737468, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
-  GoldDecreaseIcon: {fileID: -237304368, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  GoldIncreaseIcon: {fileID: -472486816, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  GoldDecreaseIcon: {fileID: 1641281075, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   Quest_risig: {fileID: 21300000, guid: 0d58313d00cc8cd46bf57ccfe780485c, type: 3}
   Quest_climax: {fileID: 21300000, guid: 05d24a6df66b71b4a8cb5a1628a77811, type: 3}
   Quest_fall: {fileID: 21300000, guid: e6ec370da0fec434d936dad7fd7c7553, type: 3}
-  UnPleasant: {fileID: 21300000, guid: b2a0bb0e9a8d0664a91e3295a415268a, type: 3}
+  UnPleasant: {fileID: 1370167794, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  MadnessIdle: {fileID: 21300000, guid: cb64c03139cc4ed4db24b582d2183431, type: 3}
+  MadnessActive: {fileID: 21300000, guid: 0e03b3baa6653aa478451b83b81bebb6, type: 3}

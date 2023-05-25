@@ -45,13 +45,13 @@ public class UI_QuestSuggest : UI_default
   {
     QuestHolder _quest = GameManager.Instance.MyGameData.CurrentQuest;
     QuestName.text = _quest.QuestName;
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestNameGroup, 1.0f, true,UIFadeMoveDir.Down));
+     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestNameGroup, 1.0f, true,UIFadeMoveDir.Down));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     QuestIllust.sprite = _quest.Illust;
     IllustRectMask.softness = new Vector2Int(UIManager.Instance.IllustSoftness_start, IllustRectMask.softness.y);
     StartCoroutine(UIManager.Instance.OpenSoftness(IllustRectMask));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 1.0f, true, UIFadeMoveDir.Down));
+     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 1.0f, true, UIFadeMoveDir.Down));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     Color _color = Color.white;
@@ -59,11 +59,11 @@ public class UI_QuestSuggest : UI_default
     QuestDescription.color = _color;
     QuestDescription.text = _quest.StartDialogue;
     _quest.CurrentSequence = QuestSequence.Rising;
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionGroup, 1.0f, true, UIFadeMoveDir.Up));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionGroup, 1.0f, true));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescription, 1.0f));
 
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, true,UIFadeMoveDir.Left));
+    new WaitForSeconds(UIManager.Instance.FadeWaitTime);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, true));
   }
 
 }

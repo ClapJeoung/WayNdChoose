@@ -19,8 +19,20 @@ public class ImageHolder : ScriptableObject
   public Sprite ThemeIllust_Conversation = null;
   public Sprite ThemeIllust_Force = null, ThemeIllust_Wild = null, ThemeIllust_Intelligence = null;
   [Space(10)]
-  public Sprite[] TendencyIcon_Rational=new Sprite[7];
-  public Sprite[] TendencyIcon_Physical = new Sprite[7], TendencyIcon_Mental = new Sprite[7], TendencyIcon_Material = new Sprite[7];
+  public Sprite[] TendencyIcon_Body = new Sprite[5];
+  public Sprite[] TendencyIllust_Body=new Sprite[5];
+  public Sprite[] TendencyIcon_Head=new Sprite[5];
+  public Sprite[] TendencyIllust_Head = new Sprite[5];
+  public Sprite GetTendencyIcon(TendencyType type,int level)
+  {
+    if(type.Equals(TendencyType.Body))return TendencyIcon_Body[level+2];
+    else return TendencyIcon_Head[level+2];
+  }
+  public Sprite GettendencyIllust(TendencyType type,int level)
+  {
+    if (type.Equals(TendencyType.Body)) return TendencyIllust_Body[level + 2];
+    else return TendencyIllust_Head[level + 2];
+  }
   [Space(10)]
   public Sprite TendencyIllust_Rational = null;
   public Sprite TendencyIllust_Physical = null, TendencyIllust_Mental = null, TendencyIllust_Material = null;
@@ -92,6 +104,8 @@ public class ImageHolder : ScriptableObject
   public Sprite Quest_fall = null;
   [Space(10)]
   public Sprite UnPleasant = null;
+  public Sprite MadnessIdle = null;
+  public Sprite MadnessActive = null;
   public Sprite GetThemeIcon(ThemeType _type)
   {
     switch (_type)
@@ -254,36 +268,5 @@ public class ImageHolder : ScriptableObject
     }
     return _targetsprite;
   }//ID로 경험 일러스트 가져오기
-  public Sprite GetTendencyIcon(TendencyType _type,int _level)
-  {
-    int _index = 0;
-    switch (_type)
-    {
-      case TendencyType.Rational:
-        _index = _level * -1;
-        return TendencyIcon_Rational[_index+3];
-      case TendencyType.Physical:
-        _index = _level * +1;
-        return TendencyIcon_Physical[_index + 3];
-      case TendencyType.Mental:
-        _index = _level * -1;
-        return TendencyIcon_Mental[_index + 3];
-      case TendencyType.Material:
-        _index = _level * +1;
-        return TendencyIcon_Material[_index + 3];
-      default: return DefaultIcon ;
-    }
-  }
-  public Sprite GetTendencyIllust(TendencyType _type)
-  {
-    switch (_type)
-    {
-      case TendencyType.Rational: return TendencyIllust_Rational;
-      case TendencyType.Physical: return TendencyIllust_Physical;
-      case TendencyType.Mental: return TendencyIllust_Mental;
-      case TendencyType.Material: return TendencyIllust_Material;
-      default: return DefaultIllust;
-    }
-  }
 
 }

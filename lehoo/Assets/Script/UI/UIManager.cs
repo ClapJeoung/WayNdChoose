@@ -197,24 +197,17 @@ public class UIManager : MonoBehaviour
     }
     Destroy(_obj);
   }
-  [SerializeField] private Image RationalIcon = null;
-  [SerializeField] private Image PhysicalIcon = null;
-  [SerializeField] private Image MentalIcon = null;
-  [SerializeField] private Image MaterialIcon = null;
+  [SerializeField] private Image TendencyHeadIcon = null;
+  [SerializeField] private Image TendencyBodyIcon = null;
   public void UpdateTendencyIcon()
   {
-    TendencyType _tendency = TendencyType.Rational;
+    TendencyType _tendency = TendencyType.Head;
     int _level = GameManager.Instance.MyGameData.GetTendencyLevel(_tendency);
-    RationalIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
+    TendencyHeadIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
 
-    _tendency = TendencyType.Physical; _level = GameManager.Instance.MyGameData.GetTendencyLevel(_tendency);
-    PhysicalIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
+    _tendency = TendencyType.Body; _level = GameManager.Instance.MyGameData.GetTendencyLevel(_tendency);
+    TendencyBodyIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
  
-    _tendency = TendencyType.Mental; _level = GameManager.Instance.MyGameData.GetTendencyLevel(_tendency);
-    MentalIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
- 
-    _tendency = TendencyType.Material; _level = GameManager.Instance.MyGameData.GetTendencyLevel(_tendency);
-    MaterialIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
   }
   [SerializeField] private Image[] LongTermIcon = new Image[2];
   [SerializeField] private TextMeshProUGUI[] LongTermTurn=new TextMeshProUGUI[2];

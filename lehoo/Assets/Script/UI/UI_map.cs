@@ -30,7 +30,7 @@ public class UI_map : UI_default
         break;
       case 1:
         if (MoveButton.interactable.Equals(false)) MoveButton.interactable = true;
-        MoveButtonText.text = GameManager.Instance.GetTextData("canmove").Name.Replace("#VALUE#",SelectedSettleCost.ToString());
+        MoveButtonText.text = string.Format(GameManager.Instance.GetTextData("canmove").Name, SelectedSettleCost);
         break;
       case 2:
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;

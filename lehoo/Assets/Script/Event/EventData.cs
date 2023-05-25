@@ -41,6 +41,7 @@ public class EventHolder
     {
       _season = _seasons[i];
       EventData Data = new EventData();
+      Data.OriginID = _data.ID;
       if (_season.Equals(0)) _id = _data.ID;
       else _id = $"{_data.ID}_{GetSeasonString(_season)}";
 
@@ -108,7 +109,7 @@ public class EventHolder
             case 0: //무조건
               break;
             case 1: //지불
-              Data.SelectionDatas[0].SelectionPayTarget = (PayOrLossTarget)int.Parse(_data.Selection_Info);
+              Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
               break;
             case 2: //테마
               Data.SelectionDatas[0].SelectionCheckTheme = (ThemeType)int.Parse(_data.Selection_Info);
@@ -126,7 +127,7 @@ public class EventHolder
             switch (Data.FailureDatas[0].Panelty_target)
             {
               case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (PayOrLossTarget)int.Parse(_data.Failure_Penalty_info); break;
+              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
               case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
             }
             _illusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
@@ -135,7 +136,7 @@ public class EventHolder
             Data.FailureDatas[0].Illust_fall = _illusts[2];
             Data.FailureDatas[0].Illust_winter = _illusts[3];
           }
-          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(PayOrLossTarget.Gold))
+          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
             Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.MyGameData.GoldFailData;
           }
@@ -173,8 +174,8 @@ public class EventHolder
 
           break;
 
-        case SelectionType.Verticla://이성육체
-        case SelectionType.Horizontal://정신물질
+        case SelectionType.Body://이성육체
+        case SelectionType.Head://정신물질
           Data.SelectionDatas = new SelectionData[2];
           Data.SelectionDatas[0] = new SelectionData(); Data.SelectionDatas[1] = new SelectionData();
           int[] _targetint = new int[2];
@@ -196,7 +197,7 @@ public class EventHolder
             switch (_targetint[j])
             {
               case 0: break;
-              case 1: Data.SelectionDatas[j].SelectionPayTarget = (PayOrLossTarget)_infoint[j]; break;
+              case 1: Data.SelectionDatas[j].SelectionPayTarget = (StatusType)_infoint[j]; break;
               case 2: Data.SelectionDatas[j].SelectionCheckTheme = (ThemeType)_infoint[j]; break;
               case 3: Data.SelectionDatas[j].SelectionCheckSkill = (SkillName)_infoint[j]; break;
             }
@@ -212,7 +213,7 @@ public class EventHolder
               switch (Data.FailureDatas[j].Panelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (PayOrLossTarget)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
+                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
                 case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
               }//패널티 정보 넣기
               _illusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
@@ -222,7 +223,7 @@ public class EventHolder
               Data.FailureDatas[j].Illust_winter = _illusts[3];
 
             }//테마 혹은 스킬 체크인 경우 실패 설명, 패널티 대상 정보, 실패 일러스트 넣기
-            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(PayOrLossTarget.Gold))
+            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
               Data.FailureDatas[j] = GameManager.Instance.MyGameData.GoldFailData;
             }//골드 지불일 경우 미리 준비한 실패 정보를 넣기
@@ -401,6 +402,7 @@ public class EventHolder
     {
       _season = _seasons[i];
       FollowEventData Data = new FollowEventData();
+      Data.OriginID = _data.ID;
       if (_season.Equals(0)) _id = _data.ID;
       else _id = $"{_data.ID}_{GetSeasonString(_season)}";
       TextData _textdata = GameManager.Instance.GetTextData(_id);
@@ -478,7 +480,7 @@ public class EventHolder
             case 0: //무조건
               break;
             case 1: //지불
-              Data.SelectionDatas[0].SelectionPayTarget = (PayOrLossTarget)int.Parse(_data.Selection_Info);
+              Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
               break;
             case 2: //테마
               Data.SelectionDatas[0].SelectionCheckTheme = (ThemeType)int.Parse(_data.Selection_Info);
@@ -497,7 +499,7 @@ public class EventHolder
             switch (Data.FailureDatas[0].Panelty_target)
             {
               case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (PayOrLossTarget)int.Parse(_data.Failure_Penalty_info); break;
+              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
               case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
             }
             _illusts= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
@@ -506,7 +508,7 @@ public class EventHolder
             Data.FailureDatas[0].Illust_fall = _illusts[2];
             Data.FailureDatas[0].Illust_winter = _illusts[3];
           }
-          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(PayOrLossTarget.Gold))
+          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
             Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.MyGameData.GoldFailData;
           }
@@ -542,8 +544,8 @@ public class EventHolder
 
           break;
 
-        case SelectionType.Verticla:
-        case SelectionType.Horizontal:
+        case SelectionType.Body:
+        case SelectionType.Head:
           Data.SelectionDatas = new SelectionData[2];
           Data.SelectionDatas[0] = new SelectionData(); Data.SelectionDatas[1] = new SelectionData();
           int[] _targetint = new int[2];
@@ -564,7 +566,7 @@ public class EventHolder
             switch (_targetint[j])
             {
               case 0: break;
-              case 1: Data.SelectionDatas[j].SelectionPayTarget = (PayOrLossTarget)_infoint[j]; break;
+              case 1: Data.SelectionDatas[j].SelectionPayTarget = (StatusType)_infoint[j]; break;
               case 2: Data.SelectionDatas[j].SelectionCheckTheme = (ThemeType)_infoint[j]; break;
               case 3: Data.SelectionDatas[j].SelectionCheckSkill = (SkillName)_infoint[j]; break;
             }
@@ -580,7 +582,7 @@ public class EventHolder
               switch (Data.FailureDatas[j].Panelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (PayOrLossTarget)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
+                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
                 case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
               }
               _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
@@ -589,7 +591,7 @@ public class EventHolder
               Data.FailureDatas[j].Illust_fall = _illusts[2];
               Data.FailureDatas[j].Illust_winter = _illusts[3];
             }
-            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(PayOrLossTarget.Gold))
+            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
               Data.FailureDatas[j] = GameManager.Instance.MyGameData.GoldFailData;
             }
@@ -764,6 +766,7 @@ public class EventHolder
     {
       _season = _seasons[i];
       QuestEventData Data = new QuestEventData();
+      Data.OriginID = _data.ID;
       if (_season.Equals(0)) _id = _data.ID;
       else _id = $"{_data.ID}_{GetSeasonString(_season)}";
       TextData _textdata = GameManager.Instance.GetTextData(_id);
@@ -844,7 +847,7 @@ public class EventHolder
             case 0: //무조건
               break;
             case 1: //지불
-              Data.SelectionDatas[0].SelectionPayTarget = (PayOrLossTarget)int.Parse(_data.Selection_Info);
+              Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
               break;
             case 2: //테마
               Data.SelectionDatas[0].SelectionCheckTheme = (ThemeType)int.Parse(_data.Selection_Info);
@@ -862,7 +865,7 @@ public class EventHolder
             switch (Data.FailureDatas[0].Panelty_target)
             {
               case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (PayOrLossTarget)int.Parse(_data.Failure_Penalty_info); break;
+              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
               case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
             }
             _startillusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID,"0");
@@ -871,7 +874,7 @@ public class EventHolder
             Data.FailureDatas[0].Illust_fall = _startillusts[2];
             Data.FailureDatas[0].Illust_winter = _startillusts[3];
           }
-          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(PayOrLossTarget.Gold))
+          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
             Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.MyGameData.GoldFailData;
           }
@@ -906,8 +909,8 @@ public class EventHolder
           Data.SuccessDatas[0].Illust_winter = _startillusts[3];
           break;
 
-        case SelectionType.Verticla:
-        case SelectionType.Horizontal:
+        case SelectionType.Body:
+        case SelectionType.Head:
           Data.SelectionDatas = new SelectionData[2];
           Data.SelectionDatas[0] = new SelectionData(); Data.SelectionDatas[1] = new SelectionData();
           int[] _targetint = new int[2];
@@ -928,7 +931,7 @@ public class EventHolder
             switch (_targetint[j])
             {
               case 0: break;
-              case 1: Data.SelectionDatas[j].SelectionPayTarget = (PayOrLossTarget)_infoint[j]; break;
+              case 1: Data.SelectionDatas[j].SelectionPayTarget = (StatusType)_infoint[j]; break;
               case 2: Data.SelectionDatas[j].SelectionCheckTheme = (ThemeType)_infoint[j]; break;
               case 3: Data.SelectionDatas[j].SelectionCheckSkill = (SkillName)_infoint[j]; break;
             }
@@ -944,7 +947,7 @@ public class EventHolder
               switch (Data.FailureDatas[j].Panelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (PayOrLossTarget)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
+                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
                 case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
               }
               _startillusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
@@ -953,7 +956,7 @@ public class EventHolder
               Data.FailureDatas[j].Illust_fall = _startillusts[2];
               Data.FailureDatas[j].Illust_winter = _startillusts[3];
             }
-            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(PayOrLossTarget.Gold))
+            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
               Data.FailureDatas[j] = GameManager.Instance.MyGameData.GoldFailData;
             }
@@ -1123,20 +1126,6 @@ public class EventHolder
         case 0://기
           _quest.QuestID = _data.QuestId; //퀘스트 ID는 QuestID
           _quest.Illust = Data.Illust_spring;//대표 일러스트는 퀘스트 ID
-
-          _quest.QuestPreview_rising = GameManager.Instance.GetTextData(_quest.QuestID + "rising").Name;
-          List<string> _climaxlist=new List<string>();
-          foreach(var _textdatas in GameManager.Instance.TextDic)
-          {
-            if (_textdatas.Key.Contains(_quest.QuestID + "climax")) _climaxlist.Add(_textdatas.Value.Name);
-          }
-          _quest.QuestPreview_Climax=_climaxlist.ToArray();
-          TextData _fallingtextdata = GameManager.Instance.GetTextData(_quest.QuestID + "falling");
-          _quest.QuestPreview_Falling = _fallingtextdata.Name;
-          _quest.StopSelectionName = _fallingtextdata.Description.Split('@')[0];
-          _quest.StopSelectionSub = _fallingtextdata.SelectionDescription.Split('@')[0];
-          _quest.ContinueSelectionName = _fallingtextdata.Description.Split('@')[1];
-          _quest.ContinueSelectionSub = _fallingtextdata.SelectionDescription.Split('@')[1];
           break;
         case 1://승
           _quest.Eventlist_Rising.Add(Data);
@@ -1192,29 +1181,6 @@ public class EventHolder
   public void RemoveEvent(string _ID)
   {
     string _defaultid = _ID;
-    if (_ID.Contains("spring") || _ID.Contains("summer") || _ID.Contains("fall") || _ID.Contains("winter"))
-    {
-      string[] _temp = _defaultid.Split("_");
-      _defaultid = "";
-      for (int i = 0; i < _temp.Length - 1; i++)
-      {
-        _defaultid += _temp[i];
-        if (i != _temp.Length - 1) _defaultid += "_";
-      }
-      //봄,여름,가을,겨울이 들어가 있는 ID면 계절 텍스트 뺀 아이디를 기준으로 삼음
-    }
-
-    if (_defaultid.Contains("town") || _defaultid.Contains("city") || _defaultid.Contains("castle"))
-    {
-      string[] _temp = _defaultid.Split("_");
-      _defaultid = "";
-      for (int i = 0; i < _temp.Length - 1; i++)
-      {
-        _defaultid += _temp[i];
-        if (i != _temp.Length - 1) _defaultid += "_";
-      }
-      //마을,도시,성채가 들어가 있는 ID면 계절 빼고 정착지도 뺀 아이디를 기준으로 삼음
-    }
 
     List<EventData> _normals = new List<EventData>();
     List<FollowEventData> _follows = new List<FollowEventData>();
@@ -1507,7 +1473,7 @@ public enum FollowType { Event,EXP,Trait,Theme,Skill}
 public enum SettlementType { Town,City,Castle,Outer,None}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Academy,NULL}
 public enum EnvironmentType { River,Forest,Highland,Mountain,Sea,NULL}
-public enum SelectionType { Single,Verticla, Horizontal,Tendency,Experience,Skill }// Vertical : 위 이성 아래 육체    Horizontal : 좌 정신 우 물질    
+public enum SelectionType { Single,Body, Head,Tendency,Experience,Skill }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTarget { Experience,HP,Sanity,Gold,Theme,Skill,Trait,None}
@@ -1516,6 +1482,7 @@ public enum QuestSequence { Start,Rising,Climax,Falling}
 #endregion  
 public class EventDataDefulat
 {
+  public string OriginID = "";
   public string ID = "";        //계절 별로 분화된 ID(ID_(계절)), 텍스트랑 일러스트 아이디로 사용함
   public Sprite Illust_spring = null;
   public Sprite Illust_summer = null;
@@ -1555,7 +1522,7 @@ public class SelectionData
     public SelectionTargetType ThisSelectionType = SelectionTargetType.None;
   public string Description = "";
   public string SubDescription = "";
-  public PayOrLossTarget SelectionPayTarget = PayOrLossTarget.HP;
+  public StatusType SelectionPayTarget = StatusType.HP;
     public ThemeType SelectionCheckTheme = ThemeType.Conversation;
     public SkillName SelectionCheckSkill = SkillName.Speech;
   public List<RewardTarget> SelectionSuccesRewards=new List<RewardTarget>();
@@ -1565,7 +1532,7 @@ public class FailureData
 {
   public string Description = "";
   public PenaltyTarget Panelty_target;
-  public PayOrLossTarget Loss_target= PayOrLossTarget.HP;
+  public StatusType Loss_target= StatusType.HP;
   public string ExpID;
   public Sprite Illust_spring = null;
   public Sprite Illust_summer = null;
@@ -1586,7 +1553,7 @@ public class FailureData
   }
 }
 public enum SelectionTargetType { None, Pay, Check_Theme, Check_Skill, Tendency, Skill, Exp }//선택지 개별 내용
-public enum PayOrLossTarget { HP,Sanity,Gold}
+public enum StatusType { HP,Sanity,Gold}
 public class SuccessData
 {
   public string Description = "";
@@ -1670,129 +1637,6 @@ public class QuestHolder
   {
     get { return QuestTextDatas[0].Name; }
   }//퀘스트의 이름
-  public int QuestClearCount
-  {
-    get { return SuccessRisingCount + SuccesClimaxCount; }
-  } //성공한 이벤트(rising,climax) 개수
-  public int FinishedRisingCount = 0;  //실패+성공한 Rising 개수
-  public int FinishedClimaxCount = 0;  //실패+성공한 Climax 개수
-  public int SuccessRisingCount = 0, SuccesClimaxCount = 0;//실패한 Rising,Climax 개수
-  public QuestEventData Event_Climax 
-  { 
-    get { if (!CurrentSequence.Equals(QuestSequence.Climax)) return null;
-      return Eventlist_Climax[FinishedClimaxCount]; } 
-  }
-  public Settlement NextQuestSettlement = null;
-  public EnvironmentType NextQuestEnvir = EnvironmentType.NULL;
-  public void AddClearEvent(QuestEventData _eventdata)
-  {
-    switch (_eventdata.TargetQuestSequence)
-    {
-      case QuestSequence.Start:
-        CurrentSequence = QuestSequence.Rising;
-        break;
-      case QuestSequence.Rising:
-        string _defaultid = _eventdata.ID;
-        if (_eventdata.ID.Contains("spring") || _eventdata.ID.Contains("summer") || _eventdata.ID.Contains("fall") || _eventdata.ID.Contains("winter"))
-        {
-          string[] _temp = _defaultid.Split("_");
-          _defaultid = "";
-          for (int i = 0; i < _temp.Length - 1; i++)
-          {
-            _defaultid += _temp[i];
-            if (i != _temp.Length - 1) _defaultid += "_";
-          }
-          //봄,여름,가을,겨울이 들어가 있는 ID면 계절 텍스트 뺀 아이디를 기준으로 삼음
-        }
-        if (_defaultid.Contains("town") || _defaultid.Contains("city") || _defaultid.Contains("castle"))
-        {
-          string[] _temp = _defaultid.Split("_");
-          _defaultid = "";
-          for (int i = 0; i < _temp.Length - 1; i++)
-          {
-            _defaultid += _temp[i];
-            if (i != _temp.Length - 1) _defaultid += "_";
-          }
-          //마을,도시,성채가 들어가 있는 ID면 계절 빼고 정착지도 뺀 아이디를 기준으로 삼음
-        }
-
-        foreach(var _event in Eventlist_Rising)
-         if(_event.ID.Contains(_defaultid)) Eventlist_Rising_clear.Add(_event.ID);
-        SuccessRisingCount++;
-        FinishedRisingCount++;
-
-        if (Eventlist_Rising.Count - 2 < FinishedRisingCount)
-        {
-          if (Random.Range(0, 100) < 80) CurrentSequence = QuestSequence.Climax;
-        }
-        else if(Eventlist_Rising.Count.Equals(FinishedRisingCount))CurrentSequence = QuestSequence.Climax;
-        //슬슬 개수 다 찬듯 하면 높은 확률로 다음장, 개수 꽉 채웠으면 즉시 다음장
-        break;
-      case QuestSequence.Climax:
-        NextQuestSettlement = null;
-        NextQuestEnvir = EnvironmentType.NULL;
-        SuccesClimaxCount++;
-        FinishedClimaxCount++;
-        if (Eventlist_Climax.Count.Equals(FinishedClimaxCount)) CurrentSequence = QuestSequence.Falling;
-        //Climax 전부 완료했으면 최종장으로
-
-        break;
-      case QuestSequence.Falling:
-        break;
-    }
-
-  }
-  public void AddFailEvent(QuestEventData _eventdata)
-  {
-    switch (_eventdata.TargetQuestSequence)
-    {
-      case QuestSequence.Start:
-        CurrentSequence = QuestSequence.Rising;
-        break;
-      case QuestSequence.Rising:
-        string _defaultid = _eventdata.ID;
-        if (_eventdata.ID.Contains("spring") || _eventdata.ID.Contains("summer") || _eventdata.ID.Contains("fall") || _eventdata.ID.Contains("winter"))
-        {
-          string[] _temp = _defaultid.Split("_");
-          _defaultid = "";
-          for (int i = 0; i < _temp.Length - 1; i++)
-          {
-            _defaultid += _temp[i];
-            if (i != _temp.Length - 1) _defaultid += "_";
-          }
-          //봄,여름,가을,겨울이 들어가 있는 ID면 계절 텍스트 뺀 아이디를 기준으로 삼음
-        }
-        if (_defaultid.Contains("town") || _defaultid.Contains("city") || _defaultid.Contains("castle"))
-        {
-          string[] _temp = _defaultid.Split("_");
-          _defaultid = "";
-          for (int i = 0; i < _temp.Length - 1; i++)
-          {
-            _defaultid += _temp[i];
-            if (i != _temp.Length - 1) _defaultid += "_";
-          }
-          //마을,도시,성채가 들어가 있는 ID면 계절 빼고 정착지도 뺀 아이디를 기준으로 삼음
-        }
-
-        foreach (var _event in Eventlist_Rising)
-          if (_event.ID.Contains(_defaultid)) Eventlist_Rising_clear.Add(_event.ID);
-
-        FinishedRisingCount++;
-        if (Eventlist_Rising.Count - 2 < FinishedRisingCount)
-        {
-          if (Random.Range(0, 100) < 80) CurrentSequence = QuestSequence.Climax;
-        }
-        break;
-      case QuestSequence.Climax:
-
-        FinishedClimaxCount++;
-        if (Eventlist_Climax.Count.Equals(FinishedClimaxCount)) CurrentSequence = QuestSequence.Falling;
-        break;
-      case QuestSequence.Falling:
-        break;
-    }
-  }
-
   public QuestSequence CurrentSequence=QuestSequence.Start; //현재 퀘스트 단계
 
   private List<TextData> questtextdatas = new List<TextData>();
@@ -1804,7 +1648,7 @@ public class QuestHolder
       {
         questtextdatas.Add(GameManager.Instance.GetTextData(QuestID));
         questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_rising"));
-        for (int i = 0; i < Eventlist_Climax.Count; i++)
+        for (int i = 0; i < ClimaxEventCount; i++)
           questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_climax" + "_" + i.ToString()));
         questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_falling"));
       }
@@ -1845,12 +1689,42 @@ public class QuestHolder
   }
   public Sprite Illust;
 
-  public string QuestPreview_rising = "";
-  public string[] QuestPreview_Climax = null;
-  public string QuestPreview_Falling;
-  public string StopSelectionName = "", StopSelectionSub = "", ContinueSelectionName = "", ContinueSelectionSub = "";
+  public string StopSelectionName
+  {
+    get { return QuestTextDatas[QuestTextDatas.Count - 1].Description.Split('@')[0]; }
+  }
+  public string StopSelectionSub
+  {
+    get { return QuestTextDatas[QuestTextDatas.Count - 1].SelectionDescription.Split('@')[0]; }
+  }
+  public string ContinueSelectionName
+  {
+    get
+    {
+     return QuestTextDatas[QuestTextDatas.Count - 1].Description.Split('@')[1];
+    }
+  }
+  public string ContinueSelectionSub {
+    get
+    {
+      return QuestTextDatas[QuestTextDatas.Count - 1].SelectionDescription.Split('@')[1];
+    }
+  }
   public List<QuestEventData> Eventlist_Rising=new List<QuestEventData>();
-    public List<string> Eventlist_Rising_clear = new List<string>();
+  private List<string> eventlist_rising_origin = new List<string>();
+  public List<string> Eventlist_Rising_Count
+  {
+    get
+    {
+      if (eventlist_rising_origin.Count.Equals(0))
+      {
+        foreach (var _origin in Eventlist_Rising)
+          if (!eventlist_rising_origin.Contains(_origin.OriginID)) eventlist_rising_origin.Add(_origin.OriginID);
+      }
+      return eventlist_rising_origin;
+    }
+  }
+    public List<string> Eventlist_Rising_clear = new List<string>();//완료한 전 단계 이벤트(원본 ID)
   public List<QuestEventData> EventList_Rising_Available
   {
     get
@@ -1866,19 +1740,136 @@ public class QuestHolder
     }
   }
   public List<QuestEventData> Eventlist_Climax = new List<QuestEventData>();
-  public QuestEventData Event_Falling = null;
-  public string QuestPreview
+  private List<string> eventlist_climax_origin = new List<string>();
+  public List<string> EventList_Climax_Origin
   {
     get
     {
-      switch (CurrentSequence)
+      if (eventlist_climax_origin.Count.Equals(0))
       {
-        case QuestSequence.Start: case QuestSequence.Rising: return QuestPreview_rising;
-        case QuestSequence.Climax: return QuestPreview_Climax[FinishedClimaxCount];
-        default: return QuestPreview_Falling;
+        foreach (var _origin in Eventlist_Climax)
+          if (!eventlist_climax_origin.Contains(_origin.OriginID)) eventlist_climax_origin.Add(_origin.OriginID);
       }
+      return eventlist_climax_origin;
     }
   }
+  public QuestEventData Event_Falling = null;
+
+  public int RisingEventCount
+  {
+    get
+    {
+      List<string> _originids = new List<string>();
+      foreach (var _rising in Eventlist_Rising) if (!_originids.Contains(_rising.OriginID)) _originids.Add(_rising.OriginID);
+      return _originids.Count;
+    }
+  }
+  public int ClimaxEventCount
+  {
+    get
+    {
+      List<string> _originids = new List<string>();
+      foreach (var _climax in Eventlist_Climax) if (!_originids.Contains(_climax.OriginID)) _originids.Add(_climax.OriginID);
+      return _originids.Count;
+    }
+  }
+  public int QuestClearCount
+  {
+    get { return SuccessRisingCount + SuccesClimaxCount; }
+  } //성공한 이벤트(rising,climax) 개수
+  public int FinishedRisingCount = 0;  //실패+성공한 Rising 개수(원본 ID)
+  public int FinishedClimaxCount = 0;  //실패+성공한 Climax 개수(원본 ID)
+  public int SuccessRisingCount = 0, SuccesClimaxCount = 0;//실패한 Rising,Climax 개수(원본 ID)
+  public QuestEventData Event_Climax
+  {
+    get
+    {
+      if (!CurrentSequence.Equals(QuestSequence.Climax)) return null;
+      return Eventlist_Climax[FinishedClimaxCount];
+    }
+  }
+  public Settlement NextQuestSettlement = null;
+  public EnvironmentType NextQuestEnvir = EnvironmentType.NULL;
+  public void AddClearEvent(QuestEventData _eventdata)
+  {
+    switch (_eventdata.TargetQuestSequence)
+    {
+      case QuestSequence.Start:
+        CurrentSequence = QuestSequence.Rising;
+        break;
+      case QuestSequence.Rising:
+        string _defaultid = _eventdata.OriginID;
+
+          if (!Eventlist_Rising_clear.Contains(_defaultid)) Eventlist_Rising_clear.Add(_defaultid);
+        //클리어한 이벤트의 기본 ID를 바탕으로 해결 Rising 리스트에 넣는다
+
+        SuccessRisingCount++;
+        //승리 카운트에 ++
+        FinishedRisingCount++;
+        //완료 카운트에 ++
+
+        if (RisingEventCount - 2 < FinishedRisingCount)
+        {
+          if (Random.Range(0, 100) < 80) CurrentSequence = QuestSequence.Climax;
+        }
+        else if (RisingEventCount.Equals(FinishedRisingCount)) CurrentSequence = QuestSequence.Climax;
+        //슬슬 개수 다 찬듯 하면 높은 확률로 다음장, 개수 꽉 채웠으면 즉시 다음장
+        break;
+      case QuestSequence.Climax:
+        NextQuestSettlement = null;
+        NextQuestEnvir = EnvironmentType.NULL;
+        //장소에 지정된 퀘스트를 해결했으므로(야외 퀘스트라도 상관없음)
+
+        SuccesClimaxCount++;
+        //승리 카운트에 ++
+        FinishedClimaxCount++;
+        //완료 카운트에 ++
+        if (ClimaxEventCount.Equals(FinishedClimaxCount)) CurrentSequence = QuestSequence.Falling;
+        //Climax 전부 완료했으면 최종장으로
+
+        break;
+      case QuestSequence.Falling:
+        GameManager.Instance.MyGameData.CurrentEvent = null;
+        break;
+    }
+
+  }
+  public void AddFailEvent(QuestEventData _eventdata)
+  {
+    switch (_eventdata.TargetQuestSequence)
+    {
+      case QuestSequence.Start:
+        CurrentSequence = QuestSequence.Rising;
+        break;
+      case QuestSequence.Rising:
+        string _defaultid = _eventdata.OriginID;
+
+          if (!Eventlist_Rising_clear.Contains(_defaultid)) Eventlist_Rising_clear.Add(_defaultid);
+          //완료 목록에 넣기
+
+        FinishedRisingCount++;
+        //성공은 못했으므로 완료 카운트만 ++
+
+        if (RisingEventCount - 2 < FinishedRisingCount)
+        {
+          if (Random.Range(0, 100) < 80) CurrentSequence = QuestSequence.Climax;
+        }
+        else if (RisingEventCount.Equals(FinishedRisingCount)) CurrentSequence = QuestSequence.Climax;
+        break;
+      case QuestSequence.Climax:
+        NextQuestSettlement = null;
+        NextQuestEnvir = EnvironmentType.NULL;
+        //장소에 지정된 퀘스트를 해결했으므로(야외 퀘스트라도 상관없음)
+
+        FinishedClimaxCount++;
+        if (ClimaxEventCount.Equals(FinishedClimaxCount)) CurrentSequence = QuestSequence.Falling;
+        break;
+      case QuestSequence.Falling:
+        GameManager.Instance.MyGameData.CurrentEvent = null;
+        break;
+    }
+  }
+
 }
 public class EventJsonData
 {
