@@ -18,6 +18,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 49fee194a69d50640bf8d6de3ccd02f5, type: 2}
   Land:
   - {fileID: 11400000, guid: f8388d74104a6e948a6ef855012037e2, type: 2}
+  - {fileID: 11400000, guid: 1463544aefe0e634db5951f857a1a539, type: 2}
+  - {fileID: 11400000, guid: 3a46cb4909b13b847a3857188a63d2ca, type: 2}
   Highland:
   - {fileID: 11400000, guid: be04d9235c9bc9547b155abed98e366a, type: 2}
   Mountain:

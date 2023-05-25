@@ -208,9 +208,9 @@ MonoBehaviour:
   ThemeIcon_Force: {fileID: 21300000, guid: a6c6025bb56840c4aa49efb919f654db, type: 3}
   ThemeIcon_Wild: {fileID: 21300000, guid: a68439f4dc29cc248817106ccf7c64c5, type: 3}
   ThemeIcon_Intelligence: {fileID: 21300000, guid: 6803d618801df4249a1cd12feaa3da23, type: 3}
-  TendencySelectionIcon: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
-  ExpSelectionIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
-  SkillSelectionIcon: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  TendencySelectionIcon: {fileID: 21300000, guid: ec20f8fafe2d1e64daad2443caedcf26, type: 3}
+  ExpSelectionIcon: {fileID: 21300000, guid: 59903f76c6baa8347ac4ca915546411d, type: 3}
+  SkillSelectionIcon: {fileID: 21300000, guid: 26356723fc80c754191e894eba06a850, type: 3}
   ResidenceIllust: []
   MarketPlaceIllust: []
   TempleIllust: []
