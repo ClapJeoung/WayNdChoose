@@ -18,10 +18,6 @@ public class UI_Reward : UI_default
   [Space(10)]
   [SerializeField] private CanvasGroup RewardSkillGroup = null;
   [SerializeField] private Image RewardSkillThemeImage = null;
-  [SerializeField] private PreviewInteractive RewardSkill_Conversation = null;
-  [SerializeField] private PreviewInteractive RewardSkill_Force = null;
-  [SerializeField] private PreviewInteractive RewardSkill_Wild = null;
-  [SerializeField] private PreviewInteractive RewardSkill_Intelligence = null;
   [SerializeField] private TextMeshProUGUI RewardSkill_Description = null;
   [Space(10)]
   [SerializeField] private CanvasGroup RewardExpGroup = null;
@@ -71,17 +67,14 @@ public class UI_Reward : UI_default
       case RewardTarget.HP:
         Reward_HP.gameObject.SetActive(true);
         Reward_HP.Setup_value(_success.Reward_Value_Modified);
-        Reward_HP.transform.GetComponent<PreviewInteractive>().RewardValue = _success.Reward_Value_Modified;
         break;
       case RewardTarget.Sanity:
         Reward_Sanity.gameObject.SetActive(true);
         Reward_Sanity.Setup_value(_success.Reward_Value_Modified);
-        Reward_Sanity.transform.GetComponent<PreviewInteractive>().RewardValue = _success.Reward_Value_Modified;
         break;
       case RewardTarget.Gold:
         Reward_Gold.gameObject.SetActive(true);
         Reward_Gold.Setup_value(_success.Reward_Value_Modified);
-        Reward_Gold.transform.GetComponent<PreviewInteractive>().RewardValue = _success.Reward_Value_Modified;
         break;
       case RewardTarget.Theme:
         Reward_Skill.gameObject.SetActive(true);
@@ -130,47 +123,19 @@ public class UI_Reward : UI_default
   }
     private IEnumerator openui()
     {
-        StartCoroutine(UIManager.Instance.ChangeAlpha(PanelGroup,1.0f,UIManager.Instance.SmallPanelFadeTime));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(PanelGroup,1.0f,UIManager.Instance.SmallPanelFadeTime, false));
         yield return null;
     }
   public void OpenRewardSkillPanel(ThemeType _themetype)
   {
     if (UIManager.Instance.IsWorking) return;
     RewardSkillThemeImage.sprite=GameManager.Instance.ImageHolder.GetThemeIcon(_themetype);
-    switch (_themetype)
-    {
-      case ThemeType.Conversation:
-        RewardSkill_Conversation.MySkillName = SkillName.Speech;
-        RewardSkill_Force.MySkillName = SkillName.Threat;
-        RewardSkill_Wild.MySkillName = SkillName.Deception;
-        RewardSkill_Intelligence.MySkillName = SkillName.Logic;
-        break;
-      case ThemeType.Force:
-        RewardSkill_Conversation.MySkillName = SkillName.Threat;
-        RewardSkill_Force.MySkillName = SkillName.Martialarts;
-        RewardSkill_Wild.MySkillName = SkillName.Bow;
-        RewardSkill_Intelligence.MySkillName = SkillName.Somatology;
-        break;
-      case ThemeType.Wild:
-        RewardSkill_Conversation.MySkillName = SkillName.Deception;
-        RewardSkill_Force.MySkillName = SkillName.Bow;
-        RewardSkill_Wild.MySkillName = SkillName.Survivable;
-        RewardSkill_Intelligence.MySkillName = SkillName.Biology;
-        break;
-      case ThemeType.Intelligence:
-        RewardSkill_Conversation.MySkillName = SkillName.Logic;
-        RewardSkill_Force.MySkillName = SkillName.Somatology;
-        RewardSkill_Wild.MySkillName = SkillName.Biology;
-        RewardSkill_Intelligence.MySkillName = SkillName.Knowledge;
-        break;
-    }
     RewardSkill_Description.text = $"{GameManager.Instance.GetTextData("chooseskill").Name}";
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardSkillGroup,1.0f,UIManager.Instance.SmallPanelFadeTime));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardSkillGroup,1.0f,UIManager.Instance.SmallPanelFadeTime,true));
   }
   public void CloseRewardSkillPanel()
   {
-    if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime,true));
   }
   public void OpenRewardExpPanel_reward()
   {
@@ -218,7 +183,7 @@ public class UI_Reward : UI_default
     }
     if (RewardExpQuitButton.activeInHierarchy == false) RewardExpQuitButton.SetActive(true);
     RewardExpDescription.text = GameManager.Instance.GetTextData("savetheexp").Name;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup,1.0f,UIManager.Instance.SmallPanelFadeTime));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup,1.0f,UIManager.Instance.SmallPanelFadeTime,true));
   }
   public void OpenRewardExpPanel_penalty(Experience _badexp)
   {
@@ -265,12 +230,12 @@ public class UI_Reward : UI_default
         }
         if (RewardExpQuitButton.activeInHierarchy == true) RewardExpQuitButton.SetActive(false);
     RewardExpDescription.text = GameManager.Instance.GetTextData("savebadexp").Name;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 1.0f, UIManager.Instance.SmallPanelFadeTime));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 1.0f, UIManager.Instance.SmallPanelFadeTime, false));
   }
   public void CloseRewardExpPanel()
   {
     if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, 0.3f));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, 0.3f, true));
   }
   public override void CloseUI()
   {
@@ -280,34 +245,43 @@ public class UI_Reward : UI_default
   }
   private IEnumerator closeui()
     {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(PanelGroup, 0.0f, 0.3f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(PanelGroup, 0.0f, 0.3f, false));
         yield return null;
     }
 
-  public void AddRewardHP(int _value, Sprite[] _icon,Vector2[] _startpos,Vector2[] _endpos)
+  public void AddRewardHP(int _value)
   {
       Reward_HP.gameObject.SetActive(false);
+    GameManager.Instance.MyGameData.HP += _value;
+    UIManager.Instance.UpdateHPText();
  //   StartCoroutine(moveicons(RewardTarget.HP,_value, _icon, _startpos, _endpos));
     AutoClose();
   }
-  public void AddRewardSanity(int _value, Sprite[] _icon, Vector2[] _startpos, Vector2[] _endpos)
+  public void AddRewardSanity(int _value)
   {
     Reward_Sanity.gameObject.SetActive(false);
+    GameManager.Instance.MyGameData.CurrentSanity += _value;
+    UIManager.Instance.UpdateSanityText();
  //   StartCoroutine(moveicons(RewardTarget.Sanity, _value, _icon, _startpos, _endpos));
     AutoClose();
   }
-  public void AddRewardGold(int _value, Sprite[] _icon, Vector2[] _startpos, Vector2[] _endpos)
+  public void AddRewardGold(int _value)
   {
     Reward_Gold.gameObject.SetActive(false);
+    GameManager.Instance.MyGameData.Gold += _value;
+    UIManager.Instance.UpdateGoldText();
  //   StartCoroutine(moveicons(RewardTarget.Gold, _value, _icon, _startpos, _endpos));
     AutoClose();
   }
-  public void AddRewardSkill(SkillName _skill, Sprite[] _icon, Vector2[] _startpos, Vector2[] _endpos)
+  public void AddRewardSkill(SkillName _skill)
   {
     Reward_Skill.gameObject.SetActive(false);
     //  StartCoroutine(moveicons(_skill, _icon, _startpos, _endpos));
     GameManager.Instance.MyGameData.Skills[_skill].LevelByOwn++;
-    if (RewardSkillGroup.alpha == 1.0f) CloseRewardSkillPanel();
+    RewardSkillGroup.alpha = 0.0f;
+    RewardSkillGroup.interactable = false;
+    RewardSkillGroup.blocksRaycasts = false;
+    RewardButtonHolder.GetChild(4).gameObject.SetActive(false);
     AutoClose();
   }
   public void AddRewardExp_Long(int _expindex)

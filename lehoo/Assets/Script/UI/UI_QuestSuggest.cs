@@ -19,7 +19,7 @@ public class UI_QuestSuggest : UI_default
     if (QuestNameGroup.alpha != 0.0f) CloseQuestSuggest();
     //시작 시 모든 요소 투명
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,1.0f, true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,1.0f, true,false));
         UIManager.Instance.AddUIQueue(setquestsuggest());
     }
     public void CloseQuestSuggest()
@@ -39,31 +39,32 @@ public class UI_QuestSuggest : UI_default
   }
     public void CloseQuestUI()
     {
-        StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
+        StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir, false));
     }
   private IEnumerator setquestsuggest()
   {
+    WaitForSeconds _wait = new WaitForSeconds(0.6f);
     QuestHolder _quest = GameManager.Instance.MyGameData.CurrentQuest;
     QuestName.text = _quest.QuestName;
-     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestNameGroup, 1.0f, true,UIFadeMoveDir.Down));
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
+     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestNameGroup, 1.0f, true,UIFadeMoveDir.Down, false));
+    yield return _wait;
 
     QuestIllust.sprite = _quest.Illust;
     IllustRectMask.softness = new Vector2Int(UIManager.Instance.IllustSoftness_start, IllustRectMask.softness.y);
     StartCoroutine(UIManager.Instance.OpenSoftness(IllustRectMask));
-     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 1.0f, true, UIFadeMoveDir.Down));
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
+     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 1.0f, true, UIFadeMoveDir.Down, false));
+    yield return _wait;
 
     Color _color = Color.white;
     _color.a = 0.0f;
     QuestDescription.color = _color;
     QuestDescription.text = _quest.StartDialogue;
     _quest.CurrentSequence = QuestSequence.Rising;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionGroup, 1.0f, true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionGroup, 1.0f, true, false));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescription, 1.0f));
 
-    new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, true));
+    yield return _wait;
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, true, false));
   }
 
 }

@@ -110,9 +110,9 @@
     "Icon": ""
   },
   "11": {
-    "ID": "uncomfortable",
+    "ID": "discomfort",
     "Name": "<sprite=53> 불쾌",
-    "Description": "",
+    "Description": "당신은 무언가를 성취하기 전까진 멈추고 싶지 않습니다.\\n\\n정착지의 장소를 방문할 때 마다 <#F5DA81>해당 정착지</color>의<sprite=54> <#3A01DF>불쾌</color> 지수가 <#FA5858>1</color> 상승하고, <#F5DA81>다른 모든 정착지</color>의 <sprite=55> <#3A01DF>불쾌</color> 지수가 <#81F781>1</color> 감소합니다. <#3A01DF>불쾌</color> 지수가 높을 수록 <#FA5858>장소</color>를 방문하기 위해 <sprite=17>감소하는 <#BE81F7>정신력</color>이 증폭됩니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
@@ -120,8 +120,8 @@
     "Icon": "<sprite=53>"
   },
   "12": {
-    "ID": "uncomfortableup",
-    "Name": "이 정착지의 <sprite=54> 불쾌 지수가 <#BE81F7>{0}</color> 증가합니다.",
+    "ID": "discomfortup",
+    "Name": "이 정착지의 <sprite=54> <#3A01DF>불쾌</color> 지수가 <#BE81F7>{0}</color> 증가합니다.",
     "Description": "",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
@@ -130,8 +130,8 @@
     "Icon": ""
   },
   "13": {
-    "ID": "currentuncomfortable",
-    "Name": "이 정착지의 <sprite=53> 불쾌 지수는 <#BE81F7>{0}</color>",
+    "ID": "currentdiscomfort",
+    "Name": "이 정착지의 <sprite=53> <#3A01DF>불쾌</color> 지수는 <#BE81F7>{0}</color>",
     "Description": "",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
@@ -330,7 +330,7 @@
     "Icon": "<sprite=14>"
   },
   "33": {
-    "ID": "sanityiecreasedown",
+    "ID": "sanityincreasedown",
     "Name": "<sprite=15> <#BE81F7>정신력</color> 회복 약화",
     "Description": "",
     "SelectionDescription": "",
@@ -340,7 +340,7 @@
     "Icon": "<sprite=15>"
   },
   "34": {
-    "ID": "sanityiecreasedoubledown",
+    "ID": "sanityincreasedoubledown",
     "Name": "<sprite=16> <#BE81F7>정신력</color> 회복 크게 약화",
     "Description": "",
     "SelectionDescription": "",
@@ -950,7 +950,7 @@
     "Icon": "<sprite=45>"
   },
   "95": {
-    "ID": "wwilddown",
+    "ID": "wilddown",
     "Name": "<sprite=46> 자연 테마 약화",
     "Description": "",
     "SelectionDescription": "",
@@ -1119,7 +1119,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "115": {
+  "112": {
     "ID": "durationscript",
     "Name": "턴 후 망각",
     "Description": "",
@@ -1129,47 +1129,147 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "116": {
-    "ID": "rational",
-    "Name": "이성적",
-    "Description": "이성 테마 설명",
+  "113": {
+    "ID": "toophysical",
+    "Name": "이미 극한으로 육체적입니다!",
+    "Description": "",
     "SelectionDescription": "",
-    "SelectionSubDescription": "이성성향간략설명",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "114": {
+    "ID": "tendency_body_p2",
+    "Name": "매우 육체적",
+    "Description": "당신은 주로 육체에 의존에 상황을 해결합니다. 덕분에 튼튼하고 민첩한 육체를 가졌으나 유연한 일 처리는 힘들겠군요.",
+    "SelectionDescription": "힘으로 해결해요!",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "115": {
+    "ID": "tendency_body_p1",
+    "Name": "약간 육체적",
+    "Description": "당신은 육체에 의존하는 경향이 있습니다. 덕분에 반사신경 좋은 몸을 가지게 되었군요.",
+    "SelectionDescription": "몸이 튼튼해졌습니다.",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "116": {
+    "ID": "tendency_body_0",
+    "Name": "중립",
+    "Description": "당신은 이렇다 할 성향을 보이지 않고 있습니다.",
+    "SelectionDescription": "균형잡혔습니다.",
+    "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
   "117": {
-    "ID": "physical",
-    "Name": "육체적",
-    "Description": "육체 테마 설명",
-    "SelectionDescription": "",
-    "SelectionSubDescription": "육체성향간략설명",
+    "ID": "tendency_body_m1",
+    "Name": "약간 정신적",
+    "Description": "당신은 머리에 의존하는 경향이 있습니다. 덕분에 유연한 사고를 가지게 되었군요.",
+    "SelectionDescription": "머리가 바쁩니다.",
+    "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
   "118": {
-    "ID": "mental",
-    "Name": "정신적",
-    "Description": "정신 테마 설명",
-    "SelectionDescription": "",
-    "SelectionSubDescription": "정신성향간략설명",
+    "ID": "tendency_body_m2",
+    "Name": "매우 정신적",
+    "Description": "당신은 주로 머리를 사용해 사건을 해결합니다. 덕분에 빠른 두뇌회전을 가지게 되었으나 몸을 쓰는 일은 둔해졌군요.",
+    "SelectionDescription": "두뇌풀가동!",
+    "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
   "119": {
-    "ID": "material",
-    "Name": "물질적",
-    "Description": "물질 테마 설명",
+    "ID": "toorational",
+    "Name": "이미 극한으로 정신적입니다!",
+    "Description": "",
     "SelectionDescription": "",
-    "SelectionSubDescription": "물질성향간략설명",
+    "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
   "120": {
+    "ID": "toomental",
+    "Name": "이미 극한으로 감정적입니다!",
+    "Description": "",
+    "SelectionDescription": "",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "121": {
+    "ID": "tendency_head_m2",
+    "Name": "매우 감정적",
+    "Description": "당신은 주로 감정적으로 생각하는 경향이 있습니다. 당신의 감정과 익숙해졌지만 물질적인 것을 신경 쓸 여유는 없어졌네요.",
+    "SelectionDescription": "감정 레버를 내려요!",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "122": {
+    "ID": "tendency_head_m1",
+    "Name": "약간 감정적",
+    "Description": "당신은 감정적으로 생각하는 경향이 있습니다. 덕분에 안 좋은 일도 쉽게 넘길 수 있게 되었군요.",
+    "SelectionDescription": "심호흡이 익숙합니다.",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "123": {
+    "ID": "tendency_head_0",
+    "Name": "중립",
+    "Description": "당신은 이렇다 할 성향을 보이지 않고 있습니다.",
+    "SelectionDescription": "균형잡혔습니다.",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "124": {
+    "ID": "tendency_head_p1",
+    "Name": "약간 물질적",
+    "Description": "당신은 물질적으로 생각하는 경향이 있습니다. 덕분에 주머니가 두둑해지겠군요",
+    "SelectionDescription": "능숙한 흥정가네요.",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "125": {
+    "ID": "tendency_head_p2",
+    "Name": "매우 물질적",
+    "Description": "당신은 주로 물질적으로 생각하는 경향이 있습니다. 이득을 취하는데 능숙해졌지만 자신을 다루는 데는 서툴어졌습니다.",
+    "SelectionDescription": "돈은 언제나 옳다!",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "126": {
+    "ID": "toomaterial",
+    "Name": "이미 극한으로 물질적입니다!",
+    "Description": "",
+    "SelectionDescription": "",
+    "SelectionSubDescription": "",
+    "FailDescription": "",
+    "SuccessDescription": "",
+    "Icon": ""
+  },
+  "127": {
     "ID": "noeffect",
     "Name": "현재 활성화 효과 없음",
     "Description": "",
@@ -1179,37 +1279,37 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "121": {
+  "128": {
     "ID": "residence",
     "Name": "거주지",
-    "Description": "거주지 설명",
+    "Description": "익숙함 그리고 새로움이 있습니.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "122": {
+  "129": {
     "ID": "residenceeffect",
-    "Name": "<#CEF6F5>3</color>턴 이내 <#CEF6F5>1</color>회의 <sprite=10> <#F5A9A9>체력 감소</color> 효과가 <#81F781>{0}%</color> 완화됩니다",
-    "Description": "",
+    "Name": "<#CEF6F5>{0}</color>턴 이내 <#CEF6F5>1</color>회의 <sprite=10> <#F5A9A9>체력 감소</color> 효과가 <#81F781>{1}%</color> 완화됩니다",
+    "Description": "푹신한 침대로 인해 든든해졌습니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "123": {
+  "130": {
     "ID": "marketplace",
     "Name": "시장",
-    "Description": "시장 설명",
+    "Description": "돈과 사람, 혹은 돈을 원하는 사람들로 가득찬 곳입니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "124": {
+  "131": {
     "ID": "marketplaceeffect",
     "Name": "<sprite=22> <#F3F781>{0}</color>골드를 얻습니다.",
     "Description": "",
@@ -1219,17 +1319,17 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "125": {
+  "132": {
     "ID": "temple",
     "Name": "사원",
-    "Description": "사원 설명",
+    "Description": "고요와 신앙이 자리잡은 곳입니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "126": {
+  "133": {
     "ID": "templeeffect",
     "Name": "모든 정착지의 <sprite=55> 불쾌 지수가 <#CEF6F5>1</color> 감소합니다.",
     "Description": "",
@@ -1239,39 +1339,39 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "127": {
+  "134": {
     "ID": "library",
     "Name": "도서관",
-    "Description": "도서관 설명",
+    "Description": "지식과 역사의 무게로 채워진 곳입니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "128": {
+  "135": {
     "ID": "libraryeffect",
-    "Name": "<#CEF6F5>3</color>턴 동안 {0} <#CEF6F5>{0}</color> 테마의 기술들이 <#CEF6F5>+1</color>의 레벨을 얻습니다.",
-    "Description": "",
+    "Name": "<#CEF6F5>{0}</color>턴 동안 <#CEF6F5>{1}</color> 테마의 기술들이 <#CEF6F5>+1</color>의 레벨을 얻습니다.",
+    "Description": "책으로 인해 식견이 넓어진 느낌입니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "129": {
+  "136": {
     "ID": "theater",
     "Name": "극장",
-    "Description": "극장 설명",
+    "Description": "새로운 경험, 혹은 오래된 경험이 기다리는 곳입니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "130": {
+  "137": {
     "ID": "theatereffect",
-    "Name": "모든 경험의 지속 턴이 <#CEF6F5>+2</color> 증가합니다.",
+    "Name": "<#CEF6F5>모든 경험</color>의 지속 턴이 <#CEF6F5>+2</color> 증가합니다.",
     "Description": "",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
@@ -1279,27 +1379,27 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "131": {
+  "138": {
     "ID": "academy",
     "Name": "아카데미",
-    "Description": "아카데미 설",
+    "Description": "발전을 뒤쫓는 사람들로 가득한 곳입니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "132": {
+  "139": {
     "ID": "academyeffect",
-    "Name": "<#CEF6F5>3</color>턴 동안 모든 확률 검사가 성공할 때 까지 <#81F781>{0}%</color> 증가합니다.",
-    "Description": "",
+    "Name": "<#CEF6F5>{0}</color>턴 동안 모든 확률 검사가 성공할 때 까지 <#81F781>{1}%</color> 증가합니다.",
+    "Description": "가르침은 활용하지 않으면 의미가 없습니다.",
     "SelectionDescription": "",
     "SelectionSubDescription": "",
     "FailDescription": "",
     "SuccessDescription": "",
     "Icon": ""
   },
-  "133": {
+  "140": {
     "ID": "normaleventpredescription",
     "Name": "이 장소에는 일반 이벤트가 있습니다",
     "Description": "",
@@ -1309,7 +1409,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "134": {
+  "141": {
     "ID": "followeventpredescription",
     "Name": "이 앞에는 연계 이벤트가 있을지도?",
     "Description": "",
@@ -1319,7 +1419,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "135": {
+  "142": {
     "ID": "questeventpredescription",
     "Name": "어이 그 앞은 지옥이다",
     "Description": "",
@@ -1329,7 +1429,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "136": {
+  "143": {
     "ID": "rationalselection",
     "Name": "이성 선택지",
     "Description": "",
@@ -1339,7 +1439,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "137": {
+  "144": {
     "ID": "physicalselection",
     "Name": "육체 선택지",
     "Description": "",
@@ -1349,7 +1449,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "138": {
+  "145": {
     "ID": "mentalselection",
     "Name": "정신 선택지",
     "Description": "",
@@ -1359,7 +1459,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "139": {
+  "146": {
     "ID": "alion",
     "Name": "알리온",
     "Description": "",
@@ -1369,7 +1469,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "140": {
+  "147": {
     "ID": "amberfort",
     "Name": "앰버포트",
     "Description": "",
@@ -1379,7 +1479,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "141": {
+  "148": {
     "ID": "arthurstone",
     "Name": "어써스톤",
     "Description": "",
@@ -1389,7 +1489,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "142": {
+  "149": {
     "ID": "ashbrook",
     "Name": "애쉬브룩",
     "Description": "",
@@ -1399,7 +1499,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "143": {
+  "150": {
     "ID": "brigelis",
     "Name": "브리겔리스",
     "Description": "",
@@ -1409,7 +1509,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "144": {
+  "151": {
     "ID": "calibria",
     "Name": "칼리브리아",
     "Description": "",
@@ -1419,7 +1519,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "145": {
+  "152": {
     "ID": "eldermist",
     "Name": "엘더미스트",
     "Description": "",
@@ -1429,7 +1529,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "146": {
+  "153": {
     "ID": "elvendom",
     "Name": "엘븐돔",
     "Description": "",
@@ -1439,7 +1539,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "147": {
+  "154": {
     "ID": "evergreenvale",
     "Name": "애버그린베일",
     "Description": "",
@@ -1449,7 +1549,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "148": {
+  "155": {
     "ID": "galania",
     "Name": "갈라니아",
     "Description": "",
@@ -1459,7 +1559,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "149": {
+  "156": {
     "ID": "ironcliff",
     "Name": "아이언클리프",
     "Description": "",
@@ -1469,7 +1569,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "150": {
+  "157": {
     "ID": "raia",
     "Name": "라이라",
     "Description": "",
@@ -1479,7 +1579,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "151": {
+  "158": {
     "ID": "rappland",
     "Name": "래프랜드",
     "Description": "",
@@ -1489,7 +1589,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "152": {
+  "159": {
     "ID": "sellier",
     "Name": "셀리어",
     "Description": "",
@@ -1499,7 +1599,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "153": {
+  "160": {
     "ID": "silberia",
     "Name": "실베리아",
     "Description": "",
@@ -1509,7 +1609,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "154": {
+  "161": {
     "ID": "sunridge",
     "Name": "선릿지",
     "Description": "",
@@ -1519,7 +1619,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "155": {
+  "162": {
     "ID": "synodia",
     "Name": "시노디아",
     "Description": "",
@@ -1529,7 +1629,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "156": {
+  "163": {
     "ID": "windmere",
     "Name": "윈드머",
     "Description": "",
@@ -1539,7 +1639,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "157": {
+  "164": {
     "ID": "albace",
     "Name": "알베이스",
     "Description": "",
@@ -1549,7 +1649,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "158": {
+  "165": {
     "ID": "avalomia",
     "Name": "알바로미아",
     "Description": "",
@@ -1559,7 +1659,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "159": {
+  "166": {
     "ID": "ellsworth",
     "Name": "엘스워스",
     "Description": "",
@@ -1569,7 +1669,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "160": {
+  "167": {
     "ID": "emael",
     "Name": "에맬",
     "Description": "",
@@ -1579,7 +1679,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "161": {
+  "168": {
     "ID": "iberton",
     "Name": "이버톤",
     "Description": "",
@@ -1589,7 +1689,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "162": {
+  "169": {
     "ID": "lumia",
     "Name": "루미아",
     "Description": "",
@@ -1599,7 +1699,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "163": {
+  "170": {
     "ID": "niverdale",
     "Name": "니버데일",
     "Description": "",
@@ -1609,7 +1709,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "164": {
+  "171": {
     "ID": "solaria",
     "Name": "솔라리아",
     "Description": "",
@@ -1619,7 +1719,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "165": {
+  "172": {
     "ID": "sylveria",
     "Name": "사이베리아",
     "Description": "",
@@ -1629,7 +1729,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "166": {
+  "173": {
     "ID": "valtar",
     "Name": "발타",
     "Description": "",
@@ -1639,7 +1739,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "167": {
+  "174": {
     "ID": "aberstead",
     "Name": "에버스테드",
     "Description": "",
@@ -1649,7 +1749,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "168": {
+  "175": {
     "ID": "arcadimia",
     "Name": "아카디미아",
     "Description": "",
@@ -1659,7 +1759,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "169": {
+  "176": {
     "ID": "catrua",
     "Name": "카투아",
     "Description": "",
@@ -1669,7 +1769,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "170": {
+  "177": {
     "ID": "lugrea",
     "Name": "루그리아",
     "Description": "",
@@ -1679,7 +1779,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "171": {
+  "178": {
     "ID": "mabrel",
     "Name": "마브렐",
     "Description": "",
@@ -1689,7 +1789,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "172": {
+  "179": {
     "ID": "meridina",
     "Name": "머리디나",
     "Description": "",
@@ -1699,7 +1799,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "173": {
+  "180": {
     "ID": "penbrite",
     "Name": "팬브라이트",
     "Description": "",
@@ -1709,7 +1809,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "174": {
+  "181": {
     "ID": "solanum",
     "Name": "솔라눔",
     "Description": "",
@@ -1719,7 +1819,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "175": {
+  "182": {
     "ID": "tryon",
     "Name": "트라이온",
     "Description": "",
@@ -1729,7 +1829,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "176": {
+  "183": {
     "ID": "udrium",
     "Name": "유드리움",
     "Description": "",
@@ -1739,7 +1839,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "177": {
+  "184": {
     "ID": "materialselection",
     "Name": "물질 선택지",
     "Description": "",
@@ -1749,7 +1849,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "178": {
+  "185": {
     "ID": "event_normal_badghost_town",
     "Name": "때깔 나쁜 유령",
     "Description": "으슥한 폐가 거리를 걸어가던 도중 밤의 냉기와 걸맞지 않은 이질적인 쌀쌀함을 느낀 순간, 당신은 눈 앞에 깡마른 유령을 마주쳤습니다!\\n당신의 몸은 수축하고 반사적으로 주먹을 움켜쥡니다...",
@@ -1759,7 +1859,7 @@
     "SuccessDescription": "날렵한 왼손이 유령의 턱을 꿰뚫는 순간, 아지랑이가 흣날리듯 유령의 형체가 뭉게졌습니다.유령이 도망친 것일까요?아니면 유령은 허께비였던 것일까요?\\n당신의 매콤한 주먹만이 그 답을 알고 있을 것 입니다...",
     "Icon": ""
   },
-  "179": {
+  "186": {
     "ID": "exp_townspooky",
     "Name": "귀신들림",
     "Description": "폐가 앞 유령은 사라졌지만, 당신이 물리친 것인지, 유령이 사라진 것인지, 아니면 유령은 처음부터 없었던 것인지, 아직도 모든 것이 혼란스럽습니다.",
@@ -1769,7 +1869,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "180": {
+  "187": {
     "ID": "event_normal_poorstep_town_spring",
     "Name": "헛디딤",
     "Description": "나른한 봄날, 포근한 날씨, 어느 때인지도 모를 정도로 급작스럽게 오른발에서 둔탁한 느낌이 느껴지고 몸의 중심이 기울어지며 지면이 일어서기 시작합니다.\\n통증이 덮쳐오기까지 짧은 시간, 어떻게 넘어져야 덜 아플지 생각해 내야 합니다!",
@@ -1779,7 +1879,7 @@
     "SuccessDescription": "당신은 넘어지는 순간 양 팔, 양 다리를 동시에 펼쳐 피해를 분산시키고 그대로 전방을 향해 한바퀴 굴러 완벽한 낙법을 선사했습니다.\\n육체와 한층 더 친숙해진 기분입니다.",
     "Icon": ""
   },
-  "181": {
+  "188": {
     "ID": "event_normal_poorstep_town_summer",
     "Name": "헛디딤",
     "Description": "뜨겁지 않은 여름, 밝은 태양, 어느 때인지도 모를 정도로 급작스럽게 오른발에서 둔탁한 느낌이 느껴지고 몸의 중심이 기울어지며 지면이 일어서기 시작합니다.\\n통증이 덮쳐오기까지 짧은 시간, 어떻게 넘어져야 덜 아플지 생각해 내야 합니다!",
@@ -1789,7 +1889,7 @@
     "SuccessDescription": "당신은 넘어지는 순간 양 팔, 양 다리를 동시에 펼쳐 피해를 분산시키고 그대로 전방을 향해 한바퀴 굴러 완벽한 낙법을 선사했습니다.\\n육체와 한층 더 친숙해진 기분입니다.",
     "Icon": ""
   },
-  "182": {
+  "189": {
     "ID": "event_normal_poorstep_town_fall",
     "Name": "헛디딤",
     "Description": "선선한 가을, 맑고 광활한 하늘, 어느 때인지도 모를 정도로 급작스럽게 오른발에서 둔탁한 느낌이 느껴지고 몸의 중심이 기울어지며 지면이 일어서기 시작합니다.\\n통증이 덮쳐오기까지 짧은 시간, 어떻게 넘어져야 덜 아플지 생각해 내야 합니다!",
@@ -1799,7 +1899,7 @@
     "SuccessDescription": "당신은 넘어지는 순간 양 팔, 양 다리를 동시에 펼쳐 피해를 분산시키고 그대로 전방을 향해 한바퀴 굴러 완벽한 낙법을 선사했습니다.\\n육체와 한층 더 친숙해진 기분입니다.",
     "Icon": ""
   },
-  "183": {
+  "190": {
     "ID": "event_normal_poorstep_town_winter",
     "Name": "헛디딤",
     "Description": "쌀쌀한 겨울, 새하얀 풍경, 어느 때인지도 모를 정도로 급작스럽게 오른발에서 둔탁한 느낌이 느껴지고 몸의 중심이 기울어지며 지면이 일어서기 시작합니다.\\n통증이 덮쳐오기까지 짧은 시간, 어떻게 넘어져야 덜 아플지 생각해 내야 합니다!",
@@ -1809,7 +1909,7 @@
     "SuccessDescription": "당신은 넘어지는 순간 양 팔, 양 다리를 동시에 펼쳐 피해를 분산시키고 그대로 전방을 향해 한바퀴 굴러 완벽한 낙법을 선사했습니다.\\n육체와 한층 더 친숙해진 기분입니다.",
     "Icon": ""
   },
-  "184": {
+  "191": {
     "ID": "exp_thump",
     "Name": "우당탕",
     "Description": "형편없는 낙법의 결과물입니다.\\n온 몸 푸른 멍은 쉽사리 사라지지 않는 교훈이 될 것입니다.",
@@ -1819,7 +1919,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "185": {
+  "192": {
     "ID": "exp_banefulherb",
     "Name": "독초 섭취",
     "Description": "독초의 휴유증이 쉽사리 사라지지 않습니다.\\n우스꽝스러운 걸음걸이와 찡그린 얼굴이 그 증세를 말해줍니다.",
@@ -1829,7 +1929,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "186": {
+  "193": {
     "ID": "event_normal_unknownherb_town_spring",
     "Name": "약초와 독초",
     "Description": "마을 농경지 근처, 파릇파릇한 풀밭에서 어느 식물 군락이 눈에 띕니다. 뙈기밭 구석자리에 있는 식물은 유명한 약초로 보이지만, 이와 비슷하게 생긴 독초 역시 그 부작용으로 유명합니다.\\n이 풀을 캐어 팔면 여행 자금으로 삼을 수 있겠지만 독초가 아니라는 증거가 필요합니다.",
@@ -1839,7 +1939,7 @@
     "SuccessDescription": "당신은 독초와 약초의 차이점을 떠올려냈습니다. 안타깝게도 이 풀은 독초입니다. 그러나 독초도 나름대로 사용처가 있기 때문에 캐어 팔면 되겠군요.@당신은 남자답게 한 움쿰 집어 씹었습니다!\\n어금니로 풀을 짓이기는 순간 입 안에 퍼져가는 녹색 맛은 몸의 반사작용을 이끌어내기 충분했습니다.당신은 위장에 있는 모든 내용물을 게워냈고 이 풀의 정체에 대해 알아냈습니다.",
     "Icon": ""
   },
-  "187": {
+  "194": {
     "ID": "event_normal_unknownherb_town_summer",
     "Name": "약초와 독초",
     "Description": "마을 농경지 근처, 덥수룩한 풀밭에서 어느 식물 군락이 눈에 띕니다. 뙈기밭 구석자리에 있는 식물은 유명한 약초로 보이지만, 이와 비슷하게 생긴 독초 역시 그 부작용으로 유명합니다.\\n이 풀을 캐어 팔면 여행 자금으로 삼을 수 있겠지만 독초가 아니라는 증거가 필요합니다.",
@@ -1849,7 +1949,7 @@
     "SuccessDescription": "당신은 독초와 약초의 차이점을 떠올려냈습니다. 안타깝게도 이 풀은 독초입니다. 그러나 독초도 나름대로 사용처가 있기 때문에 캐어 팔면 되겠군요.@당신은 남자답게 한 움쿰 집어 씹었습니다!\\n어금니로 풀을 짓이기는 순간 입 안에 퍼져가는 녹색 맛은 몸의 반사작용을 이끌어내기 충분했습니다.당신은 위장에 있는 모든 내용물을 게워냈고 이 풀의 정체에 대해 알아냈습니다.",
     "Icon": ""
   },
-  "188": {
+  "195": {
     "ID": "event_normal_unknownherb_town_fall",
     "Name": "약초와 독초",
     "Description": "마을 농경지 근처, 낙엽 가득한 풀밭에서 어느 식물 군락이 눈에 띕니다. 뙈기밭 구석자리에 있는 식물은 유명한 약초로 보이지만, 이와 비슷하게 생긴 독초 역시 그 부작용으로 유명합니다.\\n이 풀을 캐어 팔면 여행 자금으로 삼을 수 있겠지만 독초가 아니라는 증거가 필요합니다.",
@@ -1859,7 +1959,7 @@
     "SuccessDescription": "당신은 독초와 약초의 차이점을 떠올려냈습니다. 안타깝게도 이 풀은 독초입니다. 그러나 독초도 나름대로 사용처가 있기 때문에 캐어 팔면 되겠군요.@당신은 남자답게 한 움쿰 집어 씹었습니다!\\n어금니로 풀을 짓이기는 순간 입 안에 퍼져가는 녹색 맛은 몸의 반사작용을 이끌어내기 충분했습니다.당신은 위장에 있는 모든 내용물을 게워냈고 이 풀의 정체에 대해 알아냈습니다.",
     "Icon": ""
   },
-  "189": {
+  "196": {
     "ID": "event_normal_unknownherb_town_winter",
     "Name": "약초와 독초",
     "Description": "마을 농경지 근처, 눈에 덮여있음에 불구하고 파릇파릇한 어느 식물 군락이 눈에 띕니다. 뙈기밭 구석자리에 있는 식물은 유명한 약초로 보이지만, 이와 비슷하게 생긴 독초 역시 그 부작용으로 유명합니다.\\n이 풀을 캐어 팔면 여행 자금으로 삼을 수 있겠지만 독초가 아니라는 증거가 필요합니다.",
@@ -1869,7 +1969,7 @@
     "SuccessDescription": "당신은 독초와 약초의 차이점을 떠올려냈습니다. 안타깝게도 이 풀은 독초입니다. 그러나 독초도 나름대로 사용처가 있기 때문에 캐어 팔면 되겠군요.@당신은 남자답게 한 움쿰 집어 씹었습니다!\\n어금니로 풀을 짓이기는 순간 입 안에 퍼져가는 녹색 맛은 몸의 반사작용을 이끌어내기 충분했습니다.당신은 위장에 있는 모든 내용물을 게워냈고 이 풀의 정체에 대해 알아냈습니다.",
     "Icon": ""
   },
-  "190": {
+  "197": {
     "ID": "event_normal_doggofriend_town_spring",
     "Name": "새로운 친구",
     "Description": "똘똘해 보이는 강아지가 당신을 졸졸 쫓아오기 시작합니다. 강아지는 주위 사람들과 부딛치지 않으면서도 당신이 불편하지 않게 거리를 유지하며 영리하게 쫓아옵니다. 아마 당신이 마음에 든 모양입니다.",
@@ -1879,7 +1979,7 @@
     "SuccessDescription": "당신은 고기가 덕지덕지 붙은 커다란 뼈다귀를 건내줬습니다. 배가 고픈 모양은 아니었지만 건낸 뼈다귀를 거절할 이유까진 없던 모양입니다. 강아지는 뼈다귀를 문 채로 더 격렬하게 꼬리를 흔들다가 돌아갑니다.\\n새로운 친구가 생겼군요!@당신은 강아지를 근처 공터로 데려와 막대기 놀이와 터그 놀이를 했습니다. 슬슬 해가 지기 시작하고 강아지도 충분히 놀았는지 움직임이 둔해집니다. 당신은 슬그머니 돌아갈 채비를 시작하고 강아지는 더 이상 당신을 물고 늘어지지 않습니다.\\n새로운 친구가 생겼군요!",
     "Icon": ""
   },
-  "191": {
+  "198": {
     "ID": "event_normal_doggofriend_town_summer",
     "Name": "새로운 친구",
     "Description": "똘똘해 보이는 강아지가 당신을 졸졸 쫓아오기 시작합니다. 강아지는 주위 사람들과 부딛치지 않으면서도 당신이 불편하지 않게 거리를 유지하며 영리하게 쫓아옵니다. 아마 당신이 마음에 든 모양입니다.",
@@ -1889,7 +1989,7 @@
     "SuccessDescription": "당신은 고기가 덕지덕지 붙은 커다란 뼈다귀를 건내줬습니다. 배가 고픈 모양은 아니었지만 건낸 뼈다귀를 거절할 이유까진 없던 모양입니다. 강아지는 뼈다귀를 문 채로 더 격렬하게 꼬리를 흔들다가 돌아갑니다.\\n새로운 친구가 생겼군요!@당신은 강아지를 근처 공터로 데려와 막대기 놀이와 터그 놀이를 했습니다. 슬슬 해가 지기 시작하고 강아지도 충분히 놀았는지 움직임이 둔해집니다. 당신은 슬그머니 돌아갈 채비를 시작하고 강아지는 더 이상 당신을 물고 늘어지지 않습니다.\\n새로운 친구가 생겼군요!",
     "Icon": ""
   },
-  "192": {
+  "199": {
     "ID": "event_normal_doggofriend_town_fall",
     "Name": "새로운 친구",
     "Description": "똘똘해 보이는 강아지가 당신을 졸졸 쫓아오기 시작합니다. 강아지는 주위 사람들과 부딛치지 않으면서도 당신이 불편하지 않게 거리를 유지하며 영리하게 쫓아옵니다. 아마 당신이 마음에 든 모양입니다.",
@@ -1899,7 +1999,7 @@
     "SuccessDescription": "당신은 고기가 덕지덕지 붙은 커다란 뼈다귀를 건내줬습니다. 배가 고픈 모양은 아니었지만 건낸 뼈다귀를 거절할 이유까진 없던 모양입니다. 강아지는 뼈다귀를 문 채로 더 격렬하게 꼬리를 흔들다가 돌아갑니다.\\n새로운 친구가 생겼군요!@당신은 강아지를 근처 공터로 데려와 막대기 놀이와 터그 놀이를 했습니다. 슬슬 해가 지기 시작하고 강아지도 충분히 놀았는지 움직임이 둔해집니다. 당신은 슬그머니 돌아갈 채비를 시작하고 강아지는 더 이상 당신을 물고 늘어지지 않습니다.\\n새로운 친구가 생겼군요!",
     "Icon": ""
   },
-  "193": {
+  "200": {
     "ID": "event_normal_doggofriend_town_winter",
     "Name": "새로운 친구",
     "Description": "똘똘해 보이는 강아지가 당신을 졸졸 쫓아오기 시작합니다. 강아지는 주위 사람들과 부딛치지 않으면서도 당신이 불편하지 않게 거리를 유지하며 영리하게 쫓아옵니다. 아마 당신이 마음에 든 모양입니다.",
@@ -1909,7 +2009,7 @@
     "SuccessDescription": "당신은 고기가 덕지덕지 붙은 커다란 뼈다귀를 건내줬습니다. 배가 고픈 모양은 아니었지만 건낸 뼈다귀를 거절할 이유까진 없던 모양입니다. 강아지는 뼈다귀를 문 채로 더 격렬하게 꼬리를 흔들다가 돌아갑니다.\\n새로운 친구가 생겼군요!@당신은 강아지를 근처 공터로 데려와 막대기 놀이와 터그 놀이를 했습니다. 슬슬 해가 지기 시작하고 강아지도 충분히 놀았는지 움직임이 둔해집니다. 당신은 슬그머니 돌아갈 채비를 시작하고 강아지는 더 이상 당신을 물고 늘어지지 않습니다.\\n새로운 친구가 생겼군요!",
     "Icon": ""
   },
-  "194": {
+  "201": {
     "ID": "exp_stonebread",
     "Name": "돌빵",
     "Description": "당신은 돌덩이와 빵 조차 구분하지 못했습니다.\\n잇몸은 무슨 잘못이죠?",
@@ -1919,7 +2019,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "195": {
+  "202": {
     "ID": "event_normal_ration_town",
     "Name": "생존식량",
     "Description": "여정에 필요한 식량을 사러 시장가를 둘러보던 와중, 전투식량을 파는 가판대를 발견했습니다. 상인은 전투식량이라 주장하는 단단한 빵을 팔고 있습니다. 곰팡이 핀 흔적은 없지만 빵이 꽤나 단단해 보입니다.\\n저렴한 가격이 마음을 사로잡지만 먼저 먹을수 있는 빵인지 확인이 필요합니다.",
@@ -1929,7 +2029,7 @@
     "SuccessDescription": "당신은 먹음직스러운 빵을 크게 한 입 베어물었습니다.\\n바삭하군요!\\n식감이 약간 텁텁하긴 하지만 그럭저럭 먹을 만 합니다. 당신은 새로운 먹거리를 가방에 넣은 뒤 길을 떠납니다.",
     "Icon": ""
   },
-  "196": {
+  "203": {
     "ID": "exp_stoneeater",
     "Name": "돌 섭취자",
     "Description": "당신은 돌을 먹을 수 있습니다.\\n언제 알았냐고요?\\n그건 중요하지 않습니다.",
@@ -1939,7 +2039,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "197": {
+  "204": {
     "ID": "exp_oldmanandsea",
     "Name": "노인과 바다",
     "Description": "노인의 지루한 모험담이었습니다.\\n훌륭한 이야기로 자아낼 사람도 있겠지만 적어도 당신은 아니군요.",
@@ -1949,7 +2049,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "198": {
+  "205": {
     "ID": "event_normal_oldmanandsesa_town",
     "Name": "바다와 노인",
     "Description": "시장의 구석진 자리 늙은 어부가 청새치 뼈다귀를 내걸고 있습니다. 노인에게 뼈다귀에 대해 물어보니, 자신의 모험담을 풀어내기 시작합니다. 어부와 물고기의 얽히고 얽힌 집념, 적수에 대한 예우, 보상과 상실에 대한 이야기인 듯 하지만 슬슬 지루해 견딜 수 없군요.",
@@ -1959,7 +2059,7 @@
     "SuccessDescription": "당신은 노인의 이야기를 경청하는 척 했으나, 내용은 대부분 기억하지 못했습니다.\\n아마 월척에 관한 적당한 이야기였겠죠.",
     "Icon": ""
   },
-  "199": {
+  "206": {
     "ID": "event_normal_thelogystudy_town",
     "Name": "공부를 위한 장소",
     "Description": "이 사원은 깔끔하고 아늑합니다. 사원에 약간의 기부금을 제공하면 공부를 위한 책과 장소를 제공받을 수 있습니다.",
@@ -1969,7 +2069,7 @@
     "SuccessDescription": "아늑한 숙소, 다양한 서적, 친절한 수도사들.\\n더 바랄 게 없군요.",
     "Icon": ""
   },
-  "200": {
+  "207": {
     "ID": "exp_voicecrack",
     "Name": "삑사리",
     "Description": "사회적 시선에 기습을 가하는 성대의 배신입니다.\\n다음부턴 헛기침이라도 하세요.",
@@ -1979,7 +2079,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "201": {
+  "208": {
     "ID": "exp_monsterstory",
     "Name": "비늘투성이 늑대",
     "Description": "직접 발로 뛰어 얻은 늑대 괴물의 모습입니다.\\n약간의 차이가 있을 지도 모르겠군요.",
@@ -1989,7 +2089,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "202": {
+  "209": {
     "ID": "exp_wrongsidestory",
     "Name": "삼천포",
     "Description": "무슨 내용을 찾던 중이었죠?\\n재밌어 보이는 내용 투성이입니다...",
@@ -1999,7 +2099,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "203": {
+  "210": {
     "ID": "exp_goodhunter",
     "Name": "패기 넘치는 사냥꾼",
     "Description": "위풍당당, 임전무퇴.\\n바로 당신을 가리키는 말입니다!",
@@ -2009,7 +2109,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "204": {
+  "211": {
     "ID": "exp_beastphycology",
     "Name": "동물심리학",
     "Description": "적을 이해하기 위해선 적을 이해해야 합니다.\\n본능과 비이성은 같지 않습니다.",
@@ -2019,7 +2119,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "205": {
+  "212": {
     "ID": "exp_beastweekpoint",
     "Name": "약점 분석가",
     "Description": "하늘 아래 약점이 없는 존재는 존재하지 않습니다.",
@@ -2029,7 +2129,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "206": {
+  "213": {
     "ID": "quest_findingmonster_rising",
     "Name": "우선 거대한 늑대에 관한 정보를 찾아봅시다.",
     "Description": "",
@@ -2039,7 +2139,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "207": {
+  "214": {
     "ID": "quest_findingmonster",
     "Name": "괴물을 물리치는 자",
     "Description": "최근 온 정착지가 뒤숭숭합니다. 거대한 늑대가 밭을 망치고 가축을 해치며 사람들을 물어간다는 소문이 파다합니다.\\n\\n어릴 적 누구나 괴물을 물리치고 온갖 칭송을 받는 상상을 한 적 있을 것입니다.사악한 짐승을 물리친다면 온 땅에 용맹한 당신의 이름이 퍼져나갈 것입니다.\\n\\n아마, 당신은 그것을 위해 여행을 시작한 것일지도 모릅니다.",
@@ -2049,7 +2149,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "208": {
+  "215": {
     "ID": "ev_findingmonsteraskingmonster",
     "Name": "떠다니는 소문",
     "Description": "#SETTLE#에서 최근 거대한 늑대가 나타났다고 합니다. 나른한 봄날에도 집집마다 본 적도 없이 주워들은 괴물 이야기에 바쁜 모양입니다.\\n\\n대부분은 의미없는 풍문에 불과하겠지만, 제대로 걸러 들을 수 있다면 쓸만한 정보를 얻을 수 있을지도 모릅니다.",
@@ -2059,7 +2159,7 @@
     "SuccessDescription": "당신은 어느 정도 비슷한 이야기들을 추려봤습니다. 공통적으로 크고 검은 늑대에 관한 소문이었습니다.\\n\\n대부분 떠도는 이야기와 별 차이가 없었지만 괴물의 최근 활동에 관한 정보를 얻었습니다.",
     "Icon": ""
   },
-  "209": {
+  "216": {
     "ID": "ev_findingmonstermonsterstory",
     "Name": "괴물 문헌",
     "Description": "당신은 도서관에서 늑대 혹은 괴물에 관한 정보를 찾아보기로 했습니다. 원하는 정보만 골라 읽을 수도 있지만, 비록 관련 없어 보이는 책일지라도 쓸 만한 정보를 얻을 수 있을 것 같습니다.",
@@ -2069,7 +2169,7 @@
     "SuccessDescription": "당신은 다른 책들을 뒤로 하고 개과 동물에 관한 지식과 지금까지 발견된 가장 큰 늑대의 크기 같은 정보를 찾아봤습니다. 이 지식은 언젠가 반드시 유용하게 쓰일 것입니다. 다만 충분한 조사를 마치지 못한 기분이 찜찜하게 남습니다.@당신은 여러 책을 살펴보며 만족스러운 정보들을 찾아냈습니다. 개과 동물의 습성, 개의 친척뻘에 해당하는 동물들,기록에 남아있는 괴수와 맹수 등...\\n만족스러운 조사였습니다.",
     "Icon": ""
   },
-  "210": {
+  "217": {
     "ID": "ev_findingmonsterhowtokill_spring",
     "Name": "늙은 사냥꾼의 가르침",
     "Description": "화창한 봄날, 시장가에서 짐승 가죽을 무두질하는 늙은 사냥꾼을 발견했습니다. 사냥꾼은 제법 관록이 붙은 듯 했기에 사냥의 기술을 배우고자 했지만, 늙은 사냥꾼은 금전적 보수를 요구합니다.",
@@ -2079,7 +2179,7 @@
     "SuccessDescription": "당신은 값을 지불하고 늙은 사냥꾼으로부터 덫의 활용법과 추적법, 그리고 숲의 생존법을 배웠습니다. 괴물을 사냥할 때 그의 지식이 완전히 통하리라는 법은 없지만 충분한 도움이 될 것입니다.",
     "Icon": ""
   },
-  "211": {
+  "218": {
     "ID": "ev_findingmonsterhowtokill_summer",
     "Name": "늙은 사냥꾼의 가르침",
     "Description": "무더운 여름날, 당신은 시장가에서 짐승 가죽을 무두질하는 늙은 사냥꾼을 발견했습니다. 사냥꾼은 제법 관록이 붙은 듯 했기에 사냥의 기술을 배우고자 했지만, 늙은 사냥꾼은 금전적 보수를 요구합니다.",
@@ -2089,7 +2189,7 @@
     "SuccessDescription": "당신은 값을 지불하고 늙은 사냥꾼으로부터 덫의 활용법과 추적법, 그리고 숲의 생존법을 배웠습니다. 괴물을 사냥할 때 그의 지식이 완전히 통하리라는 법은 없지만 충분한 도움이 될 것입니다.",
     "Icon": ""
   },
-  "212": {
+  "219": {
     "ID": "ev_findingmonsterhowtokill_fall",
     "Name": "늙은 사냥꾼의 가르침",
     "Description": "쌀쌀한 가을날, 당신은 시장가에서 짐승 가죽을 무두질하는 늙은 사냥꾼을 발견했습니다. 사냥꾼은 제법 관록이 붙은 듯 했기에 사냥의 기술을 배우고자 했지만, 늙은 사냥꾼은 금전적 보수를 요구합니다.",
@@ -2099,7 +2199,7 @@
     "SuccessDescription": "당신은 값을 지불하고 늙은 사냥꾼으로부터 덫의 활용법과 추적법, 그리고 숲의 생존법을 배웠습니다. 괴물을 사냥할 때 그의 지식이 완전히 통하리라는 법은 없지만 충분한 도움이 될 것입니다.",
     "Icon": ""
   },
-  "213": {
+  "220": {
     "ID": "ev_findingmonsterhowtokill_winter",
     "Name": "늙은 사냥꾼의 가르침",
     "Description": "매서운 겨울, 당신은 시장가에서 짐승 가죽을 무두질하는 늙은 사냥꾼을 발견했습니다.사냥꾼은 제법 관록이 붙은 듯 했기에 사냥의 기술을 배우고자 했지만, 늙은 사냥꾼은 금전적 보수를 요구합니다.",
@@ -2109,7 +2209,7 @@
     "SuccessDescription": "당신은 값을 지불하고 늙은 사냥꾼으로부터 덫의 활용법과 추적법, 그리고 숲의 생존법을 배웠습니다. 괴물을 사냥할 때 그의 지식이 완전히 통하리라는 법은 없지만 충분한 도움이 될 것입니다.",
     "Icon": ""
   },
-  "214": {
+  "221": {
     "ID": "ev_findingmonstergiantfootpring_spring",
     "Name": "거대한 발자국",
     "Description": "잔디밭에 거대한 개 발자국과 무언가 질질 끌린 흔적을 발견했습니다. 이만한 발자국이라면 당신이 찾아다니던 늑대 괴물이 틀림없을 것입니다. 풀밭에 핏자국이 남아있는 것을 보아 큰 사냥감을 끌고 지나간 듯 합니다.\\n지금 당장 쫓기엔 무리지만, 발자국을 면밀이 조사한다면 괴물에 대해 더 파악할 수 있을 것입니다.",
@@ -2119,7 +2219,7 @@
     "SuccessDescription": "당신은 풀숲에 숨겨진 발자국과 눕혀진 풀을 세세하게 훑어봅니다. 흔적을 살피던 도중, 당신은 뭔가 이상함을 느낍니다.\\n당신은 눈에 띄는 발자국 옆에 철저히 숨겨진 발자국을 발견할 수 있었습니다. 괴물은 흔적을 숨기기 위해 원형으로 연결되는 흔적을 눈에 띄게 남겨둔 모양입니다. 당신은 흔적을 되짚어 거대한 늑대 괴물에 대해 한층 더 이해할 수 있었습니다.",
     "Icon": ""
   },
-  "215": {
+  "222": {
     "ID": "ev_findingmonstergiantfootpring_summer",
     "Name": "거대한 발자국",
     "Description": "무성한 풀밭에 거대한 개 발자국과 무언가 질질 끌린 흔적을 발견했습니다. 이만한 발자국이라면 당신이 찾아다니던 늑대 괴물이 틀림없을 것입니다. 풀밭에 벌레들이 날아다니는 것을 보아 큰 사냥감을 끌고 지나간 듯 합니다.\\n지금 당장 쫓기엔 무리지만, 발자국을 면밀이 조사한다면 괴물에 대해 더 파악할 수 있을 것입니다.",
@@ -2129,7 +2229,7 @@
     "SuccessDescription": "당신은 풀숲에 숨겨진 발자국과 눕혀진 풀을 세세하게 훑어봅니다. 흔적을 살피던 도중, 당신은 뭔가 이상함을 느낍니다.\\n당신은 눈에 띄는 발자국 옆에 철저히 숨겨진 발자국을 발견할 수 있었습니다. 괴물은 흔적을 숨기기 위해 원형으로 연결되는 흔적을 눈에 띄게 남겨둔 모양입니다. 당신은 흔적을 되짚어 거대한 늑대 괴물에 대해 한층 더 이해할 수 있었습니다.",
     "Icon": ""
   },
-  "216": {
+  "223": {
     "ID": "ev_findingmonstergiantfootpring_fall",
     "Name": "거대한 발자국",
     "Description": "길다란 풀밭에 거대한 개 발자국과 무언가 질질 끌린 흔적을 발견했습니다. 이만한 발자국이라면 당신이 찾아다니던 늑대 괴물이 틀림없을 것입니다. 꺾인 풀밭에 핏자국이 남아있는 것을 보아 큰 사냥감을 끌고 지나간 듯 합니다.\\n지금 당장 쫓기엔 무리지만, 발자국을 면밀이 조사한다면 괴물에 대해 더 파악할 수 있을 것입니다.",
@@ -2139,7 +2239,7 @@
     "SuccessDescription": "당신은 풀숲에 숨겨진 발자국과 눕혀진 풀을 세세하게 훑어봅니다. 흔적을 살피던 도중, 당신은 뭔가 이상함을 느낍니다.\\n당신은 눈에 띄는 발자국 옆에 철저히 숨겨진 발자국을 발견할 수 있었습니다. 괴물은 흔적을 숨기기 위해 원형으로 연결되는 흔적을 눈에 띄게 남겨둔 모양입니다. 당신은 흔적을 되짚어 거대한 늑대 괴물에 대해 한층 더 이해할 수 있었습니다.",
     "Icon": ""
   },
-  "217": {
+  "224": {
     "ID": "ev_findingmonstergiantfootpring_winter",
     "Name": "거대한 발자국",
     "Description": "눈밭에 거대한 개 발자국과 무언가 질질 끌린 흔적을 발견했습니다. 이만한 발자국이라면 당신이 찾아다니던 늑대 괴물이 틀림없을 것입니다. 눈에 핏자국이 남아있는 것을 보아 큰 사냥감을 끌고 지나간 듯 합니다.\\n지금 당장 쫓기엔 무리지만, 발자국을 면밀이 조사한다면 괴물에 대해 더 파악할 수 있을 것입니다.",
@@ -2149,7 +2249,7 @@
     "SuccessDescription": "당신은 풀숲에 숨겨진 발자국과 눕혀진 풀을 세세하게 훑어봅니다. 흔적을 살피던 도중, 당신은 뭔가 이상함을 느낍니다.\\n당신은 눈에 띄는 발자국 옆에 철저히 숨겨진 발자국을 발견할 수 있었습니다. 괴물은 흔적을 숨기기 위해 원형으로 연결되는 흔적을 눈에 띄게 남겨둔 모양입니다. 당신은 흔적을 되짚어 거대한 늑대 괴물에 대해 한층 더 이해할 수 있었습니다.",
     "Icon": ""
   },
-  "218": {
+  "225": {
     "ID": "ev_findingmonsterpeasant_spring",
     "Name": "망가진 밭",
     "Description": "농지에 사람들이 모여있습니다. 커다란 늑대가 밤 사이 싹이 자라나는 땅을 헤집고 종자 더미를 망쳐 놨다고 합니다. 많은 사람들이 서글피 울부짖는 모습이 당신의 이타심을 자극합니다.",
@@ -2159,7 +2259,7 @@
     "SuccessDescription": "당신은 주머니에서 노잣돈을 한 움큼 꺼내 괴로워하는 농민들에게 건내줬습니다. 슬피 울던 농민들은 기삐 울며 당신에게 몹시 감사해 합니다. 사연을 좀 더 들어보니 늑대 괴물이 밭을 헤집는 광경을 어렴풋이 본 사람이 있다고 합니다.\\n당신은 그에게서 의외의 수확을 얻은 뒤 다시 길을 떠납니다.@살 길이 막막한 농민들의 처절한 울부짖음은 쉽게 무시하고 넘어가기 힘들었습니다. 그러나 저 농민들만 아니라도 세상에 굶주리고 죽어가는 사람은 넘쳐나는 법입니다. 당신은 무거운 발걸음을 떼고 길을 나아가려던 찰나, 구경꾼들의 잡담 중 늑대 괴물에 관한 이야기가 나오기 시작합니다.\\n의외의 소득을 얻은 듯 합니다.",
     "Icon": ""
   },
-  "219": {
+  "226": {
     "ID": "ev_findingmonsterpeasant_summer",
     "Name": "망가진 밭",
     "Description": "농지에 사람들이 모여있습니다. 커다란 늑대가 밤 사이 농작물이 자라고 있던 땅을 엉망으로 헤집어 놨다고 합니다. 많은 사람들이 서글피 울부짖는 모습이 당신의 이타심을 자극합니다.",
@@ -2169,7 +2269,7 @@
     "SuccessDescription": "당신은 주머니에서 노잣돈을 한 움큼 꺼내 괴로워하는 농민들에게 건내줬습니다. 슬피 울던 농민들은 기삐 울며 당신에게 몹시 감사해 합니다. 사연을 좀 더 들어보니 늑대 괴물이 밭을 헤집는 광경을 어렴풋이 본 사람이 있다고 합니다.\\n당신은 그에게서 의외의 수확을 얻은 뒤 다시 길을 떠납니다.@살 길이 막막한 농민들의 처절한 울부짖음은 쉽게 무시하고 넘어가기 힘들었습니다. 그러나 저 농민들만 아니라도 세상에 굶주리고 죽어가는 사람은 넘쳐나는 법입니다. 당신은 무거운 발걸음을 떼고 길을 나아가려던 찰나, 구경꾼들의 잡담 중 늑대 괴물에 관한 이야기가 나오기 시작합니다.\\n의외의 소득을 얻은 듯 합니다.",
     "Icon": ""
   },
-  "220": {
+  "227": {
     "ID": "ev_findingmonsterpeasant_fall",
     "Name": "망가진 밭",
     "Description": "농지에 사람들이 모여있습니다. 커다란 늑대가 밤 사이 수확 직전의 작물들을 엉망으로 엎어 버렸다고 합니다. 많은 사람들이 서글피 울부짖는 모습이 당신의 이타심을 자극합니다.",
@@ -2179,7 +2279,7 @@
     "SuccessDescription": "당신은 주머니에서 노잣돈을 한 움큼 꺼내 괴로워하는 농민들에게 건내줬습니다. 슬피 울던 농민들은 기삐 울며 당신에게 몹시 감사해 합니다. 사연을 좀 더 들어보니 늑대 괴물이 밭을 헤집는 광경을 어렴풋이 본 사람이 있다고 합니다.\\n당신은 그에게서 의외의 수확을 얻은 뒤 다시 길을 떠납니다.@살 길이 막막한 농민들의 처절한 울부짖음은 쉽게 무시하고 넘어가기 힘들었습니다. 그러나 저 농민들만 아니라도 세상에 굶주리고 죽어가는 사람은 넘쳐나는 법입니다. 당신은 무거운 발걸음을 떼고 길을 나아가려던 찰나, 구경꾼들의 잡담 중 늑대 괴물에 관한 이야기가 나오기 시작합니다.\\n의외의 소득을 얻은 듯 합니다.",
     "Icon": ""
   },
-  "221": {
+  "228": {
     "ID": "ev_findingmonsterdelivery_spring",
     "Name": "신선한 증거",
     "Description": "강줄기를 따라 걸어가던 중, 무언가 거대한 덩어리가 떠내려 오는 것을 발견했습니다. 놀랍게도 그것은 물려 죽은 곰의 시체였습니다. 당신이 쫓고 있는 거대한 늑대 괴물이 아니고서야 곰을 물어 죽일 수 있는 동물은 그리 흔하지 않을 것입니다. 곰이 싸운 흔적을 분석한다면 괴물을 사냥할 때 유용한 정보가 될 것입니다.\\n안타깝게도 흐르는 강물에서 곰의 시체를 완전히 건져낼 수 없기 때문에 제대로 된 조사는 힘들 것 같습니다.",
@@ -2189,7 +2289,7 @@
     "SuccessDescription": "당신은 곰의 몸에 새겨진 물린 자국들을 살펴보았습니다. 곰의 온 몸에는 팔목만한 이빨이 박힌 자국이 가득했으며 목덜미의 살은 움푹 패여 있었습니다.\\n충치가 없다니 부럽군요.@당신은 곰의 시체를 뒤적거린 결과, 곰이 저항한 흔적이 그다지 보이지 않다는 느낌을 받았습니다. 이 곰은 순식간에 목 뒤를 물려 숨통이 끊어졌습니다.\\n살을 주고 뼈를 취하기엔 수지가 맞지 않을 것 같습니다.",
     "Icon": ""
   },
-  "222": {
+  "229": {
     "ID": "ev_findingmonsterdelivery_summer",
     "Name": "신선한 증거",
     "Description": "강줄기를 따라 걸어가던 중, 무언가 거대한 덩어리가 떠내려 오는 것을 발견했습니다. 놀랍게도 그것은 물려 죽은 곰의 시체였습니다. 당신이 쫓고 있는 거대한 늑대 괴물이 아니고서야 곰을 물어 죽일 수 있는 동물은 그리 흔하지 않을 것입니다. 곰이 싸운 흔적을 분석한다면 괴물을 사냥할 때 유용한 정보가 될 것입니다.\\n안타깝게도 흐르는 강물에서 곰의 시체를 완전히 건져낼 수 없기 때문에 제대로 된 조사는 힘들 것 같습니다.",
@@ -2199,7 +2299,7 @@
     "SuccessDescription": "당신은 곰의 몸에 새겨진 물린 자국들을 살펴보았습니다. 곰의 온 몸에는 팔목만한 이빨이 박힌 자국이 가득했으며 목덜미의 살은 움푹 패여 있었습니다.\\n충치가 없다니 부럽군요.@당신은 곰의 시체를 뒤적거린 결과, 곰이 저항한 흔적이 그다지 보이지 않다는 느낌을 받았습니다. 이 곰은 순식간에 목 뒤를 물려 숨통이 끊어졌습니다.\\n살을 주고 뼈를 취하기엔 수지가 맞지 않을 것 같습니다.",
     "Icon": ""
   },
-  "223": {
+  "230": {
     "ID": "ev_findingmonsterdelivery_fall",
     "Name": "신선한 증거",
     "Description": "강줄기를 따라 걸어가던 중, 무언가 거대한 덩어리가 떠내려 오는 것을 발견했습니다. 놀랍게도 그것은 물려 죽은 곰의 시체였습니다. 당신이 쫓고 있는 거대한 늑대 괴물이 아니고서야 곰을 물어 죽일 수 있는 동물은 그리 흔하지 않을 것입니다. 곰이 싸운 흔적을 분석한다면 괴물을 사냥할 때 유용한 정보가 될 것입니다.\\n안타깝게도 흐르는 강물에서 곰의 시체를 완전히 건져낼 수 없기 때문에 제대로 된 조사는 힘들 것 같습니다.",
@@ -2209,7 +2309,7 @@
     "SuccessDescription": "당신은 곰의 몸에 새겨진 물린 자국들을 살펴보았습니다. 곰의 온 몸에는 팔목만한 이빨이 박힌 자국이 가득했으며 목덜미의 살은 움푹 패여 있었습니다.\\n충치가 없다니 부럽군요.@당신은 곰의 시체를 뒤적거린 결과, 곰이 저항한 흔적이 그다지 보이지 않다는 느낌을 받았습니다. 이 곰은 순식간에 목 뒤를 물려 숨통이 끊어졌습니다.\\n살을 주고 뼈를 취하기엔 수지가 맞지 않을 것 같습니다.",
     "Icon": ""
   },
-  "224": {
+  "231": {
     "ID": "ev_findingmonsterdelivery_winter",
     "Name": "신선한 증거",
     "Description": "강줄기를 따라 걸어가던 중, 얼어붙은 강 아래 무언가를 발견했습니다. 놀랍게도 그것은 물려 죽은 곰의 시체였습니다. 당신이 쫓고 있는 거대한 늑대 괴물이 아니고서야 곰을 물어 죽일 수 있는 동물은 그리 흔하지 않을 것입니다. 곰이 싸운 흔적을 분석한다면 괴물을 사냥할 때 유용한 정보가 될 것입니다.\\n안타깝게도 얼음을 깨고 곰의 시체를 완전히 건져낼 수 없기 때문에 제대로 된 조사는 힘들 것 같습니다.",
@@ -2219,7 +2319,7 @@
     "SuccessDescription": "당신은 곰의 몸에 새겨진 물린 자국들을 살펴보았습니다. 곰의 온 몸에는 팔목만한 이빨이 박힌 자국이 가득했으며 목덜미의 살은 움푹 패여 있었습니다.\\n충치가 없다니 부럽군요.@당신은 곰의 시체를 뒤적거린 결과, 곰이 저항한 흔적이 그다지 보이지 않다는 느낌을 받았습니다. 이 곰은 순식간에 목 뒤를 물려 숨통이 끊어졌습니다.\\n살을 주고 뼈를 취하기엔 수지가 맞지 않을 것 같습니다.",
     "Icon": ""
   },
-  "225": {
+  "232": {
     "ID": "ev_findingmonsterwanted_spring",
     "Name": "수배 시작",
     "Description": "화창한 봄날, 시장가를 거닐던 도중 흔치않은 광경을 발견합니다. 단상 위에 척 봐도 귀족스러운 사내와 경호원들이 무언가를 준비하고 있습니다. 오랜 시간이 지나지 않아 귀족은 문서를 펼치고 내용을 읽기 시작합니다.\\n최근 온 정착지를 들쑤시고 다니는 거대한 늑대 괴물에 공식적으로 현상금이 걸렸습니다! 이 소식은 온 땅으로 퍼져나갈 것이고 괴물의 이야기가 더욱 부풀어질 것이며 괴물을 처치하는 자는 오랜 기간동안 온갖 전설로 회자될 것입니다. 전설의 시작으로서, 당신이 직접 그 모습을 각인시킬 때입니다!",
@@ -2229,7 +2329,7 @@
     "SuccessDescription": "당신은 군중들을 제치고 단상 앞으로 올라갔습니다. 당신은 숨을 크게 들이쉬고, 외치기 시작합니다! 사람들은 당신의 한 마디, 한 마디 놓치지 않아 집중하고 고양감에 빠져들기 시작합니다. 당신의 연설이 끝나고 우레와 같은 박수갈채가 돌아옵니다. 이제 사람들은 알 것입니다.\\n누가 무시무시한 늑대 괴물을  물리치고 영웅이 될 것인지!",
     "Icon": ""
   },
-  "226": {
+  "233": {
     "ID": "ev_findingmonsterwanted_summer",
     "Name": "수배 시작",
     "Description": "무더운 여름날, 시장가를 거닐던 도중 흔치않은 광경을 발견합니다. 단상 위에 척 봐도 귀족스러운 사내와 경호원들이 무언가를 준비하고 있습니다. 오랜 시간이 지나지 않아 귀족은 문서를 펼치고 내용을 읽기 시작합니다.\\n최근 온 정착지를 들쑤시고 다니는 거대한 늑대 괴물에 공식적으로 현상금이 걸렸습니다! 이 소식은 온 땅으로 퍼져나갈 것이고 괴물의 이야기가 더욱 부풀어질 것이며 괴물을 처치하는 자는 오랜 기간동안 온갖 전설로 회자될 것입니다. 전설의 시작으로서, 당신이 직접 그 모습을 각인시킬 때입니다!",
@@ -2239,7 +2339,7 @@
     "SuccessDescription": "당신은 군중들을 제치고 단상 앞으로 올라갔습니다. 당신은 숨을 크게 들이쉬고, 외치기 시작합니다! 사람들은 당신의 한 마디, 한 마디 놓치지 않아 집중하고 고양감에 빠져들기 시작합니다. 당신의 연설이 끝나고 우레와 같은 박수갈채가 돌아옵니다. 이제 사람들은 알 것입니다.\\n누가 무시무시한 늑대 괴물을  물리치고 영웅이 될 것인지!",
     "Icon": ""
   },
-  "227": {
+  "234": {
     "ID": "ev_findingmonsterwanted_fall",
     "Name": "수배 시작",
     "Description": "선선한 가을 바람 속, 시장가를 거닐던 도중 흔치않은 광경을 발견합니다. 단상 위에 척 봐도 귀족스러운 사내와 경호원들이 무언가를 준비하고 있습니다. 오랜 시간이 지나지 않아 귀족은 문서를 펼치고 내용을 읽기 시작합니다.\\n최근 온 정착지를 들쑤시고 다니는 거대한 늑대 괴물에 공식적으로 현상금이 걸렸습니다! 이 소식은 온 땅으로 퍼져나갈 것이고 괴물의 이야기가 더욱 부풀어질 것이며 괴물을 처치하는 자는 오랜 기간동안 온갖 전설로 회자될 것입니다. 전설의 시작으로서, 당신이 직접 그 모습을 각인시킬 때입니다!",
@@ -2249,7 +2349,7 @@
     "SuccessDescription": "당신은 군중들을 제치고 단상 앞으로 올라갔습니다. 당신은 숨을 크게 들이쉬고, 외치기 시작합니다! 사람들은 당신의 한 마디, 한 마디 놓치지 않아 집중하고 고양감에 빠져들기 시작합니다. 당신의 연설이 끝나고 우레와 같은 박수갈채가 돌아옵니다. 이제 사람들은 알 것입니다.\\n누가 무시무시한 늑대 괴물을  물리치고 영웅이 될 것인지!",
     "Icon": ""
   },
-  "228": {
+  "235": {
     "ID": "ev_findingmonsterwanted_winter",
     "Name": "수배 시작",
     "Description": "겨울 치고 따뜻한 어느 날, 시장가를 거닐던 도중 흔치않은 광경을 발견합니다. 단상 위에 척 봐도 귀족스러운 사내와 경호원들이 무언가를 준비하고 있습니다. 오랜 시간이 지나지 않아 귀족은 문서를 펼치고 내용을 읽기 시작합니다.\\n최근 온 정착지를 들쑤시고 다니는 거대한 늑대 괴물에 공식적으로 현상금이 걸렸습니다! 이 소식은 온 땅으로 퍼져나갈 것이고 괴물의 이야기가 더욱 부풀어질 것이며 괴물을 처치하는 자는 오랜 기간동안 온갖 전설로 회자될 것입니다. 전설의 시작으로서, 당신이 직접 그 모습을 각인시킬 때입니다!",
@@ -2259,7 +2359,7 @@
     "SuccessDescription": "당신은 군중들을 제치고 단상 앞으로 올라갔습니다. 당신은 숨을 크게 들이쉬고, 외치기 시작합니다! 사람들은 당신의 한 마디, 한 마디 놓치지 않아 집중하고 고양감에 빠져들기 시작합니다. 당신의 연설이 끝나고 우레와 같은 박수갈채가 돌아옵니다. 이제 사람들은 알 것입니다.\\n누가 무시무시한 늑대 괴물을  물리치고 영웅이 될 것인지!",
     "Icon": ""
   },
-  "229": {
+  "236": {
     "ID": "quest_findingmonster_climax_0",
     "Name": "요즘 온 정착지가 늑대 괴물 이야기로 뒤숭숭합니다.\\n통치층에서도 이 사건을 넘겨짚을 만한 문제가 아니라는 것을 깨달았을까요?",
     "Description": "",
@@ -2269,7 +2369,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "230": {
+  "237": {
     "ID": "ev_findingmonsterstartfinding_spring",
     "Name": "추적 시작",
     "Description": "깊은 숲 속, 여러 동물들의 시체가 널부러져 있습니다. 반으로 찢겨 갈라진 사체들과 꺾여 부숴진 나무들을 보면 평범한 짐승이 날뛴 흔적이 아닌 것을 알 수 있습니다. 얼마 전 이 곳에서 거대한 무언가 날뛴 것이 틀림 없습니다. 괴물이 이곳으로 돌아올지, 않을지는 모르지만 아직 괴물과 마주치는 것은 시기상조입니다.\\n당신은 얻을 수 있는 정보 하나만 선택하기로 했습니다.",
@@ -2279,7 +2379,7 @@
     "SuccessDescription": "당신은 짐승이 이렇게나 날뛴 광경을 본 적이 없습니다. 괴물은 왜 이렇게나 날뛴 것일까요? 당신은 생각해봅니다.\\n허기? 분노?\\n그러나 현장의 시체들은 먹힌 흔적이 없습니다. 짐승들은 마치 오락을 위해 죽은 듯 보였습니다.@현장은 마치 번개가 수십 번이나 내리친 것처럼 처참했습니다. 물론 괴물이 번개를 발사했다는 것은 아닙니다. 토막난 동물의 사체와 뭉게진 나무기둥을 보면 이 괴물은 규격외의 크기를 지녔다는 것을 알 수 있습니다. 사물이든 동물이든 크기가 클 수록 무게를 지탱하는 부분은 더욱 부담이 가기 마련입니다.",
     "Icon": ""
   },
-  "231": {
+  "238": {
     "ID": "ev_findingmonsterstartfinding_summer",
     "Name": "추적 시작",
     "Description": "깊은 숲 속, 여러 동물들의 시체가 널부러져 있습니다. 반으로 찢겨 갈라진 사체들과 꺾여 부숴진 나무들을 보면 평범한 짐승이 날뛴 흔적이 아닌 것을 알 수 있습니다. 얼마 전 이 곳에서 거대한 무언가 날뛴 것이 틀림 없습니다. 괴물이 이곳으로 돌아올지, 않을지는 모르지만 아직 괴물과 마주치는 것은 시기상조입니다.\\n당신은 얻을 수 있는 정보 하나만 선택하기로 했습니다.",
@@ -2289,7 +2389,7 @@
     "SuccessDescription": "당신은 짐승이 이렇게나 날뛴 광경을 본 적이 없습니다. 괴물은 왜 이렇게나 날뛴 것일까요? 당신은 생각해봅니다.\\n허기? 분노?\\n그러나 현장의 시체들은 먹힌 흔적이 없습니다. 짐승들은 마치 오락을 위해 죽은 듯 보였습니다.@현장은 마치 번개가 수십 번이나 내리친 것처럼 처참했습니다. 물론 괴물이 번개를 발사했다는 것은 아닙니다. 토막난 동물의 사체와 뭉게진 나무기둥을 보면 이 괴물은 규격외의 크기를 지녔다는 것을 알 수 있습니다. 사물이든 동물이든 크기가 클 수록 무게를 지탱하는 부분은 더욱 부담이 가기 마련입니다.",
     "Icon": ""
   },
-  "232": {
+  "239": {
     "ID": "ev_findingmonsterstartfinding_fall",
     "Name": "추적 시작",
     "Description": "깊은 숲 속, 여러 동물들의 시체가 널부러져 있습니다. 반으로 찢겨 갈라진 사체들과 꺾여 부숴진 나무들을 보면 평범한 짐승이 날뛴 흔적이 아닌 것을 알 수 있습니다. 얼마 전 이 곳에서 거대한 무언가 날뛴 것이 틀림 없습니다. 괴물이 이곳으로 돌아올지, 않을지는 모르지만 아직 괴물과 마주치는 것은 시기상조입니다.\\n당신은 얻을 수 있는 정보 하나만 선택하기로 했습니다.",
@@ -2299,7 +2399,7 @@
     "SuccessDescription": "당신은 짐승이 이렇게나 날뛴 광경을 본 적이 없습니다. 괴물은 왜 이렇게나 날뛴 것일까요? 당신은 생각해봅니다.\\n허기? 분노?\\n그러나 현장의 시체들은 먹힌 흔적이 없습니다. 짐승들은 마치 오락을 위해 죽은 듯 보였습니다.@현장은 마치 번개가 수십 번이나 내리친 것처럼 처참했습니다. 물론 괴물이 번개를 발사했다는 것은 아닙니다. 토막난 동물의 사체와 뭉게진 나무기둥을 보면 이 괴물은 규격외의 크기를 지녔다는 것을 알 수 있습니다. 사물이든 동물이든 크기가 클 수록 무게를 지탱하는 부분은 더욱 부담이 가기 마련입니다.",
     "Icon": ""
   },
-  "233": {
+  "240": {
     "ID": "ev_findingmonsterstartfinding_winter",
     "Name": "추적 시작",
     "Description": "깊은 숲 속, 여러 동물들의 시체가 널부러져 있습니다. 반으로 찢겨 갈라진 사체들과 꺾여 부숴진 나무들을 보면 평범한 짐승이 날뛴 흔적이 아닌 것을 알 수 있습니다. 얼마 전 이 곳에서 거대한 무언가 날뛴 것이 틀림 없습니다. 괴물이 이곳으로 돌아올지, 않을지는 모르지만 아직 괴물과 마주치는 것은 시기상조입니다.\\n당신은 얻을 수 있는 정보 하나만 선택하기로 했습니다.",
@@ -2309,7 +2409,7 @@
     "SuccessDescription": "당신은 짐승이 이렇게나 날뛴 광경을 본 적이 없습니다. 괴물은 왜 이렇게나 날뛴 것일까요? 당신은 생각해봅니다.\\n허기? 분노?\\n그러나 현장의 시체들은 먹힌 흔적이 없습니다. 짐승들은 마치 오락을 위해 죽은 듯 보였습니다.@현장은 마치 번개가 수십 번이나 내리친 것처럼 처참했습니다. 물론 괴물이 번개를 발사했다는 것은 아닙니다. 토막난 동물의 사체와 뭉게진 나무기둥을 보면 이 괴물은 규격외의 크기를 지녔다는 것을 알 수 있습니다. 사물이든 동물이든 크기가 클 수록 무게를 지탱하는 부분은 더욱 부담이 가기 마련입니다.",
     "Icon": ""
   },
-  "234": {
+  "241": {
     "ID": "quest_findingmonster_climax_1",
     "Name": "괴물을 추적하기 시작합니다.\\n근처 숲이라면 반드시 그 흔적이 있을 듯 합니다.",
     "Description": "",
@@ -2319,7 +2419,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "235": {
+  "242": {
     "ID": "ev_findingmonstercave",
     "Name": "낡은 소굴",
     "Description": "당신은 구릉지를 돌아다니던 도중 퀴퀴한 피비린내를 맡았습니다. 악취를 따라가 보니 짐승의 뼈가 무수히 쌓여 있는 동굴을 발견했습니다. 아마 거대한 늑대의 소굴로 쓰였던 것으로 보이나 지금은 버려진 듯 합니다. 박살난 뼈들을 살펴보니 괴물이 이 동굴을 버린지 그리 오래 된 것 같지는 않습니다.\\n이 장소에서 무슨 정보를 얻을 수 있을까요?",
@@ -2329,7 +2429,7 @@
     "SuccessDescription": "당신은 동굴을 몇 바퀴 돌아다니며 현장을 면밀히 살펴봤습니다. 늑대는 본디 무리를 지어 다니는 동물인데, 이 동굴에선 무리의 흔적을 엿볼 수가 없었습니다. 크기가 크기만 하다고 무리에 들어가지 못하는 법일까요? 괴물은 모종의 이유로 무리를 짓고 있지 않습니다. 아마 무리를 지을 필요가 없이 충분한 무력을 지녔기 때문이거나, 무리가 이끌리지 않을 만큼 포악하기 때문에 홀로 다니는 중일지도 모릅니다.@동굴엔 온갖 짐승의 뼈가 나돌아다니고 있습니다. 짓밟힌 소형 동물의 뼈 조각부터 시작해 반으로 갈라진 멧돼지, 사방으로 펼쳐진 곰(이었던 것)의 흔적도 보입니다. 한 입에 씹어 삼킬 수 있는 작은 동물의 뼈까지 있는 이유는 뭘까요? 이 방은 마치 트로피 전시실 같은 느낌을 줍니다. 당신은 뼈 무덤을 뒤적거리던 도중 믿을 수 없을 정도로 깔끔하게 보존된 곰의 두개골을 발견했습니다. 이런 물건은 부르는게 값인 큰 전리품입니다!",
     "Icon": ""
   },
-  "236": {
+  "243": {
     "ID": "quest_findingmonster_climax_2",
     "Name": "언덕가에 피비린내가 풍기는 동굴이 있다는 소문을 들었습니다.\\n근처 언덕을 돌아다니다 보면 괴물의 소굴이 나올 지도 모릅니다.",
     "Description": "",
@@ -2339,7 +2439,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "237": {
+  "244": {
     "ID": "ev_findingmonstermonster_spring",
     "Name": "괴물 조우",
     "Description": "여러 날을 추적에 매진한 결과, 거대한 늑대 괴물을 찾아냈습니다. 집채만한 크기의 늑대를 잠시 엿보는 순간만으로도 머릿속이 새햐애질 것만 같습니다. 지금 이 기회를 놓친다면 두번 다시 같은 기회가 오지 않을 것입니다. 당신에겐 수많은 덫과 무기가 준비되어 있고 다양한 전략을 계획해 두었습니다. 당신은 이 순간을 위해 수많은 시간을 투자했습니다. 정보를 수집하고, 시체를 뒤지고, 짐승의 머리로 생각해보기도 했습니다.\\n지금, 그 시간이 헛되지 않았는지 확인할 시간입니다!",
@@ -2349,7 +2449,7 @@
     "SuccessDescription": "당신은 괴물 늑대를 처치하기 위해 어마어마한 준비를 했습니다.\\n거대한 늑대는 미리 설치한 덫과 함정에 쉽게 뛰어들었고 그 때마다 날카로운 전략이 빛을 발했습니다. 당신은 기진맥진한 괴물에게 달려드는 척 하다가 내빼는 방식으로 얼마 없는 체력을 소모시켰습니다. 시간이 지나 꼼짝도 못하게 되버린 괴물에게 다가가 날카로운 검으로 가죽을 뚫고 심장을 찔렀습니다!\\n당신이 온 정착지를 뒤흔든 거대한 늑대 괴물을 처치했습니다!\\n이제 당신은 수 십년 넘게 전설 속의 사냥꾼으로 회자될 것입니다! 이것이 당신의 운명이었을까요? 이제 더 이상의 모험은 필요하지 않은 것일까요?",
     "Icon": ""
   },
-  "238": {
+  "245": {
     "ID": "ev_findingmonstermonster_summer",
     "Name": "괴물 조우",
     "Description": "여러 날을 추적에 매진한 결과, 거대한 늑대 괴물을 찾아냈습니다. 집채만한 크기의 늑대를 잠시 엿보는 순간만으로도 머릿속이 새햐애질 것만 같습니다. 지금 이 기회를 놓친다면 두번 다시 같은 기회가 오지 않을 것입니다. 당신에겐 수많은 덫과 무기가 준비되어 있고 다양한 전략을 계획해 두었습니다. 당신은 이 순간을 위해 수많은 시간을 투자했습니다. 정보를 수집하고, 시체를 뒤지고, 짐승의 머리로 생각해보기도 했습니다.\\n지금, 그 시간이 헛되지 않았는지 확인할 시간입니다!",
@@ -2359,7 +2459,7 @@
     "SuccessDescription": "당신은 괴물 늑대를 처치하기 위해 어마어마한 준비를 했습니다.\\n거대한 늑대는 미리 설치한 덫과 함정에 쉽게 뛰어들었고 그 때마다 날카로운 전략이 빛을 발했습니다. 당신은 기진맥진한 괴물에게 달려드는 척 하다가 내빼는 방식으로 얼마 없는 체력을 소모시켰습니다. 시간이 지나 꼼짝도 못하게 되버린 괴물에게 다가가 날카로운 검으로 가죽을 뚫고 심장을 찔렀습니다!\\n당신이 온 정착지를 뒤흔든 거대한 늑대 괴물을 처치했습니다!\\n이제 당신은 수 십년 넘게 전설 속의 사냥꾼으로 회자될 것입니다! 이것이 당신의 운명이었을까요? 이제 더 이상의 모험은 필요하지 않은 것일까요?",
     "Icon": ""
   },
-  "239": {
+  "246": {
     "ID": "ev_findingmonstermonster_fall",
     "Name": "괴물 조우",
     "Description": "여러 날을 추적에 매진한 결과, 거대한 늑대 괴물을 찾아냈습니다. 집채만한 크기의 늑대를 잠시 엿보는 순간만으로도 머릿속이 새햐애질 것만 같습니다. 지금 이 기회를 놓친다면 두번 다시 같은 기회가 오지 않을 것입니다. 당신에겐 수많은 덫과 무기가 준비되어 있고 다양한 전략을 계획해 두었습니다. 당신은 이 순간을 위해 수많은 시간을 투자했습니다. 정보를 수집하고, 시체를 뒤지고, 짐승의 머리로 생각해보기도 했습니다.\\n지금, 그 시간이 헛되지 않았는지 확인할 시간입니다!",
@@ -2369,7 +2469,7 @@
     "SuccessDescription": "당신은 괴물 늑대를 처치하기 위해 어마어마한 준비를 했습니다.\\n거대한 늑대는 미리 설치한 덫과 함정에 쉽게 뛰어들었고 그 때마다 날카로운 전략이 빛을 발했습니다. 당신은 기진맥진한 괴물에게 달려드는 척 하다가 내빼는 방식으로 얼마 없는 체력을 소모시켰습니다. 시간이 지나 꼼짝도 못하게 되버린 괴물에게 다가가 날카로운 검으로 가죽을 뚫고 심장을 찔렀습니다!\\n당신이 온 정착지를 뒤흔든 거대한 늑대 괴물을 처치했습니다!\\n이제 당신은 수 십년 넘게 전설 속의 사냥꾼으로 회자될 것입니다! 이것이 당신의 운명이었을까요? 이제 더 이상의 모험은 필요하지 않은 것일까요?",
     "Icon": ""
   },
-  "240": {
+  "247": {
     "ID": "ev_findingmonstermonster_winter",
     "Name": "괴물 조우",
     "Description": "여러 날을 추적에 매진한 결과, 거대한 늑대 괴물을 찾아냈습니다. 집채만한 크기의 늑대를 잠시 엿보는 순간만으로도 머릿속이 새햐애질 것만 같습니다. 지금 이 기회를 놓친다면 두번 다시 같은 기회가 오지 않을 것입니다. 당신에겐 수많은 덫과 무기가 준비되어 있고 다양한 전략을 계획해 두었습니다. 당신은 이 순간을 위해 수많은 시간을 투자했습니다. 정보를 수집하고, 시체를 뒤지고, 짐승의 머리로 생각해보기도 했습니다.\\n지금, 그 시간이 헛되지 않았는지 확인할 시간입니다!",
@@ -2379,7 +2479,7 @@
     "SuccessDescription": "당신은 괴물 늑대를 처치하기 위해 어마어마한 준비를 했습니다.\\n거대한 늑대는 미리 설치한 덫과 함정에 쉽게 뛰어들었고 그 때마다 날카로운 전략이 빛을 발했습니다. 당신은 기진맥진한 괴물에게 달려드는 척 하다가 내빼는 방식으로 얼마 없는 체력을 소모시켰습니다. 시간이 지나 꼼짝도 못하게 되버린 괴물에게 다가가 날카로운 검으로 가죽을 뚫고 심장을 찔렀습니다!\\n당신이 온 정착지를 뒤흔든 거대한 늑대 괴물을 처치했습니다!\\n이제 당신은 수 십년 넘게 전설 속의 사냥꾼으로 회자될 것입니다! 이것이 당신의 운명이었을까요? 이제 더 이상의 모험은 필요하지 않은 것일까요?",
     "Icon": ""
   },
-  "241": {
+  "248": {
     "ID": "quest_findingmonster_falling",
     "Name": "당신은 준비를 마쳤습니다.\\n이젠 숲을 돌아다녀 괴물을 찾아 물리칠 차례입니다.",
     "Description": "여행을 그만두기@또 다른 모험을 찾아 떠나기",
@@ -2389,7 +2489,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "242": {
+  "249": {
     "ID": "exp_beasthunter",
     "Name": "괴물 사냥꾼",
     "Description": "당신은 온 땅을 두려움에 떨게 만든 거대한 늑대 괴물을 처치했습니다.\\n하지만 당신은 그것에 만족하지 못했습니다.\\n명예롭고 용감한 사냥꾼은 당신의 진짜 운명을 찾기 위한 발자국에 불과합니다.\\n원대한 성취는 시야를 좁게 만들 수도 있습니다...",
@@ -2399,7 +2499,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "243": {
+  "250": {
     "ID": "exp_failedhunter",
     "Name": "당신은 괴물 사냥에 실패했습니다.\\n하지만 투자한 시간이 헛된 경험을 만들진 않았습니다.",
     "Description": "쓰라린 사냥의 추억입니다.",
@@ -2409,7 +2509,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "244": {
+  "251": {
     "ID": "exp_changeforest",
     "Name": "사슴의 변화",
     "Description": "당신은 변화를 이루어냈습니다.\\n숲의 존재들이 즐거워합니다.",
@@ -2419,7 +2519,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "245": {
+  "252": {
     "ID": "exp_changeriver",
     "Name": "물고기의 변화",
     "Description": "당신은 변화를 이루어냈습니다.\\n강의 존재들이 즐거워합니다.",
@@ -2429,7 +2529,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "246": {
+  "253": {
     "ID": "exp_changemountain",
     "Name": "산양의 변화",
     "Description": "당신은 변화를 이루어냈습니다.\\n산의 존재들이 즐거워합니다.",
@@ -2439,7 +2539,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "247": {
+  "254": {
     "ID": "exp_changehighland",
     "Name": "독수리의 변화",
     "Description": "당신은 변화를 이루어냈습니다.\\n구릉지의 존재들이 즐거워합니다.",
@@ -2449,7 +2549,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "248": {
+  "255": {
     "ID": "exp_changesea",
     "Name": "돌고래의 변화",
     "Description": "당신은 변화를 이루어냈습니다.\\n바다의 존재들이 즐거워합니다.",
@@ -2459,7 +2559,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "249": {
+  "256": {
     "ID": "event_normal_change_idle_town",
     "Name": "변화의 신상",
     "Description": "사원에 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2469,7 +2569,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 돈주머니를 쥔 채 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "250": {
+  "257": {
     "ID": "event_normal_change_forest_town",
     "Name": "변화의 사슴 신상",
     "Description": "숲이 우거진 사원에 사슴 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2479,7 +2579,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "251": {
+  "258": {
     "ID": "event_normal_change_river_town",
     "Name": "변화의 물고기 신상",
     "Description": "냇가 근처 사원에 물고기 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2489,7 +2589,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "252": {
+  "259": {
     "ID": "event_normal_change_mountain_town",
     "Name": "변화의 산양 신상",
     "Description": "산 밑 사원에 산양 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2499,7 +2599,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "253": {
+  "260": {
     "ID": "event_normal_change_highland_town",
     "Name": "변화의 독수리 신상",
     "Description": "언덕을 등진 사원에 독수리 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2509,7 +2609,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "254": {
+  "261": {
     "ID": "event_normal_change_sea_town",
     "Name": "변화의 돌고래 신상",
     "Description": "바닷가 근처 사원에 돌고래 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2519,7 +2619,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "255": {
+  "262": {
     "ID": "event_normal_nofather_city",
     "Name": "열 밤",
     "Description": "노란 머리의 아이가 축 처진 어꺠로 항구에 앉아 바다를 바라보고 있습니다. 아이는 아버지를 기다리고 있었다고 합니다. 아버지는 배를 타고 떠나기 전 날마다 아들에게 열 밤만 자고 일어나면 돌아오겠다는 말을 했다고 합니다. #SETTLE#은 파도가 높습니다. 그리고 얼마 전 항구를 떠난 배가 난파됐다는 소식을 들었습니다. 소년은 열 밤을 넘게 기다렸지만 아직까지 아버지는 오지 않았습니다. 아이는 당신에게 묻습니다.\\n아버지가 돌아올까요?\\n당신은 답을 알고 있지만, 아이에게 필요한 대답인지 확신할 수는 없습니다.",
@@ -2529,7 +2629,7 @@
     "SuccessDescription": "당신은 아이에게 바다의 변덕스러움에 대해 말해주었습니다. 바다는 무척이나 넓고 그만큼이나 변화무쌍하기 때문에 많은 배들이 예정보다 늦게 도착하는 것은 예삿 일이 아니라고 했습니다. 아이는 눈을 깜빡이더니 자리에 일어나 집을 향해 걸어갑니다. 아이의 뒷모습은 여전히 쓸쓸해 보이지만, 앉아 있던 뒷모습보단 더 나아 보이기도 합니다.@당신은 얼마 전에 들었던 난파 소식에 대해 말해주었습니다. 아이는 이야기를 듣는 동안 무덤덤한 표정을 유지했습니다. 당신의 설명이 끝나고, 아이는 천천히 자리에서 일어나 집을 향해 걸어갑니다. 아이의 발걸음은 무거워 보입니다.\\n하지만 그의 어깨는 가벼워 진 듯 합니다.",
     "Icon": ""
   },
-  "256": {
+  "263": {
     "ID": "exp_bravefriend",
     "Name": "용맹한 친구",
     "Description": "세상에 나쁜 개는 없습니다.\\n든든한 친구가 생겼군요!",
@@ -2539,7 +2639,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "257": {
+  "264": {
     "ID": "exp_goodbyefriend",
     "Name": "안녕히 벗이여",
     "Description": "개 한마리가 작은 인연을 잊지 않고 목숨을 걸어 당신을 구했습니다.",
@@ -2549,7 +2649,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "258": {
+  "265": {
     "ID": "event_follow_lifesavior_town_spring",
     "Name": "생명의 은인",
     "Description": "장작을 패는 일거리를 잡아 열심히 도끼질을 하던 와중, 숲에서 멧돼지가 튀어나와 당신을 향해 돌진하기 시작했습니다! 당신에겐 작은 손도끼 하나 뿐, 별 다른 무장이 없어 전전긍긍하고 있던 와중 뒤이어 비교적 작은 무언가가 튀어나왔습니다. 언젠가 당신을 따라온 적이 있던 그 개입니다! 당신의 친구는 용감하게 멧돼지에게 달려들어 주의를 끌기 시작했습니다.\\n지금이 기회입니다!",
@@ -2559,7 +2659,7 @@
     "SuccessDescription": "용감하게 달려든 당신의 친구가 멧돼지의 주의를 끈 사이, 당신은 멧돼지의 뒤를 잡아 정확한 힘으로 뒷목을 내리쳤습니다. 멧돼지는 즉사했고 누구도 다치지 않았습니다. 죽은 멧돼지를 어떻게 처리해야 할 지 생각하던 찰나, 당신의 용맹한 친구는 자리를 떠서 숲 속으로 들어가기 시작했습니다.\\n당신이 어디에, 어떻게 있든, 당신은 결코 혼자가 아닙니다.",
     "Icon": ""
   },
-  "259": {
+  "266": {
     "ID": "event_follow_lifesavior_town_summer",
     "Name": "생명의 은인",
     "Description": "장작을 패는 일거리를 잡아 열심히 도끼질을 하던 와중, 숲에서 멧돼지가 튀어나와 당신을 향해 돌진하기 시작했습니다! 당신에겐 작은 손도끼 하나 뿐, 별 다른 무장이 없어 전전긍긍하고 있던 와중 뒤이어 비교적 작은 무언가가 튀어나왔습니다. 언젠가 당신을 따라온 적이 있던 그 개입니다! 당신의 친구는 용감하게 멧돼지에게 달려들어 주의를 끌기 시작했습니다.\\n지금이 기회입니다!",
@@ -2569,7 +2669,7 @@
     "SuccessDescription": "용감하게 달려든 당신의 친구가 멧돼지의 주의를 끈 사이, 당신은 멧돼지의 뒤를 잡아 정확한 힘으로 뒷목을 내리쳤습니다. 멧돼지는 즉사했고 누구도 다치지 않았습니다. 죽은 멧돼지를 어떻게 처리해야 할 지 생각하던 찰나, 당신의 용맹한 친구는 자리를 떠서 숲 속으로 들어가기 시작했습니다.\\n당신이 어디에, 어떻게 있든, 당신은 결코 혼자가 아닙니다.",
     "Icon": ""
   },
-  "260": {
+  "267": {
     "ID": "event_follow_lifesavior_town_fall",
     "Name": "생명의 은인",
     "Description": "장작을 패는 일거리를 잡아 열심히 도끼질을 하던 와중, 숲에서 멧돼지가 튀어나와 당신을 향해 돌진하기 시작했습니다! 당신에겐 작은 손도끼 하나 뿐, 별 다른 무장이 없어 전전긍긍하고 있던 와중 뒤이어 비교적 작은 무언가가 튀어나왔습니다. 언젠가 당신을 따라온 적이 있던 그 개입니다! 당신의 친구는 용감하게 멧돼지에게 달려들어 주의를 끌기 시작했습니다.\\n지금이 기회입니다!",
@@ -2579,7 +2679,7 @@
     "SuccessDescription": "용감하게 달려든 당신의 친구가 멧돼지의 주의를 끈 사이, 당신은 멧돼지의 뒤를 잡아 정확한 힘으로 뒷목을 내리쳤습니다. 멧돼지는 즉사했고 누구도 다치지 않았습니다. 죽은 멧돼지를 어떻게 처리해야 할 지 생각하던 찰나, 당신의 용맹한 친구는 자리를 떠서 숲 속으로 들어가기 시작했습니다.\\n당신이 어디에, 어떻게 있든, 당신은 결코 혼자가 아닙니다.",
     "Icon": ""
   },
-  "261": {
+  "268": {
     "ID": "event_follow_lifesavior_town_winter",
     "Name": "생명의 은인",
     "Description": "장작을 패는 일거리를 잡아 열심히 도끼질을 하던 와중, 숲에서 멧돼지가 튀어나와 당신을 향해 돌진하기 시작했습니다! 당신에겐 작은 손도끼 하나 뿐, 별 다른 무장이 없어 전전긍긍하고 있던 와중 뒤이어 비교적 작은 무언가가 튀어나왔습니다. 언젠가 당신을 따라온 적이 있던 그 개입니다! 당신의 친구는 용감하게 멧돼지에게 달려들어 주의를 끌기 시작했습니다.\\n지금이 기회입니다!",
@@ -2589,7 +2689,7 @@
     "SuccessDescription": "용감하게 달려든 당신의 친구가 멧돼지의 주의를 끈 사이, 당신은 멧돼지의 뒤를 잡아 정확한 힘으로 뒷목을 내리쳤습니다. 멧돼지는 즉사했고 누구도 다치지 않았습니다. 죽은 멧돼지를 어떻게 처리해야 할 지 생각하던 찰나, 당신의 용맹한 친구는 자리를 떠서 숲 속으로 들어가기 시작했습니다.\\n당신이 어디에, 어떻게 있든, 당신은 결코 혼자가 아닙니다.",
     "Icon": ""
   },
-  "262": {
+  "269": {
     "ID": "event_normal_pushover_city",
     "Name": "세상물정 모르는 나리",
     "Description": "시장 거리에서 식료품을 사던 도중, 옆의 사내가 상인에게 바가지를 쓰고 있는 상황을 목격했습니다. 사내는 몸을 후드로 꽁꽁 싸맸지만 사이사이 보이는 옷과 행동거지에서 기품을 엿볼 수 있습니다. 당신은 당황하고 있는 사내를 가로막고 상인을 꾸짖어 사내가 터무니없는 금액을 지불하는 것을 막아주었습니다. 사내는 당신에게 감사를 표했습니다.\\n아무래도 사내를 그대로 보냈다간 큰 화를 당할 듯 합니다.",
@@ -2599,7 +2699,7 @@
     "SuccessDescription": "당신은 사내에게 여러 물건의 값과 속이 시커먼 상인들, 그리고 그들이 쓰는 상투적인 수법에 대해 알려줬습니다. 사내는 아무래도 세상물정에 밝은 편이 아니었는지 간단한 상식에도 눈을 밝히며 당신의 말에 귀기울였습니다. 이야기가 끝나고 사내는 고급진 어휘로 당신에게 또다시 감사의 말을 전했습니다.@당신은 사내를 데리고 시장가의 여러 가판대부터 시작해 거주지의 골목길까지 온갖 장소를 안내했습니다. 사내는 타지 사람인건지, 집 밖으로 나온 적이 없는건지 흔한 장소에도 눈을 밝히며 관심을 표했습니다. 안내가 끝나고 사내는 당신에게 진심어린 감사를 표했습니다.",
     "Icon": ""
   },
-  "263": {
+  "270": {
     "ID": "exp_friendblessing",
     "Name": "작은 축복",
     "Description": "당신의 선행이 축복으로 돌아왔습니다.",
@@ -2609,7 +2709,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "264": {
+  "271": {
     "ID": "event_follow_friendblessing_castle",
     "Name": "친우의 축복",
     "Description": "당신은 #SETTLE#의 사원에서 낯익은 얼굴을 발견했습니다. 언젠가 시장에서 바가지를 쓰던 것을 당신이 도와준 그 사내입니다. 사내 역시 당신을 알아보고 몹시 반가워합니다. 그는 상당히 높은 위치에 있는 성직자의 아들이라고 했으며 당신에게 축복을 빌 수 있게 해달라고 요청합니다.",
@@ -2619,7 +2719,7 @@
     "SuccessDescription": "축성 의식이 끝나고, 당신은 몸이 한결 더 가벼워 지는 것을 느꼈습니다.\\n당신은 사내와 다시 만나길 기원하며 다시 여행길을 떠납니다.",
     "Icon": ""
   },
-  "265": {
+  "272": {
     "ID": "event_normal_gooseeye_city",
     "Name": "맑은 눈의 거위",
     "Description": "거리를 거닐던 도중, 자그만한 소동이 일어났습니다. 농민이 팔려고 내놓은 거위 한 마리가 줄을 풀고 도망친 것입니다. 퍼덕거리며 뛰어가던 거위는 당신의 손에 붙잡혔습니다. 주인은 감사를 표하며 소정의 사례를 제공하겠다고 합니다. 당신은 거위를 주인에게 돌려주려고 하는 찰나 거위와 눈이 마주쳤습니다.\\n거위의 눈은...정말 맑고 깨끗합니다.\\n움켜쥔 손을 풀려고 할 때마다 당신의 마음이 찢어지는 것 같습니다.",
@@ -2629,7 +2729,7 @@
     "SuccessDescription": "당신은 주인에게 값을 지불하고 거위를 풀어주었습니다. 이 가여운 동물은 분명 여기서 죽을 운명이 아닐 겁니다. 그러나 뒤도 돌아보지 않고 부리나케 달려가는 거위의 뒷모습을 보니 충만했던 당신의 자비심에 금이 간 기분이 들기도 합니다...@이 아름다운 눈을 지닌 거위를 노릇노릇한 구이로 만들어 버리는 것은 정말 끔찍한 일이라고 생각됩니다. 하지만 거위의 주인은 저 농민이고 당신은 부외자일 뿐입니다. 당신은 대가를 받고 농민에게 거위를 돌려줬습니다.\\n당신은 흐르는 눈물을 감춘 채 갈 길을 떠납니다.",
     "Icon": ""
   },
-  "266": {
+  "273": {
     "ID": "event_normal_change_idle_city",
     "Name": "변화의 신상",
     "Description": "사원에 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2639,7 +2739,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 돈주머니를 쥔 채 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "267": {
+  "274": {
     "ID": "event_normal_change_forest_city",
     "Name": "변화의 사슴 신상",
     "Description": "숲이 우거진 사원에 사슴 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2649,7 +2749,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "268": {
+  "275": {
     "ID": "event_normal_change_river_city",
     "Name": "변화의 물고기 신상",
     "Description": "냇가 근처 사원에 물고기 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2659,7 +2759,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "269": {
+  "276": {
     "ID": "event_normal_change_mountain_city",
     "Name": "변화의 산양 신상",
     "Description": "산 밑 사원에 산양 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2669,7 +2769,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "270": {
+  "277": {
     "ID": "event_normal_change_highland_city",
     "Name": "변화의 독수리 신상",
     "Description": "언덕을 등진 사원에 독수리 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2679,7 +2779,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "271": {
+  "278": {
     "ID": "event_normal_change_sea_city",
     "Name": "변화의 돌고래 신상",
     "Description": "바닷가 근처 사원에 돌고래 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2689,7 +2789,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "272": {
+  "279": {
     "ID": "event_normal_change_idle_castle",
     "Name": "변화의 신상",
     "Description": "사원에 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2699,7 +2799,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 돈주머니를 쥔 채 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "273": {
+  "280": {
     "ID": "event_normal_change_forest_castle",
     "Name": "변화의 사슴 신상",
     "Description": "숲이 우거진 사원에 사슴 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2709,7 +2809,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "274": {
+  "281": {
     "ID": "event_normal_change_river_castle",
     "Name": "변화의 물고기 신상",
     "Description": "냇가 근처 사원에 물고기 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2719,7 +2819,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "275": {
+  "282": {
     "ID": "event_normal_change_mountain_castle",
     "Name": "변화의 산양 신상",
     "Description": "산 밑 사원에 산양 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2729,7 +2829,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "276": {
+  "283": {
     "ID": "event_normal_change_highland_castle",
     "Name": "변화의 독수리 신상",
     "Description": "언덕을 등진 사원에 독수리 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2739,7 +2839,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "277": {
+  "284": {
     "ID": "event_normal_change_sea_castle",
     "Name": "변화의 돌고래 신상",
     "Description": "바닷가 근처 사원에 돌고래 신상이 세워져 있습니다.\\n당신은 변화를 요구받는 기분이 듭니다...",
@@ -2749,7 +2849,7 @@
     "SuccessDescription": "당신은 정신을 차리고 보니 사원 밖으로 나가 있었습니다.\\n무슨 일이 있었던 걸까요?\\n세상을 보는 시각이 약간 달라진 기분입니다.",
     "Icon": ""
   },
-  "278": {
+  "285": {
     "ID": "event_normal_essaycontest_city",
     "Name": "백일장",
     "Description": "#SETTLE#의 도서관에서 백일장이 열린다고 합니다. 놀랍게도 참가에는 아무 조건이 없습니다. 당신은...감자를 주제로 글을 쓰기 시작합니다.",
@@ -2759,7 +2859,7 @@
     "SuccessDescription": "당신은 펜을 들고 골똘히 생각하기 시작했습니다. 작품의 주제를 해치지 않으면서 다양한 표현을 담기 위해 무슨 작법이 필요할까요? 당신은 빈 공간에 문구를 끄적였다 지우길 끝없이 반복했습니다.\\n오랜 시간이 지나 당신은 세상에 둘도 없는 서사시를 써냈습니다. 누명을 써 감옥에 갇힌 감자의 탈옥 이야기. 울타리 안에 익숙해져 버린 동료들과 악덕 간수장, 구원과 자유에 관한 이야기입니다. 당신은 대회에서 당당히 승리했습니다.",
     "Icon": ""
   },
-  "279": {
+  "286": {
     "ID": "exp_freshwriter",
     "Name": "파릇파릇한 작가",
     "Description": "원대한 서사시를 써낸 작가가 받을 수 있는 명예입니다.\\n사랑과 웃음, 그리고 감자가 담겨 있습니다.",
@@ -2769,7 +2869,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "280": {
+  "287": {
     "ID": "event_follow_beawriter_castle",
     "Name": "작가 지망생",
     "Description": "아카데미에 용무가 있어 방문하던 도중, 어느 교수가 당신을 알아보고 말을 걸었습니다. 교수는 당신이 예전에 백일장에 제출한 글을 매우 재밌게 읽었다고 합니. 그는 당신에게 글을 더 투고해 볼 것을 제안합니다.",
@@ -2779,7 +2879,7 @@
     "SuccessDescription": "당신은 백일장에 입상한 적이 있지만 그 이후 작문에 대한 열정은 사라진지 오래였습니다. 당신은 정중하게 거절한 후 좀 더 관심이 생기는 일을 찾아 길을 떠납니다.@당신은 교수의 제안을 듣고 마음 깊숙이 무언가 불타오르는 느낌을 받았습니다. 당신은 펜을 움켜쥐고 다시한번 글을 쓰기 시작했습니다. 오랜 시간이 지나 당신은 머릿속에 떠돌아다니는 영감을 정리해 훌륭한 소설로 승화시켰습니다.",
     "Icon": ""
   },
-  "281": {
+  "288": {
     "ID": "event_normal_povertyyounggenious_city",
     "Name": "가난한 영재",
     "Description": "도서관 근처 한 아이가 큰 책을 읽고 있습니다. 책은 상당히 낡고 어려운 내용을 담고 있습니다. 주위 사람들에게 물어보니, 아이는 보기 드문 천재이지만 가난한 집안에서 태어났을 뿐더러 부모조차 아이의 교육에 그다지 관심을 보이고 있지 않다고 합니. 환경이 재능을 따라가지 못하는 것 만큼 비극적게 얼마나 있을까요?\\n당신이 약간의 도움을 줄 수 있을 듯 합니다.",
@@ -2789,7 +2889,7 @@
     "SuccessDescription": "당신은 소년의 부모를 찾아가 지식과 학습의 중요성에 대해 설명을 시도했습니다. 아이의 부모는 처음엔 그다지 큰 관심을 보이지 않았습니다. 그러나 당신의 입에서 돈, 지위와 같이 세속적인 단어가 나올수록 태도가 변하기 시작했습니다. 시간이 지나 설득이 끝났고 아이의 부모는 아이의 교육에 관심을 가지는 것을 매우 긍정적으로 고려하게 되었습니다.@당신은 도서관의 관장에게 찾아가 약간의 '소개료'를 제공하고 아이의 교육을 부탁했습니다. 관장도 일찍부터 소년의 존재에 대해 들은 바가 있었고 그에 대해 안타까운 입장을 가지고 있었다고 했니다. 소년은 다음날부터 관장과 함께 공부를 시작하게 되었습니다!",
     "Icon": ""
   },
-  "282": {
+  "289": {
     "ID": "event_normal_buildingoutside_castle_spring",
     "Name": "성곽 보수",
     "Description": "당신은 #SETTLE#의 성 외곽 보수 작업에 참여했습니다. 허리에 밧줄을 단단히 묶고 성벽 바깥으로 천천히 내려가던 찰나, 몸을 지탱하던 밧줄이 도중에 끊어졌습니다! 쉴세없이 뒤바뀌는 시야 속에서 손을 뻗어 벌어진 틈 사이로 몸을 지탱하는 데 성공했습니다. 난감하게도 당신은 기어 올라가기에도, 착지하기에도 애매한 중간 위치에 매달려 있는 상태입니다.\\n성벽 위에서 도움을 바라기엔 얼마 버틸 수 없을 것 같습니다.",
@@ -2799,7 +2899,7 @@
     "SuccessDescription": "당신은 발 밑의 파릇파릇한 나무를 보고 그 위로 떨어지기로 결심했습니다. 적절한 위치에서 떨어진다면 나무가 충격을 온전히 흡수해줄 수 있을 지도 모릅니다. 당신은 천천히, 침착하게 성벽을 기어 적당한 위치까지 이동했고 나무 위로 몸을 던졌습니다.예상한 대로 안전하게 나무 위로 착지할 수 있었습니다. 당신은 노동의 보수 뿐만 아니라 충분한 보상도 받을 수 있었습니다.@당신은 몸에 묶여 있는 밧줄을 활용해 직접 성벽을 올라가기로 했습니다. 당신은 허리에서 밧줄을 풀고 날카로운 조준과 정확한 움직임으로 성곽의 돌출 부분에 올가미를 걸어 그 줄을 타고 올라갔습니다. 성곽 위에서 어쩔 줄 몰라하던 사람들은 당신을 보자마자 떡 벌어진 입을 닫지 못했습니다. 당신은 충분한 보수와 보상금을 받았습니다.",
     "Icon": ""
   },
-  "283": {
+  "290": {
     "ID": "event_normal_buildingoutside_castle_summer",
     "Name": "성곽 보수",
     "Description": "당신은 #SETTLE#의 성 외곽 보수 작업에 참여했습니다. 허리에 밧줄을 단단히 묶고 성벽 바깥으로 천천히 내려가던 찰나, 몸을 지탱하던 밧줄이 도중에 끊어졌습니다! 쉴세없이 뒤바뀌는 시야 속에서 손을 뻗어 벌어진 틈 사이로 몸을 지탱하는 데 성공했습니다. 난감하게도 당신은 기어 올라가기에도, 착지하기에도 애매한 중간 위치에 매달려 있는 상태입니다.\\n성벽 위에서 도움을 바라기엔 얼마 버틸 수 없을 것 같습니다.",
@@ -2809,7 +2909,7 @@
     "SuccessDescription": "당신은 발 밑의 파릇파릇한 나무를 보고 그 위로 떨어지기로 결심했습니다. 적절한 위치에서 떨어진다면 나무가 충격을 온전히 흡수해줄 수 있을 지도 모릅니다. 당신은 천천히, 침착하게 성벽을 기어 적당한 위치까지 이동했고 나무 위로 몸을 던졌습니다.예상한 대로 안전하게 나무 위로 착지할 수 있었습니다. 당신은 노동의 보수 뿐만 아니라 충분한 보상도 받을 수 있었습니다.@당신은 몸에 묶여 있는 밧줄을 활용해 직접 성벽을 올라가기로 했습니다. 당신은 허리에서 밧줄을 풀고 날카로운 조준과 정확한 움직임으로 성곽의 돌출 부분에 올가미를 걸어 그 줄을 타고 올라갔습니다. 성곽 위에서 어쩔 줄 몰라하던 사람들은 당신을 보자마자 떡 벌어진 입을 닫지 못했습니다. 당신은 충분한 보수와 보상금을 받았습니다.",
     "Icon": ""
   },
-  "284": {
+  "291": {
     "ID": "event_normal_buildingoutside_castle_fall",
     "Name": "성곽 보수",
     "Description": "당신은 #SETTLE#의 성 외곽 보수 작업에 참여했습니다. 허리에 밧줄을 단단히 묶고 성벽 바깥으로 천천히 내려가던 찰나, 몸을 지탱하던 밧줄이 도중에 끊어졌습니다! 쉴세없이 뒤바뀌는 시야 속에서 손을 뻗어 벌어진 틈 사이로 몸을 지탱하는 데 성공했습니다. 난감하게도 당신은 기어 올라가기에도, 착지하기에도 애매한 중간 위치에 매달려 있는 상태입니다.\\n성벽 위에서 도움을 바라기엔 얼마 버틸 수 없을 것 같습니다.",
@@ -2819,7 +2919,7 @@
     "SuccessDescription": "당신은 발 밑의 낙엽진 나무를 보고 그 위로 떨어지기로 결심했습니다. 적절한 위치에서 떨어진다면 나무가 충격을 온전히 흡수해줄 수 있을 지도 모릅니다. 당신은 천천히, 침착하게 성벽을 기어 적당한 위치까지 이동했고 나무 위로 몸을 던졌습니다.예상한 대로 안전하게 나무 위로 착지할 수 있었습니다. 당신은 노동의 보수 뿐만 아니라 충분한 보상도 받을 수 있었습니다.@당신은 몸에 묶여 있는 밧줄을 활용해 직접 성벽을 올라가기로 했습니다. 당신은 허리에서 밧줄을 풀고 날카로운 조준과 정확한 움직임으로 성곽의 돌출 부분에 올가미를 걸어 그 줄을 타고 올라갔습니다. 성곽 위에서 어쩔 줄 몰라하던 사람들은 당신을 보자마자 떡 벌어진 입을 닫지 못했습니다. 당신은 충분한 보수와 보상금을 받았습니다.",
     "Icon": ""
   },
-  "285": {
+  "292": {
     "ID": "event_normal_buildingoutside_castle_winter",
     "Name": "성곽 보수",
     "Description": "당신은 #SETTLE#의 성 외곽 보수 작업에 참여했습니다. 허리에 밧줄을 단단히 묶고 성벽 바깥으로 천천히 내려가던 찰나, 몸을 지탱하던 밧줄이 도중에 끊어졌습니다! 쉴세없이 뒤바뀌는 시야 속에서 손을 뻗어 벌어진 틈 사이로 몸을 지탱하는 데 성공했습니다. 난감하게도 당신은 기어 올라가기에도, 착지하기에도 애매한 중간 위치에 매달려 있는 상태입니다.\\n성벽 위에서 도움을 바라기엔 얼마 버틸 수 없을 것 같습니다.",
@@ -2829,7 +2929,7 @@
     "SuccessDescription": "당신은 발 밑 눈에 쌓인 나무를 보고 그 위로 떨어지기로 결심했습니다. 적절한 위치에서 떨어진다면 나무가 충격을 온전히 흡수해줄 수 있을 지도 모릅니다. 당신은 천천히, 침착하게 성벽을 기어 적당한 위치까지 이동했고 나무 위로 몸을 던졌습니다.예상한 대로 안전하게 나무 위로 착지할 수 있었습니다. 당신은 노동의 보수 뿐만 아니라 충분한 보상도 받을 수 있었습니다.@당신은 몸에 묶여 있는 밧줄을 활용해 직접 성벽을 올라가기로 했습니다. 당신은 허리에서 밧줄을 풀고 날카로운 조준과 정확한 움직임으로 성곽의 돌출 부분에 올가미를 걸어 그 줄을 타고 올라갔습니다. 성곽 위에서 어쩔 줄 몰라하던 사람들은 당신을 보자마자 떡 벌어진 입을 닫지 못했습니다. 당신은 충분한 보수와 보상금을 받았습니다.",
     "Icon": ""
   },
-  "286": {
+  "293": {
     "ID": "exp_deputyhonor",
     "Name": "결투와 명",
     "Description": "혈투와 영광의 대리자입니다.",
@@ -2839,7 +2939,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "287": {
+  "294": {
     "ID": "event_normal_deputyduel_castle_spring",
     "Name": "대리 결투자",
     "Description": "#SETTLE#의 광장을 거닐던 도중 석상 앞에 인파가 몰린 것을 발견했습니다. 석상 앞에선 두 남성이 서로 말다툼을 하고 있었으며 몸싸움으로 번지기 일보 직전의 상황 같았습니다. 이윽고 두 남성은 장갑을 던져 결투를 선언했습니다만, 한 남성은 자신의 몸이 좋은 상황이 아니라며 대산 싸워줄 사람을 구하기 시작했습니다. 두 결투자 모두 샌님 같아 보이는데, 당신이라면 충분히 이길 수 있을 듯 합니다.",
@@ -2849,7 +2949,7 @@
     "SuccessDescription": "이 싸움은 당신과 아무런 관련도 없었기에 그냥  싸움 구경이나 하기로 했습니다. 오랜 시간이 지나지 않아 사내 대신 싸워줄 사람이 나왔고, 당신은 즐겁게 결투를 관람했습니다. 대리 결투자는 1분을 채 버티지 못하고 실신했습니다.@당신은 웃옷을 벗고 군중 앞으로 나왔습니다. 남자는 왼쪽 어깨를 앞세워 방어용으로 쓰고 있었고 검지부터 무명지까지만 힘을 준 왼주먹은 언제든 방어와 공격을 겸할 수 있었으며, 느슨하게 쥔 오른주먹은 언제든 발포가 준비된 대포와 같았습니다. 당신은 남자에게 달려들었고 그 후 벌어진 결투는 설명 탭을 여섯 번 채우고 남을 만큼 길고 긴 전투였지만, 약간의 생략을 걸쳐, 당신은 당당히 승리했습니다!",
     "Icon": ""
   },
-  "288": {
+  "295": {
     "ID": "event_normal_deputyduel_castle_summer",
     "Name": "대리 결투자",
     "Description": "#SETTLE#의 광장을 거닐던 도중 석상 앞에 인파가 몰린 것을 발견했습니다. 석상 앞에선 두 남성이 서로 말다툼을 하고 있었으며 몸싸움으로 번지기 일보 직전의 상황 같았습니다. 이윽고 두 남성은 장갑을 던져 결투를 선언했습니다만, 한 남성은 자신의 몸이 좋은 상황이 아니라며 대산 싸워줄 사람을 구하기 시작했습니다. 두 결투자 모두 샌님 같아 보이는데, 당신이라면 충분히 이길 수 있을 듯 합니다.",
@@ -2859,7 +2959,7 @@
     "SuccessDescription": "이 싸움은 당신과 아무런 관련도 없었기에 그냥  싸움 구경이나 하기로 했습니다. 오랜 시간이 지나지 않아 사내 대신 싸워줄 사람이 나왔고, 당신은 즐겁게 결투를 관람했습니다. 대리 결투자는 1분을 채 버티지 못하고 실신했습니다.@당신은 웃옷을 벗고 군중 앞으로 나왔습니다. 남자는 왼쪽 어깨를 앞세워 방어용으로 쓰고 있었고 검지부터 무명지까지만 힘을 준 왼주먹은 언제든 방어와 공격을 겸할 수 있었으며, 느슨하게 쥔 오른주먹은 언제든 발포가 준비된 대포와 같았습니다. 당신은 남자에게 달려들었고 그 후 벌어진 결투는 설명 탭을 여섯 번 채우고 남을 만큼 길고 긴 전투였지만, 약간의 생략을 걸쳐, 당신은 당당히 승리했습니다!",
     "Icon": ""
   },
-  "289": {
+  "296": {
     "ID": "event_normal_deputyduel_castle_fall",
     "Name": "대리 결투자",
     "Description": "#SETTLE#의 광장을 거닐던 도중 석상 앞에 인파가 몰린 것을 발견했습니다. 석상 앞에선 두 남성이 서로 말다툼을 하고 있었으며 몸싸움으로 번지기 일보 직전의 상황 같았습니다. 이윽고 두 남성은 장갑을 던져 결투를 선언했습니다만, 한 남성은 자신의 몸이 좋은 상황이 아니라며 대산 싸워줄 사람을 구하기 시작했습니다. 두 결투자 모두 샌님 같아 보이는데, 당신이라면 충분히 이길 수 있을 듯 합니다.",
@@ -2869,7 +2969,7 @@
     "SuccessDescription": "이 싸움은 당신과 아무런 관련도 없었기에 그냥  싸움 구경이나 하기로 했습니다. 오랜 시간이 지나지 않아 사내 대신 싸워줄 사람이 나왔고, 당신은 즐겁게 결투를 관람했습니다. 대리 결투자는 1분을 채 버티지 못하고 실신했습니다.@당신은 웃옷을 벗고 군중 앞으로 나왔습니다. 남자는 왼쪽 어깨를 앞세워 방어용으로 쓰고 있었고 검지부터 무명지까지만 힘을 준 왼주먹은 언제든 방어와 공격을 겸할 수 있었으며, 느슨하게 쥔 오른주먹은 언제든 발포가 준비된 대포와 같았습니다. 당신은 남자에게 달려들었고 그 후 벌어진 결투는 설명 탭을 여섯 번 채우고 남을 만큼 길고 긴 전투였지만, 약간의 생략을 걸쳐, 당신은 당당히 승리했습니다!",
     "Icon": ""
   },
-  "290": {
+  "297": {
     "ID": "event_normal_deputyduel_castle_winter",
     "Name": "대리 결투자",
     "Description": "#SETTLE#의 광장을 거닐던 도중 석상 앞에 인파가 몰린 것을 발견했습니다. 석상 앞에선 두 남성이 서로 말다툼을 하고 있었으며 몸싸움으로 번지기 일보 직전의 상황 같았습니다. 이윽고 두 남성은 장갑을 던져 결투를 선언했습니다만, 한 남성은 자신의 몸이 좋은 상황이 아니라며 대산 싸워줄 사람을 구하기 시작했습니다. 두 결투자 모두 샌님 같아 보이는데, 당신이라면 충분히 이길 수 있을 듯 합니다.",
@@ -2879,7 +2979,7 @@
     "SuccessDescription": "이 싸움은 당신과 아무런 관련도 없었기에 그냥  싸움 구경이나 하기로 했습니다. 오랜 시간이 지나지 않아 사내 대신 싸워줄 사람이 나왔고, 당신은 즐겁게 결투를 관람했습니다. 대리 결투자는 1분을 채 버티지 못하고 실신했습니다.@당신은 웃옷을 벗고 군중 앞으로 나왔습니다. 남자는 왼쪽 어깨를 앞세워 방어용으로 쓰고 있었고 검지부터 무명지까지만 힘을 준 왼주먹은 언제든 방어와 공격을 겸할 수 있었으며, 느슨하게 쥔 오른주먹은 언제든 발포가 준비된 대포와 같았습니다. 당신은 남자에게 달려들었고 그 후 벌어진 결투는 설명 탭을 여섯 번 채우고 남을 만큼 길고 긴 전투였지만, 약간의 생략을 걸쳐, 당신은 당당히 승리했습니다!",
     "Icon": ""
   },
-  "291": {
+  "298": {
     "ID": "event_normal_robinhood_castle_spring",
     "Name": "광대, 사과, 화살",
     "Description": "화창한 봄날, 시장가에서 사과와 활을 든 광대가 큰 소리로 익살을 떨며 군중을 모으고 있었습니다. 80보 밖에서 활을 쏴 사람 머리 위의 사과를 맞춘다면 두 사람 모두 큰 상금을 주겠다고 합니다. 여러 사람들이 쭈뼛쭈뼛하는 와중, 광대는 당신과 다른 한 명을 지목했습니다! 수많은 군중들의 시선이 당신에게 집중되어 맘 편히 빠져나가기도 힘든 상황입니다. 다행히 다른 한 명은 활에 자신이 있다고 하는군요.\\n당신은 사과를 머리에 올려 놓을 수도 있고 활을 쏠 수도 있습니다.",
@@ -2889,7 +2989,7 @@
     "SuccessDescription": "당신은 머리에 사과를 올려놓은 후 화살이 날라오기를 기다렸습니다. 활이 튕기는 소리가 들리고 당신의 눈을 날라오는 화살을 포착했습니다. 당신은 짧은 시간 화살의 경로를 예측했으며, 그 종착지는 당신의 미간이었습니다! 당신은 침착하게, 천천히 몸의 위치를 낮추었습니다. 화살은 사과를 꿰뚫었고 당신의 머리 위로 끈적하고 달콤한 과즙이 흐르기 시작했습니다.@당신은 멀리 떨어져 지긋이 목표물을 바라봅니다. 심호흡을 하고, 화살을 활에 올려놓은 뒤 시위를 당깁니다. 조금의 실수도 용납되지 않기에 어느 때보다 더욱 침착해야 합니다. 당신은 폐에 공기를 들여보낸 뒤 숨을 참아 조준을 유지합니다. 화살은 날라갔고, 화살이 멈춥니다. 사과를 올려놓은 사내는 당신에게 손을 흔들어 보입니다.\\n성공입니다!",
     "Icon": ""
   },
-  "292": {
+  "299": {
     "ID": "event_normal_robinhood_castle_summer",
     "Name": "광대, 사과, 화살",
     "Description": "무더운 여름날, 시장가에서 사과와 활을 든 광대가 큰 소리로 익살을 떨며 군중을 모으고 있었습니다. 80보 밖에서 활을 쏴 사람 머리 위의 사과를 맞춘다면 두 사람 모두 큰 상금을 주겠다고 합니다. 여러 사람들이 쭈뼛쭈뼛하는 와중, 광대는 당신과 다른 한 명을 지목했습니다! 수많은 군중들의 시선이 당신에게 집중되어 맘 편히 빠져나가기도 힘든 상황입니다. 다행히 다른 한 명은 활에 자신이 있다고 하는군요.\\n당신은 사과를 머리에 올려 놓을 수도 있고 활을 쏠 수도 있습니다.",
@@ -2899,7 +2999,7 @@
     "SuccessDescription": "당신은 머리에 사과를 올려놓은 후 화살이 날라오기를 기다렸습니다. 활이 튕기는 소리가 들리고 당신의 눈을 날라오는 화살을 포착했습니다. 당신은 짧은 시간 화살의 경로를 예측했으며, 그 종착지는 당신의 미간이었습니다! 당신은 침착하게, 천천히 몸의 위치를 낮추었습니다. 화살은 사과를 꿰뚫었고 당신의 머리 위로 끈적하고 달콤한 과즙이 흐르기 시작했습니다.@당신은 멀리 떨어져 지긋이 목표물을 바라봅니다. 심호흡을 하고, 화살을 활에 올려놓은 뒤 시위를 당깁니다. 조금의 실수도 용납되지 않기에 어느 때보다 더욱 침착해야 합니다. 당신은 폐에 공기를 들여보낸 뒤 숨을 참아 조준을 유지합니다. 화살은 날라갔고, 화살이 멈춥니다. 사과를 올려놓은 사내는 당신에게 손을 흔들어 보입니다.\\n성공입니다!",
     "Icon": ""
   },
-  "293": {
+  "300": {
     "ID": "event_normal_robinhood_castle_fall",
     "Name": "광대, 사과, 화살",
     "Description": "새파란 가을날, 시장가에서 사과와 활을 든 광대가 큰 소리로 익살을 떨며 군중을 모으고 있었습니다. 80보 밖에서 활을 쏴 사람 머리 위의 사과를 맞춘다면 두 사람 모두 큰 상금을 주겠다고 합니다. 여러 사람들이 쭈뼛쭈뼛하는 와중, 광대는 당신과 다른 한 명을 지목했습니다! 수많은 군중들의 시선이 당신에게 집중되어 맘 편히 빠져나가기도 힘든 상황입니다. 다행히 다른 한 명은 활에 자신이 있다고 하는군요.\\n당신은 사과를 머리에 올려 놓을 수도 있고 활을 쏠 수도 있습니다.",
@@ -2909,7 +3009,7 @@
     "SuccessDescription": "당신은 머리에 사과를 올려놓은 후 화살이 날라오기를 기다렸습니다. 활이 튕기는 소리가 들리고 당신의 눈을 날라오는 화살을 포착했습니다. 당신은 짧은 시간 화살의 경로를 예측했으며, 그 종착지는 당신의 미간이었습니다! 당신은 침착하게, 천천히 몸의 위치를 낮추었습니다. 화살은 사과를 꿰뚫었고 당신의 머리 위로 끈적하고 달콤한 과즙이 흐르기 시작했습니다.@당신은 멀리 떨어져 지긋이 목표물을 바라봅니다. 심호흡을 하고, 화살을 활에 올려놓은 뒤 시위를 당깁니다. 조금의 실수도 용납되지 않기에 어느 때보다 더욱 침착해야 합니다. 당신은 폐에 공기를 들여보낸 뒤 숨을 참아 조준을 유지합니다. 화살은 날라갔고, 화살이 멈춥니다. 사과를 올려놓은 사내는 당신에게 손을 흔들어 보입니다.\\n성공입니다!",
     "Icon": ""
   },
-  "294": {
+  "301": {
     "ID": "event_normal_robinhood_castle_winter",
     "Name": "광대, 사과, 화살",
     "Description": "어둑한 겨울날, 시장가에서 사과와 활을 든 광대가 큰 소리로 익살을 떨며 군중을 모으고 있었습니다. 80보 밖에서 활을 쏴 사람 머리 위의 사과를 맞춘다면 두 사람 모두 큰 상금을 주겠다고 합니다. 여러 사람들이 쭈뼛쭈뼛하는 와중, 광대는 당신과 다른 한 명을 지목했습니다! 수많은 군중들의 시선이 당신에게 집중되어 맘 편히 빠져나가기도 힘든 상황입니다. 다행히 다른 한 명은 활에 자신이 있다고 하는군요.\\n당신은 사과를 머리에 올려 놓을 수도 있고 활을 쏠 수도 있습니다.",
@@ -2919,7 +3019,7 @@
     "SuccessDescription": "당신은 머리에 사과를 올려놓은 후 화살이 날라오기를 기다렸습니다. 활이 튕기는 소리가 들리고 당신의 눈을 날라오는 화살을 포착했습니다. 당신은 짧은 시간 화살의 경로를 예측했으며, 그 종착지는 당신의 미간이었습니다! 당신은 침착하게, 천천히 몸의 위치를 낮추었습니다. 화살은 사과를 꿰뚫었고 당신의 머리 위로 끈적하고 달콤한 과즙이 흐르기 시작했습니다.@당신은 멀리 떨어져 지긋이 목표물을 바라봅니다. 심호흡을 하고, 화살을 활에 올려놓은 뒤 시위를 당깁니다. 조금의 실수도 용납되지 않기에 어느 때보다 더욱 침착해야 합니다. 당신은 폐에 공기를 들여보낸 뒤 숨을 참아 조준을 유지합니다. 화살은 날라갔고, 화살이 멈춥니다. 사과를 올려놓은 사내는 당신에게 손을 흔들어 보입니다.\\n성공입니다!",
     "Icon": ""
   },
-  "295": {
+  "302": {
     "ID": "event_normal_deadstock_castle",
     "Name": "악성 재고",
     "Description": "당신은 #SETTLE#의 잡화점에서 단기 일자리를 구해 단순한 잡무를 맡았습니다. 계약 기간이 만료된 후, 상점 주인은 수고의 의미로 팔리지 않는 물건 중 하나를 얹어주겠다고 합니다. 거의 다 의미없는 골동품이나 자질구레한 도구 같은 것들이지만 책 한 권과 특이해보이는 무기가 당신의 눈길을 사로잡습니다.",
@@ -2929,7 +3029,7 @@
     "SuccessDescription": "당신은 감사를 표하고 책을 골라 가져갔습니다. 책은 여러 종류의 활과 그 구조에 대해 설명하는 책이었습니다. 책의 문체는 상당히 난해해 아무도 가져가지 않을만 했지만 그 내용은 보기보다 알차고 값진 지식이었습니다.@당신은 감사를 표하고 무기를 가져갔습니다. 무기는 낡고  이가 빠져 전투에 활용할 수는 없었기에 당신은 무기를 분해해 그 구조를 살펴보기로 했습니다.",
     "Icon": ""
   },
-  "296": {
+  "303": {
     "ID": "exp_stageup",
     "Name": "무대 위의 유머",
     "Description": "경청과 참가.\\n훌륭한 청중의 표본입니다.",
@@ -2939,7 +3039,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "297": {
+  "304": {
     "ID": "event_normal_standcomedy_castle",
     "Name": "스탠드 코미디",
     "Description": "당신은 극장에서 작은 단막극을 관람하던 도중, 객석 참여자로 지목됐습니다! 극이 끊기지 않게 무엇을 해야 할까요? 어려운 내용은 아니지만 급작스러운 상황에 당신의 머릿속은 뒤죽박죽이 되었습니다.",
@@ -2949,7 +3049,7 @@
     "SuccessDescription": "당신은 얼결떨에 끌려나온 것 치고 꽤나 유머러스하게 상황을 이어나갔습니다. 박수갈채를 받으며 무대를 내려오는 와중에도 당신의 머리는 혼란스러워 마치 기억이 왜곡된 듯한 기분입니다...",
     "Icon": ""
   },
-  "298": {
+  "305": {
     "ID": "exp_littleclown",
     "Name": "광대의 사고법",
     "Description": "흰 얼굴의 어릿광대로부터 배운 철학입니다.\\n혓바닥으로 사람을 다루기 위한 조언이 들어있습니다.",
@@ -2959,7 +3059,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "299": {
+  "306": {
     "ID": "event_normal_littleclown_castle",
     "Name": "입담 좋은 어릿광대",
     "Description": "당신은 얼굴을 하얗게 칠한 어릿광대의 연극을 관람했습니다. 짧고 간단한 공연이었음에도 불구하고 엄청난 입담을 가졌다는 것을 알 수 있었습니다. 극장을 나가던 길에 당신은 휴식을 취하는 어릿광대를 발견했습니다. 그의 웅변 능력을 조금이라도 배울 수 있을 지도 모릅니다.",
@@ -2969,7 +3069,7 @@
     "SuccessDescription": "당신은 어릿광대에게 관심을 표했습니다. 흰 분장의 어릿광대는 몇 마디를 나누지도 않았는데 당신이 말을 건 이유를 간파한 듯 합니다.당신은 사람을 꿰뚫어 보는 법, 사람을 손쉽게 다룰 수 있는 방법을 배웠습니다.",
     "Icon": ""
   },
-  "300": {
+  "307": {
     "ID": "event_follow_clowntongue_castle",
     "Name": "어릿광대의 혀",
     "Description": "당신은 흰 분칠을 한 어릿광대를 발견했습니다. 화려한 입담을 가진 것으로 기억했던 바로 그 어릿광대입니다. 어릿광대 역시 당신을 알아봤는지 당신을 향해 다가옵니다. 그는 당신의 열정이 마음에 들었다고 합니다. 이번엔 약간의 수업료를 지불하면 사람을 마음대로 속이고 조종할 수 있는 방법을 알려줄 의향이 있다고 합니다.",
@@ -2979,7 +3079,7 @@
     "SuccessDescription": "당신은 어릿광대의 제안을 정중히 거절했습니다. 위험한 기술은 알고 있는 것으로만으로도 사람의 마음을 뒤흔들 수 있기 때문입니다. 당신에게는 필요하지 않은 요소입니다.@당신은 그의 말에 솔깃해 수업료를 지불하기로 했습니다. 광대는 돈뭉치를 받은 뒤 잠시 후 분장실로 들어오라고 했습니다. 약간의 시간이 지난 후, 당신은 분장실로 들어갔지만 그 누구도 보이지 않았습니다. 어릿광대의 칸으로 보이는 화장대에는 그림이 그려진 종이가 붙여져 있었습니다.\\n거짓말을 할 때엔 약간의 진실을 넣으면 된다.\\n이걸 속은 것이라고 해야 할지 모르겠네요.",
     "Icon": ""
   },
-  "301": {
+  "308": {
     "ID": "exp_forthefuture",
     "Name": "미래를 위한 용기",
     "Description": "잘못된 행동과 끔찍한 결과를 막기 위한 용감한 행위입니다.\\n틀린 것을 틀렸다고 말할 수 있어야 합니다.",
@@ -2989,7 +3089,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "302": {
+  "309": {
     "ID": "event_normal_faildesign_castle",
     "Name": "실패한 디자인",
     "Description": "당신은 #SETTLE#의 아카데미에서 잡무원 노릇을 하고 있던 와중 어느 학자의 시제품처럼 보이는 의자를 발견했습니다. 그 물건은 의자와 책상의 지지대가 연결되어 일체화된 의자였습니다. 당신은 이 의자를 보는 것 만으로도 극도의 불편함을 느꼈습니다. 표지를 살펴보니 그 의자는 저명한 교수의 작품처럼 보였습니다. 그 때문에 비판의 의견을 내는 것 조차 힘들었겠죠. 하지만 당신은 이 기괴한 발명품을 보고 가만히 있을 수 없었습니다...",
@@ -2999,7 +3099,7 @@
     "SuccessDescription": "당신은 종이와 펜을 구해와 글을 적기 시작했습니다. 의자와 책상의 거리를 조정할 수도 없는 점, 책상과 의자의 높이를 바꿀 수도 없는 점, 너무 좁은 넓이 등 여러 불편함과 그 개선점을 기술해 의자 위에 올려두었습니다. 당신의 편지가 교수에게 갈 수 있을 지는 알 수 없지만 적어도 다른 사람들이 이 편지를 보고 정당한 비판에 용기를 얻었길 바랍니다.@당신은 무엇을 해야 할지 생각할 필요도 없었습니다. 주위에 아무도 없는 지 확인한 후, 사악함 그 자체를 물질적인 모습으로 표출한 의자를 산산조각냈습니다!\\n의자는 훨씬 보기 좋은 형태가 되었습니다. 당신은 이 행동에 한 점의 후회도 없었습니다.",
     "Icon": ""
   },
-  "303": {
+  "310": {
     "ID": "event_normal_graduatingclass_castle",
     "Name": "졸업반",
     "Description": "당신은 아카데미 복도의 벤치에 찌그러져있는 남성을 발견했습니다. 꾀죄죄한 옷과 헝클어진 머리, 피곤에 찌든 육체를 보니 졸업을 앞둔 학생으로 보입니다. 대낮이 되었는데도 죽은 듯 골아떯어진것으로 보아 상당이 수면이 부족했던 것 같습니다.",
@@ -3009,7 +3109,7 @@
     "SuccessDescription": "당신은 남성을 뒤로 하고 가던 길을 갔습니다. 졸업을 하려는 자 그 무게를 견뎌라. 어느 시대든 흔히 있는 평범한 일상 중 하나입니다.@당신은 피로 회복에 좋은 음료를 구매해 남성의 머리맡에 두었습니다. 이것으로 사내의 고통이 조금이라도 줄어들길...",
     "Icon": ""
   },
-  "304": {
+  "311": {
     "ID": "event_normal_shadowplay_castle",
     "Name": "그림자 연극",
     "Description": "노점 간판에서 작은 그림자 연극이 진행중입니다. 붙잡힌 공주와 용감한 왕자의 이야기 같이 흔해빠진 이야기지만 그림자의 움직임이 당신의 마음을 이끕니다. 당신은 깡통에 동전을 던져넣고 구경하기 시작합니다.",
@@ -3019,7 +3119,7 @@
     "SuccessDescription": "내용 자체는 별 볼일 없었지만 그림자의 움직임은 흔히 볼 수 있는 구경거리가 아니었습니다. 당신은 만족스럽게 연극을 관람한 후 다시 길을 떠납니다.",
     "Icon": ""
   },
-  "305": {
+  "312": {
     "ID": "event_normal_sam_outer_spring",
     "Name": "생명의 샘",
     "Description": "강둑을 따라 걸어가던 도중 아름다운 샘을 발견했습니다. 샘 근처는 쌀쌀한 날이 풀린 지 얼마 되지 않았음에도 아름다운 꽃들이 활짝 폈고 바위에서 흘러나오는 샘물은 마치 물이 아닌 무언가처럼 투명했습니다. 당신은 급작스럽게 피로가 몰려왔기 때문에 샘 근처에서 휴식을 취하기로 했습니다.",
@@ -3029,7 +3129,7 @@
     "SuccessDescription": "당신은 잠기운에 몸을 맡겼습니다. 충분한 시간이 지난 뒤 당신은 몸이 훨씬 가벼워짐을 느꼈습니다. 샘을 뒤로 하고 가던 길을 가던 도중, 당신은 머릿속에서 샘의 위치에 대한 기억이 전혀 나지 않는다는 것을 느꼈습니다.",
     "Icon": ""
   },
-  "306": {
+  "313": {
     "ID": "event_normal_sam_outer_summer",
     "Name": "생명의 샘",
     "Description": "강둑을 따라 걸어가던 도중 아름다운 샘을 발견했습니다. 쨍쨍한 햇볕에도 불구하고 샘 근처는 전혀 덥지 않았습니다. 샘에는 아름다운 꽃들이 활짝 폈고 바위에서 흘러나오는 샘물은 마치 물이 아닌 무언가처럼 투명했습니다. 당신은 급작스럽게 피로가 몰려왔기 때문에 샘 근처에서 휴식을 취하기로 했습니다.",
@@ -3039,7 +3139,7 @@
     "SuccessDescription": "당신은 잠기운에 몸을 맡겼습니다. 충분한 시간이 지난 뒤 당신은 몸이 훨씬 가벼워짐을 느꼈습니다. 샘을 뒤로 하고 가던 길을 가던 도중, 당신은 머릿속에서 샘의 위치에 대한 기억이 전혀 나지 않는다는 것을 느꼈습니다.",
     "Icon": ""
   },
-  "307": {
+  "314": {
     "ID": "event_normal_sam_outer_fall",
     "Name": "생명의 샘",
     "Description": "강둑을 따라 걸어가던 도중 아름다운 샘을 발견했습니다. 샘 근처는 쌀쌀한 가을날씨가 시작된지 오랜 시간이 지났음에도 불구하고 싱싱하고 아름다운 꽃들이 활짝 폈고 바위에서 흘러나오는 샘물은 마치 물이 아닌 무언가처럼 투명했습니다. 당신은 급작스럽게 피로가 몰려왔기 때문에 샘 근처에서 휴식을 취하기로 했습니다.",
@@ -3049,7 +3149,7 @@
     "SuccessDescription": "당신은 잠기운에 몸을 맡겼습니다. 충분한 시간이 지난 뒤 당신은 몸이 훨씬 가벼워짐을 느꼈습니다. 샘을 뒤로 하고 가던 길을 가던 도중, 당신은 머릿속에서 샘의 위치에 대한 기억이 전혀 나지 않는다는 것을 느꼈습니다.",
     "Icon": ""
   },
-  "308": {
+  "315": {
     "ID": "event_normal_sam_outer_winter",
     "Name": "생명의 샘",
     "Description": "얼어붙은 강둑을 따라 걸어가던 도중 아름다운 샘을 발견했습니다. 신기하게도 샘 근처는 눈이 쌓인 흔적이 없었으며 갓 피어난 아름다운 꽃들이 활짝 폈고 바위에서 흘러나오는 샘물은 마치 물이 아닌 무언가처럼 투명했습니다. 당신은 급작스럽게 피로가 몰려왔기 때문에 샘 근처에서 휴식을 취하기로 했습니다.",
@@ -3059,7 +3159,7 @@
     "SuccessDescription": "당신은 잠기운에 몸을 맡겼습니다. 충분한 시간이 지난 뒤 당신은 몸이 훨씬 가벼워짐을 느꼈습니다. 샘을 뒤로 하고 가던 길을 가던 도중, 당신은 머릿속에서 샘의 위치에 대한 기억이 전혀 나지 않는다는 것을 느꼈습니다.",
     "Icon": ""
   },
-  "309": {
+  "316": {
     "ID": "event_normal_bandit_outer_spring",
     "Name": "숲의 도적들",
     "Description": "깊은 숲 속을 지나가던 도중 부상입은 도적 무리를 마주쳤습니다!\\n도적들은 당신을 노리고 있던 것이 아닌지, 적잖이 당황한 모양입니다. 도적들은 칼을 빼들고 당신에게 접근하기 시작합니다. 계획에 없던 습격인지 아직 둘러싸이진 않았고 전부 부상을 입은 상태입니다.",
@@ -3069,7 +3169,7 @@
     "SuccessDescription": "당신은 무기를 빼들고 머릿속으로 지금까지 걸어온 길을 되짚어 안전한 탈출을 위한 경로를 계산했습니다. 도적들은 부상자가 많았기에 쉽사리 달려들지 못했고 덕분에 당신은 충분한 시간을 벌 수 있었습니다. 탈출 경로 계산이 끝난 후 당신은 즉시 뒤돌아 달려가기 시작했고, 부상입은 도적들은 당신을 따라잡지 못했습니다.@당신은 겁에 질린 척 항복 의사를 표현했습니다. 긴장이 풀린 도적들 중 한명이 당신에게 다가가고, 당신은 도적이 사정거리에 들어오는 즉시 급소를 가격해 실신시켰습니다. 놀란 도적들 중 몇명이 당신에게 달려들기 시작했고 당신은 무기를 빼들어 반격을 시작했습니다. 곧 도적 무리는 도망치기 시작했고 당신은 상처 하나 없이 승리했습니다.",
     "Icon": ""
   },
-  "310": {
+  "317": {
     "ID": "event_normal_bandit_outer_summer",
     "Name": "숲의 도적들",
     "Description": "깊은 숲 속을 지나가던 도중 부상입은 도적 무리를 마주쳤습니다! 도적들은 당신을 노리고 있던 것이 아닌지, 적잖이 당황한 모양입니다. 도적들은 칼을 빼들고 당신에게 접근하기 시작합니다. 계획에 없던 습격인지 아직 둘러싸이진 않았고 전부 부상을 입은 상태입니다.",
@@ -3079,7 +3179,7 @@
     "SuccessDescription": "당신은 무기를 빼들고 머릿속으로 지금까지 걸어온 길을 되짚어 안전한 탈출을 위한 경로를 계산했습니다. 도적들은 부상자가 많았기에 쉽사리 달려들지 못했고 덕분에 당신은 충분한 시간을 벌 수 있었습니다. 탈출 경로 계산이 끝난 후 당신은 즉시 뒤돌아 달려가기 시작했고, 부상입은 도적들은 당신을 따라잡지 못했습니다.@당신은 겁에 질린 척 항복 의사를 표현했습니다. 긴장이 풀린 도적들 중 한명이 당신에게 다가가고, 당신은 도적이 사정거리에 들어오는 즉시 급소를 가격해 실신시켰습니다. 놀란 도적들 중 몇명이 당신에게 달려들기 시작했고 당신은 무기를 빼들어 반격을 시작했습니다. 곧 도적 무리는 도망치기 시작했고 당신은 상처 하나 없이 승리했습니다.",
     "Icon": ""
   },
-  "311": {
+  "318": {
     "ID": "event_normal_bandit_outer_fall",
     "Name": "숲의 도적들",
     "Description": "깊은 숲 속을 지나가던 도중 부상입은 도적 무리를 마주쳤습니다! 도적들은 당신을 노리고 있던 것이 아닌지, 적잖이 당황한 모양입니다. 도적들은 칼을 빼들고 당신에게 접근하기 시작합니다. 계획에 없던 습격인지 아직 둘러싸이진 않았고 전부 부상을 입은 상태입니다.",
@@ -3089,7 +3189,7 @@
     "SuccessDescription": "당신은 무기를 빼들고 머릿속으로 지금까지 걸어온 길을 되짚어 안전한 탈출을 위한 경로를 계산했습니다. 도적들은 부상자가 많았기에 쉽사리 달려들지 못했고 덕분에 당신은 충분한 시간을 벌 수 있었습니다. 탈출 경로 계산이 끝난 후 당신은 즉시 뒤돌아 달려가기 시작했고, 부상입은 도적들은 당신을 따라잡지 못했습니다.@당신은 겁에 질린 척 항복 의사를 표현했습니다. 긴장이 풀린 도적들 중 한명이 당신에게 다가가고, 당신은 도적이 사정거리에 들어오는 즉시 급소를 가격해 실신시켰습니다. 놀란 도적들 중 몇명이 당신에게 달려들기 시작했고 당신은 무기를 빼들어 반격을 시작했습니다. 곧 도적 무리는 도망치기 시작했고 당신은 상처 하나 없이 승리했습니다.",
     "Icon": ""
   },
-  "312": {
+  "319": {
     "ID": "event_normal_bandit_outer_winter",
     "Name": "숲의 도적들",
     "Description": "깊은 숲 속을 지나가던 도중 부상입은 도적 무리를 마주쳤습니다! 도적들은 당신을 노리고 있던 것이 아닌지, 적잖이 당황한 모양입니다. 도적들은 칼을 빼들고 당신에게 접근하기 시작합니다. 계획에 없던 습격인지 아직 둘러싸이진 않았고 전부 부상을 입은 상태입니다.",
@@ -3099,7 +3199,7 @@
     "SuccessDescription": "당신은 무기를 빼들고 머릿속으로 지금까지 걸어온 길을 되짚어 안전한 탈출을 위한 경로를 계산했습니다. 도적들은 부상자가 많았기에 쉽사리 달려들지 못했고 덕분에 당신은 충분한 시간을 벌 수 있었습니다. 탈출 경로 계산이 끝난 후 당신은 즉시 뒤돌아 달려가기 시작했고, 부상입은 도적들은 당신을 따라잡지 못했습니다.@당신은 겁에 질린 척 항복 의사를 표현했습니다. 긴장이 풀린 도적들 중 한명이 당신에게 다가가고, 당신은 도적이 사정거리에 들어오는 즉시 급소를 가격해 실신시켰습니다. 놀란 도적들 중 몇명이 당신에게 달려들기 시작했고 당신은 무기를 빼들어 반격을 시작했습니다. 곧 도적 무리는 도망치기 시작했고 당신은 상처 하나 없이 승리했습니다.",
     "Icon": ""
   },
-  "313": {
+  "320": {
     "ID": "event_normal_scarecrow_outer_spring",
     "Name": "허수아비 장식",
     "Description": "당신은 길을 가다 뙈기밭에 세워진 허수아비를 발견했습니다. 어디서나 볼 수 있는 허수아비였지만 당신은 이 허수아비를 쉽사리 지나칠 수 없었습니다.\\n\\n허수아비가 너무 밋밋해 보였기에, 당신은 조금 손을 보기로 했습니다.",
@@ -3109,7 +3209,7 @@
     "SuccessDescription": "당신은 허수아비의 모자를 벗기고 곱슬머리 가발과 선명한 이목구비를 추가했습니다.\\n\\n이 정도는 되어야 허수아비죠.@당신은 허수아비의 몸통에 나뭇가지로 윤곽을 잡고 흙과 짚으로 형태를 만들었습니다.\\n\\n이 정도는 되어야 허수아비죠.",
     "Icon": ""
   },
-  "314": {
+  "321": {
     "ID": "event_normal_scarecrow_outer_summer",
     "Name": "허수아비 장식",
     "Description": "당신은 길을 가다 뙈기밭에 세워진 허수아비를 발견했습니다. 어디서나 볼 수 있는 허수아비였지만 당신은 이 허수아비를 쉽사리 지나칠 수 없었습니다.\\n\\n허수아비가 너무 밋밋해 보였기에, 당신은 조금 손을 보기로 했습니다.",
@@ -3119,7 +3219,7 @@
     "SuccessDescription": "당신은 허수아비의 모자를 벗기고 곱슬머리 가발과 선명한 이목구비를 추가했습니다.\\n\\n이 정도는 되어야 허수아비죠.@당신은 허수아비의 몸통에 나뭇가지로 윤곽을 잡고 흙과 짚으로 형태를 만들었습니다.\\n\\n이 정도는 되어야 허수아비죠.",
     "Icon": ""
   },
-  "315": {
+  "322": {
     "ID": "event_normal_scarecrow_outer_fall",
     "Name": "허수아비 장식",
     "Description": "당신은 길을 가다 뙈기밭에 세워진 허수아비를 발견했습니다. 어디서나 볼 수 있는 허수아비였지만 당신은 이 허수아비를 쉽사리 지나칠 수 없었습니다.\\n\\n허수아비가 너무 밋밋해 보였기에, 당신은 조금 손을 보기로 했습니다.",
@@ -3129,7 +3229,7 @@
     "SuccessDescription": "당신은 허수아비의 모자를 벗기고 곱슬머리 가발과 선명한 이목구비를 추가했습니다.\\n\\n이 정도는 되어야 허수아비죠.@당신은 허수아비의 몸통에 나뭇가지로 윤곽을 잡고 흙과 짚으로 형태를 만들었습니다.\\n\\n이 정도는 되어야 허수아비죠.",
     "Icon": ""
   },
-  "316": {
+  "323": {
     "ID": "event_normal_scarecrow_outer_winter",
     "Name": "허수아비 장식",
     "Description": "당신은 길을 가다 뙈기밭에 세워진 허수아비를 발견했습니다. 어디서나 볼 수 있는 허수아비였지만 당신은 이 허수아비를 쉽사리 지나칠 수 없었습니다.\\n\\n허수아비가 너무 밋밋해 보였기에, 당신은 조금 손을 보기로 했습니다.",
@@ -3139,7 +3239,7 @@
     "SuccessDescription": "당신은 허수아비의 모자를 벗기고 곱슬머리 가발과 선명한 이목구비를 추가했습니다.\\n\\n이 정도는 되어야 허수아비죠.@당신은 허수아비의 몸통에 나뭇가지로 윤곽을 잡고 흙과 짚으로 형태를 만들었습니다.\\n\\n이 정도는 되어야 허수아비죠.",
     "Icon": ""
   },
-  "317": {
+  "324": {
     "ID": "exp_scarecrowface",
     "Name": "허수아비 성형사",
     "Description": "허수아비에게 밋밋한 얼굴은 형벌이나 다름없습니다.",
@@ -3149,7 +3249,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "318": {
+  "325": {
     "ID": "exp_scarecrowbody",
     "Name": "허수아비 피트니스",
     "Description": "빈약한 허수아비를 누가 무서워할까요?",
@@ -3159,7 +3259,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "319": {
+  "326": {
     "ID": "event_normal_creepyhut_outer",
     "Name": "소름끼치는 오두막",
     "Description": "당신은 쏟아지는 소나기를 피할 외딴 오두막을 찾았습니다.오두막은 버려진지 오랜지 허름하고 으스스한 기분이 듭니다.\\n\\n낡고 오래된 환경에도 불구하고 왠지 사람의 흔적이 남아 있는 듯 보여, 당신은 이 오두막이 매우 불길하게 느껴졌습니다.",
@@ -3169,7 +3269,7 @@
     "SuccessDescription": "밖은 장대비가 억수같이 내렸기 때문에 당신은 불길한 느낌을 뒤로하고 오두막에 잠자리를 폈습니다. 당신은 잠을 자는 도중 무언가가 지켜보는 기분이 들어 갑작스럽게 잠에서 깼다가 다시 잠에 들길 반복했습니다.\\n새벽이 지나 비가 그쳤지만 당신은 충분한 휴식을 취하지 못했습니다.@당신은 한시라도 이 장소에 머무르고 싶지 않았기 때문에 서둘로 비가 쏟아지는 바깥으로 나갔습니다. 당신은 쏟아지는 폭우를 뚫고 비가 새지 않는 바위 틈을 찾아 어떻게든 불을 붙여 휴식을 취했습니다.\\n다음날 당신은 으슬으슬하고 피곤한 몸을 이끌고 다시 길을 걸어가기 시작합니다.",
     "Icon": ""
   },
-  "320": {
+  "327": {
     "ID": "event_normal_rockface_outer_spring",
     "Name": "낮은 암벽",
     "Description": "당신은 길을 가던 도중 암벽을 마주쳤습니다. 절벽은 그리 높아 보이지 않아 도구를 쓴다면 기어 올라갈 수도 있을 것 같습니다.",
@@ -3179,7 +3279,7 @@
     "SuccessDescription": "멀쩡한 길이 있는데 굳이 힘든 길을 택할 필요는 없습니다. 당신은 절벽을 돌아 건너가면서 주위 구경을 만끽했습니다.@당신은 주위에서 덩굴과 나뭇가지를 주워 단단한 줄을 만들었습니다. 당신은 줄로 올가미를 만들어 바위 위 돌출부에 끼운 후 허리에 고정한 뒤 절벽을 올라가기 시작했습니다. 몇 번이나 추락할 위기를 넘기며 당신은 자력으로 절벽을 올라가는데 성공했습니다!",
     "Icon": ""
   },
-  "321": {
+  "328": {
     "ID": "event_normal_rockface_outer_summer",
     "Name": "낮은 암벽",
     "Description": "당신은 길을 가던 도중 암벽을 마주쳤습니다. 절벽은 그리 높아 보이지 않아 도구를 쓴다면 기어 올라갈 수도 있을 것 같습니다.",
@@ -3189,7 +3289,7 @@
     "SuccessDescription": "멀쩡한 길이 있는데 굳이 힘든 길을 택할 필요는 없습니다. 당신은 절벽을 돌아 건너가면서 주위 구경을 만끽했습니다.@당신은 주위에서 덩굴과 나뭇가지를 주워 단단한 줄을 만들었습니다. 당신은 줄로 올가미를 만들어 바위 위 돌출부에 끼운 후 허리에 고정한 뒤 절벽을 올라가기 시작했습니다. 몇 번이나 추락할 위기를 넘기며 당신은 자력으로 절벽을 올라가는데 성공했습니다!",
     "Icon": ""
   },
-  "322": {
+  "329": {
     "ID": "event_normal_rockface_outer_fall",
     "Name": "낮은 암벽",
     "Description": "당신은 길을 가던 도중 암벽을 마주쳤습니다. 절벽은 그리 높아 보이지 않아 도구를 쓴다면 기어 올라갈 수도 있을 것 같습니다.",
@@ -3199,7 +3299,7 @@
     "SuccessDescription": "멀쩡한 길이 있는데 굳이 힘든 길을 택할 필요는 없습니다. 당신은 절벽을 돌아 건너가면서 주위 구경을 만끽했습니다.@당신은 주위에서 덩굴과 나뭇가지를 주워 단단한 줄을 만들었습니다. 당신은 줄로 올가미를 만들어 바위 위 돌출부에 끼운 후 허리에 고정한 뒤 절벽을 올라가기 시작했습니다. 몇 번이나 추락할 위기를 넘기며 당신은 자력으로 절벽을 올라가는데 성공했습니다!",
     "Icon": ""
   },
-  "323": {
+  "330": {
     "ID": "event_normal_rockface_outer_winter",
     "Name": "낮은 암벽",
     "Description": "당신은 길을 가던 도중 암벽을 마주쳤습니다. 절벽은 그리 높아 보이지 않아 도구를 쓴다면 기어 올라갈 수도 있을 것 같습니다.",
@@ -3209,7 +3309,7 @@
     "SuccessDescription": "멀쩡한 길이 있는데 굳이 힘든 길을 택할 필요는 없습니다. 당신은 절벽을 돌아 건너가면서 주위 구경을 만끽했습니다.@당신은 주위에서 덩굴과 나뭇가지를 주워 단단한 줄을 만들었습니다. 당신은 줄로 올가미를 만들어 바위 위 돌출부에 끼운 후 허리에 고정한 뒤 절벽을 올라가기 시작했습니다. 몇 번이나 추락할 위기를 넘기며 당신은 자력으로 절벽을 올라가는데 성공했습니다!",
     "Icon": ""
   },
-  "324": {
+  "331": {
     "ID": "exp_climingfail",
     "Name": "필사의 등반",
     "Description": "예상치 못한 하드코어 암벽등반으로 인한 부상입니다.",
@@ -3219,7 +3319,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "325": {
+  "332": {
     "ID": "exp_salefortiming",
     "Name": "손절은 타이밍",
     "Description": "떡상과 떡락은 한 끗 차이입니다.",
@@ -3229,7 +3329,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "326": {
+  "333": {
     "ID": "event_normal_meninnet_outer_spring",
     "Name": "그물 속의 사내들",
     "Description": "당신은 숲 속을 지나가던 도중 어디선가 옥신각신하는 소리를 들었습니다. 소리를 따라 향하니 두 남성이 나무에 매달린 그물 안세서 서로를 향해 고함을 치고 있었습니다. 그들은 당신을 눈치채고 그물에서 내려달라고 합니다. 그물 밑에 가지런히 놓여진 물건들이 당신의 눈에 들어옵니다...",
@@ -3239,7 +3339,7 @@
     "SuccessDescription": "당신은 날붙이를 꺼내 두 남자를 풀어주었습니다. 남성들은 사냥꾼이었으며 서로의 실수로 서로의 덫에 걸렸다고 주장합니다. 당신은 간단한 사례를 받고 길을 나아갑니다.@당신은 가지에 매달린 그물과 나무 옆에 놓여진 물건들을 번갈아 쳐다보며 그들에게 제대로 된 대가를 요구했습니다. 남성들은 당신의 협박에 하는 수 없이 물건을 몇 개 챙겨가는 대신 날붙이를 건내받기로 했습니다. 당신은 쓸만한 물건들을 챙겨가고 그들에게 주머니칼을 건내준 뒤 길을 떠났습니다. 등 뒤로 아직도 싸우는 소리가 들립니다.",
     "Icon": ""
   },
-  "327": {
+  "334": {
     "ID": "event_normal_meninnet_outer_summer",
     "Name": "그물 속의 사내들",
     "Description": "당신은 숲 속을 지나가던 도중 어디선가 옥신각신하는 소리를 들었습니다. 소리를 따라 향하니 두 남성이 나무에 매달린 그물 안세서 서로를 향해 고함을 치고 있었습니다. 그들은 당신을 눈치채고 그물에서 내려달라고 합니다. 그물 밑에 가지런히 놓여진 물건들이 당신의 눈에 들어옵니다...",
@@ -3249,7 +3349,7 @@
     "SuccessDescription": "당신은 날붙이를 꺼내 두 남자를 풀어주었습니다. 남성들은 사냥꾼이었으며 서로의 실수로 서로의 덫에 걸렸다고 주장합니다. 당신은 간단한 사례를 받고 길을 나아갑니다.@당신은 가지에 매달린 그물과 나무 옆에 놓여진 물건들을 번갈아 쳐다보며 그들에게 제대로 된 대가를 요구했습니다. 남성들은 당신의 협박에 하는 수 없이 물건을 몇 개 챙겨가는 대신 날붙이를 건내받기로 했습니다. 당신은 쓸만한 물건들을 챙겨가고 그들에게 주머니칼을 건내준 뒤 길을 떠났습니다. 등 뒤로 아직도 싸우는 소리가 들립니다.",
     "Icon": ""
   },
-  "328": {
+  "335": {
     "ID": "event_normal_meninnet_outer_fall",
     "Name": "그물 속의 사내들",
     "Description": "당신은 숲 속을 지나가던 도중 어디선가 옥신각신하는 소리를 들었습니다. 소리를 따라 향하니 두 남성이 나무에 매달린 그물 안세서 서로를 향해 고함을 치고 있었습니다. 그들은 당신을 눈치채고 그물에서 내려달라고 합니다. 그물 밑에 가지런히 놓여진 물건들이 당신의 눈에 들어옵니다...",
@@ -3259,7 +3359,7 @@
     "SuccessDescription": "당신은 날붙이를 꺼내 두 남자를 풀어주었습니다. 남성들은 사냥꾼이었으며 서로의 실수로 서로의 덫에 걸렸다고 주장합니다. 당신은 간단한 사례를 받고 길을 나아갑니다.@당신은 가지에 매달린 그물과 나무 옆에 놓여진 물건들을 번갈아 쳐다보며 그들에게 제대로 된 대가를 요구했습니다. 남성들은 당신의 협박에 하는 수 없이 물건을 몇 개 챙겨가는 대신 날붙이를 건내받기로 했습니다. 당신은 쓸만한 물건들을 챙겨가고 그들에게 주머니칼을 건내준 뒤 길을 떠났습니다. 등 뒤로 아직도 싸우는 소리가 들립니다.",
     "Icon": ""
   },
-  "329": {
+  "336": {
     "ID": "event_normal_meninnet_outer_winter",
     "Name": "그물 속의 사내들",
     "Description": "당신은 숲 속을 지나가던 도중 어디선가 옥신각신하는 소리를 들었습니다. 소리를 따라 향하니 두 남성이 나무에 매달린 그물 안세서 서로를 향해 고함을 치고 있었습니다. 그들은 당신을 눈치채고 그물에서 내려달라고 합니다. 그물 밑에 가지런히 놓여진 물건들이 당신의 눈에 들어옵니다...",
@@ -3269,7 +3369,7 @@
     "SuccessDescription": "당신은 날붙이를 꺼내 두 남자를 풀어주었습니다. 남성들은 사냥꾼이었으며 서로의 실수로 서로의 덫에 걸렸다고 주장합니다. 당신은 간단한 사례를 받고 길을 나아갑니다.@당신은 가지에 매달린 그물과 나무 옆에 놓여진 물건들을 번갈아 쳐다보며 그들에게 제대로 된 대가를 요구했습니다. 남성들은 당신의 협박에 하는 수 없이 물건을 몇 개 챙겨가는 대신 날붙이를 건내받기로 했습니다. 당신은 쓸만한 물건들을 챙겨가고 그들에게 주머니칼을 건내준 뒤 길을 떠났습니다. 등 뒤로 아직도 싸우는 소리가 들립니다.",
     "Icon": ""
   },
-  "330": {
+  "337": {
     "ID": "exp_flatter",
     "Name": "아첨꾼",
     "Description": "듣는 사람의 뇌를 살찌우는 기름진 혓바닥입니다.",
@@ -3279,7 +3379,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "331": {
+  "338": {
     "ID": "exp_viletongue",
     "Name": "독설가",
     "Description": "의도했든 의도하지 않든, 마음을 찢는 데 제격입니다.",
@@ -3289,7 +3389,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "332": {
+  "339": {
     "ID": "exp_liar",
     "Name": "거짓말쟁이",
     "Description": "자신을 먼저 속일 수 있는 능력입니다.",
@@ -3299,7 +3399,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "333": {
+  "340": {
     "ID": "exp_forcelogic",
     "Name": "일단논법",
     "Description": "고대 철학자의 논리를 약간 변형시켰습니다.",
@@ -3309,7 +3409,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "334": {
+  "341": {
     "ID": "exp_violence",
     "Name": "폭력적",
     "Description": "당신은 기꺼이 제 2의 수단을 피하지 않게 되었습니다.",
@@ -3319,7 +3419,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "335": {
+  "342": {
     "ID": "exp_headhunter",
     "Name": "인간사냥꾼",
     "Description": "당신은 동등한 입장에서 사냥을 만끽하고 싶어졌습니다.",
@@ -3329,7 +3429,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "336": {
+  "343": {
     "ID": "exp_butcher",
     "Name": "인간백정",
     "Description": "머리는 인간과 고기의 차이를 인지하고 있습니다.\\n그러나 마음은 그러지 못합니다.",
@@ -3339,7 +3439,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "337": {
+  "344": {
     "ID": "exp_naturalman",
     "Name": "자연인",
     "Description": "당신은 문명의 더러움을 참아야 합니다.",
@@ -3349,7 +3449,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "338": {
+  "345": {
     "ID": "exp_predator",
     "Name": "포식자",
     "Description": "지피지기면 백전백승입니다.\\n맛을 아는 것도 비슷하겠죠.",
@@ -3359,7 +3459,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "339": {
+  "346": {
     "ID": "exp_acquiredknowledge",
     "Name": "후천적 천재",
     "Description": "당신은 여백조차 없는 백과사전입니다.",
@@ -3369,7 +3469,7 @@
     "SuccessDescription": "",
     "Icon": ""
   },
-  "340": {
+  "347": {
     "ID": "event_normal_debtgambler_city",
     "Name": "빚쟁이",
     "Description": "당신은 침대에서 곤히 수면을 취하던 중 떠들석한 소리를 들었습니다.\\n잠에서 깬 당신은 방 구석에 꾀죄죄한 남자가 숨어있는 것을 발견했습니다.\\n그는 안절부절 못하며 당신에게 제발 못 본 척 해 달라고 간구합니다.\\n남자는 유명한 도박중독자였으며 빚쟁이에게 쫓기는 듯 했습니다.\\n곧이어 방문 밖에서 누군가 쾅쾅거리는 소리와 함께 도박꾼은 옷장 안으로 숨었습니다.\\n방문이 열리고 험상궃은 사내들이 밀려들어와 당신에게 도박꾼의 행방을 묻습니다.",
@@ -3379,7 +3479,7 @@
     "SuccessDescription": "당신은 짐짓 놀란 기색을 감추고 험상궃은 사내들에게 오히려 화를 냈습니다.\\n장정들은 멋쩍은 듯이 고개를 갸우뚱 거리다가 그대로 나갔습니다.\\n도박꾼은 눈물을 흘리며 감사해했습니다.\\n이 일로 개과천선 했으면 좋겠군요.@당신은 아무 말 않고 손을 들어 옷장을 가리켰습니다.\\n거한들은 조용히 서로 눈빛을 교환한 다음 옷장을 통째로 들고 가기 시작했습니다!\\n그들은 조용히, 신속하게, 폭력적인 추심 행위를 집행한 후 당신의 머리맡에 동전 주머니를 놔두고 갔습니다.",
     "Icon": ""
   },
-  "341": {
+  "348": {
     "ID": "event_normal_freeclass_castle",
     "Name": "공짜 강의",
     "Description": "임시설명",
@@ -3389,7 +3489,7 @@
     "SuccessDescription": "임시결과설명",
     "Icon": ""
   },
-  "342": {
+  "349": {
     "ID": "event_normal_proxyclass_castle",
     "Name": "대리 출석",
     "Description": "임시설명",
@@ -3399,7 +3499,7 @@
     "SuccessDescription": "임시결과설명",
     "Icon": ""
   },
-  "343": {
+  "350": {
     "ID": "exp_physicalexocist",
     "Name": "물리 제령사",
     "Description": "주먹으로 유령을 없애지 못했다면 힘이 부족했던 게 아닐까요?",

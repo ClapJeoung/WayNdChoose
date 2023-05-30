@@ -11,6 +11,12 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private RectTransform MyRect = null;
   [SerializeField] private TextMeshProUGUI MyDescription = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
+  [SerializeField] private GameObject PayOrElseObj = null;
+  [SerializeField] private Image PayOrElseIcon = null;
+  [SerializeField] private GameObject ThemeObj_A = null;
+  [SerializeField] private Image ThemeIcon_A = null;
+  [SerializeField] private GameObject ThemeObj_B = null;
+  [SerializeField] private Image ThemeIcon_B = null;
   public TendencyType MyTendencyType = TendencyType.None;
   public int Index = 0;
   //현재 이 선택지가 가지는 설명문
@@ -43,6 +49,57 @@ public class UI_Selection : MonoBehaviour
   }
   public void Active(SelectionData _data)
   {
+    switch (_data.ThisSelectionType)
+    {
+      case SelectionTargetType.None:
+        if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
+        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
+        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        break;
+      case SelectionTargetType.Pay:
+        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
+        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
+        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        switch (_data.SelectionPayTarget)
+        {
+          case StatusType.HP:PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;break;
+          case StatusType.Sanity:PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;break;
+          case StatusType.Gold:PayOrElseIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;break;
+        }
+        break;
+      case SelectionTargetType.Check_Theme:
+        if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
+        if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
+        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetThemeIcon(_data.SelectionCheckTheme);
+        break;
+      case SelectionTargetType.Check_Skill:
+        if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
+        if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
+        if (ThemeObj_B.activeInHierarchy.Equals(false)) ThemeObj_B.SetActive(true);
+        Sprite[] _sprs = new Sprite[2];
+        GameManager.Instance.ImageHolder.GetSkillIcons(_data.SelectionCheckSkill, ref _sprs);
+        ThemeIcon_A.sprite = _sprs[0];ThemeIcon_B.sprite = _sprs[1];
+        break;
+      case SelectionTargetType.Tendency:
+        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
+        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
+        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.TendencySelectionIcon;
+        break;
+      case SelectionTargetType.Skill:
+        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
+        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
+        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.SkillSelectionIcon;
+        break;
+      case SelectionTargetType.Exp:
+        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
+        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
+        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.ExpSelectionIcon;
+        break;
+    }
     MySelectionData = _data;
     MyDescription.text = _data.Description;
     StartCoroutine(fadein());

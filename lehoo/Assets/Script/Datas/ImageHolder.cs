@@ -10,9 +10,6 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> CityIllust=new List<Sprite>();                 //도시 일러스트
   public List<Sprite> CastleIllust=new List<Sprite>();               //성채 일러스트
   [Space(10)]
-  public Sprite UnknownHP = null;
-  public Sprite UnknownSanity = null;
-  public Sprite UnknownGold = null;
   public Sprite UnknownTheme = null;
   public Sprite UnknownExp = null;
   [Space(10)]
@@ -68,6 +65,24 @@ public class ImageHolder : ScriptableObject
     if (_list.Count.Equals(0)) return DefaultIllust;
     return _list[Random.Range(0, _list.Count)];
   }
+  public Sprite ResidenceIcon = null;
+  public Sprite MarketPlaceIcon = null;
+  public Sprite TempleIcon = null;
+  public Sprite LibraryIcon = null;
+  public Sprite TheaterIcon = null;
+  public Sprite AcademyIcon = null;
+  public Sprite GetPlaceIcon(PlaceType placetype)
+  {
+    switch (placetype)
+    {
+      case PlaceType.Residence:return ResidenceIcon;
+      case PlaceType.Marketplace:return MarketPlaceIcon;
+      case PlaceType.Temple:return TempleIcon;
+      case PlaceType.Library:return LibraryIcon;
+      case PlaceType.Theater:return TheaterIcon;
+      default:return AcademyIcon;
+    }
+  }
   [Space(10)]
     public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
@@ -103,9 +118,11 @@ public class ImageHolder : ScriptableObject
   public Sprite Quest_climax = null;
   public Sprite Quest_fall = null;
   [Space(10)]
-  public Sprite UnPleasant = null;
+  public Sprite DisComfort = null;
   public Sprite MadnessIdle = null;
   public Sprite MadnessActive = null;
+  public Sprite Arrow_Active = null;
+  public Sprite Arrow_DeActive = null;
   public Sprite GetThemeIcon(ThemeType _type)
   {
     switch (_type)

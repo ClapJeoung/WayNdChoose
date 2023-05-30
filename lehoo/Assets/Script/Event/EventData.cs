@@ -148,7 +148,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience:Data.SuccessDatas[0].Reward_ID = _data.Reward_Info;break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -238,7 +238,7 @@ public class EventHolder
             Data.SuccessDatas[j].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[j]);
             switch (Data.SuccessDatas[j].Reward_Target)
             {
-              case RewardTarget.Experience:
+              case RewardTarget.Experience: Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
 
               case RewardTarget.Theme: Data.SuccessDatas[j].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info.Split('@')[j]); break;
@@ -282,7 +282,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -319,7 +319,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -356,7 +356,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -519,7 +519,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -606,7 +606,7 @@ public class EventHolder
             Data.SuccessDatas[j].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[j]);
             switch (Data.SuccessDatas[j].Reward_Target)
             {
-              case RewardTarget.Experience:
+              case RewardTarget.Experience: Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
 
               case RewardTarget.Theme: Data.SuccessDatas[j].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info.Split('@')[j]); break;
@@ -647,7 +647,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -684,7 +684,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -721,7 +721,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -885,7 +885,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -971,7 +971,7 @@ public class EventHolder
             Data.SuccessDatas[j].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[j]);
             switch (Data.SuccessDatas[j].Reward_Target)
             {
-              case RewardTarget.Experience:
+              case RewardTarget.Experience: Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
 
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
 
@@ -1013,7 +1013,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -1049,7 +1049,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
@@ -1086,7 +1086,7 @@ public class EventHolder
           Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
           switch (Data.SuccessDatas[0].Reward_Target)
           {
-            case RewardTarget.Experience:
+            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
             case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;

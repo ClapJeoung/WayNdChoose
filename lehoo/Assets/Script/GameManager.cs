@@ -135,6 +135,24 @@ public class GameManager : MonoBehaviour
     }
     return NullText;
   }
+  public TextData GetPlaceEffectTextData(PlaceType place)
+  {
+    switch (place)
+    {
+      case PlaceType.Residence:
+        return GetTextData("residenceeffect");
+      case PlaceType.Marketplace:
+        return GetTextData("marketplaceeffect");
+      case PlaceType.Temple:
+        return GetTextData("templeeffect");
+      case PlaceType.Library:
+        return GetTextData("libraryeffect");
+      case PlaceType.Theater:
+        return GetTextData("theatereffect");
+      default:
+        return GetTextData("academyeffect");
+    }
+  }
   public TextData GetTextData(System.Type _eventtype)
   {
     if (_eventtype == typeof(EventData)) return GetTextData("normaleventpredescription");
@@ -239,6 +257,7 @@ public class GameManager : MonoBehaviour
     {
       Experience _exp = _data.Value.ReturnEXPClass();
       ExpDic.Add(_data.Value.ID, _exp);
+      if(_exp.ExpType.Equals(ExpTypeEnum.Mad))MadExpDic.Add(_data.Value.ID, _exp);
     }
     //°æÇè Json -> EXPDic
 
@@ -347,6 +366,7 @@ public class GameManager : MonoBehaviour
     _exp.Duration = ConstValues.LongTermStartTurn;
     MyGameData.LongTermEXP[_index] = _exp;
     MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;
+    UIManager.Instance.UpdateSanityText();
     UIManager.Instance.UpdateExpLongTermIcon();
   }
   public void ShiftShortExp(Experience _exp, int _index)

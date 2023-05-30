@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
-  RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short}
+  RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
+Place}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -12,11 +13,13 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
     public ThemeType MyTheme = ThemeType.Conversation;
     public TendencyType MyTendency = TendencyType.None;
   public TendencyType MySelectionTendency= TendencyType.None;
+  public bool MySelectionTendencyDir = false;
   public int MySelectionTendencyIndex = 0;
   public SkillName MySkillName = SkillName.Speech;
   public int RewardValue = 0;
   public int ExpIndex = 0;
   public Experience MyEXP = null;
+  public PlaceType MyPlaceType = PlaceType.NULL;
     public void OnPointerEnter(PointerEventData eventData)
     {
     Experience _exp = null;
@@ -55,19 +58,19 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         switch (_selection.ThisSelectionType)
         {
-          case SelectionTargetType.None:UIManager.Instance.PreviewManager.OpenSelectionNonePreview(_selection); break;
-          case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection); break;
-          case SelectionTargetType.Check_Theme:UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_theme(_selection); break;
-          case SelectionTargetType.Check_Skill:UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection); break;
-          default: UIManager.Instance.PreviewManager.OpenSelectionElsePreview(_selection); break;
+          case SelectionTargetType.None:UIManager.Instance.PreviewManager.OpenSelectionNonePreview(_selection,MySelectionTendency,MySelectionTendencyDir); break;
+          case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection, MySelectionTendency, MySelectionTendencyDir); break;
+          case SelectionTargetType.Check_Theme:UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_theme(_selection, MySelectionTendency, MySelectionTendencyDir); break;
+          case SelectionTargetType.Check_Skill:UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection, MySelectionTendency, MySelectionTendencyDir); break;
+          default: UIManager.Instance.PreviewManager.OpenSelectionElsePreview(_selection, MySelectionTendency, MySelectionTendencyDir); break;
         }
         break;
       case PreviewPanelType.RewardHP:
-        UIManager.Instance.PreviewManager.OpenRewardHPPreview(RewardValue); break;
+        UIManager.Instance.PreviewManager.OpenRewardHPPreview(GameManager.Instance.MyGameData.RewardHPValue_origin); break;
       case PreviewPanelType.RewardSanity:
-        UIManager.Instance.PreviewManager.OpenRewardSanityPreview(RewardValue); break;
+        UIManager.Instance.PreviewManager.OpenRewardSanityPreview(GameManager.Instance.MyGameData.RewardSanityValue_origin); break;
       case PreviewPanelType.RewardGold:
-        UIManager.Instance.PreviewManager.OpenRewardGoldPreview(RewardValue); break;
+        UIManager.Instance.PreviewManager.OpenRewardGoldPreview(GameManager.Instance.MyGameData.RewardGoldValue_origin); break;
       case PreviewPanelType.RewardTheme:
         UIManager.Instance.PreviewManager.OpenRewardThemePreview(MyTheme); break;
       case PreviewPanelType.RewardSkill:
@@ -94,8 +97,15 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           else UIManager.Instance.PreviewManager.OpenExpSelectionBadPreview();
         }
         break;
-    }
+      case PreviewPanelType.Discomfort:
+        UIManager.Instance.PreviewManager.OpenDisComfortPanel();
+        break;
+      case PreviewPanelType.Place:
+        if (!GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(MyPlaceType)) return;
+        UIManager.Instance.PreviewManager.OpenPlacePanel(MyPlaceType);
+        break;
 
+    }
     }
     public void OnPointerExit(PointerEventData eventData) 
     {

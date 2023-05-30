@@ -8,9 +8,10 @@ public class UI_Tendency : UI_default
 {
   [SerializeField] private Image TouchBlock = null;
   [SerializeField] private Image Illust = null;
-  [SerializeField] private TextMeshProUGUI Name = null;
     [SerializeField] private TextMeshProUGUI Description = null;
     private Tendency CurrentTendency = null;
+  private Vector2 ClosePos =new Vector2(1010.0f,0.0f);
+  private Vector2 OpenPos =new Vector2(304.0f,0.0f);
     private TendencyType CurrentTendencyType = TendencyType.None;
     private Tendency GetTendencyByType(TendencyType _type)
     {
@@ -23,9 +24,11 @@ public class UI_Tendency : UI_default
             default:return null;
         }
     }
-
+  [SerializeField] private CanvasGroup BackButton = null;
   public void OpenUI(int _index)
   {
+    BackButton.interactable = true;
+    BackButton.blocksRaycasts = true;
     TendencyType _tendencytype = (TendencyType)_index;
     //이성, 육체, 정신, 물질
     if (UIManager.Instance.IsWorking) return;
@@ -44,12 +47,18 @@ public class UI_Tendency : UI_default
 
     Illust.sprite = _tendency.Illust;
     Description.text = _description + "\n\n" + _effect;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+
+    if (CurrentTendencyType.Equals(TendencyType.None))
+    {
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, ClosePos,OpenPos, UIManager.Instance.LargePanelMoveTime,true));
+    }
+    CurrentTendencyType = _tendencytype;
   }
   public override void CloseUI()
   {
-    TouchBlock.enabled = false;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect, MyDir, UIManager.Instance.LargePanelMoveTime));
+    BackButton.interactable = false;
+    BackButton.blocksRaycasts = false;
+    StartCoroutine( UIManager.Instance.CloseUI(MyRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,true));
     IsOpen = false;
     CurrentTendency = null;
         CurrentTendencyType = TendencyType.None;

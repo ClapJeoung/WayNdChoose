@@ -107,6 +107,7 @@ public class GameData    //게임 진행도 데이터
                 }
                 foreach (var _place in _deleteplace) PlaceEffects.Remove(_place);
                 foreach (var _place in _downplace) PlaceEffects[_place]--;
+        if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
       }
     }
   }
@@ -214,7 +215,11 @@ public class GameData    //게임 진행도 데이터
     {
         get { return hp; }
         set {
-            if (value < hp && PlaceEffects.ContainsKey(PlaceType.Residence)) PlaceEffects.Remove(PlaceType.Residence);
+      if (value < hp && PlaceEffects.ContainsKey(PlaceType.Residence))
+      {
+        PlaceEffects.Remove(PlaceType.Residence);
+        if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
+      }
             //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
             hp = value;
             if (hp > 100) hp = 100;
@@ -262,35 +267,39 @@ public class GameData    //게임 진행도 데이터
   public Dictionary<SkillName, Skill> Skills = new Dictionary<SkillName, Skill>();//기술들
   public void AssembleSkill()
   {
+    System.Random _rnd = new System.Random();
     List<SkillName> _availableskills = new List<SkillName>();
+    //뒤섞을 기술들 리스트
+
     foreach (var _data in Skills)
       if (_data.Value.LevelByOwn > 0) _availableskills.Add(_data.Key);
     //원본 레벨 0 이상만 리스트에 포함
-    if (_availableskills.Count < 4)
+
+    if (_availableskills.Count < 4)//섞을 기술 목록이 부족할 경우
     {
-      while (_availableskills.Count < 4)
+      while (_availableskills.Count < 4)//다른 0레벨 기술도 리스트에 포함해 4개 채울때까지 무한반복
       {
         SkillName _temp = (SkillName)UnityEngine.Random.Range(0, 10);
         if (_availableskills.Contains(_temp)) continue;
         _availableskills.Add(_temp);
       }
+      _availableskills.OrderBy((x) => _rnd.Next()).ToList();
     }
-    //선택된 개수가 부족하면 0레벨도 징집
-    List<SkillName> _targetskills=new List<SkillName>();
-    while(_targetskills.Count < 4)
+    else if (_availableskills.Count > 4)//4개 이상이면 4개만 추려서
     {
-      SkillName _temp=_availableskills[UnityEngine.Random.Range(0,_targetskills.Count)];
-      if(_targetskills.Contains(_temp)) continue;
-      _targetskills.Add(_temp);
+      _availableskills.OrderBy((x) => _rnd.Next()).ToList();
+      var _temp =new SkillName[4] {_availableskills[0], _availableskills[1],_availableskills[2],_availableskills[3]};
     }
-    //순서 무작위로 섞기
+
     int _sum = 0;
     foreach (var _skill in _availableskills) _sum += Skills[_skill].LevelByOwn;
+
     int _value = _sum / 4;
     int _else = _sum % 4;
+
     foreach (var _skill in _availableskills) Skills[_skill].LevelByOwn=_value;
     //평균값 넣기
-    for (int i = 0; i < _else; i++) Skills[_targetskills[UnityEngine.Random.Range(0, _targetskills.Count)]].LevelByOwn += _else;
+    for (int i = 0; i < _else; i++) Skills[_availableskills[i]].LevelByOwn += _else;
     //넣고 남은건 순서대로 넣기
   }
   public int ConversationLevel
@@ -533,31 +542,31 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, false, false);
-            _intel=GameManager.Instance.GetTextData(ThemeType.Intelligence,false,false);
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, true);
-            _wild=GameManager.Instance.GetTextData(ThemeType.Wild, true, true);
-            _tendencydescription = $"{_force.Name} {_wild.Name}\n{_conver.Name} {_intel.Name}";
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, true);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, true);
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, false, false);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, false, false);
+            _tendencydescription = $"{_conver.Name} {_intel.Name}\n\n{_force.Name} {_wild.Name}";
             break;
           case -1:
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, false);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, false);
-            _tendencydescription = $"{_force.Name} {_wild.Name}";
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, false);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, false);
+            _tendencydescription = $"{_conver.Name} {_intel.Name}";
             break;
           case 0:
             _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
             break;
           case 1:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, false);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, false);
-            _tendencydescription = $"{_conver.Name} {_intel.Name}";
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, false);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, false);
+            _tendencydescription = $"{_force.Name} {_wild.Name}";
             break;
           case 2:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, true);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, true);
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, false, false);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, false, false);
-            _tendencydescription = $"{_conver.Name} {_intel.Name}\n{_force.Name} {_wild.Name}";
+            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, false, false);
+            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, false, false);
+            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, true);
+            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, true);
+            _tendencydescription = $"{_force.Name} {_wild.Name}\n\n{_conver.Name} {_intel.Name}";
             break;
         }
         break;
@@ -565,25 +574,25 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, true);
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, true, false, false);
-            _tendencydescription = $"{_sanity.Name}\n{_gold.Name}";
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, true);
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, true, false, false);
+            _tendencydescription = $"{_gold.Name}\n\n{_sanity.Name}";
             break;
           case -1:
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, false);
-            _tendencydescription = _sanity.Name;
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, false);
+            _tendencydescription = _gold.Name;
             break;
           case 0:
             _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
             break;
           case 1:
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, false);
-            _tendencydescription = _gold.Name;
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, false);
+            _tendencydescription = _sanity.Name;
             break;
           case 2:
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, true);
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, true, false, false);
-            _tendencydescription = $"{_gold.Name}\n{_sanity.Name}";
+            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, true);
+            _gold = GameManager.Instance.GetTextData(StatusType.Gold, true, false, false);
+            _tendencydescription = $"{_sanity.Name}\n\n{_gold.Name}";
             break;
         }
         break;
@@ -605,7 +614,7 @@ public class GameData    //게임 진행도 데이터
             _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, false, false);
             _force = GameManager.Instance.GetTextData(ThemeType.Force, true, true);
             _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, true);
-            _tendencydescription = $"{_force.Icon} {_wild.Icon}\n{_conver.Icon} {_intel.Icon}";
+            _tendencydescription = $"{_force.Icon} {_wild.Icon}\n\n{_conver.Icon} {_intel.Icon}";
             break;
           case -1:
             _force = GameManager.Instance.GetTextData(ThemeType.Force, true, false);
@@ -625,7 +634,7 @@ public class GameData    //게임 진행도 데이터
             _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, true);
             _force = GameManager.Instance.GetTextData(ThemeType.Force, false, false);
             _wild = GameManager.Instance.GetTextData(ThemeType.Wild, false, false);
-            _tendencydescription = $"{_conver.Icon} {_intel.Icon}\n{_force.Icon} {_wild.Icon}";
+            _tendencydescription = $"{_conver.Icon} {_intel.Icon}\n\n{_force.Icon} {_wild.Icon}";
             break;
         }
         break;
@@ -635,7 +644,7 @@ public class GameData    //게임 진행도 데이터
           case -2:
             _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, true);
             _gold = GameManager.Instance.GetTextData(StatusType.Gold, true, false, false);
-            _tendencydescription = $"{_sanity.Icon}\n{_gold.Icon}";
+            _tendencydescription = $"{_sanity.Icon}\n\n{_gold.Icon}";
             break;
           case -1:
             _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, false);
@@ -651,7 +660,7 @@ public class GameData    //게임 진행도 데이터
           case 2:
             _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, true);
             _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, true, false, false);
-            _tendencydescription = $"{_gold.Icon}\n{_sanity.Icon}";
+            _tendencydescription = $"{_gold.Icon}\n\n{_sanity.Icon}";
             break;
         }
         break;
@@ -800,7 +809,8 @@ public class GameData    //게임 진행도 데이터
         break;//시장- 일시불 골드 획득
 
       case PlaceType.Temple:
-        foreach (var _settle in AllSettleUnpleasant.Keys)
+        var _settles = AllSettleUnpleasant.Keys.ToList();
+        foreach (var _settle in _settles)
           if (!AllSettleUnpleasant[_settle].Equals(0)) AllSettleUnpleasant[_settle]--;
         break;//사원- 모든 불쾌 1 감소
 
@@ -827,6 +837,7 @@ public class GameData    //게임 진행도 데이터
         else PlaceEffects.Add(placetype, 3);
         break;//아카데미- 다음 체크 확률 증가(3턴 지속, 성공할 때 까지)
     }
+    if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
   }
 
   public List<EventDataDefulat> CurrentSuggestingEvents = new List<EventDataDefulat>(); //현재 정착지에서 제시 중인 이벤트
@@ -1094,7 +1105,7 @@ public class GameData    //게임 진행도 데이터
     Turn = 0;
     HP = 100;
     CurrentSanity = MaxSanity;
-    Gold = 0;
+    Gold = 50;
     Skill _speech = new Skill(ThemeType.Conversation, ThemeType.Conversation,SkillName.Speech);
     Skill _treat = new Skill(ThemeType.Conversation, ThemeType.Force, SkillName.Threat);
     Skill _deception = new Skill(ThemeType.Conversation, ThemeType.Wild, SkillName.Deception);
@@ -1170,6 +1181,7 @@ public class Skill
 public enum TendencyType {None, Body,Head}
 public class Tendency
 {
+  public int ChangedDir = 0;
   public TendencyType Type;
   public Sprite Illust
   {
@@ -1178,12 +1190,35 @@ public class Tendency
      return GameManager.Instance.ImageHolder.GettendencyIllust(Type, Level);
     }
   }
-  public Sprite Icon
+  public Sprite CurrentIcon
   {
     get
     {
       return GameManager.Instance.ImageHolder.GetTendencyIcon(Type,level);
     }
+  }
+  public Sprite GetNextIcon(bool dir)
+  {
+    Sprite _spr = null;
+    switch (level)
+    {
+      case -2:
+        _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1);
+        break;
+      case -1:
+        _spr=dir.Equals(false)?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-0);
+        break;
+      case 0:
+        _spr = dir.Equals(false) ? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, +1);
+        break;
+      case 1:
+        _spr = dir.Equals(false) ? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 0) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
+        break;
+      case 2:
+        _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1);
+        break;
+    }
+    return _spr;
   }
   public TextData MyTextData
   {
@@ -1263,7 +1298,9 @@ public class Tendency
   public int Level
   {
     get { return level; }
-    set { level = value;
+    set {
+      ChangedDir = value - level;
+      level = value;
       count = 0;
       if(UIManager.Instance!=null) UIManager.Instance.UpdateTendencyIcon();
     }

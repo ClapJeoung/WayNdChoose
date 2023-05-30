@@ -31,9 +31,15 @@ public class UI_skill_info : UI_default
   [SerializeField] private TextMeshProUGUI IntelligenceSkillName = null;
   [SerializeField] private TextMeshProUGUI IntelligenceSkillLevel = null;
   [SerializeField] private PreviewInteractive IntelligencePreviewData = null;
+  [Space(10)]
+  [SerializeField] private CanvasGroup BackButton = null;
   private int CurrentThemeIndex = -1;
+  private Vector2 ClosePos =new Vector2( 1150.0f,0.0f);
+  private Vector2 OpenPos =new Vector2( 170.0f,0.0f);
   public void OpenUI(int _index)
   {
+    BackButton.interactable = true;
+    BackButton.blocksRaycasts = true;
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen && CurrentThemeIndex.Equals(_index)) { CloseUI(); return; }
     IsOpen = true;
@@ -108,7 +114,7 @@ public class UI_skill_info : UI_default
       MainThemeIllust.sprite = _themeillust;
       MainThemeDescription.text = _themedescription;
       SkillLevelSum.text = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_themetype).ToString();
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect,MyDir,UIManager.Instance.LargePanelMoveTime));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect,ClosePos,OpenPos,UIManager.Instance.LargePanelMoveTime,true));
     }//닫혀 있던 상태에서 처음으로 열었을때면 UI 열기 이펙트
     else
     {
@@ -145,8 +151,10 @@ public class UI_skill_info : UI_default
   
   public override void CloseUI()
   {
+    BackButton.interactable = false;
+    BackButton.blocksRaycasts = false;
     TouchBlock.enabled = false;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect,MyDir,UIManager.Instance.LargePanelMoveTime));
+    StartCoroutine(UIManager.Instance.CloseUI(MyRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime,true));
     IsOpen = false;
     CurrentThemeIndex = -1;
   }

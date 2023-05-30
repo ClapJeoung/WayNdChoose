@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -13,6 +14,7 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] private UI_EventSuggest MyEventSuggest = null;
     [SerializeField] private Button MyButton = null;
   [SerializeField] private RectTransform NameRect = null;
+  [SerializeField] private TextMeshProUGUI MyPlaceName = null;
   public PlaceType MyPlaceType = PlaceType.Residence;
   public bool Clicked = false;
   public void OnPointerEnter(PointerEventData eventdata)
@@ -23,7 +25,6 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
   {
     NameCanvasGroup.alpha = 0.0f;
   }
-
   public void Setup()
     {
     if (GameManager.Instance.MyGameData.VisitedPlaces.Contains(MyPlaceType))
@@ -31,17 +32,10 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
       MyButton.interactable = false;
     }
     else MyButton.interactable = true;
-        StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, false, UIFadeMoveDir.Left));
-    }
-    public void Close()
-    {
-    StartCoroutine(close());
-    }
-  private IEnumerator close()
-  {
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, false));
-    gameObject.SetActive(false);
-  }
+
+        StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, false, false));
+        if (MyPlaceName.text.Equals("")) MyPlaceName.text = GameManager.Instance.GetTextData(MyPlaceType).Name;
+}
   public void OnClick()
     {
         MyEventSuggest.SelectPlace(MyPlaceType);

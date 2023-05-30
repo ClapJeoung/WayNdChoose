@@ -202,7 +202,7 @@ public class UI_map : UI_default
     {
       SetMoveButton(3);
     }
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,1.0f,0.4f));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,1.0f,0.4f, false));
   }
   public override void CloseUI()
   {
@@ -211,7 +211,7 @@ public class UI_map : UI_default
   }
   private IEnumerator closeui()
   {
-   yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.2f));
+   yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.2f, false));
     for(int i = 0; i < EnvirIcons.Count; i++)
     {
       if (EnvirIcons[i].activeInHierarchy.Equals(true)) EnvirIcons[i].SetActive(false);
@@ -296,8 +296,8 @@ public class UI_map : UI_default
   }
   private IEnumerator movemap()
   {
-        //이동 도중이니 이동 버튼은 비활성화
-        GameManager.Instance.MyGameData.VisitedPlaces.Clear();
+    //이동 도중이니 이동 버튼은 비활성화
+    GameManager.Instance.MyGameData.VisitedPlaces.Clear();
     SetMoveButton(2);
     Vector3 _playerrectpos = PlayerRect.anchoredPosition;          //현재 위치(UI)
     Vector3 _settlerectpos = SettleIcons[SelectedSettle.OriginName].GetComponent<RectTransform>().anchoredPosition;           //종점 위치(UI)
@@ -309,8 +309,8 @@ public class UI_map : UI_default
     float _targetprogress = 0.0f;                                             //이번 이동에서 목표로 하는 이동 진행도
     if (_currentprogress == 0.0f) _targetprogress = Random.Range(0.3f, 0.7f);
     else _targetprogress = 1.0f;
-    Vector3 _targetrectpos=Vector3.Lerp(_playerrectpos, _settlerectpos, _targetprogress);  //이번 이동에서 목표로 하는 위치(UI)
-    Vector3 _targettilepos=Vector3.Lerp(_playretilepos, _settletilepos, _targetprogress);    //이번 이동에서 목표로 하는 위치(타일)
+    Vector3 _targetrectpos = Vector3.Lerp(_playerrectpos, _settlerectpos, _targetprogress);  //이번 이동에서 목표로 하는 위치(UI)
+    Vector3 _targettilepos = Vector3.Lerp(_playretilepos, _settletilepos, _targetprogress);    //이번 이동에서 목표로 하는 위치(타일)
     if (_currentprogress == 0.0f)//정착지 ~ 야외
     {
       GameManager.Instance.MyGameData.CurrentSanity -= SelectedSettleCost;
@@ -322,15 +322,15 @@ public class UI_map : UI_default
       //이전 정착지의 이벤트 관련 데이터 초기화
       //currentprogress==0.0f면 정착지에서 중간 이벤트 지점까지 이동
       yield return StartCoroutine(movecharacter(PlayerRect.anchoredPosition, _targetrectpos, _settlerectpos, _targetprogress));
-            //캐릭터 이동시킴
+      //캐릭터 이동시킴
 
-            EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetrectpos));
-            //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
-            yield return StartCoroutine(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir));
-            IsOpen = false;
+      EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetrectpos));
+      //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
+      yield return StartCoroutine(UIManager.Instance.CloseUI(MyGroup, true, false));
+      IsOpen = false;
       SettleIcons[SelectedSettle.OriginName].GetComponent<Button>().interactable = false;
-      foreach (var _settle in GameManager.Instance.MyGameData.AvailableSettlement) 
-      { 
+      foreach (var _settle in GameManager.Instance.MyGameData.AvailableSettlement)
+      {
         if (_settle.Equals(SelectedSettle)) continue;
       }
       GameManager.Instance.MyGameData.AvailableSettlement.Clear();
@@ -348,12 +348,12 @@ public class UI_map : UI_default
 
       //currentprogress!=0.0f면 외부에서 이벤트 클리어하고 가던 정착지를 향해 다시 출발
       yield return StartCoroutine(movecharacter(_playerrectpos, _settlerectpos, _currentprogress));
-            //캐릭터 이동시킨
-            CloseUI();
-            IsOpen = false;
-            //멈췄으면 바로 맵 닫기
+      //캐릭터 이동시킨
+      CloseUI();
+      IsOpen = false;
+      //멈췄으면 바로 맵 닫기
 
-            EventManager.Instance.SetSettleEvent(SelectedSettle.TileData);
+      EventManager.Instance.SetSettleEvent(SelectedSettle.TileData);
       //캐릭터 목표 지점 정착지 정보 보내줌
       GameManager.Instance.MyGameData.Turn++;
       UIManager.Instance.UpdateTurnIcon();
@@ -363,15 +363,14 @@ public class UI_map : UI_default
       SelectedSettle = null;
       UpdateIcons(GameManager.Instance.MyGameData.AvailableSettlement);
 
-        }
     }
+  }
   private IEnumerator movecharacter(Vector3 _originrectpos,Vector3 _targetrectpos,Vector3 _maxpos, float _targetprogress)
   {
     float _time = 0.0f;
-    float _targettime = MoveTime * _targetprogress;
-    while (_time < _targettime)
+    while (_time < MoveTime)
     {
-      PlayerRect.anchoredPosition=Vector3.Lerp(_originrectpos, _maxpos, Mathf.Pow(_time / MoveTime,0.4f));
+      PlayerRect.anchoredPosition=Vector3.Lerp(_originrectpos, _targetrectpos, UIManager.Instance.CharacterMoveCurve.Evaluate(_time / MoveTime));
       _time += Time.deltaTime;
       yield return null;
     }
@@ -382,14 +381,13 @@ public class UI_map : UI_default
   }//캐릭터 움직이는 코루틴 - 정착지 ~ 야외 이벤트
   private IEnumerator movecharacter(Vector3 _currenrecttpos, Vector3 _endrectpos, float _currentprogress)
   {
-    Vector3 _originpos =_currenrecttpos- ((_endrectpos - _currenrecttpos) / (1.0f - _currentprogress)) * _currentprogress;
     //출발 좌표, 끝 좌표랑 현재 진행도(_progress)를 사용해 0.1칸 단위를 만들어 10배를 곱해
     //_progress 0.0f 기준(시작점)을 도출한다
-    float _time = MoveTime * _currentprogress;
+    float _time =0.0f;
     //시작 _time은 0.0~MoveTime의 _currentprogress만큼
     while (_time < MoveTime)
     {
-      PlayerRect.anchoredPosition = Vector3.Lerp(_originpos, _endrectpos, Mathf.Pow(_time / MoveTime, 0.4f));
+      PlayerRect.anchoredPosition = Vector3.Lerp(_currenrecttpos, _endrectpos, UIManager.Instance.CharacterMoveCurve.Evaluate(_time / MoveTime));
       _time += Time.deltaTime; yield return null;
     }
     PlayerRect.anchoredPosition = _endrectpos;

@@ -80,7 +80,10 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject SelectionNonePanel = null;
   [SerializeField] private TextMeshProUGUI SelectionNoneText = null;
+  [SerializeField] private PreviewSelectionTendency SelectionNoneTendency = null;
   [SerializeField] private Transform NoneRewardIcons = null;
+  [SerializeField] private Vector2 SelectionNoneNoTendencySize = new Vector2(360.0f, 200.0f);
+  [SerializeField] private Vector2 SelectionNoneTendencySize = new Vector2(360.0f, 320.0f);
   [Space(10)]
   [SerializeField] private GameObject SelectionPayPanel = null;
   [SerializeField] private Image PayIcon = null;
@@ -89,6 +92,13 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI PaySuccessPercent = null;
   [SerializeField] private TextMeshProUGUI PayDescription = null;
   [SerializeField] private Transform PayRewardIcons = null;
+  [SerializeField] private PreviewSelectionTendency SelectionPayTendendcy = null;
+  private Vector2 SelectionPayNoneTendencySize = new Vector2(360.0f, 350.0f);
+  [SerializeField] private RectTransform SelectionPayInfoRect = null;
+   private float SelectionPayDescriptionLength = 47.0f;
+   private float SelectionPayPerLength = 80.0f;
+   private float SelectionPayTendendcyLength = 80.0f;
+   private float SelectionPayInfoSpace = 25.0f;
   [Space(10)]
   [SerializeField] private GameObject SelectionCheckPanel = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckName = null;
@@ -99,15 +109,22 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI CheckPercent = null;
   [SerializeField] private Transform CheckRewardIcons = null;
   [SerializeField] private TextMeshProUGUI CheckDescription = null;
+  [SerializeField] private PreviewSelectionTendency SelectionCheckTendendcy = null;
+  private Vector2 SelectionCheckNoneTendendcySize=new Vector2(360.0f,400.0f);
+  private float SelectionCheckLevelByOtherLength = 65.0f;
+  private float SelectionCheckTendencySize = 80.0f;
+  private float SelectionCheckInfoSpace = 25.0f;
   [Space(10)]
   [SerializeField] private GameObject SelectionElsePanel = null;
   [SerializeField] private Image SelectionElseIcon = null;
   [SerializeField] private TextMeshProUGUI SelectionElseDescription = null;
+  [SerializeField] private PreviewSelectionTendency SelectionElseTendency = null;
+  [SerializeField] private Vector2 SelectionElseNoneTendencySize = new Vector2(360.0f, 370.0f);
+  [SerializeField] private Vector2 SelectionElseTendencySize = new Vector2(360.0f, 490.0f);
   [Space(10)]
   [SerializeField] private GameObject RewardStatusPanel = null;
   [SerializeField] private Image RewardStatusIcon = null;
   [SerializeField] private TextMeshProUGUI RewardStatusAmount = null;
-  [SerializeField] private TextMeshProUGUI RewardStatusDescription = null;
   [Space(10)]
   [SerializeField] private GameObject RewardTEPanel = null;
   [SerializeField] private TextMeshProUGUI RewardTEName = null;
@@ -134,6 +151,17 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject ExpSelectionBadPanel = null;
   [SerializeField] private TextMeshProUGUI ExpSelectionBadText = null;
+  [Space(10)]
+  [SerializeField] private GameObject DisComfortPanel = null;
+  [SerializeField] private TextMeshProUGUI DiscomfortText = null;
+  [Space(10)]
+  [SerializeField] private GameObject PlacePanel = null;
+  [SerializeField] private Image PlaceIcon = null;
+  [SerializeField] private Image PlaceThemeIcon = null;
+  [SerializeField] private TextMeshProUGUI PlaceTurn = null;
+  [SerializeField] private TextMeshProUGUI PlaceName = null;
+  [SerializeField] private TextMeshProUGUI PlaceDescription = null;
+  [SerializeField] private TextMeshProUGUI PlaceSubDescription = null;
   private List<CanvasGroup> AllCanvasGroup = new List<CanvasGroup>();
   private void Awake()
   {
@@ -494,6 +522,7 @@ public class PreviewManager : MonoBehaviour
       _str = string.Format(GameManager.Instance.GetTextData("byplace").Name, _valuestr);
       SkillLevelByPlace.text = _str;
     }
+    else SkillLevelByPlace.text = "";
 
     SkillIcon_A.sprite= _icons[0];SkillIcon_B.sprite = _icons[1];
     SkillName.text = _name;
@@ -547,7 +576,7 @@ public class PreviewManager : MonoBehaviour
     TendencyIcon.sprite = _tendencyicon;
     TendencyName.text = _tendencyname;
     TendencyDescription.text = _tendencyeffect;
-    TendencySubDescription.text = _textdata.SelectionSubDescription;
+    TendencySubDescription.text = _textdata.SelectionDescription;
 
     CurrentPreview = TendencyPreview.GetComponent<RectTransform>();
 
@@ -555,18 +584,36 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(TendencyPreview, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionNonePreview(SelectionData _selection)
+  public void OpenSelectionNonePreview(SelectionData _selection,TendencyType tendencytype,bool dir)
   {
     SelectionNoneText.text = _selection.SubDescription;
     SetRewardIcons(NoneRewardIcons, _selection.SelectionSuccesRewards);
 
     CurrentPreview = SelectionNonePanel.GetComponent<RectTransform>();
 
+    switch (tendencytype)
+    {
+      case TendencyType.None:
+        if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(true)) SelectionNoneTendency.gameObject.SetActive(false);
+        SelectionNonePanel.GetComponent<RectTransform>().sizeDelta = SelectionNoneNoTendencySize;
+        break;
+      case TendencyType.Body:
+        if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(false)) SelectionNoneTendency.gameObject.SetActive(true);
+        SelectionNonePanel.GetComponent<RectTransform>().sizeDelta = SelectionNoneTendencySize;
+        SelectionNoneTendency.Setup(GameManager.Instance.MyGameData.Tendency_Body,dir);
+        break;
+      case TendencyType.Head:
+        if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(false)) SelectionNoneTendency.gameObject.SetActive(true);
+        SelectionNonePanel.GetComponent<RectTransform>().sizeDelta = SelectionNoneTendencySize;
+        SelectionNoneTendency.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
+        break;
+    }
+
     IEnumerator _cor = null;
     _cor = fadepreview(SelectionNonePanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionPayPreview(SelectionData _selection)
+  public void OpenSelectionPayPreview(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
     PayDescription.text = _selection.SubDescription;
     SetRewardIcons(PayRewardIcons, _selection.SelectionSuccesRewards);
@@ -588,17 +635,17 @@ public class PreviewManager : MonoBehaviour
         if (_modify.Equals(0)) _targetdescription = "";
         else if (_modify > 0)
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status,false,true, _modify).Name} {ColorText.NegativeColor(_modify.ToString())}%";
+          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status, false, true, _modify).Name} {ColorText.NegativeColor(_modify.ToString())}%";
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status, false, true, _modify).Name} {ColorText.PositiveColor(_modify.ToString())}%";
+          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status, false, false, _modify).Name} {ColorText.PositiveColor(_modify.ToString())}%";
         }//보정치가 0 이하라면 긍정적인것
         break;//체력이라면 지불 기본값, 보정치, 최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
 
       case StatusType.Sanity:
         _status = StatusType.Sanity;
-        _icon = GameManager.Instance.ImageHolder.SanityDecreaseIcon; 
+        _icon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
         _target_origin = GameManager.Instance.MyGameData.PaySanityValue_origin;
         _modify = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
         _target = GameManager.Instance.MyGameData.PaySanityValue_modified;
@@ -609,12 +656,12 @@ public class PreviewManager : MonoBehaviour
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status, false, true, _modify).Name} {ColorText.PositiveColor(_modify.ToString())}%";
+          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status, false, false, _modify).Name} {ColorText.PositiveColor(_modify.ToString())}%";
         }//보정치가 0 이하라면 긍정적인것
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
       case StatusType.Gold:
         _status = StatusType.Gold;
-        _icon = GameManager.Instance.ImageHolder.GoldDecreaseIcon; 
+        _icon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
         _target_origin = GameManager.Instance.MyGameData.PayGoldValue_origin;
         _modify = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
         _target = GameManager.Instance.MyGameData.PayGoldValue_modified;
@@ -625,24 +672,69 @@ public class PreviewManager : MonoBehaviour
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status, false, true, _modify).Name} {ColorText.PositiveColor(_modify.ToString())}%";
+          _targetdescription = $"{GameManager.Instance.GetTextData("default").Name} {_target_origin}\n{GameManager.Instance.GetTextData(_status, false, false, _modify).Name} {ColorText.PositiveColor(_modify.ToString())}%";
         }//보정치가 0 이하라면 긍정적인것
         if (_target > GameManager.Instance.MyGameData.Gold) _percent = GameManager.Instance.MyGameData.CheckPercent_money(_target);
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
     }
-    
+
     PayIcon.sprite = _icon;
     PayTargetAmount.text = (-_target).ToString();
-    PayTargetDescription.text = _targetdescription;
-    if(!_percent.Equals(-1))PaySuccessPercent.text = _percent.ToString()+"%";
 
     CurrentPreview = SelectionPayPanel.GetComponent<RectTransform>();
+    float _additionallength = 0;
+
+    Vector2 _newsize = SelectionPayNoneTendencySize;
+    if (_modify.Equals(0))//변동치 존재하면 변동치 텍스트 활성화
+    {
+      if (PayTargetDescription.gameObject.activeInHierarchy.Equals(true)) PayTargetDescription.gameObject.SetActive(false);
+    }
+    else
+    {
+      if (PayTargetDescription.gameObject.activeInHierarchy.Equals(false)) PayTargetDescription.gameObject.SetActive(true);
+      PayTargetDescription.text = _targetdescription;
+         _additionallength += SelectionPayDescriptionLength + SelectionPayInfoSpace;
+  }
+
+    if (_percent.Equals(-1))//(골드) 확률 검사해야 하면 확률 텍스트 활성화
+    {
+      if (PaySuccessPercent.gameObject.activeInHierarchy.Equals(true)) PaySuccessPercent.gameObject.SetActive(false);
+    }
+    else
+    {
+      if (PaySuccessPercent.gameObject.activeInHierarchy.Equals(false)) PaySuccessPercent.gameObject.SetActive(true);
+      PaySuccessPercent.text = _percent.ToString() + "%";
+         _additionallength += SelectionPayPerLength + SelectionPayInfoSpace;
+    }
+
+    switch (tendencytype)//성향 존재하는거면 그거 활성화
+    {
+      case TendencyType.None:
+        if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionPayTendendcy.gameObject.SetActive(false);
+        break;
+      case TendencyType.Body:
+        if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionPayTendendcy.gameObject.SetActive(true);
+        SelectionPayTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
+        _additionallength += SelectionPayTendendcyLength + SelectionPayInfoSpace;
+        break;
+      case TendencyType.Head:
+        if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionPayTendendcy.gameObject.SetActive(true);
+        SelectionPayTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
+        _additionallength += SelectionPayTendendcyLength + SelectionPayInfoSpace;
+        break;
+    }
+    if (_additionallength > 0) _additionallength += SelectionPayInfoSpace;
+
+    _newsize = new Vector2(_newsize.x, _newsize.y + _additionallength);
+    Debug.Log($"{SelectionPayNoneTendencySize}  {_additionallength}");
+
+    SelectionPayPanel.GetComponent<RectTransform>().sizeDelta = _newsize;
 
     IEnumerator _cor = null;
     _cor = fadepreview(SelectionPayPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionCheckPreview_theme(SelectionData _selection)
+  public void OpenSelectionCheckPreview_theme(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
     CheckLevelByOtherSkills.text = "";
     CheckDescription.text = _selection.SubDescription;
@@ -666,15 +758,37 @@ public class PreviewManager : MonoBehaviour
     CheckIcon_A.sprite = _icon;
     CheckIcon_B.transform.parent.gameObject.SetActive(false);
     CheckTargetLevel.text = $"{_currentlevel} / {_targetlevel}";
-    if(_percent!=-1) CheckPercent.text = _percent.ToString() + "%";
+    CheckPercent.text = _percent.ToString() + "%";
 
     CurrentPreview = SelectionCheckPanel.GetComponent<RectTransform>();
 
+    Vector2 _newsize = SelectionCheckNoneTendendcySize;
+    float _addlength = 0.0f;
+    switch (tendencytype)
+    {
+      case TendencyType.None:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionCheckTendendcy.gameObject.SetActive(false);
+        break;
+      case TendencyType.Body:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
+        SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
+        _addlength += SelectionCheckTendencySize + SelectionCheckInfoSpace;
+        break;
+      case TendencyType.Head:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
+        SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
+        _addlength += SelectionCheckTendencySize + SelectionCheckInfoSpace;
+        break;
+    }
+    if (_addlength > 0) _addlength += SelectionCheckInfoSpace;
+    _newsize = new Vector2(_newsize.x, _newsize.y + _addlength);
+
+    SelectionCheckPanel.GetComponent<RectTransform>().sizeDelta = _newsize;
     IEnumerator _cor = null;
     _cor = fadepreview(SelectionCheckPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionCheckPreview_skill(SelectionData _selection)
+  public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
     CheckDescription.text = _selection.SubDescription;
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
@@ -703,12 +817,36 @@ public class PreviewManager : MonoBehaviour
     CheckPercent.text = _percent.ToString() + "%";
 
     CurrentPreview = SelectionCheckPanel.GetComponent<RectTransform>();
+    Vector2 _newsize = SelectionCheckNoneTendendcySize;
+    float _addlength = 0.0f;
+
+    if (_byotherskills > 0) _addlength += SelectionCheckLevelByOtherLength + SelectionCheckInfoSpace;
+    switch (tendencytype)
+    {
+      case TendencyType.None:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionCheckTendendcy.gameObject.SetActive(false);
+        break;
+      case TendencyType.Body:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
+        SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
+        _addlength += SelectionCheckTendencySize + SelectionCheckInfoSpace;
+        break;
+      case TendencyType.Head:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
+        SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
+        _addlength += SelectionCheckTendencySize + SelectionCheckInfoSpace; 
+        break;
+    }
+    if (_addlength > 0.0f) _addlength += SelectionCheckInfoSpace;
+    _newsize = new Vector2(_newsize.x, _newsize.y + _addlength);
+
+    SelectionCheckPanel.GetComponent<RectTransform>().sizeDelta = _newsize;
 
     IEnumerator _cor = null;
     _cor = fadepreview(SelectionCheckPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionElsePreview(SelectionData _selection)
+  public void OpenSelectionElsePreview(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite _icon = null;
@@ -720,6 +858,24 @@ public class PreviewManager : MonoBehaviour
     SelectionElseDescription.text = _selection.SubDescription;
 
     CurrentPreview=SelectionElsePanel.GetComponent<RectTransform>();
+
+    switch (tendencytype)
+    {
+      case TendencyType.None:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionCheckTendendcy.gameObject.SetActive(false);
+        SelectionElsePanel.GetComponent<RectTransform>().sizeDelta = SelectionElseNoneTendencySize;
+        break;
+      case TendencyType.Body:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
+        SelectionElsePanel.GetComponent<RectTransform>().sizeDelta = SelectionElseTendencySize;
+        SelectionElseTendency.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
+        break;
+      case TendencyType.Head:
+        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
+        SelectionElsePanel.GetComponent<RectTransform>().sizeDelta = SelectionElseTendencySize;
+        SelectionElseTendency.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
+        break;
+    }
 
     IEnumerator _cor = null;
     _cor = fadepreview(SelectionElsePanel, true);
@@ -736,16 +892,15 @@ public class PreviewManager : MonoBehaviour
     _modify = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
 
     string _changedegree = "";
-    _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + _value.ToString() + "\n";
+    _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + GameManager.Instance.MyGameData.RewardHPValue_origin.ToString() + "\n";
     if (_modify.Equals(0.0f)) _changedegree =ColorText.NeutralColor( GameManager.Instance.GetTextData("nochange").Name);
-    else if(_modify>0)_changedegree=ColorText.PositiveColor(_modify.ToString());
-    else _changedegree=ColorText.NegativeColor(_modify.ToString());
+    else if(_modify>0)_changedegree=ColorText.PositiveColor(_modify.ToString())+"%";
+    else _changedegree=ColorText.NegativeColor(_modify.ToString()) + "%";
 
-    _modifydescription+=$"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}%";
+    _modifydescription+=$"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}";
 
     RewardStatusIcon.sprite = _icon;
-    RewardStatusAmount.text ="+ "+ _value.ToString();
-    RewardStatusDescription.text = _modifydescription;
+    RewardStatusAmount.text = _modifydescription+"\n\n+ " + _value.ToString();
 
     CurrentPreview = RewardStatusPanel.GetComponent<RectTransform>();
 
@@ -763,15 +918,16 @@ public class PreviewManager : MonoBehaviour
     _modify = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
 
     string _changedegree = "";
-    _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + _value.ToString() + "\n";
+    _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + GameManager.Instance.MyGameData.RewardSanityValue_origin.ToString() + "\n";
     if (_modify.Equals(0.0f)) _changedegree = ColorText.NeutralColor(GameManager.Instance.GetTextData("nochange").Name);
-    else if (_modify > 0) _changedegree = ColorText.PositiveColor(_modify.ToString());
-    else _changedegree = ColorText.NegativeColor(_modify.ToString());
-    _modifydescription += $"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}%";
+    else if (_modify > 0) _changedegree = ColorText.PositiveColor(_modify.ToString()) + "%";
+    else _changedegree = ColorText.NegativeColor(_modify.ToString()) + "%";
+
+    _modifydescription += $"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}";
+
 
     RewardStatusIcon.sprite = _icon;
-    RewardStatusAmount.text = _value.ToString();
-    RewardStatusDescription.text = _modifydescription;
+    RewardStatusAmount.text = _modifydescription + "\n\n+ " + _value.ToString();
 
     CurrentPreview = RewardStatusPanel.GetComponent<RectTransform>();
 
@@ -791,13 +947,13 @@ public class PreviewManager : MonoBehaviour
     string _changedegree = "";
     _modifydescription = GameManager.Instance.GetTextData("default").Name + " " + _value.ToString() + "\n";
     if (_modify.Equals(0.0f)) _changedegree = ColorText.NeutralColor(GameManager.Instance.GetTextData("nochange").Name);
-    else if (_modify > 0) _changedegree = ColorText.PositiveColor(_modify.ToString());
-    else _changedegree = ColorText.NegativeColor(_modify.ToString());
-    _modifydescription += $"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}%";
+    else if (_modify > 0) _changedegree = ColorText.PositiveColor(_modify.ToString()) + "%";
+    else _changedegree = ColorText.NegativeColor(_modify.ToString()) + "%";
+
+    _modifydescription += $"{GameManager.Instance.GetTextData("modified").Name} {_changedegree}";
 
     RewardStatusIcon.sprite = _icon;
-    RewardStatusAmount.text ="+"+ _value.ToString();
-    RewardStatusDescription.text = _modifydescription;
+    RewardStatusAmount.text = _modifydescription + "\n\n+ " + _value.ToString();
 
     CurrentPreview = RewardStatusPanel.GetComponent<RectTransform>();
 
@@ -919,6 +1075,70 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(ExpSelectionBadPanel, true);
     StartCoroutine(_cor);
   }
+  public void OpenDisComfortPanel()
+  {
+     DiscomfortText.text = GameManager.Instance.GetTextData("discomfort").Description;
+
+    CurrentPreview = DisComfortPanel.GetComponent<RectTransform>();
+
+    IEnumerator _cor = null;
+    _cor = fadepreview(DisComfortPanel, true);
+    StartCoroutine(_cor);
+  }
+  public void OpenPlacePanel(PlaceType place)
+  {
+    Sprite _placeicon = null;
+    _placeicon = GameManager.Instance.ImageHolder.GetPlaceIcon(place);
+    Sprite _themeicon = null;
+
+    string _name = "", _effectdescription = "", _subdescription = "";
+    TextData _textdata=GameManager.Instance.GetPlaceEffectTextData(place);
+    _name = GameManager.Instance.GetTextData(place).Name;
+    _subdescription = _textdata.Description;
+    switch (place)
+    {
+      case PlaceType.Residence:
+        if (PlaceThemeIcon.transform.parent.gameObject.activeInHierarchy.Equals(transform)) PlaceThemeIcon.transform.parent.gameObject.SetActive(false);
+        _effectdescription = string.Format(_textdata.Name, GameManager.Instance.MyGameData.PlaceEffects[place], ((int)(ConstValues.PlaceEffect_residence * 100.0f)).ToString());
+        break;
+      case PlaceType.Marketplace:
+        if (PlaceThemeIcon.transform.parent.gameObject.activeInHierarchy.Equals(transform)) PlaceThemeIcon.transform.parent.gameObject.SetActive(false);
+        _effectdescription = string.Format(_textdata.Name, ConstValues.PlaceEffect_marketplace.ToString());
+        break;
+      case PlaceType.Temple:
+        if (PlaceThemeIcon.transform.parent.gameObject.activeInHierarchy.Equals(transform)) PlaceThemeIcon.transform.parent.gameObject.SetActive(false);
+        _effectdescription = _textdata.Name;
+        break;
+      case PlaceType.Library:
+        ThemeType _theme = GameManager.Instance.MyGameData.CurrentSettlement.LibraryType;
+        _themeicon = GameManager.Instance.ImageHolder.GetThemeIcon(_theme);
+        _effectdescription = string.Format(_textdata.Name, GameManager.Instance.MyGameData.PlaceEffects[place], _themeicon, GameManager.Instance.GetTextData(_theme).Name);
+      if(PlaceThemeIcon.transform.parent.gameObject.activeInHierarchy.Equals(false))PlaceThemeIcon.transform.parent.gameObject.SetActive(true);
+        break;
+      case PlaceType.Theater:
+        if (PlaceThemeIcon.transform.parent.gameObject.activeInHierarchy.Equals(transform)) PlaceThemeIcon.transform.parent.gameObject.SetActive(false);
+        _effectdescription = _textdata.Name;
+        break;
+      case PlaceType.Academy:
+        if (PlaceThemeIcon.transform.parent.gameObject.activeInHierarchy.Equals(transform)) PlaceThemeIcon.transform.parent.gameObject.SetActive(false);
+        _effectdescription = string.Format(_textdata.Name, GameManager.Instance.MyGameData.PlaceEffects[place], ConstValues.PlaceEffect_acardemy.ToString());
+        break;
+    }
+    PlaceName.text = _name;
+    PlaceIcon.sprite = _placeicon;
+    PlaceThemeIcon.sprite = _themeicon;
+    PlaceTurn.text = GameManager.Instance.MyGameData.PlaceEffects[place].ToString();
+    PlaceDescription.text = _effectdescription;
+    PlaceSubDescription.text = _subdescription;
+
+    CurrentPreview = PlacePanel.GetComponent<RectTransform>();
+
+    IEnumerator _cor = null;
+    _cor = fadepreview(PlacePanel, true);
+    StartCoroutine(_cor);
+
+  }
+
   private Vector2 Newpos = Vector2.zero;
   public void Update()
   {
@@ -932,6 +1152,10 @@ public class PreviewManager : MonoBehaviour
     if (CurrentPreview == null) return;
     StopAllCoroutines();
         CurrentPreview.GetComponent<CanvasGroup>().alpha = 0.0f;
+    SelectionNoneTendency.StopEffect();
+    SelectionPayTendendcy.StopEffect();
+    SelectionCheckTendendcy.StopEffect();
+    SelectionElseTendency.StopEffect();
     CurrentPreview = null; 
   }
 

@@ -167,9 +167,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a01fe552de13710459497d3a75488b9e, type: 3}
   - {fileID: 21300000, guid: 1c9d054c0bcf8f948ab16b9858b0e457, type: 3}
   - {fileID: 21300000, guid: aeac7940506a92d4886862aa495f244c, type: 3}
-  UnknownHP: {fileID: 0}
-  UnknownSanity: {fileID: 0}
-  UnknownGold: {fileID: 0}
   UnknownTheme: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   UnknownExp: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
   ThemeIllust_Conversation: {fileID: 21300000, guid: 16d47ffe49052184faaa7e7e94904eca, type: 3}
@@ -177,11 +174,11 @@ MonoBehaviour:
   ThemeIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
   ThemeIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
   TendencyIcon_Body:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 21300000, guid: 90f890b6ce10f18439b9468b01da9346, type: 3}
+  - {fileID: 21300000, guid: 36d3dd0062294bf49acf7c8f48eafafe, type: 3}
+  - {fileID: 21300000, guid: 270b8618eec0c984687abf7237b9c31d, type: 3}
+  - {fileID: 21300000, guid: 9c82d165cf20d5f41840da3e0e05ea46, type: 3}
+  - {fileID: 21300000, guid: 49e373aa33c9c784b929c6ac76358acc, type: 3}
   TendencyIllust_Body:
   - {fileID: 0}
   - {fileID: 0}
@@ -189,11 +186,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   TendencyIcon_Head:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 21300000, guid: cdba53ef6391a254c94df5f1c14aa230, type: 3}
+  - {fileID: 21300000, guid: 4c1b5956b04481641a471b528fadbaaa, type: 3}
+  - {fileID: 21300000, guid: 71a7fb53d88b4f94b9006f1f52ff7f3b, type: 3}
+  - {fileID: 21300000, guid: fef534efbe40331408dd0f97e15ac695, type: 3}
+  - {fileID: 21300000, guid: 9cba5a9c0ab94e34cb7397af403cecec, type: 3}
   TendencyIllust_Head:
   - {fileID: 0}
   - {fileID: 0}
@@ -218,6 +215,12 @@ MonoBehaviour:
   TheaterIllust: []
   AcademyIllust: []
   NoneIllust: {fileID: 0}
+  ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
+  MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
+  TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
+  LibraryIcon: {fileID: 21300000, guid: 9c71aa13cdd3beb42b347760c03a7b9d, type: 3}
+  TheaterIcon: {fileID: 21300000, guid: e0a1aff2efc28ba49bf9fea542b9288a, type: 3}
+  AcademyIcon: {fileID: 21300000, guid: b2ed8b7c7cf8da349b1685bebb032fbb, type: 3}
   EventIllust:
   - {fileID: 21300000, guid: 118454cf19c33244eae50960de27fc16, type: 3}
   - {fileID: 21300000, guid: 72b082cba3858754d99b87f7bbad72d9, type: 3}
@@ -638,6 +641,8 @@ MonoBehaviour:
   Quest_risig: {fileID: 21300000, guid: 0d58313d00cc8cd46bf57ccfe780485c, type: 3}
   Quest_climax: {fileID: 21300000, guid: 05d24a6df66b71b4a8cb5a1628a77811, type: 3}
   Quest_fall: {fileID: 21300000, guid: e6ec370da0fec434d936dad7fd7c7553, type: 3}
-  UnPleasant: {fileID: 1370167794, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
-  MadnessIdle: {fileID: 21300000, guid: cb64c03139cc4ed4db24b582d2183431, type: 3}
-  MadnessActive: {fileID: 21300000, guid: 0e03b3baa6653aa478451b83b81bebb6, type: 3}
+  DisComfort: {fileID: 0}
+  MadnessIdle: {fileID: 21300000, guid: 533227ba82acdd649bf6c2137697490f, type: 3}
+  MadnessActive: {fileID: 21300000, guid: 886081899e6a4894482d7746622dca02, type: 3}
+  Arrow_Active: {fileID: 21300000, guid: 639b5ae68dd4e8049bb780540ae4dc93, type: 3}
+  Arrow_DeActive: {fileID: 21300000, guid: ff7319df531d8c044b1fa7e0eafafaba, type: 3}

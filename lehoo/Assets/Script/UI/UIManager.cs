@@ -23,12 +23,17 @@ public class UIManager : MonoBehaviour
     }
     else Destroy(gameObject);
   }
+  public AnimationCurve UIPanelOpenCurve = null;
+  public AnimationCurve UIPanelCLoseCurve = null;
+  public AnimationCurve CharacterMoveCurve = null;
+  [Space(10)]
   [SerializeField] private Transform MyCanvas = null;
   [SerializeField] private UI_dialogue MyDialogue = null;
   [SerializeField] private UI_Reward MyUIReward = null;
   [SerializeField] private UI_EventSuggest MyEvnetSuggest = null;
   [SerializeField] private UI_QuestSuggest MyQuestSuggent = null;
   [SerializeField] private UI_Mad MyMadPanel = null;
+  [SerializeField] private UI_PlaceEffect MyPlaceEffect = null;
   [SerializeField] private RectTransform HpRect = null;
   [SerializeField] private RectTransform SanityRect = null;
   [SerializeField] private RectTransform GoldRect = null;
@@ -197,17 +202,56 @@ public class UIManager : MonoBehaviour
     }
     Destroy(_obj);
   }
-  [SerializeField] private Image TendencyHeadIcon = null;
-  [SerializeField] private Image TendencyBodyIcon = null;
+  [SerializeField] private RectTransform TendencyHeadRect = null;
+  [SerializeField] private RectTransform TendencyHeadIcon = null;
+  [SerializeField] private RectTransform TendencyBodyRect = null;
+  [SerializeField] private RectTransform TendencyBodyIcon = null;
+  private float TendendcyIconMoveUnit = 55.0f;
   public void UpdateTendencyIcon()
   {
-    TendencyType _tendency = TendencyType.Head;
-    int _level = GameManager.Instance.MyGameData.GetTendencyLevel(_tendency);
-    TendencyHeadIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
+    if(GameManager.Instance.MyGameData.Tendency_Body.ChangedDir!=0)
+    {
+      StartCoroutine(movetendencyrect( TendencyBodyRect, GameManager.Instance.MyGameData.Tendency_Body.ChangedDir));
+      StartCoroutine(movetendencyicon(TendencyBodyIcon, GameManager.Instance.MyGameData.Tendency_Body.ChangedDir));
+      GameManager.Instance.MyGameData.Tendency_Body.ChangedDir = 0;
+    }
 
-    _tendency = TendencyType.Body; _level = GameManager.Instance.MyGameData.GetTendencyLevel(_tendency);
-    TendencyBodyIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(_tendency, _level);
- 
+    if (GameManager.Instance.MyGameData.Tendency_Head.ChangedDir != 0)
+    {
+      StartCoroutine(movetendencyrect(TendencyHeadRect, GameManager.Instance.MyGameData.Tendency_Head.ChangedDir));
+      StartCoroutine(movetendencyicon(TendencyHeadIcon, GameManager.Instance.MyGameData.Tendency_Head.ChangedDir));
+      GameManager.Instance.MyGameData.Tendency_Head.ChangedDir = 0;
+    }
+  }
+  private IEnumerator movetendencyrect(RectTransform rect,int degree)
+  {
+    Vector2 _originpos = rect.anchoredPosition;
+    Vector2 _targetpos=new Vector2(_originpos.x+TendendcyIconMoveUnit*degree, _originpos.y);
+    Vector2 _currentpos = _originpos;
+    float _time = 0.0f, _targetime = 0.4f;
+    while(_time< _targetime)
+    {
+      rect.anchoredPosition = _currentpos;
+      _currentpos = Vector2.Lerp(_originpos, _targetpos, _time / _targetime);
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    rect.anchoredPosition = _targetpos;
+  }
+  private IEnumerator movetendencyicon(RectTransform rect, int degree)
+  {
+    Vector2 _originpos = rect.anchoredPosition;
+    Vector2 _targetpos = new Vector2(_originpos.x - TendendcyIconMoveUnit * degree, _originpos.y);
+    Vector2 _currentpos = _originpos;
+    float _time = 0.0f, _targetime = 0.4f;
+    while (_time < _targetime)
+    {
+      rect.anchoredPosition = _currentpos;
+      _currentpos = Vector2.Lerp(_originpos, _targetpos, _time / _targetime);
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    rect.anchoredPosition = _targetpos;
   }
   [SerializeField] private Image[] LongTermIcon = new Image[2];
   [SerializeField] private TextMeshProUGUI[] LongTermTurn=new TextMeshProUGUI[2];
@@ -243,7 +287,7 @@ public class UIManager : MonoBehaviour
       }
     }
   }
-  private UI_default LastUI = null;
+  private CanvasGroup CurrentTopUI = null;
   public void UpdateAllUI()
   {
     UpdateYearText();
@@ -257,7 +301,7 @@ public class UIManager : MonoBehaviour
   }
   private void Update()
   {
-    if (Input.GetMouseButtonDown(1) && IsWorking == false) StartCoroutine(CloseAllUI());
+    if (Input.GetMouseButtonDown(1) && IsWorking == false) CloseCurrentTopUI();
     if (Input.GetKeyDown(KeyCode.W)) SanityLossParticle.Play();
   }
     private Queue<IEnumerator> UIAnimationQueue = new Queue<IEnumerator>();
@@ -296,9 +340,10 @@ public class UIManager : MonoBehaviour
       yield return null;
     }
   }
-   public IEnumerator OpenUI(RectTransform _rect,CanvasGroup _group,UIMoveDir _dir,bool _islarge)
+   public IEnumerator OpenUI(RectTransform _rect,CanvasGroup _group,UIMoveDir _dir,bool _islarge,bool istopui)
   {
-    if(LastUI!=null) _rect.transform.SetSiblingIndex(LastUI.transform.GetSiblingIndex() + 1);
+    if (istopui) CloseCurrentTopUI();
+
     if (_rect.gameObject.activeSelf == false) _rect.gameObject.SetActive(true);
     Vector2 _size = _rect.sizeDelta;
     _group.alpha = MoveInAlpha;
@@ -309,7 +354,8 @@ public class UIManager : MonoBehaviour
         float _targetime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
     while (_time < _targetime)
     {
-      _rect.anchoredPosition=Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time/ _targetime, 0.5f));
+      _rect.anchoredPosition = Vector2.Lerp(_startpos,_endpos, UIPanelOpenCurve.Evaluate(_time/_targetime));
+
       _group.alpha = Mathf.Lerp(MoveInAlpha, 1.0f, Mathf.Pow(_time / _targetime, 0.5f));
       _time += Time.deltaTime;
       yield return null;
@@ -318,14 +364,15 @@ public class UIManager : MonoBehaviour
     _group.blocksRaycasts = true;
     _group.alpha = 1.0f;
     _group.interactable = true;
+   
+    if(istopui) CurrentTopUI = _group;
 
-    if(LastUI!=null) LastUI.CloseUI();
     if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
-    LastUI = _rect.GetComponent<UI_default>();
   }
-  public IEnumerator OpenUI(RectTransform _rect,UIMoveDir _dir,float _movetime)
+  public IEnumerator OpenUI(RectTransform _rect,UIMoveDir _dir,float _movetime, bool istopui)
   {
-    if (LastUI != null) _rect.transform.SetSiblingIndex(LastUI.transform.GetSiblingIndex() + 1);
+    if (istopui) CloseCurrentTopUI();
+
     if (_rect.gameObject.activeSelf == false) _rect.gameObject.SetActive(true);
     if (_rect.GetComponent<CanvasGroup>().alpha.Equals(0.0f))
     {
@@ -341,29 +388,70 @@ public class UIManager : MonoBehaviour
     float _targetime = _movetime;
     while (_time < _targetime)
     {
-      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targetime, 0.4f));
+      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, UIPanelOpenCurve.Evaluate(_time / _targetime));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _rect.anchoredPosition = _endpos;
+    if (istopui) CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
+
+    if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
+  }
+  public IEnumerator OpenUI(RectTransform _rect,Vector2 originpos, Vector2 targetpos, float _movetime, bool istopui)
+  {
+    if (istopui) CloseCurrentTopUI();
+
+    if (_rect.gameObject.activeSelf == false) _rect.gameObject.SetActive(true);
+    if (_rect.GetComponent<CanvasGroup>().alpha.Equals(0.0f))
+    {
+      _rect.GetComponent<CanvasGroup>().alpha = 1.0f;
+      _rect.GetComponent<CanvasGroup>().interactable = true;
+      _rect.GetComponent<CanvasGroup>().blocksRaycasts = true;
+    }
+    Vector2 _size = _rect.sizeDelta;
+    Vector2 _startpos = _rect.anchoredPosition;
+    _rect.anchoredPosition = _startpos;
+    Vector2 _endpos = targetpos;
+    float _time = 0.0f;
+    float _targetime = _movetime;
+    while (_time < _targetime)
+    {
+      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, UIPanelOpenCurve.Evaluate(_time / _targetime));
       _time += Time.deltaTime;
       yield return null;
     }
     _rect.anchoredPosition = _endpos;
 
-    if (LastUI != null) LastUI.CloseUI();
+    if (istopui) CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
     if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
-    LastUI = _rect.GetComponent<UI_default>();
   }
-  public IEnumerator CloseAllUI()
+  public void CloseCurrentTopUI() => StartCoroutine(closetopui());
+  public IEnumerator closetopui()
   {
-    if (LastUI != null)
+    if (CurrentTopUI != null)
     {
-      LastUI.CloseUI();
-      LastUI = null;
+
+      if (CurrentTopUI.transform.parent.GetComponent<UI_default>() != null)
+      {
+        var _uidefault = CurrentTopUI.transform.parent.GetComponent<UI_default>();
+        CurrentTopUI = null;
+        _uidefault.CloseUI();
+      }
+      else
+      {
+        CurrentTopUI.alpha = 0.0f;
+        CurrentTopUI.interactable = false;
+        CurrentTopUI.blocksRaycasts = false;
+        CurrentTopUI = null;
+      }
       yield return null;
     }
     yield return null;
   }
-    public IEnumerator CloseUI(RectTransform _rect, CanvasGroup _group, UIMoveDir _dir)
+    public IEnumerator CloseUI(RectTransform _rect, CanvasGroup _group, UIMoveDir _dir,bool istopui)
   {
-        LastUI = null;
+    if (istopui) CurrentTopUI = null;
+
     _group.interactable = false;
     _group.blocksRaycasts = false;
     Vector2 _size = _rect.sizeDelta;
@@ -374,18 +462,20 @@ public class UIManager : MonoBehaviour
     float _time = 0.0f;
     while (_time < LargePanelFadeTime)
     {
-      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / LargePanelFadeTime, 0.5f));
+      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos,UIPanelCLoseCurve.Evaluate(_time / LargePanelFadeTime));
       _group.alpha = Mathf.Lerp(1.0f, 0.0f, Mathf.Pow(_time / LargePanelFadeTime, 0.5f));
       _time += Time.deltaTime;
       yield return null;
     }
     _rect.anchoredPosition = _endpos;
     _group.alpha = 0.0f;
+   
   }
-    public IEnumerator CloseUI(CanvasGroup _group,bool _islarge)
+  public IEnumerator CloseUI(CanvasGroup _group,bool _islarge, bool istopui)
   {
-        LastUI = null;
-        _group.interactable = false;
+    if (istopui) CurrentTopUI = null;
+
+    _group.interactable = false;
     _group.blocksRaycasts = false;
     _group.alpha = 1.0f;
     float _time = 0.0f;
@@ -398,22 +488,41 @@ public class UIManager : MonoBehaviour
     }
     _group.alpha = 0.0f;
   }
-  public IEnumerator CloseUI(RectTransform _rect, UIMoveDir _dir, float _movetime)
+  public IEnumerator CloseUI(RectTransform _rect, UIMoveDir _dir, float _movetime, bool istopui)
   {
-    LastUI = null;
+    if (istopui) CurrentTopUI = null;
+
     Vector2 _size = _rect.sizeDelta;
     Vector2 _startpos = _rect.anchoredPosition3D;
-    _rect.anchoredPosition = _startpos;
     Vector2 _endpos = _dir.Equals(UIMoveDir.Horizontal) ? RightSidePos : TopSidePos;
     float _time = 0.0f;
     float _targetime = _movetime;
     while (_time < _targetime)
     {
-      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targetime, 0.4f));
+      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, UIPanelCLoseCurve.Evaluate(_time / LargePanelFadeTime));
       _time += Time.deltaTime;
       yield return null;
     }
     _rect.anchoredPosition = _endpos;
+
+  }
+  public IEnumerator CloseUI(RectTransform _rect,Vector2 originpos, Vector2 targetpos, float _movetime, bool istopui)
+  {
+    if (istopui) CloseCurrentTopUI();
+
+    Vector2 _size = _rect.sizeDelta;
+    Vector2 _startpos = _rect.anchoredPosition3D;
+    Vector2 _endpos = targetpos;
+    float _time = 0.0f;
+    float _targetime = _movetime;
+    while (_time < _targetime)
+    {
+      _rect.anchoredPosition = Vector2.Lerp(_startpos, _endpos, UIPanelCLoseCurve.Evaluate(_time / LargePanelFadeTime));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _rect.anchoredPosition = _endpos;
+    CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
 
   }
   public IEnumerator ChangeAlpha(Image _img, float _targetalpha)
@@ -437,8 +546,10 @@ public class UIManager : MonoBehaviour
     _color.a = _alpha;
     _img.color= _color;
   }
-  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, float targettime)
+  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, float targettime, bool istopui)
   {
+    if (istopui&&_targetalpha.Equals(1.0f)) CloseCurrentTopUI();
+
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
@@ -461,9 +572,12 @@ public class UIManager : MonoBehaviour
       _group.interactable = true;
       _group.blocksRaycasts = true;
     }
+
+    if (istopui) CurrentTopUI = _targetalpha.Equals(1.0f) ? _group : null;
   }
-  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha,bool _islarge)
+  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha,bool _islarge, bool istopui)
   {
+    if (istopui) CloseCurrentTopUI();
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
@@ -486,50 +600,54 @@ public class UIManager : MonoBehaviour
       _group.interactable = true;
       _group.blocksRaycasts = true;
     }
+    if (istopui) CurrentTopUI = _targetalpha.Equals(1.0f) ? _group : null;
   }
-    public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, bool _islarge, UIFadeMoveDir _movedir)
+  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, bool _islarge, UIFadeMoveDir _movedir, bool istopui)
+  {
+    if (istopui) CloseCurrentTopUI();
+    Vector2 _dir = Vector2.zero;
+    switch (_movedir)
     {
-        Vector2 _dir = Vector2.zero;
-        switch (_movedir)
-        {
-            case UIFadeMoveDir.Left: _dir = Vector2.left; break;
-            case UIFadeMoveDir.Right: _dir = Vector2.right; break;
-            case UIFadeMoveDir.Up: _dir = Vector2.up; break;
-            case UIFadeMoveDir.Down: _dir = Vector2.down; break;
-        }
-        RectTransform _rect = _group.transform.GetComponent<RectTransform>();
-        Vector2 _originpos = _rect.anchoredPosition3D;
-        Vector2 _startpos = _targetalpha.Equals(1.0f) ? _originpos - _dir * FadeMoveDegree : _originpos;
-        Vector2 _endpos = _targetalpha.Equals(1.0f) ? _originpos : _originpos + _dir * FadeMoveDegree;
-        Vector2 _currentpos = _startpos;
-        //movedir 설정했으면 해당 방향대로 목표, 종료 위치 설정
+      case UIFadeMoveDir.Left: _dir = Vector2.left; break;
+      case UIFadeMoveDir.Right: _dir = Vector2.right; break;
+      case UIFadeMoveDir.Up: _dir = Vector2.up; break;
+      case UIFadeMoveDir.Down: _dir = Vector2.down; break;
+    }
+    RectTransform _rect = _group.transform.GetComponent<RectTransform>();
+    Vector2 _originpos = _rect.anchoredPosition3D;
+    Vector2 _startpos = _targetalpha.Equals(1.0f) ? _originpos - _dir * FadeMoveDegree : _originpos;
+    Vector2 _endpos = _targetalpha.Equals(1.0f) ? _originpos : _originpos + _dir * FadeMoveDegree;
+    Vector2 _currentpos = _startpos;
+    //movedir 설정했으면 해당 방향대로 목표, 종료 위치 설정
 
-        float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
-        float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
-        float _time = 0.0f;
-        float _targettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
-        float _alpha = _startalpha;
-        _group.alpha = _alpha;
-        _group.interactable = false;
-        _group.blocksRaycasts = false;
-        _rect.anchoredPosition3D = _currentpos;
-        while (_time < _targettime)
-        {
-            _currentpos = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targettime, 0.3f));
-            _rect.anchoredPosition3D = _currentpos;
-            _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.7f));
-            _group.alpha = _alpha;
-            _time += Time.deltaTime;
-            yield return null;
-        }
-        _alpha = _endalpha;
-        _group.alpha = _alpha;
-        _rect.anchoredPosition3D = _originpos;
+    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
+    float _time = 0.0f;
+    float _targettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
+    float _alpha = _startalpha;
+    _group.alpha = _alpha;
+    _group.interactable = false;
+    _group.blocksRaycasts = false;
+    _rect.anchoredPosition3D = _currentpos;
+    AnimationCurve _curve = _targetalpha.Equals(1.0f) ? UIPanelOpenCurve : UIPanelCLoseCurve;
+    while (_time < _targettime)
+    {
+      _currentpos = Vector2.Lerp(_startpos, _endpos, _curve.Evaluate(_time / _targettime));
+      _rect.anchoredPosition3D = _currentpos;
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.7f));
+      _group.alpha = _alpha;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _alpha = _endalpha;
+    _group.alpha = _alpha;
+    _rect.anchoredPosition3D = _originpos;
     if (_targetalpha.Equals(1.0f))
     {
       _group.interactable = true;
       _group.blocksRaycasts = true;
     }
+    if (istopui) CurrentTopUI = _targetalpha.Equals(1.0f) ? _group : null;
   }
   public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha)
   {
@@ -580,6 +698,7 @@ public class UIManager : MonoBehaviour
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MyEvnetSuggest.CloseSuggestPanel_normal();
   public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
+  public void UpdatePlaceEffect() => MyPlaceEffect.UpdatePlace();
 }
 public static class ColorText
 {

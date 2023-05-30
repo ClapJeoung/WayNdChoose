@@ -12,14 +12,6 @@ public class RewardButton : MonoBehaviour
   [SerializeField] private TextMeshProUGUI RewardInfo = null;
   [SerializeField] private UI_Reward MyUIReward = null;
 
-  [SerializeField] private RectTransform HPRect = null;
-  [SerializeField] private RectTransform SanityRect = null;
-  [SerializeField] private RectTransform GoldRect = null;
-  [SerializeField] private RectTransform ConversationRect = null;
-  [SerializeField] private RectTransform ForceRect = null;
-  [SerializeField] private RectTransform WildRect = null;
-  [SerializeField] private RectTransform IntelligenceRect = null;
-  [SerializeField] private RectTransform ExpRect = null;
   private int MyValue = -1;
   private string MyID = "";
   private Vector2[] TargetThemePos;
@@ -33,9 +25,9 @@ public class RewardButton : MonoBehaviour
      MyValue = _value;
     switch (RewardType)
     {
-      case RewardTarget.HP: RewardInfo.text =  MyValue.ToString();break;
-      case RewardTarget.Sanity: RewardInfo.text = MyValue.ToString(); break;
-      case RewardTarget.Gold: RewardInfo.text =  MyValue.ToString(); break;
+      case RewardTarget.HP: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.HP).Icon+" "+ MyValue.ToString();break;
+      case RewardTarget.Sanity: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Sanity).Icon + " " + MyValue.ToString(); break;
+      case RewardTarget.Gold: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Gold).Icon + " " + MyValue.ToString(); break;
     }
   }
   public void Setup_Expid(string _id)
@@ -43,6 +35,7 @@ public class RewardButton : MonoBehaviour
     GetComponent<Button>().interactable = true;
     RewardType = RewardTarget.Experience;
     MyID = _id;
+    Debug.Log(MyID);
     RewardInfo.text =$"{GameManager.Instance.GetTextData("exp").Name}: {GameManager.Instance.GetTextData(MyID).Name}";
     MyExp=GameManager.Instance.ExpDic[MyID];
   }
@@ -54,13 +47,6 @@ public class RewardButton : MonoBehaviour
     Icon_A.sprite = GameManager.Instance.ImageHolder.GetThemeIcon(_theme);
     Icon_B.sprite = GameManager.Instance.ImageHolder.UnknownTheme;
     TargetThemePos = new Vector2[1];
-    switch (_theme)
-    {
-      case ThemeType.Conversation:TargetThemePos[0]=ConversationRect.anchoredPosition; break;
-      case ThemeType.Force: TargetThemePos[0] = ForceRect.anchoredPosition; break;
-      case ThemeType.Wild: TargetThemePos[0] = WildRect.anchoredPosition; break;
-      case ThemeType.Intelligence: TargetThemePos[0] = IntelligenceRect.anchoredPosition; break;
-    }
   }
   public void Setup_skill(SkillName _skill)
   {
@@ -72,19 +58,6 @@ public class RewardButton : MonoBehaviour
     Icon_A.sprite = _icons[0];
     Icon_B.sprite=_icons[1];
     TargetThemePos = new Vector2[2];
-    switch (_skill)
-    {
-      case SkillName.Speech: TargetThemePos[0] = ConversationRect.position;TargetThemePos[1] = ConversationRect.position; break;
-      case SkillName.Threat: TargetThemePos[0] = ConversationRect.position; TargetThemePos[1] = ForceRect.position; break;
-      case SkillName.Deception: TargetThemePos[0] = ConversationRect.position; TargetThemePos[1] = WildRect.position; break;
-      case SkillName.Logic: TargetThemePos[0] = ConversationRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
-      case SkillName.Martialarts: TargetThemePos[0] = ForceRect.position; TargetThemePos[1] = ForceRect.position; break;
-      case SkillName.Bow: TargetThemePos[0] = WildRect.position; TargetThemePos[1] = ForceRect.position; break;
-      case SkillName.Somatology: TargetThemePos[0] = ForceRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
-      case SkillName.Survivable: TargetThemePos[0] = WildRect.position; TargetThemePos[1] = WildRect.position; break;
-      case SkillName.Biology: TargetThemePos[0] = WildRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
-      case SkillName.Knowledge:  TargetThemePos[0] = IntelligenceRect.position; TargetThemePos[1] = IntelligenceRect.position; break;
-    }
   }
 
   public void GetReward()
@@ -96,20 +69,19 @@ public class RewardButton : MonoBehaviour
         MyUIReward.OpenRewardExpPanel_reward();
         break;
       case RewardTarget.HP:
-        MyUIReward.AddRewardHP(MyValue, new Sprite[] { Icon_A.sprite }, new Vector2[] { Icon_A.rectTransform.position }, new Vector2[] { HPRect.position });
+        MyUIReward.AddRewardHP(MyValue);
         CloseUIButton(); break;
       case RewardTarget.Sanity:
-        MyUIReward.AddRewardSanity(MyValue,new Sprite[] { Icon_A.sprite }, new Vector2[] { Icon_A.rectTransform.position }, new Vector2[] { SanityRect.position });
+        MyUIReward.AddRewardSanity(MyValue);
         CloseUIButton(); break;
       case RewardTarget.Gold:
-        MyUIReward.AddRewardGold(MyValue,new Sprite[] { Icon_A.sprite }, new Vector2[] { Icon_A.rectTransform.position }, new Vector2[] { GoldRect.position });
+        MyUIReward.AddRewardGold(MyValue);
         CloseUIButton(); break;
       case RewardTarget.Theme:
         MyUIReward.OpenRewardSkillPanel(MyThemeType);
         CloseUIButton(); break;
       case RewardTarget.Skill:
-        MyUIReward.AddRewardSkill(MySkillName, new Sprite[] { Icon_A.sprite, Icon_B.sprite }, new Vector2[] { Icon_A.rectTransform.position, Icon_B.rectTransform.position },
-   TargetThemePos);
+        MyUIReward.AddRewardSkill(MySkillName);
         CloseUIButton(); break;
       case RewardTarget.Trait:
         CloseUIButton();  break;

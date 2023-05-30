@@ -15,13 +15,13 @@ public class UI_Mad : UI_default
     MadExp = exp;
     Name.text = exp.Name;
     Description.text = exp.TextData.SelectionSubDescription;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, true));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup,1.0f,false,UIFadeMoveDir.Down));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, true,false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup,1.0f,false,UIFadeMoveDir.Down, false));
   }
   public override void CloseUI()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,true));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup, 0.0f, true, UIFadeMoveDir.Down));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,true, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup, 0.0f, true, UIFadeMoveDir.Down, false));
   }
   public void AddMad()
   {

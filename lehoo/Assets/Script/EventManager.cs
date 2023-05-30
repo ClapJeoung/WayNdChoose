@@ -40,6 +40,7 @@ public class EventManager : MonoBehaviour
     public void SetSettleEvent(PlaceType place)
     {
         TargetTileEventData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileData;
+   // Debug.Log($"{_tiledta.SettlementType} {place} {_tiledta.PlaceData[place]} {_tiledta.EnvironmentType}");
         EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.SettlementType, place, _tiledta.PlaceData[place], _tiledta.EnvironmentType);
         GameManager.Instance.SelectEvent( _event );
         GameManager.Instance.MyGameData.AddPlaceEffectBeforeStartEvent(place);
