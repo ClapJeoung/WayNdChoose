@@ -8,11 +8,11 @@ public class EventHolder
   private const int PlacePer = 2, LevelPer = 3, EnvirPer = 2;
   public List<EventData> AvailableNormalEvents = new List<EventData>();
   public List<FollowEventData> AvailableFollowEvents = new List<FollowEventData>();
-  public Dictionary<string, QuestHolder> AvailableQuests = new Dictionary<string, QuestHolder>();
+  public List<QuestHolder> AvailableQuests = new List<QuestHolder>();
 
   public List<EventData> AllNormalEvents = new List<EventData>();
   public List<FollowEventData> AllFollowEvents = new List<FollowEventData>();
-  public Dictionary<string, QuestHolder> AllQuests = new Dictionary<string, QuestHolder>();
+  public List<QuestHolder> AllQuests = new List<QuestHolder>();
   private string GetSeasonString(int _index)
   {
     switch (_index)
@@ -138,7 +138,7 @@ public class EventHolder
           }
           else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
-            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.MyGameData.GoldFailData;
+            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
           }
 
 
@@ -225,7 +225,7 @@ public class EventHolder
             }//테마 혹은 스킬 체크인 경우 실패 설명, 패널티 대상 정보, 실패 일러스트 넣기
             else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
-              Data.FailureDatas[j] = GameManager.Instance.MyGameData.GoldFailData;
+              Data.FailureDatas[j] = GameManager.Instance.GoldFailData;
             }//골드 지불일 경우 미리 준비한 실패 정보를 넣기
 
           }//실패 정보 구현
@@ -510,7 +510,7 @@ public class EventHolder
           }
           else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
-            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.MyGameData.GoldFailData;
+            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
           }
 
           Data.SuccessDatas = new SuccessData[1];
@@ -593,7 +593,7 @@ public class EventHolder
             }
             else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
-              Data.FailureDatas[j] = GameManager.Instance.MyGameData.GoldFailData;
+              Data.FailureDatas[j] = GameManager.Instance.GoldFailData;
             }
 
           }
@@ -876,7 +876,7 @@ public class EventHolder
           }
           else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
-            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.MyGameData.GoldFailData;
+            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
           }
 
           Data.SuccessDatas = new SuccessData[1];
@@ -958,7 +958,7 @@ public class EventHolder
             }
             else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
-              Data.FailureDatas[j] = GameManager.Instance.MyGameData.GoldFailData;
+              Data.FailureDatas[j] = GameManager.Instance.GoldFailData;
             }
 
           }
@@ -1112,14 +1112,19 @@ public class EventHolder
       }
 
       QuestHolder _quest = null;
-      if (AllQuests.ContainsKey(_data.QuestId))
-      {
-        _quest = AllQuests[_data.QuestId];
-      }//딕셔너리에 퀘스트가 이미 만들어졌을 경우
-      else
+      if (AllQuests.Count.Equals(0))//퀘스트 리스트가 없으면 당연히 새로 하나 만드는거
       {
         _quest = new QuestHolder();
-      }//딕셔너리에 퀘스트가 없을 경우 새로 하나 만들기
+      }
+      else//퀘스트 리스트가 존재할 경우
+      {
+        foreach(var __data in AllQuests)
+          if(__data.QuestID.Equals(_data.QuestId))
+          { _quest=__data; break;}//ID가 동일한 퀘스트가 있다면 그거 가져옴
+
+        if(_quest==null) _quest = new QuestHolder();//ID가 같은게 하나도 없다면 새로 만들기
+
+      }
 
       switch (_data.Sequence)
       {
@@ -1137,7 +1142,7 @@ public class EventHolder
           _quest.Event_Falling = Data;
           break;
       }
-      if (!AllQuests.ContainsKey(_data.QuestId)) AllQuests.Add(_data.QuestId, _quest);
+      if (!AllQuests.Contains(_quest)) AllQuests.Add(_quest);
     }
 
   }
@@ -1170,12 +1175,6 @@ public class EventHolder
         }
       }
       if (_isenable) AvailableFollowEvents.Add(_event);
-    }
-    foreach (var _quest in AllQuests)
-    {
-      if (GameManager.Instance.MyGameData.ClearQuest.Contains(_quest.Key)) continue;
-      if (GameManager.Instance.MyGameData.CurrentQuest == _quest.Value) continue;
-      AvailableQuests.Add(_quest.Key, _quest.Value);
     }
   }//Gamemanager.instance.GameData를 기반으로 이미 클리어한 이벤트 빼고 다 활성화 리스트에 넣기
   public void RemoveEvent(string _ID)
@@ -1400,66 +1399,67 @@ public class EventHolder
             return true;
         }
     }
-    /// <summary>
-    /// 해당 정착지나 외부에서 사용 가능한 퀘스트 이벤트 하나 반환
-    /// </summary>
-    /// <param name="tiledata"></param>
-    /// <returns></returns>
-    public EventDataDefulat ReturnQuestEvent(TargetTileEventData tiledata)
+  /// <summary>
+  /// 해당 정착지나 외부에서 사용 가능한 퀘스트 이벤트 하나 반환
+  /// </summary>
+  /// <param name="tiledata"></param>
+  /// <returns></returns>
+  public EventDataDefulat ReturnQuestEvent(TargetTileEventData tiledata)
+  {
+    if (!GameManager.Instance.MyGameData.QuestAble) return null;
+
+    QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
+    if (_currentquest == null) return null;
+    switch (_currentquest.CurrentSequence)
     {
-        QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
-        if (_currentquest == null) return null;
-        switch (_currentquest.CurrentSequence)
-        {
-            case QuestSequence.Falling: //마지막 단계에서는 마지막 이벤트 딱 하나 
-                if (isenable(_currentquest.Event_Falling))return _currentquest.Event_Falling;
-                else return null;
-            case QuestSequence.Climax:
-        EventDataDefulat _targetevent = _currentquest.Event_Climax;
-                if (isenable(_targetevent)) return _targetevent;
-                else return null;
-            default:
+      case QuestSequence.Falling: //마지막 단계에서는 마지막 이벤트 딱 하나 
+        if (isenable(_currentquest.Event_Falling)) return _currentquest.Event_Falling;
+        else return null;
+      case QuestSequence.Climax:
+        var _targetevents = _currentquest.Event_Climax;
+        return _targetevents;
+      default:
         List<QuestEventData> _temp = _currentquest.EventList_Rising_Available;
         List<QuestEventData> _avail = new List<QuestEventData>();
-        foreach(var _event in _temp)
+        foreach (var _event in _temp)
         {
-          if(isenable(_event))_avail.Add(_event);
+          if (isenable(_event)) _avail.Add(_event);
         }
         if (_avail.Count.Equals(0)) return null;
-        else return _avail[Random.Range(0,_avail.Count)];
-        }
-
-        bool isenable(EventDataDefulat eventdata)
-        {
-            if (eventdata.SettlementType.Equals(SettlementType.Outer))
-            {
-                if (!tiledata.SettlementType.Equals(SettlementType.Outer)) return false;
-            }   //야외 이벤트일 경우 야외만 받음
-            else
-            {
-                if (eventdata.SettlementType.Equals(SettlementType.None))
-                {
-                    if (tiledata.SettlementType.Equals(SettlementType.Outer)) return false;
-                    //야외 빼고 다 받음
-                }   //전역 정착지일 경우
-                else if (!eventdata.SettlementType.Equals(tiledata.SettlementType)) return false;
-                //그 외 동일한 것 아닐 시 X 반환
-
-            }   //정착지 이벤트일 경우
-
-            if (!tiledata.PlaceData.ContainsKey(eventdata.PlaceType)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
-
-            if (eventdata.TileCheckType.Equals(1))                              //환경 검사일 때
-                if (!tiledata.EnvironmentType.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
-
-            if (eventdata.TileCheckType.Equals(2))                              //장소 레벨 검사일 때
-                if (!eventdata.PlaceLevel.Equals(tiledata.PlaceData[eventdata.PlaceType])) return false;     //해당 이벤트의 장소 레벨이 맞지 않으면 X
-
-            //여기까지 왔으면 다 통과했으므로 O 반환
-            return true;
-        }
-
+        else return _avail[Random.Range(0, _avail.Count)];
     }
+
+    bool isenable(EventDataDefulat eventdata)
+    {
+      if (eventdata.SettlementType.Equals(SettlementType.Outer))
+      {
+        if (!tiledata.SettlementType.Equals(SettlementType.Outer)) return false;
+      }   //야외 이벤트일 경우 야외만 받음
+      else
+      {
+        if (eventdata.SettlementType.Equals(SettlementType.None))
+        {
+          if (tiledata.SettlementType.Equals(SettlementType.Outer)) return false;
+          //야외 빼고 다 받음
+        }   //전역 정착지일 경우
+        else if (!eventdata.SettlementType.Equals(tiledata.SettlementType)) return false;
+        //그 외 동일한 것 아닐 시 X 반환
+
+      }   //정착지 이벤트일 경우
+
+      if (!tiledata.PlaceData.ContainsKey(eventdata.PlaceType)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
+
+      if (eventdata.TileCheckType.Equals(1))                              //환경 검사일 때
+        if (!tiledata.EnvironmentType.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
+
+      if (eventdata.TileCheckType.Equals(2))                              //장소 레벨 검사일 때
+        if (!eventdata.PlaceLevel.Equals(tiledata.PlaceData[eventdata.PlaceType])) return false;     //해당 이벤트의 장소 레벨이 맞지 않으면 X
+
+      //여기까지 왔으면 다 통과했으므로 O 반환
+      return true;
+    }
+
+  }
 }
 public class TargetTileEventData
 {
@@ -1732,7 +1732,7 @@ public class QuestHolder
       List<QuestEventData> _temp = new List<QuestEventData>();
       foreach (var _event in Eventlist_Rising)
       {
-        if (Eventlist_Rising_clear.Contains(_event.ID)) continue;
+        if (Eventlist_Rising_clear.Contains(_event.OriginID)) continue;
         _temp.Add(_event);
       }
       if (_temp.Count.Equals(0)) return null;
@@ -1752,7 +1752,7 @@ public class QuestHolder
       }
       return eventlist_climax_origin;
     }
-  }
+  }//승 단계 이벤트 ID(원본)
   public QuestEventData Event_Falling = null;
 
   public int RisingEventCount
@@ -1785,13 +1785,27 @@ public class QuestHolder
     get
     {
       if (!CurrentSequence.Equals(QuestSequence.Climax)) return null;
-      return Eventlist_Climax[FinishedClimaxCount];
+
+      QuestEventData _availableclimaxevent = null;
+      foreach (var _questevent in Eventlist_Climax)
+      {
+        if (_questevent.OriginID.Equals(EventList_Climax_Origin[FinishedClimaxCount]))
+        {
+          if(_questevent.Season.Equals(0)|| _questevent.Season.Equals(GameManager.Instance.MyGameData.Turn + 1))
+          {
+            _availableclimaxevent = _questevent;
+            break;
+          }
+        }
+      }
+      return _availableclimaxevent;//원본 ID 리스트인 EventList_Climax_Origin 활용해 현재 순서의 원본 ID에 해당하고 계절이 맞는 이벤트를 반환
     }
   }
   public Settlement NextQuestSettlement = null;
   public EnvironmentType NextQuestEnvir = EnvironmentType.NULL;
   public void AddClearEvent(QuestEventData _eventdata)
   {
+    GameManager.Instance.MyGameData.LastQuestCount++;
     switch (_eventdata.TargetQuestSequence)
     {
       case QuestSequence.Start:
@@ -1836,6 +1850,7 @@ public class QuestHolder
   }
   public void AddFailEvent(QuestEventData _eventdata)
   {
+    GameManager.Instance.MyGameData.LastQuestCount++;
     switch (_eventdata.TargetQuestSequence)
     {
       case QuestSequence.Start:

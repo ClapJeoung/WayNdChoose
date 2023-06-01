@@ -46,7 +46,7 @@ public class UI_map : UI_default
         break;
     }
   }
-  [SerializeField] private maptext MapCreater = null;
+  public maptext MapCreater = null;
   private Dictionary<string,SettlementIcon> SettleIcons = new Dictionary<string,SettlementIcon>();
   [SerializeField] private Image CurrentQuestProgress = null;
   [SerializeField] private TextMeshProUGUI CurrentQuestDescription = null;
@@ -58,6 +58,14 @@ public class UI_map : UI_default
   //<OriginName,SettlementIcon>
   private Settlement SelectedSettle = null;
   private int SelectedSettleCost = 0;
+  [SerializeField] private AnimationCurve ZoomInCurve = null;
+  [SerializeField] private AnimationCurve ZoomOutCurve = null;
+  [SerializeField] private RectTransform ScaleChanger = null;
+  [SerializeField] private RectTransform LastHolder = null;
+  [SerializeField] private Vector3 ZoomInScale = Vector3.one* 2.3f;
+  [SerializeField] private float ZoomInTime = 1.2f;
+  [SerializeField] private float ZoomOutTime = 0.4f;
+  
 
   public void AddSettleIcon(string _name, SettlementIcon _icon) => SettleIcons.Add(_name, _icon);
   public void OpenUI()
@@ -101,6 +109,7 @@ public class UI_map : UI_default
           CurrentQuestProgress.sprite = GameManager.Instance.ImageHolder.Quest_climax;
           if (_currentquest.NextQuestSettlement == null&&_currentquest.NextQuestEnvir.Equals(EnvironmentType.NULL))
           {
+
             QuestEventData _climaxevent = _currentquest.Event_Climax;
             if (_climaxevent.SettlementType.Equals(SettlementType.Outer))
             {
@@ -202,6 +211,7 @@ public class UI_map : UI_default
     {
       SetMoveButton(3);
     }
+    if (ScaleChanger.localScale.x > 1.0f) StartCoroutine(zoomoutview());
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,1.0f,0.4f, false));
   }
   public override void CloseUI()
@@ -279,7 +289,9 @@ public class UI_map : UI_default
   {
     MoveButton.interactable = false;
         UIManager.Instance.ResetEventPanels();
-        yield return StartCoroutine(movemap());
+    if (ScaleChanger.localScale.x > 1.0f) StartCoroutine(zoomoutview());
+    yield return new WaitForSeconds(ZoomOutTime - 0.2f);
+    yield return StartCoroutine(movemap());
         yield return null;
   }
   public void MoveMap()
@@ -322,11 +334,12 @@ public class UI_map : UI_default
       //이전 정착지의 이벤트 관련 데이터 초기화
       //currentprogress==0.0f면 정착지에서 중간 이벤트 지점까지 이동
       yield return StartCoroutine(movecharacter(PlayerRect.anchoredPosition, _targetrectpos, _settlerectpos, _targetprogress));
+      yield return StartCoroutine(UIManager.Instance.CloseUI(MyGroup, true, false));
       //캐릭터 이동시킴
+      //이동+줌인+종료
 
       EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetrectpos));
       //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
-      yield return StartCoroutine(UIManager.Instance.CloseUI(MyGroup, true, false));
       IsOpen = false;
       SettleIcons[SelectedSettle.OriginName].GetComponent<Button>().interactable = false;
       foreach (var _settle in GameManager.Instance.MyGameData.AvailableSettlement)
@@ -348,8 +361,8 @@ public class UI_map : UI_default
 
       //currentprogress!=0.0f면 외부에서 이벤트 클리어하고 가던 정착지를 향해 다시 출발
       yield return StartCoroutine(movecharacter(_playerrectpos, _settlerectpos, _currentprogress));
-      //캐릭터 이동시킨
-      CloseUI();
+      yield return StartCoroutine(UIManager.Instance.CloseUI(MyGroup, true, false));
+      //캐릭터 이동시킴(이동+줌인+종료)
       IsOpen = false;
       //멈췄으면 바로 맵 닫기
 
@@ -375,10 +388,28 @@ public class UI_map : UI_default
       yield return null;
     }
     PlayerRect.anchoredPosition = _targetrectpos;
-    yield return new WaitForSeconds(UIManager.Instance.CharacterWaitTime);
+    yield return StartCoroutine(zoominview(_targetrectpos));
     //0.0f ~ _targetprogress 비율까지 움직임
 
   }//캐릭터 움직이는 코루틴 - 정착지 ~ 야외 이벤트
+  private IEnumerator zoominview(Vector2 targetpos)
+  {
+    float _time = 0.0f, _targettime = ZoomInTime;
+    Vector3 _startscale = Vector3.one, _endscale = ZoomInScale;
+    Vector2 _startpos = Vector3.zero, _endpos = targetpos;
+    float _degree = 0.0f;
+    while (_time < _targettime)
+    {
+      _degree = ZoomInCurve.Evaluate(_time / _targettime);
+      ScaleChanger.localScale = Vector3.Lerp(_startscale, _endscale, _degree);
+      ScaleChanger.anchoredPosition = Vector2.Lerp(_startpos, _endpos, _degree);
+
+      LastHolder.anchoredPosition = Vector2.Lerp(_startpos, -_endpos, _degree);
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+  }//정착지,야외 이동 후 지도 줌인 하는 코루틴
   private IEnumerator movecharacter(Vector3 _currenrecttpos, Vector3 _endrectpos, float _currentprogress)
   {
     //출발 좌표, 끝 좌표랑 현재 진행도(_progress)를 사용해 0.1칸 단위를 만들어 10배를 곱해
@@ -391,11 +422,28 @@ public class UI_map : UI_default
       _time += Time.deltaTime; yield return null;
     }
     PlayerRect.anchoredPosition = _endrectpos;
-    yield return new WaitForSeconds(UIManager.Instance.CharacterWaitTime);
+    yield return StartCoroutine(zoominview(_endrectpos));
     //targetprogress ~ 1.0f 비율까지 이동
 
   }//캐릭터 움직이는 코루틴 - 야외 이벤트 ~ 정착지
+  private IEnumerator zoomoutview()
+  {
+    float _time = 0.0f, _targettime = ZoomOutTime;
+    Vector3 _startscale = ZoomInScale, _endscale = Vector3.one;
+    Vector2 _startpos = ScaleChanger.anchoredPosition, _endpos = Vector3.zero;
+    float _degree = 0.0f;
+    while (_time < _targettime)
+    {
+      _degree = ZoomOutCurve.Evaluate(_time / _targettime);
+      ScaleChanger.localScale = Vector3.Lerp(_startscale, _endscale, _degree);
+      ScaleChanger.anchoredPosition = Vector2.Lerp(_startpos, _endpos, _degree);
 
+      LastHolder.anchoredPosition = Vector2.Lerp(-_startpos, _endpos, _degree);
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+  }//지도 켰을때 줌 인 된 상태라면 줌아웃 시키는 코루틴
   public void UpdateIcons(List<Settlement> _settles)
   {
     foreach (Settlement _settle in _settles)
@@ -405,10 +453,23 @@ public class UI_map : UI_default
   public void SetPlayerPos(Settlement _targetsettle)
   {
     Vector3 _targetpos = SettleIcons[_targetsettle.OriginName].GetComponent<RectTransform>().anchoredPosition;
+    Debug.Log($"{_targetsettle.VectorPos}  {_targetsettle.Name}  {_targetpos}");
     PlayerRect.anchoredPosition= _targetpos;
   }
   public void SetPlayerPos(Vector3 _tilepos)
   {
+    Vector3Int _intpos_lower=new Vector3Int(Mathf.FloorToInt(_tilepos.x), Mathf.FloorToInt(_tilepos.y));
+    Vector3Int _intpos_upper = new Vector3Int(Mathf.CeilToInt(_tilepos.x), Mathf.FloorToInt(_tilepos.y));
+
+    PlayerRect.position = MapCreater.Tilemap_bottom.CellToWorld(_intpos_lower);
+    Vector2 _loweranchorpos = PlayerRect.anchoredPosition;
+    PlayerRect.position = MapCreater.Tilemap_bottom.CellToWorld(_intpos_upper);
+    Vector2 _upperanchorpos=PlayerRect.anchoredPosition;
+    float _length =Vector3.Distance(_intpos_lower,_tilepos)/ Vector3Int.Distance(_intpos_lower, _intpos_upper);
+
+    PlayerRect.position = Vector3.Lerp(_loweranchorpos, _upperanchorpos, _length);
+    return;
+
     Transform _originparent = PlayerRect.parent;
     PlayerRect.SetParent(null);
 
@@ -422,8 +483,8 @@ public class UI_map : UI_default
     Vector3 _else=new Vector3(_tilepos.x-_intpos.x,_tilepos.y-_intpos.y);
     //타일 좌표를 정수, 나머지로 분리
 
-    PlayerRect.anchoredPosition = MapCreater.Tilemap_bottom.CellToWorld(_intpos);
-    PlayerRect.anchoredPosition = PlayerRect.anchoredPosition + new Vector2(_unit.x * _else.x, _unit.y * _else.y);
+    PlayerRect.position = MapCreater.Tilemap_bottom.CellToWorld(_intpos);
+    PlayerRect.position = PlayerRect.position + new Vector3(_unit.x * _else.x, _unit.y * _else.y);
     PlayerRect.SetParent(_originparent);
     //정수 값으로 산출한 CelltoWorld랑 미리 값을 구해놓은 실수형 값을 더해 이동
   }//정수가 아닌 좌표를 받아서 거기로 옮기는거

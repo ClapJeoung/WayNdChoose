@@ -2536,8 +2536,9 @@ public class maptext : MonoBehaviour
     }
     Debug.Log(_str);
   }
-  public void MakeTilemap(MapSaveData _jsondata,MapData _mapdata)
+  public void MakeTilemap(MapSaveData _jsondata)
     {
+    MapData _mapdata = _jsondata.ConvertToMapData();
     Vector3 _cellsize = new Vector3(75, 75);
     Debug.Log("맵을 만든 레후~");
         //타일로 구현화

@@ -122,26 +122,6 @@ public class GameData    //게임 진행도 데이터
             //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
         }
     }//스킬 체크, 지불 체크 최소 성공확률
-    private FailureData goldfaildata = null;
-    public FailureData GoldFailData
-    {
-        get
-        {
-            if (goldfaildata == null)
-            {
-                goldfaildata = new FailureData();
-                goldfaildata.Description = GameManager.Instance.GetTextData("goldfail").Name;
-                goldfaildata.Panelty_target = PenaltyTarget.Status;
-                goldfaildata.Loss_target = StatusType.Sanity;
-        goldfaildata.Illust_spring = GameManager.Instance.ImageHolder.NoGoldIllust;
-        goldfaildata.Illust_summer = GameManager.Instance.ImageHolder.NoGoldIllust;
-        goldfaildata.Illust_fall = GameManager.Instance.ImageHolder.NoGoldIllust;
-        goldfaildata.Illust_winter = GameManager.Instance.ImageHolder.NoGoldIllust;
-
-      }
-      return goldfaildata;
-        }
-    }
     #region 값 프로퍼티
     public int GetMoveSanityValue(float length)
   { 
@@ -204,7 +184,11 @@ public class GameData    //게임 진행도 데이터
         //좌상향 곡선 ~ 우상향 곡선
     }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
     public Dictionary<Settlement, int> AllSettleUnpleasant = new Dictionary<Settlement, int>();
-  public Vector2 MoveTargetPos = Vector2.zero;
+  public Vector2 MoveTargetPos = Vector2.zero;//이동 목표 정착지의 UI 앵커포지션
+  /// <summary>
+  /// 모든 정착지 불쾌 0으로 세팅
+  /// </summary>
+  /// <param name="_allsettle"></param>
     public void CreateSettleUnpleasant(List<Settlement> _allsettle)
     {
         foreach (var _settlement in _allsettle) AllSettleUnpleasant.Add(_settlement, 0);
@@ -313,7 +297,9 @@ public class GameData    //게임 진행도 데이터
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill  + _onlyexp + _onlytendency;
+
+      int _sum = _onlyskill + _onlyexp + _onlytendency;
+      return _sum<0?0:_sum;
     }
   }
   public int ForceLevel
@@ -327,7 +313,8 @@ public class GameData    //게임 진행도 데이터
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill + _onlyexp + _onlytendency;
+      int _sum = _onlyskill + _onlyexp + _onlytendency;
+      return _sum < 0 ? 0 : _sum;
     }
   }
   public int WildLevel
@@ -341,7 +328,8 @@ public class GameData    //게임 진행도 데이터
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill + _onlyexp + _onlytendency;
+      int _sum = _onlyskill + _onlyexp + _onlytendency;
+      return _sum < 0 ? 0 : _sum;
     }
   }
   public int IntelligenceLevel
@@ -355,7 +343,8 @@ public class GameData    //게임 진행도 데이터
       int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
       //경험에서 나온 값
       int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-      return _onlyskill  + _onlyexp + _onlytendency;
+      int _sum = _onlyskill + _onlyexp + _onlytendency;
+      return _sum < 0 ? 0 : _sum;
     }
   }
   public int GetThemeLevel(ThemeType _themetype)
@@ -440,6 +429,13 @@ public class GameData    //게임 진행도 데이터
         }
       default: return SkillName.Speech;
     }
+  }
+  public List<Skill> GetThemeSkills(ThemeType themetype)
+  {
+    List<Skill> _temp=new List<Skill>();
+    foreach(var _data in Skills)
+      if(_data.Value.Type_A.Equals(themetype)||_data.Value.Type_B.Equals(themetype))_temp.Add(_data.Value);
+    return _temp;
   }
   public int GetThemeLevelBySkill(ThemeType _theme)
   {
@@ -859,7 +855,6 @@ public class GameData    //게임 진행도 데이터
   public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_All= new List<string>();
 
-  public List<string> ClearQuest = new List<string>();//현재 게임에서 클리어한 퀘스트 ID
   public QuestHolder CurrentQuest = null; //현재 진행 중인 퀘스트
   public int LastQuestCount = 0;          //퀘스트 이벤트를 실행한지 얼마나 지났는지
   public bool QuestAble
@@ -867,8 +862,7 @@ public class GameData    //게임 진행도 데이터
     get
     {
       int _per = 0;
-      if (LastQuestCount < 1) _per = 10;
-      else if (LastQuestCount < 2) _per = 30;
+      if (LastQuestCount < 1) _per = 80;
       else _per = 100;
       if (UnityEngine.Random.Range(0, 100) < _per) return true;
       else return false;
@@ -1169,12 +1163,14 @@ public class Skill
     get
     {
       int level = LevelByOwn + LevelByExp+LevelByPlace;
-      return level;
+      return level<0?0:level;
     }
   }
   public int LevelForSkillCheck
   {
-    get { return LevelByOwn + LevelByExp + LevelByPlace + LevelByTheme; }
+    get {
+      int _level = LevelByOwn + LevelByExp + LevelByPlace + LevelByTheme;
+      return _level<0?0:_level; }
   }
   public Skill(ThemeType _a, ThemeType _b,SkillName name) { Type_A = _a;Type_B= _b;SkillType = name; }
 }
@@ -1232,6 +1228,13 @@ public class Tendency
     get
     {
      return MyTextData.Name;
+    }
+  }
+  public string Icon
+  {
+    get
+    {
+      return MyTextData.Icon;
     }
   }
   public string Description
@@ -1309,6 +1312,5 @@ public class Tendency
 }
 public class ProgressData
 {
-  public List<string> TotalFoundQuest = new List<string>();//게임 하면서 만난 모든 퀘스트
 }//게임 외부 진척도 데이터
 

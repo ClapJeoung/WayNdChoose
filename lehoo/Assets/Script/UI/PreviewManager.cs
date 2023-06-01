@@ -79,6 +79,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI TendencySubDescription = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionNonePanel = null;
+  [SerializeField] private Image SelectionNoneBackground = null;
   [SerializeField] private TextMeshProUGUI SelectionNoneText = null;
   [SerializeField] private PreviewSelectionTendency SelectionNoneTendency = null;
   [SerializeField] private Transform NoneRewardIcons = null;
@@ -86,6 +87,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Vector2 SelectionNoneTendencySize = new Vector2(360.0f, 320.0f);
   [Space(10)]
   [SerializeField] private GameObject SelectionPayPanel = null;
+  [SerializeField] private Image SelectionPayBackground = null;
   [SerializeField] private Image PayIcon = null;
   [SerializeField] private TextMeshProUGUI PayTargetAmount = null;
   [SerializeField] private TextMeshProUGUI PayTargetDescription = null;
@@ -101,6 +103,7 @@ public class PreviewManager : MonoBehaviour
    private float SelectionPayInfoSpace = 25.0f;
   [Space(10)]
   [SerializeField] private GameObject SelectionCheckPanel = null;
+  [SerializeField] private Image SelectionCheckBackground = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckName = null;
   [SerializeField] private Image CheckIcon_A = null;
   [SerializeField] private Image CheckIcon_B = null;
@@ -116,6 +119,7 @@ public class PreviewManager : MonoBehaviour
   private float SelectionCheckInfoSpace = 25.0f;
   [Space(10)]
   [SerializeField] private GameObject SelectionElsePanel = null;
+  [SerializeField] private Image SelectionElseBackground = null;
   [SerializeField] private Image SelectionElseIcon = null;
   [SerializeField] private TextMeshProUGUI SelectionElseDescription = null;
   [SerializeField] private PreviewSelectionTendency SelectionElseTendency = null;
@@ -466,15 +470,15 @@ public class PreviewManager : MonoBehaviour
     string _str = "";
 
     makecolorvalue(_onlyskill);
-    _str=string.Format(GameManager.Instance.GetTextData("byskill").Name, _valuestr);
+    _str=string.Format(GameManager.Instance.GetTextData("byskill_themepreview").Name, _valuestr);
     ThemeLevelBySkill.text = _str;
 
     makecolorvalue(_onlyexp);
-    _str =string.Format(GameManager.Instance.GetTextData("byexp").Name, _valuestr);
+    _str =string.Format(GameManager.Instance.GetTextData("byexp_preview").Name, _valuestr);
     ThemeLevelByExp.text = _str;
 
     makecolorvalue(_onlytendency);
-    _str=string.Format(GameManager.Instance.GetTextData("bytendency").Name,_valuestr);
+    _str=string.Format(GameManager.Instance.GetTextData("bytendency_themepreview").Name,_valuestr);
     ThemeLevelByTendency.text= _str;
 
     ThemeSubDescription.text = _themename.SelectionSubDescription;
@@ -508,18 +512,18 @@ public class PreviewManager : MonoBehaviour
     int _onlyplace = _targetskill.LevelByPlace;
 
     makecolorvalue(_onlylevel);
-    _str =string.Format(GameManager.Instance.GetTextData("byownlevel").Name, _valuestr);
+    _str =string.Format(GameManager.Instance.GetTextData("byownlevel_skillpreview").Name, _valuestr);
     SkillLevelBySkill.text = _str;
 
     makecolorvalue(_onlyexp);
-    _str =string.Format(GameManager.Instance.GetTextData("byexp").Name, _valuestr);
+    _str =string.Format(GameManager.Instance.GetTextData("byexp_preview").Name, _valuestr);
     SkillLevelByExp.text = _str;
 
 
     if (_onlyplace != 0)
     {
       makecolorvalue(_onlyplace);
-      _str = string.Format(GameManager.Instance.GetTextData("byplace").Name, _valuestr);
+      _str = string.Format(GameManager.Instance.GetTextData("byplace_skillpreview").Name, _valuestr);
       SkillLevelByPlace.text = _str;
     }
     else SkillLevelByPlace.text = "";
@@ -586,6 +590,8 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionNonePreview(SelectionData _selection,TendencyType tendencytype,bool dir)
   {
+    SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+
     SelectionNoneText.text = _selection.SubDescription;
     SetRewardIcons(NoneRewardIcons, _selection.SelectionSuccesRewards);
 
@@ -615,6 +621,8 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionPayPreview(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
+    SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+
     PayDescription.text = _selection.SubDescription;
     SetRewardIcons(PayRewardIcons, _selection.SelectionSuccesRewards);
     Sprite _icon = null;
@@ -736,6 +744,8 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionCheckPreview_theme(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
+    SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+    
     CheckLevelByOtherSkills.text = "";
     CheckDescription.text = _selection.SubDescription;
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
@@ -790,6 +800,8 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
+    SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+
     CheckDescription.text = _selection.SubDescription;
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite[] _icons = new Sprite[2];
@@ -804,7 +816,7 @@ public class PreviewManager : MonoBehaviour
     _byotherskills = _skill.LevelByTheme;
     string _otherskilllevel = "";
     if (_byotherskills<=0) _otherskilllevel = "";
-    else _otherskilllevel =string.Format(GameManager.Instance.GetTextData("byotherskills").Name, ColorText.PositiveColor(_otherskilllevel.ToString()));
+    else _otherskilllevel =string.Format(GameManager.Instance.GetTextData("byotherskills_selectionpreview").Name, ColorText.PositiveColor(_otherskilllevel.ToString()));
     
     _percent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _targetlevel);
 
@@ -848,6 +860,8 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionElsePreview(SelectionData _selection, TendencyType tendencytype, bool dir)
   {
+    SelectionElseBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite _icon = null;
     if (_selection.ThisSelectionType.Equals(SelectionTargetType.Skill)) _icon = GameManager.Instance.ImageHolder.SkillSelectionIcon;

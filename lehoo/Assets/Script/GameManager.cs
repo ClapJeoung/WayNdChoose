@@ -4,14 +4,13 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
 using System.Text;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
   private static GameManager instance;
   public static GameManager Instance { get { return instance; } }
 
-  [HideInInspector] public GameData MyGameData = new GameData();            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
+  [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
   private const string GameDataName = "GameData.json";
   [HideInInspector] public MapData MyMapData = null;              //맵 데이터(맵 정보만)
   [HideInInspector] public MapSaveData MyMapSaveData = null;
@@ -31,6 +30,26 @@ public class GameManager : MonoBehaviour
   public Dictionary<string, Experience> MadExpDic = new Dictionary<string, Experience>();
   public Dictionary<string, TextData> TextDic = new Dictionary<string, TextData>();   //각종 텍스트 딕셔터리
   public TextData NullText = null;
+  private FailureData goldfaildata = null;
+  public FailureData GoldFailData
+  {
+    get
+    {
+      if (goldfaildata == null)
+      {
+        goldfaildata = new FailureData();
+        goldfaildata.Description = GetTextData("goldfail").Name;
+        goldfaildata.Panelty_target = PenaltyTarget.Status;
+        goldfaildata.Loss_target = StatusType.Sanity;
+        goldfaildata.Illust_spring = ImageHolder.NoGoldIllust;
+        goldfaildata.Illust_summer =ImageHolder.NoGoldIllust;
+        goldfaildata.Illust_fall = ImageHolder.NoGoldIllust;
+        goldfaildata.Illust_winter = ImageHolder.NoGoldIllust;
+
+      }
+      return goldfaildata;
+    }
+  }
   public TextData GetTextData(string _id)
   {
     // Debug.Log($"{_id} ID를 가진 텍스트 데이터 {(TextDic.ContainsKey(_id)?"있음":"없음")}");
@@ -85,20 +104,20 @@ public class GameManager : MonoBehaviour
   {
     switch (_effect)
     {
-      case EffectType.Conversation: return GetTextData("conversation");
-      case EffectType.Force: return GetTextData("force");
-      case EffectType.Wild: return GetTextData("wild");
-      case EffectType.Intelligence: return GetTextData("intelligence");
-      case EffectType.Speech: return GetTextData("speech");
-      case EffectType.Threat: return GetTextData("threat");
-      case EffectType.Deception: return GetTextData("deception");
-      case EffectType.Logic: return GetTextData("logic");
-      case EffectType.Martialarts: return GetTextData("martialarts");
-      case EffectType.Bow: return GetTextData("bow");
-      case EffectType.Somatology: return GetTextData("somatology");
-      case EffectType.Survivable: return GetTextData("survivable");
-      case EffectType.Biology: return GetTextData("biology");
-      case EffectType.Knowledge: return GetTextData("knowledge");
+      case EffectType.Conversation: return GetTextData("conversationup");
+      case EffectType.Force: return GetTextData("forceup");
+      case EffectType.Wild: return GetTextData("wildup");
+      case EffectType.Intelligence: return GetTextData("intelligenceup");
+      case EffectType.Speech: return GetTextData("speechup");
+      case EffectType.Threat: return GetTextData("threatup");
+      case EffectType.Deception: return GetTextData("deceptionup");
+      case EffectType.Logic: return GetTextData("logicup");
+      case EffectType.Martialarts: return GetTextData("martialartsup");
+      case EffectType.Bow: return GetTextData("bowup");
+      case EffectType.Somatology: return GetTextData("somatologyup");
+      case EffectType.Survivable: return GetTextData("survivableup");
+      case EffectType.Biology: return GetTextData("biologyup");
+      case EffectType.Knowledge: return GetTextData("knowledgeup");
       case EffectType.HPLoss: return GetTextData(StatusType.HP, false);
       case EffectType.HPGen: return GetTextData(StatusType.HP, true);
       case EffectType.SanityLoss: return GetTextData(StatusType.Sanity, false);
@@ -220,8 +239,7 @@ public class GameManager : MonoBehaviour
   }
     public void LoadData()
   {
-    MyGameData = new GameData();
-    //데이터가 있으면 데이터 불러오고, 데이터가 없다면 새로 만들기
+    //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
     Dictionary<string, TextData> _temp = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
     foreach (var _data in _temp)
@@ -261,7 +279,7 @@ public class GameManager : MonoBehaviour
     }
     //경험 Json -> EXPDic
 
-    EventHolder.LoadAllEvents();
+   if(MyGameData!=null)EventHolder.LoadAllEvents();
 
   }//각종 Json 가져와서 변환
   public void SaveData()
@@ -462,7 +480,6 @@ public class GameManager : MonoBehaviour
       instance = this;
       DontDestroyOnLoad(gameObject);
       LoadData();
-      OpenAllQuest();
       //  DebugAllEvents();
     }
     else Destroy(gameObject);
@@ -477,57 +494,37 @@ public class GameManager : MonoBehaviour
     }
     if (Input.GetKeyDown(KeyCode.F1)) MyGameData.CurrentSanity = 3;
   }
-  public void DebugAllEvents()
-  {
-    string _str = "";
-    foreach (var _data in EventHolder.AvailableNormalEvents)
-    {
-      _str += $"이벤트 ID : {_data.ID}\n이벤트 이름 : {_data.Name}\n설명 : {_data.Description}\n" +
-          $"\n";
-    }
-    _str += "\n";
-    foreach(var _data in EventHolder.AvailableFollowEvents)
-    {
-      _str += $"연계 이벤트 Id : {_data.ID}\n연계 대상 : {_data.FollowTarget}\n";
-    }
-    _str += "\n";
-    foreach(var _data in EventHolder.AvailableQuests)
-    {
-      _str += $"퀘스트 {_data.Key} 시작 문구 : {_data.Value.StartDialogue}\n승 이벤트\n";
-      foreach(var _rising in _data.Value.Eventlist_Rising)
-      {
-        _str += $"이벤트 ID : {_rising.ID}\n이벤트 이름 : {_rising.Name}\n설명 : {_rising.Description}\n" +
-            $"\n";
-      }
-      foreach (var _climax in _data.Value.Eventlist_Climax)
-      {
-        _str += $"이벤트 ID : {_climax.ID}\n이벤트 이름 : {_climax.Name}\n설명 : {_climax.Description}\n" +
-            $"\n";
-      }
-    }
 
-    Debug.Log(_str);
-  }
-  public void OpenAllQuest()
+  public void StartNewGame(QuestHolder newquest)
   {
-    foreach(var _data in EventHolder.AllQuests)
-    {
-      MyProgressData.TotalFoundQuest.Add(_data.Key);
-    }
+    StartCoroutine(startnewgame(newquest));
   }
+  private IEnumerator startnewgame(QuestHolder newquest)
+  {
+    MyGameData = new GameData();//새로운 게임 데이터 생성
+    MyGameData.CurrentQuest= newquest;
 
-  public void LoadGameScene()
-  {
-    StartCoroutine(loadscene("GameScene"));
-  }
-  private IEnumerator loadscene(string scenename)
-  {
-    if (MainUIManager.Instance != null) MyGameData.CurrentQuest = EventHolder.AllQuests[MainUIManager.Instance.SelectQuestID];
-    AsyncOperation _oper = SceneManager.LoadSceneAsync(scenename);
-    _oper.allowSceneActivation = true;
+    yield return StartCoroutine(createnewmap());//새 맵 만들기
 
-    yield return new WaitUntil(()=> _oper.isDone==true);
-        yield return StartCoroutine(createnewmap());
+    yield return StartCoroutine(UIManager.Instance.opengamescene());
+    UIManager.Instance.UpdateAllUI();
+
+    UIManager.Instance.OpenQuestDialogue();
+  }
+  /// <summary>
+  /// 저장된 데이터로 게임 시작
+  /// </summary>
+  public void LoadGame()
+  {
+    UIManager.Instance.AddUIQueue(loadgame());
+  }
+  private IEnumerator loadgame()
+  {
+    //게임 데이터는 이미 불러온 데이터 사용
+
+    UIManager.Instance.CreateMap();
+    UIManager.Instance.UpdateMap_SetPlayerPos();
+    yield return StartCoroutine(UIManager.Instance.opengamescene());
     UIManager.Instance.UpdateAllUI();
 
     if (MyGameData.CurrentEvent == null)
@@ -596,13 +593,11 @@ public class GameManager : MonoBehaviour
 
     MyGameData.AvailableSettlement = MyMapData.GetCloseSettles(_startsettle, 3);
 
-    _map.MakeTilemap(MyMapSaveData, MyMapData);
-
     MyGameData.CreateSettleUnpleasant(MyMapData.AllSettles);
 
+
+    _map.MakeTilemap(MyMapSaveData);
     UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle);
-    MyGameData.Tendency_Body.Level = 2;
-    MyGameData.Tendency_Head.Level = -1;
     yield return null;
   }
 }

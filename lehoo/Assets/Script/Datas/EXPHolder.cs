@@ -62,7 +62,7 @@ public class Experience
           case EffectType.Survivable:
           case EffectType.Biology:
           case EffectType.Knowledge:
-            _temp = $"{_textdata.Name} +{_data.Value}";
+            _temp = $"{_textdata.Icon} {_textdata.Name} +{_data.Value}";
             break;
 
           case EffectType.HPLoss:

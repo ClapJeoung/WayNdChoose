@@ -121,8 +121,43 @@ public class ImageHolder : ScriptableObject
   public Sprite DisComfort = null;
   public Sprite MadnessIdle = null;
   public Sprite MadnessActive = null;
-  public Sprite Arrow_Active = null;
   public Sprite Arrow_DeActive = null;
+  public Sprite Arrow_Active_rational = null;
+  public Sprite Arrow_Active_physical = null;
+  public Sprite Arrow_Active_mental = null;
+  public Sprite Arrow_Active_material = null;
+  public Sprite Arrow_Active(TendencyType tendencytype,bool dir)
+  {
+    switch (tendencytype)
+    {
+      case TendencyType.Body:
+        if (dir.Equals(false)) return Arrow_Active_rational;
+        else return Arrow_Active_physical;
+      case TendencyType.Head:
+        if (dir.Equals(false)) return Arrow_Active_mental;
+        else return Arrow_Active_material;
+      default: return DefaultIcon;
+    }
+  }
+  [Space(10)]
+  public Sprite SelectionBackground_none = null;
+  public Sprite SelectionBackground_rational = null;
+  public Sprite SelectionBackground_physical = null;
+  public Sprite SelectionBackground_mental = null;
+  public Sprite SelectionBackground_material = null;
+  public Sprite SelectionBackground (TendencyType tendencytype,bool dir)
+  {
+    switch (tendencytype)
+    {
+      case TendencyType.Body:
+        if (dir.Equals(false)) return SelectionBackground_rational;
+        else return SelectionBackground_physical;
+      case TendencyType.Head:
+        if (dir.Equals(false)) return SelectionBackground_mental;
+        else return SelectionBackground_material;
+      default:return SelectionBackground_none;
+    }
+  }
   public Sprite GetThemeIcon(ThemeType _type)
   {
     switch (_type)

@@ -34,9 +34,9 @@ public class UIManager : MonoBehaviour
   [SerializeField] private UI_QuestSuggest MyQuestSuggent = null;
   [SerializeField] private UI_Mad MyMadPanel = null;
   [SerializeField] private UI_PlaceEffect MyPlaceEffect = null;
-  [SerializeField] private RectTransform HpRect = null;
-  [SerializeField] private RectTransform SanityRect = null;
-  [SerializeField] private RectTransform GoldRect = null;
+  [SerializeField] private RectTransform HpTextRect = null;
+  [SerializeField] private RectTransform SanityTextRect = null;
+  [SerializeField] private RectTransform GoldTextRect = null;
   public UI_map MyMap = null;
   public bool IsWorking = false;
   public float LargePanelMoveTime = 0.3f;
@@ -61,8 +61,36 @@ public class UIManager : MonoBehaviour
   public Vector2 TopSidePos = new Vector2(0.0f, 900.0f);
   public PreviewManager PreviewManager = null;
   [Space(10)]
-  [SerializeField] private TextMeshProUGUI YearText = null;
-  public void UpdateYearText() => YearText.text = GameManager.Instance.MyGameData.Year.ToString();
+  [SerializeField] private TextMeshProUGUI YearText_a = null;//(시작 기준) 아래 텍스트
+  [SerializeField] private TextMeshProUGUI YearText_b = null;//(시작 기준) 위 텍스트
+  private bool CurrentYearTextCount = true;
+  private float YearTextMoveUnit = 140.0f;
+  public void UpdateYearText()
+  {
+    RectTransform _currentrect = CurrentYearTextCount ? YearText_a.rectTransform:YearText_b.rectTransform;
+    RectTransform _targetrect = CurrentYearTextCount ? YearText_b.rectTransform : YearText_a.rectTransform;
+    if (CurrentYearTextCount.Equals(true)) YearText_b.text = GameManager.Instance.MyGameData.Year.ToString();
+    else YearText_a.text= GameManager.Instance.MyGameData.Year.ToString();
+
+    StartCoroutine(moveyeartext(_currentrect,_targetrect));
+  }
+  private IEnumerator moveyeartext(RectTransform currentrect,RectTransform targetrect)
+  {
+    float _time = 0.0f, _targettime = 0.8f;
+    Vector2 _toppos=new Vector2(0.0f,YearTextMoveUnit),_middlepos=Vector2.zero,_bottompos=new Vector2(0.0f,-YearTextMoveUnit);
+    
+    while (_time < _targettime)
+    {
+      currentrect.anchoredPosition = Vector2.Lerp(_middlepos, _bottompos, _time / _targettime);
+      targetrect.anchoredPosition = Vector2.Lerp(_toppos, _bottompos, _time / _targettime);
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    currentrect.anchoredPosition = _toppos;
+    targetrect.anchoredPosition = _middlepos;
+
+    CurrentYearTextCount = !CurrentYearTextCount;
+  }
   [SerializeField] private Image SpringIcon = null, SummerIcon = null, FallIcon = null, WinterIcon = null;
   public void UpdateTurnIcon()
   {
@@ -86,8 +114,8 @@ public class UIManager : MonoBehaviour
     if (!lasthp.Equals(-1))
     {
       int _value = GameManager.Instance.MyGameData.HP - lasthp;
-      if (_value < 0) { StartCoroutine(lossstatus(_value, HpRect.position)); HPLossParticle.Play(); }
-      else if(_value > 0){ StartCoroutine(genstatus(_value, HpRect.position));HPGenParticle.Play(); }
+      if (_value < 0) { StartCoroutine(lossstatus(_value, HpTextRect.position)); HPLossParticle.Play(); }
+      else if(_value > 0){ StartCoroutine(genstatus(_value, HpTextRect.position));HPGenParticle.Play(); }
     }
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
     lasthp = GameManager.Instance.MyGameData.HP;
@@ -99,8 +127,8 @@ public class UIManager : MonoBehaviour
     if (!lastsanity.Equals(-1))
     {
       int _value = GameManager.Instance.MyGameData.CurrentSanity - lastsanity;
-      if (_value < 0) { StartCoroutine(lossstatus(_value, SanityRect.position)); SanityLossParticle.Play();}
-      else if(_value>0) { StartCoroutine(genstatus(_value, SanityRect.position)); SanityGenParticle.Play(); }
+      if (_value < 0) { StartCoroutine(lossstatus(_value, SanityTextRect.position)); SanityLossParticle.Play();}
+      else if(_value>0) { StartCoroutine(genstatus(_value, SanityTextRect.position)); SanityGenParticle.Play(); }
     }
     SanityText.text = GameManager.Instance.MyGameData.CurrentSanity.ToString();
   lastsanity= GameManager.Instance.MyGameData.CurrentSanity;
@@ -112,8 +140,8 @@ public class UIManager : MonoBehaviour
     if (!lastgold.Equals(-1))
     {
       int _value = GameManager.Instance.MyGameData.Gold - lastgold;
-      if (_value < 0) { StartCoroutine(lossstatus(_value, GoldRect.position)); GoldLossParticle.Play(); }
-      else if (_value > 0) { StartCoroutine(genstatus(_value, GoldRect.position)); GoldGenParticle.Play(); }
+      if (_value < 0) { StartCoroutine(lossstatus(_value, GoldTextRect.position)); GoldLossParticle.Play(); }
+      else if (_value > 0) { StartCoroutine(genstatus(_value, GoldTextRect.position)); GoldGenParticle.Play(); }
     }
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
     lastgold= GameManager.Instance.MyGameData.Gold;
@@ -206,7 +234,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform TendencyHeadIcon = null;
   [SerializeField] private RectTransform TendencyBodyRect = null;
   [SerializeField] private RectTransform TendencyBodyIcon = null;
-  private float TendendcyIconMoveUnit = 55.0f;
+  private float TendendcyIconMoveUnit = 66.0f;
   public void UpdateTendencyIcon()
   {
     if(GameManager.Instance.MyGameData.Tendency_Body.ChangedDir!=0)
@@ -676,6 +704,8 @@ public class UIManager : MonoBehaviour
   public void UpdateMap_SettleIcons(List<Settlement> _avail) => MyMap.UpdateIcons(_avail);
   public void UpdateMap_AddSettle(string _name, SettlementIcon _icon) => MyMap.AddSettleIcon(_name, _icon);
   public void UpdateMap_SetPlayerPos(Settlement _settle)=>MyMap.SetPlayerPos(_settle);
+  public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.CurrentPos);
+  public void CreateMap() => MyMap.MapCreater.MakeTilemap(GameManager.Instance.MyMapSaveData);
   public void OpenSuggestUI() => MyEvnetSuggest.OpenSuggest();
   public void OpenBadExpUI(Experience _badexp) => MyUIReward.OpenRewardExpPanel_penalty(_badexp);
     public void OpenDialogue()
@@ -699,6 +729,171 @@ public class UIManager : MonoBehaviour
     public void CloseSuggestPanel_normal() => MyEvnetSuggest.CloseSuggestPanel_normal();
   public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
   public void UpdatePlaceEffect() => MyPlaceEffect.UpdatePlace();
+
+  [Space(20)]
+  [SerializeField] private GameObject MainmainHolder_temp = null;
+  [SerializeField] private GameObject MainscenarioHolder_temp = null;
+  [SerializeField] private TextMeshProUGUI NewGameText = null;
+  [SerializeField] private Button LoadGameButton = null;
+  [SerializeField] private TextMeshProUGUI LoadGameText = null;
+  [SerializeField] private TextMeshProUGUI LoadInfoText = null;
+  [SerializeField] private TextMeshProUGUI OptionText = null;
+  [SerializeField] private TextMeshProUGUI QuitText = null;
+  [SerializeField] private Image QuestIllust = null;
+  [SerializeField] private TextMeshProUGUI QuestDescription = null;
+  [SerializeField] private Button StartNewGameButton = null;
+  [SerializeField] private TextMeshProUGUI StartNewGameText = null;
+  [SerializeField] private TextMeshProUGUI BackToMainText = null;
+
+  public void OpenScenario()//새 게임 눌러 시나리오 선택으로 넘어가는 메소드
+  {
+    MainmainHolder_temp.SetActive(false);
+    MainscenarioHolder_temp.SetActive(true);
+  }
+  public void LoadGame()//불러오기 버튼 눌러 게임 시작
+  {
+    GameManager.Instance.LoadGame();
+  }
+  public void ReturnToMain()
+  {
+    MainmainHolder_temp.SetActive(true);
+    MainscenarioHolder_temp.SetActive(false);
+  }
+  public void SelectQuest(int index)//시나리오 버튼 누를때
+  {
+    SelectedQuest = GameManager.Instance.EventHolder.AllQuests[index];
+    QuestIllust.sprite = SelectedQuest.Illust;
+    QuestDescription.text = SelectedQuest.PreDescription;
+  }
+  private QuestHolder SelectedQuest = null;
+  public void StartNewGame()//버튼으로 새 게임 시작 버튼 누르는거
+  {
+    MainmainHolder_temp.SetActive(false);
+    MainscenarioHolder_temp.SetActive(false);
+    GameManager.Instance.StartNewGame(SelectedQuest);
+    //게임매니저에서 데이터 생성->맵 생성->(메인->게임)전환 코루틴 실행->이후 처리
+  }
+
+  #region 메인-게임 전환
+  [Space(20)]
+  [SerializeField] private RectTransform TopTitleRect = null;
+  [SerializeField] private Vector2 TopTitle_ClosePos= Vector2.zero;
+  [SerializeField] private Vector2 TopTitle_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform RightTitleRect = null;
+  [SerializeField] private Vector2 RightTitle_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 RightTitle_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform BottomTitleRect = null;
+  [SerializeField] private Vector2 BottomTitle_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 BottomTitle_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform LeftTitleRect = null;
+  [SerializeField] private Vector2 LeftTitle_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 LeftTitle_OpenPos = Vector2.zero;
+   [Space(3)]
+  [SerializeField] private RectTransform YearRect = null;
+  [SerializeField] private Vector2 Year_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Year_OpenPos = Vector2.zero;
+ [Space(3)]
+  [SerializeField] private RectTransform TurnRect = null;
+  [SerializeField] private Vector2 Turn_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Turn_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform HPRect = null;
+  [SerializeField] private Vector2 HP_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 HP_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform SanityRect = null;
+  [SerializeField] private Vector2 Sanity_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Sanity_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform GoldRect = null;
+  [SerializeField] private Vector2 Gold_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Gold_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform MapRect = null;
+  [SerializeField] private Vector2 Map_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Map_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform QuestRect = null;
+  [SerializeField] private Vector2 Quest_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Quest_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform OptionRect = null;
+  [SerializeField] private Vector2 Option_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Option_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform PlaceRect = null;
+  [SerializeField] private Vector2 Place_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Place_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform SkillRect = null;
+  [SerializeField] private Vector2 Skill_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Skill_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform ExpRect = null;
+  [SerializeField] private Vector2 Exp_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Exp_OpenPos = Vector2.zero;
+  [Space(3)]
+  [SerializeField] private RectTransform TendencyRect = null;
+  [SerializeField] private Vector2 Tendency_ClosePos = Vector2.zero;
+  [SerializeField] private Vector2 Tendency_OpenPos = Vector2.zero;
+  [Space(10)]
+  [SerializeField] private float SceneAnimationTitleMoveTime = 0.3f;
+  [SerializeField] private float SceneAnimationObjMoveTime = 0.1f;
+  [SerializeField] private float TitleWaitTime = 0.2f;
+  [SerializeField] private float ObjWaitTime = 0.08f;
+  [SerializeField] private AnimationCurve SceneAnimationCurve = null;
+  public IEnumerator opengamescene()
+  {
+    var _titlewait = new WaitForSeconds(TitleWaitTime);
+    var _objwait = new WaitForSeconds(ObjWaitTime);
+
+    StartCoroutine(moverect(TopTitleRect,  TopTitle_ClosePos, TopTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
+    yield return _titlewait;
+    StartCoroutine(moverect(RightTitleRect, RightTitle_ClosePos, RightTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
+    yield return _titlewait;
+    StartCoroutine(moverect(BottomTitleRect,  BottomTitle_ClosePos, BottomTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
+    yield return _titlewait;
+    StartCoroutine(moverect(LeftTitleRect,  LeftTitle_ClosePos, LeftTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
+    yield return _titlewait;
+    StartCoroutine(moverect(YearRect,Year_ClosePos, Year_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(TurnRect, Turn_ClosePos, Turn_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(HPRect, HP_ClosePos, HP_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(SanityRect, Sanity_ClosePos, Sanity_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(GoldRect, Gold_ClosePos, Gold_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(MapRect, Map_ClosePos, Map_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(QuestRect, Quest_ClosePos, Quest_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(OptionRect, Option_ClosePos, Option_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(PlaceRect, Place_ClosePos, Place_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(SkillRect, Skill_ClosePos, Skill_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    StartCoroutine(moverect(ExpRect, Exp_ClosePos, Exp_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    yield return _objwait;
+    yield return StartCoroutine(moverect(TendencyRect, Tendency_ClosePos, Tendency_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+  }
+  private IEnumerator moverect(RectTransform rect,Vector2 startpos,Vector2 endpos,float targettime,AnimationCurve targetcurve)
+  {
+    float _time = 0.0f, _targettime = targettime;
+    while (_time < _targettime)
+    {
+      rect.anchoredPosition = Vector2.Lerp(startpos, endpos, targetcurve.Evaluate(_time / _targettime));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    rect.anchoredPosition = endpos;
+  }
+  #endregion
 }
 public static class ColorText
 {

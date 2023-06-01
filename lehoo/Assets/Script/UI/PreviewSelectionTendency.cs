@@ -11,6 +11,7 @@ public class PreviewSelectionTendency : MonoBehaviour
   [SerializeField] private Image[] ArrowImages=new Image[3];
   [SerializeField] private RectTransform[] ArrowRects=new RectTransform[3];
   [SerializeField] private CanvasGroup[] ArrowEffects=new CanvasGroup[3];
+  [SerializeField] private Image[] ArrowEffectImages=new Image[3];
   [SerializeField] private Image RightIcon = null;
   [Space(10)]
   [SerializeField] private CanvasGroup NoneProgressGroup = null;
@@ -136,14 +137,15 @@ public class PreviewSelectionTendency : MonoBehaviour
           break;
       }
 
-      SetArrow(dir, _arrowcount, _effectindex);
+      SetArrow(tendency.Type, dir, _arrowcount, _effectindex);
 
       LeftIcon.sprite = _leftsprite;
       RightIcon.sprite = _rightsprite;
     }
   }
-  public void SetArrow(bool dir,int count,int effectindex)
+  public void SetArrow(TendencyType tendency, bool dir,int count,int effectindex)
   {
+    Sprite _activearrow = GameManager.Instance.ImageHolder.Arrow_Active(tendency, dir);
     int _currentindex = 0;
     for (int i = 0; i < Arrows.Length; i++)
     {
@@ -159,12 +161,14 @@ public class PreviewSelectionTendency : MonoBehaviour
 
       if (i < effectindex)
       {
-        ArrowImages[_currentindex].sprite = GameManager.Instance.ImageHolder.Arrow_Active;
+        ArrowImages[_currentindex].sprite = _activearrow;
         ArrowEffects[_currentindex].alpha = 0.0f;
       }
       else if (i.Equals(effectindex))
       {
         ArrowImages[_currentindex].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+
+        ArrowEffectImages[i].sprite = _activearrow;
         StartCoroutine(arroweffect(ArrowEffects[_currentindex]));
       }
       else

@@ -214,7 +214,7 @@ MonoBehaviour:
   LibraryIllust: []
   TheaterIllust: []
   AcademyIllust: []
-  NoneIllust: {fileID: 0}
+  NoneIllust: {fileID: 21300000, guid: 622e8cc81030c2543be848d6ac0035b8, type: 3}
   ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
   MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
   TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
@@ -641,8 +641,16 @@ MonoBehaviour:
   Quest_risig: {fileID: 21300000, guid: 0d58313d00cc8cd46bf57ccfe780485c, type: 3}
   Quest_climax: {fileID: 21300000, guid: 05d24a6df66b71b4a8cb5a1628a77811, type: 3}
   Quest_fall: {fileID: 21300000, guid: e6ec370da0fec434d936dad7fd7c7553, type: 3}
-  DisComfort: {fileID: 0}
+  DisComfort: {fileID: 21300000, guid: b2a0bb0e9a8d0664a91e3295a415268a, type: 3}
   MadnessIdle: {fileID: 21300000, guid: 533227ba82acdd649bf6c2137697490f, type: 3}
   MadnessActive: {fileID: 21300000, guid: 886081899e6a4894482d7746622dca02, type: 3}
-  Arrow_Active: {fileID: 21300000, guid: 639b5ae68dd4e8049bb780540ae4dc93, type: 3}
-  Arrow_DeActive: {fileID: 21300000, guid: ff7319df531d8c044b1fa7e0eafafaba, type: 3}
+  Arrow_DeActive: {fileID: 21300000, guid: d59a3a542981d164b88cb7b5cd59dccf, type: 3}
+  Arrow_Active_rational: {fileID: 21300000, guid: ba98f2d0708544047b52f9e68a044281, type: 3}
+  Arrow_Active_physical: {fileID: 21300000, guid: e269443b03526ed4c93ebd6fdaf850ff, type: 3}
+  Arrow_Active_mental: {fileID: 21300000, guid: 6c779bf83d2052145a54db3541faad02, type: 3}
+  Arrow_Active_material: {fileID: 21300000, guid: 50996e3cd6a9de448b03012ae010f376, type: 3}
+  SelectionBackground_none: {fileID: 21300000, guid: 57a5c29b2f416674796854c96c001025, type: 3}
+  SelectionBackground_rational: {fileID: 21300000, guid: c5edb195c0f41164dacb79259406836e, type: 3}
+  SelectionBackground_physical: {fileID: 21300000, guid: 1a379d669eae2d5459a8f2f1a889f9e2, type: 3}
+  SelectionBackground_mental: {fileID: 21300000, guid: 87afc43fbea7f6e4ca6d5a863cc176c9, type: 3}
+  SelectionBackground_material: {fileID: 21300000, guid: 70a5ec174de25194ead7b676c7cdeb0d, type: 3}

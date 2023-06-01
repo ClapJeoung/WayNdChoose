@@ -13,7 +13,7 @@ public class UI_Expereince_info : UI_default
   [SerializeField] private TextMeshProUGUI ExpEffect = null;
   [SerializeField] private TextMeshProUGUI ExpTurn = null;
   [SerializeField] private CanvasGroup BackButton = null; 
-  private Vector2 ClosePos =new Vector2(1020.0f,0.0f);
+  private Vector2 ClosePos =new Vector2(1500.0f,0.0f);
   private Vector2 OpenPos =new Vector2(309.0f,0.0f);
   public void OpenLongExpUI(int _index)
   {
