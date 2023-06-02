@@ -6,6 +6,9 @@ using TMPro;
 
 public class UI_dialogue : UI_default
 {
+  public float TextFadeTime = 0.7f;
+  [Space(10)]
+
   [SerializeField] private CanvasGroup NameGroup = null;
   [SerializeField] private TextMeshProUGUI NameText = null;
   [SerializeField] private CanvasGroup IllustGroup = null;
@@ -25,6 +28,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private UI_Selection Selection_Physical = null;
   [SerializeField] private UI_Selection Selection_Mental = null;
   [SerializeField] private UI_Selection Selection_Material = null;
+  
   private void Start()
   {
     if (KeepMoveText.text.Equals("null")) KeepMoveText.text = GameManager.Instance.GetTextData("keepgoing").Name;
@@ -158,13 +162,13 @@ public class UI_dialogue : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, true, false));
 
      StartCoroutine(UIManager.Instance.ChangeAlpha(NameGroup, 1.0f, false,UIFadeMoveDir.Right, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(NameText, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(NameText, 1.0f, TextFadeTime));
     yield return _wait;
      StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, false, UIFadeMoveDir.Right, false));
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
     yield return _wait;
      StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 1.0f, false, UIFadeMoveDir.Left, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f, TextFadeTime));
     yield return _wait;
     //이름, 일러스트, 설명 그룹 등장
 
@@ -207,14 +211,14 @@ public class UI_dialogue : UI_default
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 0.0f));
         yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
-        StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
+        StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f, TextFadeTime));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     string _dialogetemp = _success.Description;
     if (_dialogetemp.Contains("#settle")) _dialogetemp = _success.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
     DialogueText.text = _dialogetemp;
     Illust.sprite = _success.Illust;
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f, TextFadeTime));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     MyUIReward.SetRewardPanel(_success);
@@ -232,14 +236,14 @@ public class UI_dialogue : UI_default
   private IEnumerator updatedialogue(FailureData _faiilure)
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 0.0f));
-     StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f));
+     StartCoroutine( UIManager.Instance.ChangeAlpha(DialogueText, 0.0f, TextFadeTime));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     string _dialogetemp = _faiilure.Description;
     if (_dialogetemp.Contains("#settle")) _dialogetemp = _faiilure.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
     DialogueText.text = _dialogetemp;
-    Illust.sprite = _faiilure.Illust_spring;
+    Illust.sprite = _faiilure.Illust;
     StartCoroutine(UIManager.Instance.ChangeAlpha(Illust, 1.0f));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueText, 1.0f, TextFadeTime));
     yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
 
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)

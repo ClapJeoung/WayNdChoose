@@ -42,17 +42,14 @@ public class EventHolder
       _season = _seasons[i];
       EventData Data = new EventData();
       Data.OriginID = _data.ID;
-      if (_season.Equals(0)) _id = _data.ID;
-      else _id = $"{_data.ID}_{GetSeasonString(_season)}";
+
+      if (_season.Equals(0)) _id = _data.ID;  //계절이 0이라면 Data.ID는  _data.id
+      else _id = $"{_data.ID}_{GetSeasonString(_season)}";  //계절이 존재한다면 Data.ID는 _data.id+(season)
 
       TextData _textdata = GameManager.Instance.GetTextData(_id);
       Data.Name = _textdata.Name;
       Data.ID = _id;
-      Sprite[] _illusts = GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
-      Data.Illust_spring = _illusts[0];
-      Data.Illust_summer = _illusts[1];
-      Data.Illust_fall = _illusts[2];
-      Data.Illust_winter = _illusts[3];
+      Data.Illust = GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
       Data.Description = _textdata.Description;
       Data.Season = _season;
       Data.SettlementType = (SettlementType)_data.Settlement;
@@ -130,11 +127,7 @@ public class EventHolder
               case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
               case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
             }
-            _illusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
-            Data.FailureDatas[0].Illust_spring = _illusts[0];
-            Data.FailureDatas[0].Illust_summer = _illusts[1];
-            Data.FailureDatas[0].Illust_fall = _illusts[2];
-            Data.FailureDatas[0].Illust_winter = _illusts[3];
+            Data.FailureDatas[0].Illust = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
           }
           else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
@@ -154,11 +147,7 @@ public class EventHolder
             case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
           }
           Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.Illust = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
 
           Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
           switch (Data.SuccessDatas[0].SubReward_target)
@@ -216,11 +205,7 @@ public class EventHolder
                 case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
                 case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
               }//패널티 정보 넣기
-              _illusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
-              Data.FailureDatas[j].Illust_spring = _illusts[0];
-              Data.FailureDatas[j].Illust_summer = _illusts[1];
-              Data.FailureDatas[j].Illust_fall = _illusts[2];
-              Data.FailureDatas[j].Illust_winter = _illusts[3];
+              Data.FailureDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
 
             }//테마 혹은 스킬 체크인 경우 실패 설명, 패널티 대상 정보, 실패 일러스트 넣기
             else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
@@ -259,11 +244,7 @@ public class EventHolder
                 break;
             }
 
-            _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-            Data.SuccessDatas[j].Illust_spring = _illusts[0];
-            Data.SuccessDatas[j].Illust_summer = _illusts[1];
-            Data.SuccessDatas[j].Illust_fall = _illusts[2];
-            Data.SuccessDatas[j].Illust_winter = _illusts[3];
+            Data.SuccessDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
 
 
           }//성공 정보 구현(설명, 보상, 일러스트)
@@ -299,11 +280,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
 
         case SelectionType.Skill://기술 재배치느 실패가 없다
@@ -336,11 +313,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
 
         case SelectionType.Experience:  //경험 재배치는 실패가 없다
@@ -373,11 +346,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
       }
 
@@ -419,11 +388,7 @@ public class EventHolder
 
       Data.Name = _textdata.Name;
       Data.ID = _id;
-      Sprite[] _illusts = GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
-      Data.Illust_spring = _illusts[0];
-      Data.Illust_summer = _illusts[1];
-      Data.Illust_fall = _illusts[2];
-      Data.Illust_winter = _illusts[3];
+      Data.Illust= GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
       Data.Description = _textdata.Description;
       Data.Season = _season;
       Data.SettlementType = (SettlementType)_data.Settlement;
@@ -502,11 +467,7 @@ public class EventHolder
               case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
               case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
             }
-            _illusts= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
-            Data.FailureDatas[0].Illust_spring = _illusts[0];
-            Data.FailureDatas[0].Illust_summer = _illusts[1];
-            Data.FailureDatas[0].Illust_fall = _illusts[2];
-            Data.FailureDatas[0].Illust_winter = _illusts[3];
+            Data.FailureDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
           }
           else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
@@ -536,11 +497,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
 
           break;
 
@@ -585,11 +542,7 @@ public class EventHolder
                 case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
                 case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
               }
-              _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-              Data.FailureDatas[j].Illust_spring = _illusts[0];
-              Data.FailureDatas[j].Illust_summer = _illusts[1];
-              Data.FailureDatas[j].Illust_fall = _illusts[2];
-              Data.FailureDatas[j].Illust_winter = _illusts[3];
+              Data.FailureDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
             }
             else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
@@ -625,11 +578,7 @@ public class EventHolder
                 if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold);
                 break;
             }
-            _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-            Data.SuccessDatas[j].Illust_spring = _illusts[0];
-            Data.SuccessDatas[j].Illust_summer = _illusts[1];
-            Data.SuccessDatas[j].Illust_fall = _illusts[2];
-            Data.SuccessDatas[j].Illust_winter = _illusts[3];
+            Data.SuccessDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
           }
           break;
 
@@ -664,11 +613,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID,"0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.SuccessDatas[0].Illust = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
 
           break;
 
@@ -701,11 +646,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
 
         case SelectionType.Experience:
@@ -738,11 +679,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _illusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _illusts[0];
-          Data.SuccessDatas[0].Illust_summer = _illusts[1];
-          Data.SuccessDatas[0].Illust_fall = _illusts[2];
-          Data.SuccessDatas[0].Illust_winter = _illusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
       }
 
@@ -772,11 +709,7 @@ public class EventHolder
       TextData _textdata = GameManager.Instance.GetTextData(_id);
       Data.Name = _textdata.Name;
       Data.ID = _id;
-      Sprite[] _startillusts = GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
-      Data.Illust_spring = _startillusts[0];
-      Data.Illust_summer = _startillusts[1];
-      Data.Illust_fall = _startillusts[2];
-      Data.Illust_winter = _startillusts[3];
+      Data.Illust= GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
       Data.Description = _textdata.Description;
       Data.Season = _season;
       switch (_data.Settlement)
@@ -868,11 +801,7 @@ public class EventHolder
               case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
               case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
             }
-            _startillusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID,"0");
-            Data.FailureDatas[0].Illust_spring = _startillusts[0];
-            Data.FailureDatas[0].Illust_summer = _startillusts[1];
-            Data.FailureDatas[0].Illust_fall = _startillusts[2];
-            Data.FailureDatas[0].Illust_winter = _startillusts[3];
+            Data.FailureDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
           }
           else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
           {
@@ -902,11 +831,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _startillusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _startillusts[0];
-          Data.SuccessDatas[0].Illust_summer = _startillusts[1];
-          Data.SuccessDatas[0].Illust_fall = _startillusts[2];
-          Data.SuccessDatas[0].Illust_winter = _startillusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
 
         case SelectionType.Body:
@@ -950,11 +875,7 @@ public class EventHolder
                 case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
                 case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
               }
-              _startillusts = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
-              Data.FailureDatas[j].Illust_spring = _startillusts[0];
-              Data.FailureDatas[j].Illust_summer = _startillusts[1];
-              Data.FailureDatas[j].Illust_fall = _startillusts[2];
-              Data.FailureDatas[j].Illust_winter = _startillusts[3];
+              Data.FailureDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
             }
             else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
             {
@@ -991,11 +912,7 @@ public class EventHolder
                 if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold);
                 break;
             }
-            _startillusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-            Data.SuccessDatas[j].Illust_spring = _startillusts[0];
-            Data.SuccessDatas[j].Illust_summer = _startillusts[1];
-            Data.SuccessDatas[j].Illust_fall = _startillusts[2];
-            Data.SuccessDatas[j].Illust_winter = _startillusts[3];
+            Data.SuccessDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
           }
           break;
 
@@ -1030,11 +947,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _startillusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _startillusts[0];
-          Data.SuccessDatas[0].Illust_summer = _startillusts[1];
-          Data.SuccessDatas[0].Illust_fall = _startillusts[2];
-          Data.SuccessDatas[0].Illust_winter = _startillusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
 
         case SelectionType.Skill:
@@ -1066,11 +979,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _startillusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _startillusts[0];
-          Data.SuccessDatas[0].Illust_summer = _startillusts[1];
-          Data.SuccessDatas[0].Illust_fall = _startillusts[2];
-          Data.SuccessDatas[0].Illust_winter = _startillusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
 
         case SelectionType.Experience:
@@ -1103,11 +1012,7 @@ public class EventHolder
               if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          _startillusts = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          Data.SuccessDatas[0].Illust_spring = _startillusts[0];
-          Data.SuccessDatas[0].Illust_summer = _startillusts[1];
-          Data.SuccessDatas[0].Illust_fall = _startillusts[2];
-          Data.SuccessDatas[0].Illust_winter = _startillusts[3];
+          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
           break;
       }
 
@@ -1130,7 +1035,7 @@ public class EventHolder
       {
         case 0://기
           _quest.QuestID = _data.QuestId; //퀘스트 ID는 QuestID
-          _quest.Illust = Data.Illust_spring;//대표 일러스트는 퀘스트 ID
+          _quest.StartIllust = GameManager.Instance.ImageHolder.GetEventStartIllust(Data.QuestID);//대표 일러스트는 퀘스트 ID
           break;
         case 1://승
           _quest.Eventlist_Rising.Add(Data);
@@ -1484,23 +1389,7 @@ public class EventDataDefulat
 {
   public string OriginID = "";
   public string ID = "";        //계절 별로 분화된 ID(ID_(계절)), 텍스트랑 일러스트 아이디로 사용함
-  public Sprite Illust_spring = null;
-  public Sprite Illust_summer = null;
-  public Sprite Illust_fall = null;
-  public Sprite Illust_winter = null;
-  public Sprite Illust
-  {
-    get
-    {
-      switch (GameManager.Instance.MyGameData.Turn)
-      {
-        case 0:return Illust_spring;
-        case 1:return Illust_summer;
-        case 2:return Illust_fall;
-        default:return Illust_winter;
-      }
-    }
-  }
+  public Sprite Illust = null;
   public string Name;
   public string Description;
   public int Season = 0;  //0,1,2,3,4
@@ -1534,46 +1423,14 @@ public class FailureData
   public PenaltyTarget Panelty_target;
   public StatusType Loss_target= StatusType.HP;
   public string ExpID;
-  public Sprite Illust_spring = null;
-  public Sprite Illust_summer = null;
-  public Sprite Illust_fall = null;
-  public Sprite Illust_winter = null;
-  public Sprite Illust
-  {
-    get
-    {
-      switch (GameManager.Instance.MyGameData.Turn)
-      {
-        case 0: return Illust_spring;
-        case 1: return Illust_summer;
-        case 2: return Illust_fall;
-        default: return Illust_winter;
-      }
-    }
-  }
+  public Sprite Illust = null;
 }
 public enum SelectionTargetType { None, Pay, Check_Theme, Check_Skill, Tendency, Skill, Exp }//선택지 개별 내용
 public enum StatusType { HP,Sanity,Gold}
 public class SuccessData
 {
   public string Description = "";
-  public Sprite Illust_spring = null;
-  public Sprite Illust_summer = null;
-  public Sprite Illust_fall = null;
-  public Sprite Illust_winter = null;
-  public Sprite Illust
-  {
-    get
-    {
-      switch (GameManager.Instance.MyGameData.Turn)
-      {
-        case 0: return Illust_spring;
-        case 1: return Illust_summer;
-        case 2: return Illust_fall;
-        default: return Illust_winter;
-      }
-    }
-  }
+  public Sprite Illust = null;
   public RewardTarget Reward_Target;
   public ThemeType Reward_Theme;
   public SkillName Reward_Skill;
@@ -1633,6 +1490,14 @@ public class QuestEventData : EventDataDefulat
 public class QuestHolder
 {
     public string QuestID = "";     //퀘스트 ID
+  public string QuestID_name
+  {
+    get
+    {
+      var _temp = QuestID.Split("_");
+      return _temp[1];
+    }
+  }//quest_(이 부분)
   public string QuestName
   {
     get { return QuestTextDatas[0].Name; }
@@ -1663,6 +1528,47 @@ public class QuestHolder
   {
     get { return QuestTextDatas[0].SelectionDescription; }
   }  //시작 화면 미리보기 텍스트
+  public Sprite StartIllust = null; //시작 일러스트
+
+  public Sprite ExpSelectionIllust
+  {
+    get
+    {
+      return GameManager.Instance.ImageHolder.GetEventStartIllust(QuestID + "_expselect");
+    }
+  }//시작 경험 선택 일러스트
+  public string ExpSelectionDescription
+  {
+    get
+    {
+      return GameManager.Instance.GetTextData(QuestID + "_expselect").Name;
+    }
+  }//시작 경험 선택 설명
+  public Experience[] StartingExps
+  {
+    get
+    {
+      Experience[] _temp = new Experience[4];
+      _temp[0] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_0"];
+      _temp[1] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_1"];
+      _temp[2] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_2"];
+      _temp[3] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_3"];
+      return _temp;
+    }
+  }//시작 경험 4개
+
+  public Sprite StartingIllust
+  {
+    get { return GameManager.Instance.ImageHolder.GetEventStartIllust(QuestID + "_starting"); }
+  }//출발 일러스트
+  public string StartingDescription
+  {
+    get { return GameManager.Instance.GetTextData(QuestID+"_starting").Name; }
+  }//출발 설명
+  public string StartingSelection
+  {
+    get { return GameManager.Instance.GetTextData(QuestID + "_starting").SelectionDescription; }
+  }//출발 선택지 문구
   public string RisingDescription
   {
     get { return QuestTextDatas[1].Name; }
@@ -1687,7 +1593,6 @@ public class QuestHolder
       }
     }
   }
-  public Sprite Illust;
 
   public string StopSelectionName
   {
@@ -1937,6 +1842,8 @@ public class FollowEventJsonData
   public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
 
   public string SubReward;                  //없음,돈,정신력,돈+정신력
+
+  public string EndingName = "";            //엔딩이 있을 경우(""가 아닌 경우) 엔딩 이름
 }
 public class QuestEventDataJson
 {

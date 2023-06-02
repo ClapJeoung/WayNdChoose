@@ -41,10 +41,7 @@ public class GameManager : MonoBehaviour
         goldfaildata.Description = GetTextData("goldfail").Name;
         goldfaildata.Panelty_target = PenaltyTarget.Status;
         goldfaildata.Loss_target = StatusType.Sanity;
-        goldfaildata.Illust_spring = ImageHolder.NoGoldIllust;
-        goldfaildata.Illust_summer =ImageHolder.NoGoldIllust;
-        goldfaildata.Illust_fall = ImageHolder.NoGoldIllust;
-        goldfaildata.Illust_winter = ImageHolder.NoGoldIllust;
+        goldfaildata.Illust = ImageHolder.NoGoldIllust;
 
       }
       return goldfaildata;

@@ -428,7 +428,7 @@ public class PreviewManager : MonoBehaviour
     {
       QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
       QuestName.text = _currentquest.QuestName;
-      QuestIllust.sprite = _currentquest.Illust;
+      QuestIllust.sprite = _currentquest.StartIllust;
       string _strid = $"{_currentquest.QuestID}_";
       switch (_currentquest.CurrentSequence)
       {

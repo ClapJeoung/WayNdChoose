@@ -574,6 +574,27 @@ public class UIManager : MonoBehaviour
     _color.a = _alpha;
     _img.color= _color;
   }
+  public IEnumerator ChangeAlpha(Image _img, float _targetalpha,float targettime)
+  {
+    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
+    float _time = 0.0f;
+    Color _color = Color.white;
+    float _alpha = _startalpha;
+    _color.a = _alpha;
+    _img.color = _color;
+    while (_time < targettime)
+    {
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / targettime, 0.3f));
+      _color.a = _alpha;
+      _img.color = _color;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _alpha = _endalpha;
+    _color.a = _alpha;
+    _img.color = _color;
+  }
   public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, float targettime, bool istopui)
   {
     if (istopui&&_targetalpha.Equals(1.0f)) CloseCurrentTopUI();
@@ -677,7 +698,7 @@ public class UIManager : MonoBehaviour
     }
     if (istopui) CurrentTopUI = _targetalpha.Equals(1.0f) ? _group : null;
   }
-  public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha)
+  public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha,float targettime)
   {
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
@@ -686,12 +707,13 @@ public class UIManager : MonoBehaviour
     float _alpha = _startalpha;
     _color.a = _alpha;
     _tmp.color = _color;
-    float _targettime=_targetalpha==1.0f?TextFadeInTime:TextFadeOutTime;
+    float _targettime = targettime;
     while (_time < _targettime)
     {
       _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
       _color.a = _alpha;
       _tmp.color = _color;
+
       _time += Time.deltaTime;
       yield return null;
     }
@@ -762,7 +784,7 @@ public class UIManager : MonoBehaviour
   public void SelectQuest(int index)//시나리오 버튼 누를때
   {
     SelectedQuest = GameManager.Instance.EventHolder.AllQuests[index];
-    QuestIllust.sprite = SelectedQuest.Illust;
+    QuestIllust.sprite = SelectedQuest.StartIllust;
     QuestDescription.text = SelectedQuest.PreDescription;
   }
   private QuestHolder SelectedQuest = null;
@@ -882,7 +904,7 @@ public class UIManager : MonoBehaviour
     yield return _objwait;
     yield return StartCoroutine(moverect(TendencyRect, Tendency_ClosePos, Tendency_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
   }
-  private IEnumerator moverect(RectTransform rect,Vector2 startpos,Vector2 endpos,float targettime,AnimationCurve targetcurve)
+  public IEnumerator moverect(RectTransform rect,Vector2 startpos,Vector2 endpos,float targettime,AnimationCurve targetcurve)
   {
     float _time = 0.0f, _targettime = targettime;
     while (_time < _targettime)

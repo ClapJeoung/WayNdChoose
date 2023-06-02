@@ -235,76 +235,45 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//성채 이름에 해당하는 일러스트 가져오기
 
-  public Sprite[] GetEventStartIllust(string _illustid)
+  public Sprite GetEventStartIllust(string _illustid)
   {
     //계절 적용된 id
-    Sprite[] _illusts = new Sprite[4];
-    for(int i=0;i< _illusts.Length; i++)
+    foreach (Sprite _spr in EventIllust)
     {
-     string _temp = _illustid;
-      _illusts[i] = DefaultIllust;
-      foreach(Sprite _spr in EventIllust)
+      if (_spr.name.Equals(_illustid))
       {
-        if (_spr.name.Equals(_temp))
-        {
-          _illusts[i] = _spr;
-          break;
-        }
+        return _spr;
       }
     }
-    return _illusts;
-  }//ID로 이벤트 일러스트 가져오기
-  public Sprite[] GetEventFailIllusts(string _illustid, string _index)
+      return DefaultIllust;
+  }//ID로 이벤트 일러스트 가져오기(계절별)
+  public Sprite GetEventFailIllusts(string _illustid, string _index)
   {
     //계절 적용된 id
-    Sprite[] _illusts = new Sprite[4];
-    for (int i = 0; i < _illusts.Length; i++)
+    string _temp = _illustid + "_" + _index + "_fail";
+    foreach (Sprite _spr in EventIllust)
     {
-      string _temp = _illustid  + "_" + _index + "_fail";
-      foreach (Sprite _spr in EventIllust)
+      if (_spr.name.Equals(_temp))
       {
-        if (_spr.name.Equals(_temp))
-        {
-          _illusts[i] = _spr;
-          break;
-        }
+        return _spr;
       }
-
-      if (_illusts[i] == null)
-      {
-        _temp = _illustid + "_" + _index + "_fail";
-        foreach (Sprite _spr in EventIllust)
-        {
-          if (_spr.name.Equals(_temp))
-          {
-            _illusts[i] = _spr;
-            break;
-          }
-        }
-        if (_illusts[i] == null) _illusts[i] = DefaultIllust;
-      }
-
     }
-    return _illusts;
+    return DefaultIllust;
   }
-  public Sprite[] GetEventSuccessIllusts(string _illustid, string _index)
+  public Sprite GetEventSuccessIllusts(string _illustid, string _index)
   {
     //계절 적용된 id
-    Sprite[] _illusts = new Sprite[4];
-    for (int i = 0; i < _illusts.Length; i++)
+    string _temp = _illustid + "_" + _index + "_success";
+    foreach (Sprite _spr in EventIllust)
     {
-      string _temp = _illustid + "_" + _index + "_success";
-      foreach (Sprite _spr in EventIllust)
+      if (_spr.name.Equals(_temp))
       {
-        if (_spr.name.Equals(_temp))
-        {
-          _illusts[i] = _spr;
-          break;
-        }
+        return _spr;
       }
-        if (_illusts[i] == null) _illusts[i] = DefaultIllust;
     }
-    return _illusts;
+
+
+    return DefaultIllust;
   }
 
   public Sprite GetEXPIllust(string _illustid)
