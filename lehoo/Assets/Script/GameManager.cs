@@ -370,6 +370,9 @@ public class GameManager : MonoBehaviour
   }
   public void AddShortExp(Experience _exp, int _index)
   {
+    if (UIManager.Instance.MyQuestSuggent.IsActivePanel) UIManager.Instance.MyQuestSuggent.OpenStarting();
+    //퀘스트 제시 패널에서 경험 저장하는 경우라면 다음 단계로 넘어가게
+
     if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
     _exp.Duration = ConstValues.ShortTermStartTurn;
     MyGameData.ShortTermEXP[_index] = _exp;
@@ -377,6 +380,9 @@ public class GameManager : MonoBehaviour
   }
   public void AddLongExp(Experience _exp, int _index)
   {
+    if (UIManager.Instance.MyQuestSuggent.IsActivePanel) UIManager.Instance.MyQuestSuggent.OpenStarting();
+    //퀘스트 제시 패널에서 경험 저장하는 경우라면 다음 단계로 넘어가게
+
     if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
     _exp.Duration = ConstValues.LongTermStartTurn;
     MyGameData.LongTermEXP[_index] = _exp;
@@ -587,8 +593,6 @@ public class GameManager : MonoBehaviour
 
     MyGameData.CurrentSettlement = _startsettle;
     MyGameData.CurrentPos = _startsettle.VectorPos;
-
-    MyGameData.AvailableSettlement = MyMapData.GetCloseSettles(_startsettle, 3);
 
     MyGameData.CreateSettleUnpleasant(MyMapData.AllSettles);
 

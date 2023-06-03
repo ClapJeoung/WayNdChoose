@@ -342,12 +342,6 @@ public class UI_map : UI_default
       //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
       IsOpen = false;
       SettleIcons[SelectedSettle.OriginName].GetComponent<Button>().interactable = false;
-      foreach (var _settle in GameManager.Instance.MyGameData.AvailableSettlement)
-      {
-        if (_settle.Equals(SelectedSettle)) continue;
-      }
-      GameManager.Instance.MyGameData.AvailableSettlement.Clear();
-      GameManager.Instance.MyGameData.AvailableSettlement.Add(SelectedSettle);
       //도중에 멈춘거니까 이동 버튼 활성화는 안함
     }
     else//야외 ~ 정착지
@@ -371,10 +365,8 @@ public class UI_map : UI_default
       GameManager.Instance.MyGameData.Turn++;
       UIManager.Instance.UpdateTurnIcon();
       //정착지에 도착했으면 새로운 목표 장소 3개 활성화
-      GameManager.Instance.MyGameData.AvailableSettlement = GameManager.Instance.MyMapData.GetCloseSettles(GameManager.Instance.MyGameData.CurrentSettlement, 3);
       if (SelectedSettle != null) SettleIcons[SelectedSettle.OriginName].Selected = false;
       SelectedSettle = null;
-      UpdateIcons(GameManager.Instance.MyGameData.AvailableSettlement);
 
     }
   }

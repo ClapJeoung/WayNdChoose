@@ -116,7 +116,7 @@ public class UI_Selection : MonoBehaviour
     MyGroup.interactable = false; MyGroup.blocksRaycasts = false;
     while (_time < _targettime)
     {
-      _currentpos = Vector2.Lerp(_startpos, _endpos,Mathf.Pow(_time / _targettime,0.3f));
+      _currentpos = Vector2.Lerp(_startpos, _endpos,UIManager.Instance.UIPanelOpenCurve.Evaluate(_time / _targettime));
       MyRect.anchoredPosition = _currentpos;
       _currentalpha = Mathf.Lerp(_startalpha, _endalpha,Mathf.Pow(_time / _targettime,2.0f)*1.3f);
       MyGroup.alpha = _currentalpha;
@@ -132,5 +132,17 @@ public class UI_Selection : MonoBehaviour
     MyUIDialogue.SelectSelection(this);
     if (MyTendencyType.Equals(TendencyType.None)) return;
     GameManager.Instance.AddTendencyCount(MyTendencyType,Index);
+  }
+
+  public IEnumerator movetocenter()
+  {
+    float _time = 0.0f, _targettime = 1.2f;
+    while (_time < _targettime)
+    {
+      MyRect.anchoredPosition = Vector2.Lerp(OriginPos, Vector2.zero, UIManager.Instance.UIPanelOpenCurve.Evaluate(_time / _targettime));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    MyRect.anchoredPosition = Vector2.zero;
   }
 }

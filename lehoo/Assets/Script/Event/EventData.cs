@@ -386,6 +386,17 @@ public class EventHolder
       else if (Data.FollowType.Equals(FollowType.Theme) || Data.FollowType.Equals(FollowType.Skill))
         Data.FollowTargetLevel = _data.FollowTargetSuccess;
 
+      if (_data.EndingName != "")
+      {
+        FollowEndingData _endingdata=new FollowEndingData();
+        _endingdata.ID = $"ending_{_data.ID.Split("_")[1]}";
+        _endingdata.Illust = GameManager.Instance.ImageHolder.GetEndingIllust(_endingdata.ID);
+        _endingdata.Name = GameManager.Instance.GetTextData(_endingdata.ID).Name;
+        _endingdata.Description= GameManager.Instance.GetTextData(_endingdata.ID).Description;
+        Data.EndingData = _endingdata;
+      }
+
+
       Data.Name = _textdata.Name;
       Data.ID = _id;
       Data.Illust= GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
@@ -1480,7 +1491,16 @@ public class FollowEventData:EventDataDefulat
   public int FollowTargetLevel = 0;
   public bool FollowTargetSuccess = false;
   public int FollowTendency = 0;          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
+
+  public FollowEndingData EndingData = null;
 }//연계 이벤트
+public class FollowEndingData
+{
+  public string ID = "";
+  public Sprite Illust = null;
+  public string Name = "";
+  public string Description = "";
+}
 public class QuestEventData : EventDataDefulat
 {
   public string QuestID = "";

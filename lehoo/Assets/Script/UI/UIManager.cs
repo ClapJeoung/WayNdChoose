@@ -31,9 +31,10 @@ public class UIManager : MonoBehaviour
   [SerializeField] private UI_dialogue MyDialogue = null;
   [SerializeField] private UI_Reward MyUIReward = null;
   [SerializeField] private UI_EventSuggest MyEvnetSuggest = null;
-  [SerializeField] private UI_QuestSuggest MyQuestSuggent = null;
+  public UI_QuestSuggest MyQuestSuggent = null;
   [SerializeField] private UI_Mad MyMadPanel = null;
   [SerializeField] private UI_PlaceEffect MyPlaceEffect = null;
+  public UI_FollowEnding MyFollowEnding = null;
   [SerializeField] private RectTransform HpTextRect = null;
   [SerializeField] private RectTransform SanityTextRect = null;
   [SerializeField] private RectTransform GoldTextRect = null;
@@ -712,7 +713,7 @@ public class UIManager : MonoBehaviour
     {
       _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
       _color.a = _alpha;
-      _tmp.color = _color;
+      _tmp.faceColor = _color;
 
       _time += Time.deltaTime;
       yield return null;
@@ -746,11 +747,16 @@ public class UIManager : MonoBehaviour
   {
     MyDialogue.ClosePanel_quick();
     MyEvnetSuggest.CloseSuggestPanel_quick();
-    MyQuestSuggent.CloseQuestUI();
+   if(MyQuestSuggent.IsActivePanel) MyQuestSuggent.CloseQuestUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MyEvnetSuggest.CloseSuggestPanel_normal();
   public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
   public void UpdatePlaceEffect() => MyPlaceEffect.UpdatePlace();
+  public void OpenEnding(FollowEndingData endingdata)
+  {
+    MyDialogue.CloseUI();
+    MyFollowEnding.OpenEnding(endingdata);
+  }
 
   [Space(20)]
   [SerializeField] private GameObject MainmainHolder_temp = null;
@@ -919,6 +925,13 @@ public class UIManager : MonoBehaviour
 }
 public static class ColorText
 {
+  private static Color SuccessColor = new Color(0.8867924f, 5621194f, 0.3471876f, 1.0f);
+  private static Color FailColor = new Color(0.5648571f, 0.8862745f, 0.3490196f, 1.0f);
+  public static string PercentageColor(int percent)
+  {
+    string _html = ColorUtility.ToHtmlStringRGB(Color.Lerp(FailColor, SuccessColor, percent / 100.0f));
+    return $"<{_html}>{percent}</color>";
+  }
   public static string PositiveColor(string str)
   {
     return "<#64FE2E>"+str+"</color>";

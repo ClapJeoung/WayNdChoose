@@ -40,10 +40,10 @@ public class UI_QuestSuggest : UI_default
   [SerializeField] private TextMeshProUGUI MapButtonText = null;
   [SerializeField] private RectMask2D IllustRectMask = null;
 
-  private bool IsActivePanel = false;
+  public bool IsActivePanel = false;
   public void OpenQuestSuggestUI()
   {
-
+    IsActivePanel = true;
     UIManager.Instance.AddUIQueue(setquestsuggest_beginning());
   }
   private IEnumerator setquestsuggest_beginning()
@@ -107,6 +107,8 @@ public class UI_QuestSuggest : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllust, 0.0f, QuestUIFadeTime));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionText, 0.0f, QuestUIFadeTime));
 
+    yield return Wait;
+
     QuestIllust.sprite = _quest.StartingIllust;
     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllust, 1.0f, QuestUIFadeTime));
     QuestDescriptionText_size.text = _quest.StartingDescription;
@@ -120,7 +122,7 @@ public class UI_QuestSuggest : UI_default
   }
   public void CloseQuestUI()
   {
-    if (!IsActivePanel) return;
+    IsActivePanel = false;
     StartCoroutine(closequestui());
   }
   private IEnumerator closequestui()

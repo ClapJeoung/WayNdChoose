@@ -42,29 +42,7 @@ public class ImageHolder : ScriptableObject
   public Sprite TendencySelectionIcon = null;
   public Sprite ExpSelectionIcon = null;
   public Sprite SkillSelectionIcon = null;
-  [Space(10)]
-  public List<Sprite> ResidenceIllust = null;
-  public List<Sprite> MarketPlaceIllust = null;
-  public List<Sprite> TempleIllust = null;
-  public List<Sprite> LibraryIllust = null;
-  public List<Sprite> TheaterIllust = null;
-  public List<Sprite> AcademyIllust = null;
     public Sprite NoneIllust = null;
-  public Sprite GetPlaceIllust(PlaceType _placetype)
-  {
-    List<Sprite> _list = new List<Sprite>();
-    switch (_placetype)
-    {
-      case PlaceType.Residence: _list = ResidenceIllust;break;
-      case PlaceType.Marketplace: _list = MarketPlaceIllust; break;
-      case PlaceType.Temple: _list = TempleIllust; break;
-      case PlaceType.Library: _list = LibraryIllust; break;
-      case PlaceType.Theater: _list = TheaterIllust; break;
-      case PlaceType.Academy: _list = AcademyIllust; break;
-    }
-    if (_list.Count.Equals(0)) return DefaultIllust;
-    return _list[Random.Range(0, _list.Count)];
-  }
   public Sprite ResidenceIcon = null;
   public Sprite MarketPlaceIcon = null;
   public Sprite TempleIcon = null;
@@ -86,8 +64,15 @@ public class ImageHolder : ScriptableObject
   [Space(10)]
     public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
+  public List<Sprite> EndingIllusts=new List<Sprite>();//엔딩 일러스트
+  public Sprite GetEndingIllust(string index)
+  {
+    foreach (var _temp in EndingIllusts)
+      if (_temp.name.Equals(index)) return _temp;
+
+    return DefaultIllust;
+  }
   public Sprite NoGoldIllust = null;
-  public Sprite EmptyExpIllust = null;
     public Sprite EmptyLongExpIcon = null;
     public Sprite EmptyShortExpIcon = null;
   public Sprite DefaultIllust = null;                                 //빈 일러스트

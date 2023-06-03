@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int StartGold = 50;
   public const float  HPGen_Exp = 0.08f,  HPLoss_Exp = 0.01f;
   public const float GoldGen_Exp = 0.15f,  GoldLoss_Exp = 0.15f;
   public const float GoldLoss_Tendency_1 = 0.1f, GoldLoss_Tendency_2 = 0.2f, GoldLoss_Tendency_3 = 0.35f, GoldGen_Tendency_3 = 0.3f;
@@ -783,7 +784,6 @@ public class GameData    //게임 진행도 데이터
   public Vector3 CurrentPos = Vector3.zero;//맵 상 현재 좌표
   public float MoveProgress = 0.0f;  //0.0f면 현재 정착지, 그 외면 정착지에서 출발해 야외 이벤트를 만난 상황
 
-  public List<Settlement> AvailableSettlement = new List<Settlement>();   //현재 이동 가능한 정착지들
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
   public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
   public List<PlaceType> VisitedPlaces = new List<PlaceType>();     //현재 정착지에서 사용한 장소 목록
@@ -1099,7 +1099,7 @@ public class GameData    //게임 진행도 데이터
     Turn = 0;
     HP = 100;
     CurrentSanity = MaxSanity;
-    Gold = 50;
+    Gold = ConstValues.StartGold ;
     Skill _speech = new Skill(ThemeType.Conversation, ThemeType.Conversation,SkillName.Speech);
     Skill _treat = new Skill(ThemeType.Conversation, ThemeType.Force, SkillName.Threat);
     Skill _deception = new Skill(ThemeType.Conversation, ThemeType.Wild, SkillName.Deception);
@@ -1132,10 +1132,6 @@ public class GameData    //게임 진행도 데이터
     CurrentSuggestingEvents.Clear();
     CurrentEvent = null;
   }
-}
-public class GameJsonData
-{
-
 }
 public enum ThemeType { Conversation, Force, Wild, Intelligence }
 public enum SkillName { Speech,Threat,Deception,Logic,Martialarts,Bow,Somatology,Survivable,Biology,Knowledge}
@@ -1309,6 +1305,20 @@ public class Tendency
     }
   }
   public Tendency(TendencyType type) { Type = type; }
+}
+public class GameJsonData
+{
+  public int Year, Turn, HP, Sanity, Gold;
+  public List<string> SettleOriginNames = new List<string>();
+  public List<int> SettleUnps = new List<int>();
+  public List<int> SkillLevels = new List<int>();
+  public int TendencyBodyLevel, TendencyBodyCount, TenndencyChangeDir;
+  public int TendencyHeadLevel, TendencyHeadCount, TendencyChangeDir;
+  public string[] LongTermExpID, ShortTermExpID;
+  public int[] LongTermExpTurn, ShortTermExpTurn;
+  public Vector2 CurrentPos;
+  public float MoveProgress;
+  public string CurrentSettleOriginName;
 }
 public class ProgressData
 {

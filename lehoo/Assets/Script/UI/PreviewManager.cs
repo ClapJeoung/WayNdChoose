@@ -711,7 +711,7 @@ public class PreviewManager : MonoBehaviour
     else
     {
       if (PaySuccessPercent.gameObject.activeInHierarchy.Equals(false)) PaySuccessPercent.gameObject.SetActive(true);
-      PaySuccessPercent.text = _percent.ToString() + "%";
+      PaySuccessPercent.text =ColorText.PercentageColor(_percent) + "%";
          _additionallength += SelectionPayPerLength + SelectionPayInfoSpace;
     }
 
@@ -768,7 +768,7 @@ public class PreviewManager : MonoBehaviour
     CheckIcon_A.sprite = _icon;
     CheckIcon_B.transform.parent.gameObject.SetActive(false);
     CheckTargetLevel.text = $"{_currentlevel} / {_targetlevel}";
-    CheckPercent.text = _percent.ToString() + "%";
+    CheckPercent.text = ColorText.PercentageColor(_percent) + "%";
 
     CurrentPreview = SelectionCheckPanel.GetComponent<RectTransform>();
 
@@ -826,7 +826,7 @@ public class PreviewManager : MonoBehaviour
     CheckIcon_B.sprite = _icons[1];
     CheckLevelByOtherSkills.text = _otherskilllevel;
     CheckTargetLevel.text =$"{_currentlevel} / {_targetlevel}";
-    CheckPercent.text = _percent.ToString() + "%";
+    CheckPercent.text = ColorText.PercentageColor(_percent) + "%";
 
     CurrentPreview = SelectionCheckPanel.GetComponent<RectTransform>();
     Vector2 _newsize = SelectionCheckNoneTendendcySize;
