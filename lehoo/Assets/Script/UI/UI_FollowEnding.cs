@@ -48,7 +48,6 @@ public class UI_FollowEnding : MonoBehaviour
   public void CloseUI()
   {
     if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.IsWorking = true;
     UIManager.Instance.AddUIQueue(closeui());
   }
   private IEnumerator closeui()

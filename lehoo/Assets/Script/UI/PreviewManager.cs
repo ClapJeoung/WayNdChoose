@@ -152,6 +152,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelectOriginEffect = null;
   [SerializeField] private TextMeshProUGUI ExpSelectNewTurn = null;
   [SerializeField] private TextMeshProUGUI ExpSelectNewEffect = null;
+  [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectionBadPanel = null;
   [SerializeField] private TextMeshProUGUI ExpSelectionBadText = null;
@@ -166,6 +167,11 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI PlaceName = null;
   [SerializeField] private TextMeshProUGUI PlaceDescription = null;
   [SerializeField] private TextMeshProUGUI PlaceSubDescription = null;
+  [Space(10)]
+  [SerializeField] private GameObject EnvirPanel = null;
+  [SerializeField] private Image EnvirIcon = null;
+  [SerializeField] private TextMeshProUGUI EnvirName = null;
+  [SerializeField] private TextMeshProUGUI EnvirDescription = null;
   private List<CanvasGroup> AllCanvasGroup = new List<CanvasGroup>();
   private void Awake()
   {
@@ -417,34 +423,24 @@ public class PreviewManager : MonoBehaviour
   }//현재 이동 가능 여부에 따라 텍스트만 출력
   public void OpenQuestPreview()
   {
-    if (GameManager.Instance.MyGameData.CurrentQuest == null)
+    QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
+    QuestName.text = _currentquest.QuestName;
+    QuestIllust.sprite = _currentquest.StartIllust;
+    string _strid = $"{_currentquest.QuestID}_";
+    switch (_currentquest.CurrentSequence)
     {
-      TextData _textdata = GameManager.Instance.GetTextData("donthaveanyquest");
-      QuestName.text = _textdata.Name;
-      QuestIllust.sprite = GameManager.Instance.ImageHolder.NothingQuestIllust;
-      NextQuestEventDescription.text = _textdata.Description;
-    }
-    else
-    {
-      QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
-      QuestName.text = _currentquest.QuestName;
-      QuestIllust.sprite = _currentquest.StartIllust;
-      string _strid = $"{_currentquest.QuestID}_";
-      switch (_currentquest.CurrentSequence)
-      {
-        case QuestSequence.Start:
-        case QuestSequence.Rising:
-          _strid += "rising";
-          break;//퀘스트id_rising을 부 설명으로
-        case QuestSequence.Climax:
-          _strid += $"climax_{_currentquest.FinishedClimaxCount.ToString()}";
-          break;//id_climax_순서 를 부 설명으로
-        case QuestSequence.Falling:
-          _strid += "falling";
-          break;//id_falling을 부 설명으로
-      }//퀘스트가 존재할경우
-      NextQuestEventDescription.text = GameManager.Instance.GetTextData(_strid).Name;
-    }
+      case QuestSequence.Start:
+      case QuestSequence.Rising:
+        _strid += "rising";
+        break;//퀘스트id_rising을 부 설명으로
+      case QuestSequence.Climax:
+        _strid += $"climax_{_currentquest.FinishedClimaxCount.ToString()}";
+        break;//id_climax_순서 를 부 설명으로
+      case QuestSequence.Falling:
+        _strid += "falling";
+        break;//id_falling을 부 설명으로
+    }//퀘스트가 존재할경우
+    NextQuestEventDescription.text = GameManager.Instance.GetTextData(_strid).Name;
     QuestSubDescription.text = GameManager.Instance.GetTextData("quest").SelectionSubDescription;
 
     CurrentPreview = QuestPreview.GetComponent<RectTransform>();
@@ -519,7 +515,7 @@ public class PreviewManager : MonoBehaviour
     _str =string.Format(GameManager.Instance.GetTextData("byexp_preview").Name, _valuestr);
     SkillLevelByExp.text = _str;
 
-
+    Debug.Log(_onlyplace);
     if (_onlyplace != 0)
     {
       makecolorvalue(_onlyplace);
@@ -550,7 +546,7 @@ public class PreviewManager : MonoBehaviour
     ExpName.text =_exp.Name;
     ExpDuration.text = $"{_exp.Duration}";
     ExpEffect.text = _exp.ShortEffectString;
-    ExpSubDescription.text = GameManager.Instance.GetTextData(_exp.ID).SelectionSubDescription;
+    ExpSubDescription.text = GameManager.Instance.GetTextData(_exp.ID).SelectionDescription;
 
     CurrentPreview = ExpPreview.GetComponent<RectTransform>();
 
@@ -1071,9 +1067,10 @@ public class PreviewManager : MonoBehaviour
 
     string _neweffect = _new.ShortEffectString;
     ExpSelectNewEffect.text = _neweffect;
-    ExpSelectNewTurn.text = _new.Duration.ToString();
+    ExpSelectNewTurn.text = _turn.ToString();
 
     CurrentPreview = ExpSelectExistPanel.GetComponent<RectTransform>();
+    ExpSelecitonExistDescription.text = _description;
 
     IEnumerator _cor = null;
     _cor = fadepreview(ExpSelectExistPanel, true);
@@ -1152,7 +1149,18 @@ public class PreviewManager : MonoBehaviour
     StartCoroutine(_cor);
 
   }
+  public void OpenEnvirPanel(EnvironmentType envir)
+  {
+    EnvirIcon.sprite = GameManager.Instance.ImageHolder.GetEnvirTile(envir);
+    TextData _textdata = GameManager.Instance.GetTextData(envir);
+    EnvirName.text = _textdata.Name;
+    EnvirDescription.text = _textdata.Description;
 
+    CurrentPreview = EnvirPanel.GetComponent<RectTransform>();
+    IEnumerator _cor = null;
+    _cor = fadepreview(EnvirPanel, true);
+    StartCoroutine(_cor);
+  }
   private Vector2 Newpos = Vector2.zero;
   public void Update()
   {

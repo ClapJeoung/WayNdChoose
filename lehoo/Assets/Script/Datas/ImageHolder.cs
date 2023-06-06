@@ -72,6 +72,12 @@ public class ImageHolder : ScriptableObject
 
     return DefaultIllust;
   }
+  public Sprite GetRandomMainIllust(Sprite lastillust)
+  {
+    Sprite _spr=Random.Range(0,2).Equals(0)?EventIllust[Random.Range(0,EventIllust.Count)]:EXPIllust[Random.Range(0,EXPIllust.Count)];
+    while(_spr==lastillust) _spr = Random.Range(0, 2).Equals(0) ? EventIllust[Random.Range(0, EventIllust.Count)] : EXPIllust[Random.Range(0, EXPIllust.Count)];
+    return _spr;
+  }//대문에 넣을 일러스트 무작위로 전달
   public Sprite NoGoldIllust = null;
     public Sprite EmptyLongExpIcon = null;
     public Sprite EmptyShortExpIcon = null;
@@ -86,8 +92,6 @@ public class ImageHolder : ScriptableObject
   public Sprite FallIcon_deactive = null;
   public Sprite WinterIcon_active = null;
   public Sprite WinterIcon_deactive = null;
-  [Space(10)]
-    public Sprite NothingQuestIllust = null;
   [Space(10)]
   public Sprite HPIcon = null;
   public Sprite HPIncreaseIcon = null;
@@ -130,6 +134,46 @@ public class ImageHolder : ScriptableObject
   public Sprite SelectionBackground_physical = null;
   public Sprite SelectionBackground_mental = null;
   public Sprite SelectionBackground_material = null;
+  [Space(10)]
+  public Sprite[] NullEnvirIllust=new Sprite[0];
+  public Sprite[] RiverEnvirIllust=null;
+  public Sprite[] ForestEnvirIllust = null;
+  public Sprite[] HighlandEnvirIllust = null;
+  public Sprite[] MountainEnvirIllust = null;
+  public Sprite[] SeaEnvirIllust = null;
+  [Space(10)]
+  public Sprite RiverTile = null;
+  public Sprite ForestTile=null,HighlandTile=null,MountainTile=null,SeaTile=null;
+  public Sprite GetEnvirTile(EnvironmentType envir)
+  {
+    switch (envir)
+    {
+      case EnvironmentType.River: return RiverTile;
+      case EnvironmentType.Forest: return ForestTile;
+      case EnvironmentType.Highland: return HighlandTile;
+      case EnvironmentType.Mountain: return MountainTile;
+      case EnvironmentType.Sea: return SeaTile;
+      default: return DefaultIcon;
+    }
+  }
+  public Sprite GetEnvirBackground(EnvironmentType envir)
+  {
+    switch (envir)
+    {
+      case EnvironmentType.River:
+        return RiverEnvirIllust[GameManager.Instance.MyGameData.Turn];
+      case EnvironmentType.Forest:
+        return ForestEnvirIllust[GameManager.Instance.MyGameData.Turn];
+      case EnvironmentType.Highland:
+        return HighlandEnvirIllust[GameManager.Instance.MyGameData.Turn];
+      case EnvironmentType.Mountain:
+        return MountainEnvirIllust[GameManager.Instance.MyGameData.Turn];
+      case EnvironmentType.Sea:
+        return SeaEnvirIllust[GameManager.Instance.MyGameData.Turn];
+      default:
+        return NullEnvirIllust[GameManager.Instance.MyGameData.Turn];
+    }
+  }
   public Sprite SelectionBackground (TendencyType tendencytype,bool dir)
   {
     switch (tendencytype)
@@ -230,6 +274,7 @@ public class ImageHolder : ScriptableObject
         return _spr;
       }
     }
+    Debug.Log(_illustid);
       return DefaultIllust;
   }//ID로 이벤트 일러스트 가져오기(계절별)
   public Sprite GetEventFailIllusts(string _illustid, string _index)

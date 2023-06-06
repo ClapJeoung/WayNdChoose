@@ -45,10 +45,13 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
   [SerializeField] private Color ActiveThemeColor = Color.white;
   [SerializeField] private Color DeActiveThemeColor= Color.grey;
   private int CurrentThemeIndex = -1;
-  private Vector2 ClosePos =new Vector2( 1600.0f,0.0f);
-  private Vector2 OpenPos =new Vector2( 170.0f,0.0f);
+  private Vector2 ClosePos =new Vector2(1608.0f, -470.0f);
+  private Vector2 OpenPos =new Vector2( 170.0f,-470.0f);
   public void OpenUI(int _index)
   {
+    MyGroup.alpha = 1.0f;
+    MyGroup.interactable = true;
+    MyGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
     if (UIManager.Instance.IsWorking) return;
@@ -140,7 +143,7 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
     if (_levelbyskills > 0) _themedescription += string.Format(GameManager.Instance.GetTextData("byskill_themepanel").Name,
           GameManager.Instance.GetTextData(_themetype).Name, _levelbyskills.ToString(), GameManager.Instance.GetTextData(_centralskill.SkillType).Icon+ GameManager.Instance.GetTextData(_centralskill.SkillType).Name) + "\n";
     if (_levelbyexps > 0) _themedescription += string.Format(GameManager.Instance.GetTextData("byexp_themepanel").Name,
-          GameManager.Instance.GetTextData(_themetype).Icon + " " + GameManager.Instance.GetTextData(_themetype).Name, _levelbyexps) + "\n";
+          GameManager.Instance.GetTextData(_themetype).Name, _levelbyexps) + "\n";
     if(_levelbytendency>0)_themedescription+=string.Format(GameManager.Instance.GetTextData("bytendency_themepanel").Name,
      GameManager.Instance.MyGameData.Tendency_Body.Icon+" "+GameManager.Instance.MyGameData.Tendency_Body.Name)+"\n";
 
@@ -224,7 +227,8 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
     TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.CloseUI(MyRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime,true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime, true));
+    StartCoroutine(UIManager.Instance.CloseUI(MyRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime,false));
     IsOpen = false;
     CurrentThemeIndex = -1;
   }

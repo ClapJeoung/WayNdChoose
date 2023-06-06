@@ -41,236 +41,6 @@ public class maptext : MonoBehaviour
      //   StartCoroutine(makeperfectmap());
     }
 
-  private IEnumerator _simul_status()
-  {
-    int town_wealth_max = 0, town_wealth_aver = 0,
-      town_faith_max = 0, town_faith_aver = 0;
-    int city_wealth_max = 0, city_wealth_aver = 0,
- city_faith_max = 0, city_faith_aver = 0, city_culture_max = 0, city_culture_aver = 0, city_science_max = 0, city_science_aver = 0;
-    int castle_wealth_max = 0, castle_wealth_aver = 0,
- castle_faith_max = 0, castle_faith_aver = 0, castle_culture_max = 0, castle_culture_aver = 0,castle_science_max = 0, castle_science_aver = 0;
-
-    int _town_wealth_low = 0, _town_wealth_middle = 0, _town_wealth_high = 0,
-      _town_faith_low = 0, _town_faith_middle = 0, _town_faith_high = 0,
-      _town_culture_low = 0, _town_culture_middle = 0, _town_culture_high = 0;
-
-    int _city_wealth_low = 0, _city_wealth_middle = 0, _city_wealth_high = 0,
-      _city_faith_low = 0, _city_faith_middle = 0, _city_faith_high = 0,
-      _city_culture_low = 0, _city_culture_middle = 0, _city_culture_high = 0,
-      _city_science_low = 0, _city_science_middle = 0, _city_science_high = 0;
-
-    int _castle_wealth_low = 0, _castle_wealth_middle = 0, _castle_wealth_high = 0,
-      _castle_faith_low = 0, _castle_faith_middle = 0, _castle_faith_high = 0,
-      _castle_culture_low = 0, _castle_culture_middle = 0, _castle_culture_high = 0,
-      _castle_science_low = 0, _castle_science_middle = 0, _castle_science_high = 0;
-
-    Dictionary<int,int> _town_wealth_data=new Dictionary<int,int>();
-    Dictionary<int, int> _town_faith_data = new Dictionary<int, int>();
-
-    Dictionary<int, int> _city_wealth_data = new Dictionary<int, int>();
-    Dictionary<int, int> _city_faith_data = new Dictionary<int, int>();
-    Dictionary<int, int> _city_culture_data = new Dictionary<int, int>();
-    Dictionary<int,int> _city_science_data=new Dictionary<int, int>();
-
-    Dictionary<int, int> _castle_wealth_data = new Dictionary<int, int>();
-    Dictionary<int, int> _castle_faith_data = new Dictionary<int, int>();
-    Dictionary<int, int> _castle_culture_data = new Dictionary<int, int>();
-    Dictionary<int,int> _castle_science_data=new Dictionary<int, int>();
-
-    MapSaveData _currentmap =null;
-
-    int _towncount=0,_citycount=0, _castlecount=0;
-    for (int a = 0; a < 1000; a++)
-        {
-           _currentmap= MakeMap();
-      for (int i = 0; i < _currentmap.TownCount; i++)
-      {
-        _towncount++;
-        if (_currentmap.Wealth_town[i] > town_wealth_max) town_wealth_max = _currentmap.Wealth_town[i];
-        town_wealth_aver = (town_wealth_aver * i + 1 + _currentmap.Wealth_town[i]) / (i + 1);
-        Adddata(_town_wealth_data, _currentmap.Wealth_town[i]);
-        if (_currentmap.Faith_town[i] > town_faith_max) town_faith_max = _currentmap.Faith_town[i];
-        town_faith_aver = (town_faith_aver * i + 1 + _currentmap.Faith_town[i]) / (i + 1);
-        Adddata(_town_faith_data, _currentmap.Faith_town[i]);
-
-        if (_currentmap.Wealth_town[i] <= SettleCountdeg.Town_Wealth_Low) _town_wealth_low++;
-        else if (_currentmap.Wealth_town[i] <= SettleCountdeg.Town_Wealth_Middle) _town_wealth_middle++;
-        else _town_wealth_high++;
-        if (_currentmap.Faith_town[i] <= SettleCountdeg.Town_Faith_Low) _town_faith_low++;
-        else if (_currentmap.Faith_town[i] <= SettleCountdeg.Town_Faith_Middle) _town_faith_middle++;
-        else _town_faith_high++;
-
-      }
-      for (int i = 0; i < _currentmap.CityCount; i++)
-      {
-        _citycount++;
-        if (_currentmap.Wealth_city[i] > city_wealth_max) city_wealth_max = _currentmap.Wealth_city[i];
-        city_wealth_aver = (city_wealth_aver * i + 1 + _currentmap.Wealth_city[i]) / (i + 1);
-        Adddata(_city_wealth_data, _currentmap.Wealth_city[i]);
-        if (_currentmap.Faith_city[i] > city_faith_max) city_faith_max = _currentmap.Faith_city[i];
-        city_faith_aver = (city_faith_aver * i + 1 + _currentmap.Faith_city[i]) / (i + 1);
-        Adddata(_city_faith_data, _currentmap.Faith_city[i]);
-        if (_currentmap.Culture_city[i] > city_culture_max) city_culture_max = _currentmap.Culture_city[i];
-        city_culture_aver = (city_culture_aver * i + 1 + _currentmap.Culture_city[i]) / (i + 1);
-        Adddata(_city_culture_data, _currentmap.Culture_city[i]);
-        if (_currentmap.Science_city[i] > city_science_max) city_science_max = _currentmap.Science_city[i];
-        city_science_aver = (city_science_aver * i + 1 + _currentmap.Science_city[i]) / (i + 1);
-        Adddata(_city_science_data, _currentmap.Science_city[i]);
-
-        if (_currentmap.Wealth_city[i] <= SettleCountdeg.City_Wealth_Low) _city_wealth_low++;
-        else if (_currentmap.Wealth_city[i] <= SettleCountdeg.City_Wealth_Middle) _city_wealth_middle++;
-        else _city_wealth_high++;
-        if (_currentmap.Faith_city[i] <= SettleCountdeg.City_Faith_Low) _city_faith_low++;
-        else if (_currentmap.Faith_city[i] <= SettleCountdeg.City_Faith_Middle) _city_faith_middle++;
-        else _city_faith_high++;
-        if (_currentmap.Culture_city[i] <= SettleCountdeg.City_Culture_Low) _city_culture_low++;
-        else if (_currentmap.Culture_city[i] <= SettleCountdeg.City_Culture_Middle) _city_culture_middle++;
-        else _city_culture_high++;
-        if (_currentmap.Science_city[i] <= SettleCountdeg.City_Science_Low) _city_science_low++;
-        else if (_currentmap.Science_city[i] <= SettleCountdeg.City_Science_Middle) _city_science_middle++;
-        else _city_science_high++;
-
-      }
-      for (int i=0;i<_currentmap.CastleCount; i++)
-      {
-        _castlecount++;
-        if (_currentmap.Wealth_castle[i] > castle_wealth_max) castle_wealth_max = _currentmap.Wealth_castle[i];
-        castle_wealth_aver = (castle_wealth_aver * i + 1 + _currentmap.Wealth_castle[i]) / (i + 1);
-        Adddata(_castle_wealth_data, _currentmap.Wealth_castle[i]);
-        if (_currentmap.Faith_castle[i] > castle_faith_max) castle_faith_max = _currentmap.Faith_castle[i];
-        castle_faith_aver = (castle_faith_aver * i + 1 + _currentmap.Faith_castle[i]) / (i + 1);
-        Adddata(_castle_faith_data, _currentmap.Faith_castle[i]);
-        if (_currentmap.Culture_castle[i] > castle_culture_max) castle_culture_max = _currentmap.Culture_castle[i];
-        castle_culture_aver = (castle_culture_aver * i + 1 + _currentmap.Culture_castle[i]) / (i + 1);
-        Adddata(_castle_culture_data, _currentmap.Culture_castle[i]);
-        if (_currentmap.Science_castle[i] > castle_science_max) castle_science_max = _currentmap.Science_castle[i];
-        castle_science_aver = (castle_science_aver * i + 1 + _currentmap.Science_castle[i]) / (i + 1);
-        Adddata(_castle_science_data, _currentmap.Science_castle[i]);
-
-
-        if (_currentmap.Wealth_castle[i] <= SettleCountdeg.Caslte_Wealth_Low) _castle_wealth_low++;
-        else if (_currentmap.Wealth_castle[i] <= SettleCountdeg.Caslte_Wealth_Middle) _castle_wealth_middle++;
-        else _castle_wealth_high++;
-        if (_currentmap.Faith_castle[i] <= SettleCountdeg.Caslte_Faith_Low) _castle_faith_low++;
-        else if (_currentmap.Faith_castle[i] <= SettleCountdeg.Caslte_Faith_Middle) _castle_faith_middle++;
-        else _castle_faith_high++;
-        if (_currentmap.Culture_castle[i] <= SettleCountdeg.Caslte_Culture_Low) _castle_culture_low++;
-        else if (_currentmap.Culture_castle[i] <= SettleCountdeg.Caslte_Culture_Middle) _castle_culture_middle++;
-        else _castle_culture_high++;
-        if (_currentmap.Science_castle[i] <= SettleCountdeg.Castle_Science_Low) _castle_science_low++;
-        else if (_currentmap.Science_castle[i] <= SettleCountdeg.Castle_Science_Middle) _castle_science_middle++;
-        else _castle_science_high++;
-      }
-    }
-    string _townwealthdata = "",_townfaithdata="",_citywealthdata="",_cityfaithdata="",_cityculturedata="",_castlewealthdata="",_castlefaithdata="",_castleculturedata= "";
-    string _citysciencedata = "", _castlesciencedata = "";
-    Resort(ref _town_wealth_data); Resort(ref _town_faith_data);
-    Resort(ref _city_wealth_data); Resort(ref _city_faith_data);Resort(ref _city_culture_data);
-    Resort(ref _castle_wealth_data); Resort(ref _castle_faith_data); Resort(ref _castle_culture_data);
-    Resort(ref _city_science_data); Resort(ref _castle_science_data);
-
-
-    foreach (int _key in _town_wealth_data.Keys) _townwealthdata += $"{_key,-2}: {_town_wealth_data[_key],-2}    ";
-    foreach (int _key in _town_faith_data.Keys) _townfaithdata += $"{_key,-2}: {_town_faith_data[_key],-2}    ";
-    foreach (int _key in _city_wealth_data.Keys) _citywealthdata += $"{_key,-2}: {_city_wealth_data[_key],-2}    ";
-    foreach (int _key in _city_faith_data.Keys) _cityfaithdata += $"{_key,-2}: {_city_faith_data[_key],-2}    ";
-    foreach (int _key in _city_culture_data.Keys) _cityculturedata += $"{_key,-2}: {_city_culture_data[_key],-2}    ";
-    foreach (int _key in _city_science_data.Keys) _citysciencedata += $"{_key,-2}: {_city_science_data[_key],-2}    ";
-
-    foreach (int _key in _castle_wealth_data.Keys) _castlewealthdata += $"{_key,-2}: {_castle_wealth_data[_key],-2}    ";
-    foreach (int _key in _castle_faith_data.Keys) _castlefaithdata += $"{_key,-2}: {_castle_faith_data[_key],-2}    ";
-    foreach (int _key in _castle_culture_data.Keys) _castleculturedata += $"{_key,-2}: {_castle_culture_data[_key],-2}    ";
-    foreach (int _key in _castle_science_data.Keys) _castlesciencedata += $"{_key,-2}: {_castle_science_data[_key],-2}    ";
-
-
-    Debug.Log($"마을 검사  마을 총 개수 : {_towncount}\n\n" +
-  $"부 최대 : {town_wealth_max}   부 평균 : {town_wealth_aver}\n" +
-  $"{_townwealthdata}\n" +
-          $"low : {_town_wealth_low,-4} ({((int)(_town_wealth_low*100.0f/_towncount))/100.0f})   " +
-          $"middle : {_town_wealth_middle,-4} ({((int)(_town_wealth_middle * 100.0f / _towncount)) / 100.0f})   " +
-          $"high : {_town_wealth_high} ({((int)(_town_wealth_high * 100.0f / _towncount)) / 100.0f})\n\n" +
-  $"신앙 최대 : {town_faith_max}   신앙 평균 : {town_faith_aver}\n" +
-     $"{_townfaithdata}\n" +
-          $"low : {_town_faith_low,-4} ({((int)(_town_faith_low * 100.0f / _towncount)) / 100.0f})   " +
-          $"middle : {_town_faith_middle,-4} ({((int)(_town_faith_middle * 100.0f / _towncount)) / 100.0f})   " +
-          $"high : {_town_faith_high} ({((int)(_town_faith_high * 100.0f / _towncount)) / 100.0f})\n\n" +
-  $"───────────────────────────────────────────────────────────\n" +
-      $"도시 검사  도시 총 개수 : {_citycount}\n\n" +
-  $"부 최대 : {city_wealth_max}   부 평균 : {city_wealth_aver}\n" +
-     $"{_citywealthdata}\n" +
-          $"low : {_city_wealth_low,-4} ({((int)(_city_wealth_low * 100.0f / _citycount)) / 100.0f})   " +
-          $"middle : {_city_wealth_middle,-4} ({((int)(_city_wealth_middle * 100.0f / _citycount)) / 100.0f})   " +
-          $"high : {_city_wealth_high} ({((int)(_city_wealth_high * 100.0f / _citycount)) / 100.0f})\n\n" +
-  $"신앙 최대 : {city_faith_max}   신앙 평균 : {city_faith_aver}\n" +
-      $"{_cityfaithdata}\n" +
-          $"low : {_city_faith_low,-4} ({((int)(_city_faith_low * 100.0f / _citycount)) / 100.0f})   " +
-          $"middle : {_city_faith_middle,-4} ({((int)(_city_faith_middle * 100.0f / _citycount)) / 100.0f})   " +
-          $"high : {_city_faith_high} ({((int)(_city_faith_high * 100.0f / _citycount)) / 100.0f})\n\n" +
-      $"문화 최대 : {city_culture_max}   문화 평균 : {city_culture_aver}\n" +
-      $"{_cityculturedata}\n" +
-          $"low : {_city_culture_low,-4} ({((int)(_city_culture_low * 100.0f / _citycount)) / 100.0f})   " +
-          $"middle : {_city_culture_middle,-4} ({((int)(_city_culture_middle * 100.0f / _citycount)) / 100.0f})   " +
-          $"high : {_city_culture_high} ({((int)(_city_culture_high * 100.0f / _citycount)) / 100.0f})\n\n" +
-      $"과학 최대 : {city_science_max}   과학 평균 : {city_science_aver}\n" +
-      $"{_citysciencedata}\n" +
-          $"low : {_city_science_low,-4} ({((int)(_city_science_low * 100.0f / _citycount)) / 100.0f})   " +
-          $"middle : {_city_science_middle,-4} ({((int)(_city_science_middle * 100.0f / _citycount)) / 100.0f})   " +
-          $"high : {_city_science_high} ({((int)(_city_science_high * 100.0f / _citycount)) / 100.0f})\n\n" +
- $"───────────────────────────────────────────────────────────\n" +
-      $"성채 검사  성채 총 개수 : {_castlecount}\n\n" +
-  $"부 최대 : {castle_wealth_max}   부 평균 : {castle_wealth_aver}\n" +
-       $"{_castlewealthdata}\n" +
-          $"low : {_castle_wealth_low,-4} ({((int)(_castle_wealth_low * 100.0f / _castlecount)) / 100.0f})   " +
-          $"middle : {_castle_wealth_middle,-4} ({((int)(_castle_wealth_middle * 100.0f / _castlecount)) / 100.0f})   " +
-          $"high : {_castle_wealth_high} ({((int)(_castle_wealth_high * 100.0f / _castlecount)) / 100.0f})\n\n" +
-  $"신앙 최대 : {castle_faith_max}   신앙 평균 : {castle_faith_aver}\n" +
-     $"{_castlefaithdata}\n" +
-          $"low : {_castle_faith_low,-4} ({((int)(_castle_faith_low * 100.0f / _castlecount)) / 100.0f})   " +
-          $"middle : {_castle_faith_middle,-4} ({((int)(_castle_faith_middle * 100.0f / _castlecount)) / 100.0f})   " +
-          $"high : {_castle_faith_high} ({((int)(_castle_faith_high * 100.0f / _castlecount)) / 100.0f})\n\n" +
-      $"문화 최대 : {castle_culture_max}   문화 평균 : {castle_culture_aver}\n" +
-       $"{_castleculturedata}\n" +
-          $"low : {_castle_culture_low,-4} ({((int)(_castle_culture_low * 100.0f / _castlecount)) / 100.0f})   " +
-          $"middle : {_castle_culture_middle,-4} ({((int)(_castle_culture_middle * 100.0f / _castlecount)) / 100.0f})   " +
-          $"high : {_castle_culture_high} ({((int)(_castle_culture_high * 100.0f / _castlecount)) / 100.0f})\n\n" +
-          $"과학 최대 : {castle_science_max}   과학 평균 : {castle_science_aver}\n" +
-      $"{_castlesciencedata}\n" +
-          $"low : {_castle_science_low,-4} ({((int)(_castle_science_low * 100.0f / _castlecount)) / 100.0f})   " +
-          $"middle : {_castle_science_middle,-4} ({((int)(_castle_science_middle * 100.0f / _castlecount)) / 100.0f})   " +
-          $"high : {_castle_science_high} ({((int)(_castle_science_high * 100.0f / _castlecount)) / 100.0f})\n\n" +
-  $"───────────────────────────────────────────────────────────\n" + 
-      $"");
-    void Adddata(Dictionary<int,int> _dic, int _data)
-    {
-      if (_dic.ContainsKey(_data)) _dic[_data]++;
-      else _dic.Add(_data, 1);
-    }
-    void Resort(ref Dictionary<int,int> _dic)
-    {
-      List<int> _keys_origin = new List<int>();
-      List<int> _keys = new List<int>();
-      List<int> _values = new List<int>();
-      foreach (int __key in _dic.Keys) { _keys_origin.Add(__key); _keys.Add(__key); _values.Add(_dic[__key]); }
-      _keys.Sort();
-      List<int> _originpos = new List<int>();
-      foreach(int _origin in _keys)
-      {
-        for(int i = 0; i < _keys_origin.Count; i++)
-        {
-          if (_keys_origin[i] == _origin)
-          {
-            _originpos.Add(i); break;
-          }
-        }
-      }
-      _dic.Clear();
-      for(int i = 0; i < _originpos.Count; i++)
-      {
-        _dic.Add(_keys[i], _values[_originpos[i]]);
-      }
-    }
-        yield return null;
-    }
   private IEnumerator _simul_bool()
   {
     float _town_noriver = 0, _town_noforest = 0, _town_nohighland=0, _town_nomountain=0, _town_nosea = 0;
@@ -2246,10 +2016,6 @@ public class maptext : MonoBehaviour
     _JsonData.Ismine_town= new bool[_JsonData.TownCount];
     _JsonData.Ismountain_town= new bool[_JsonData.TownCount];
     _JsonData.Issea_town = new bool[_JsonData.TownCount];
-        _JsonData.Wealth_town = new int[_JsonData.TownCount];
-        _JsonData.Faith_town = new int[_JsonData.TownCount];
-        _JsonData.Culture_town = new int[_JsonData.TownCount];
-        _JsonData.Science_town = new int[_JsonData.TownCount];
     _JsonData.Town_Open=new bool[_JsonData.TownCount];
     _JsonData.Town_NameIndex=new int[_JsonData.TownCount];
         _JsonData.Town_Index = new int[_JsonData.TownCount];
@@ -2259,10 +2025,6 @@ public class maptext : MonoBehaviour
     _JsonData.Ismine_city = new bool[_JsonData.CityCount];
     _JsonData.Ismountain_city = new bool[_JsonData.CityCount];
     _JsonData.Issea_city = new bool[_JsonData.CityCount];
-    _JsonData.Wealth_city = new int[_JsonData.CityCount];
-    _JsonData.Faith_city = new int[_JsonData.CityCount];
-    _JsonData.Culture_city = new int[_JsonData.CityCount];
-    _JsonData.Science_city = new int[_JsonData.CityCount];
     _JsonData.City_Open = new bool[_JsonData.CityCount];
     _JsonData.City_NameIndex = new int[_JsonData.CityCount];
         _JsonData.City_Index = new int[_JsonData.CityCount];
@@ -2272,10 +2034,6 @@ public class maptext : MonoBehaviour
     _JsonData.Ismine_castle = new bool[_JsonData.CastleCount];
     _JsonData.Ismountain_castle = new bool[_JsonData.CastleCount];
     _JsonData.Issea_castle = new bool[_JsonData.CastleCount];
-    _JsonData.Wealth_castle = new int[_JsonData.CastleCount];
-    _JsonData.Faith_castle = new int[_JsonData.CastleCount];
-    _JsonData.Culture_castle = new int[_JsonData.CastleCount];
-    _JsonData.Science_castle = new int[_JsonData.CastleCount];
     _JsonData.Castle_Open= new bool[_JsonData.CastleCount];
     _JsonData.Castle_NameIndex= new int[_JsonData.CastleCount];
         _JsonData.Castle_Index = new int[_JsonData.CastleCount];
@@ -2329,10 +2087,6 @@ public class maptext : MonoBehaviour
       _JsonData.Ismine_town[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_town[i] = _settles[i].IsMountain;
       _JsonData.Issea_town[i]= _settles[i].IsSea;
-      _JsonData.Wealth_town[i] = _settles[i].Wealth;
-      _JsonData.Faith_town[i] = _settles[i].Faith;
-      _JsonData.Culture_town[i] = _settles[i].Culture;
-      _JsonData.Science_town[i] = _settles[i].Science;
       _JsonData.Town_NameIndex[i] = _settles[i].NameIndex;
     }
     _poses.Clear();
@@ -2355,10 +2109,6 @@ public class maptext : MonoBehaviour
       _JsonData.Ismine_city[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_city[i] = _settles[i].IsMountain;
       _JsonData.Issea_city[i]= _settles[i].IsSea;
-      _JsonData.Wealth_city[i] = _settles[i].Wealth;
-      _JsonData.Faith_city[i] = _settles[i].Faith;
-      _JsonData.Culture_city[i] = _settles[i].Culture;
-      _JsonData.Science_city[i] = _settles[i].Science;
       _JsonData.City_NameIndex[i] = _settles[i].NameIndex;
     }
     _poses.Clear();
@@ -2382,10 +2132,6 @@ public class maptext : MonoBehaviour
       _JsonData.Ismine_castle[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_castle[i] = _settles[i].IsMountain;
       _JsonData.Issea_castle[i] = _settles[i].IsSea;
-      _JsonData.Wealth_castle[i] = _settles[i].Wealth;
-      _JsonData.Faith_castle[i] = _settles[i].Faith;
-      _JsonData.Culture_castle[i] = _settles[i].Culture;
-      _JsonData.Science_castle[i] = _settles[i].Science;
       _JsonData.Castle_NameIndex[i] = _settles[i].NameIndex;
     }
     #endregion
@@ -2451,26 +2197,7 @@ public class maptext : MonoBehaviour
         _newsetl.IsForest = CheckCount(_aroundtop, _frstpool) > 0 ? true : false;
         _newsetl.IsHighland = CheckCount(_aroundbottom, _mindustpool) > 0 ? true : false;
         //강,바다,숲,광산 검사
-        _newsetl.Wealth = CheckCount(GetAround(Mapdata_t, _pos, 2), _commerpool);
-        if (_newsetl.IsRiver) _newsetl.Wealth++;
-        if (_newsetl.IsSea) _newsetl.Wealth++;
-        if (_newsetl.IsForest) _newsetl.Wealth++;
-        if (_newsetl.IsHighland) _newsetl.Wealth++;
-        //부 수치 측량
-        int _faith = 0;
-        foreach (var __pos in _pos)
-        {
-          _faith = _MaxFaith - Mathf.RoundToInt(Vector3Int.Distance(__pos, _saintpos));
-          if (_newsetl.Faith < _faith) _newsetl.Faith = _faith;
-        }
-        //신앙 수치 측량
         _newsetl.IsMountain = CheckCount(GetAround(MapData_b, _pos, 2), _mountainpool) > 0 ? true : false;
-        if (_newsetl.IsMountain) _newsetl.Faith += 2;
-        //산 여부 검사+신앙 증가
-        _newsetl.Culture = CheckCount(GetAround(Mapdata_t, _pos, 3), _cultulrepool);
-        //문화 측량
-        _newsetl.Science = (_newsetl.Wealth + _newsetl.Faith + _newsetl.Culture) / 3;
-        //과학 측량
         _list.Add(_newsetl);
 
         string[] _namearray;
@@ -2488,25 +2215,6 @@ public class maptext : MonoBehaviour
         _newsetl.NameIndex = _nameindex;
         _newsetl.IllustIndex = _illindex;
 
-        if (_settletype.Equals(0))
-        {
-          _newsetl.Wealth = _newsetl.Wealth <= SettleCountdeg.Town_Wealth_Low ? 1 : _newsetl.Wealth <= SettleCountdeg.Town_Wealth_Middle ? 2 : 3;
-          _newsetl.Faith = _newsetl.Faith <= SettleCountdeg.Town_Faith_Low ? 1 : _newsetl.Faith <= SettleCountdeg.Town_Faith_Middle ? 2 : 3;
-        }
-        else if (_settletype.Equals(1))
-        {
-          _newsetl.Wealth = _newsetl.Wealth <= SettleCountdeg.City_Wealth_Low ? 1 : _newsetl.Wealth <= SettleCountdeg.City_Wealth_Middle ? 2 : 3;
-          _newsetl.Faith = _newsetl.Faith <= SettleCountdeg.City_Faith_Low ? 1 : _newsetl.Faith <= SettleCountdeg.City_Faith_Middle ? 2 : 3;
-          _newsetl.Culture = _newsetl.Culture <= SettleCountdeg.City_Culture_Low ? 1 : _newsetl.Culture <= SettleCountdeg.City_Culture_Middle ? 2 : 3;
-          _newsetl.Science = _newsetl.Science <= SettleCountdeg.City_Science_Low ? 1 : _newsetl.Science <= SettleCountdeg.City_Science_Middle ? 2 : 3;
-        }
-        else
-        {
-          _newsetl.Wealth = _newsetl.Wealth <= SettleCountdeg.Caslte_Wealth_Low ? 1 : _newsetl.Wealth <= SettleCountdeg.Caslte_Wealth_Low ? 2 : 3;
-          _newsetl.Faith = _newsetl.Faith <= SettleCountdeg.Caslte_Faith_Low ? 1 : _newsetl.Faith <= SettleCountdeg.Caslte_Faith_Middle ? 2 : 3;
-          _newsetl.Culture = _newsetl.Culture <= SettleCountdeg.Caslte_Culture_Low ? 1 : _newsetl.Culture <= SettleCountdeg.Caslte_Culture_Middle ? 2 : 3;
-          _newsetl.Science = _newsetl.Science <= SettleCountdeg.Castle_Science_Low ? 1 : _newsetl.Science <= SettleCountdeg.Castle_Science_Middle ? 2 : 3;
-        }
       }
       //  Debug.Log($"ckeckcount : {_checkcount} _list.count : {_list.Count}");
       return _list;
@@ -2514,28 +2222,6 @@ public class maptext : MonoBehaviour
     //  OutputSettleData(_JsonData);
         return _JsonData;
     }
-  public void OutputSettleData(MapSaveData _data)
-  {
-    string _str = "";
-    for(int i = 0; i < _data.TownCount; i++)
-    {
-      _str += $"마을 {i+1}번 위치 : {_data.Town_Pos[i]} \n" +
-        $"부 : {_data.Wealth_town[i]}   신앙 : {_data.Faith_town[i]}\n";
-    }
-    _str += "\n";
-    for (int i = 0; i < _data.CityCount; i++)
-    {
-      _str += $"도시 {i + 1}번 위치 : {_data.City_Pos[i*2]}, {_data.City_Pos[i*2+1]}\n" +
-        $"부 : {_data.Wealth_city[i]}   신앙 : {_data.Faith_city[i]}  문화 : {_data.Culture_city[i]}\n";
-    }
-    _str += "\n";
-    for (int i = 0; i < _data.CastleCount; i++)
-    {
-      _str += $"성채 {i + 1}번 위치 : {_data.Castle_Pos[i * 3]}, {_data.Castle_Pos[i * 3 + 1]}, {_data.Castle_Pos[i * 3 + 2]}\n" +
-        $"부 : {_data.Wealth_castle[i]}   신앙 : {_data.Faith_castle[i]}  문화 : {_data.Culture_castle[i]}\n";
-    }
-    Debug.Log(_str);
-  }
   public void MakeTilemap(MapSaveData _jsondata)
     {
     MapData _mapdata = _jsondata.ConvertToMapData();
@@ -2578,7 +2264,7 @@ public class maptext : MonoBehaviour
         _rect.anchoredPosition3D=new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
         _images.Add(_temp);
       }//이미지 만들고 위치,스프라이트 넣기
-      GameObject _button =new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),typeof(Button),typeof(SettlementIcon) });
+      GameObject _button =new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
       //버튼 오브젝트
       _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x,_buttonpos.y,0.0f);
             _button.transform.SetParent(SettlerHolder);
@@ -2588,6 +2274,7 @@ public class maptext : MonoBehaviour
         _images[j].transform.SetParent(_button.transform, true);
         _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_images[j].GetComponent<RectTransform>().anchoredPosition.x, _images[j].GetComponent<RectTransform>().anchoredPosition.y, 0.0f);
         _images[j].transform.localScale = Vector3.one;
+        _images[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
       }
       GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
       _questicon.GetComponent<Image>().enabled = false;
@@ -2595,6 +2282,7 @@ public class maptext : MonoBehaviour
       _questicon.transform.localScale = Vector3.one;
       _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
       _questicon.GetComponent<RectTransform>().sizeDelta=Vector3.one*45.0f;
+      _button.AddComponent<CanvasGroup>().alpha = 0.3f;
       _button.GetComponent<SettlementIcon>().Setup(_mapdata.Towns[i],_questicon.GetComponent<Image>());
     //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
@@ -2624,7 +2312,7 @@ public class maptext : MonoBehaviour
                 _zeropos += _pos;
             }//이미지 만들고 위치,스프라이트 넣기
 
-      GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(SettlementIcon) });
+      GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
       //버튼 오브젝트
       _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
       _button.transform.SetParent(SettlerHolder);
@@ -2637,6 +2325,7 @@ public class maptext : MonoBehaviour
          //       Debug.Log($"부모 변경 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
                 _images[j].transform.localScale = Vector3.one;
                 _images[j].GetComponent<RectTransform>().anchoredPosition3D=new Vector3(_newpos.x,_newpos.y,0.0f);
+        _images[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
       }
       GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
       _questicon.GetComponent<Image>().enabled = false;
@@ -2644,6 +2333,7 @@ public class maptext : MonoBehaviour
       _questicon.transform.localScale = Vector3.one;
       _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
       _questicon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
+      _button.AddComponent<CanvasGroup>().alpha = 0.3f;
       _button.GetComponent<SettlementIcon>().Setup(_mapdata.Cities[i], _questicon.GetComponent<Image>());
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }
@@ -2674,7 +2364,7 @@ public class maptext : MonoBehaviour
                 _zeropos += _pos;
             }//이미지 만들고 위치,스프라이트 넣기
 
-      GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(SettlementIcon) });
+      GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
       //버튼 오브젝트
       _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
       _button.transform.SetParent(SettlerHolder);
@@ -2685,6 +2375,7 @@ public class maptext : MonoBehaviour
                 _images[j].transform.SetParent(_button.transform, true);
         _images[j].transform.localScale = Vector3.one;
                 _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x,_newpos.y,0.0f);
+        _images[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
       }
       GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
       _questicon.GetComponent<Image>().enabled = false;
@@ -2692,6 +2383,7 @@ public class maptext : MonoBehaviour
       _questicon.transform.localScale = Vector3.one;
       _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
       _questicon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
+      _button.AddComponent<CanvasGroup>().alpha = 0.3f;
       _button.GetComponent<SettlementIcon>().Setup(_mapdata.Castles[i], _questicon.GetComponent<Image>());
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     }

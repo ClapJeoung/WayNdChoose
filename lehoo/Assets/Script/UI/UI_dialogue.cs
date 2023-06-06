@@ -30,8 +30,8 @@ public class UI_dialogue : UI_default
   [SerializeField] private TextMeshProUGUI DescriptionText = null;
   [SerializeField] private CanvasGroup DescriptionTextGroup = null;
   [SerializeField] private RectTransform DescriptionRect = null;
-  private Vector2 DescriptionClosePos = new Vector2(750.0f, 0.0f);
-  private Vector2 DescriptionOpenPos = new Vector2(-1.5f, 0.0f);
+  private Vector2 DescriptionClosePos = new Vector2(1150.0f, 280.0f);
+  private Vector2 DescriptionOpenPos = new Vector2(45.0f, 280.0f);
   [Space(10)]
   [SerializeField] private CanvasGroup CenterGroup = null;
   [SerializeField] private UI_Selection Selection_None = null;
@@ -94,7 +94,6 @@ public class UI_dialogue : UI_default
   public void SetEventDialogue()
   {
 
-    ClosePanel_quick();
     //초기화
         UIManager.Instance.AddUIQueue(setnewdialogue());
   }//이벤트 시작 열기
@@ -161,6 +160,9 @@ public class UI_dialogue : UI_default
   private IEnumerator setnewdialogue()
   {
     EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
+
+    UIManager.Instance.UpdateBackground(_currentevent.EnvironmentType);
+
     string _descriptiontemp = _currentevent.Description;
     if (_descriptiontemp.Contains("#SETTLE#")) _descriptiontemp = _currentevent.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
     Sprite _illust = _currentevent.Illust;
@@ -178,23 +180,26 @@ public class UI_dialogue : UI_default
     Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
     //모든 선택지 위치 초기화 및 숨기기
 
+    DescriptionGroup.alpha = 1.0f;
+    DescriptionTextGroup.alpha = 0.0f;
+    IllustImageGroup.alpha = 0.0f;
+    IllustGroup.alpha = 1.0f;
     DescriptionText.text = _descriptiontemp;
     DescriptionText_size.text = _descriptiontemp;
      StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.3f);
-    yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
+    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return Wait;
     NameText.text = _name;
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NameTextGroup, 1.0f, UIFadeTime,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(NameTextGroup, 1.0f, UIFadeTime,false));
     yield return TextWait;
     //일러스트, 설명 이동시키고 이름만 출현
 
     Illust.sprite = _illust;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, UIFadeTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
     StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup,1.0f,UIFadeTime,false));
     yield return Wait;
     //일러스트,내용 동시에 표시
-
 
     switch (_currentevent.Selection_type)
     {
@@ -233,7 +238,6 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator updatedialogue(FollowEndingData endingdata,SuccessData successdata)
   {
-    yield return Wait;
     SuccessParticle.Play();
     CurrentUISelection.DeActive();
 
@@ -245,13 +249,15 @@ public class UI_dialogue : UI_default
     Illust.sprite = successdata.Illust;
     DescriptionText.text = successdata.Description;
     DescriptionText_size.text = successdata.Description;
+    yield return new WaitForEndOfFrame();
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
     yield return ResultWait;
 
     yield return StartCoroutine(openendingbuttons());
   }
   private IEnumerator updatedialogue(SuccessData _success)
   {
-    yield return Wait;
     SuccessParticle.Play();
     CurrentUISelection.DeActive();
 
@@ -261,8 +267,11 @@ public class UI_dialogue : UI_default
     yield return TextWait;
 
     Illust.sprite = _success.Illust;
-    DescriptionText.text = _success.Description;
     DescriptionText_size.text = _success.Description;
+    DescriptionText.text = _success.Description;
+    yield return new WaitForEndOfFrame();
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
     yield return ResultWait;
 
     OpenButtons(_success);
@@ -279,8 +288,11 @@ public class UI_dialogue : UI_default
     yield return TextWait;
 
     Illust.sprite = _faiilure.Illust;
-    DescriptionText.text = _faiilure.Description;
     DescriptionText_size.text = _faiilure.Description;
+    DescriptionText.text = _faiilure.Description;
+    yield return new WaitForEndOfFrame();
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
     yield return ResultWait;
 
 
@@ -337,8 +349,9 @@ public class UI_dialogue : UI_default
     _ma.interactable = false;
     _ma.blocksRaycasts = false;
     CloseButtons();
+    yield return null;
     StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f,0.3f,false));
-  yield return  StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 0.0f, 0.3f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 0.0f, 0.3f, false));
     NameText.text = "";
     NameTextGroup.alpha = 0.0f;
     Illust.sprite = GameManager.Instance.ImageHolder.NoneIllust;
@@ -348,6 +361,7 @@ public class UI_dialogue : UI_default
     DescriptionTextGroup.alpha = 0.0f;
 
     IllustRect.anchoredPosition = IllustClosePos;
+    yield return null;
   }
   private void OpenButtons(SuccessData _success)
   {
@@ -380,7 +394,6 @@ public class UI_dialogue : UI_default
   public void OpenEnding()
   {
     if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.IsWorking = true;
     FollowEndingData _endingdata = ((FollowEventData)GameManager.Instance.MyGameData.CurrentEvent).EndingData;
     UIManager.Instance.OpenEnding(_endingdata);
   }
@@ -452,7 +465,6 @@ public class UI_dialogue : UI_default
      yield return StartCoroutine(_selection.movetocenter());
     }//성향이 존재한다면 가운데로 이동시킴
    
-    yield return new WaitForSeconds(UIManager.Instance.FadeWaitTime);
     SelectionData _selectiondata = _selection.MySelectionData;
     int _currentvalue = 0,_checkvalue=0;
     int _successpercent = 0;

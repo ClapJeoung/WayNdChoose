@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
-Place}
+Place,Environment}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -20,6 +20,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public int ExpIndex = 0;
   public Experience MyEXP = null;
   public PlaceType MyPlaceType = PlaceType.NULL;
+  public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
     public void OnPointerEnter(PointerEventData eventData)
     {
     Experience _exp = null;
@@ -104,7 +105,9 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         if (!GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(MyPlaceType)) return;
         UIManager.Instance.PreviewManager.OpenPlacePanel(MyPlaceType);
         break;
-
+      case PreviewPanelType.Environment:
+        UIManager.Instance.PreviewManager.OpenEnvirPanel(MyEnvironmentType);
+        break;
     }
     }
     public void OnPointerExit(PointerEventData eventData) 

@@ -180,11 +180,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9c82d165cf20d5f41840da3e0e05ea46, type: 3}
   - {fileID: 21300000, guid: 49e373aa33c9c784b929c6ac76358acc, type: 3}
   TendencyIllust_Body:
+  - {fileID: 21300000, guid: 42808f26c7927784fa6762c27e00d377, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 21300000, guid: 0c19233e57ebce1458d2f1677f92cdc9, type: 3}
   TendencyIcon_Head:
   - {fileID: 21300000, guid: cdba53ef6391a254c94df5f1c14aa230, type: 3}
   - {fileID: 21300000, guid: 4c1b5956b04481641a471b528fadbaaa, type: 3}
@@ -196,7 +196,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 21300000, guid: a89f38520a7344f4cb85dded99581892, type: 3}
   TendencyIllust_Rational: {fileID: 21300000, guid: 42808f26c7927784fa6762c27e00d377, type: 3}
   TendencyIllust_Physical: {fileID: 21300000, guid: 0c19233e57ebce1458d2f1677f92cdc9, type: 3}
   TendencyIllust_Mental: {fileID: 21300000, guid: db64b1b41faf2ba4580f7640153d58a6, type: 3}
@@ -577,6 +577,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 56285b54120eecd4cb76436057f61cb4, type: 3}
   - {fileID: 21300000, guid: e9b3fd813ba9d87498193042b22420a3, type: 3}
   - {fileID: 21300000, guid: e2b2d5b8ee0065844a1908f55e7a2e7c, type: 3}
+  - {fileID: 21300000, guid: 3136975e93a801e408772956153ca6dc, type: 3}
+  - {fileID: 21300000, guid: f2f516be41fa6cb42857550cca4f07fe, type: 3}
+  - {fileID: 21300000, guid: 91524935b10049b44ac3ded3fbfe95e3, type: 3}
   EXPIllust:
   - {fileID: 21300000, guid: 72b5cb0d1bf3d4d4cbfb588305636045, type: 3}
   - {fileID: 21300000, guid: 0406bff0d857dd24cb28e886736e8794, type: 3}
@@ -608,6 +611,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5e3486711d3201b42a86b121edbe80fd, type: 3}
   - {fileID: 21300000, guid: 4318f44759362d44eb9869ef39253194, type: 3}
   - {fileID: 21300000, guid: 590c0330e80af864fa32bf1f8169a47b, type: 3}
+  - {fileID: 21300000, guid: dca6b9fe90792794bac3e677670cca46, type: 3}
+  - {fileID: 21300000, guid: d225665e794898a4e91d70da1ace19e2, type: 3}
+  - {fileID: 21300000, guid: 55448ca771db7f947b128b9b4884ff2c, type: 3}
+  - {fileID: 21300000, guid: 946ac2f33d390ae40b18155a1e22edb5, type: 3}
   EndingIllusts: []
   NoGoldIllust: {fileID: 21300000, guid: 5ce237ac48c060f48a83877139e6918f, type: 3}
   EmptyLongExpIcon: {fileID: 21300000, guid: c8859889966423244b72eb0209f9a7b0, type: 3}
@@ -622,7 +629,6 @@ MonoBehaviour:
   FallIcon_deactive: {fileID: 21300000, guid: e920e062ae8b3b74a97d951d13563e20, type: 3}
   WinterIcon_active: {fileID: 21300000, guid: 00bad12d653487445a3a65160267794c, type: 3}
   WinterIcon_deactive: {fileID: 21300000, guid: b3624b99b5b396c4087d760e8e88f770, type: 3}
-  NothingQuestIllust: {fileID: 0}
   HPIcon: {fileID: 21300000, guid: 129c86f1e6e975a4b8c82a05cc851a81, type: 3}
   HPIncreaseIcon: {fileID: 789177023, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   HPDecreaseIcon: {fileID: -765305855, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
@@ -648,3 +654,38 @@ MonoBehaviour:
   SelectionBackground_physical: {fileID: 21300000, guid: 1a379d669eae2d5459a8f2f1a889f9e2, type: 3}
   SelectionBackground_mental: {fileID: 21300000, guid: 87afc43fbea7f6e4ca6d5a863cc176c9, type: 3}
   SelectionBackground_material: {fileID: 21300000, guid: 70a5ec174de25194ead7b676c7cdeb0d, type: 3}
+  NullEnvirIllust:
+  - {fileID: 21300000, guid: ebc258cf7623c4f45b6cb2bdab039564, type: 3}
+  - {fileID: 21300000, guid: 27aabe31a6cf0f74b932df66a3fdb954, type: 3}
+  - {fileID: 21300000, guid: d3269817314255744a460a6699dc334e, type: 3}
+  - {fileID: 21300000, guid: c74d4f0dfc207094bab7972f2c5c2844, type: 3}
+  RiverEnvirIllust:
+  - {fileID: 21300000, guid: ad3f374be0f8a9041b575ecb609a868b, type: 3}
+  - {fileID: 21300000, guid: 7c26575893bb76342b7e7a1b3ca553ca, type: 3}
+  - {fileID: 21300000, guid: 4f867e7c905e45b4baa0be1347bf1513, type: 3}
+  - {fileID: 21300000, guid: dccab34453da1294994f5d8e596750b7, type: 3}
+  ForestEnvirIllust:
+  - {fileID: 21300000, guid: 80edafb81c0c2714db46d77448db2f96, type: 3}
+  - {fileID: 21300000, guid: 84ad2da1d3051e84d99e4db2529434be, type: 3}
+  - {fileID: 21300000, guid: 448cbf44d060f974daa5af7bebe84405, type: 3}
+  - {fileID: 21300000, guid: 6153abbcfe84e4f4e9e19fe0f32349c0, type: 3}
+  HighlandEnvirIllust:
+  - {fileID: 21300000, guid: b675794c4d2bd164cb96ca97e99e8c18, type: 3}
+  - {fileID: 21300000, guid: eb755a18c5abfe04496c81e858188011, type: 3}
+  - {fileID: 21300000, guid: 2f155bf770bb08843ba082d578f1959f, type: 3}
+  - {fileID: 21300000, guid: 0832e3d331adc2341a2f55ee3c88403e, type: 3}
+  MountainEnvirIllust:
+  - {fileID: 21300000, guid: 8efc4bedc6399d5478bc68ef3e2090ac, type: 3}
+  - {fileID: 21300000, guid: 643515c4a1725274a80ff39bfe058887, type: 3}
+  - {fileID: 21300000, guid: 5f39cfe89b0e0d446a3fb78b5c8449b5, type: 3}
+  - {fileID: 21300000, guid: 05429c72e7939954b8f9d350553355b9, type: 3}
+  SeaEnvirIllust:
+  - {fileID: 21300000, guid: e94117c350957764fa802e2c35fedbc1, type: 3}
+  - {fileID: 21300000, guid: b964759620d342e4e9897d8686a26291, type: 3}
+  - {fileID: 21300000, guid: c5a4653c0063eb44cad9e6a3c265caca, type: 3}
+  - {fileID: 21300000, guid: f17ff66ffc7c085419f7109817133c94, type: 3}
+  RiverTile: {fileID: 21300000, guid: 653f61813b5b16246a89f5c01b935084, type: 3}
+  ForestTile: {fileID: 21300000, guid: e318e4d647fca0c429dcfc97ae08605f, type: 3}
+  HighlandTile: {fileID: 21300000, guid: 5c9c053e5b9c19645bce9b8fb4d53ae7, type: 3}
+  MountainTile: {fileID: 21300000, guid: 0339cf2f871f22e45b0685349f48febf, type: 3}
+  SeaTile: {fileID: 21300000, guid: ee55fe9d99cd3714b9e06048f1e06c5f, type: 3}

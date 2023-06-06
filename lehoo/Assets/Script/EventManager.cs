@@ -25,23 +25,23 @@ public class EventManager : MonoBehaviour
   }
   public void SetSettleEvent(TargetTileEventData _settledata)
   {
-        if (GameManager.Instance.MyGameData.CurrentQuest != null)
-        {
-            EventDataDefulat _questevent = MyEventHolder.ReturnQuestEvent(_settledata);
-            if (_questevent != null)
-            {
-                GameManager.Instance.SelectEvent(_questevent);
-                return;
-            }
-        }//현재 퀘스트가 있다면 하나 가져와 바로 실행
+    if (GameManager.Instance.MyGameData.CurrentQuest != null)
+    {
+      EventDataDefulat _questevent = MyEventHolder.ReturnQuestEvent(_settledata);
+      if (_questevent != null)
+      {
+        GameManager.Instance.SelectQuestEvent(_questevent);
+        return;
+      }
+    }//현재 퀘스트가 있다면 하나 가져와 바로 실행
 
-        GameManager.Instance.SetSettlementPlace();
+    GameManager.Instance.SetSettlementPlace();
   }//외부 -> 정착지 도착
-    public void SetSettleEvent(PlaceType place)
+  public void SetSettleEvent(PlaceType place)
     {
         TargetTileEventData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileData;
    // Debug.Log($"{_tiledta.SettlementType} {place} {_tiledta.PlaceData[place]} {_tiledta.EnvironmentType}");
-        EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.SettlementType, place, _tiledta.PlaceData[place], _tiledta.EnvironmentType);
+        EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.SettlementType, place, _tiledta.EnvironmentType);
         GameManager.Instance.SelectEvent( _event );
         GameManager.Instance.MyGameData.AddPlaceEffectBeforeStartEvent(place);
 

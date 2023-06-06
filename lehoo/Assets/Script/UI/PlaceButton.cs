@@ -17,6 +17,10 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
   [SerializeField] private TextMeshProUGUI MyPlaceName = null;
   public PlaceType MyPlaceType = PlaceType.Residence;
   public bool Clicked = false;
+  private void Start()
+  {
+    MyPlaceName.text = GameManager.Instance.GetTextData(MyPlaceType).Name;
+  }
   public void OnPointerEnter(PointerEventData eventdata)
   {
     NameCanvasGroup.alpha = 1.0f;
@@ -34,7 +38,6 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     else MyButton.interactable = true;
 
         StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, false, false));
-        if (MyPlaceName.text.Equals("")) MyPlaceName.text = GameManager.Instance.GetTextData(MyPlaceType).Name;
 }
   public void OnClick()
     {

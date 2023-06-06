@@ -10,7 +10,6 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [SerializeField] private RectTransform MyRect = null;
   [SerializeField] private TextMeshProUGUI MyDescription = null;
-  [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
   [SerializeField] private GameObject PayOrElseObj = null;
   [SerializeField] private Image PayOrElseIcon = null;
   [SerializeField] private GameObject ThemeObj_A = null;
@@ -136,7 +135,7 @@ public class UI_Selection : MonoBehaviour
 
   public IEnumerator movetocenter()
   {
-    float _time = 0.0f, _targettime = 1.2f;
+    float _time = 0.0f, _targettime = 0.7f;
     while (_time < _targettime)
     {
       MyRect.anchoredPosition = Vector2.Lerp(OriginPos, Vector2.zero, UIManager.Instance.UIPanelOpenCurve.Evaluate(_time / _targettime));

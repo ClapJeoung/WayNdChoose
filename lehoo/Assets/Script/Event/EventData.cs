@@ -78,18 +78,7 @@ public class EventHolder
         }
       }
 
-      Data.TileCheckType = _data.TileCondition;
-      switch (Data.TileCheckType)
-      {
-        case 0: //검사 없음
-          break;
-        case 1: //환경
-          Data.EnvironmentType = (EnvironmentType)_data.TileCondition_info;
-          break;
-        case 2: //장소 레벨
-          Data.PlaceLevel = _data.TileCondition_info;
-          break;
-      }
+      Data.EnvironmentType = (EnvironmentType)_data.Environment;
 
       Data.Selection_type = (SelectionType)_data.Selection_Type;
 
@@ -428,18 +417,7 @@ public class EventHolder
         }
       }
 
-      Data.TileCheckType = _data.TileCondition;
-      switch (Data.TileCheckType)
-      {
-        case 0: //검사 없음
-          break;
-        case 1: //환경
-          Data.EnvironmentType = (EnvironmentType)_data.TileCondition_info;
-          break;
-        case 2: //장소 레벨
-          Data.PlaceLevel = _data.TileCondition_info;
-          break;
-      }
+      Data.EnvironmentType = (EnvironmentType)_data.Environment;
 
       Data.Selection_type = (SelectionType)_data.Selection_Type;
 
@@ -766,15 +744,7 @@ public class EventHolder
         }
       }
 
-      Data.TileCheckType = _data.Environment.Equals(0) ? 0 : 1;
-      switch (Data.TileCheckType)
-      {
-        case 0: //검사 없음
-          break;
-        case 1: //환경
-          Data.EnvironmentType = (EnvironmentType)(_data.Environment + 1);
-          break;
-      }
+      Data.EnvironmentType = (EnvironmentType)(_data.Environment);
 
       Data.Selection_type = (SelectionType)_data.Selection_Type;
 
@@ -1046,7 +1016,7 @@ public class EventHolder
       {
         case 0://기
           _quest.QuestID = _data.QuestId; //퀘스트 ID는 QuestID
-          _quest.StartIllust = GameManager.Instance.ImageHolder.GetEventStartIllust(Data.QuestID);//대표 일러스트는 퀘스트 ID
+          _quest.StartIllust = GameManager.Instance.ImageHolder.GetEventStartIllust(_quest.QuestID);//대표 일러스트는 퀘스트 ID
           break;
         case 1://승
           _quest.Eventlist_Rising.Add(Data);
@@ -1063,16 +1033,22 @@ public class EventHolder
 
   }
 
+  public void SetAllEvents()
+  {
+    foreach (var _event in AllNormalEvents) AvailableNormalEvents.Add(_event);
+    foreach(var _followevent in AllFollowEvents) AvailableFollowEvents.Add(_followevent);
+  }//처음 시작 시 모든 이벤트를 사용 가능 이벤트 풀에 넣기
   public void LoadAllEvents()
   {
     bool _isenable = true;
     foreach (var _event in AllNormalEvents)
     {
       _isenable = true;
-      foreach (var _removeid in GameManager.Instance.MyGameData.RemoveEvent)
+      foreach (var _removeoriginid in GameManager.Instance.MyGameData.RemoveEvent)
       {
-        if (_event.ID.Contains(_removeid))
+        if (_event.OriginID.Equals(_removeoriginid))
         {
+          Debug.Log(_event.OriginID);
           _isenable = false;
           break;
         }
@@ -1082,9 +1058,9 @@ public class EventHolder
     foreach (var _event in AllFollowEvents)
     {
       _isenable = true;
-      foreach (var _removeid in GameManager.Instance.MyGameData.RemoveEvent)
+      foreach (var _removeoriginid in GameManager.Instance.MyGameData.RemoveEvent)
       {
-        if (_event.ID.Contains(_removeid))
+        if (_event.OriginID.Equals(_removeoriginid))
         {
           _isenable = false;
           break;
@@ -1093,128 +1069,129 @@ public class EventHolder
       if (_isenable) AvailableFollowEvents.Add(_event);
     }
   }//Gamemanager.instance.GameData를 기반으로 이미 클리어한 이벤트 빼고 다 활성화 리스트에 넣기
-  public void RemoveEvent(string _ID)
+  public void RemoveEvent(string _originid)
   {
-    string _defaultid = _ID;
 
     List<EventData> _normals = new List<EventData>();
     List<FollowEventData> _follows = new List<FollowEventData>();
 
     foreach (var _data in AvailableNormalEvents)
-      if (_data.ID.Contains(_defaultid))
+      if (_data.OriginID.Equals(_originid))
         _normals.Add(_data);
 
     foreach (var _data in AvailableFollowEvents)
-      if (_data.ID.Contains(_defaultid))
+      if (_data.OriginID.Equals(_originid))
         _follows.Add(_data);
 
     foreach (var _deletenormal in _normals) AvailableNormalEvents.Remove(_deletenormal);
     foreach (var _deletfollow in _follows) AvailableFollowEvents.Remove(_deletfollow);
-    GameManager.Instance.MyGameData.RemoveEvent.Add(_ID);
+    GameManager.Instance.MyGameData.RemoveEvent.Add(_originid);
   }
-    /// <summary>
-    /// 외부 이벤트 반환
-    /// </summary>
-    /// <param name="envir"></param>
-    /// <returns></returns>
-    public EventDataDefulat ReturnOutsideEvent(List<EnvironmentType> envir)
+  /// <summary>
+  /// 외부 이벤트 반환
+  /// </summary>
+  /// <param name="envir"></param>
+  /// <returns></returns>
+  public EventDataDefulat ReturnOutsideEvent(List<EnvironmentType> envir)
+  {
+    List<EventDataDefulat> _temp = new List<EventDataDefulat>();
+    List<EventDataDefulat> _followevents = new List<EventDataDefulat>();
+    foreach (var _follow in AvailableFollowEvents)
     {
-        List<EventDataDefulat> _temp = new List<EventDataDefulat>();
-        List<EventDataDefulat> _followevents = new List<EventDataDefulat>();
-        foreach (var _follow in AvailableFollowEvents)
-        {
-            switch (_follow.FollowType)
+      switch (_follow.FollowType)
+      {
+        case FollowType.Event:  //이벤트 연계일 경우 
+          List<string> _checktarget = new List<string>();
+          if (_follow.FollowTargetSuccess == true)
+          {
+            switch (_follow.FollowTendency)
             {
-                case FollowType.Event:  //이벤트 연계일 경우 
-                    List<string> _checktarget = new List<string>();
-                    if (_follow.FollowTargetSuccess == true)
-                    {
-                        switch (_follow.FollowTendency)
-                        {
-                            case 0: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_None; break;
-                            case 1: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Rational; break;
-                            case 2: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Physical; break;
-                            case 3: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Mental; break;
-                            case 4: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Material; break;
-                            case 5: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_All; break;
-                        }
-                    }
-                    else
-                    {
-                        switch (_follow.FollowTendency)
-                        {
-                            case 0: _checktarget = GameManager.Instance.MyGameData.FailEvent_None; break;
-                            case 1: _checktarget = GameManager.Instance.MyGameData.FailEvent_Rational; break;
-                            case 2: _checktarget = GameManager.Instance.MyGameData.FailEvent_Physical; break;
-                            case 3: _checktarget = GameManager.Instance.MyGameData.FailEvent_Mental; break;
-                            case 4: _checktarget = GameManager.Instance.MyGameData.FailEvent_Material; break;
-                            case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
-                        }
-                    }
-                    if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
-                    break;
-                case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-                    foreach (var _data in GameManager.Instance.MyGameData.LongTermEXP)
-                        if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
-                    foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-                        if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
-                    break;
-                case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
-                    int _targetlevel = 0;
-                    ThemeType _type = ThemeType.Conversation; ;
-                    switch (_follow.FollowTarget)
-                    {
-                        case "0"://대화 테마
-                            _type = ThemeType.Conversation; break;
-                        case "1"://무력 테마
-                            _type = ThemeType.Force; break;
-                        case "2"://생존 테마
-                            _type = ThemeType.Wild; break;
-                        case "3"://학식 테마
-                            _type = ThemeType.Intelligence; break;
-                    }
-                    _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type)
-                               + GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
-                    if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
-                    break;
-                case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
-                    SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
-                    if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForPreviewOrTheme) _temp.Add(_follow);
-                    break;
+              case 0: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_None; break;
+              case 1: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Rational; break;
+              case 2: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Physical; break;
+              case 3: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Mental; break;
+              case 4: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Material; break;
+              case 5: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_All; break;
             }
-        }
-        foreach(var _event in _temp)
-        {
-            if (_event.SettlementType.Equals(SettlementType.Outer))
+          }
+          else
+          {
+            switch (_follow.FollowTendency)
             {
-                if (envir.Contains(_event.EnvironmentType) || _event.TileCheckType.Equals(0)) _followevents.Add(_event);
+              case 0: _checktarget = GameManager.Instance.MyGameData.FailEvent_None; break;
+              case 1: _checktarget = GameManager.Instance.MyGameData.FailEvent_Rational; break;
+              case 2: _checktarget = GameManager.Instance.MyGameData.FailEvent_Physical; break;
+              case 3: _checktarget = GameManager.Instance.MyGameData.FailEvent_Mental; break;
+              case 4: _checktarget = GameManager.Instance.MyGameData.FailEvent_Material; break;
+              case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
             }
-        }//연계 충족된 이벤트들 중 환경 가능한 것들 리스트
-        _temp.Clear();
-        List<EventDataDefulat> _normalevents = new List<EventDataDefulat>();
-        foreach(var _event in AvailableNormalEvents)
-        {
-            if (_event.SettlementType.Equals(SettlementType.Outer))
-                if (envir.Contains(_event.EnvironmentType) || _event.TileCheckType.Equals(0)) _normalevents.Add(_event);
-        }//일반 야외 이벤트 중 환경 가능한 것 들 리스트
-
-        if (_followevents.Count > 0 && _normalevents.Count > 0)
-        {
-            if (Random.Range(0, 100) < 80) return _followevents[Random.Range(0, _followevents.Count)];
-            else return _normalevents[Random.Range(0, _normalevents.Count)];
-        }//두 풀 다 있ㅇ면 80로 연계
-        else if (_followevents.Count > 0 && _normalevents.Count.Equals(0)) return _followevents[Random.Range(0, _followevents.Count)];
-        else return _normalevents[Random.Range(0, _normalevents.Count)];
+          }
+          if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
+          break;
+        case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
+          foreach (var _data in GameManager.Instance.MyGameData.LongTermEXP)
+            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+          foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
+            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+          break;
+        case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+          int _targetlevel = 0;
+          ThemeType _type = ThemeType.Conversation; ;
+          switch (_follow.FollowTarget)
+          {
+            case "0"://대화 테마
+              _type = ThemeType.Conversation; break;
+            case "1"://무력 테마
+              _type = ThemeType.Force; break;
+            case "2"://생존 테마
+              _type = ThemeType.Wild; break;
+            case "3"://학식 테마
+              _type = ThemeType.Intelligence; break;
+          }
+          _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type)
+                     + GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
+          if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
+          break;
+        case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
+          SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
+          if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForPreviewOrTheme) _temp.Add(_follow);
+          break;
+      }
     }
-    /// <summary>
-    /// 정착지의 장소 이벤트 반환
-    /// </summary>
-    /// <param name="settletype"></param>
-    /// <param name="placetype"></param>
-    /// <param name="placelevel"></param>
-    /// <param name="envir"></param>
-    /// <returns></returns>
-    public EventDataDefulat ReturnPlaceEvent(SettlementType settletype,PlaceType placetype,int placelevel,List<EnvironmentType> envir)
+    foreach (var _event in _temp)
+    {
+      if (_event.SettlementType.Equals(SettlementType.Outer))
+      {
+        if (_event.EnvironmentType==EnvironmentType.NULL||envir.Contains(_event.EnvironmentType)) _followevents.Add(_event);
+      }
+    }//연계 충족된 이벤트들 중 환경 가능한 것들 리스트
+    _temp.Clear();
+    List<EventDataDefulat> _normalevents = new List<EventDataDefulat>();
+    foreach (var _event in AvailableNormalEvents)
+    {
+      if (_event.SettlementType.Equals(SettlementType.Outer))
+      {
+        if(_event.EnvironmentType != EnvironmentType.NULL|| envir.Contains(_event.EnvironmentType)) _normalevents.Add(_event);
+      }
+    }//일반 야외 이벤트 중 환경 가능한 것 들 리스트
+
+    if (_followevents.Count > 0 && _normalevents.Count > 0)
+    {
+      if (Random.Range(0, 100) < 80) return _followevents[Random.Range(0, _followevents.Count)];
+      else return _normalevents[Random.Range(0, _normalevents.Count)];
+    }//두 풀 다 있ㅇ면 80로 연계
+    else if (_followevents.Count > 0 && _normalevents.Count.Equals(0)) return _followevents[Random.Range(0, _followevents.Count)];
+    else return _normalevents[Random.Range(0, _normalevents.Count)];
+  }
+  /// <summary>
+  /// 정착지의 장소 이벤트 반환
+  /// </summary>
+  /// <param name="settletype"></param>
+  /// <param name="placetype"></param>
+  /// <param name="placelevel"></param>
+  /// <param name="envir"></param>
+  /// <returns></returns>
+  public EventDataDefulat ReturnPlaceEvent(SettlementType settletype,PlaceType placetype,List<EnvironmentType> envir)
     {
         List<EventDataDefulat> _temp = new List<EventDataDefulat>();
         List<EventDataDefulat> _follows = new List<EventDataDefulat>();
@@ -1305,11 +1282,9 @@ public class EventHolder
 
             if (!eventdata.PlaceType.Equals(placetype)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
 
-            if (eventdata.TileCheckType.Equals(1))                              //환경 검사일 때
+            if (eventdata.EnvironmentType != EnvironmentType.NULL)                              //환경 검사일 때
                 if (!envir.Contains(eventdata.EnvironmentType))return false;    //해당 이벤트의 환경이 맞지 않으면 X
 
-            if (eventdata.TileCheckType.Equals(2))                              //장소 레벨 검사일 때
-                if (!eventdata.PlaceLevel.Equals(placelevel)) return false;     //해당 이벤트의 장소 레벨이 맞지 않으면 X
 
             //여기까지 왔으면 다 통과했으므로 O 반환
             return true;
@@ -1363,24 +1338,112 @@ public class EventHolder
 
       }   //정착지 이벤트일 경우
 
-      if (!tiledata.PlaceData.ContainsKey(eventdata.PlaceType)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
+      if (!tiledata.PlaceList.Contains(eventdata.PlaceType)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
 
-      if (eventdata.TileCheckType.Equals(1))                              //환경 검사일 때
+      if (eventdata.EnvironmentType!=EnvironmentType.NULL)                              //환경 검사일 때
         if (!tiledata.EnvironmentType.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
 
-      if (eventdata.TileCheckType.Equals(2))                              //장소 레벨 검사일 때
-        if (!eventdata.PlaceLevel.Equals(tiledata.PlaceData[eventdata.PlaceType])) return false;     //해당 이벤트의 장소 레벨이 맞지 않으면 X
 
       //여기까지 왔으면 다 통과했으므로 O 반환
       return true;
     }
 
   }
+
+  public bool IsFollowEventEnable(TargetTileEventData tiledata,PlaceType place)
+  {
+    List<EventDataDefulat> _follows = new List<EventDataDefulat>();
+    List<EventDataDefulat> _temp=new List<EventDataDefulat>();
+    foreach (var _follow in AvailableFollowEvents)
+    {
+      switch (_follow.FollowType)
+      {
+        case FollowType.Event:  //이벤트 연계일 경우 
+          List<string> _checktarget = new List<string>();
+          if (_follow.FollowTargetSuccess == true)
+          {
+            switch (_follow.FollowTendency)
+            {
+              case 0: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_None; break;
+              case 1: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Rational; break;
+              case 2: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Physical; break;
+              case 3: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Mental; break;
+              case 4: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Material; break;
+              case 5: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_All; break;
+            }
+          }//성공 이벤트 연계일 경우 성공 이벤트 리스트가 검사 대상
+          else
+          {
+            switch (_follow.FollowTendency)
+            {
+              case 0: _checktarget = GameManager.Instance.MyGameData.FailEvent_None; break;
+              case 1: _checktarget = GameManager.Instance.MyGameData.FailEvent_Rational; break;
+              case 2: _checktarget = GameManager.Instance.MyGameData.FailEvent_Physical; break;
+              case 3: _checktarget = GameManager.Instance.MyGameData.FailEvent_Mental; break;
+              case 4: _checktarget = GameManager.Instance.MyGameData.FailEvent_Material; break;
+              case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
+            }
+          }//실패 인벤트 연계일 경우 실패 이벤트 리스트가 검사 대상
+
+          if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);//일단 검사 조건이 맞다면 넣기
+          break;
+
+        case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
+          foreach (var _data in GameManager.Instance.MyGameData.LongTermEXP)
+            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+          foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
+            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+          break;
+
+        case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+          int _targetlevel = 0;
+          switch (_follow.FollowTarget)
+          {
+            case "0"://대화 테마
+              _targetlevel = GameManager.Instance.MyGameData.ConversationLevel; break;
+            case "1"://무력 테마
+              _targetlevel = GameManager.Instance.MyGameData.ForceLevel; break;
+            case "2"://생존 테마
+              _targetlevel = GameManager.Instance.MyGameData.WildLevel; break;
+            case "3"://학식 테마
+              _targetlevel = GameManager.Instance.MyGameData.IntelligenceLevel; break;
+          }
+          if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
+          break;
+
+        case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
+          SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
+          if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForSkillCheck) _temp.Add(_follow);
+          break;
+      }
+    }
+    foreach (var _event in _temp)
+    {
+      if (isenable(_event)) _follows.Add(_event);
+    }//해당 장소의 적합한 연계 이벤트 리스트
+
+    if (_follows.Count > 0) return true;
+    else return false;
+
+    bool isenable(EventDataDefulat eventdata)
+    {
+      if (!eventdata.SettlementType.Equals(tiledata.SettlementType)) return false;     //해당 이벤트의 정착지가 맞지 않으면 X
+
+      if (!eventdata.PlaceType.Equals(place)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
+
+      if (eventdata.EnvironmentType!=EnvironmentType.NULL)                              //환경 검사일 때
+        if (!tiledata.EnvironmentType.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
+
+
+      //여기까지 왔으면 다 통과했으므로 O 반환
+      return true;
+    }
+  }
 }
 public class TargetTileEventData
 {
   public SettlementType SettlementType; //정착지 타입
-  public Dictionary<PlaceType, int> PlaceData = new Dictionary<PlaceType, int>(); //(정착지일 경우) 장소 타입과 장소 레벨
+  public List<PlaceType> PlaceList = new List<PlaceType>(); //(정착지일 경우) 장소 타입과 장소 레벨
   public List<EnvironmentType> EnvironmentType = new List<EnvironmentType>();//주위 환경 타입
   public int Season;
 }
@@ -1388,7 +1451,7 @@ public class TargetTileEventData
 public enum FollowType { Event,EXP,Trait,Theme,Skill}
 public enum SettlementType { Town,City,Castle,Outer,None}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Academy,NULL}
-public enum EnvironmentType { River,Forest,Highland,Mountain,Sea,NULL}
+public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea}
 public enum SelectionType { Single,Body, Head,Tendency,Experience,Skill }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
@@ -1406,9 +1469,7 @@ public class EventDataDefulat
   public int Season = 0;  //0,1,2,3,4
   public SettlementType SettlementType;
   public PlaceType PlaceType;
-  public int TileCheckType = 0;//0:없음 1: 환경요구 2: 레벨요구
-  public EnvironmentType EnvironmentType = EnvironmentType.River;
-  public int PlaceLevel = 0;  //0:전역 1,2,3
+  public EnvironmentType EnvironmentType = EnvironmentType.NULL;
 
   public SelectionType Selection_type;
   public SelectionData[] SelectionDatas;
@@ -1816,8 +1877,7 @@ public class EventJsonData
   public string ID = "";              //ID
   public int Settlement = 0;          //0,1,2,3
   public int Place = 0;               //0,1,2,3,4
-    public int TileCondition = 0;       //0: 조건없음  1: 환경  2: 레벨
-    public int TileCondition_info = 0;  //환경 : 숲,강,언덕,산,바다      레벨: 0,1,2
+    public int Environment = 0;  //없음, 숲,강,언덕,산,바다
   public string Season ;              //전역,봄,여름,가을,겨울
 
   public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
@@ -1852,8 +1912,7 @@ public class FollowEventJsonData
   public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
                                             //2:대화,무력,생존,정신
                                             //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
-    public int TileCondition = 0;       //0: 조건없음  1: 환경  2: 레벨
-    public int TileCondition_info = 0;  //환경 : 숲,강,언덕,산,바다      레벨: 0,1,2
+  public int Environment = 0;  //없음, 숲,강,언덕,산,바다
 
   public string Failure_Penalty;            //없음,손실,경험
   public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID

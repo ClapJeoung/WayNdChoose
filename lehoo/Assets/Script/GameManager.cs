@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
   public static GameManager Instance { get { return instance; } }
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
-  private const string GameDataName = "GameData.json";
+  [HideInInspector] public const string GameDataName = "WNCGameData.json";
   [HideInInspector] public MapData MyMapData = null;              //맵 데이터(맵 정보만)
   [HideInInspector] public MapSaveData MyMapSaveData = null;
   private const string MapDataName = "MapData.json";
@@ -52,6 +52,24 @@ public class GameManager : MonoBehaviour
     // Debug.Log($"{_id} ID를 가진 텍스트 데이터 {(TextDic.ContainsKey(_id)?"있음":"없음")}");
     if (!TextDic.ContainsKey(_id)) { Debug.Log($"{_id} 없음?"); return NullText; }
     return TextDic[_id];
+  }
+  public TextData GetTextData(EnvironmentType envir)
+  {
+    switch (envir)
+    {
+      case EnvironmentType.NULL:
+        return NullText;
+      case EnvironmentType.River:
+        return GetTextData("river");
+      case EnvironmentType.Forest:
+        return GetTextData("forest");
+      case EnvironmentType.Highland:
+        return GetTextData("highland");
+      case EnvironmentType.Mountain:
+        return GetTextData("mountain");
+      default:
+        return GetTextData("sea");
+    }
   }
   public TextData GetTextData(SkillName _skill)
   {
@@ -236,6 +254,11 @@ public class GameManager : MonoBehaviour
   }
     public void LoadData()
   {
+    if (File.Exists(Application.persistentDataPath+"/"+GameDataName ))
+    {
+      MyGameData = JsonUtility.FromJson<GameJsonData>(File.ReadAllText(Application.persistentDataPath + "/" + GameDataName)).GetGameData();
+      MyMapData = JsonUtility.FromJson<MapSaveData>(File.ReadAllText(Application.persistentDataPath + "/" + MapDataName)).ConvertToMapData();
+    }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
     Dictionary<string, TextData> _temp = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
@@ -248,6 +271,7 @@ public class GameManager : MonoBehaviour
       if (_texttemp.SelectionSubDescription.Contains("\\n")) _texttemp.SelectionSubDescription = _texttemp.SelectionSubDescription.Replace("\\n", "\n");
       if (_texttemp.FailDescription.Contains("\\n")) _texttemp.FailDescription = _texttemp.FailDescription.Replace("\\n", "\n");
       if (_texttemp.SuccessDescription.Contains("\\n")) _texttemp.SuccessDescription = _texttemp.SuccessDescription.Replace("\\n", "\n");
+      if (TextDic.ContainsKey(_data.Value.ID)) { Debug.Log($"{_data.Value.ID} 겹침! 확인 필요!"); return; }
       TextDic.Add(_data.Value.ID, _data.Value);
     }
 
@@ -285,25 +309,26 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   public void SuccessCurrentEvent(TendencyType _tendencytype,int index)
   {
+   if(MyGameData.CurrentSettlement!=null)MyGameData.CurrentSettlement.SetAvailablePlaces();
     EventHolder.RemoveEvent(MyGameData.CurrentEvent.OriginID);
     switch (_tendencytype)
     {
       case TendencyType.None:
-        MyGameData.SuccessEvent_None.Add(MyGameData.CurrentEvent.ID); break;
+        MyGameData.SuccessEvent_None.Add(MyGameData.CurrentEvent.OriginID); break;
       case TendencyType.Body:
         if(index.Equals(0))
-          MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.ID); 
+          MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.OriginID); 
         else
-          MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.ID); 
+          MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.OriginID); 
         break;
       case TendencyType.Head:
         if(index.Equals(0))
-        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.ID);
+        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.OriginID);
         else
-        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.ID); 
+        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.OriginID); 
         break;
     }
-    MyGameData.SuccessEvent_All.Add(MyGameData.CurrentEvent.ID);
+    MyGameData.SuccessEvent_All.Add(MyGameData.CurrentEvent.OriginID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -313,24 +338,25 @@ public class GameManager : MonoBehaviour
   }
   public void FailCurrentEvent(TendencyType _tendencytype, int index)
   {
+    if (MyGameData.CurrentSettlement != null) MyGameData.CurrentSettlement.SetAvailablePlaces();
     switch (_tendencytype)
     {
       case TendencyType.None:
-        MyGameData.FailEvent_None.Add(MyGameData.CurrentEvent.ID); break;
+        MyGameData.FailEvent_None.Add(MyGameData.CurrentEvent.OriginID); break;
       case TendencyType.Body:
         if (index.Equals(0))
-          MyGameData.FailEvent_Rational.Add(MyGameData.CurrentEvent.ID);
+          MyGameData.FailEvent_Rational.Add(MyGameData.CurrentEvent.OriginID);
         else
-          MyGameData.FailEvent_Physical.Add(MyGameData.CurrentEvent.ID);
+          MyGameData.FailEvent_Physical.Add(MyGameData.CurrentEvent.OriginID);
         break;
       case TendencyType.Head:
         if (index.Equals(0))
-          MyGameData.FailEvent_Mental.Add(MyGameData.CurrentEvent.ID);
+          MyGameData.FailEvent_Mental.Add(MyGameData.CurrentEvent.OriginID);
         else
-          MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.ID);
+          MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.OriginID);
         break;
     }
-    MyGameData.FailEvent_All.Add(MyGameData.CurrentEvent.ID);
+    MyGameData.FailEvent_All.Add(MyGameData.CurrentEvent.OriginID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -411,7 +437,7 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = _event;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(_event.ID);
+    MyGameData.RemoveEvent.Add(_event.OriginID);
     //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
     //다이어로그 열기
@@ -425,7 +451,6 @@ public class GameManager : MonoBehaviour
   }//정착지의 장소 세팅
   public void SelectEvent(EventDataDefulat _targetevent)
   {
-    if (_targetevent.GetType().Equals(typeof(QuestEventData))) MyGameData.LastQuestCount = 0;
     MyGameData.CurrentSanity -= MyGameData.SettleSanityLoss;
     UIManager.Instance.UpdateSanityText();
     Dictionary<Settlement,int> _temp=new Dictionary<Settlement,int>();
@@ -433,31 +458,48 @@ public class GameManager : MonoBehaviour
     {
       if (_data.Key.Equals(MyGameData.CurrentSettlement))
       {
-        _temp.Add(_data.Key, MyGameData.AllSettleUnpleasant[_data.Key]+1);
+        _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key]+1);
       }
       else
       {
         if (MyGameData.AllSettleUnpleasant[_data.Key] == 0) continue;
-        else _temp.Add(_data.Key,MyGameData.AllSettleUnpleasant[_data.Key]-1);
+        else _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key]-1);
       }
     }//정착지에서 이벤트를 선택하면 현재 정착지 불쾌 ++, 
-    foreach (var _data in _temp) MyGameData.AllSettleUnpleasant[_data.Key] = _data.Value;
+    foreach (var _data in _temp) MyGameData.AllSettleUnpleasant[_data.Key.OriginName] = _data.Value;
     MyGameData.CurrentEvent = _targetevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(_targetevent.ID);
+    MyGameData.RemoveEvent.Add(_targetevent.OriginID);
     //추후 등장하지 않게
-    if (MyGameData.CurrentSuggestingEvents.Contains(_targetevent)) MyGameData.CurrentSuggestingEvents.Remove(_targetevent);
-    //현재 제시 리스트에서 제거
     UIManager.Instance.OpenDialogue();
     SaveData();
   }//제시 패널에서 이벤트를 선택한 경우
-  public void SetNewQuest(QuestHolder _quest)
+  public void SelectQuestEvent(EventDataDefulat questevent)
   {
-    MyGameData.CurrentQuest = _quest;
-    UIManager.Instance.OpenQuestDialogue();
+    MyGameData.LastQuestCount = 0;
+    Dictionary<Settlement, int> _temp = new Dictionary<Settlement, int>();
+    foreach (var _data in MyGameData.AllSettleUnpleasant)
+    {
+      if (_data.Key.Equals(MyGameData.CurrentSettlement))
+      {
+        _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key] + 1);
+      }
+      else
+      {
+        if (MyGameData.AllSettleUnpleasant[_data.Key] == 0) continue;
+        else _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key] - 1);
+      }
+    }//정착지에서 이벤트를 선택하면 현재 정착지 불쾌 ++, 
+    foreach (var _data in _temp) MyGameData.AllSettleUnpleasant[_data.Key.OriginName] = _data.Value;
+    MyGameData.CurrentEvent = questevent;
+    MyGameData.CurrentEventSequence = EventSequence.Progress;
+    //현재 이벤트 데이터에 삽입
+    MyGameData.RemoveEvent.Add(questevent.OriginID);
+    //추후 등장하지 않게
+    UIManager.Instance.OpenDialogue();
     SaveData();
-  }//정착지 도착을 통해 퀘스트를 받은 경우
+  }
   public void AddTendencyCount(TendencyType _tendencytype,int index)
   {
     switch (_tendencytype)
@@ -500,12 +542,13 @@ public class GameManager : MonoBehaviour
 
   public void StartNewGame(QuestHolder newquest)
   {
-    StartCoroutine(startnewgame(newquest));
+    UIManager.Instance.AddUIQueue(startnewgame(newquest));
   }
   private IEnumerator startnewgame(QuestHolder newquest)
   {
     MyGameData = new GameData();//새로운 게임 데이터 생성
     MyGameData.CurrentQuest= newquest;
+    EventHolder.SetAllEvents();
 
     yield return StartCoroutine(createnewmap());//새 맵 만들기
 
@@ -532,16 +575,7 @@ public class GameManager : MonoBehaviour
 
     if (MyGameData.CurrentEvent == null)
     {
-      if (MyGameData.CurrentSuggestingEvents.Count>0)
-      {
-        UIManager.Instance.OpenSuggestUI();
-        //현재 진행 이벤트는 없는데 제시 이벤트가 남아있으면 이벤트 제시 패널에 장소, 일러스트, 정보를 채워넣고 제시 패널 열기
-      }
-      else
-      {
-        UIManager.Instance.OpenQuestDialogue();
-        //현재 진행 이벤트도 없고, 제시 중인 이벤트도 없다는건 지금 막 퀘스트를 조우한 상태라는 뜻이니 퀘스트 패널 세팅하고 열기
-      }
+      UIManager.Instance.OpenSuggestUI();
     }
     else
     {
@@ -552,7 +586,7 @@ public class GameManager : MonoBehaviour
       }
       else
       {
-        string _id = MyGameData.CurrentEvent.ID;
+        string _id = MyGameData.CurrentEvent.OriginID;
         SuccessData _success = null;
         if (MyGameData.SuccessEvent_None.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
         else if(MyGameData.SuccessEvent_Rational.Contains(_id))_success = MyGameData.CurrentEvent.SuccessDatas[0];
@@ -592,10 +626,10 @@ public class GameManager : MonoBehaviour
     Settlement _startsettle = MyMapData.AllSettles[Random.Range(0, MyMapData.AllSettles.Count)];
 
     MyGameData.CurrentSettlement = _startsettle;
+    MyGameData.AvailableSettles = MyMapData.GetCloseSettles(_startsettle, 3);
     MyGameData.CurrentPos = _startsettle.VectorPos;
 
     MyGameData.CreateSettleUnpleasant(MyMapData.AllSettles);
-
 
     _map.MakeTilemap(MyMapSaveData);
     UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle);

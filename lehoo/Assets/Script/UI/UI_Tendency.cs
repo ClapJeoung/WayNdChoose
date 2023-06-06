@@ -27,6 +27,9 @@ public class UI_Tendency : UI_default
   [SerializeField] private CanvasGroup BackButton = null;
   public void OpenUI(int _index)
   {
+    MyGroup.alpha = 1.0f;
+    MyGroup.interactable = true;
+    MyGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
     TendencyType _tendencytype = (TendencyType)_index;
@@ -58,7 +61,8 @@ public class UI_Tendency : UI_default
   {
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
-    StartCoroutine( UIManager.Instance.CloseUI(MyRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime, true));
+    StartCoroutine( UIManager.Instance.CloseUI(MyRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
     IsOpen = false;
     CurrentTendency = null;
         CurrentTendencyType = TendencyType.None;

@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int TownPlaceCount = 1, CityPlaceCount = 2, CastlePlaceCount = 3;
+  public const int TownDiscomfortDeg = 1,CityDiscomfortDeg=2,CastleDiscomfortDeg=3;
+
   public const int StartGold = 50;
   public const float  HPGen_Exp = 0.08f,  HPLoss_Exp = 0.01f;
   public const float GoldGen_Exp = 0.15f,  GoldLoss_Exp = 0.15f;
@@ -123,6 +126,7 @@ public class GameData    //게임 진행도 데이터
             //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
         }
     }//스킬 체크, 지불 체크 최소 성공확률
+  public List<Settlement> AvailableSettles=new List<Settlement>();
     #region 값 프로퍼티
     public int GetMoveSanityValue(float length)
   { 
@@ -146,7 +150,7 @@ public class GameData    //게임 진행도 데이터
     public int SubRewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardSanity_min, ConstValues.SubRewardSanity_max); } }
     public int SubRewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardGold_min, ConstValues.SubRewardGold_max); } }
     public int SettleSanityLoss
-    { get { return (int)(ConstValues.SettleEventSanity_Min * Mathf.Pow(ConstValues.SettleEventUnpleasantExpansion, AllSettleUnpleasant[CurrentSettlement])); } }
+    { get { return (int)(ConstValues.SettleEventSanity_Min * Mathf.Pow(ConstValues.SettleEventUnpleasantExpansion, AllSettleUnpleasant[CurrentSettlement.OriginName])); } }
     public int PayHPValue_modified
     { get { return (int)(PayHPValue_origin * GetHPLossModify(true)); } }
     public int PaySanityValue_modified
@@ -184,7 +188,9 @@ public class GameData    //게임 진행도 데이터
         return Mathf.CeilToInt(Mathf.Pow(_per, Mathf.Lerp(ConstValues.MoneyCheck_min, ConstValues.MoneyCheck_max, Year / ConstValues.MaxYear)));
         //좌상향 곡선 ~ 우상향 곡선
     }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
-    public Dictionary<Settlement, int> AllSettleUnpleasant = new Dictionary<Settlement, int>();
+
+  //정착지 <OriginName,불쾌>
+    public Dictionary<string, int> AllSettleUnpleasant = new Dictionary<string, int>();
   public Vector2 MoveTargetPos = Vector2.zero;//이동 목표 정착지의 UI 앵커포지션
   /// <summary>
   /// 모든 정착지 불쾌 0으로 세팅
@@ -192,7 +198,10 @@ public class GameData    //게임 진행도 데이터
   /// <param name="_allsettle"></param>
     public void CreateSettleUnpleasant(List<Settlement> _allsettle)
     {
-        foreach (var _settlement in _allsettle) AllSettleUnpleasant.Add(_settlement, 0);
+    foreach (var _settlement in _allsettle)
+    {
+      AllSettleUnpleasant.Add(_settlement.OriginName, 0);
+    }
     }
 
     private int hp = 0;
@@ -836,7 +845,6 @@ public class GameData    //게임 진행도 데이터
     if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
   }
 
-  public List<EventDataDefulat> CurrentSuggestingEvents = new List<EventDataDefulat>(); //현재 정착지에서 제시 중인 이벤트
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
@@ -889,36 +897,16 @@ public class GameData    //게임 진행도 데이터
     switch (_theme)
     {
       case ThemeType.Conversation:
-        _targettheme = EffectType.Conversation;
         _targeteffects.Add(EffectType.Conversation);
-        _targeteffects.Add(EffectType.Speech);
-        _targeteffects.Add(EffectType.Threat);
-        _targeteffects.Add(EffectType.Deception);
-        _targeteffects.Add(EffectType.Logic);
         break;
       case ThemeType.Force:
-        _targettheme = EffectType.Force;
         _targeteffects.Add(EffectType.Force);
-        _targeteffects.Add(EffectType.Martialarts);
-        _targeteffects.Add(EffectType.Threat);
-        _targeteffects.Add(EffectType.Bow);
-        _targeteffects.Add(EffectType.Somatology);
         break;
       case ThemeType.Wild:
-        _targettheme = EffectType.Wild;
         _targeteffects.Add(EffectType.Wild);
-        _targeteffects.Add(EffectType.Survivable);
-        _targeteffects.Add(EffectType.Bow);
-        _targeteffects.Add(EffectType.Deception);
-        _targeteffects.Add(EffectType.Biology);
         break;
       case ThemeType.Intelligence:
-        _targettheme = EffectType.Intelligence;
         _targeteffects.Add(EffectType.Intelligence);
-        _targeteffects.Add(EffectType.Knowledge);
-        _targeteffects.Add(EffectType.Somatology);
-        _targeteffects.Add(EffectType.Biology);
-        _targeteffects.Add(EffectType.Logic);
         break;
       default: Debug.Log("뎃?"); break;
     }
@@ -1129,7 +1117,6 @@ public class GameData    //게임 진행도 데이터
   public void ClearBeforeEvents()
   {
     CurrentSettlement = null;
-    CurrentSuggestingEvents.Clear();
     CurrentEvent = null;
   }
 }
@@ -1150,7 +1137,19 @@ public class Skill
   }//테마에 속한 다른 기술들로 인한 값(스킬 체크에만 사용됨)
   public int LevelByPlace
   {
-    get { if (GameManager.Instance.MyGameData.PlaceEffects.Keys.Contains(PlaceType.Library)&& GameManager.Instance.MyGameData.PlaceEffectTheme == Type_A || GameManager.Instance.MyGameData.PlaceEffectTheme == Type_B) return 1;
+    get {
+      if (GameManager.Instance.MyGameData.PlaceEffects.Keys.Contains(PlaceType.Library) &&
+        GameManager.Instance.MyGameData.PlaceEffects[PlaceType.Library] > 0 &&
+          (GameManager.Instance.MyGameData.PlaceEffectTheme == Type_A || GameManager.Instance.MyGameData.PlaceEffectTheme == Type_B))
+      {
+        Debug.Log(GameManager.Instance.MyGameData.PlaceEffects.Count);
+        foreach(var _data in GameManager.Instance.MyGameData.PlaceEffects)
+        {
+          Debug.Log($"{_data.Key} {_data.Value} {GameManager.Instance.MyGameData.PlaceEffectTheme}");
+        }
+        return 1;
+
+      }
       else return 0;
     }
   }
@@ -1319,6 +1318,11 @@ public class GameJsonData
   public Vector2 CurrentPos;
   public float MoveProgress;
   public string CurrentSettleOriginName;
+
+  public GameData GetGameData()
+  {
+    return null;
+  }
 }
 public class ProgressData
 {

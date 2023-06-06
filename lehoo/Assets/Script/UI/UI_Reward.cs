@@ -38,6 +38,7 @@ public class UI_Reward : UI_default
   [SerializeField] private PreviewInteractive[] RewardShortExpPreview = new PreviewInteractive[4];
   [SerializeField] private GameObject RewardExpQuitButton = null;
   [SerializeField] private TextMeshProUGUI RewardExpDescription = null;
+
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [Space(10)]
   [SerializeField] private VerticalLayoutGroup LayoutGroup = null;
@@ -135,7 +136,7 @@ public class UI_Reward : UI_default
   }
   public void CloseRewardSkillPanel()
   {
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime,true));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardSkillGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime,true));
   }
   public void OpenRewardExpPanel_reward()
   {

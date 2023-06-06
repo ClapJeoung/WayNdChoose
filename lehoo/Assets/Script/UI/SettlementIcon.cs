@@ -4,52 +4,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
+public class SettlementIcon : MonoBehaviour
 {
-  private float UpSize = 1.2f;
-  private float OriginSIze = 1.0f;
   public Settlement SettlementData = null;
-  List<RectTransform> MyImages=new List<RectTransform>();
   Image QuestIcon = null;
-  private Button MyButton = null;
-  private bool selected;
-  public bool Selected
-  {
-    get { return selected; }
-    set { selected = value;if (selected == true) SizeUp(); else SizeDown(); }
-  }
-    private UI_map MapUI = null;
+  public CanvasGroup MyGroup = null;
+  public float DisableAlpha = 0.3f;
+  private float DeActiveAlpha = 0.6f;
+  private float ActiveAlpha = 1.0f;
   public void ActiveButton()
   {
-    Color _availablecolor = Color.white;
-    _availablecolor.a = 1.0f;
-    foreach(var _image in MyImages)_image.GetComponent<Image>().color = _availablecolor;
-    MyButton.interactable = true;
-    SizeDown();
+    MyGroup.alpha = ActiveAlpha;
   }//활성화 시키기
   public void DeActiveButton()
   {
-    Color _disablecolor = Color.grey;
-    _disablecolor.a = 0.2f;
-    foreach (var _image in MyImages) _image.GetComponent<Image>().color = _disablecolor;
-    MyButton.interactable = false;
-    SizeDown();
+    MyGroup.alpha = DeActiveAlpha;
   }//비활성화 시키기
+  public void DisableButton()
+  {
+    MyGroup.alpha = DisableAlpha;
+  }
   public void Setup(Settlement _data,Image _questicon)
   {
-    GetComponent<Image>().enabled = false;
+    MyGroup = GetComponent<CanvasGroup>();
     QuestIcon=_questicon;
     transform.localScale = Vector3.one;
-    Color _disablecolor = Color.grey;
-    _disablecolor.a = 0.2f;
-    MyButton=GetComponent<Button>();
       SettlementData = _data;
-    UIManager.Instance.UpdateMap_AddSettle(SettlementData.OriginName, this);
-    MyButton.onClick.AddListener(SendData);
-    for(int i = 0; i < transform.childCount; i++)
-    {
-      MyImages.Add(transform.GetChild(i).GetComponent<RectTransform>());
-    }
+    UIManager.Instance.UpdateMap_AddSettle(this);
   }
   /// <summary>
   /// 0: 없음(기) 1:승 2:전 3:결
@@ -71,28 +52,4 @@ public class SettlementIcon : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
     if(QuestIcon.enabled.Equals(false))QuestIcon.enabled = true;
     QuestIcon.sprite = _sprite;
   }
-  private void SizeUp()
-  {
-    foreach (RectTransform _rect in MyImages)
-      _rect.localScale = Vector3.one * UpSize;
-  }
-  private void SizeDown()
-  {
-    foreach (RectTransform _rect in MyImages)
-      _rect.localScale = Vector3.one * OriginSIze;
-  }
-  public void OnPointerEnter(PointerEventData _data)
-  {
-    if (Selected||UIManager.Instance.IsWorking) return;
-  }
-  public void OnPointerExit(PointerEventData _data)
-  {
-    if (Selected || UIManager.Instance.IsWorking) return;
-  }
-  public void SendData()
-  {
-    foreach (RectTransform _rect in MyImages)
-      _rect.localScale = Vector3.one * UpSize;
-    UIManager.Instance.UpdateMap_SettlePanel(SettlementData);
-  }//눌렀을때 메소드
 }

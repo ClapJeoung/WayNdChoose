@@ -4,11 +4,12 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
-using static UnityEditor.Progress;
 
 public class Settlement
 {
   public ThemeType LibraryType = ThemeType.Conversation;
+  
+  public List<PlaceType> EnablePlaces=new List<PlaceType>();
     public int IllustIndex = 0;
   public SettlementType Type;
   public int NameIndex;
@@ -73,11 +74,6 @@ public class Settlement
   public bool IsSea = false;    //주변 1칸에 바다 여부
 
   public List<Vector3Int> Pose=new List<Vector3Int>();//일반 타일맵 기준
-
-    public int Wealth = 0;      //부
-    public int Faith = 0;       //신앙
-    public int Culture = 0;     //문화
-    public int Science = 0;     //과학
   public Vector3 VectorPos
   {
     get
@@ -95,19 +91,19 @@ public class Settlement
       {
         tiledata= new TargetTileEventData();
         tiledata.SettlementType = Type;
-        tiledata.PlaceData.Add(PlaceType.Residence, Wealth);
-        tiledata.PlaceData.Add(PlaceType.Marketplace, Wealth);
-        tiledata.PlaceData.Add(PlaceType.Temple, Faith);
+        tiledata.PlaceList.Add(PlaceType.Residence);
+        tiledata.PlaceList.Add(PlaceType.Marketplace);
+        tiledata.PlaceList.Add(PlaceType.Temple);
         switch (Type)
         {
           case SettlementType.Town:
             break;
           case SettlementType.City:
-            tiledata.PlaceData.Add(PlaceType.Library, Culture);
+            tiledata.PlaceList.Add(PlaceType.Library);
             break;
           case SettlementType.Castle:
-            tiledata.PlaceData.Add(PlaceType.Theater, Culture);
-            tiledata.PlaceData.Add(PlaceType.Academy, Science);
+            tiledata.PlaceList.Add(PlaceType.Theater);
+            tiledata.PlaceList.Add(PlaceType.Academy);
             break;
         }
         tiledata.EnvironmentType.Add(EnvironmentType.River);
@@ -129,45 +125,82 @@ public class Settlement
     if (!_event.SettlementType.Equals(SettlementType.None))
       if (_event.SettlementType.Equals(TileData.SettlementType)) return false;
     //전역 정착지 이벤트가 아닐 때 정착지 타입이 맞지 않으면 X
-    if (_event.TileCheckType == 1)
+    if (_event.EnvironmentType != EnvironmentType.NULL)
     {
-      if (!TileData.EnvironmentType.Contains(_event.EnvironmentType)) return false;
-    }//환경 요구일 때 요구하는 환경이 하나도 없을 경우 X
-    else if(_event.TileCheckType == 2)
-    {
-      if (!TileData.PlaceData[_event.PlaceType].Equals(_event.PlaceLevel)) return false;
-    }//레벨 요구일 떄 요구하는 장소 레벨이 맞지 않을 경우 X
+      if(!TileData.EnvironmentType.Contains(_event.EnvironmentType))
+      return false;
+    }
+    //환경이 맞지 않으면 X
+
     return true;
   }
-    public List<PlaceType> AvailabePlaces
-    {
-        get
-        {
-            if (availabeplaces.Count.Equals(0))
-            {
-                List<PlaceType> _places = new List<PlaceType>();
 
-                _places.Add(PlaceType.Residence);
-                _places.Add(PlaceType.Marketplace);
-                _places.Add(PlaceType.Temple);
-                switch (Type)
-                {
-                    case SettlementType.Town:
-                        break;
-                    case SettlementType.City:
-                        _places.Add(PlaceType.Library);
-                        break;
-                    case SettlementType.Castle:
-                        _places.Add(PlaceType.Theater);
-                        _places.Add(PlaceType.Academy);
-                        break;
-                }
-                availabeplaces = _places;
-            }
-            return availabeplaces;
-        }
+  public void SetAvailablePlaces()
+  {
+    List<PlaceType> _followplaces = new List<PlaceType>();
+    List<PlaceType> _normalplaces=new List<PlaceType>();
+    List<PlaceType> _enableplaces=new List<PlaceType>();
+
+
+    for(int i = 0; i < 3; i++)
+    {
+      PlaceType _targetplce = (PlaceType)i;
+      if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, _targetplce)) _followplaces.Add(_targetplce);
+      else _normalplaces.Add(_targetplce);
     }
-    private List<PlaceType> availabeplaces = new List<PlaceType>();
+
+    System.Random _rnd=new System.Random();
+    int _count = 0;
+    switch (Type)
+    {
+      case SettlementType.Town:
+        _count = ConstValues.TownPlaceCount;
+
+        break;
+      case SettlementType.City:
+        PlaceType _targetplce = PlaceType.Library;
+        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, _targetplce)) _followplaces.Add(_targetplce);
+        else _normalplaces.Add(_targetplce);
+        _count= ConstValues.CityPlaceCount;
+
+        break;
+      case SettlementType.Castle:
+        PlaceType __targetplce = PlaceType.Theater;
+        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, __targetplce)) _followplaces.Add(__targetplce);
+        else _normalplaces.Add(__targetplce);
+
+        PlaceType ___targetplce = PlaceType.Academy;
+        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, ___targetplce)) _followplaces.Add(___targetplce);
+        else _normalplaces.Add(___targetplce);
+        _count = ConstValues.CastlePlaceCount;
+
+        break;
+    }
+
+    if (_followplaces.Count > _count)
+    {
+      var _temp = _followplaces.OrderBy(x => _rnd.Next()).ToList();
+      for (int i = 0; i < _count; i++)
+        _enableplaces.Add(_temp[i]);
+      _enableplaces.Sort();
+    }//연계 가능한 장소가 목표보다 많으면 그 중 무작위 선택해 반환
+    else if (_followplaces.Count == _count)
+    {
+      _enableplaces = _followplaces;
+    }//연계 가능한 장소가 목표 개수랑 동일하면 그대로 반환
+    else
+    {
+      var _temp = _normalplaces.OrderBy(x => _rnd.Next()).ToList();
+      for (int i = 0; i < _count - _followplaces.Count; i++)
+      {
+        _followplaces.Add(_temp[i]);
+      }
+      _followplaces.Sort();
+      _enableplaces = _followplaces;
+    }//연계 가능한 장소가 목표치에 못 도달하면 일반 장소 중 무작위로 선택해 반환
+
+    EnablePlaces = _enableplaces;
+  }
 }
 public class MapSaveData
 {
@@ -186,11 +219,8 @@ public class MapSaveData
   public bool[] City_Open;
   public bool[] Castle_Open;
     public int TownCount, CityCount, CastleCount;
-    public int[]   Wealth_town, Faith_town, Culture_town, Science_town;
   public bool[] Isriver_town, Isforest_town, Ismine_town, Ismountain_town,Issea_town;
-  public int[] Wealth_city, Faith_city, Culture_city, Science_city;
   public bool[] Isriver_city, Isforest_city, Ismine_city, Ismountain_city,Issea_city;
-  public int[]  Wealth_castle, Faith_castle, Culture_castle, Science_castle;
   public bool[] Isriver_castle, Isforest_castle, Ismine_castle, Ismountain_castle,Issea_castle;
 
   public MapData ConvertToMapData()
@@ -217,11 +247,6 @@ public class MapSaveData
 
       _town.Pose.Add(Town_Pos[i]);
 
-      _town.Wealth= Wealth_town[i];
-      _town.Faith= Faith_town[i];
-      _town.Culture= Culture_town[i];
-      _town.Science= Science_town[i];
-
             _town.IllustIndex = Town_Index[i];
 
       _mapdata.Towns.Add( _town);
@@ -240,11 +265,6 @@ public class MapSaveData
 
       _city.Pose.Add(City_Pos[i*2]);
       _city.Pose.Add(City_Pos[i * 2+1]);
-
-      _city.Wealth = Wealth_city[i];
-      _city.Faith = Faith_city[i];
-      _city.Culture = Culture_city[i];
-      _city.Science = Science_city[i];
             _city.IllustIndex = City_Index[i];
 
             _mapdata.Cities.Add( _city);
@@ -264,11 +284,6 @@ public class MapSaveData
       _castle.Pose.Add(Castle_Pos[i * 3]);
       _castle.Pose.Add(Castle_Pos[i * 3 + 1]);
       _castle.Pose.Add(Castle_Pos[i * 3 + 2]);
-
-      _castle.Wealth = Wealth_castle[i];
-      _castle.Faith = Faith_castle[i];
-      _castle.Culture = Culture_castle[i];
-      _castle.Science = Science_castle[i];
             _castle.IllustIndex = Castle_Index[i];
 
             _mapdata.Castles.Add( _castle);
@@ -290,6 +305,14 @@ public class MapData
   public List<Settlement> Cities =new List<Settlement>();
   public List<Settlement> Castles =new List<Settlement>();
   public List<Settlement> AllSettles = new List<Settlement>();
+  public Settlement GetSettle(string originname)
+  {
+    for(int i = 0; i < AllSettles.Count; i++)
+    {
+      if (AllSettles[i].OriginName.Equals(originname)) return AllSettles[i];
+    }
+    return null;
+  }
   public List<Settlement> GetCloseSettles(Settlement _origin,int _count)
   {
     Vector2 _originpos = _origin.VectorPos;

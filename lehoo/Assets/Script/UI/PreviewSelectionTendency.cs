@@ -168,7 +168,7 @@ public class PreviewSelectionTendency : MonoBehaviour
       {
         ArrowImages[_currentindex].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
 
-        ArrowEffectImages[i].sprite = _activearrow;
+        ArrowEffectImages[_currentindex].sprite = _activearrow;
         StartCoroutine(arroweffect(ArrowEffects[_currentindex]));
       }
       else
