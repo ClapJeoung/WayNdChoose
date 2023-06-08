@@ -27,16 +27,16 @@ public class UI_Tendency : UI_default
   [SerializeField] private CanvasGroup BackButton = null;
   public void OpenUI(int _index)
   {
-    MyGroup.alpha = 1.0f;
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
-    BackButton.interactable = true;
-    BackButton.blocksRaycasts = true;
     TendencyType _tendencytype = (TendencyType)_index;
     //이성, 육체, 정신, 물질
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen && CurrentTendencyType == _tendencytype) { CloseUI(); IsOpen = false; return; }
     //동일한 성향 다시 클릭하면 닫기
+    MyGroup.alpha = 1.0f;
+    MyGroup.interactable = true;
+    MyGroup.blocksRaycasts = true;
+    BackButton.interactable = true;
+    BackButton.blocksRaycasts = true;
 
     IsOpen = true;
     TouchBlock.enabled = true;
@@ -59,12 +59,13 @@ public class UI_Tendency : UI_default
   }
   public override void CloseUI()
   {
+    CurrentTendency = null;
+    IsOpen = false;
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime, true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.1f, false));
     StartCoroutine( UIManager.Instance.CloseUI(MyRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
-    IsOpen = false;
-    CurrentTendency = null;
+    UIManager.Instance.CurrentTopUI = null;
         CurrentTendencyType = TendencyType.None;
   }
 }

@@ -49,13 +49,14 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
   private Vector2 OpenPos =new Vector2( 170.0f,-470.0f);
   public void OpenUI(int _index)
   {
+    if (UIManager.Instance.IsWorking) return;
+    if (IsOpen && CurrentThemeIndex.Equals(_index)) { CloseUI(); return; }
     MyGroup.alpha = 1.0f;
     MyGroup.interactable = true;
     MyGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
-    if (UIManager.Instance.IsWorking) return;
-    if (IsOpen && CurrentThemeIndex.Equals(_index)) { CloseUI(); return; }
+
     IsOpen = true;
     TouchBlock.enabled = true;
     ThemeType _themetype = (ThemeType)_index;
@@ -224,12 +225,14 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
   }
   public override void CloseUI()
   {
+    UIManager.Instance.CurrentTopUI = null;
+    IsOpen = false;
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
     TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime, true));
-    StartCoroutine(UIManager.Instance.CloseUI(MyRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime,false));
-    IsOpen = false;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.1f, false));
+    StartCoroutine(UIManager.Instance.CloseUI(MyRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime, false));
+    UIManager.Instance.CurrentTopUI = null;
     CurrentThemeIndex = -1;
   }
 }

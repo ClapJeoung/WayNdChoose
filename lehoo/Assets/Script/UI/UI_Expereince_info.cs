@@ -17,15 +17,15 @@ public class UI_Expereince_info : UI_default
   private Vector2 OpenPos =new Vector2(309.0f,0.0f);
   public void OpenLongExpUI(int _index)
   {
+    Experience _exp = GameManager.Instance.MyGameData.LongTermEXP[_index];
+    //나중에 인수도 받아야함
+    if (UIManager.Instance.IsWorking || _exp == null) return;
+    if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
     MyGroup.alpha = 1.0f;
     MyGroup.interactable = true;
     MyGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
-    Experience _exp = GameManager.Instance.MyGameData.LongTermEXP[_index];
-    //나중에 인수도 받아야함
-    if (UIManager.Instance.IsWorking || _exp == null) return;
-    if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
 
     TouchBlock.enabled = true;
     IsOpen = true;
@@ -60,15 +60,15 @@ public class UI_Expereince_info : UI_default
   }
   public void OpenShortExpUI(int _index)
   {
+    Experience _exp = GameManager.Instance.MyGameData.ShortTermEXP[_index];
+    //나중에 인수도 받아야함
+    if (UIManager.Instance.IsWorking || _exp == null) return;
+    if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
     MyGroup.alpha = 1.0f;
     MyGroup.interactable = true;
     MyGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
-    Experience _exp = GameManager.Instance.MyGameData.ShortTermEXP[_index];
-    //나중에 인수도 받아야함
-    if (UIManager.Instance.IsWorking || _exp == null) return;
-    if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
 
     TouchBlock.enabled = true;
     IsOpen = true;
@@ -103,13 +103,14 @@ public class UI_Expereince_info : UI_default
   }
   public override void CloseUI()
   {
+    IsOpen = false;
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
     CurrentExp = null;
+    UIManager.Instance.CurrentTopUI = null;
 
     TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.SmallPanelFadeTime, true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.1f, false));
     StartCoroutine( UIManager.Instance.CloseUI(MyRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
-    IsOpen = false;
   }
 }

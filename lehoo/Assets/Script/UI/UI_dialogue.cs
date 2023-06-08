@@ -179,6 +179,8 @@ public class UI_dialogue : UI_default
     Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
     Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
     //모든 선택지 위치 초기화 및 숨기기
+    IllustRect.anchoredPosition = IllustClosePos;
+    DescriptionRect.anchoredPosition = DescriptionClosePos;
 
     DescriptionGroup.alpha = 1.0f;
     DescriptionTextGroup.alpha = 0.0f;

@@ -402,12 +402,7 @@ public class UIManager : MonoBehaviour
       }
     }
   }
-  private CanvasGroup currenttopui = null;
-  public CanvasGroup CurrentTopUI
-  {
-    get { return currenttopui; }
-    set { currenttopui = value; if(currenttopui!=null) Debug.Log(currenttopui.name); }
-  }
+  public CanvasGroup CurrentTopUI = null;
   public void UpdateAllUI()
   {
     UpdateYearText();
@@ -589,7 +584,8 @@ public class UIManager : MonoBehaviour
     }
     _rect.anchoredPosition = _endpos;
     _group.alpha = 0.0f;
-   
+
+    if (istopui) CurrentTopUI = null;
   }
   public IEnumerator CloseUI(CanvasGroup _group,bool _islarge, bool istopui)
   {
@@ -607,6 +603,8 @@ public class UIManager : MonoBehaviour
       yield return null;
     }
     _group.alpha = 0.0f;
+
+    if(istopui) CurrentTopUI = null;
   }
   public IEnumerator CloseUI(RectTransform _rect, UIMoveDir _dir, float _movetime, bool istopui)
   {
@@ -642,7 +640,7 @@ public class UIManager : MonoBehaviour
       yield return null;
     }
     _rect.anchoredPosition = _endpos;
-    CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
+    if (istopui) CurrentTopUI = null;
 
   }
   public IEnumerator ChangeAlpha(Image _img, float _targetalpha)
