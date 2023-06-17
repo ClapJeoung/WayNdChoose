@@ -279,7 +279,7 @@ public class UIManager : MonoBehaviour
       case SkillName.Threat: _theme_a = ThemeType.Conversation; _theme_b = ThemeType.Force; break;
       case SkillName.Deception: _theme_a = ThemeType.Conversation; _theme_b = ThemeType.Wild; break;
       case SkillName.Logic: _theme_a = ThemeType.Conversation; _theme_b = ThemeType.Intelligence; break;
-      case SkillName.Martialarts: _theme_a = ThemeType.Force; _theme_b = ThemeType.Force; break;
+      case SkillName.Kombat: _theme_a = ThemeType.Force; _theme_b = ThemeType.Force; break;
       case SkillName.Bow: _theme_a = ThemeType.Force; _theme_b = ThemeType.Wild; break;
       case SkillName.Somatology: _theme_a = ThemeType.Force; _theme_b = ThemeType.Intelligence; break;
       case SkillName.Survivable: _theme_a = ThemeType.Wild; _theme_b = ThemeType.Wild; break;
@@ -368,25 +368,22 @@ public class UIManager : MonoBehaviour
     }
     rect.anchoredPosition = _targetpos;
   }
-  [SerializeField] private Image[] LongTermIcon = new Image[2];
-  [SerializeField] private TextMeshProUGUI[] LongTermTurn=new TextMeshProUGUI[2];
+  [SerializeField] private Image LongTermIcon = null;
+  [SerializeField] private TextMeshProUGUI LongTermTurn = null;
   public void UpdateExpLongTermIcon()
   {
-    for(int i=0; i < LongTermIcon.Length; i++)
+    if (GameManager.Instance.MyGameData.LongTermEXP == null)
     {
-      if (GameManager.Instance.MyGameData.LongTermEXP[i] == null)
-      {
-        LongTermIcon[i].enabled = true;
-      }
-      else
-      {
-        LongTermIcon[i].enabled = false;
-        LongTermTurn[i].text = GameManager.Instance.MyGameData.LongTermEXP[i].Duration.ToString();
-      }
+      LongTermIcon.enabled = true;
+    }
+    else
+    {
+      LongTermIcon.enabled = false;
+      LongTermTurn.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
     }
   }
-  [SerializeField] private Image[] ShortTermIcon = new Image[4];
-  [SerializeField] private TextMeshProUGUI[] ShortTermTurn=new TextMeshProUGUI[4];
+  [SerializeField] private Image[] ShortTermIcon = new Image[2];
+  [SerializeField] private TextMeshProUGUI[] ShortTermTurn=new TextMeshProUGUI[2];
   public void UpdateExpShortTermIcon()
   {
     for (int i = 0; i < ShortTermIcon.Length; i++)

@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
       case SkillName.Threat: _name = "threat"; break;
       case SkillName.Deception: _name = "deception"; break;
       case SkillName.Logic: _name = "logic"; break;
-      case SkillName.Martialarts: _name = "martialarts"; break;
+      case SkillName.Kombat: _name = "kombat"; break;
       case SkillName.Bow: _name = "bow"; break;
       case SkillName.Somatology: _name = "somatology"; break;
       case SkillName.Survivable: _name = "survivable"; break;
@@ -119,15 +119,11 @@ public class GameManager : MonoBehaviour
   {
     switch (_effect)
     {
-      case EffectType.Conversation: return GetTextData("conversationup");
-      case EffectType.Force: return GetTextData("forceup");
-      case EffectType.Wild: return GetTextData("wildup");
-      case EffectType.Intelligence: return GetTextData("intelligenceup");
       case EffectType.Speech: return GetTextData("speechup");
       case EffectType.Threat: return GetTextData("threatup");
       case EffectType.Deception: return GetTextData("deceptionup");
       case EffectType.Logic: return GetTextData("logicup");
-      case EffectType.Martialarts: return GetTextData("martialartsup");
+      case EffectType.Kombat: return GetTextData("kombatup");
       case EffectType.Bow: return GetTextData("bowup");
       case EffectType.Somatology: return GetTextData("somatologyup");
       case EffectType.Survivable: return GetTextData("survivableup");
@@ -374,24 +370,28 @@ public class GameManager : MonoBehaviour
     if (_emptylist.Count > 0)
     {
       _targetslot=Random.Range(0,_emptylist.Count);
+      MyGameData.ShortTermEXP[_targetslot] = badexp;
+      UIManager.Instance.UpdateExpShortTermIcon();
       return;
     } //단기 슬롯 중 빈 칸이 있다면 무작위로 악경험 삽입하고 종료
 
-    for (int i = 0; i < MyGameData.LongTermEXP.Length; i++)
-      if (MyGameData.LongTermEXP[i] == null) _emptylist.Add(i);
-    if (_emptylist.Count > 0)
+    if (MyGameData.LongTermEXP==null)
     {
-      _targetslot = Random.Range(0, _emptylist.Count);
+      MyGameData.LongTermEXP = badexp;
+      UIManager.Instance.UpdateExpLongTermIcon();
       return;
     } //단기 슬롯에 빈 칸이 없다면 장기 슬롯 중 무작위로 악경험 삽입하고 종료
 
     if (Random.Range(0, 100) < 75)
     {
-      _targetslot = Random.Range(0, 4);
+      _targetslot = Random.Range(0, 2);
+      MyGameData.ShortTermEXP[_targetslot] = badexp;
+      UIManager.Instance.UpdateExpShortTermIcon();
     } //장기,단기 둘 다 꽉 차있다면 75% 확률로 단기 경험 하나 대체
     else
     {
-      _targetslot = Random.Range(0, 2);
+      MyGameData.LongTermEXP = badexp;
+      UIManager.Instance.UpdateExpLongTermIcon();
     } //15% 확률로 장기 경험 하나 대체
   }
   public void AddShortExp(Experience _exp, int _index)
@@ -404,14 +404,14 @@ public class GameManager : MonoBehaviour
     MyGameData.ShortTermEXP[_index] = _exp;
     UIManager.Instance.UpdateExpShortTermIcon();
   }
-  public void AddLongExp(Experience _exp, int _index)
+  public void AddLongExp(Experience _exp)
   {
     if (UIManager.Instance.MyQuestSuggent.IsActivePanel) UIManager.Instance.MyQuestSuggent.OpenStarting();
     //퀘스트 제시 패널에서 경험 저장하는 경우라면 다음 단계로 넘어가게
 
     if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
     _exp.Duration = ConstValues.LongTermStartTurn;
-    MyGameData.LongTermEXP[_index] = _exp;
+    MyGameData.LongTermEXP = _exp;
     MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;
     UIManager.Instance.UpdateSanityText();
     UIManager.Instance.UpdateExpLongTermIcon();
@@ -423,11 +423,11 @@ public class GameManager : MonoBehaviour
     MyGameData.ShortTermEXP[_index] = _exp;
     UIManager.Instance.UpdateExpShortTermIcon();
   }
-  public void ShiftLongExp(Experience _exp, int _index)
+  public void ShiftLongExp(Experience _exp)
   {
     _exp.Duration = ConstValues.LongTermStartTurn;
-    Experience _target = MyGameData.LongTermEXP[_index];
-    MyGameData.LongTermEXP[_index] = _exp;
+    Experience _target = MyGameData.LongTermEXP;
+    MyGameData.LongTermEXP= _exp;
     MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;
     UIManager.Instance.UpdateExpLongTermIcon();
   }

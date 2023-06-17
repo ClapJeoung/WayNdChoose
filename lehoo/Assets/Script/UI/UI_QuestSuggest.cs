@@ -38,7 +38,6 @@ public class UI_QuestSuggest : UI_default
   [Space(10)]
   [SerializeField] private CanvasGroup MapButtonGroup = null;
   [SerializeField] private TextMeshProUGUI MapButtonText = null;
-  [SerializeField] private RectMask2D IllustRectMask = null;
   [Space(10)]
   [SerializeField] private CanvasGroup RewardExpGroup = null;
 
@@ -119,12 +118,12 @@ public class UI_QuestSuggest : UI_default
     SelectedExp=QuestExps[index];
   }
   private Experience SelectedExp = null;
-  public void AddRewardExp_Long(int _expindex)
+  public void AddRewardExp_Long()
   {
     if (UIManager.Instance.IsWorking) return;
 
-    if (GameManager.Instance.MyGameData.LongTermEXP[_expindex] == null) GameManager.Instance.AddLongExp(SelectedExp, _expindex);
-    else GameManager.Instance.ShiftLongExp(SelectedExp, _expindex);
+    if (GameManager.Instance.MyGameData.LongTermEXP == null) GameManager.Instance.AddLongExp(SelectedExp);
+    else GameManager.Instance.ShiftLongExp(SelectedExp);
     UIManager.Instance.UpdateExpLongTermIcon();
     StartCoroutine (UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, 0.3f, false));
     StartCoroutine(UIManager.Instance.ChangeAlpha(ExpGroup, 0.0f, QuestUIFadeTime, false));
@@ -146,7 +145,7 @@ public class UI_QuestSuggest : UI_default
     if (UIManager.Instance.IsWorking) return;
     for (int i = 0; i < 2; i++)
     {
-      Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP[i];
+      Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP;
       if (_longexp == null)
       {
         RewardLongExpNameGroup[i].alpha = 0.0f;

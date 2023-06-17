@@ -634,6 +634,7 @@ public class UI_map : UI_default
     PlayerRect.position = Vector3.Lerp(_loweranchorpos, _upperanchorpos, _length);
     return;
 
+    /*
     Transform _originparent = PlayerRect.parent;
     PlayerRect.SetParent(null);
 
@@ -651,6 +652,6 @@ public class UI_map : UI_default
     PlayerRect.position = PlayerRect.position + new Vector3(_unit.x * _else.x, _unit.y * _else.y);
     PlayerRect.SetParent(_originparent);
     //정수 값으로 산출한 CelltoWorld랑 미리 값을 구해놓은 실수형 값을 더해 이동
-    ScaleChanger.localScale = IdleScale;
+    ScaleChanger.localScale = IdleScale;*/
   }//정수가 아닌 좌표를 받아서 거기로 옮기는거
 }

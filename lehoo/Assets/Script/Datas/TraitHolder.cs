@@ -44,7 +44,7 @@ public class Trait
           case EffectType.Threat:
           case EffectType.Deception: 
           case EffectType.Logic: 
-          case EffectType.Martialarts: 
+          case EffectType.Kombat: 
           case EffectType.Bow:
           case EffectType.Somatology:
           case EffectType.Survivable:

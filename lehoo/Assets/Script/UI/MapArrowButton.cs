@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class MapArrowButton : MonoBehaviour
 {
-  [SerializeField] private RectTransform MyRect = null;
   public SettlementIcon MySettlementIcon = null;
   public CanvasGroup MyGroup = null;
   public bool Selected = false;

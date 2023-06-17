@@ -52,9 +52,6 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ThemeName = null;
   [SerializeField] private TextMeshProUGUI ThemeLevel = null;
   [SerializeField] private Image ThemeIcon = null;
-  [SerializeField] private TextMeshProUGUI ThemeLevelBySkill = null;
-  [SerializeField] private TextMeshProUGUI ThemeLevelByExp = null;
-  [SerializeField] private TextMeshProUGUI ThemeLevelByTendency = null;
   [SerializeField] private TextMeshProUGUI ThemeSubDescription = null;
   [Space(10)]
   [SerializeField] private GameObject SkillPreview = null;
@@ -64,6 +61,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI SkillLevelBySkill = null;
   [SerializeField] private TextMeshProUGUI SkillLevelByExp = null;
   [SerializeField] private TextMeshProUGUI SkillLevelByPlace = null;
+  [SerializeField] private TextMeshProUGUI SkillLevelByTendency = null;
   [SerializeField] private TextMeshProUGUI SkillSubDescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpPreview = null;
@@ -457,35 +455,13 @@ public class PreviewManager : MonoBehaviour
     ThemeName.text = _themename.Name;
     int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
     //기술로부터 나온 값
-    int _onlyexp = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_theme);
-    //경험에서 나온 값
-    int _onlytendency = GameManager.Instance.MyGameData.GetThemeLevelByTendency(_theme);
-    int _sum = _onlyskill  + _onlyexp + _onlytendency;
+
+    int _sum = _onlyskill ;
     ThemeLevel.text = _sum.ToString();
-    string _valuestr = "";
-    string _str = "";
-
-    makecolorvalue(_onlyskill);
-    _str=string.Format(GameManager.Instance.GetTextData("byskill_themepreview").Name, _valuestr);
-    ThemeLevelBySkill.text = _str;
-
-    makecolorvalue(_onlyexp);
-    _str =string.Format(GameManager.Instance.GetTextData("byexp_preview").Name, _valuestr);
-    ThemeLevelByExp.text = _str;
-
-    makecolorvalue(_onlytendency);
-    _str=string.Format(GameManager.Instance.GetTextData("bytendency_themepreview").Name,_valuestr);
-    ThemeLevelByTendency.text= _str;
 
     ThemeSubDescription.text = _themename.SelectionSubDescription;
     ThemeIcon.sprite = _icon;
 
-    void makecolorvalue(int value)
-    {
-      if (value.Equals(0)) _valuestr = value.ToString();
-      else if (value > 0) _valuestr = ColorText.PositiveColor(value.ToString());
-      else _valuestr=ColorText.NegativeColor(value.ToString());
-    }
     CurrentPreview = ThemePreview.GetComponent<RectTransform>();
 
     IEnumerator _cor = null;
@@ -506,6 +482,7 @@ public class PreviewManager : MonoBehaviour
     int _onlylevel = _targetskill.LevelByOwn;
     int _onlyexp = _targetskill.LevelByExp;
     int _onlyplace = _targetskill.LevelByPlace;
+    int _bytendency = _targetskill.LevelByTendency;
 
     makecolorvalue(_onlylevel);
     _str =string.Format(GameManager.Instance.GetTextData("byownlevel_skillpreview").Name, _valuestr);
@@ -515,14 +492,33 @@ public class PreviewManager : MonoBehaviour
     _str =string.Format(GameManager.Instance.GetTextData("byexp_preview").Name, _valuestr);
     SkillLevelByExp.text = _str;
 
-    Debug.Log(_onlyplace);
     if (_onlyplace != 0)
     {
       makecolorvalue(_onlyplace);
-      _str = string.Format(GameManager.Instance.GetTextData("byplace_skillpreview").Name, _valuestr);
+      _str = GameManager.Instance.GetTextData("byplace_skillpreview").Name;
       SkillLevelByPlace.text = _str;
+      if (SkillLevelByPlace.gameObject.activeInHierarchy.Equals(false)) SkillLevelByPlace.gameObject.SetActive(true);
     }
-    else SkillLevelByPlace.text = "";
+    else {
+      if (SkillLevelByPlace.gameObject.activeInHierarchy.Equals(true)) SkillLevelByPlace.gameObject.SetActive(false);
+      SkillLevelByPlace.text = "";
+
+    }
+    
+
+    if (_bytendency != 0)
+    {
+      if (_bytendency > 0) _valuestr = ColorText.PositiveColor("+" + _bytendency.ToString());
+      else _valuestr = ColorText.NegativeColor("-" + _bytendency.ToString());
+
+      _str = string.Format(GameManager.Instance.GetTextData("bytendency_skillpreviewandpanel").Name, GameManager.Instance.MyGameData.Tendency_Body.Icon + GameManager.Instance.MyGameData.Tendency_Body.Name, _valuestr);
+      SkillLevelByTendency.text = _str;
+      if (SkillLevelByTendency.gameObject.activeInHierarchy.Equals(false)) SkillLevelByTendency.gameObject.SetActive(true);
+    }
+    else
+    {
+      if (SkillLevelByTendency.gameObject.activeInHierarchy.Equals(true)) SkillLevelByTendency.gameObject.SetActive(false);
+    }
 
     SkillIcon_A.sprite= _icons[0];SkillIcon_B.sprite = _icons[1];
     SkillName.text = _name;
@@ -747,15 +743,11 @@ public class PreviewManager : MonoBehaviour
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite _icon = null;
     int _currentlevel = 0;
-    int  _byskill = 0, _byexp = 0, _bytendency = 0;
     int _targetlevel = GameManager.Instance.MyGameData.CheckThemeValue;
     int _percent = -1;
     ThemeType _themetype = _selection.SelectionCheckTheme;
 
     _icon = GameManager.Instance.ImageHolder.GetThemeIcon(_themetype);
-    _byskill=GameManager.Instance.MyGameData.GetThemeLevelBySkill(_themetype);
-    _byexp=GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_themetype);
-    _bytendency=GameManager.Instance.MyGameData.GetThemeLevelByTendency(_themetype);
 
     _currentlevel = GameManager.Instance.MyGameData.GetThemeLevel(_themetype);
     _percent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _targetlevel);
@@ -898,7 +890,6 @@ public class PreviewManager : MonoBehaviour
     float _modify = 0.0f;
     string _modifydescription = "";
     _icon = GameManager.Instance.ImageHolder.HPIcon;
-    StatusType _statustype = StatusType.HP;
     _modify = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
 
     string _changedegree = "";
@@ -923,7 +914,6 @@ public class PreviewManager : MonoBehaviour
     Sprite _icon = null;
     float _modify = 0.0f;
     string _modifydescription = "";
-    StatusType _statustype = StatusType.Sanity;
     _icon = GameManager.Instance.ImageHolder.SanityIcon;
     _modify = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
 
@@ -950,7 +940,6 @@ public class PreviewManager : MonoBehaviour
     Sprite _icon = null;
     float _modify = 0.0f;
     string _modifydescription = "";
-    StatusType _statustype = StatusType.Gold;
     _icon = GameManager.Instance.ImageHolder.GoldIcon;
     _modify = (int)GameManager.Instance.MyGameData.GetGoldGenModify(false);
 

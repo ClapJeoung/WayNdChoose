@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EffectType {
-    Conversation,Force,Wild,Intelligence
-    , Speech, Threat, Deception, Logic, Martialarts, Bow, Somatology, Survivable, Biology, Knowledge,
-  HPLoss, HPGen,
-  SanityLoss, SanityGen,
-  GoldLoss, GoldGen }
+    Speech, Threat, Deception, Logic, Kombat, Bow, Somatology, Survivable, Biology, Knowledge,
+  HPGen, HPLoss,
+  SanityGen, SanityLoss,
+  GoldGen, GoldLoss }
 public enum ExpTypeEnum{ Normal,Bad,Mad}
 public class Experience
 {
@@ -21,7 +20,7 @@ public class Experience
   public ExpTypeEnum ExpType = ExpTypeEnum.Normal; 
   public string Description { get { return TextData.Description; } }
   public string SubDescription { get { return TextData.SelectionSubDescription; } }
-    public Dictionary<EffectType, int> Effects=new Dictionary<EffectType, int>();
+    public List<EffectType> Effects=new List<EffectType>();
   private int _duration = 0;
   public int Duration
   {
@@ -43,40 +42,35 @@ public class Experience
       foreach (var _data in Effects)
       {
         if (!_str.Equals("")) _str += "\n";
-        TextData _textdata = GameManager.Instance.GetTextData(_data.Key);
+        TextData _textdata = GameManager.Instance.GetTextData(_data);
         string _temp = "";
-        string _temptemp = _data.Value > 0 ? GameManager.Instance.GetTextData("increase").Name : GameManager.Instance.GetTextData("decrease").Name;
-        switch (_data.Key)
+        switch (_data)
         {
-          case EffectType.Conversation:
-          case EffectType.Force:
-          case EffectType.Wild:
-          case EffectType.Intelligence:
           case EffectType.Speech:
           case EffectType.Threat:
           case EffectType.Deception:
           case EffectType.Logic:
-          case EffectType.Martialarts:
+          case EffectType.Kombat:
           case EffectType.Bow:
           case EffectType.Somatology:
           case EffectType.Survivable:
           case EffectType.Biology:
           case EffectType.Knowledge:
-            _temp = $"{_textdata.Icon} {_textdata.Name} +{_data.Value}";
+            _temp = $"{_textdata.Icon} {_textdata.Name} + 1";
             break;
 
           case EffectType.HPLoss:
-            _temp = $"{_textdata.Name} {_temptemp}"; break;
+            _temp = $"{_textdata.Name}"; break;
           case EffectType.SanityLoss:
-            _temp = $"{_textdata.Name} {_temptemp}"; break;
+            _temp = $"{_textdata.Name}"; break;
           case EffectType.GoldLoss:
-            _temp = $"{_textdata.Name} {_temptemp}"; break;
+            _temp = $"{_textdata.Name}"; break;
           case EffectType.HPGen:
-            _temp = $"{_textdata.Name} {_temptemp}"; break;
+            _temp = $"{_textdata.Name}"; break;
           case EffectType.SanityGen:
-            _temp = $"{_textdata.Name} {_temptemp}"; break;
+            _temp = $"{_textdata.Name}"; break;
           case EffectType.GoldGen:
-            _temp = $"{_textdata.Name} {_temptemp}"; break;
+            _temp = $"{_textdata.Name}"; break;
         }
         _str += _temp;
       }
@@ -91,7 +85,7 @@ public class Experience
       string _str = "";
       foreach (var _data in Effects)
       {
-        TextData _textdata = GameManager.Instance.GetTextData(_data.Key);
+        TextData _textdata = GameManager.Instance.GetTextData(_data);
         _str += _textdata.Icon+" ";
       }
 
@@ -114,23 +108,17 @@ public class ExperienceJsonData
   public string ID = "";
   public int GoodOrBad;
   public string Type;    //0~9 : 기술들  10~   체력,정신력,돈 등
-  public string Info;
   public Experience ReturnEXPClass()
   {
     Experience _exp = new Experience();
-    _exp.ID= ID;
+    _exp.ID = ID;
     TextData _textdata = GameManager.Instance.GetTextData(ID);
     _exp.ExpType = (ExpTypeEnum)GoodOrBad;
-        string[] _temp = Type.Split("@");
-        EffectType[] _type = new EffectType[_temp.Length];
-        for (int i = 0; i < _temp.Length; i++) _type[i] = (EffectType)int.Parse(_temp[i]);
+    string[] _temp = Type.Split("@");
+    EffectType[] _type = new EffectType[_temp.Length];
+    for (int i = 0; i < _temp.Length; i++) _type[i] = (EffectType)int.Parse(_temp[i]);
 
-        _temp = Info.Split("@");
-        int[] _infos=new int[_temp.Length];
-        for (int i = 0; i < _temp.Length; i++) _infos[i] = int.Parse(_temp[i]);
-
-        for (int i = 0; i < _temp.Length; i++) _exp.Effects.Add(_type[i], _infos[i]);
-            return _exp;
-    }
+    return _exp;
+  }
 }
 

@@ -9,7 +9,6 @@ public class UI_Tendency : UI_default
   [SerializeField] private Image TouchBlock = null;
   [SerializeField] private Image Illust = null;
     [SerializeField] private TextMeshProUGUI Description = null;
-    private Tendency CurrentTendency = null;
   private Vector2 ClosePos =new Vector2(1500.0f,0.0f);
   private Vector2 OpenPos =new Vector2(304.0f,0.0f);
     private TendencyType CurrentTendencyType = TendencyType.None;
@@ -59,7 +58,6 @@ public class UI_Tendency : UI_default
   }
   public override void CloseUI()
   {
-    CurrentTendency = null;
     IsOpen = false;
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;

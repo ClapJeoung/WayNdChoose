@@ -258,42 +258,8 @@ public class maptext : MonoBehaviour
       if (_data.Castles.Count != 2) {  yield return null; continue; }
 
       Debug.Log($"{_index}번째 맵 성공\n");
-   /*         foreach(var _town in _data.Towns)
-            {
-                string _str = "";
-                _str += _town.Name+"  ";
-                _str += _town.IsRiver ? "강 " : "";
-                _str += _town.IsForest ? "숲 " : "";
-                _str += _town.IsMine ? "고원 " : "";
-                _str += _town.IsMountain ? "산 " : "";
-                _str += _town.IsSea ? "바다 " : "";
-                Debug.Log(_str + "\n");
-            }
-            foreach (var _city in _data.Cities)
-            {
-                string _str = "";
-                _str += _city.Name + "  ";
-                _str += _city.IsRiver ? "강 " : "";
-                _str += _city.IsForest ? "숲 " : "";
-                _str += _city.IsMine ? "고원 " : "";
-                _str += _city.IsMountain ? "산 " : "";
-                _str += _city.IsSea ? "바다 " : "";
-                Debug.Log(_str + "\n");
-            }
-            foreach (var _castle in _data.Castles)
-            {
-                string _str = "";
-                _str += _castle.Name + "  ";
-                _str += _castle.IsRiver ? "강 " : "";
-                _str += _castle.IsForest ? "숲 " : "";
-                _str += _castle.IsMine ? "고원 " : "";
-                _str += _castle.IsMountain ? "산 " : "";
-                Debug.Log(_str + "\n");
-            }
-   */
             GameManager.Instance.MyMapSaveData = _savedata;
             break;
-            yield return null;
         }
     }
 
@@ -2009,7 +1975,6 @@ public class maptext : MonoBehaviour
         //나무,마을,도시,성채 넣기
 
         Vector3Int _saintpos = new Vector3Int(Random.Range(_deg, _deg*3), Random.Range(_deg,_deg*3));
-    int _MaxFaith = 8;
 
     _JsonData.Isriver_town = new bool[_JsonData.TownCount];
     _JsonData.Isforest_town=new bool[_JsonData.TownCount];

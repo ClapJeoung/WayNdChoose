@@ -83,6 +83,5 @@ public class UI_PlaceEffect : MonoBehaviour
       rects[2].rotation = Quaternion.Euler(Vector3.forward * _rot);
       yield return null;
     }
-    yield return null;
   }
 }

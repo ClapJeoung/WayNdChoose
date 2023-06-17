@@ -76,7 +76,7 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
         break;
 
       case ThemeType.Force:
-        _skills[0] = SkillName.Threat; _skills[1] = SkillName.Martialarts; _skills[2] = SkillName.Bow; _skills[3] = SkillName.Somatology;
+        _skills[0] = SkillName.Threat; _skills[1] = SkillName.Kombat; _skills[2] = SkillName.Bow; _skills[3] = SkillName.Somatology;
         break;
 
       case ThemeType.Wild:
@@ -124,10 +124,8 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
     MainThemeName.text = _themename;
     MainThemeIllust.sprite = _themeillust;
 
-    int _levelbyskills = 0, _levelbyexps = 0, _levelbytendency = 0;
+    int _levelbyskills = 0;
     _levelbyskills = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_themetype);
-    _levelbyexps = GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_themetype);
-    _levelbytendency=GameManager.Instance.MyGameData.GetThemeLevelByTendency(_themetype);
     Tendency _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
     int _themelevel = GameManager.Instance.MyGameData.GetThemeLevel(_themetype);
     Skill _centralskill = null;
@@ -138,15 +136,10 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
         break;
       }
 
-    Debug.Log($"skill:{_levelbyskills}  exp:{_levelbyexps}  tendency:{_levelbytendency}  sum:{_themelevel}");
     ThemeLevel.text = _themelevel.ToString();
 
     if (_levelbyskills > 0) _themedescription += string.Format(GameManager.Instance.GetTextData("byskill_themepanel").Name,
           GameManager.Instance.GetTextData(_themetype).Name, _levelbyskills.ToString(), GameManager.Instance.GetTextData(_centralskill.SkillType).Icon+ GameManager.Instance.GetTextData(_centralskill.SkillType).Name) + "\n";
-    if (_levelbyexps > 0) _themedescription += string.Format(GameManager.Instance.GetTextData("byexp_themepanel").Name,
-          GameManager.Instance.GetTextData(_themetype).Name, _levelbyexps) + "\n";
-    if(_levelbytendency>0)_themedescription+=string.Format(GameManager.Instance.GetTextData("bytendency_themepanel").Name,
-     GameManager.Instance.MyGameData.Tendency_Body.Icon+" "+GameManager.Instance.MyGameData.Tendency_Body.Name)+"\n";
 
     if (_themedescription.Length > 0) _themedescription += "\n";
     _themedescription+= _themetextdata.Description;

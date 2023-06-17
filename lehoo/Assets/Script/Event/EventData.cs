@@ -1129,8 +1129,7 @@ public class EventHolder
           if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
           break;
         case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-          foreach (var _data in GameManager.Instance.MyGameData.LongTermEXP)
-            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+            if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _temp.Add(_follow);
           foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
             if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
           break;
@@ -1148,8 +1147,7 @@ public class EventHolder
             case "3"://학식 테마
               _type = ThemeType.Intelligence; break;
           }
-          _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type)
-                     + GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
+          _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type);
           if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
           break;
         case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
@@ -1228,8 +1226,7 @@ public class EventHolder
                     if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
                     break;
                 case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-                    foreach (var _data in GameManager.Instance.MyGameData.LongTermEXP)
-                        if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+                        if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _temp.Add(_follow);
                     foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
                         if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
                     break;
@@ -1247,8 +1244,7 @@ public class EventHolder
                         case "3"://학식 테마
                             _type = ThemeType.Intelligence; break;
                     }
-                    _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type)  +
-                                GameManager.Instance.MyGameData.GetEffectThemeCount_Exp(_type) + GameManager.Instance.MyGameData.GetThemeLevelByTendency(_type);
+          _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type);
                     if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
                     break;
                 case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
@@ -1389,8 +1385,7 @@ public class EventHolder
           break;
 
         case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-          foreach (var _data in GameManager.Instance.MyGameData.LongTermEXP)
-            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+            if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _temp.Add(_follow);
           foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
             if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
           break;

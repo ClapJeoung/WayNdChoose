@@ -35,7 +35,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.Theme:UIManager.Instance.PreviewManager.OpenThemePreview(MyTheme);break;
       case PreviewPanelType.Skill:UIManager.Instance.PreviewManager.OpenSkillPreview(MySkillName);break;
       case PreviewPanelType.EXP_long:
-         _exp = GameManager.Instance.MyGameData.LongTermEXP[ExpIndex];
+         _exp = GameManager.Instance.MyGameData.LongTermEXP;
         if(_exp!=null)UIManager.Instance.PreviewManager.OpenExpPreview(_exp);
         break;
         case PreviewPanelType.EXP_short:
@@ -81,7 +81,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.RewardSkillSelect:
         UIManager.Instance.PreviewManager.OpenSkillSelectPreview(MySkillName);break;
       case PreviewPanelType.RewardExpSelect_long:
-        _exp = GameManager.Instance.MyGameData.LongTermEXP[ExpIndex];
+        _exp = GameManager.Instance.MyGameData.LongTermEXP;
         if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,true);
         else
         {

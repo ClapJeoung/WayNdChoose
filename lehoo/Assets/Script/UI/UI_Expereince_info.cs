@@ -15,9 +15,9 @@ public class UI_Expereince_info : UI_default
   [SerializeField] private CanvasGroup BackButton = null; 
   private Vector2 ClosePos =new Vector2(1500.0f,0.0f);
   private Vector2 OpenPos =new Vector2(309.0f,0.0f);
-  public void OpenLongExpUI(int _index)
+  public void OpenLongExpUI()
   {
-    Experience _exp = GameManager.Instance.MyGameData.LongTermEXP[_index];
+    Experience _exp = GameManager.Instance.MyGameData.LongTermEXP;
     //나중에 인수도 받아야함
     if (UIManager.Instance.IsWorking || _exp == null) return;
     if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }

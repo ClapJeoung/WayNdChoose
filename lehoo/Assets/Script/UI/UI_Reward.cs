@@ -7,7 +7,6 @@ using TMPro;
 public class UI_Reward : UI_default
 {
   [SerializeField] private Canvas MyCansvas = null;
-  [SerializeField] private RectTransform PanelRect = null;
   [SerializeField] private CanvasGroup PanelGroup = null;
   [SerializeField] private Transform RewardButtonHolder = null;
   [SerializeField] private RewardButton Reward_HP = null;
@@ -144,7 +143,7 @@ public class UI_Reward : UI_default
     Experience _rewardexperience = GameManager.Instance.ExpDic[CurrentSuccesData.Reward_ID];
     for(int i = 0; i < 2; i++)
     {
-      Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP[i];
+      Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP;
       if (_longexp == null)
       {
                 RewardLongExpNameGroup[i].alpha = 0.0f;
@@ -191,7 +190,7 @@ public class UI_Reward : UI_default
     Experience _rewardexperience = _badexp;
     for (int i = 0; i < 2; i++)
     {
-      Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP[i];
+      Experience _longexp = GameManager.Instance.MyGameData.LongTermEXP;
       if (_longexp == null)
       {
                 RewardLongExpNameGroup[i].alpha = 0.0f;
@@ -285,11 +284,11 @@ public class UI_Reward : UI_default
     RewardButtonHolder.GetChild(4).gameObject.SetActive(false);
     AutoClose();
   }
-  public void AddRewardExp_Long(int _expindex)
+  public void AddRewardExp_Long()
   {
     Reward_Exp.CloseUIButton();
-    if (GameManager.Instance.MyGameData.LongTermEXP[_expindex] == null) GameManager.Instance.AddLongExp(GameManager.Instance.ExpDic[CurrentSuccesData.Reward_ID], _expindex);
-    else GameManager.Instance.ShiftLongExp(GameManager.Instance.ExpDic[CurrentSuccesData.Reward_ID], _expindex);
+    if (GameManager.Instance.MyGameData.LongTermEXP == null) GameManager.Instance.AddLongExp(GameManager.Instance.ExpDic[CurrentSuccesData.Reward_ID]);
+    else GameManager.Instance.ShiftLongExp(GameManager.Instance.ExpDic[CurrentSuccesData.Reward_ID]);
     UIManager.Instance.UpdateExpLongTermIcon();
     CloseRewardExpPanel();
     AutoClose();
