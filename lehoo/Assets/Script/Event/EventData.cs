@@ -30,7 +30,7 @@ public class EventHolder
     string _id = _data.ID;
     int _season = 0;
     int[] _seasons = null;
-    if (_data.Season.Equals("0")) { _seasons = new int[1]; _seasons[0] = 0; }
+    if (_data.Season.Equals("0")) { _seasons = new int[1]; _seasons[0] = 4; }
     else
     {
       _temp = _data.Season.Split('@');
@@ -349,7 +349,7 @@ public class EventHolder
     string _id = _data.ID;
     int _season = 0;
     int[] _seasons = null;
-    if (_data.Season[0].Equals("0")) { _seasons = new int[1]; _seasons[0] = 0; }
+    if (_data.Season[0].Equals("4")) { _seasons = new int[1]; _seasons[0] = 4; }
     else
     {
       _temp = _data.Season.Split('@');
@@ -681,7 +681,7 @@ public class EventHolder
     string _id = _data.ID;
     int _season = 0;
     int[] _seasons = null;
-    if (_data.Season[0].Equals("0")) { _seasons = new int[1]; _seasons[0] = 0; }
+    if (_data.Season[0].Equals("4")) { _seasons = new int[1]; _seasons[0] = 4; }
     else
     {
       _temp = _data.Season.Split('@');
@@ -1160,18 +1160,24 @@ public class EventHolder
     {
       if (_event.SettlementType.Equals(SettlementType.Outer))
       {
-        if (_event.EnvironmentType==EnvironmentType.NULL||envir.Contains(_event.EnvironmentType)) _followevents.Add(_event);
+        if (_event.EnvironmentType == EnvironmentType.NULL || envir.Contains(_event.EnvironmentType))
+        {
+          if(_event.Season.Equals(4)||_event.Season.Equals(GameManager.Instance.MyGameData.Turn))
+          _followevents.Add(_event);
+        }
       }
-    }//연계 충족된 이벤트들 중 환경 가능한 것들 리스트
+    }//연계 충족된 이벤트들 중 환경, 계절 가능한 것들 리스트
     _temp.Clear();
     List<EventDataDefulat> _normalevents = new List<EventDataDefulat>();
     foreach (var _event in AvailableNormalEvents)
     {
       if (_event.SettlementType.Equals(SettlementType.Outer))
       {
-        if(_event.EnvironmentType != EnvironmentType.NULL|| envir.Contains(_event.EnvironmentType)) _normalevents.Add(_event);
+        if(_event.EnvironmentType != EnvironmentType.NULL|| envir.Contains(_event.EnvironmentType))
+          if (_event.Season.Equals(4) || _event.Season.Equals(GameManager.Instance.MyGameData.Turn))
+            _normalevents.Add(_event);
       }
-    }//일반 야외 이벤트 중 환경 가능한 것 들 리스트
+    }//일반 야외 이벤트 중 환경, 계절 가능한 것 들 리스트
 
     if (_followevents.Count > 0 && _normalevents.Count > 0)
     {
@@ -1281,9 +1287,11 @@ public class EventHolder
             if (eventdata.EnvironmentType != EnvironmentType.NULL)                              //환경 검사일 때
                 if (!envir.Contains(eventdata.EnvironmentType))return false;    //해당 이벤트의 환경이 맞지 않으면 X
 
+      if (eventdata.Season != 4 && eventdata.Season != GameManager.Instance.MyGameData.Turn) return false;  //전역 계절이 아닌데도 계절이 맞지 않으면 X
 
-            //여기까지 왔으면 다 통과했으므로 O 반환
-            return true;
+
+        //여기까지 왔으면 다 통과했으므로 O 반환
+        return true;
         }
     }
   /// <summary>
@@ -1339,6 +1347,7 @@ public class EventHolder
       if (eventdata.EnvironmentType!=EnvironmentType.NULL)                              //환경 검사일 때
         if (!tiledata.EnvironmentType.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
 
+      if (eventdata.Season != 4 && eventdata.Season != GameManager.Instance.MyGameData.Turn) return false;  //전역 계절이 아닌데도 계절이 맞지 않으면 X
 
       //여기까지 왔으면 다 통과했으므로 O 반환
       return true;

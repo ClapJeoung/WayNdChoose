@@ -265,7 +265,7 @@ public class GameData    //게임 진행도 데이터
     }//최대 정신력(현재 광기 특성 개수에 따라)
   public int MadnessCount = 0;
   public Dictionary<SkillName, Skill> Skills = new Dictionary<SkillName, Skill>();//기술들
-  public void AssembleSkill()
+  public void MixSkill()
   {
     System.Random _rnd = new System.Random();
     List<SkillName> _availableskills = new List<SkillName>();
@@ -625,7 +625,7 @@ public class GameData    //게임 진행도 데이터
     }
     return 100;
   }
-  public void AssembleTendency()
+  public void MixTendency()
   {
     Tendency _currenttendency=UnityEngine.Random.Range(0,2)==0?Tendency_Head:Tendency_Body;
     bool _changelittle = false;
@@ -651,38 +651,86 @@ public class GameData    //게임 진행도 데이터
   //장기 기억 슬롯 0,1
   public Experience[] ShortTermEXP = new Experience[2];
   //단기 기억 슬롯 0,1,2,3
-  public void AssembleExp()
+  public void MixExp()
   {
     bool _longenable = LongTermEXP != null;
-    int _shortcount = 0;
-    for (int i = 0; i < ShortTermEXP.Length; i++) if (ShortTermEXP[i] != null) _shortcount++;
+    List<int> _shortindex=new List<int>();
+    for (int i = 0; i < ShortTermEXP.Length; i++) if (ShortTermEXP[i] != null) { _shortindex.Add(i); }
 
+    Experience _temp = null;
+    int _index = 0;
     if (_longenable.Equals(true))
     {
-      switch (_shortcount)
+      switch (_shortindex.Count)
       {
         case 0:
+          ShortTermEXP[0] = LongTermEXP.Copy();
+          if(ShortTermEXP[0].Duration>ConstValues.ShortTermStartTurn)
+            ShortTermEXP[0].Duration = ConstValues.ShortTermStartTurn;
+          LongTermEXP = null;
+
+          UIManager.Instance.UpdateExpLongTermIcon();
+          UIManager.Instance.UpdateExpShortTermIcon();
           break;//장기 -> 단기
 
         case 1:
+          _index = _shortindex[0];
+          _temp=LongTermEXP.Copy();
+          LongTermEXP=ShortTermEXP[_index].Copy();      //단기 -> 장기
+          ShortTermEXP[_index] = _temp; //장기 -> 단기
+          if (ShortTermEXP[_index].Duration > ConstValues.ShortTermStartTurn)
+          { ShortTermEXP[_index].Duration = ConstValues.ShortTermStartTurn;}
+
+          UIManager.Instance.UpdateExpLongTermIcon();
+          UIManager.Instance.UpdateExpShortTermIcon();
           break;//장기 <-> 단기
 
         case 2:
+          if (UnityEngine.Random.Range(0, 100) < 75)
+          {
+            _temp = ShortTermEXP[0].Copy();
+            ShortTermEXP[0] = ShortTermEXP[1].Copy();
+            ShortTermEXP[1] = _temp;
+            UIManager.Instance.UpdateExpShortTermIcon();
+          }
+          else
+          {
+            _index = UnityEngine.Random.Range(0, 2);//0번 단기 혹은 1번 단기 중 무작위로
+            _temp = LongTermEXP.Copy();
+            LongTermEXP = ShortTermEXP[_index].Copy();
+            ShortTermEXP[_index] = _temp;
+            if (ShortTermEXP[_shortindex[_index]].Duration > ConstValues.ShortTermStartTurn)
+            { ShortTermEXP[_shortindex[_index]].Duration = ConstValues.ShortTermStartTurn; }
+
+            UIManager.Instance.UpdateExpLongTermIcon();
+            UIManager.Instance.UpdateExpShortTermIcon();
+          }
           break;//(75%)단기 <-> 단기    (25%)장기 <-> 단기
       }
     }
     else
     {
-      switch (_shortcount)
+      switch (_shortindex.Count)
       {
         case 0:
           //가진 경험이 하나도 없는 상태임
           break;
 
         case 1:
+          _index = _shortindex[0];
+          LongTermEXP = ShortTermEXP[_index].Copy();
+          ShortTermEXP[_index] = null;
+
+          UIManager.Instance.UpdateExpLongTermIcon();
+          UIManager.Instance.UpdateExpShortTermIcon();
           break;//단기 -> 장기
         
         case 2:
+          _temp = ShortTermEXP[0].Copy();
+          ShortTermEXP[0] = ShortTermEXP[1].Copy();
+          ShortTermEXP[1] = _temp;
+
+          UIManager.Instance.UpdateExpShortTermIcon();
           break;//단기 <-> 단기
       }
     }

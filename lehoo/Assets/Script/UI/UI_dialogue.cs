@@ -558,15 +558,15 @@ public class UI_dialogue : UI_default
         else _issuccess = false;
         break;
       case SelectionTargetType.Skill:
-        GameManager.Instance.MyGameData.AssembleSkill();
+        GameManager.Instance.MyGameData.MixSkill();
         _issuccess = true;
         break;
       case SelectionTargetType.Tendency:
-        GameManager.Instance.MyGameData.AssembleTendency();
+        GameManager.Instance.MyGameData.MixTendency();
         _issuccess = true;
         break;
       case SelectionTargetType.Exp:
-        GameManager.Instance.MyGameData.AssembleExp();
+        GameManager.Instance.MyGameData.MixExp();
         _issuccess = true;
         break;
     }
