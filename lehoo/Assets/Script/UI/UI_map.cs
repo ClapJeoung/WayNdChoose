@@ -13,10 +13,8 @@ public class UI_map : UI_default
   [SerializeField] private Tilemap Tilemap_bottom = null;
   [SerializeField] private Tilemap Tilemap_top = null;
     [SerializeField] private TextMeshProUGUI SettleName = null;
-    [SerializeField] private Image SettleIllust = null;
     [SerializeField] private Button MoveButton = null;
   [SerializeField] private TextMeshProUGUI MoveButtonText = null;
-  [SerializeField] private TextMeshProUGUI SanityLossText = null;
   [SerializeField] private Button CancleButton = null;
   [SerializeField] private TextMeshProUGUI CancleButtonText = null;
   /// <summary>
@@ -32,7 +30,6 @@ public class UI_map : UI_default
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;
         if(CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
         MoveButtonText.text = GameManager.Instance.GetTextData("choosesettle").Name;
-        SanityLossText.text = "";
         CancleButton.interactable = false;
         break;
       case 1:
@@ -40,7 +37,6 @@ public class UI_map : UI_default
         if (MoveButton.interactable.Equals(false)) MoveButton.interactable = true;
         if (CancleButton.interactable.Equals(false)) CancleButton.interactable = true;
         MoveButtonText.text = GameManager.Instance.GetTextData("canmove").Name;
-        SanityLossText.text = SelectedSettleCost.ToString();
         CancleButton.interactable = true;
         break;
       case 2:
@@ -48,7 +44,6 @@ public class UI_map : UI_default
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;
         if (CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
         MoveButtonText.text = GameManager.Instance.GetTextData("duringmoving").Name;
-        SanityLossText.text = "";
         CancleButton.interactable = false;
         break;
       case 3:
@@ -56,7 +51,6 @@ public class UI_map : UI_default
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;
         if (CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
         MoveButtonText.text = GameManager.Instance.GetTextData("cannotmove").Name;
-        SanityLossText.text = "";
         CancleButton.interactable = false;
         break;
       case 4:
@@ -64,7 +58,6 @@ public class UI_map : UI_default
         if (MoveButton.interactable.Equals(false)) MoveButton.interactable = true;
         if (CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
         MoveButtonText.text = GameManager.Instance.GetTextData("keepgoing").Name;
-        SanityLossText.text = "";
         CancleButton.interactable = false;
         break;
     }
@@ -357,7 +350,6 @@ public class UI_map : UI_default
 
       SelectedArrow = _arrow;
       SettleName.text = _settle.Name;
-      SettleIllust.sprite = _settle.Illust;
       UnpText.text = GameManager.Instance.MyGameData.AllSettleUnpleasant[_settle.OriginName].ToString();
 
       SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.VectorPos));
@@ -371,7 +363,6 @@ public class UI_map : UI_default
     {
       SelectedArrow = _arrow;
       SettleName.text = _settle.Name;
-      SettleIllust.sprite = _settle.Illust;
       UnpText.text = GameManager.Instance.MyGameData.AllSettleUnpleasant[_settle.OriginName].ToString();
     
       SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.VectorPos));
@@ -393,7 +384,6 @@ public class UI_map : UI_default
     Debug.Log("방향 버튼 취소");
     SelectedArrow.deactivecolor();
     SelectedArrow = null;
-    SettleIllust.sprite = GameManager.Instance.ImageHolder.NoneIllust;
     SettleName.text = "";
     SetMoveButton(0);
     yield return StartCoroutine(movetoplayer());
