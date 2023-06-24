@@ -11,12 +11,10 @@ public class GameManager : MonoBehaviour
   public static GameManager Instance { get { return instance; } }
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
+  [HideInInspector] public GameJsonData MyGameJsonData = null;
   [HideInInspector] public const string GameDataName = "WNCGameData.json";
   [HideInInspector] public MapData MyMapData = null;              //맵 데이터(맵 정보만)
-  [HideInInspector] public MapSaveData MyMapSaveData = null;
-  private const string MapDataName = "MapData.json";
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
-  private const string ProgressDataName = "ProgressData.json";
 
   public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
 
@@ -252,8 +250,9 @@ public class GameManager : MonoBehaviour
   {
     if (File.Exists(Application.persistentDataPath+"/"+GameDataName ))
     {
-      MyGameData = JsonUtility.FromJson<GameJsonData>(File.ReadAllText(Application.persistentDataPath + "/" + GameDataName)).GetGameData();
-      MyMapData = JsonUtility.FromJson<MapSaveData>(File.ReadAllText(Application.persistentDataPath + "/" + MapDataName)).ConvertToMapData();
+      MyGameJsonData = JsonUtility.FromJson<GameJsonData>(File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
+      MyGameData = MyGameJsonData.GetGameData();
+      MyMapData = MyGameJsonData.GetMapData();
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
@@ -454,19 +453,7 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentSanity -= MyGameData.SettleSanityLoss;
     UIManager.Instance.UpdateSanityText();
     Dictionary<Settlement,int> _temp=new Dictionary<Settlement,int>();
-    foreach (var _data in MyGameData.AllSettleUnpleasant)
-    {
-      if (_data.Key.Equals(MyGameData.CurrentSettlement))
-      {
-        _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key]+1);
-      }
-      else
-      {
-        if (MyGameData.AllSettleUnpleasant[_data.Key] == 0) continue;
-        else _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key]-1);
-      }
-    }//정착지에서 이벤트를 선택하면 현재 정착지 불쾌 ++, 
-    foreach (var _data in _temp) MyGameData.AllSettleUnpleasant[_data.Key.OriginName] = _data.Value;
+    MyGameData.AddDiscomfort(MyGameData.CurrentSettlement);
     MyGameData.CurrentEvent = _targetevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
@@ -479,19 +466,6 @@ public class GameManager : MonoBehaviour
   {
     MyGameData.LastQuestCount = 0;
     Dictionary<Settlement, int> _temp = new Dictionary<Settlement, int>();
-    foreach (var _data in MyGameData.AllSettleUnpleasant)
-    {
-      if (_data.Key.Equals(MyGameData.CurrentSettlement))
-      {
-        _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key] + 1);
-      }
-      else
-      {
-        if (MyGameData.AllSettleUnpleasant[_data.Key] == 0) continue;
-        else _temp.Add(MyMapData.GetSettle(_data.Key), MyGameData.AllSettleUnpleasant[_data.Key] - 1);
-      }
-    }//정착지에서 이벤트를 선택하면 현재 정착지 불쾌 ++, 
-    foreach (var _data in _temp) MyGameData.AllSettleUnpleasant[_data.Key.OriginName] = _data.Value;
     MyGameData.CurrentEvent = questevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
@@ -620,8 +594,8 @@ public class GameManager : MonoBehaviour
 
     _map.MakePerfectMap();
 
-    yield return new WaitUntil(()=>MyMapSaveData != null);
-    MyMapData = MyMapSaveData.ConvertToMapData();
+    yield return new WaitUntil(()=>MyGameJsonData != null);
+    MyMapData = MyGameJsonData.GetMapData();
 
     Settlement _startsettle = MyMapData.AllSettles[Random.Range(0, MyMapData.AllSettles.Count)];
 
@@ -629,9 +603,7 @@ public class GameManager : MonoBehaviour
     MyGameData.AvailableSettles = MyMapData.GetCloseSettles(_startsettle, 3);
     MyGameData.CurrentPos = _startsettle.VectorPos;
 
-    MyGameData.CreateSettleUnpleasant(MyMapData.AllSettles);
-
-    _map.MakeTilemap(MyMapSaveData);
+    _map.MakeTilemap(MyMapData);
     UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle);
     yield return null;
   }

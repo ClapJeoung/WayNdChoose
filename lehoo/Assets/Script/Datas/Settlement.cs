@@ -10,11 +10,34 @@ public class Settlement
   public ThemeType LibraryType = ThemeType.Conversation;
   
   public List<PlaceType> EnablePlaces=new List<PlaceType>();
-    public int IllustIndex = 0;
   public SettlementType Type;
-  public int NameIndex;
-  public string OriginName = "";
+  public int InfoIndex;
+  public string OriginName
+  {
+    get
+    {
+      switch (Type)
+      {
+        case SettlementType.Town:
+          return SettlementName.TownNams[InfoIndex];
+        case SettlementType.City:
+          return SettlementName.CityNames[InfoIndex];
+        default:
+          return SettlementName.CastleNames[InfoIndex];
+      }
+    }
+  }
   private TextData NameTextData = null;
+  public int Discomfort = 0;
+  public void AddDiscomfort()
+  {
+    switch (Type)
+    {
+      case SettlementType.Town:Discomfort += ConstValues.TownDiscomfortGrowth;return;
+      case SettlementType.City:Discomfort += ConstValues.CityDiscomfortGrowth; return;
+      default: Discomfort += ConstValues.CastleDiscomfortGrowth; return;
+    }
+  }
   private string name;
   public string Name { 
     get
@@ -30,7 +53,6 @@ public class Settlement
     switch (Type)
     {
       case SettlementType.Town:
-        OriginName = SettlementName.TownNams[NameIndex];
         NameTextData = GameManager.Instance.GetTextData(OriginName);
         SpringIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_summer");
@@ -38,14 +60,12 @@ public class Settlement
         WinterIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_winter"); 
         break;
       case SettlementType.City:
-        OriginName = SettlementName.CityNames[NameIndex];
         NameTextData = GameManager.Instance.GetTextData(OriginName);
         SpringIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_summer");
         FallIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}autumn");
         WinterIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_winter"); break;
       case SettlementType.Castle:
-        OriginName = SettlementName.CastleNames[NameIndex]; 
         NameTextData = GameManager.Instance.GetTextData(OriginName);
         SpringIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_summer");
@@ -202,108 +222,13 @@ public class Settlement
     EnablePlaces = _enableplaces;
   }
 }
-public class MapSaveData
-{
-    public int Size = 0;
-    public int[] BottomMapCode;
-    public int[] BottomTileCode;
-    public int[] TopMapCode;
-    public int[] TopTileCode;
-    public int[] RotCode;
-    public Vector3Int[] Town_Pos;
-    public Vector3Int[] City_Pos;
-    public Vector3Int[] Castle_Pos;
-  public int[] Town_NameIndex,City_NameIndex, Castle_NameIndex;
-    public int[] Town_Index, City_Index, Castle_Index;
-  public bool[] Town_Open;
-  public bool[] City_Open;
-  public bool[] Castle_Open;
-    public int TownCount, CityCount, CastleCount;
-  public bool[] Isriver_town, Isforest_town, Ismine_town, Ismountain_town,Issea_town;
-  public bool[] Isriver_city, Isforest_city, Ismine_city, Ismountain_city,Issea_city;
-  public bool[] Isriver_castle, Isforest_castle, Ismine_castle, Ismountain_castle,Issea_castle;
-
-  public MapData ConvertToMapData()
-  {
-    MapData _mapdata = new MapData();
-    _mapdata.MapCode_Bottom = new int[Size, Size];
-    _mapdata.MapCode_Top = new int[Size, Size];
-    for(int i=0;i<Size;i++)
-      for(int j=0;j<Size;j++)
-      {
-        _mapdata.MapCode_Bottom[j, i] = BottomMapCode[i * Size + j];
-        _mapdata.MapCode_Top[j, i] = TopMapCode[i * Size + j];
-      }
-    for(int i = 0; i < TownCount; i++)
-    {
-      Settlement _town = new Settlement();
-      _town.NameIndex = Town_NameIndex[i];
-      _town.Type = SettlementType.Town;
-      _town.IsRiver = Isriver_town[i];
-      _town.IsForest= Isforest_town[i];
-      _town.IsMountain= Ismountain_town[i];
-      _town.IsHighland= Ismine_town[i];
-      _town.IsSea = Issea_town[i];
-
-      _town.Pose.Add(Town_Pos[i]);
-
-            _town.IllustIndex = Town_Index[i];
-
-      _mapdata.Towns.Add( _town);
-      _mapdata.AllSettles.Add( _town);
-    }
-    for (int i = 0; i < CityCount; i++)
-    {
-      Settlement _city = new Settlement();
-      _city.NameIndex = City_NameIndex[i];
-      _city.Type = SettlementType.City;
-      _city.IsRiver = Isriver_city[i];
-      _city.IsForest = Isforest_city[i];
-      _city.IsMountain = Ismountain_city[i];
-      _city.IsHighland = Ismine_city[i];
-      _city.IsSea = Issea_city[i];
-
-      _city.Pose.Add(City_Pos[i*2]);
-      _city.Pose.Add(City_Pos[i * 2+1]);
-            _city.IllustIndex = City_Index[i];
-
-            _mapdata.Cities.Add( _city);
-      _mapdata.AllSettles.Add( _city);
-    }
-    for (int i = 0; i < CastleCount; i++)
-    {
-      Settlement _castle = new Settlement();
-      _castle.NameIndex = Castle_NameIndex[i];
-      _castle.Type = SettlementType.Castle;
-      _castle.IsRiver = Isriver_castle[i];
-      _castle.IsForest = Isforest_castle[i];
-      _castle.IsMountain = Ismountain_castle[i];
-      _castle.IsHighland = Ismine_castle[i];
-      _castle.IsSea = Issea_castle[i];
-
-      _castle.Pose.Add(Castle_Pos[i * 3]);
-      _castle.Pose.Add(Castle_Pos[i * 3 + 1]);
-      _castle.Pose.Add(Castle_Pos[i * 3 + 2]);
-            _castle.IllustIndex = Castle_Index[i];
-
-            _mapdata.Castles.Add( _castle);
-      _mapdata.AllSettles.Add( _castle);
-    }
-
-    foreach (var _settle in _mapdata.AllSettles) _settle.Setup();
-    return _mapdata;
-  }
-  public void UpdateSaveData(MapData _data)
-  {
-  }
-}
 public class MapData
 {
   public int[,] MapCode_Bottom;
   public int[,] MapCode_Top;
   public List<Settlement> Towns = new List<Settlement>();
   public List<Settlement> Cities =new List<Settlement>();
-  public List<Settlement> Castles =new List<Settlement>();
+  public Settlement Castles = null;
   public List<Settlement> AllSettles = new List<Settlement>();
   public Settlement GetSettle(string originname)
   {
@@ -343,7 +268,7 @@ public class MapData
 
     return _closest;
   }//_origin 정착지로부터 제일 가까운 3개
-}
+}//게임 상에서 꺼내 쓰기 편리하게 변환한 지도 데이터
 public static class SettlementName
 {
   public static string[] TownNams =

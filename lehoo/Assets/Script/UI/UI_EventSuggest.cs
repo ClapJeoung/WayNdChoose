@@ -75,13 +75,13 @@ public class UI_EventSuggest : UI_default
  //환경 정보 슉슉 나타남
 
     DiscomfortGroup.alpha = 0.0f;
-    DiscomfortCount.text = GameManager.Instance.MyGameData.AllSettleUnpleasant[_currentsettle.OriginName].ToString();
+    DiscomfortCount.text = _currentsettle.Discomfort.ToString();
     StartCoroutine(UIManager.Instance.moverect(DiscomfortRect, DiscomfortClosePos, discomfortOpenPos, UIOpenMoveTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.ChangeAlpha(DiscomfortGroup, 1.0f, UIOpenFadeTime, false));
     yield return LittleWait;
     //불쾌 정보 세팅하고 나타남
 
-    string _currentdiscomfort = string.Format(GameManager.Instance.GetTextData("currentdiscomfort").Name, GameManager.Instance.MyGameData.AllSettleUnpleasant[GameManager.Instance.MyGameData.CurrentSettlement.OriginName]);
+    string _currentdiscomfort = string.Format(GameManager.Instance.GetTextData("currentdiscomfort").Name, GameManager.Instance.MyGameData.CurrentSettlement.Discomfort);
     string _currentvalue = GameManager.Instance.GetTextData("currentsettlesanityloss").Name;
     _currentvalue = string.Format(_currentvalue, GameManager.Instance.MyGameData.SettleSanityLoss);
     //장소 진입 시 #VALUE# #sanity# 감소

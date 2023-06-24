@@ -41,153 +41,6 @@ public class maptext : MonoBehaviour
      //   StartCoroutine(makeperfectmap());
     }
 
-  private IEnumerator _simul_bool()
-  {
-    float _town_noriver = 0, _town_noforest = 0, _town_nohighland=0, _town_nomountain=0, _town_nosea = 0;
-    float _city_noriver = 0, _city_noforest = 0, _city_nohighland=0, _city_nomountain=0, _city_nosea = 0;
-    float _castle_noriver = 0, _castle_noforest = 0, _castle_nohighland=0, _castle_nomountain=0, _castle_nosea = 0;
-    string _str = "";
-    float _alltowncount = 0.0f, _allcitycount = 0.0f, _allcastlecount = 0.0f;
-    for (int i = 0; i < 1000; i++)
-    {
-      float _noriver = 0, _noforest = 0, _nohighland = 0, _nomountain = 0, _nosea = 0;
-      MapData _data = MakeMap().ConvertToMapData();
-      int _count = 0;
-      _str = $"{i + 1}번 검사\n";
-      foreach(var _town in _data.Towns)
-      {
-        _count++;
-        if (_town.IsRiver == false) _noriver++;
-        if(_town.IsForest == false) _noforest++;
-        if (_town.IsHighland == false) _nohighland++;
-        if (_town.IsMountain == false) _nomountain++;
-        if(_town.IsSea==false) _nosea++;
-      }
-      _town_noriver += _noriver;
-      _town_noforest += _noforest;
-      _town_nohighland += _nohighland;
-      _town_nomountain += _nomountain;
-      _town_nosea += _nosea;
-      float _towncount = _data.Towns.Count;
-      _alltowncount += _towncount;
-      _str += $"마을 강 확률 : {(_towncount-_noriver)/_towncount}  숲 확률 : {(_towncount-_noforest)/_towncount}  언덕 확률 : {(_towncount-_nohighland)/_towncount}  산 확률 : {(_towncount-_nomountain)/_towncount}  바다 확률 : {(_towncount-_nosea)/_towncount}\n\n";
-      _noriver = 0; _noforest = 0; _nohighland = 0; _nomountain = 0; _nosea = 0;
-     
-      foreach (var _city in _data.Cities)
-      {
-        _count++;
-        if (_city.IsRiver == false) _noriver++;
-        if (_city.IsForest == false) _noforest++;
-        if (_city.IsHighland == false) _nohighland++;
-        if (_city.IsMountain == false) _nomountain++;
-        if (_city.IsSea == false) _nosea++;
-      }
-      _city_noriver += _noriver;
-      _city_noforest += _noforest;
-      _city_nohighland += _nohighland;
-      _city_nomountain += _nomountain;
-      _city_nosea += _nosea;
-      float _citycount = _data.Cities.Count;
-      _allcitycount += _citycount;
-      _str += $"도시 강 확률 : {(_citycount-_noriver) / _citycount}  숲 확률 : {(_citycount-_noforest) / _citycount}  언덕 확률 : {(_citycount-_nohighland) / _citycount}  산 확률 : {(_citycount-_nomountain) / _citycount}  바다 확률 : {(_citycount-_nosea) / _citycount}\n\n";
-      _noriver = 0; _noforest = 0; _nohighland = 0; _nomountain = 0; _nosea = 0;
-      
-      foreach (var _castle in _data.Castles)
-      {
-        _count++;
-        if (_castle.IsRiver == false) _noriver++;
-        if (_castle.IsForest == false) _noforest++;
-        if (_castle.IsHighland == false) _nohighland++;
-        if (_castle.IsMountain == false) _nomountain++;
-        if (_castle.IsSea == false) _nosea++;
-      }
-      _castle_noriver += _noriver;
-      _castle_noforest += _noforest;
-      _castle_nohighland += _nohighland;
-      _castle_nomountain += _nomountain;
-      _castle_nosea += _nosea;
-      float _castlecount = _data.Castles.Count;
-      _allcastlecount += _castlecount;
-      _str += $"성채 강 확률 : {(_castlecount-_noriver) / _castlecount}  숲 확률 : {(_castlecount-_noforest) / _castlecount}  언덕 확률 : {(_castlecount-_nohighland) / _castlecount}  산 확률 : {(_castlecount-_nomountain) / _castlecount}  바다 확률 : {(_castlecount-_nosea) / _castlecount}\n\n";
-      _noriver = 0; _noforest = 0; _nohighland = 0; _nomountain = 0; _nosea = 0;
-
-    //  Debug.Log(_str);
-      yield return null;
-    }
-    _str = $"마을 개수 : {_alltowncount}\n" +
-      $"강 확률 : {_town_noriver / _alltowncount}  숲 확률 : {_town_noforest / _alltowncount}  고원 확률 : {_town_nohighland / _alltowncount}  " +
-      $"산 확률 : {_town_nomountain / _alltowncount}  바다 확률 : {_town_nosea / _alltowncount}\n\n" +
-      $"도시 개수 : {_allcitycount}\n" +
-      $"강 확률 : {_city_noriver / _allcitycount}  숲 확률 : {_city_noforest / _allcitycount}  고원 확률 : {_city_nohighland / _allcitycount}  " +
-      $"산 확률 : {_city_nomountain / _allcitycount}  바다 확률 : {_city_nosea / _allcitycount}\n\n" + 
-      $"성채 개수 : {_allcastlecount}\n" +
-      $"강 확률 : {_castle_noriver / _allcastlecount}  숲 확률 : {_castle_noforest / _allcastlecount}  고원 확률 : {_castle_nohighland / _allcastlecount}  " +
-      $"산 확률 : {_castle_nomountain / _allcastlecount}  바다 확률 : {_castle_nosea / _allcastlecount}\n\n";
-    Debug.Log(_str);
-      }
-  private IEnumerator _simul_fatal()
-  {
-    string _str = "";
-    for (int i = 0; i < 1000; i++)
-    {
-      string _temp = "";
-      MapData _data = MakeMap().ConvertToMapData();
-      bool _isriver = false, _isforest = false, _ishighland = false, _ismountain = false, _issea = false;
-      bool _fataltown = false, _fatalcity = false, _fatalcastle = false;
-      foreach (var _town in _data.Towns)
-      {
-        if (_town.IsRiver) _isriver = true;
-        if (_town.IsForest) _isforest = true;
-        if (_town.IsHighland) _ishighland = true;
-        if (_town.IsMountain) _ismountain = true;
-        if (_town.IsSea) _issea = true;
-      }
-    /*  if (!_isriver) _temp += "강 ";
-      if (!_isforest) _temp += "숲 ";
-      if (!_ishighland) _temp += "언덕 ";
-      if (!_ismountain) _temp += "산 ";
-      if (!_ismountain) _temp += "바다 ";
-      if (_temp != "") { _str += $"{i + 1}번 모든 마을에 '{_temp}' 없음\n"; _fataltown = true; }
-
-      _isriver = false;_isforest = false;_ishighland = false;_ismountain = false;_issea = false;
-      _temp = "";*/
-      foreach (var _city in _data.Cities)
-      {
-        if (_city.IsRiver) _isriver = true;
-        if (_city.IsForest) _isforest = true;
-        if (_city.IsHighland) _ishighland = true;
-        if (_city.IsMountain) _ismountain = true;
-        if (_city.IsSea) _issea = true;
-      }
-   /*   if (!_isriver) _temp += "강 ";
-      if (!_isforest) _temp += "숲 ";
-      if (!_ishighland) _temp += "언덕 ";
-      if (!_ismountain) _temp += "산 ";
-      if (!_ismountain) _temp += "바다 ";
-      if (_temp != "") { _str += $"{i + 1}번 모든 도시에 '{_temp}' 없음\n"; _fatalcity = true; }
-
-      _isriver = false; _isforest = false; _ishighland = false; _ismountain = false; _issea = false;
-      _temp = "";*/
-      foreach (var _castle in _data.Castles)
-      {
-        if (_castle.IsRiver) _isriver = true;
-        if (_castle.IsForest) _isforest = true;
-        if (_castle.IsHighland) _ishighland = true;
-        if (_castle.IsMountain) _ismountain = true;
-        if (_castle.IsSea) _issea = true;
-      }
-     if (!_isriver) _temp += "강 ";
-      if (!_isforest) _temp += "숲 ";
-      if (!_ishighland) _temp += "언덕 ";
-      if (!_ismountain) _temp += "산 ";
-      if (!_ismountain) _temp += "바다 ";
-      if (_temp != "") { _str += $"{i + 1}번 모든 정착지에 '{_temp}' 없음\n"; _fatalcastle = true; }
-
-      if (_fataltown || _fatalcity || _fatalcastle) _str += "\n";
-      yield return null;
-    }
-    Debug.Log(_str);
-  }
   public void MakePerfectMap()
   {
     StartCoroutine(makeperfectmap());
@@ -198,9 +51,9 @@ public class maptext : MonoBehaviour
         while (true)
         {
             _index++;
-      MapSaveData _savedata = MakeMap();
-      if (_savedata == null) continue;
-            MapData _data = _savedata.ConvertToMapData();
+            GameJsonData _gamejsondata = MakeMap();
+            if (_gamejsondata == null) continue;
+            MapData _data = _gamejsondata.GetMapData();
             bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
             bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false, _citysea = false;
             bool _castleriver = false, _castleforest = false, _castlehighland = false, _castlemountain = false;
@@ -221,15 +74,13 @@ public class maptext : MonoBehaviour
                 if (_city.IsMountain) _citymountain = true;
                 if (_city.IsSea) _citysea = true;
             }
-            foreach (var _castle in _data.Castles)
-            {
-                if (_castle.IsRiver) _castleriver = true;
-                if (_castle.IsForest) _castleforest = true;
-                if (_castle.IsHighland) _castlehighland = true;
-                if (_castle.IsMountain) _castlemountain = true;
-            }
+      var _castle = _data.Castles;
+      if (_castle.IsRiver) _castleriver = true;
+      if (_castle.IsForest) _castleforest = true;
+      if (_castle.IsHighland) _castlehighland = true;
+      if (_castle.IsMountain) _castlemountain = true;
 
-            if (!_townriver||!_townforest||!_townhighland||!_townmountain||!_townsea||
+      if (!_townriver||!_townforest||!_townhighland||!_townmountain||!_townsea||
                !_cityriver || !_cityforest || !_cityhighland || !_citymountain || !_citysea ||
                !_castleriver || !_castleforest || !_castlehighland || !_castlemountain )
             {
@@ -255,18 +106,17 @@ public class maptext : MonoBehaviour
             }
       if (_data.Towns.Count != 4) { yield return null;continue; }
       if (_data.Cities.Count != 2) { yield return null; continue; }
-      if (_data.Castles.Count != 2) {  yield return null; continue; }
+      if (_data.Castles==null) {  yield return null; continue; }
 
       Debug.Log($"{_index}번째 맵 성공\n");
-            GameManager.Instance.MyMapSaveData = _savedata;
+            GameManager.Instance.MyGameJsonData = _gamejsondata;
             break;
         }
     }
 
-    public MapSaveData MakeMap()
+    public GameJsonData MakeMap()
     {
-    MapSaveData _JsonData = new MapSaveData();
-    _JsonData.Size = DefaultSize;
+    GameJsonData _JsonData = new GameJsonData();
         MapData_b = new int[DefaultSize, DefaultSize];    //지도 크기_바닥
         for (int i = 0; i < DefaultSize; i++)
             for (int j = 0; j < DefaultSize; j++) MapData_b[i, j] = MapCode.b_land;
@@ -1430,232 +1280,215 @@ public class maptext : MonoBehaviour
         }//숲 개수 채우기 전까지 반복
          //  Debug.Log($"숲 최대 개수 : {_forestmaxcount}  현재 숲 개수 : {_forests.Count}");
 
-        #endregion
+    #endregion
     //   Debug.Log("숲 생성 완료");
 
-        #region 성채
-        Vector3Int[] _castleoriginpos = new Vector3Int[2];
-    int _deg = (DefaultSize - 1) / 4;
-    int _eightro= (DefaultSize - 1) / 8;
-    bool _rnd_x = Random.Range(0, 2) == 0 ? true : false;
-    bool _rnd_y = Random.Range(0, 2) == 0 ? true : false;
-    _castleoriginpos[0] = new Vector3Int(_deg, _deg * (_rnd_y ? 1 : 3));
-    _castleoriginpos[1] = new Vector3Int(_deg*3, _deg * (_rnd_y ? 3 : 1));
+    #region 성채
+    Vector3Int _castleoriginpos = Vector3Int.zero;
+    float _castleposrange = 0.1f;
+    _castleoriginpos = new Vector3Int((int)Random.Range(DefaultSize*(0.5f- _castleposrange), DefaultSize* (0.5f + _castleposrange)),(int) Random.Range(DefaultSize * (0.5f - _castleposrange), DefaultSize * (0.5f + _castleposrange)));
     int _modifyrange = 2;   //좌표 오차범위
-        List<Vector3Int[]> _castles = new List<Vector3Int[]>();
-        for (int i = 0; i < _castleoriginpos.Length; i++)
-        {
-      List<int> _failcode = new List<int>();
-            _failcode.Add(MapCode.b_sea);
-            _failcode.Add(MapCode.b_highland);
-            _failcode.Add(MapCode.b_mountain);
-            _failcode.Add(MapCode.b_desert_mountain);
-            _failcode.Add(MapCode.b_desert);
-            _failcode.Add(MapCode.b_desert_highland);
-            _failcode.Add(MapCode.b_desert_river);
-            _failcode.Add(MapCode.b_desert_source);
+    Vector3Int[] _castleposes = null;
+    List<int> _castlefailcode = new List<int>();
+    _castlefailcode.Add(MapCode.b_sea);
+    _castlefailcode.Add(MapCode.b_highland);
+    _castlefailcode.Add(MapCode.b_mountain);
+    _castlefailcode.Add(MapCode.b_desert_mountain);
+    _castlefailcode.Add(MapCode.b_desert);
+    _castlefailcode.Add(MapCode.b_desert_highland);
+    _castlefailcode.Add(MapCode.b_desert_river);
+    _castlefailcode.Add(MapCode.b_desert_source);
 
-            int _loopcount = 0, _maxloopcount = 10;
-            while (true)
-            {
-                if (_loopcount > _maxloopcount)
-                {
-                    if (_failcode.Contains(MapCode.b_highland))
-                    {
-                        _failcode.Remove(MapCode.b_highland);
-                    }//불가 목록에서 고원 제거
-                    else if (_failcode.Contains(MapCode.b_desert))
-                    {
-                        _failcode.Remove(MapCode.b_desert);
-                        _failcode.Remove(MapCode.b_desert_highland);
-                        _failcode.Remove(MapCode.b_desert_source);
-                        _failcode.Remove(MapCode.b_desert_river);
-                    }//불가 목록에서 사막 제거
-                    else if (_failcode.Contains(MapCode.b_mountain))
-                    {
-                        _failcode.Remove(MapCode.b_mountain);
-                        _failcode.Remove(MapCode.b_desert_mountain);
-                    }//불가 목록에서 산 제거
-                    else { Debug.Log("안이싯팔~~"); return null; }
-                    _loopcount = 0;
-                }//루프 너무 많이 할 때마다
-
-                Vector3Int _rndpos = _castleoriginpos[i] + new Vector3Int(Random.Range(-_modifyrange, _modifyrange + 1), Random.Range(-_modifyrange, _modifyrange + 1));
-                if (!CheckInside(_rndpos)) continue;        //시작 좌표가 맵 밖이면 안됨
-        if (_rndpos.x > _eightro * 3 && _rndpos.x < _eightro * 5 && _rndpos.y > _eightro * 3 && _rndpos.y < _eightro * 5) { _loopcount++; continue; }
-        int _code = MapData_b[_rndpos.x, _rndpos.y];
-                if (_failcode.Contains(_code)) { _loopcount++; continue; }//시작 지형이 불가 목록에 있으면 다시
-
-                Vector3Int _pos_top = GetNextPos(_rndpos, 0);//성 타일 3개 중 위(2번째)
-                if (!CheckInside(_pos_top)) { _loopcount++; continue; }        //좌표가 맵 밖이면 안됨
-        if (_pos_top.x > _eightro * 3 && _pos_top.x < _eightro * 5 && _pos_top.y > _eightro * 3 && _pos_top.y < _eightro * 5) { _loopcount++; continue; }
-        _code = MapData_b[_pos_top.x, _pos_top.y];
-                if (_failcode.Contains(_code)) { _loopcount++; continue; }//시작 지형이 불가 목록에 있으면 다시
-
-                Vector3Int _pos_right = GetNextPos(_rndpos, 1);//성 타일 3개 중 오른쪽(3번째)
-                if (!CheckInside(_pos_right)) { _loopcount++; continue; }        //좌표가 맵 밖이면 안됨
-        if (_pos_right.x > _eightro * 3 && _pos_right.x < _eightro * 5 && _pos_right.y > _eightro * 3 && _pos_right.y < _eightro * 5) { _loopcount++; continue; }
-        _code = MapData_b[_pos_right.x, _pos_right.y];
-                if (_failcode.Contains(_code)) { _loopcount++; continue; }//시작 지형이 불가 목록에 있으면 다시
-
-                
-
-                //여기까지 왔다는건 멀쩡한 성채 위치 3개 완료한것
-                _castles.Add(new Vector3Int[] { _rndpos, _pos_top, _pos_right });
-                break;
-            }
-        }
-        for (int i = 0; i < _castles.Count; i++)
-        {
-            foreach (Vector3Int _pos in _castles[i]) Mapdata_t[_pos.x, _pos.y] = MapCode.t_castle;
-        }
-        #endregion
-     //   Debug.Log("성채 생성 완료");
-
-        #region 도시
-    int _additional = Random.Range(0, Count_castle);
-        List<Vector3Int[]> _cities = new List<Vector3Int[]>();
-        for (int i = 0; i < _castles.Count; i++)
-        {
-            List<int> _failcode = new List<int>();
-            _failcode.Add(MapCode.b_sea);
-            _failcode.Add(MapCode.b_mountain);
-            _failcode.Add(MapCode.b_desert_mountain);
-
-            List<int> _settlercode = new List<int>();
-            _settlercode.Add(MapCode.t_castle);_settlercode.Add(MapCode.t_city);
-
-            int _loopcount = 0, _maxloop = 50;
-            int _randomrange = 3;   //성 주변 범위 위치
-            while (true)
-            {
-                bool _hav2continue = false;
-                //for문에서 검사 체크 용도로 true면 바로 continue 직행
-                if (_loopcount > _maxloop)
-                {
-                    if (_failcode.Contains(MapCode.b_mountain))
-                    {
-                        _failcode.Remove(MapCode.b_mountain); _failcode.Remove(MapCode.b_desert_mountain);
-                        _loopcount = 0;
-                    }
-                    else { if (_loopcount > 1000) { break; } }
-                }
-
-                Vector3Int _rndpos = _castles[i][0] + new Vector3Int(Random.Range(-_randomrange, _randomrange - 1), Random.Range(-_randomrange, _randomrange - 1));
-                //_rndpos : 성채 주위 3칸 무작위 위치
-                if (!CheckInside(_rndpos)) continue;
-                //맵 밖을 벗어났으면 다시 무작위 위치
-
-                int _code = MapData_b[_rndpos.x, _rndpos.y];
-                //_code : 해당 좌표 지형 코드
-                int _tcode = Mapdata_t[_rndpos.x, _rndpos.y];
-                //_code : 해당 좌표 지상 코드
-                if (_failcode.Contains(_code)|| _settlercode.Contains(_tcode)) { _loopcount++; continue; }
-              
-                for (int j = 0; j < 6; j++)
-                {
-                    Vector3Int _temp = GetNextPos(_rndpos, j);
-                    if (!CheckInside(_temp)) continue;
-                    _tcode = Mapdata_t[_temp.x, _temp.y];
-                    if (_settlercode.Contains(_tcode)) { _hav2continue = true; break; }
-                }//주변 1칸 도시,성채 맞닺는거 있는지 검사
-                if (_hav2continue) { _loopcount++; continue; }
-
-                Vector3Int _nextpos = GetNextPos(_rndpos, Random.Range(0, 6));
-
-                if (!CheckInside(_nextpos)) continue;
-
-                _code = MapData_b[_nextpos.x, _nextpos.y];
-                _tcode = Mapdata_t[_nextpos.x, _nextpos.y];
-                if (_failcode.Contains(_code) || _settlercode.Contains(_tcode)) { _loopcount++; continue; }
-
-                for (int j = 0; j < 6; j++)
-                {
-                    Vector3Int _temp = GetNextPos(_nextpos, j);
-                    if (!CheckInside(_temp)) continue;
-                    _tcode = Mapdata_t[_temp.x, _temp.y];
-                    if (_settlercode.Contains(_tcode)) { _hav2continue = true; break; }
-                }//주변 1칸 도시,성채 맞닺는거 있는지 검사
-                if (_hav2continue) { _loopcount++; continue; }
-
-                //여기까지 왔으면 이어진 도시 타일 한 세트 완성
-                Mapdata_t[_rndpos.x, _rndpos.y] = MapCode.t_city;
-                Mapdata_t[_nextpos.x, _nextpos.y] = MapCode.t_city;
-                _cities.Add(new Vector3Int[2] { _rndpos, _nextpos });
-                break;
-            }
-
-      if (_additional == i)
+    int _castleloopcount = 0, _castlemaxloopcount = 10;
+    while (true)
+    {
+      if (_castleloopcount > _castlemaxloopcount)
       {
-        _additional = -1;
-        i--;
-        continue;
-      }
-        }
-
-        #endregion
-  //      Debug.Log("도시 생성 완료");
-
-        #region 마을
-        int _towndefaultcount = 1;
-        int _sizeunit = ((DefaultSize - 1) / 2) - 1;
-        List<Vector3Int> _towns = new List<Vector3Int>();
-        for (int i = 0; i < 2; i++)
+        if (_castlefailcode.Contains(MapCode.b_highland))
         {
-            for (int j = 0; j < 2; j++)
-            {
-                for (int t = 0; t < _towndefaultcount; t++)
-                {
-                    Vector3Int _startpos = new Vector3Int(j * _sizeunit + (j > 0 ? 2 : 0), i * _sizeunit + (i > 0 ? 2 : 0));
-                    Vector3Int _endpos = new Vector3Int((j + 1) * _sizeunit + (j > 0 ? 2 : 0), (i + 1) * _sizeunit + (i > 0 ? 2 : 0));
+          _castlefailcode.Remove(MapCode.b_highland);
+        }//불가 목록에서 고원 제거
+        else if (_castlefailcode.Contains(MapCode.b_desert))
+        {
+          _castlefailcode.Remove(MapCode.b_desert);
+          _castlefailcode.Remove(MapCode.b_desert_highland);
+          _castlefailcode.Remove(MapCode.b_desert_source);
+          _castlefailcode.Remove(MapCode.b_desert_river);
+        }//불가 목록에서 사막 제거
+        else if (_castlefailcode.Contains(MapCode.b_mountain))
+        {
+          _castlefailcode.Remove(MapCode.b_mountain);
+          _castlefailcode.Remove(MapCode.b_desert_mountain);
+        }//불가 목록에서 산 제거
+        else { Debug.Log("안이싯팔~~"); return null; }
+        _castleloopcount = 0;
+      }//루프 너무 많이 할 때마다
 
-                    List<int> _failcode = new List<int>();
-                    _failcode.Add(MapCode.b_sea);
-                    _failcode.Add(MapCode.b_mountain);
-                    _failcode.Add(MapCode.b_desert_mountain);
-                    int _loopcount = 0, _maxloop = 50;
-                    while (true)
-                    {
-                        bool _isfail = false;
-                        if (_loopcount > _maxloop)
-                        {
-                            if (_failcode.Contains(MapCode.b_mountain))
-                            {
-                                _failcode.Remove(MapCode.b_mountain); _failcode.Remove(MapCode.b_desert_mountain);
-                                _loopcount = 0;
-                            }
-                            if (_loopcount > 300) { break; }
-                        }
-                        Vector3Int _townpos = new Vector3Int(Random.Range(_startpos.x, _endpos.x), Random.Range(_startpos.y, _endpos.y));
+      Vector3Int _rndpos = _castleoriginpos + new Vector3Int(Random.Range(-_modifyrange, _modifyrange + 1), Random.Range(-_modifyrange, _modifyrange + 1));
+      if (!CheckInside(_rndpos)) continue;        //시작 좌표가 맵 밖이면 안됨
+      int _code = MapData_b[_rndpos.x, _rndpos.y];
+      if (_castlefailcode.Contains(_code)) { _castleloopcount++; continue; }//시작 지형이 불가 목록에 있으면 다시
 
-                        if (!CheckInside(_townpos)) continue;
+      Vector3Int _pos_top = GetNextPos(_rndpos, 0);//성 타일 3개 중 위(2번째)
+      if (!CheckInside(_pos_top)) { _castleloopcount++; continue; }        //좌표가 맵 밖이면 안됨
+      _code = MapData_b[_pos_top.x, _pos_top.y];
+      if (_castlefailcode.Contains(_code)) { _castleloopcount++; continue; }//시작 지형이 불가 목록에 있으면 다시
 
-                        int _code = MapData_b[_townpos.x, _townpos.y];
-                        if (_failcode.Contains(_code)) { _loopcount++; continue; }
+      Vector3Int _pos_right = GetNextPos(_rndpos, 1);//성 타일 3개 중 오른쪽(3번째)
+      if (!CheckInside(_pos_right)) { _castleloopcount++; continue; }        //좌표가 맵 밖이면 안됨
+      _code = MapData_b[_pos_right.x, _pos_right.y];
+      if (_castlefailcode.Contains(_code)) { _castleloopcount++; continue; }//시작 지형이 불가 목록에 있으면 다시
 
-                        _code = Mapdata_t[_townpos.x, _townpos.y];
-                        if (_code == MapCode.t_castle || _code == MapCode.t_city || _code == MapCode.t_town) { _loopcount++; continue; }
 
-                        for (int k = 0; k < 6; k++)
-                        {
-                            Vector3Int _temp = GetNextPos(_townpos, k);
-                            if (!CheckInside(_temp)) continue;
-                            _code = Mapdata_t[_temp.x, _temp.y];
-                            if (_code == MapCode.t_castle || _code == MapCode.t_city || _code == MapCode.t_town) { _isfail = true; break; }
-                        }
-                        if (_isfail) { _loopcount++; continue; }
-                        //여기까지 왔으면 마을 선택 성공
-                        _towns.Add(_townpos);
-                        Mapdata_t[_townpos.x, _townpos.y] = MapCode.t_town;
-                        break;
-                    }
-                }
-            }
+
+      //여기까지 왔다는건 멀쩡한 성채 위치 3개 완료한것
+      _castleposes=new Vector3Int[] { _rndpos, _pos_top, _pos_right };
+      break;
+    }
+    foreach (Vector3Int _pos in _castleposes) Mapdata_t[_pos.x, _pos.y] = MapCode.t_castle;
+
+    #endregion
+    //   Debug.Log("성채 생성 완료");
+
+    #region 도시
+    float _cityorbitlength = DefaultSize * 0.35f;
+    float _cityangle = 0.0f;
+    List<Vector3Int[]> _cities = new List<Vector3Int[]>();
+    while(_cities.Count<2)
+    {
+      int i=_cities.Count;
+      if(i.Equals(0)) _cityangle= Random.Range(0.0f, 180.0f) ;
+      List<int> _failcode = new List<int>();
+      _failcode.Add(MapCode.b_sea);
+      _failcode.Add(MapCode.b_mountain);
+      _failcode.Add(MapCode.b_desert_mountain);
+
+      List<int> _settlercode = new List<int>();
+      _settlercode.Add(MapCode.t_castle); _settlercode.Add(MapCode.t_city);
+
+      int _loopcount = 0, _maxloop = 50;
+      while (true)
+      {
+        bool _hav2continue = false;
+        //for문에서 검사 체크 용도로 true면 바로 continue 직행
+        if (_loopcount > _maxloop)
+        {
+          if (_failcode.Contains(MapCode.b_mountain))
+          {
+            _failcode.Remove(MapCode.b_mountain); _failcode.Remove(MapCode.b_desert_mountain);
+            _loopcount = 0;
+          }
+          else { if (_loopcount > 1000) { break; } }
         }
-        #endregion
+
+        Vector3Int _rndpos = Vector3Int.zero;
+        if (i.Equals(0)) _rndpos = new Vector3Int((int)(Mathf.Cos(_cityangle * Mathf.Deg2Rad) * _cityorbitlength) + Random.Range(-1, 2), (int)(Mathf.Sin(_cityangle * Mathf.Deg2Rad) * _cityorbitlength) + Random.Range(-1, 2));
+        else _rndpos = new Vector3Int(_cities[0][0].x + Random.Range(-1, 2), _cities[0][0].y + Random.Range(-1, 2));
+        //_rndpos : 성채 중심으로부터 원형 둘레에서 반대방향으로 한 쌍 씩
+        if (!CheckInside(_rndpos)) continue;
+        //맵 밖을 벗어났으면 다시 무작위 위치
+
+        int _code = MapData_b[_rndpos.x, _rndpos.y];
+        //_code : 해당 좌표 지형 코드
+        int _tcode = Mapdata_t[_rndpos.x, _rndpos.y];
+        //_code : 해당 좌표 지상 코드
+        if (_failcode.Contains(_code) || _settlercode.Contains(_tcode)) { _loopcount++; continue; }
+
+        for (int j = 0; j < 6; j++)
+        {
+          Vector3Int _temp = GetNextPos(_rndpos, j);
+          if (!CheckInside(_temp)) continue;
+          _tcode = Mapdata_t[_temp.x, _temp.y];
+          if (_settlercode.Contains(_tcode)) { _hav2continue = true; break; }
+        }//주변 1칸 도시,성채 맞닺는거 있는지 검사
+        if (_hav2continue) { _loopcount++; continue; }
+
+        Vector3Int _nextpos = GetNextPos(_rndpos, Random.Range(0, 6));
+
+        if (!CheckInside(_nextpos)) continue;
+
+        _code = MapData_b[_nextpos.x, _nextpos.y];
+        _tcode = Mapdata_t[_nextpos.x, _nextpos.y];
+        if (_failcode.Contains(_code) || _settlercode.Contains(_tcode)) { _loopcount++; continue; }
+
+        for (int j = 0; j < 6; j++)
+        {
+          Vector3Int _temp = GetNextPos(_nextpos, j);
+          if (!CheckInside(_temp)) continue;
+          _tcode = Mapdata_t[_temp.x, _temp.y];
+          if (_settlercode.Contains(_tcode)) { _hav2continue = true; break; }
+        }//주변 1칸 도시,성채 맞닺는거 있는지 검사
+        if (_hav2continue) { _loopcount++; continue; }
+
+        //여기까지 왔으면 이어진 도시 타일 한 세트 완성
+        Mapdata_t[_rndpos.x, _rndpos.y] = MapCode.t_city;
+        Mapdata_t[_nextpos.x, _nextpos.y] = MapCode.t_city;
+        _cities.Add(new Vector3Int[2] { _rndpos, _nextpos });
+        break;
+      }    }
+
+    #endregion
+    //      Debug.Log("도시 생성 완료");
+
+    #region 마을
+    float _townorbitlength = 0.2f;
+    List<Vector3Int> _towns = new List<Vector3Int>();
+    for (int t = 0; t < 3; t++)
+    {
+      float _angletemp = 0.0f;
+      if (t.Equals(0)) _angletemp = _cityangle + 90.0f;
+      else if (t.Equals(1)) _angletemp = _cityangle - 60.0f;
+      else _angletemp = _cityangle - 120.0f;
+      //마을 좌표는 대강 도시 두개를 양 팔료 하는 별 모양의 머리,다리,다리 꼴로 되도록
+
+      Vector3Int _nexttownpos = new Vector3Int((int)(Mathf.Cos(_angletemp * Mathf.Deg2Rad)* _townorbitlength),
+        (int)(Mathf.Sin(_angletemp * Mathf.Deg2Rad)* _townorbitlength));
+
+      List<int> _failcode = new List<int>();
+      _failcode.Add(MapCode.b_sea);
+      _failcode.Add(MapCode.b_mountain);
+      _failcode.Add(MapCode.b_desert_mountain);
+      int _loopcount = 0, _maxloop = 50;
+      while (true)
+      {
+        bool _isfail = false;
+        if (_loopcount > _maxloop)
+        {
+          if (_failcode.Contains(MapCode.b_mountain))
+          {
+            _failcode.Remove(MapCode.b_mountain); _failcode.Remove(MapCode.b_desert_mountain);
+            _loopcount = 0;
+          }
+          if (_loopcount > 300) { break; }
+        }
+        Vector3Int _townpos = new Vector3Int(_nexttownpos.x+Random.Range(-1,2), _nexttownpos.y + Random.Range(-1, 2));
+
+        if (!CheckInside(_townpos)) continue;
+
+        int _code = MapData_b[_townpos.x, _townpos.y];
+        if (_failcode.Contains(_code)) { _loopcount++; continue; }
+
+        _code = Mapdata_t[_townpos.x, _townpos.y];
+        if (_code == MapCode.t_castle || _code == MapCode.t_city || _code == MapCode.t_town) { _loopcount++; continue; }
+
+        for (int k = 0; k < 6; k++)
+        {
+          Vector3Int _temp = GetNextPos(_townpos, k);
+          if (!CheckInside(_temp)) continue;
+          _code = Mapdata_t[_temp.x, _temp.y];
+          if (_code == MapCode.t_castle || _code == MapCode.t_city || _code == MapCode.t_town) { _isfail = true; break; }
+        }
+        if (_isfail) { _loopcount++; continue; }
+        //여기까지 왔으면 마을 선택 성공
+        _towns.Add(_townpos);
+        Mapdata_t[_townpos.x, _townpos.y] = MapCode.t_town;
+        break;
+      }
+    }
+    #endregion
     //    Debug.Log("마을 생성 완료");
 
-        string _str = "";
+    string _str = "";
         Stack<string> _strq = new Stack<string>();
         for(int i = 0; i < DefaultSize; i++)
         {
@@ -1948,67 +1781,43 @@ public class maptext : MonoBehaviour
     _JsonData.TopTileCode = _tc_t;
     _JsonData.RotCode = _r;
 
-    _JsonData.TownCount = _towns.Count;
     _JsonData.Town_Pos = _towns.ToArray();
 
-        int _citycount = 0;
         List<Vector3Int> _citytemp = new List<Vector3Int>();
         foreach(var _array in _cities)
         {
             if (_array.Length != 0)
             {
-                _citycount++;
                 foreach (var _pos in _array) _citytemp.Add(_pos);
             }
         }
-    _JsonData.CityCount = _citycount;
     _JsonData.City_Pos = _citytemp.ToArray();
 
-    _JsonData.CastleCount = _castles.Count;
         List<Vector3Int> _castletemp = new List<Vector3Int>();
-        foreach (var _array in _castles)
-        {
-            foreach (var _pos in _array) _castletemp.Add(_pos);
-        }
+    foreach (var _pos in _castleposes) _castletemp.Add(_pos);
     _JsonData.Castle_Pos = _castletemp.ToArray();
 
         //나무,마을,도시,성채 넣기
 
-        Vector3Int _saintpos = new Vector3Int(Random.Range(_deg, _deg*3), Random.Range(_deg,_deg*3));
 
-    _JsonData.Isriver_town = new bool[_JsonData.TownCount];
-    _JsonData.Isforest_town=new bool[_JsonData.TownCount];
-    _JsonData.Ismine_town= new bool[_JsonData.TownCount];
-    _JsonData.Ismountain_town= new bool[_JsonData.TownCount];
-    _JsonData.Issea_town = new bool[_JsonData.TownCount];
-    _JsonData.Town_Open=new bool[_JsonData.TownCount];
-    _JsonData.Town_NameIndex=new int[_JsonData.TownCount];
-        _JsonData.Town_Index = new int[_JsonData.TownCount];
+    _JsonData.Isriver_town = new bool[GameJsonData.TownCount];
+    _JsonData.Isforest_town=new bool[GameJsonData.TownCount];
+    _JsonData.Ismine_town= new bool[GameJsonData.TownCount];
+    _JsonData.Ismountain_town= new bool[GameJsonData.TownCount];
+    _JsonData.Issea_town = new bool[GameJsonData.TownCount];
+    _JsonData.Town_InfoIndex=new int[GameJsonData.TownCount];
 
-    _JsonData.Isriver_city = new bool[_JsonData.CityCount];
-    _JsonData.Isforest_city = new bool[_JsonData.CityCount];
-    _JsonData.Ismine_city = new bool[_JsonData.CityCount];
-    _JsonData.Ismountain_city = new bool[_JsonData.CityCount];
-    _JsonData.Issea_city = new bool[_JsonData.CityCount];
-    _JsonData.City_Open = new bool[_JsonData.CityCount];
-    _JsonData.City_NameIndex = new int[_JsonData.CityCount];
-        _JsonData.City_Index = new int[_JsonData.CityCount];
-
-        _JsonData.Isriver_castle = new bool[_JsonData.CastleCount];
-    _JsonData.Isforest_castle = new bool[_JsonData.CastleCount];
-    _JsonData.Ismine_castle = new bool[_JsonData.CastleCount];
-    _JsonData.Ismountain_castle = new bool[_JsonData.CastleCount];
-    _JsonData.Issea_castle = new bool[_JsonData.CastleCount];
-    _JsonData.Castle_Open= new bool[_JsonData.CastleCount];
-    _JsonData.Castle_NameIndex= new int[_JsonData.CastleCount];
-        _JsonData.Castle_Index = new int[_JsonData.CastleCount];
+    _JsonData.Isriver_city = new bool[GameJsonData.CityCount];
+    _JsonData.Isforest_city = new bool[GameJsonData.CityCount];
+    _JsonData.Ismine_city = new bool[GameJsonData.CityCount];
+    _JsonData.Ismountain_city = new bool[GameJsonData.CityCount];
+    _JsonData.Issea_city = new bool[GameJsonData.CityCount];
+    _JsonData.City_InfoIndex = new int[GameJsonData.CityCount];
 
         #region 검사 풀
         List<int> _deserttilepool = new List<int>();
     _deserttilepool.Add(MapCode.b_desert); _deserttilepool.Add(MapCode.b_desert_beach); _deserttilepool.Add(MapCode.b_desert_highland);
     _deserttilepool.Add(MapCode.b_desert_river); _deserttilepool.Add(MapCode.b_desert_riverbeach); _deserttilepool.Add(MapCode.b_desert_source);
-
-    int _desertcount_town = 3, _desertcount_city = 5, _desertcount_castle = 6;
 
 
     List<int> _fertilepool = new List<int>();//강 풀
@@ -2036,7 +1845,7 @@ public class maptext : MonoBehaviour
     List<List<Vector3Int>> _poses = new List<List<Vector3Int>>();
     List<Vector3Int> _poslist = new List<Vector3Int>();
     //마을 개수대로 검사
-    for(int i = 0; i < _JsonData.TownCount; i++)
+    for(int i = 0; i < GameJsonData.TownCount; i++)
     {
       _poslist.Clear();
       _poslist.Add(_JsonData.Town_Pos[i]);
@@ -2044,7 +1853,7 @@ public class maptext : MonoBehaviour
       foreach (var _asdf in _poslist) _temp.Add(_asdf);
       _poses.Add(_temp);
     }
-    _settles = ClassifySettle(_poses,_desertcount_town,0);
+    _settles = ClassifySettle(_poses,SettlementType.Town);
     for(int i = 0; i < _settles.Count; i++)
     {
       _JsonData.Isriver_town[i] = _settles[i].IsRiver;
@@ -2052,12 +1861,12 @@ public class maptext : MonoBehaviour
       _JsonData.Ismine_town[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_town[i] = _settles[i].IsMountain;
       _JsonData.Issea_town[i]= _settles[i].IsSea;
-      _JsonData.Town_NameIndex[i] = _settles[i].NameIndex;
+      _JsonData.Town_InfoIndex[i] = _settles[i].InfoIndex;
     }
     _poses.Clear();
     _poslist.Clear();
     //도시 2개씩 묶어서 검사
-    for (int i = 0; i < _JsonData.CityCount; i++)
+    for (int i = 0; i < GameJsonData.CityCount; i++)
     {
       _poslist.Clear();
       _poslist.Add(_JsonData.City_Pos[i*2]);
@@ -2066,7 +1875,7 @@ public class maptext : MonoBehaviour
       foreach (var _asdf in _poslist) _temp.Add(_asdf);
       _poses.Add(_temp);
     }
-    _settles = ClassifySettle(_poses, _desertcount_city,1);
+    _settles = ClassifySettle(_poses,SettlementType.City);
     for (int i = 0; i < _settles.Count; i++)
     {
       _JsonData.Isriver_city[i] = _settles[i].IsRiver;
@@ -2074,31 +1883,33 @@ public class maptext : MonoBehaviour
       _JsonData.Ismine_city[i] = _settles[i].IsHighland;
       _JsonData.Ismountain_city[i] = _settles[i].IsMountain;
       _JsonData.Issea_city[i]= _settles[i].IsSea;
-      _JsonData.City_NameIndex[i] = _settles[i].NameIndex;
+      _JsonData.City_InfoIndex[i] = _settles[i].InfoIndex;
     }
     _poses.Clear();
     _poslist.Clear();
     //성채 3개씩 묶어서 검사
-    for (int i = 0; i < _JsonData.CastleCount; i++)
-    {
+
       _poslist.Clear();
-      _poslist.Add(_JsonData.Castle_Pos[i * 3]);
-      _poslist.Add(_JsonData.Castle_Pos[i * 3+ 1]);
-      _poslist.Add(_JsonData.Castle_Pos[i * 3 + 2]);
-      List<Vector3Int> _temp = new List<Vector3Int>();
-      foreach (var _asdf in _poslist) _temp.Add(_asdf);
-      _poses.Add(_temp);
-    }
-    _settles = ClassifySettle(_poses, _desertcount_castle,2);
+      _poslist.Add(_JsonData.Castle_Pos[0]);
+      _poslist.Add(_JsonData.Castle_Pos[1]);
+      _poslist.Add(_JsonData.Castle_Pos[2]);
+      List<Vector3Int> _castlepostemp = new List<Vector3Int>();
+      foreach (var _asdf in _poslist) _castlepostemp.Add(_asdf);
+      _poses.Add(_castlepostemp);
+
+    _settles = ClassifySettle(_poses,SettlementType.Castle);
     for (int i = 0; i < _settles.Count; i++)
     {
-      _JsonData.Isriver_castle[i] = _settles[i].IsRiver;
-      _JsonData.Isforest_castle[i] = _settles[i].IsForest;
-      _JsonData.Ismine_castle[i] = _settles[i].IsHighland;
-      _JsonData.Ismountain_castle[i] = _settles[i].IsMountain;
-      _JsonData.Issea_castle[i] = _settles[i].IsSea;
-      _JsonData.Castle_NameIndex[i] = _settles[i].NameIndex;
+      _JsonData.Isriver_castle = _settles[i].IsRiver;
+      _JsonData.Isforest_castle = _settles[i].IsForest;
+      _JsonData.Ismine_castle = _settles[i].IsHighland;
+      _JsonData.Ismountain_castle = _settles[i].IsMountain;
+      _JsonData.Issea_castle = _settles[i].IsSea;
+      _JsonData.Castle_InfoIndex = _settles[i].InfoIndex;
     }
+
+    _JsonData.Discomfort = new int[GameJsonData.CastleCount + GameJsonData.CityCount + GameJsonData.TownCount];
+    for (int i = 0; i < _JsonData.Discomfort.Length; i++) _JsonData.Discomfort[i] = 0;
     #endregion
 
     List<int> GetAround(int[,] _targetarray, List<Vector3Int> _poslist,int range)
@@ -2141,21 +1952,20 @@ public class maptext : MonoBehaviour
       foreach (var _code in _list) if (_pool.Contains(_code)) _count++;
       return _count;
     }
-    List<Settlement> ClassifySettle(List<List<Vector3Int>> _poses,int _desertcount,int _settletype)
+    List<Settlement> ClassifySettle(List<List<Vector3Int>> _poses,SettlementType _settletype)
     {
       int _checkcount = _poses.Count;
       List<Settlement> _list = new List<Settlement>();
       List<int> _namelist = new List<int>();
       List<int> _illlist = new List<int>();
-      int illustCount = 100;
       for (int i = 0; i < _checkcount; i++)
       {
         Settlement _newsetl = new Settlement();
         List<Vector3Int> _pos = _poses[i];
 
         _newsetl = new Settlement();
-        List<int> _aroundbottom = GetAround(MapData_b, _pos, 1);  //마을 주위 1칸 (지형)
-        List<int> _aroundtop = GetAround(Mapdata_t, _pos, 1);     //마을 주위 1칸 (지상)
+        List<int> _aroundbottom = GetAround(MapData_b, _pos, 1);  //타일 주위 1칸 (지형)
+        List<int> _aroundtop = GetAround(Mapdata_t, _pos, 1);     //타일 주위 1칸 (지상)
 
         _newsetl.IsRiver = CheckCount(GetAround(MapData_b, _pos, 2), _fertilepool) > 0 ? true : false;
         _newsetl.IsSea = CheckCount(_aroundbottom, new List<int> { MapCode.b_sea }) > 0 ? true : false;
@@ -2166,30 +1976,22 @@ public class maptext : MonoBehaviour
         _list.Add(_newsetl);
 
         string[] _namearray;
-        if (_settletype == 0) { _namearray = SettlementName.TownNams; _newsetl.Type = SettlementType.Town; }
-        else if (_settletype == 1) { _namearray = SettlementName.CityNames; _newsetl.Type = SettlementType.City; }
+        if (_settletype.Equals(SettlementType.Town)) { _namearray = SettlementName.TownNams; _newsetl.Type = SettlementType.Town; }
+        else if (_settletype.Equals(SettlementType.City)) { _namearray = SettlementName.CityNames; _newsetl.Type = SettlementType.City; }
         else {  _namearray = SettlementName.CastleNames; _newsetl.Type = SettlementType.Castle; }
 
-        int _nameindex = Random.Range(0, _namearray.Length);
-        while(_namelist.Contains(_nameindex))_nameindex = Random.Range(0, _namearray.Length);
-
-        int _illindex = Random.Range(0, illustCount);
-        while (_illlist.Contains(_illindex)) _illindex = Random.Range(0, illustCount);
-
-        _namelist.Add(_nameindex);
-        _newsetl.NameIndex = _nameindex;
-        _newsetl.IllustIndex = _illindex;
-
+        int _infoindex = Random.Range(0, _namearray.Length);
+        while(_namelist.Contains(_infoindex)) _infoindex = Random.Range(0, _namearray.Length);
+        _namelist.Add(_infoindex);
+        _newsetl.InfoIndex = _infoindex;
       }
-      //  Debug.Log($"ckeckcount : {_checkcount} _list.count : {_list.Count}");
       return _list;
     }
-    //  OutputSettleData(_JsonData);
+
         return _JsonData;
     }
-  public void MakeTilemap(MapSaveData _jsondata)
+  public void MakeTilemap(MapData _mapdata)
     {
-    MapData _mapdata = _jsondata.ConvertToMapData();
     Vector3 _cellsize = new Vector3(75, 75);
     Debug.Log("맵을 만든 레후~");
         //타일로 구현화
@@ -2199,9 +2001,9 @@ public class maptext : MonoBehaviour
       {
         Vector3Int _newpos = new Vector3Int(j, i, 0);
        // Debug.Log($"{_newpos} -> {Tilemap_bottom.CellToWorld(_newpos)}");
-        maketile(GetTile_bottom(_jsondata.BottomTileCode[i * DefaultSize + j]), Tilemap_bottom.CellToWorld(_newpos), _jsondata.RotCode[i * DefaultSize + j]);
+        maketile(GetTile_bottom(GameManager.Instance.MyGameJsonData.BottomTileCode[i * DefaultSize + j]), Tilemap_bottom.CellToWorld(_newpos), GameManager.Instance.MyGameJsonData.RotCode[i * DefaultSize + j]);
 
-        int _topcode = _jsondata.TopTileCode[i * DefaultSize + j];
+        int _topcode = GameManager.Instance.MyGameJsonData.TopTileCode[i * DefaultSize + j];
         if(_topcode==TileCode.forest||_topcode==TileCode.forest_river || _topcode == TileCode.d_forest || _topcode == TileCode.d_forest_river)
           maketile(GetTile_top(_topcode), Tilemap_top.CellToWorld(_newpos),0);
       }
@@ -2209,11 +2011,11 @@ public class maptext : MonoBehaviour
     //이 밑은 정착지를 버튼으로 만드는거
     Vector3 _zeropos = Vector3.zero;
     Vector3 _buttonpos = Vector3.zero;
-        for(int i = 0; i < _jsondata.TownCount; i++)
+        for(int i = 0; i < GameJsonData.TownCount; i++)
     {
       _buttonpos = Vector3.zero;
       List<Vector3> townpos = new List<Vector3>();
-      townpos.Add(Tilemap_top.CellToWorld(_jsondata.Town_Pos[i]) );
+      townpos.Add(Tilemap_top.CellToWorld(GameManager.Instance.MyGameJsonData.Town_Pos[i]) );
       foreach (Vector3 pos in townpos) _buttonpos += pos;
       //위치(Rect로 변환) 집어넣고
       List<GameObject> _images=new List<GameObject>();
@@ -2253,12 +2055,12 @@ public class maptext : MonoBehaviour
     }
 
         _zeropos = Vector3.zero;
-    for (int i = 0; i < _jsondata.CityCount; i++)
+    for (int i = 0; i < GameJsonData.CityCount; i++)
     {
       _buttonpos = Vector3.zero;
       List<Vector3> citypos = new List<Vector3>();
-      citypos.Add(Tilemap_top.CellToWorld(_jsondata.City_Pos[i*2]) );
-      citypos.Add(Tilemap_top.CellToWorld(_jsondata.City_Pos[i * 2+1]) );
+      citypos.Add(Tilemap_top.CellToWorld(GameManager.Instance.MyGameJsonData.City_Pos[i*2]) );
+      citypos.Add(Tilemap_top.CellToWorld(GameManager.Instance.MyGameJsonData.City_Pos[i * 2+1]) );
       foreach (Vector3 pos in citypos) _buttonpos += pos;
             _buttonpos /= 2;
             //위치(Rect로 변환) 집어넣고
@@ -2304,55 +2106,51 @@ public class maptext : MonoBehaviour
     }
 
         _zeropos = Vector3.zero;
-        for (int i = 0; i < _jsondata.CastleCount; i++)
+    _buttonpos = Vector3.zero;
+    List<Vector3> castlepos = new List<Vector3>();
+    castlepos.Add(Tilemap_top.CellToWorld(GameManager.Instance.MyGameJsonData.Castle_Pos[0]));
+    castlepos.Add(Tilemap_top.CellToWorld(GameManager.Instance.MyGameJsonData.Castle_Pos[1]));
+    castlepos.Add(Tilemap_top.CellToWorld(GameManager.Instance.MyGameJsonData.Castle_Pos[2]));
+    foreach (Vector3 pos in castlepos) _buttonpos += pos;
+    _buttonpos /= 3;
+    //위치(Rect로 변환) 집어넣고
+    List<GameObject> _castleimages = new List<GameObject>();
+    foreach (Vector3 _pos in castlepos)
     {
-      _buttonpos = Vector3.zero;
-      List<Vector3> castlepos = new List<Vector3>();
-      castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3]) );
-      castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3 + 1]) );
-      castlepos.Add(Tilemap_top.CellToWorld(_jsondata.Castle_Pos[i * 3 + 2]) );
-      foreach (Vector3 pos in castlepos) _buttonpos += pos;
-            _buttonpos /= 3;
-            //위치(Rect로 변환) 집어넣고
-            List<GameObject> _images = new List<GameObject>();
-      foreach (Vector3 _pos in castlepos)
-      {
-        GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        RectTransform _rect = _temp.GetComponent<RectTransform>();
-        _rect.localScale = Vector3.one;
-        _rect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0) ;
-        _rect.sizeDelta = _cellsize;
-        _temp.GetComponent<Image>().sprite = Castlesprite;
-        _temp.transform.SetParent(SettlerHolder);
-        _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
-        _images.Add(_temp);
-                _zeropos += _pos;
-            }//이미지 만들고 위치,스프라이트 넣기
+      GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+      RectTransform _rect = _temp.GetComponent<RectTransform>();
+      _rect.localScale = Vector3.one;
+      _rect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0);
+      _rect.sizeDelta = _cellsize;
+      _temp.GetComponent<Image>().sprite = Castlesprite;
+      _temp.transform.SetParent(SettlerHolder);
+      _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
+      _castleimages.Add(_temp);
+      _zeropos += _pos;
+    }//이미지 만들고 위치,스프라이트 넣기
 
-      GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
-      //버튼 오브젝트
-      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
-      _button.transform.SetParent(SettlerHolder);
-      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_button.GetComponent<RectTransform>().anchoredPosition3D.x, _button.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
-      for (int j=0;j<_images.Count;j++)
-      {
-                Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _button.GetComponent<RectTransform>().anchoredPosition;
-                _images[j].transform.SetParent(_button.transform, true);
-        _images[j].transform.localScale = Vector3.one;
-                _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x,_newpos.y,0.0f);
-        _images[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
-      }
-      GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-      _questicon.GetComponent<Image>().enabled = false;
-      _questicon.transform.SetParent(_button.transform);
-      _questicon.transform.localScale = Vector3.one;
-      _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-      _questicon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
-      _button.AddComponent<CanvasGroup>().alpha = 0.3f;
-      _button.GetComponent<SettlementIcon>().Setup(_mapdata.Castles[i], _questicon.GetComponent<Image>());
-      //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
+    GameObject _castlebutton = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
+    //버튼 오브젝트
+    _castlebutton.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
+    _castlebutton.transform.SetParent(SettlerHolder);
+    _castlebutton.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_castlebutton.GetComponent<RectTransform>().anchoredPosition3D.x, _castlebutton.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
+    for (int j = 0; j < _castleimages.Count; j++)
+    {
+      Vector3 _newpos = _castleimages[j].GetComponent<RectTransform>().anchoredPosition - _castlebutton.GetComponent<RectTransform>().anchoredPosition;
+      _castleimages[j].transform.SetParent(_castlebutton.transform, true);
+      _castleimages[j].transform.localScale = Vector3.one;
+      _castleimages[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x, _newpos.y, 0.0f);
+      _castleimages[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
     }
-
+    GameObject _castlequesticon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+    _castlequesticon.GetComponent<Image>().enabled = false;
+    _castlequesticon.transform.SetParent(_castlebutton.transform);
+    _castlequesticon.transform.localScale = Vector3.one;
+    _castlequesticon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+    _castlequesticon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
+    _castlebutton.AddComponent<CanvasGroup>().alpha = 0.3f;
+    _castlebutton.GetComponent<SettlementIcon>().Setup(_mapdata.Castles, _castlequesticon.GetComponent<Image>());
+    //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
     void maketile(Sprite spr, Vector3 pos, int rot)
     {
       Vector3 _newpos = pos;

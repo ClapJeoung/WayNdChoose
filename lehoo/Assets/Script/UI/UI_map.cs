@@ -102,7 +102,6 @@ public class UI_map : UI_default
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private AnimationCurve ZoomOutCurve = null;
   [SerializeField] private RectTransform ScaleChanger = null;
-  [SerializeField] private RectTransform LastHolder = null;
   [SerializeField] private Vector3 IdleScale = Vector3.one * 1.8f;
   [SerializeField] private Vector3 ZoomInScale = Vector3.one* 2.3f;
   [SerializeField] private float ZoomInTime = 1.2f;
@@ -238,7 +237,7 @@ public class UI_map : UI_default
 
     }
 
-    if(SelectedArrow!=null) UnpText.text = GameManager.Instance.MyGameData.AllSettleUnpleasant[SelectedSettle.OriginName].ToString();
+    if(SelectedArrow!=null) UnpText.text = SelectedSettle.Discomfort.ToString();
 
 
     if (GameManager.Instance.MyGameData.CanMove)  //이동 가능한 상황(야외에서 이벤트를 완료한 상황, 정착지에서 이벤트를 완료한 상황)
@@ -350,7 +349,7 @@ public class UI_map : UI_default
 
       SelectedArrow = _arrow;
       SettleName.text = _settle.Name;
-      UnpText.text = GameManager.Instance.MyGameData.AllSettleUnpleasant[_settle.OriginName].ToString();
+      UnpText.text = SelectedSettle.Discomfort.ToString();
 
       SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.VectorPos));
       Vector2 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;
@@ -363,7 +362,7 @@ public class UI_map : UI_default
     {
       SelectedArrow = _arrow;
       SettleName.text = _settle.Name;
-      UnpText.text = GameManager.Instance.MyGameData.AllSettleUnpleasant[_settle.OriginName].ToString();
+      UnpText.text = SelectedSettle.Discomfort.ToString();
     
       SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.VectorPos));
       Vector2 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;
