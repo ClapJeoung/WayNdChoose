@@ -8,6 +8,11 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+public class TileData
+{
+  public Vector2 Coordinate = Vector2.zero;
+
+}
 public class maptext : MonoBehaviour
 {
    public Tilemap Tilemap_bottom, Tilemap_top;

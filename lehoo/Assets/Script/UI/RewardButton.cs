@@ -15,8 +15,7 @@ public class RewardButton : MonoBehaviour
   private int MyValue = -1;
   private string MyID = "";
   private Vector2[] TargetThemePos;
-  private ThemeType MyThemeType = ThemeType.Conversation;
-  private SkillName MySkillName = SkillName.Speech;
+  private SkillType MySkillName = SkillType.Conversation;
   private Experience MyExp = null;
 
   public void Setup_value(int _value)
@@ -25,9 +24,9 @@ public class RewardButton : MonoBehaviour
      MyValue = _value;
     switch (RewardType)
     {
-      case RewardTarget.HP: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.HP).Icon+" "+ MyValue.ToString();break;
-      case RewardTarget.Sanity: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Sanity).Icon + " " + MyValue.ToString(); break;
-      case RewardTarget.Gold: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Gold).Icon + " " + MyValue.ToString(); break;
+      case RewardTarget.HP: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.HP,2)+" "+ MyValue.ToString();break;
+      case RewardTarget.Sanity: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Sanity, 2) + " " + MyValue.ToString(); break;
+      case RewardTarget.Gold: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Gold, 2) + " " + MyValue.ToString(); break;
     }
   }
   public void Setup_Expid(string _id)
@@ -36,28 +35,17 @@ public class RewardButton : MonoBehaviour
     RewardType = RewardTarget.Experience;
     MyID = _id;
     Debug.Log(MyID);
-    RewardInfo.text =$"{GameManager.Instance.GetTextData("exp").Name}: {GameManager.Instance.GetTextData(MyID).Name}";
+    RewardInfo.text =$"{GameManager.Instance.GetTextData("EXP_NAME")} - {GameManager.Instance.ExpDic[MyID].Name}";
     MyExp=GameManager.Instance.ExpDic[MyID];
   }
-  public void Setup_theme(ThemeType _theme)
+  public void Setup_skill(SkillType skill)
   {
-    RewardType= RewardTarget.Theme;
-    MyThemeType = _theme;
+    RewardType= RewardTarget.Skill;
+    MySkillName = skill;
     GetComponent<Button>().interactable = true;
-    Icon_A.sprite = GameManager.Instance.ImageHolder.GetThemeIcon(_theme);
+    Icon_A.sprite = GameManager.Instance.ImageHolder.GetSkillIcon(skill);
     Icon_B.sprite = GameManager.Instance.ImageHolder.UnknownTheme;
     TargetThemePos = new Vector2[1];
-  }
-  public void Setup_skill(SkillName _skill)
-  {
-    RewardType = RewardTarget.Skill;
-    MySkillName = _skill;
-    GetComponent<Button>().interactable = true;
-    Sprite[] _icons = new Sprite[2];
-    GameManager.Instance.ImageHolder.GetSkillIcons(_skill, ref _icons);
-    Icon_A.sprite = _icons[0];
-    Icon_B.sprite=_icons[1];
-    TargetThemePos = new Vector2[2];
   }
 
   public void GetReward()
@@ -77,14 +65,9 @@ public class RewardButton : MonoBehaviour
       case RewardTarget.Gold:
         MyUIReward.AddRewardGold(MyValue);
         CloseUIButton(); break;
-      case RewardTarget.Theme:
-        MyUIReward.OpenRewardSkillPanel(MyThemeType);
-        CloseUIButton(); break;
       case RewardTarget.Skill:
         MyUIReward.AddRewardSkill(MySkillName);
         CloseUIButton(); break;
-      case RewardTarget.Trait:
-        CloseUIButton();  break;
     }
   }
   public void CloseUIButton()

@@ -30,10 +30,10 @@ public class PreviewSelectionTendency : MonoBehaviour
       switch (tendency.Type)
       {
         case TendencyType.Body:
-          _limittext = tendency.Level.Equals(-2) ? GameManager.Instance.GetTextData("toophysical").Name : GameManager.Instance.GetTextData("toorational").Name;
+          _limittext = tendency.Level.Equals(-2) ? GameManager.Instance.GetTextData("TOOMUCHRATIONAL") : GameManager.Instance.GetTextData("TOOMUCHPHYSICAL");
           break;
         case TendencyType.Head:
-          _limittext = tendency.Level.Equals(-2) ? GameManager.Instance.GetTextData("toomental").Name : GameManager.Instance.GetTextData("toomaterial").Name;
+          _limittext = tendency.Level.Equals(-2) ? GameManager.Instance.GetTextData("TOOMUCHMENTAL") : GameManager.Instance.GetTextData("TOOMUCHMATERIAL");
           break;
       }
       NoneProgressIcon.sprite = _limiticon;

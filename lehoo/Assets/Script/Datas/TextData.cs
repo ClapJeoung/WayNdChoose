@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TextData
+public class TexData
 {
   public string ID="";
     public string Name = "";
@@ -12,14 +12,4 @@ public class TextData
     public string SuccessDescription = "";
     public string FailDescription = "";
   public string Icon = "";
-    public void Debugtext()
-    {
-        string _str = "";
-        _str += Name + " ";
-        _str += Description + " ";
-        _str += SelectionDescription + " ";
-        _str += SuccessDescription + " ";
-        _str += FailDescription + " ";
-        Debug.Log(_str);
-    }
 }

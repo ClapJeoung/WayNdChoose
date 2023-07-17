@@ -26,17 +26,17 @@ public class GameManager : MonoBehaviour
   public EventHolder EventHolder = new EventHolder();                               //이벤트 저장할 홀더
   public Dictionary<string, Experience> ExpDic = new Dictionary<string, Experience>();  //경험 딕셔너리
   public Dictionary<string, Experience> MadExpDic = new Dictionary<string, Experience>();
-  public Dictionary<string, TextData> TextDic = new Dictionary<string, TextData>();   //각종 텍스트 딕셔터리
-  public TextData NullText = null;
-  private FailureData goldfaildata = null;
-  public FailureData GoldFailData
+  public Dictionary<string,string> TextDic=new Dictionary<string, string>();
+  public const string NullText = "no text exist";
+  private GoldFailData goldfaildata = null;
+  public GoldFailData GoldFailData
   {
     get
     {
       if (goldfaildata == null)
       {
-        goldfaildata = new FailureData();
-        goldfaildata.Description = GetTextData("goldfail").Name;
+        goldfaildata = new GoldFailData();
+        goldfaildata.Description = GetTextData("GOLDFAIL_TEXT");
         goldfaildata.Panelty_target = PenaltyTarget.Status;
         goldfaildata.Loss_target = StatusType.Sanity;
         goldfaildata.Illust = ImageHolder.NoGoldIllust;
@@ -45,206 +45,233 @@ public class GameManager : MonoBehaviour
       return goldfaildata;
     }
   }
-  public TextData GetTextData(string _id)
+  public string GetTextData(string _id)
   {
     // Debug.Log($"{_id} ID를 가진 텍스트 데이터 {(TextDic.ContainsKey(_id)?"있음":"없음")}");
     if (!TextDic.ContainsKey(_id)) { Debug.Log($"{_id} 없음?"); return NullText; }
     return TextDic[_id];
   }
-  public TextData GetTextData(EnvironmentType envir)
+  /// <summary>
+  /// texttype : 이름/설명
+  /// </summary>
+  /// <param name="envir"></param>
+  /// <param name="texttype"></param>
+  /// <returns></returns>
+  public string GetTextData(EnvironmentType envir,int texttype)
   {
+    string _str = "";
     switch (envir)
     {
       case EnvironmentType.NULL:
         return NullText;
       case EnvironmentType.River:
-        return GetTextData("river");
+        _str = "RIVER";
+        break;
       case EnvironmentType.Forest:
-        return GetTextData("forest");
+        _str = "FOREST";
+        break;
       case EnvironmentType.Highland:
-        return GetTextData("highland");
+        _str = "HIGHLAND";
+        break;
       case EnvironmentType.Mountain:
-        return GetTextData("mountain");
+        _str = "MOUNTAIN";
+        break;
       default:
-        return GetTextData("sea");
+        _str = "SEA";
+        break;
     }
+    _str += "_";
+    if (texttype.Equals(0)) _str += "NAME";
+    else _str += "DESCRIPTION";
+    return GetTextData(_str);
   }
-  public TextData GetTextData(SkillName _skill)
+  /// <summary>
+  /// 이름(아이콘 없음),이름(아이콘 있음),아이콘,설명,간략설명,증가,크게 증가,감소,크게 감소
+  /// </summary>
+  /// <param name="_theme"></param>
+  /// <param name="texttype"></param>
+  /// <returns></returns>
+  public string GetTextData(SkillType skilltype,int texttype)
   {
     string _name = "";
-    switch (_skill)
+    switch (skilltype)
     {
-      case SkillName.Speech: _name = "speech"; break;
-      case SkillName.Threat: _name = "threat"; break;
-      case SkillName.Deception: _name = "deception"; break;
-      case SkillName.Logic: _name = "logic"; break;
-      case SkillName.Kombat: _name = "kombat"; break;
-      case SkillName.Bow: _name = "bow"; break;
-      case SkillName.Somatology: _name = "somatology"; break;
-      case SkillName.Survivable: _name = "survivable"; break;
-      case SkillName.Biology: _name = "biology"; ; break;
-      case SkillName.Knowledge: _name = "knowledge"; break;
+      case SkillType.Conversation: _name = "CONVERSATION"; break;
+      case SkillType.Force: _name = "FORCE"; break;
+      case SkillType.Wild: _name = "WILD"; break;
+      case SkillType.Intelligence: _name = "INTELLIGENCE"; break;
+    }
+    _name += "_";
+    switch (texttype)
+    {
+      case 0:
+        _name += "NAME_NOICON";
+        break;
+      case 1:
+        _name += "NAME_ICON";
+        break;
+      case 2:
+        _name += "ICON";
+        break;
+      case 3:
+        _name += "DESCRIPTION";
+        break;
+      case 4:
+        _name += "SUBDESCRIPTION";
+        break;
+      case 5:
+        _name += "UP_NORMAL";
+        break;
+      case 6:
+        _name += "UP_HIGH";
+        break;
+      case 7:
+        _name += "DOWN_NORMAL";
+        break;
+      case 8:
+        _name += "DOWN_HIGH";
+        break;
     }
     return GetTextData(_name);
   }
-  public TextData GetTextData(ThemeType _theme)
+  public string GetTextData(SkillType skilltype, bool isup,bool isstrong,bool isicon)
   {
     string _name = "";
-    switch (_theme)
+    switch (skilltype)
     {
-      case ThemeType.Conversation: _name = "conversation"; break;
-      case ThemeType.Force: _name = "force"; break;
-      case ThemeType.Wild: _name = "wild"; break;
-      case ThemeType.Intelligence: _name = "intelligence"; break;
+      case SkillType.Conversation: _name = "CONVERSATION"; break;
+      case SkillType.Force: _name = "FORCE"; break;
+      case SkillType.Wild: _name = "WILD"; break;
+      case SkillType.Intelligence: _name = "INTELLIGENCE"; break;
     }
+    _name += isup ? "_UP" : "_DOWN";
+    _name += isstrong ? "_HIGH" : "_NORMAL";
+    _name += isicon ? "_ICON" : "";
     return GetTextData(_name);
   }
-  public TextData GetTextData(ThemeType theme,bool isup,bool isstrong)
-  {
-    string _name = "";
-    switch (theme)
-    {
-      case ThemeType.Conversation: _name = "conversation"; break;
-      case ThemeType.Force: _name = "force"; break;
-      case ThemeType.Wild: _name = "wild"; break;
-      case ThemeType.Intelligence: _name = "intelligence"; break;
-    }
-    _name += isstrong ? "double" : "";
-    _name += isup ? "up" : "down";
-    return GetTextData(_name);
-  }
-  public TextData GetTextData(EffectType _effect)
+  public string GetTextData(EffectType _effect,bool isicon)
   {
     switch (_effect)
     {
-      case EffectType.Speech: return GetTextData("speechup");
-      case EffectType.Threat: return GetTextData("threatup");
-      case EffectType.Deception: return GetTextData("deceptionup");
-      case EffectType.Logic: return GetTextData("logicup");
-      case EffectType.Kombat: return GetTextData("kombatup");
-      case EffectType.Bow: return GetTextData("bowup");
-      case EffectType.Somatology: return GetTextData("somatologyup");
-      case EffectType.Survivable: return GetTextData("survivableup");
-      case EffectType.Biology: return GetTextData("biologyup");
-      case EffectType.Knowledge: return GetTextData("knowledgeup");
-      case EffectType.HPLoss: return GetTextData(StatusType.HP, false);
-      case EffectType.HPGen: return GetTextData(StatusType.HP, true);
-      case EffectType.SanityLoss: return GetTextData(StatusType.Sanity, false);
-      case EffectType.SanityGen: return GetTextData(StatusType.Sanity, true);
-      case EffectType.GoldLoss: return GetTextData(StatusType.Gold, false);
-      case EffectType.GoldGen: return GetTextData(StatusType.Gold, true);
+      case EffectType.Conversation: return GetTextData(SkillType.Conversation,true,false,isicon);
+      case EffectType.Force: return GetTextData(SkillType.Force , true, false, isicon);
+      case EffectType.Wild: return GetTextData(SkillType.Wild, true, false, isicon);
+      case EffectType.Intelligence: return GetTextData(SkillType.Intelligence, true, false, isicon);
+      case EffectType.HPLoss: return GetTextData(StatusType.HP,false,isicon?2:1);
+      case EffectType.HPGen: return GetTextData(StatusType.HP, true, isicon?2:1);
+      case EffectType.SanityLoss: return GetTextData(StatusType.Sanity, false, isicon?2:1);
+      case EffectType.SanityGen: return GetTextData(StatusType.Sanity, true, isicon?2:1);
+      case EffectType.GoldLoss: return GetTextData(StatusType.Gold, false, isicon?2:1);
+      case EffectType.GoldGen: return GetTextData(StatusType.Gold, true, isicon?2:1);
       default: return NullText;
     }
   }
-  public TextData GetTextData(TendencyType tendency,int level)
+  /// <summary>
+  /// 이름 설명 간략설명 아이콘
+  /// </summary>
+  /// <param name="tendency"></param>
+  /// <param name="level"></param>
+  /// <returns></returns>
+  public string GetTextData(TendencyType tendency,int level,int texttype)
   {
-    string _name = tendency.Equals(TendencyType.Body) ? "tendency_body_" : "tendency_head_";
+    string _name = tendency.Equals(TendencyType.Body) ? "TENDENCY_BODY" : "TENDENCY_HEAD";
     string _level = "";
     switch (level)
     {
-      case -2:_level = "m2";break;
-      case -1:_level = "m1";break;
-      case 0:_level = "0";break;
-      case 1:_level = "p1";break;
-      case 2:_level = "p2";break;
+      case -2:_level = "M2";break;
+      case -1:_level = "M1";break;
+      case 1:_level = "P1";break;
+      case 2:_level = "P2";break;
     }
-    return GetTextData(_name + _level);
-  }
-  public TextData GetTextData(PlaceType _place)
-  {
-    switch (_place)
+    string _type = "";
+    switch (texttype)
     {
-      case PlaceType.Residence: return GetTextData("residence");
-      case PlaceType.Marketplace: return GetTextData("marketplace");
-      case PlaceType.Temple: return GetTextData("temple");
-      case PlaceType.Library: return GetTextData("library");
-      case PlaceType.Theater: return GetTextData("theater");
-      case PlaceType.Academy: return GetTextData("academy");
+      case 0:_type = "NAME";break;
+      case 1: _type = "DESCRIPTIION"; break;
+      case 2: _type = "SUBDESCRIPTION"; break;
+      case 3: _type = "ICON"; break;
     }
-    return NullText;
-  }
-  public TextData GetPlaceEffectTextData(PlaceType place)
-  {
-    switch (place)
-    {
-      case PlaceType.Residence:
-        return GetTextData("residenceeffect");
-      case PlaceType.Marketplace:
-        return GetTextData("marketplaceeffect");
-      case PlaceType.Temple:
-        return GetTextData("templeeffect");
-      case PlaceType.Library:
-        return GetTextData("libraryeffect");
-      case PlaceType.Theater:
-        return GetTextData("theatereffect");
-      default:
-        return GetTextData("academyeffect");
-    }
-  }
-  public TextData GetTextData(System.Type _eventtype)
-  {
-    if (_eventtype == typeof(EventData)) return GetTextData("normaleventpredescription");
-    else if (_eventtype == typeof(FollowEventData)) return GetTextData("followeventpredescription");
-    else return GetTextData("questeventpredescription");
-  }
-  public TextData GetTextData(StatusType type)
-  {
-    switch (type)
-    {
-      case StatusType.HP:return GetTextData("hp");
-      case StatusType.Sanity:return GetTextData("sanity");
-      default:return GetTextData("gold");
-    }
-  }
-  public TextData GetTextData(StatusType type,bool isincrease)
-  {
-    switch (type)
-    {
-      case StatusType.HP: if (isincrease) return GetTextData("hpincrease"); else return GetTextData("hpdecrease");
-      case StatusType.Sanity: if (isincrease) return GetTextData("sanityincrease"); else return GetTextData("sanitydecrease");
-      default: if (isincrease) return GetTextData("goldincrease"); else return GetTextData("golddecrease");
-    }
+    return GetTextData(_name+"_" + _level+"_"+_type);
   }
   /// <summary>
-  /// 레벨은 1/2
+  /// 이름 설명 아이콘 효과 효과설명
+  /// </summary>
+  /// <param name="_place"></param>
+  /// <param name="texttype"></param>
+  /// <returns></returns>
+  public string GetTextData(PlaceType _place,int texttype)
+  {
+    string _str = "PLACE_";
+    switch (_place)
+    {
+      case PlaceType.Residence: _str += "RESIDENCE";break;
+      case PlaceType.Marketplace: _str += "MARKETPLACE"; break;
+      case PlaceType.Temple: _str += "TEMPLE"; break;
+      case PlaceType.Library: _str += "LIBRARY"; break;
+      case PlaceType.Theater: _str += "THEATER"; break;
+      case PlaceType.Academy: _str += "ACADEMY"; break;
+    }
+    _str += "_";
+    switch (texttype)
+    {
+      case 0: _str += "NAME";break;
+      case 1: _str += "DESCRIPTION";break;
+      case 2: _str += "ICON";break;
+      case 3: _str += "EFFECT_NAME";break;
+      case 4: _str += "EFFECT_DESCRIPTION";break;
+    }
+
+    return GetTextData(_str);
+  }
+  /// <summary>
+  /// 이름(X) 이름(O) 아이콘 설명 간략설명|회복(X) 회복(O) 회복아이콘|소모(X) 소모(O) 소모아이콘|회복증가(X) 회복증가(O) 회복아이콘|소모증가(X) 소모증가(O) 소모아이콘 
   /// </summary>
   /// <param name="type"></param>
-  /// <param name="isup"></param>
-  /// <param name="level"></param>
   /// <returns></returns>
-  public TextData GetTextData(StatusType type,bool isincrease,bool isup, int value)
+  public string GetTextData(StatusType type,int texttype)
   {
-    string _targetname = "";
+    string _str = "";
     switch (type)
     {
-      case StatusType.HP:
-        _targetname = "hp";break;
-      case StatusType.Sanity:
-        _targetname = "sanity";break;
-      case StatusType.Gold:
-        _targetname = "gold";break;
+      case StatusType.HP: _str = "HP";break;
+      case StatusType.Sanity:_str = "SANITY";break;
+      case StatusType.Gold: _str = "GOLD";break;
     }
-    _targetname += isincrease ? "increase" : "decrease";
-    _targetname += Mathf.Abs(value)>ConstValues.DoubleValue ? "" : "double";
-    _targetname += isup ? "up" : "down";
-    return GetTextData(_targetname);
+    _str += "_";
+    switch (texttype)
+    {
+      case 0:_str += "NAME_NOICON";break;
+      case 1: _str += "NAME_ICON"; break;
+      case 2: _str += "ICON"; break;
+      case 3: _str += "DESCRIPTION"; break;
+      case 4: _str += "SUBDESCRIPTION"; break;
+      case 5: _str += "RESTORE_NAME_NOICON"; break;
+      case 6: _str += "RESTORE_NAME_ICON"; break;
+      case 7: _str += "RESTORE_ICON"; break;
+      case 8: _str += "PAY_NAME_NOICON"; break;
+      case 9: _str += "PAY_NAME_ICON"; break;
+      case 10: _str += "PAY_ICON"; break;
+      case 11: _str += "INCREASE_NAME_NOICON"; break;
+      case 12: _str += "INCREASE_NAME_ICON"; break;
+      case 13: _str += "INCREASE_ICON"; break;
+      case 14: _str += "DECREASE_NAME_NOICON"; break;
+      case 15: _str += "DECREASE_NAME_ICON"; break;
+      case 16: _str += "DECREASE_ICON"; break;
+    }
+    return GetTextData(_str);
   }
-  public TextData GetTextData(StatusType type, bool isincrease, bool isup, bool isstrong)
+  /// <summary>
+  /// 아이콘X 아이콘O 아이콘
+  /// </summary>
+  /// <param name="type"></param>
+  /// <param name="isincrease"></param>
+  /// <param name="icontype"></param>
+  /// <returns></returns>
+  public string GetTextData(StatusType type,bool isincrease,int icontype)
   {
-    string _targetname = "";
-    switch (type)
-    {
-      case StatusType.HP:
-        _targetname = "hp"; break;
-      case StatusType.Sanity:
-        _targetname = "sanity"; break;
-      case StatusType.Gold:
-        _targetname = "gold"; break;
-    }
-    _targetname += isincrease ? "increase" : "decrease";
-    _targetname += isstrong ? "" : "double";
-    _targetname += isup ? "up" : "down";
-    return GetTextData(_targetname);
+    int _typecode = isincrease ? 11 : 14;
+    _typecode += icontype;
+    return GetTextData(type, _typecode);
   }
     public void LoadData()
   {
@@ -256,18 +283,13 @@ public class GameManager : MonoBehaviour
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
-    Dictionary<string, TextData> _temp = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
+    Dictionary<string, string> _temp = JsonConvert.DeserializeObject<Dictionary<string, string>>(TextData.text);
     foreach (var _data in _temp)
     {
-      TextData _texttemp = _data.Value;
-     if(_texttemp.Name.Contains("\\n")) _texttemp.Name=_texttemp.Name.Replace("\\n", "\n");
-      if (_texttemp.Description.Contains("\\n")) _texttemp.Description = _texttemp.Description.Replace("\\n", "\n");
-      if (_texttemp.SelectionDescription.Contains("\\n")) _texttemp.SelectionDescription = _texttemp.SelectionDescription.Replace("\\n", "\n");
-      if (_texttemp.SelectionSubDescription.Contains("\\n")) _texttemp.SelectionSubDescription = _texttemp.SelectionSubDescription.Replace("\\n", "\n");
-      if (_texttemp.FailDescription.Contains("\\n")) _texttemp.FailDescription = _texttemp.FailDescription.Replace("\\n", "\n");
-      if (_texttemp.SuccessDescription.Contains("\\n")) _texttemp.SuccessDescription = _texttemp.SuccessDescription.Replace("\\n", "\n");
-      if (TextDic.ContainsKey(_data.Value.ID)) { Debug.Log($"{_data.Value.ID} 겹침! 확인 필요!"); return; }
-      TextDic.Add(_data.Value.ID, _data.Value);
+      string _texttemp = _data.Value;
+      if (_texttemp.Contains("\\n")) _texttemp = _texttemp.Replace("\\n", "\n");
+      if (TextDic.ContainsKey(_data.Key)) { Debug.Log($"{_data.Key} 겹침! 확인 필요!"); return; }
+      TextDic.Add(_data.Key, _data.Value);
     }
 
     Dictionary<string, EventJsonData> _eventjson = new Dictionary<string, EventJsonData>();
@@ -305,25 +327,25 @@ public class GameManager : MonoBehaviour
   public void SuccessCurrentEvent(TendencyType _tendencytype,int index)
   {
    if(MyGameData.CurrentSettlement!=null)MyGameData.CurrentSettlement.SetAvailablePlaces();
-    EventHolder.RemoveEvent(MyGameData.CurrentEvent.OriginID);
+    EventHolder.RemoveEvent(MyGameData.CurrentEvent.ID);
     switch (_tendencytype)
     {
       case TendencyType.None:
-        MyGameData.SuccessEvent_None.Add(MyGameData.CurrentEvent.OriginID); break;
+        MyGameData.SuccessEvent_None.Add(MyGameData.CurrentEvent.ID); break;
       case TendencyType.Body:
         if(index.Equals(0))
-          MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.OriginID); 
+          MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.ID); 
         else
-          MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.OriginID); 
+          MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.ID); 
         break;
       case TendencyType.Head:
         if(index.Equals(0))
-        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.OriginID);
+        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.ID);
         else
-        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.OriginID); 
+        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.ID); 
         break;
     }
-    MyGameData.SuccessEvent_All.Add(MyGameData.CurrentEvent.OriginID);
+    MyGameData.SuccessEvent_All.Add(MyGameData.CurrentEvent.ID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -337,21 +359,21 @@ public class GameManager : MonoBehaviour
     switch (_tendencytype)
     {
       case TendencyType.None:
-        MyGameData.FailEvent_None.Add(MyGameData.CurrentEvent.OriginID); break;
+        MyGameData.FailEvent_None.Add(MyGameData.CurrentEvent.ID); break;
       case TendencyType.Body:
         if (index.Equals(0))
-          MyGameData.FailEvent_Rational.Add(MyGameData.CurrentEvent.OriginID);
+          MyGameData.FailEvent_Rational.Add(MyGameData.CurrentEvent.ID);
         else
-          MyGameData.FailEvent_Physical.Add(MyGameData.CurrentEvent.OriginID);
+          MyGameData.FailEvent_Physical.Add(MyGameData.CurrentEvent.ID);
         break;
       case TendencyType.Head:
         if (index.Equals(0))
-          MyGameData.FailEvent_Mental.Add(MyGameData.CurrentEvent.OriginID);
+          MyGameData.FailEvent_Mental.Add(MyGameData.CurrentEvent.ID);
         else
-          MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.OriginID);
+          MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.ID);
         break;
     }
-    MyGameData.FailEvent_All.Add(MyGameData.CurrentEvent.OriginID);
+    MyGameData.FailEvent_All.Add(MyGameData.CurrentEvent.ID);
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -436,7 +458,7 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = _event;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(_event.OriginID);
+    MyGameData.RemoveEvent.Add(_event.ID);
     //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
     //다이어로그 열기
@@ -457,7 +479,7 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = _targetevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(_targetevent.OriginID);
+    MyGameData.RemoveEvent.Add(_targetevent.ID);
     //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
     SaveData();
@@ -469,7 +491,7 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = questevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(questevent.OriginID);
+    MyGameData.RemoveEvent.Add(questevent.ID);
     //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
     SaveData();
@@ -488,12 +510,6 @@ public class GameManager : MonoBehaviour
   }
   private void Awake()
   {
-        NullText = new TextData();
-        NullText.Name = "NullName";
-        NullText.Description = "NullDescription";
-        NullText.SelectionDescription = "NullSelection@NullSelection";
-        NullText.FailDescription = "NullFail";
-        NullText.SuccessDescription = "NullSuccess";
     if(instance == null)
     {
       instance = this;
@@ -560,7 +576,7 @@ public class GameManager : MonoBehaviour
       }
       else
       {
-        string _id = MyGameData.CurrentEvent.OriginID;
+        string _id = MyGameData.CurrentEvent.ID;
         SuccessData _success = null;
         if (MyGameData.SuccessEvent_None.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
         else if(MyGameData.SuccessEvent_Rational.Contains(_id))_success = MyGameData.CurrentEvent.SuccessDatas[0];

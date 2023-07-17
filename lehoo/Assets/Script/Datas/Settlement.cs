@@ -7,7 +7,7 @@ using System.Linq;
 
 public class Settlement
 {
-  public ThemeType LibraryType = ThemeType.Conversation;
+  public SkillType LibraryType = SkillType.Conversation;
   
   public List<PlaceType> EnablePlaces=new List<PlaceType>();
   public SettlementType Type;
@@ -27,7 +27,6 @@ public class Settlement
       }
     }
   }
-  private TextData NameTextData = null;
   public int Discomfort = 0;
   public void AddDiscomfort()
   {
@@ -42,10 +41,7 @@ public class Settlement
   public string Name { 
     get
     {
-      if (NameTextData == null)
-      {
-      }
-      return NameTextData.Name;
+      return GameManager.Instance.GetTextData(OriginName);
     }
   }
   public void Setup()
@@ -53,20 +49,17 @@ public class Settlement
     switch (Type)
     {
       case SettlementType.Town:
-        NameTextData = GameManager.Instance.GetTextData(OriginName);
         SpringIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_summer");
         FallIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}autumn");
         WinterIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_winter"); 
         break;
       case SettlementType.City:
-        NameTextData = GameManager.Instance.GetTextData(OriginName);
         SpringIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_summer");
         FallIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}autumn");
         WinterIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_winter"); break;
       case SettlementType.Castle:
-        NameTextData = GameManager.Instance.GetTextData(OriginName);
         SpringIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_summer");
         FallIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}autumn");

@@ -34,7 +34,7 @@ public class UI_QuestSuggest : UI_default
   [SerializeField] private CanvasGroup ExpGroup = null;
   [SerializeField] private TextMeshProUGUI[] ExpNames = new TextMeshProUGUI[4];
   [SerializeField] private PreviewInteractive[] ExpPreviews=new PreviewInteractive[4];
-  private Experience[] QuestExps=new Experience[4];
+  private Experience[] QuestExps=new Experience[4];                                                 //퀘스트 경험(수정요망)
   [Space(10)]
   [SerializeField] private CanvasGroup MapButtonGroup = null;
   [SerializeField] private TextMeshProUGUI MapButtonText = null;
@@ -66,15 +66,9 @@ public class UI_QuestSuggest : UI_default
   }
   private IEnumerator setquestsuggest_beginning()
   {
-    NextToExpButtonText.text = GameManager.Instance.GetTextData("next").Name;
+    NextToExpButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
     QuestHolder _quest = GameManager.Instance.MyGameData.CurrentQuest;
 
-    QuestExps = _quest.StartingExps;
-    for (int i = 0; i < QuestExps.Length; i++)
-    {
-      ExpNames[i].text =GameManager.Instance.GetTextData((ThemeType)i).Icon+" "+ QuestExps[i].Name;
-      ExpPreviews[i].MyEXP = QuestExps[i];
-    }
 
     QuestName.text = _quest.QuestName;
     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestNameGroup, 1.0f, QuestUIFadeTime, false));
@@ -183,7 +177,7 @@ public class UI_QuestSuggest : UI_default
       }//해당 슬롯에 이미 경험이 있다면 이름,일러스트,턴 표기
       RewardShortExpPreview[i].MyEXP = SelectedExp;
     }
-    RewardExpDescription.text = GameManager.Instance.GetTextData("savetheexp").Name;
+    RewardExpDescription.text = GameManager.Instance.GetTextData("SAVETHEEXP_NAME");
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(RewardExpGroup, 1.0f, UIManager.Instance.SmallPanelFadeTime, false));
   }
 

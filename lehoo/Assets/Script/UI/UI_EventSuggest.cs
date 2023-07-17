@@ -51,8 +51,8 @@ public class UI_EventSuggest : UI_default
   private void Start()
   {
     for (int i = 0; i < PlaceButtons.Length; i++)
-      PlaceButtons[i].MyText.name = GameManager.Instance.GetTextData(PlaceButtons[i].MyPlaceType).Name;
-    StartButtonText.text = GameManager.Instance.GetTextData("canmove").Name;
+      PlaceButtons[i].MyText.name = GameManager.Instance.GetTextData(PlaceButtons[i].MyPlaceType,0);
+    StartButtonText.text = GameManager.Instance.GetTextData("TOTHEWORLD");
   }
   public void OpenSuggest()
   {
@@ -65,7 +65,7 @@ public class UI_EventSuggest : UI_default
     else UIManager.Instance.UpdateBackground(_currentsettle.TileData.EnvironmentType[Random.Range(0, _currentsettle.TileData.EnvironmentType.Count)]);
 
     SettleNameGroup.alpha = 1.0f;
-    SettleName.text = GameManager.Instance.GetTextData(_currentsettle.OriginName).Name;
+    SettleName.text = GameManager.Instance.GetTextData(_currentsettle.OriginName);
     yield return StartCoroutine(UIManager.Instance.moverect(SettleNameRect, SettleNameClosePos, SettleNameOpenPos, UIOpenMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return LittleWait;
     //이름 세팅하고 나타남
@@ -81,9 +81,8 @@ public class UI_EventSuggest : UI_default
     yield return LittleWait;
     //불쾌 정보 세팅하고 나타남
 
-    string _currentdiscomfort = string.Format(GameManager.Instance.GetTextData("currentdiscomfort").Name, GameManager.Instance.MyGameData.CurrentSettlement.Discomfort);
-    string _currentvalue = GameManager.Instance.GetTextData("currentsettlesanityloss").Name;
-    _currentvalue = string.Format(_currentvalue, GameManager.Instance.MyGameData.SettleSanityLoss);
+    string _currentdiscomfort = string.Format(GameManager.Instance.GetTextData("CURRENTDISCOMFORT"), GameManager.Instance.MyGameData.CurrentSettlement.Discomfort);
+    string _currentvalue = string.Format(GameManager.Instance.GetTextData("PLACESANITYCOST"), GameManager.Instance.MyGameData.SettleSanityLoss);
     //장소 진입 시 #VALUE# #sanity# 감소
     //이 정착지의 불쾌 지수는 #UNP#
 
@@ -253,29 +252,29 @@ public class UI_EventSuggest : UI_default
     if (CurrentPlace.Equals(_targetplace)) return;
   //  Debug.Log("정보 전개");
     CurrentPlace = _targetplace;
-    string _description = GameManager.Instance.GetTextData(_targetplace).Description;
+    string _description = GameManager.Instance.GetTextData(_targetplace,1);
     string _effect = "";
     switch (_targetplace)
     {
       case PlaceType.Residence:
-        _effect =string.Format( GameManager.Instance.GetPlaceEffectTextData(_targetplace).Name,"3", ((int)(ConstValues.PlaceEffect_residence*100.0f)).ToString());
+        _effect =string.Format( GameManager.Instance.GetTextData(_targetplace,0),"3", ((int)(ConstValues.PlaceEffect_residence*100.0f)).ToString());
         break;
       case PlaceType.Marketplace:
-        _effect=string.Format(GameManager.Instance.GetPlaceEffectTextData(_targetplace).Name,ConstValues.PlaceEffect_marketplace.ToString());
+        _effect=string.Format(GameManager.Instance.GetTextData(_targetplace,0),ConstValues.PlaceEffect_marketplace.ToString());
         break;
       case PlaceType.Temple:
-        _effect = GameManager.Instance.GetPlaceEffectTextData(_targetplace).Name;
+        _effect = GameManager.Instance.GetTextData(_targetplace,0);
         break;
       case PlaceType.Library:
-        ThemeType _theme = GameManager.Instance.MyGameData.CurrentSettlement.LibraryType;
-        string _themeicon = GameManager.Instance.GetTextData(_theme).Icon;
-        _effect=string.Format(GameManager.Instance.GetPlaceEffectTextData(_targetplace).Name,"3", _themeicon,GameManager.Instance.GetTextData(_theme).Name);
+        SkillType _skill = GameManager.Instance.MyGameData.CurrentSettlement.LibraryType;
+        string _themeicon = GameManager.Instance.GetTextData(_skill,2);
+        _effect=string.Format(GameManager.Instance.GetTextData(_targetplace,0),"3", _themeicon,GameManager.Instance.GetTextData(_skill,0));
         break;
       case PlaceType.Theater:
-        _effect = GameManager.Instance.GetPlaceEffectTextData(_targetplace).Name;
+        _effect = GameManager.Instance.GetTextData(_targetplace,0);
         break;
       case PlaceType.Academy:
-        _effect=string.Format(GameManager.Instance.GetPlaceEffectTextData(_targetplace).Name,"3",ConstValues.PlaceEffect_acardemy.ToString());
+        _effect=string.Format(GameManager.Instance.GetTextData(_targetplace,0),"3",ConstValues.PlaceEffect_acardemy.ToString());
         break;
     }
 

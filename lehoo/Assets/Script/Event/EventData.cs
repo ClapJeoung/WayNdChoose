@@ -13,1025 +13,243 @@ public class EventHolder
   public List<EventData> AllNormalEvents = new List<EventData>();
   public List<FollowEventData> AllFollowEvents = new List<FollowEventData>();
   public List<QuestHolder> AllQuests = new List<QuestHolder>();
-  private string GetSeasonString(int _index)
+  public EventDataDefulat ReturnEventDataDefault(EventJsonData _data)
   {
-    switch (_index)
-    {
-      case 1: return "spring";
-      case 2: return "summer";
-      case 3: return "fall";
-      case 4: return "winter";
-    }
-    return "lehoo";
-  }
-  public void ConvertData_Normal(EventJsonData _data)
-  {
-    string[] _temp;
-    string _id = _data.ID;
-    int _season = 0;
-    int[] _seasons = null;
-    if (_data.Season.Equals("0")) { _seasons = new int[1]; _seasons[0] = 4; }
-    else
-    {
-      _temp = _data.Season.Split('@');
-      _seasons = new int[_temp.Length];
-      for (int i = 0; i < _seasons.Length; i++) { _seasons[i] = int.Parse(_temp[i]); }
-    }
-    for (int i = 0; i < _seasons.Length; i++)
-    {
-      _season = _seasons[i];
-      EventData Data = new EventData();
-      Data.OriginID = _data.ID;
+    EventDataDefulat Data = new EventDataDefulat();
 
-      if (_season.Equals(0)) _id = _data.ID;  //계절이 0이라면 Data.ID는  _data.id
-      else _id = $"{_data.ID}_{GetSeasonString(_season)}";  //계절이 존재한다면 Data.ID는 _data.id+(season)
+    Data.ID = _data.ID;
 
-      TextData _textdata = GameManager.Instance.GetTextData(_id);
-      Data.Name = _textdata.Name;
-      Data.ID = _id;
-      Data.Illust = GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
-      Data.Description = _textdata.Description;
-      Data.Season = _season;
-      Data.SettlementType = (SettlementType)_data.Settlement;
-      switch (_data.Place)
+    string[] _seasons = _data.Season.Split('@');
+    for (int i = 0; i < _seasons.Length; i++) _data.Season.ElementAtOrDefault(int.Parse(_seasons[i]));
+
+    Data.SettlementType = (SettlementType)_data.Settlement;
+    switch (_data.Place)
+    {
+      case 0: Data.PlaceType = PlaceType.Residence; break;
+      case 1: Data.PlaceType = PlaceType.Marketplace; break;
+      case 2: Data.PlaceType = PlaceType.Temple; break;
+    }
+    if (_data.Place > 2)
+    {
+      if (Data.SettlementType.Equals(SettlementType.City))
       {
-        case 0: Data.PlaceType = PlaceType.Residence; break;
-        case 1: Data.PlaceType = PlaceType.Marketplace; break;
-        case 2: Data.PlaceType = PlaceType.Temple; break;
-      }
-      if (_data.Place > 2)
-      {
-        if (Data.SettlementType.Equals(SettlementType.City))
+        switch (_data.Place)
         {
-          switch (_data.Place)
-          {
-            case 3: Data.PlaceType = PlaceType.Library; break;
-          }
-        }
-        else
-        {
-          switch (_data.Place)
-          {
-            case 3: Data.PlaceType = PlaceType.Theater; break;
-            case 4: Data.PlaceType = PlaceType.Academy; break;
-          }
+          case 3: Data.PlaceType = PlaceType.Library; break;
         }
       }
-
-      Data.EnvironmentType = (EnvironmentType)_data.Environment;
-
-      Data.Selection_type = (SelectionType)_data.Selection_Type;
-
-      switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
+      else
       {
-        case SelectionType.Single://단일 선택지
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          switch (int.Parse(_data.Selection_Target))
+        switch (_data.Place)
+        {
+          case 3: Data.PlaceType = PlaceType.Theater; break;
+          case 4: Data.PlaceType = PlaceType.Academy; break;
+        }
+      }
+    }
+
+    Data.EnvironmentType = (EnvironmentType)_data.Environment;
+
+    Data.Selection_type = (SelectionType)_data.Selection_Type;
+
+    switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
+    {
+      case SelectionType.Single://단일 선택지
+        Data.SelectionDatas = new SelectionData[1];
+        Data.SelectionDatas[0] = new SelectionData(Data ,-1);
+
+        Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
+        switch (Data.SelectionDatas[0].ThisSelectionType)
+        {
+          case SelectionTargetType.None: //무조건
+            break;
+          case SelectionTargetType.Pay: //지불
+            Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
+            break;
+          case SelectionTargetType.Check_Single: //기술(단일)
+            Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info));
+            break;
+          case SelectionTargetType.Check_Multy: //기술(복수)
+            string[] _temp = _data.Selection_Info.Split(',');
+            for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[i]));
+            break;
+        }
+        if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single)||
+          Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
+        {
+          Data.FailureDatas = new FailureData[1];
+          Data.FailureDatas[0] = new FailureData(Data,-1);
+          Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+          switch (Data.FailureDatas[0].Panelty_target)
           {
-            case 0: //무조건
+            case PenaltyTarget.None: break;
+            case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
+            case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
+          }
+        }
+        else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
+        {
+          Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
+        }
+        Data.SuccessDatas = new SuccessData[1];
+        Data.SuccessDatas[0] = new SuccessData(Data,-1);
+        Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
+        switch (Data.SuccessDatas[0].Reward_Target)
+        {
+          case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
+          case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
+          case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+        }
+        Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
+
+        Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+        switch (Data.SuccessDatas[0].SubReward_target)
+        {
+          case 0: break;
+          case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+          case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+          case 3:
+            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+            break;
+        }
+
+        break;
+
+      case SelectionType.Body://이성육체
+      case SelectionType.Head://정신물질
+        Data.SelectionDatas = new SelectionData[2];
+
+        for(int i = 0; i < Data.SelectionDatas.Length; i++)
+        {
+          Data.SelectionDatas[i] = new SelectionData(Data, i);
+
+          Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
+          switch (Data.SelectionDatas[i].ThisSelectionType)
+          {
+            case SelectionTargetType.None: //무조건
               break;
-            case 1: //지불
-              Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
+            case SelectionTargetType.Pay: //지불
+              Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
               break;
-            case 2: //테마
-              Data.SelectionDatas[0].SelectionCheckTheme = (ThemeType)int.Parse(_data.Selection_Info);
+            case SelectionTargetType.Check_Single: //기술(단일)
+              Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info));
               break;
-            case 3: //단일 스킬
-              Data.SelectionDatas[0].SelectionCheckSkill = (SkillName)int.Parse(_data.Selection_Info);
+            case SelectionTargetType.Check_Multy: //기술(복수)
+              string[] _temp = _data.Selection_Info.Split(',');
+              for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[j]));
               break;
           }
-          if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Theme) || Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Skill))
+          if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
+            Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
           {
             Data.FailureDatas = new FailureData[1];
-            Data.FailureDatas[0] = new FailureData();
-            Data.FailureDatas[0].Description = _textdata.FailDescription;
-            Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-            switch (Data.FailureDatas[0].Panelty_target)
+            Data.FailureDatas[i] = new FailureData(Data, -1);
+            Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+            switch (Data.FailureDatas[i].Panelty_target)
             {
               case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
-              case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
-            }
-            Data.FailureDatas[0].Illust = GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
-          }
-          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
-          {
-            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
-          }
-
-
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience:Data.SuccessDatas[0].Reward_ID = _data.Reward_Info;break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.Illust = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-
-          break;
-
-        case SelectionType.Body://이성육체
-        case SelectionType.Head://정신물질
-          Data.SelectionDatas = new SelectionData[2];
-          Data.SelectionDatas[0] = new SelectionData(); Data.SelectionDatas[1] = new SelectionData();
-          int[] _targetint = new int[2];
-          int[] _infoint = new int[2];
-          string[] _description = _textdata.SelectionDescription.Split('@');
-          string[] _subdescriptions = _textdata.SelectionSubDescription.Split('@');
-          _temp = _data.Selection_Target.Split('@');
-          for (int j = 0; j < _temp.Length; j++)
-          {
-            _targetint[j] = int.Parse(_temp[j]);
-            if (_targetint[j] != 0) _infoint[j] =int.Parse(_data.Selection_Info.Split('@')[j]);
-          }
-
-          for (int j = 0; j < Data.SelectionDatas.Length; j++)
-          {
-            Data.SelectionDatas[j].ThisSelectionType = (SelectionTargetType)_targetint[j];
-            Data.SelectionDatas[j].Description = _description[j];
-            Data.SelectionDatas[j].SubDescription = _subdescriptions[j];
-            switch (_targetint[j])
-            {
-              case 0: break;
-              case 1: Data.SelectionDatas[j].SelectionPayTarget = (StatusType)_infoint[j]; break;
-              case 2: Data.SelectionDatas[j].SelectionCheckTheme = (ThemeType)_infoint[j]; break;
-              case 3: Data.SelectionDatas[j].SelectionCheckSkill = (SkillName)_infoint[j]; break;
+              case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
+              case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info; break;
             }
           }
-          Data.FailureDatas = new FailureData[2];
-          Data.FailureDatas[0] = new FailureData(); Data.FailureDatas[1] = new FailureData();
-          for (int j = 0; j < Data.FailureDatas.Length; j++)
+          else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusType.Gold))
           {
-            if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Check_Theme) || Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Check_Skill))
-            {
-              Data.FailureDatas[j].Description = _textdata.FailDescription.Split('@')[j];
-              Data.FailureDatas[j].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[j]);
-              switch (Data.FailureDatas[j].Panelty_target)
-              {
-                case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
-                case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
-              }//패널티 정보 넣기
-              Data.FailureDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
-
-            }//테마 혹은 스킬 체크인 경우 실패 설명, 패널티 대상 정보, 실패 일러스트 넣기
-            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
-            {
-              Data.FailureDatas[j] = GameManager.Instance.GoldFailData;
-            }//골드 지불일 경우 미리 준비한 실패 정보를 넣기
-
-          }//실패 정보 구현
-
-          Data.SuccessDatas = new SuccessData[2];
-          Data.SuccessDatas[0] = new SuccessData(); Data.SuccessDatas[1] = new SuccessData();
-          for (int j = 0; j < Data.SuccessDatas.Length; j++)
-          {
-            Data.SuccessDatas[j].Description = _textdata.SuccessDescription.Split('@')[j];
-            Data.SuccessDatas[j].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[j]);
-            switch (Data.SuccessDatas[j].Reward_Target)
-            {
-              case RewardTarget.Experience: Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
-              case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-
-              case RewardTarget.Theme: Data.SuccessDatas[j].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info.Split('@')[j]); break;
-
-              case RewardTarget.Skill: Data.SuccessDatas[j].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info.Split('@')[j]); break;
-            }//보상 정보 넣기
-            Data.SuccessDatas[j].SubReward_target = int.Parse(_data.SubReward.Split('@')[j]);
-
-            Data.SelectionDatas[j].SelectionSuccesRewards.Add(Data.SuccessDatas[j].Reward_Target);
-            switch (Data.SuccessDatas[j].SubReward_target)
-            {
-              case 0: break;
-              case 1: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-              case 2: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-              case 3:
-                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold);
-                break;
-            }
-
-            Data.SuccessDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-
-
-          }//성공 정보 구현(설명, 보상, 일러스트)
-          break;
-
-        case SelectionType.Tendency:  //성향 체크는 성공뿐이므로 실패 정보가 없음
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Tendency;
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
+            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
           }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
+          Data.SuccessDatas = new SuccessData[1];
+          Data.SuccessDatas[i] = new SuccessData(Data, -1);
+          Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
+          switch (Data.SuccessDatas[i].Reward_Target)
+          {
+            case RewardTarget.Experience: Data.SuccessDatas[i].Reward_ID = _data.Reward_Info; break;
+            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
+            case RewardTarget.Skill: Data.SuccessDatas[i].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+          }
+          Data.SuccessDatas[i].SubReward_target = int.Parse(_data.SubReward);
+
+          Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
+          switch (Data.SuccessDatas[i].SubReward_target)
           {
             case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+            case 1: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+            case 2: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
             case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+              if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+              if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold);
               break;
           }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
+        }
 
-        case SelectionType.Skill://기술 재배치느 실패가 없다
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Skill;
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
+        break;
 
-        case SelectionType.Experience:  //경험 재배치는 실패가 없다
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Exp;
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
-      }
-
-      AllNormalEvents.Add(Data);
+      case SelectionType.Tendency:
+      case SelectionType.Experience:
+        Data.SelectionDatas = new SelectionData[1];
+        Data.SelectionDatas[0] = new SelectionData(Data,-1);
+        Data.SelectionDatas[0].ThisSelectionType =Data.Selection_type.Equals(SelectionType.Tendency)?SelectionTargetType.Tendency: SelectionTargetType.Exp;
+      
+        Data.SuccessDatas = new SuccessData[1];
+        Data.SuccessDatas[0] = new SuccessData(Data,-1);
+        Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
+        switch (Data.SuccessDatas[0].Reward_Target)
+        {
+          case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
+          case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
+          case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+        }
+        Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
+        Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+        switch (Data.SuccessDatas[0].SubReward_target)
+        {
+          case 0: break;
+          case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+          case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+          case 3:
+            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+            break;
+        }
+        break;
     }
+    return Data;
+  }
+    public void ConvertData_Normal(EventJsonData _data)
+  {
+    EventData Data = (EventData)ReturnEventDataDefault(_data);
+      AllNormalEvents.Add(Data);
   }
 
   public void ConvertData_Follow(FollowEventJsonData _data)
   {
-    string[] _temp;
-    string _id = _data.ID;
-    int _season = 0;
-    int[] _seasons = null;
-    if (_data.Season[0].Equals("4")) { _seasons = new int[1]; _seasons[0] = 4; }
-    else
+    FollowEventData Data = (FollowEventData)ReturnEventDataDefault(_data);
+
+    Data.FollowType = (FollowType)_data.FollowType; //선행 대상 이벤트,경험,특성,테마,기술
+    Data.FollowTarget = _data.FollowTarget;         //선행 대상- 이벤트,경험,특성이면 Id   테마면 0,1,2,3  기술이면 0~9
+    if (Data.FollowType == FollowType.Event)
     {
-      _temp = _data.Season.Split('@');
-      _seasons = new int[_temp.Length];
-      for (int i = 0; i < _seasons.Length; i++) { _seasons[i] = int.Parse(_temp[i]); }
+      Data.FollowTargetSuccess = _data.FollowTargetSuccess == 0 ? true : false;//선행 대상이 이벤트일 경우 성공 혹은 실패
+      Data.FollowTendency = _data.FollowTendency;                              //선행 대상이 이벤트일 경우 선택지 형식
     }
-    for (int i = 0; i < _seasons.Length; i++)
+    else if (Data.FollowType.Equals(FollowType.Skill))
+      Data.FollowTargetLevel = _data.FollowTargetSuccess;
+
+    if (_data.EndingName != "")
     {
-      _season = _seasons[i];
-      FollowEventData Data = new FollowEventData();
-      Data.OriginID = _data.ID;
-      if (_season.Equals(0)) _id = _data.ID;
-      else _id = $"{_data.ID}_{GetSeasonString(_season)}";
-      TextData _textdata = GameManager.Instance.GetTextData(_id);
-
-      Data.FollowType = (FollowType)_data.FollowType; //선행 대상 이벤트,경험,특성,테마,기술
-      Data.FollowTarget = _data.FollowTarget;         //선행 대상- 이벤트,경험,특성이면 Id   테마면 0,1,2,3  기술이면 0~9
-      if (Data.FollowType == FollowType.Event)
-      {
-        Data.FollowTargetSuccess = _data.FollowTargetSuccess == 0 ? true : false;//선행 대상이 이벤트일 경우 성공 혹은 실패
-        Data.FollowTendency = _data.FollowTendency;                              //선행 대상이 이벤트일 경우 선택지 형식
-      }
-      else if (Data.FollowType.Equals(FollowType.Theme) || Data.FollowType.Equals(FollowType.Skill))
-        Data.FollowTargetLevel = _data.FollowTargetSuccess;
-
-      if (_data.EndingName != "")
-      {
-        FollowEndingData _endingdata=new FollowEndingData();
-        _endingdata.ID = $"ending_{_data.ID.Split("_")[1]}";
-        _endingdata.Illust = GameManager.Instance.ImageHolder.GetEndingIllust(_endingdata.ID);
-        _endingdata.Name = GameManager.Instance.GetTextData(_endingdata.ID).Name;
-        _endingdata.Description= GameManager.Instance.GetTextData(_endingdata.ID).Description;
-        Data.EndingData = _endingdata;
-      }
-
-
-      Data.Name = _textdata.Name;
-      Data.ID = _id;
-      Data.Illust= GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
-      Data.Description = _textdata.Description;
-      Data.Season = _season;
-      Data.SettlementType = (SettlementType)_data.Settlement;
-      switch (_data.Place)
-      {
-        case 0: Data.PlaceType = PlaceType.Residence; break;
-        case 1: Data.PlaceType = PlaceType.Marketplace; break;
-        case 2: Data.PlaceType = PlaceType.Temple; break;
-      }
-      if (_data.Place > 2)
-      {
-        if (Data.SettlementType.Equals(SettlementType.City))
-        {
-          switch (_data.Place)
-          {
-            case 3: Data.PlaceType = PlaceType.Library; break;
-          }
-        }
-        else
-        {
-          switch (_data.Place)
-          {
-            case 3: Data.PlaceType = PlaceType.Theater; break;
-            case 4: Data.PlaceType = PlaceType.Academy; break;
-          }
-        }
-      }
-
-      Data.EnvironmentType = (EnvironmentType)_data.Environment;
-
-      Data.Selection_type = (SelectionType)_data.Selection_Type;
-
-      switch (Data.Selection_type)
-      {
-        case SelectionType.Single:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          switch (int.Parse(_data.Selection_Target))
-          {
-            case 0: //무조건
-              break;
-            case 1: //지불
-              Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
-              break;
-            case 2: //테마
-              Data.SelectionDatas[0].SelectionCheckTheme = (ThemeType)int.Parse(_data.Selection_Info);
-              break;
-            case 3: //단일 스킬
-              Data.SelectionDatas[0].SelectionCheckSkill = (SkillName)int.Parse(_data.Selection_Info);
-              break;
-          }
-
-          if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Theme) || Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Skill))
-          {
-            Data.FailureDatas = new FailureData[1];
-            Data.FailureDatas[0] = new FailureData();
-            Data.FailureDatas[0].Description = _textdata.FailDescription;
-            Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-            switch (Data.FailureDatas[0].Panelty_target)
-            {
-              case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
-              case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
-            }
-            Data.FailureDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
-          }
-          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
-          {
-            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
-          }
-
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-
-          break;
-
-        case SelectionType.Body:
-        case SelectionType.Head:
-          Data.SelectionDatas = new SelectionData[2];
-          Data.SelectionDatas[0] = new SelectionData(); Data.SelectionDatas[1] = new SelectionData();
-          int[] _targetint = new int[2];
-          int[] _infoint = new int[2];
-          string[] _description = _textdata.SelectionDescription.Split('@');
-          string[] _subdescriptions = _textdata.SelectionSubDescription.Split('@');
-          _temp = _data.Selection_Target.Split('@');
-          for (int j = 0; j < _temp.Length; j++)
-          {
-            _targetint[j] = int.Parse(_temp[j]);
-            if (_targetint[j] != 0) _infoint[j] = int.Parse(_data.Selection_Info.Split('@')[j]);
-          }
-          for (int j = 0; j < Data.SelectionDatas.Length; j++)
-          {
-            Data.SelectionDatas[j].ThisSelectionType = (SelectionTargetType)_targetint[j];
-            Data.SelectionDatas[j].Description = _description[j];
-            Data.SelectionDatas[j].SubDescription = _subdescriptions[j];
-            switch (_targetint[j])
-            {
-              case 0: break;
-              case 1: Data.SelectionDatas[j].SelectionPayTarget = (StatusType)_infoint[j]; break;
-              case 2: Data.SelectionDatas[j].SelectionCheckTheme = (ThemeType)_infoint[j]; break;
-              case 3: Data.SelectionDatas[j].SelectionCheckSkill = (SkillName)_infoint[j]; break;
-            }
-          }
-          Data.FailureDatas = new FailureData[2];
-          Data.FailureDatas[0] = new FailureData(); Data.FailureDatas[1] = new FailureData();
-          for (int j = 0; j < Data.FailureDatas.Length; j++)
-          {
-            if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Check_Theme) || Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Check_Skill))
-            {
-              Data.FailureDatas[j].Description = _textdata.FailDescription.Split('@')[j];
-              Data.FailureDatas[j].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[j]);
-              switch (Data.FailureDatas[j].Panelty_target)
-              {
-                case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
-                case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
-              }
-              Data.FailureDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-            }
-            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
-            {
-              Data.FailureDatas[j] = GameManager.Instance.GoldFailData;
-            }
-
-          }
-
-          Data.SuccessDatas = new SuccessData[2];
-          Data.SuccessDatas[0] = new SuccessData(); Data.SuccessDatas[1] = new SuccessData();
-          for (int j = 0; j < Data.SuccessDatas.Length; j++)
-          {
-            Data.SuccessDatas[j].Description = _textdata.SuccessDescription.Split('@')[j];
-            Data.SuccessDatas[j].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[j]);
-            switch (Data.SuccessDatas[j].Reward_Target)
-            {
-              case RewardTarget.Experience: Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
-              case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-
-              case RewardTarget.Theme: Data.SuccessDatas[j].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info.Split('@')[j]); break;
-
-              case RewardTarget.Skill: Data.SuccessDatas[j].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info.Split('@')[j]); break;
-            }
-            Data.SuccessDatas[j].SubReward_target = int.Parse(_data.SubReward.Split('@')[j]);
-            Data.SelectionDatas[j].SelectionSuccesRewards.Add(Data.SuccessDatas[j].Reward_Target);
-            switch (Data.SuccessDatas[j].SubReward_target)
-            {
-              case 0: break;
-              case 1: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-              case 2: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-              case 3:
-                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold);
-                break;
-            }
-            Data.SuccessDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-          }
-          break;
-
-        case SelectionType.Tendency:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Tendency;
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust = GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-
-          break;
-
-        case SelectionType.Skill:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Skill;
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
-
-        case SelectionType.Experience:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Exp;
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
-      }
-
-      AvailableFollowEvents.Add(Data);
+      FollowEndingData _endingdata = new FollowEndingData();
+      _endingdata.ID = $"ending_{_data.ID.Split("_")[1]}";
+      _endingdata.Illust = GameManager.Instance.ImageHolder.GetEndingIllust(_endingdata.ID);
+      _endingdata.Name = GameManager.Instance.GetTextData(Data.ID+"_NAME");
+      _endingdata.Description = GameManager.Instance.GetTextData(Data.ID+"_DESCRIPTION");
+      Data.EndingData = _endingdata;
     }
+    AllFollowEvents.Add(Data);
   }
   public void ConvertData_Quest(QuestEventDataJson _data)
   {
-    string[] _temp;
-    string _id = _data.ID;
-    int _season = 0;
-    int[] _seasons = null;
-    if (_data.Season[0].Equals("4")) { _seasons = new int[1]; _seasons[0] = 4; }
-    else
-    {
-      _temp = _data.Season.Split('@');
-      _seasons = new int[_temp.Length];
-      for (int i = 0; i < _seasons.Length; i++) { _seasons[i] = int.Parse(_temp[i]); }
-    }
-    for (int i = 0; i < _seasons.Length; i++)
-    {
-      _season = _seasons[i];
-      QuestEventData Data = new QuestEventData();
-      Data.OriginID = _data.ID;
-      if (_season.Equals(0)) _id = _data.ID;
-      else _id = $"{_data.ID}_{GetSeasonString(_season)}";
-      TextData _textdata = GameManager.Instance.GetTextData(_id);
-      Data.Name = _textdata.Name;
-      Data.ID = _id;
-      Data.Illust= GameManager.Instance.ImageHolder.GetEventStartIllust(Data.ID);
-      Data.Description = _textdata.Description;
-      Data.Season = _season;
-      switch (_data.Settlement)
-      {
-        case 0:
-          Data.SettlementType = SettlementType.None;
-          break;
-        case 1:
-          Data.SettlementType = SettlementType.Town;
-          break;
-        case 2:
-          Data.SettlementType = SettlementType.City;
-          break;
-        case 3:
-          Data.SettlementType = SettlementType.Castle;
-          break;
-        case 4:
-          Data.SettlementType = SettlementType.Outer;
-          break;
-      }
-      switch (_data.Place)
-      {
-        case 0: Data.PlaceType = PlaceType.Residence; break;
-        case 1: Data.PlaceType = PlaceType.Marketplace; break;
-        case 2: Data.PlaceType = PlaceType.Temple; break;
-      }
-      if (_data.Place > 2)
-      {
-        if (Data.SettlementType.Equals(SettlementType.City))
-        {
-          switch (_data.Place)
-          {
-            case 3: Data.PlaceType = PlaceType.Library; break;
-          }
-        }
-        else
-        {
-          switch (_data.Place)
-          {
-            case 3: Data.PlaceType = PlaceType.Theater; break;
-            case 4: Data.PlaceType = PlaceType.Academy; break;
-          }
-        }
-      }
-
-      Data.EnvironmentType = (EnvironmentType)(_data.Environment);
-
-      Data.Selection_type = (SelectionType)_data.Selection_Type;
-
-      switch (Data.Selection_type)
-      {
-        case SelectionType.Single:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
-          Data.SelectionDatas[0].Description = _textdata.SelectionDescription;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          switch (int.Parse(_data.Selection_Target))
-          {
-            case 0: //무조건
-              break;
-            case 1: //지불
-              Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
-              break;
-            case 2: //테마
-              Data.SelectionDatas[0].SelectionCheckTheme = (ThemeType)int.Parse(_data.Selection_Info);
-              break;
-            case 3: //단일 스킬
-              Data.SelectionDatas[0].SelectionCheckSkill = (SkillName)int.Parse(_data.Selection_Info);
-              break;
-          }
-          if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Theme) || Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Skill))
-          {
-            Data.FailureDatas = new FailureData[1];
-            Data.FailureDatas[0] = new FailureData();
-            Data.FailureDatas[0].Description = _textdata.FailDescription;
-            Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-            switch (Data.FailureDatas[0].Panelty_target)
-            {
-              case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
-              case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
-            }
-            Data.FailureDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, "0");
-          }
-          else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
-          {
-            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
-          }
-
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
-
-        case SelectionType.Body:
-        case SelectionType.Head:
-          Data.SelectionDatas = new SelectionData[2];
-          Data.SelectionDatas[0] = new SelectionData(); Data.SelectionDatas[1] = new SelectionData();
-          int[] _targetint = new int[2];
-          int[] _infoint = new int[2];
-          string[] _description = _textdata.SelectionDescription.Split('@');
-          string[] _subdescriptions = _textdata.SelectionSubDescription.Split('@');
-          _temp = _data.Selection_Target.Split('@');
-          for (int j = 0; j < _temp.Length; j++)
-          {
-            _targetint[j] = int.Parse(_temp[j]);
-            if (_targetint[j] != 0) _infoint[j] = int.Parse(_data.Selection_Info.Split('@')[j]);
-          }
-          for (int j = 0; j < Data.SelectionDatas.Length; j++)
-          {
-            Data.SelectionDatas[j].ThisSelectionType = (SelectionTargetType)_targetint[j];
-            Data.SelectionDatas[j].Description = _description[j];
-            Data.SelectionDatas[j].SubDescription = _subdescriptions[j];
-            switch (_targetint[j])
-            {
-              case 0: break;
-              case 1: Data.SelectionDatas[j].SelectionPayTarget = (StatusType)_infoint[j]; break;
-              case 2: Data.SelectionDatas[j].SelectionCheckTheme = (ThemeType)_infoint[j]; break;
-              case 3: Data.SelectionDatas[j].SelectionCheckSkill = (SkillName)_infoint[j]; break;
-            }
-          }
-          Data.FailureDatas = new FailureData[2];
-          Data.FailureDatas[0] = new FailureData(); Data.FailureDatas[1] = new FailureData();
-          for (int j = 0; j < Data.FailureDatas.Length; j++)
-          {
-            if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Check_Theme) || Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Check_Skill))
-            {
-              Data.FailureDatas[j].Description = _textdata.FailDescription.Split('@')[j];
-              Data.FailureDatas[j].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[j]);
-              switch (Data.FailureDatas[j].Panelty_target)
-              {
-                case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[j].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[j]); break;
-                case PenaltyTarget.EXP: Data.FailureDatas[j].ExpID = _data.Failure_Penalty_info.Split('@')[j]; break;
-              }
-              Data.FailureDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventFailIllusts(Data.ID, j.ToString());
-            }
-            else if (Data.SelectionDatas[j].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[j].SelectionPayTarget.Equals(StatusType.Gold))
-            {
-              Data.FailureDatas[j] = GameManager.Instance.GoldFailData;
-            }
-
-          }
-
-          Data.SuccessDatas = new SuccessData[2];
-          Data.SuccessDatas[0] = new SuccessData(); Data.SuccessDatas[1] = new SuccessData();
-          for (int j = 0; j < Data.SuccessDatas.Length; j++)
-          {
-            Data.SuccessDatas[j].Description = _textdata.SuccessDescription.Split('@')[j];
-            Data.SuccessDatas[j].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[j]);
-            switch (Data.SuccessDatas[j].Reward_Target)
-            {
-              case RewardTarget.Experience: Data.SuccessDatas[j].Reward_ID = _data.Reward_Info.Split('@')[j]; break;
-
-              case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-
-              case RewardTarget.Theme: Data.SuccessDatas[j].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info.Split('@')[j]); break;
-
-              case RewardTarget.Skill: Data.SuccessDatas[j].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info.Split('@')[j]); break;
-            }
-            Data.SuccessDatas[j].SubReward_target = int.Parse(_data.SubReward.Split('@')[j]);
-            Data.SelectionDatas[j].SelectionSuccesRewards.Add(Data.SuccessDatas[j].Reward_Target);
-            switch (Data.SuccessDatas[j].SubReward_target)
-            {
-              case 0: break;
-              case 1: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-              case 2: if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-              case 3:
-                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-                if (!Data.SelectionDatas[j].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[j].SelectionSuccesRewards.Add(RewardTarget.Gold);
-                break;
-            }
-            Data.SuccessDatas[j].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, j.ToString());
-          }
-          break;
-
-        case SelectionType.Tendency:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Tendency;
-          Data.SelectionDatas[0].Description = _textdata.Description;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
-
-        case SelectionType.Skill:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Skill;
-          Data.SelectionDatas[0].Description = _textdata.Description;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
-
-        case SelectionType.Experience:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData();
-          Data.SelectionDatas[0].ThisSelectionType = SelectionTargetType.Exp;
-          Data.SelectionDatas[0].Description = _textdata.Description;
-          Data.SelectionDatas[0].SubDescription = _textdata.SelectionSubDescription;
-          Data.SelectionDatas[0] = Data.SelectionDatas[0];
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[0] = new SuccessData();
-          Data.SuccessDatas[0].Description = _textdata.SuccessDescription;
-          Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-          switch (Data.SuccessDatas[0].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Theme: Data.SuccessDatas[0].Reward_Theme = (ThemeType)int.Parse(_data.Reward_Info); break;
-            case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillName)int.Parse(_data.Reward_Info); break;
-          }
-          Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-          Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-          switch (Data.SuccessDatas[0].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
-          }
-          Data.SuccessDatas[0].Illust= GameManager.Instance.ImageHolder.GetEventSuccessIllusts(Data.ID, "0");
-          break;
-      }
-
-      QuestHolder _quest = null;
-      if (AllQuests.Count.Equals(0))//퀘스트 리스트가 없으면 당연히 새로 하나 만드는거
-      {
-        _quest = new QuestHolder();
-      }
-      else//퀘스트 리스트가 존재할 경우
-      {
-        foreach(var __data in AllQuests)
-          if(__data.QuestID.Equals(_data.QuestId))
-          { _quest=__data; break;}//ID가 동일한 퀘스트가 있다면 그거 가져옴
-
-        if(_quest==null) _quest = new QuestHolder();//ID가 같은게 하나도 없다면 새로 만들기
-
-      }
-
-      switch (_data.Sequence)
-      {
-        case 0://기
-          _quest.QuestID = _data.QuestId; //퀘스트 ID는 QuestID
-          _quest.StartIllust = GameManager.Instance.ImageHolder.GetEventStartIllust(_quest.QuestID);//대표 일러스트는 퀘스트 ID
-          break;
-        case 1://승
-          _quest.Eventlist_Rising.Add(Data);
-          break;
-        case 2://전
-          _quest.Eventlist_Climax.Add(Data);
-          break;
-        case 3://결
-          _quest.Event_Falling = Data;
-          break;
-      }
-      if (!AllQuests.Contains(_quest)) AllQuests.Add(_quest);
-    }
-
-  }
+    QuestEventData Data = (QuestEventData)ReturnEventDataDefault(_data);
+    레후~;
+  }//퀘스트 디자인 기획 끝나고 추가해야함
 
   public void SetAllEvents()
   {
@@ -1046,9 +264,9 @@ public class EventHolder
       _isenable = true;
       foreach (var _removeoriginid in GameManager.Instance.MyGameData.RemoveEvent)
       {
-        if (_event.OriginID.Equals(_removeoriginid))
+        if (_event.ID.Equals(_removeoriginid))
         {
-          Debug.Log(_event.OriginID);
+          Debug.Log(_event.ID);
           _isenable = false;
           break;
         }
@@ -1060,7 +278,7 @@ public class EventHolder
       _isenable = true;
       foreach (var _removeoriginid in GameManager.Instance.MyGameData.RemoveEvent)
       {
-        if (_event.OriginID.Equals(_removeoriginid))
+        if (_event.ID.Equals(_removeoriginid))
         {
           _isenable = false;
           break;
@@ -1076,11 +294,11 @@ public class EventHolder
     List<FollowEventData> _follows = new List<FollowEventData>();
 
     foreach (var _data in AvailableNormalEvents)
-      if (_data.OriginID.Equals(_originid))
+      if (_data.ID.Equals(_originid))
         _normals.Add(_data);
 
     foreach (var _data in AvailableFollowEvents)
-      if (_data.OriginID.Equals(_originid))
+      if (_data.ID.Equals(_originid))
         _follows.Add(_data);
 
     foreach (var _deletenormal in _normals) AvailableNormalEvents.Remove(_deletenormal);
@@ -1133,26 +351,22 @@ public class EventHolder
           foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
             if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
           break;
-        case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+        case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
           int _targetlevel = 0;
-          ThemeType _type = ThemeType.Conversation; ;
+          SkillType _type = SkillType.Conversation; ;
           switch (_follow.FollowTarget)
           {
             case "0"://대화 테마
-              _type = ThemeType.Conversation; break;
+              _type = SkillType.Conversation; break;
             case "1"://무력 테마
-              _type = ThemeType.Force; break;
+              _type = SkillType.Force; break;
             case "2"://생존 테마
-              _type = ThemeType.Wild; break;
+              _type = SkillType.Wild; break;
             case "3"://학식 테마
-              _type = ThemeType.Intelligence; break;
+              _type = SkillType.Intelligence; break;
           }
-          _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type);
+          _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
           if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
-          break;
-        case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
-          SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
-          if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForPreviewOrTheme) _temp.Add(_follow);
           break;
       }
     }
@@ -1236,26 +450,22 @@ public class EventHolder
                     foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
                         if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
                     break;
-                case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+                case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
                     int _targetlevel = 0;
-                    ThemeType _type = ThemeType.Conversation; ;
+          SkillType _type = SkillType.Conversation; ;
                     switch (_follow.FollowTarget)
                     {
                         case "0"://대화 테마
-                            _type = ThemeType.Conversation; break;
+                            _type = SkillType.Conversation; break;
                         case "1"://무력 테마
-                            _type = ThemeType.Force; break;
+                            _type = SkillType.Force; break;
                         case "2"://생존 테마
-                            _type = ThemeType.Wild; break;
+                            _type = SkillType.Wild; break;
                         case "3"://학식 테마
-                            _type = ThemeType.Intelligence; break;
+                            _type = SkillType.Intelligence; break;
                     }
-          _targetlevel = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_type);
+          _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
                     if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
-                    break;
-                case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
-                    SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
-                    if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForPreviewOrTheme) _temp.Add(_follow);
                     break;
             }
         }
@@ -1399,26 +609,22 @@ public class EventHolder
             if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
           break;
 
-        case FollowType.Theme://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+        case FollowType.Skill://기술 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
           int _targetlevel = 0;
           switch (_follow.FollowTarget)
           {
             case "0"://대화 테마
-              _targetlevel = GameManager.Instance.MyGameData.ConversationLevel; break;
+              _targetlevel = GameManager.Instance.MyGameData.Skill_Conversation.Level; break;
             case "1"://무력 테마
-              _targetlevel = GameManager.Instance.MyGameData.ForceLevel; break;
+              _targetlevel = GameManager.Instance.MyGameData.Skill_Force.Level; break;
             case "2"://생존 테마
-              _targetlevel = GameManager.Instance.MyGameData.WildLevel; break;
+              _targetlevel = GameManager.Instance.MyGameData.Skill_Wild.Level; break;
             case "3"://학식 테마
-              _targetlevel = GameManager.Instance.MyGameData.IntelligenceLevel; break;
+              _targetlevel = GameManager.Instance.MyGameData.Skill_Intelligence.Level; break;
           }
           if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
           break;
 
-        case FollowType.Skill://기술 연계일 경우 현재 기술의 레벨이 기준 이상인지 확인
-          SkillName _skill = (SkillName)int.Parse(_follow.FollowTarget);
-          if (_follow.FollowTargetLevel <= GameManager.Instance.MyGameData.Skills[_skill].LevelForSkillCheck) _temp.Add(_follow);
-          break;
       }
     }
     foreach (var _event in _temp)
@@ -1452,25 +658,52 @@ public class TargetTileEventData
   public int Season;
 }
 #region 이벤트 정보에 쓰는 배열들
-public enum FollowType { Event,EXP,Trait,Theme,Skill}
+public enum FollowType { Event,EXP,Skill}
 public enum SettlementType { Town,City,Castle,Outer,None}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Academy,NULL}
 public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea}
-public enum SelectionType { Single,Body, Head,Tendency,Experience,Skill }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
+public enum SelectionType { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
-public enum RewardTarget { Experience,HP,Sanity,Gold,Theme,Skill,Trait,None}
+public enum RewardTarget { Experience,HP,Sanity,Gold,Skill,None}
 public enum EventSequence { Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
 public enum QuestSequence { Start,Rising,Climax,Falling}
 #endregion  
 public class EventDataDefulat
 {
-  public string OriginID = "";
-  public string ID = "";        //계절 별로 분화된 ID(ID_(계절)), 텍스트랑 일러스트 아이디로 사용함
-  public Sprite Illust = null;
-  public string Name;
-  public string Description;
-  public int Season = 0;  //0,1,2,3,4
+  public string ID = "";
+  public Sprite Illust
+  {
+    get
+    {
+     return  GameManager.Instance.ImageHolder.GetEventStartIllust(ID, Season);
+    }
+  }
+  public string Name
+  {
+    get
+    {
+      string _str = GameManager.Instance.GetTextData(ID + "_NAME");
+      return WNCText.GetSeasonText(_str);
+    }
+  }
+  public string Description
+  {
+    get
+    {
+      string _str = GameManager.Instance.GetTextData(ID + "_DESCRIPTION");
+      return WNCText.GetSeasonText(_str);
+    }
+  }
+  public List<int> EnableSeasons = new List<int>();  //0개면 사계절 분화 없음
+  public int Season
+  {
+    get
+    {
+      if (EnableSeasons.Contains(4)) return 4;
+      return GameManager.Instance.MyGameData.Turn;
+    }
+  }
   public SettlementType SettlementType;
   public PlaceType PlaceType;
   public EnvironmentType EnvironmentType = EnvironmentType.NULL;
@@ -1484,32 +717,111 @@ public class EventDataDefulat
 }
 public class SelectionData
 {
+  private EventDataDefulat MyEvent = null;
+  public SelectionData(EventDataDefulat myevent,int index)
+  {
+    MyEvent = myevent;Index = index;
+  }
+  private string ID { get { return MyEvent.ID + SearchWord_SubDescriptoin + SearchIndex; } }
+  public int Index = 0; //-1(단일),0,1(복수)
+    private string SearchIndex
+    {
+      get
+      {
+        return Index == -1 ? "" : string.Format("_{0}", Index.ToString());
+      }
+    }
     public SelectionTargetType ThisSelectionType = SelectionTargetType.None;
-  public string Description = "";
-  public string SubDescription = "";
+    private const string SearchWord_Name = "_SELECTION";
+    public string Name
+  {
+    get {
+        return WNCText.GetSeasonText(ID + SearchWord_Name + SearchIndex); 
+      }
+  }
+    private const string SearchWord_SubDescriptoin = "_SELECTIONDESCRIPTION";
+  public string SubDescription
+  {
+    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID)); }
+  }
   public StatusType SelectionPayTarget = StatusType.HP;
-    public ThemeType SelectionCheckTheme = ThemeType.Conversation;
-    public SkillName SelectionCheckSkill = SkillName.Speech;
+  public List<SkillType> SelectionCheckSkill = new List<SkillType>();
   public List<RewardTarget> SelectionSuccesRewards=new List<RewardTarget>();
 }    
 
 public class FailureData
 {
-  public string Description = "";
+  private EventDataDefulat MyEvent = null;
+  public FailureData(EventDataDefulat myevent, int index)
+  {
+    MyEvent = myevent; Index = index;
+  }
+  private string ID { get { return MyEvent.ID + SearchWord_Description + SearchIndex; } }
+  public int Index = -1;   //-1(단일),0,1(복수)
+    private string SearchIndex
+    {
+      get
+      {
+        return Index == -1 ? "" : string.Format("_{0}", Index.ToString());
+      }
+    }
+    private const string SearchWord_Description = "_FAIL_DESCRIPTION";
+    public string Description
+  {
+    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(MyEvent.ID)); }
+  }
   public PenaltyTarget Panelty_target;
   public StatusType Loss_target= StatusType.HP;
   public string ExpID;
-  public Sprite Illust = null;
+  public Sprite Illust
+  {
+    get
+    {
+      return GameManager.Instance.ImageHolder.GetEventResultIllust(MyEvent.ID, MyEvent.Season,Index, false);
+    }
+  }
 }
-public enum SelectionTargetType { None, Pay, Check_Theme, Check_Skill, Tendency, Skill, Exp }//선택지 개별 내용
+public class GoldFailData : FailureData
+{
+  public GoldFailData() : base(null, -1) { }
+  new public string Description = "";
+  new public Sprite Illust = null;
+}
+public enum SelectionTargetType { None, Pay, Check_Single,Check_Multy ,Tendency, Exp }//선택지 개별 내용
 public enum StatusType { HP,Sanity,Gold}
 public class SuccessData
 {
-  public string Description = "";
-  public Sprite Illust = null;
+  private EventDataDefulat MyEvent = null;
+  public SuccessData(EventDataDefulat myevent, int index)
+  {
+    MyEvent = myevent; Index = index;
+  }
+  private string ID { get { return MyEvent.ID + SearchWord_Description + SearchIndex; } }
+  public int Index = -1;   //-1(단일),0,1(복수)
+  private string SearchIndex
+  {
+    get
+    {
+      return Index == -1 ? "" : string.Format("_{0}", Index.ToString());
+    }
+  }
+  private const string SearchWord_Description = "_SUCCESS_DESCRIPTION";
+  public string Description
+  {
+    get
+    {
+      return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID));
+    }
+  }
+  public Sprite Illust
+  {
+    get
+    {
+      return GameManager.Instance.ImageHolder.GetEventResultIllust(MyEvent.ID, MyEvent.Season, Index, true);
+    }
+  }
   public RewardTarget Reward_Target;
-  public ThemeType Reward_Theme;
-  public SkillName Reward_Skill;
+  public SkillType Reward_Skill;
   public string Reward_ID;
   private int reward_value_origin = -1;
   public int Reward_Value_Origin
@@ -1585,12 +897,12 @@ public class QuestHolder
   }//quest_(이 부분)
   public string QuestName
   {
-    get { return QuestTextDatas[0].Name; }
+    get { return QuestTextDatas[0]; }
   }//퀘스트의 이름
   public QuestSequence CurrentSequence=QuestSequence.Start; //현재 퀘스트 단계
 
-  private List<TextData> questtextdatas = new List<TextData>();
-  private List<TextData> QuestTextDatas
+  private List<string> questtextdatas = new List<string>();
+  private List<string> QuestTextDatas
   {
     get
     {
@@ -1607,11 +919,11 @@ public class QuestHolder
   }
   public string StartDialogue
   {
-    get { return QuestTextDatas[0].Description; }
+    get { return QuestTextDatas[0]; }
   }   //게임 내부에서 퀘스트 조우할 시 나오는 텍스트
   public string PreDescription
   {
-    get { return QuestTextDatas[0].SelectionDescription; }
+    get { return QuestTextDatas[0]; }
   }  //시작 화면 미리보기 텍스트
   public Sprite StartIllust = null; //시작 일러스트
 
@@ -1619,14 +931,14 @@ public class QuestHolder
   {
     get
     {
-      return GameManager.Instance.ImageHolder.GetEventStartIllust(QuestID + "_expselect");
+      return null;
     }
   }//시작 경험 선택 일러스트
   public string ExpSelectionDescription
   {
     get
     {
-      return GameManager.Instance.GetTextData(QuestID + "_expselect").Name;
+      return GameManager.Instance.GetTextData(QuestID + "_expselect");
     }
   }//시작 경험 선택 설명
   public Experience[] StartingExps
@@ -1644,27 +956,27 @@ public class QuestHolder
 
   public Sprite StartingIllust
   {
-    get { return GameManager.Instance.ImageHolder.GetEventStartIllust(QuestID + "_starting"); }
+    get { return null; }
   }//출발 일러스트
   public string StartingDescription
   {
-    get { return GameManager.Instance.GetTextData(QuestID+"_starting").Name; }
+    get { return GameManager.Instance.GetTextData(QuestID+"_starting"); }
   }//출발 설명
   public string StartingSelection
   {
-    get { return GameManager.Instance.GetTextData(QuestID + "_starting").SelectionDescription; }
+    get { return GameManager.Instance.GetTextData(QuestID + "_starting"); }
   }//출발 선택지 문구
   public string RisingDescription
   {
-    get { return QuestTextDatas[1].Name; }
+    get { return QuestTextDatas[1]; }
   }
   public string ClimaxDescription
   {
-    get { return QuestTextDatas[2 + FinishedClimaxCount].Name; }
+    get { return QuestTextDatas[2 + FinishedClimaxCount]; }
   }
   public string FallingDescription
   {
-    get { return QuestTextDatas[QuestTextDatas.Count - 1].Name; }
+    get { return QuestTextDatas[QuestTextDatas.Count - 1]; }
   }
   public string CurrentDescription
   {
@@ -1681,23 +993,23 @@ public class QuestHolder
 
   public string StopSelectionName
   {
-    get { return QuestTextDatas[QuestTextDatas.Count - 1].Description.Split('@')[0]; }
+    get { return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[0]; }
   }
   public string StopSelectionSub
   {
-    get { return QuestTextDatas[QuestTextDatas.Count - 1].SelectionDescription.Split('@')[0]; }
+    get { return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[0]; }
   }
   public string ContinueSelectionName
   {
     get
     {
-     return QuestTextDatas[QuestTextDatas.Count - 1].Description.Split('@')[1];
+     return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[1];
     }
   }
   public string ContinueSelectionSub {
     get
     {
-      return QuestTextDatas[QuestTextDatas.Count - 1].SelectionDescription.Split('@')[1];
+      return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[1];
     }
   }
   public List<QuestEventData> Eventlist_Rising=new List<QuestEventData>();
@@ -1709,7 +1021,7 @@ public class QuestHolder
       if (eventlist_rising_origin.Count.Equals(0))
       {
         foreach (var _origin in Eventlist_Rising)
-          if (!eventlist_rising_origin.Contains(_origin.OriginID)) eventlist_rising_origin.Add(_origin.OriginID);
+          if (!eventlist_rising_origin.Contains(_origin.ID)) eventlist_rising_origin.Add(_origin.ID);
       }
       return eventlist_rising_origin;
     }
@@ -1722,7 +1034,7 @@ public class QuestHolder
       List<QuestEventData> _temp = new List<QuestEventData>();
       foreach (var _event in Eventlist_Rising)
       {
-        if (Eventlist_Rising_clear.Contains(_event.OriginID)) continue;
+        if (Eventlist_Rising_clear.Contains(_event.ID)) continue;
         _temp.Add(_event);
       }
       if (_temp.Count.Equals(0)) return null;
@@ -1738,7 +1050,7 @@ public class QuestHolder
       if (eventlist_climax_origin.Count.Equals(0))
       {
         foreach (var _origin in Eventlist_Climax)
-          if (!eventlist_climax_origin.Contains(_origin.OriginID)) eventlist_climax_origin.Add(_origin.OriginID);
+          if (!eventlist_climax_origin.Contains(_origin.ID)) eventlist_climax_origin.Add(_origin.ID);
       }
       return eventlist_climax_origin;
     }
@@ -1750,7 +1062,7 @@ public class QuestHolder
     get
     {
       List<string> _originids = new List<string>();
-      foreach (var _rising in Eventlist_Rising) if (!_originids.Contains(_rising.OriginID)) _originids.Add(_rising.OriginID);
+      foreach (var _rising in Eventlist_Rising) if (!_originids.Contains(_rising.ID)) _originids.Add(_rising.ID);
       return _originids.Count;
     }
   }
@@ -1759,7 +1071,7 @@ public class QuestHolder
     get
     {
       List<string> _originids = new List<string>();
-      foreach (var _climax in Eventlist_Climax) if (!_originids.Contains(_climax.OriginID)) _originids.Add(_climax.OriginID);
+      foreach (var _climax in Eventlist_Climax) if (!_originids.Contains(_climax.ID)) _originids.Add(_climax.ID);
       return _originids.Count;
     }
   }
@@ -1779,7 +1091,7 @@ public class QuestHolder
       QuestEventData _availableclimaxevent = null;
       foreach (var _questevent in Eventlist_Climax)
       {
-        if (_questevent.OriginID.Equals(EventList_Climax_Origin[FinishedClimaxCount]))
+        if (_questevent.ID.Equals(EventList_Climax_Origin[FinishedClimaxCount]))
         {
           if(_questevent.Season.Equals(0)|| _questevent.Season.Equals(GameManager.Instance.MyGameData.Turn + 1))
           {
@@ -1802,7 +1114,7 @@ public class QuestHolder
         CurrentSequence = QuestSequence.Rising;
         break;
       case QuestSequence.Rising:
-        string _defaultid = _eventdata.OriginID;
+        string _defaultid = _eventdata.ID;
 
           if (!Eventlist_Rising_clear.Contains(_defaultid)) Eventlist_Rising_clear.Add(_defaultid);
         //클리어한 이벤트의 기본 ID를 바탕으로 해결 Rising 리스트에 넣는다
@@ -1847,7 +1159,7 @@ public class QuestHolder
         CurrentSequence = QuestSequence.Rising;
         break;
       case QuestSequence.Rising:
-        string _defaultid = _eventdata.OriginID;
+        string _defaultid = _eventdata.ID;
 
           if (!Eventlist_Rising_clear.Contains(_defaultid)) Eventlist_Rising_clear.Add(_defaultid);
           //완료 목록에 넣기
@@ -1875,7 +1187,7 @@ public class QuestHolder
     }
   }
 
-}
+}//                                         퀘스트 디자인 후 수정
 public class EventJsonData
 {
   public string ID = "";              //ID
@@ -1898,60 +1210,19 @@ public class EventJsonData
 
   public string SubReward;                  //없음,돈,정신력,돈+정신력
 }
-public class FollowEventJsonData
+public class FollowEventJsonData:EventJsonData
 {
-  public string ID = "";              //ID
 
   public int FollowType = 0;              //이벤트,경험,특성,테마,기술
   public string FollowTarget = "";            //해당 ID 혹은 0,1,2,3 혹은 0~9
   public int FollowTargetSuccess = 0;            //(이벤트) 성공/실패
   public int FollowTendency = 0;          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
 
-    public string Season;              //전역,봄,여름,가을,겨울
-    public int Settlement = 0;          //0,1,2,3
-  public int Place = 0;               //0,1,2,3,4
-
-  public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
-  public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
-  public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
-                                            //2:대화,무력,생존,정신
-                                            //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
-  public int Environment = 0;  //없음, 숲,강,언덕,산,바다
-
-  public string Failure_Penalty;            //없음,손실,경험
-  public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
-
-  public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
-  public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
-
-  public string SubReward;                  //없음,돈,정신력,돈+정신력
-
   public string EndingName = "";            //엔딩이 있을 경우(""가 아닌 경우) 엔딩 이름
 }
-public class QuestEventDataJson
+public class QuestEventDataJson:EventJsonData
 {
   public string QuestId = "";                 //퀘스트 ID
-  public string ID = "";
   public int Sequence = 0;                   //0:기  1:승   2:전   3:결
-  public string Season = "";
-
-  public string Name = "";              //이름
-  public int Settlement = 0;          //0(아무 정착지),1,2,3,4(외부)
-  public int Place = 0;               //0,1,2,3,4
-  public int Environment = 0;    //0:전역 1:숲 2:강 3:언덕 4:산 5:바다
-
-  public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
-  public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
-  public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
-                                            //2:대화,무력,생존,정신
-                                            //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
-
-  public string Failure_Penalty;            //없음,손실,경험
-  public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
-
-  public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
-  public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
-
-  public string SubReward;                  //없음,돈,정신력,돈+정신력
 }
 

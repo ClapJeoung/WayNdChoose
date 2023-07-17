@@ -29,35 +29,35 @@ public class UI_map : UI_default
         Debug.Log("정착지 선택 상태");
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;
         if(CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
-        MoveButtonText.text = GameManager.Instance.GetTextData("choosesettle").Name;
+        MoveButtonText.text = GameManager.Instance.GetTextData("choosesettle").asdf;      //지도 상태 문구 기획 완료 후 변경 요망
         CancleButton.interactable = false;
         break;
       case 1:
         Debug.Log("이동 가능 상태");
         if (MoveButton.interactable.Equals(false)) MoveButton.interactable = true;
         if (CancleButton.interactable.Equals(false)) CancleButton.interactable = true;
-        MoveButtonText.text = GameManager.Instance.GetTextData("canmove").Name;
+        MoveButtonText.text = GameManager.Instance.GetTextData("canmove");
         CancleButton.interactable = true;
         break;
       case 2:
         Debug.Log("이동 중");
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;
         if (CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
-        MoveButtonText.text = GameManager.Instance.GetTextData("duringmoving").Name;
+        MoveButtonText.text = GameManager.Instance.GetTextData("duringmoving");
         CancleButton.interactable = false;
         break;
       case 3:
         Debug.Log("이동 불가 상태");
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;
         if (CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
-        MoveButtonText.text = GameManager.Instance.GetTextData("cannotmove").Name;
+        MoveButtonText.text = GameManager.Instance.GetTextData("cannotmove");
         CancleButton.interactable = false;
         break;
       case 4:
         Debug.Log("계속 이동 중인 상태");
         if (MoveButton.interactable.Equals(false)) MoveButton.interactable = true;
         if (CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
-        MoveButtonText.text = GameManager.Instance.GetTextData("keepgoing").Name;
+        MoveButtonText.text = GameManager.Instance.GetTextData("keepgoing");
         CancleButton.interactable = false;
         break;
     }
@@ -80,8 +80,6 @@ public class UI_map : UI_default
   }
   [SerializeField] private Image CurrentQuestProgress = null;
   [SerializeField] private TextMeshProUGUI CurrentQuestDescription = null;
-  [SerializeField] private List<GameObject> EnvirIcons=new List<GameObject>();
-  [SerializeField] private TextMeshProUGUI OuterInfoText = null;
   [SerializeField] private TextMeshProUGUI UnpText = null;
   [SerializeField] private CanvasGroup[] ArrowGroup = null;
   [SerializeField] private RectTransform[] ArrowRect = null;
@@ -123,119 +121,8 @@ public class UI_map : UI_default
   private IEnumerator openui()
   {
     ScaleChanger.anchoredPosition = GetScaleChangerPos(PlayerRect.anchoredPosition);
-    if (GameManager.Instance.MyGameData.CurrentQuest != null)
-    {
-      List<SettlementIcon> _ablesettles = new List<SettlementIcon>();
-      List<EnvironmentType> _ableenvir = new List<EnvironmentType>();
-      QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
-      CurrentQuestDescription.text = _currentquest.CurrentDescription;
-      switch (_currentquest.CurrentSequence)
-      {
-        case QuestSequence.Rising:
-          CurrentQuestProgress.sprite = GameManager.Instance.ImageHolder.Quest_risig;
-          var _risings = _currentquest.EventList_Rising_Available;
-          foreach(var _event in _risings)
-          {
-            if (_event.SettlementType.Equals(SettlementType.Outer))
-            {
-              if (!_ableenvir.Contains(_event.EnvironmentType))
-              {
-                _ableenvir.Add(_event.EnvironmentType);
-              }
-            }//야외 이벤트면 환경 정보만 가져옴
-            else
-            {
-              foreach(var _data in SettleIcons)
-              {
-                if(_data.SettlementData.CheckAbleEvent(_event)&&!_ablesettles.Contains(_data))_ablesettles.Add(_data);
-              }
-            }//그 외 정착지라면 이벤트에 직접 물어보는 식으로
-          }
-          break;
-        case QuestSequence.Climax:
-          CurrentQuestProgress.sprite = GameManager.Instance.ImageHolder.Quest_climax;
-          if (_currentquest.NextQuestSettlement == null&&_currentquest.NextQuestEnvir.Equals(EnvironmentType.NULL))
-          {
 
-            QuestEventData _climaxevent = _currentquest.Event_Climax;
-            if (_climaxevent.SettlementType.Equals(SettlementType.Outer))
-            {
-              if (_climaxevent.EnvironmentType!=EnvironmentType.NULL)
-              {
-                _ableenvir.Add(_climaxevent.EnvironmentType);
-                _currentquest.NextQuestEnvir = _climaxevent.EnvironmentType;
-              }
-            }//외부 이벤트면 환경만
-            else
-            {
-              List<SettlementIcon> _availableclimax = new List<SettlementIcon>();
-              foreach(var _data in SettleIcons)
-              {
-                if(_data.SettlementData.CheckAbleEvent(_climaxevent))_availableclimax.Add(_data);
-              }
-              SettlementIcon _selectclimax = _availableclimax[Random.Range(0, _availableclimax.Count)];
-              _ablesettles.Add(_selectclimax);
-              _currentquest.NextQuestSettlement = _selectclimax.SettlementData;
-            }//정착지 이벤트면 무작위 하나 가져오기
-          }//다음 목적지가 정해지지 않은 상태라면 새로 만들어서 입력
-          else
-          {
-            if (_currentquest.NextQuestSettlement != null)
-              _ablesettles.Add(GetSettleIcon(_currentquest.NextQuestSettlement.OriginName));
-            else _ableenvir.Add(_currentquest.NextQuestEnvir);
-          }//다음 목적지가 정해진 상태라면 그대로 불러오기
-          break;
-        case QuestSequence.Falling:
-          CurrentQuestProgress.sprite = GameManager.Instance.ImageHolder.Quest_fall;
-          if (_currentquest.NextQuestSettlement == null && _currentquest.NextQuestEnvir.Equals(EnvironmentType.NULL))
-          {
-            QuestEventData _fallingevent = _currentquest.Event_Falling;
-            if (_fallingevent.SettlementType.Equals(SettlementType.Outer))
-            {
-              if (_fallingevent.EnvironmentType!=EnvironmentType.NULL)
-              {
-                _ableenvir.Add(_fallingevent.EnvironmentType);
-                _currentquest.NextQuestEnvir = _fallingevent.EnvironmentType;
-              }
-            }//외부 이벤트면 환경만
-            else
-            {
-              List<SettlementIcon> _availablefalling = new List<SettlementIcon>();
-              foreach (var _data in SettleIcons)
-              {
-                if (_data.SettlementData.CheckAbleEvent(_fallingevent)) _availablefalling.Add(_data);
-              }
-              SettlementIcon _selectfalling = _availablefalling[Random.Range(0, _availablefalling.Count)];
-              _ablesettles.Add(_selectfalling);
-              _currentquest.NextQuestSettlement = _selectfalling.SettlementData;
-            }//정착지 이벤트면 무작위 하나 가져오기
-          }//다음 목적지가 정해지지 않은 상태라면 새로 만들어서 입력
-          else
-          {
-            if (_currentquest.NextQuestSettlement != null)
-              _ablesettles.Add(GetSettleIcon(_currentquest.NextQuestSettlement.OriginName));
-            else _ableenvir.Add(_currentquest.NextQuestEnvir);
-          }//다음 목적지가 정해진 상태라면 그대로 불러오기
-          break;
-      }
-
-      if (_ableenvir.Count > 0)
-      {
-        foreach (var _envir in _ableenvir)
-          if (EnvirIcons[(int)_envir].activeInHierarchy.Equals(false)) EnvirIcons[(int)_envir].SetActive(true);
-        OuterInfoText.text = GameManager.Instance.GetTextData("outereventinfo").Name;
-      }
-      else OuterInfoText.text = "";
-
-      if (_ablesettles.Count>0)
-      {
-        for (int i = 0; i < _ablesettles.Count; i++)
-        {
-          _ablesettles[i].SetQuestIcon((int)_currentquest.CurrentSequence);
-        }
-      }
-
-    }
+    //                                                                                                        퀘스트 기획 후 지도에 퀘스트 정보 표기 넣기
 
     if(SelectedArrow!=null) UnpText.text = SelectedSettle.Discomfort.ToString();
 
@@ -275,10 +162,6 @@ public class UI_map : UI_default
     SelectedArrow.deactivecolor();
     SelectedArrow = null;
    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.2f, false));
-    for(int i = 0; i < EnvirIcons.Count; i++)
-    {
-      if (EnvirIcons[i].activeInHierarchy.Equals(true)) EnvirIcons[i].SetActive(false);
-    }
     var _settleicons = SettleIcons;
     for (int i = 0; i < SettleIcons.Count; i++)
       _settleicons[i].SetQuestIcon(0);
@@ -508,7 +391,7 @@ public class UI_map : UI_default
       GameManager.Instance.MyGameData.CurrentSettlement.SetAvailablePlaces();
      GameManager.Instance.MyGameData.AvailableSettles = GameManager.Instance.MyMapData.GetCloseSettles(GameManager.Instance.MyGameData.CurrentSettlement, 3);
 
-      SelectedSettle.LibraryType = (ThemeType)Random.Range(0, 4);
+      SelectedSettle.LibraryType = (SkillType)Random.Range(0, 4);
       //목표에 완전히 도착했으니 이동 관련 정보는 초기화
 
       //currentprogress!=0.0f면 외부에서 이벤트 클리어하고 가던 정착지를 향해 다시 출발

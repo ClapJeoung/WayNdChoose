@@ -266,49 +266,23 @@ public class UIManager : MonoBehaviour
   [SerializeField] private CanvasGroup WildEffect = null;
   [SerializeField] private CanvasGroup IntelEffect = null;
   private int ConverLevel = -1, ForceLevel = -1, WildLevel = -1, IntelLevel = -1;
-  public void UpdateTheme()
-  {
-
-  }
-  public void UpdateTheme(SkillName skill)
-  {
-    ThemeType _theme_a = ThemeType.Conversation, _theme_b = ThemeType.Conversation;
-    switch (skill)
-    {
-      case SkillName.Speech: _theme_a = ThemeType.Conversation;_theme_b = ThemeType.Conversation; break;
-      case SkillName.Threat: _theme_a = ThemeType.Conversation; _theme_b = ThemeType.Force; break;
-      case SkillName.Deception: _theme_a = ThemeType.Conversation; _theme_b = ThemeType.Wild; break;
-      case SkillName.Logic: _theme_a = ThemeType.Conversation; _theme_b = ThemeType.Intelligence; break;
-      case SkillName.Kombat: _theme_a = ThemeType.Force; _theme_b = ThemeType.Force; break;
-      case SkillName.Bow: _theme_a = ThemeType.Force; _theme_b = ThemeType.Wild; break;
-      case SkillName.Somatology: _theme_a = ThemeType.Force; _theme_b = ThemeType.Intelligence; break;
-      case SkillName.Survivable: _theme_a = ThemeType.Wild; _theme_b = ThemeType.Wild; break;
-      case SkillName.Biology: _theme_a = ThemeType.Wild; _theme_b = ThemeType.Intelligence; break;
-      case SkillName.Knowledge: _theme_a = ThemeType.Intelligence; _theme_b = ThemeType.Intelligence; break;
-    }
-    if (_theme_a == _theme_b) UpdateTheme(_theme_a);
-    else
-    {
-      UpdateTheme(_theme_a);UpdateTheme(_theme_b);
-    }
-  }
-  public void UpdateTheme(ThemeType theme)
+  public void UpdateSkillIcon(SkillType theme)
   {
     switch (theme)
     {
-      case ThemeType.Conversation:
+      case SkillType.Conversation:
         ConverEffect.alpha = 1.0f;
         StartCoroutine(ChangeAlpha(ConverEffect,0.0f,0.15f,false));
         break;
-      case ThemeType.Force:
+      case SkillType.Force:
         ForceEffect.alpha = 1.0f;
         StartCoroutine(ChangeAlpha(ForceEffect, 0.0f, 0.15f, false));
         break;
-      case ThemeType.Wild:
+      case SkillType.Wild:
         WildEffect.alpha = 1.0f;
         StartCoroutine(ChangeAlpha(WildEffect, 0.0f, 0.15f, false));
         break;
-      case ThemeType.Intelligence:
+      case SkillType.Intelligence:
         IntelEffect.alpha = 1.0f;
         StartCoroutine(ChangeAlpha(IntelEffect, 0.0f, 0.15f, false));
         break;
@@ -959,7 +933,7 @@ public class UIManager : MonoBehaviour
   #endregion
 
 }
-public static class ColorText
+public static class WNCText
 {
   private static Color SuccessColor = new Color(0.8867924f, 5621194f, 0.3471876f, 1.0f);
   private static Color FailColor = new Color(0.5648571f, 0.8862745f, 0.3490196f, 1.0f);
@@ -980,4 +954,31 @@ public static class ColorText
   {
     return "<#D8D8D8>" + str + "</color>";
   }
+  public static string GetSeasonText(string str)
+  {
+    List<int> _startindex = new List<int>(), _endindex = new List<int>();
+    for (int i = 0; i < str.Length; i++)
+    {
+      if (str[i].Equals("[")) _startindex.Add(i);
+      else if (str[i].Equals("]")) _endindex.Add(i);
+    }
+    if (_startindex.Count.Equals(0)) return str;
+
+    List<string> _strsegs = new List<string>();
+    for (int i = 0; i < _startindex.Count; i++)
+    {
+      int _start = _startindex[i] + 1;
+      int _length = _endindex[i] - _start;
+      _strsegs.Add(str.Substring(_start, _length));
+    }
+
+    int _currentseason = GameManager.Instance.MyGameData.Turn;
+    for (int i = 0; i < _strsegs.Count; i++)
+    {
+      str.Replace("[" + _strsegs[i] + "]", _strsegs[i].Split(",")[_currentseason]);
+    }
+
+    return str;
+  }
+
 }

@@ -66,18 +66,19 @@ public class UI_Selection : MonoBehaviour
           case StatusType.Gold:PayOrElseIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;break;
         }
         break;
-      case SelectionTargetType.Check_Theme:
+      case SelectionTargetType.Check_Single:
         if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
         if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
         if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetThemeIcon(_data.SelectionCheckTheme);
+        ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[0]);
         break;
-      case SelectionTargetType.Check_Skill:
+      case SelectionTargetType.Check_Multy:
         if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
         if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
         if (ThemeObj_B.activeInHierarchy.Equals(false)) ThemeObj_B.SetActive(true);
         Sprite[] _sprs = new Sprite[2];
-        GameManager.Instance.ImageHolder.GetSkillIcons(_data.SelectionCheckSkill, ref _sprs);
+        _sprs[0] = GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[0]);
+        _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[1]);
         ThemeIcon_A.sprite = _sprs[0];ThemeIcon_B.sprite = _sprs[1];
         break;
       case SelectionTargetType.Tendency:
@@ -85,12 +86,6 @@ public class UI_Selection : MonoBehaviour
         if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
         if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
         PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.TendencySelectionIcon;
-        break;
-      case SelectionTargetType.Skill:
-        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
-        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
-        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.SkillSelectionIcon;
         break;
       case SelectionTargetType.Exp:
         if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
@@ -100,7 +95,7 @@ public class UI_Selection : MonoBehaviour
         break;
     }
     MySelectionData = _data;
-    MyDescription.text = _data.Description;
+    MyDescription.text = _data.SubDescription;
     StartCoroutine(fadein());
   }
   private IEnumerator fadein()

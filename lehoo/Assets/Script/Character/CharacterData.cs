@@ -17,22 +17,21 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.15f,  GoldLoss_Exp = 0.15f;
   public const float SanityGen_Exp = 0.1f, SanityLoss_Exp = 0.08f;
 
-  public const float SanityGenByTendency_m2 = 0.3f, SanityGenByTendency_m1 = 0.15f, SanityLossByTendency_p2 = 0.15f;
-  public const float GoldLossByTendency_m2 = 0.2f, GoldGenByTendency_p1 = 0.2f, GoldGenByTendency_p2 = 0.35f;
-  public const float HPLossByTendency_m2 = 0.15f, HPGenByTendency_p1 = 0.15f, HPGenByTendency_p2 = 0.3f;
-  //정신적 2: 정신력 회복 증가+ 체력 소모 증가 골드 소모 증가
+  public const float SanityGenByTendency_m1 = 0.15f, DiscomfortByTendency_m2 = 0.5f, SanityGenByTendency_m2 = 0.3f, SanityLossByTendency_p2 = 0.2f;
+  public const float GoldGenByTendency_p1 = 0.3f, GoldGenByTendency_p2 = 0.45f, GoldLossByTendency_m2 = 0.2f, HPGenByTendency_p2 = 0.3f;
+  //정신적 2: 정신력 회복 증가, 불쾌 효과 감소, 골드 감소
   //정신적 1: 정신력 회복 증가
-  //물질적 1: 체력 회복 증가  골드 회복 증가
-  //물질적 2: 체력 회복 증가+ 골드 회복 증가+ 정신력 소모 증가
+  //물질적 1: 골드 증가
+  //물질적 2: 골드 증가, 체력 증가, 정신력 감소
 
-  public const int SpeechByTendency_m2 = 2, SpeechByTendency_m1 = 1, SpeechByTendency_p2 = -1,
-    KnowledgeByTendency_m2 = 2, KnowledgeByTendency_m1 = 1, KnowledgeByTendency_p2 = -1,
-    KombatByTendency_m2 = -1, KombatByTendency_p1 = 1, KombatByTendency_p2 = 2,
-    SurvieByTendency_m2 = -1, SurviveByTendency_p1 = 1, SurviveByTendency_p2 = 2;
-  //이성적 2: 화술+2 학식+2 격투-1 생존-1
+  public const int ConversationByTendency_m2 = 3, ConversationByTendency_m1 = 1, ConversationByTendency_p2 = -1,
+    IntelligenceByTendency_m2 = 3, IntelligenceByTendency_m1 = 1, IntelligenceByTendency_p2 = -1,
+    ForceByTendency_m2 = -1, ForceByTendency_p1 = 1, ForceByTendency_p2 = 3,
+    WildByTendency_m2 = -1, WildByTendency_p1 = 1, WildByTendency_p2 = 3;
+  //이성적 2: 화술+3 학식+3 격투-1 생존-1
   //이성적 1: 화술+1 학식+1
   //육체적 1: 격투+1 생존+1
-  //육체적 2: 격투+2 생존+2 화술-1 학식-1
+  //육체적 2: 격투+3 생존+3 화술-1 학식-1
 
   //성향 진행도 따라 긍정,부정 값
   public const float minsuccesper_max = 60;
@@ -43,8 +42,8 @@ public static class ConstValues
   public const int PayHP_min = 10, PayHP_max = 20;        //체력 지불 최소~최대   (1년~10년)
   public const int PaySanity_min = 15, PaySanity_max = 30;//정신력 지불 최소~최대 (1년~10년)
   public const int PayGold_min = 20, PayGold_max = 30;  //돈 지불 최소~최대     (1년~10년)
-  public const int CheckTheme_min = 3, CheckTheme_max = 15; //테마 체크 최소~최대 (1년~10년)
-  public const int CheckSkill_min = 1, CheckSkill_max = 6;  //기술 체크 최소~최대 (1년~10년)
+  public const int CheckSkill_single_min = 1, CheckSkill_single_max = 8;  //기술(단일) 체크 최소~최대 (1년~10년)
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 14;   //기술(복수) 체크 최소~최대 (1년~10년)
   public const int FailHP_min = 5, FailHP_max = 10;         //실패 체력 최소~최대 (1년~10년)
   public const int FailSanity_min = 10, FailSanity_max = 20;//실패 정신력 최소~최대(1년~10년)
   public const int FailGold_min = 15, FailGold_max = 30;    //실패 골드 최소~최대 (1년~10년)
@@ -67,6 +66,7 @@ public static class ConstValues
     public const float PlaceEffect_residence = 0.3f;
     public const int PlaceEffect_marketplace = 20;
     public const int PlaceEffect_temple = 1;
+  public const int PlaceEffect_Library = 2;
     public const int PlaceEffect_theater = 3;
     public const int PlaceEffect_acardemy = 10;
 
@@ -79,6 +79,9 @@ public static class ConstValues
 
   public const int DoubleValue = 40;
   public const int MaxTendencyLevel = 2;
+
+  public const int SkillAssemble_min=1,SkillAssemble_max=2;
+  public const float GoldSanityPayAmplifiedValue = 1.2f;
 }
 public class GameData    //게임 진행도 데이터
 {
@@ -147,9 +150,9 @@ public class GameData    //게임 진행도 데이터
     public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
     public int PaySanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear); } }
     public int PayGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear); } }
-    public int CheckThemeValue { get { return (int)Mathf.Lerp(ConstValues.CheckTheme_min, ConstValues.CheckTheme_max, Year / ConstValues.MaxYear); } }
-    public int CheckSkillValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_min, ConstValues.CheckSkill_max, Year / ConstValues.MaxYear); } }
-    public int FailHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear); } }
+    public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, Year / ConstValues.MaxYear); } }
+  public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, Year / ConstValues.MaxYear); } }
+  public int FailHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear); } }
     public int FailSanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear); } }
     public int FailGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear); } }
     public int RewardHPValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardHP_min, ConstValues.RewardHP_max); } }
@@ -183,10 +186,10 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)(SubRewardGoldValue_origin * GetGoldGenModify(true)); } }
     #endregion
 
-    public int CheckPercent_themeorskill(int _origin, int _target)
+    public int CheckPercent_themeorskill(int _current, int _target)
     {
-        if (_origin >= _target) return 100;
-        float _per = _origin / _target;
+        if (_current >= _target) return 100;
+        float _per = _current / _target;
         return Mathf.CeilToInt((1 - MinSuccesPer) * Mathf.Pow(_per, 1.5f) + MinSuccesPer);
     }//origin : 대상 레벨   target : 목표 레벨
     public int CheckPercent_money(int _target)
@@ -276,99 +279,16 @@ public class GameData    //게임 진행도 데이터
         }
     }//최대 정신력(현재 광기 특성 개수에 따라)
   public int MadnessCount = 0;
-  public Dictionary<SkillName, Skill> Skills = new Dictionary<SkillName, Skill>();//기술들
-  public void MixSkill()
+  public Skill Skill_Conversation, Skill_Force, Skill_Wild, Skill_Intelligence;
+  public Skill GetSkill(SkillType type)
   {
-    System.Random _rnd = new System.Random();
-    List<SkillName> _availableskills = new List<SkillName>();
-    //뒤섞을 기술들 리스트
-
-    foreach (var _data in Skills)
-      if (_data.Value.LevelByOwn > 0) _availableskills.Add(_data.Key);
-    //원본 레벨 0 이상만 리스트에 포함
-
-    if (_availableskills.Count < 4)//섞을 기술 목록이 부족할 경우
+    switch (type)
     {
-      while (_availableskills.Count < 4)//다른 0레벨 기술도 리스트에 포함해 4개 채울때까지 무한반복
-      {
-        SkillName _temp = (SkillName)UnityEngine.Random.Range(0, 10);
-        if (_availableskills.Contains(_temp)) continue;
-        _availableskills.Add(_temp);
-      }
-      _availableskills.OrderBy((x) => _rnd.Next()).ToList();
+      case SkillType.Conversation:return Skill_Conversation;
+        case SkillType.Force:return Skill_Force;
+        case SkillType.Wild:return Skill_Wild;
+      default:return Skill_Intelligence;
     }
-    else if (_availableskills.Count > 4)//4개 이상이면 4개만 추려서
-    {
-      _availableskills.OrderBy((x) => _rnd.Next()).ToList();
-      var _temp =new SkillName[4] {_availableskills[0], _availableskills[1],_availableskills[2],_availableskills[3]};
-    }
-
-    int _sum = 0;
-    foreach (var _skill in _availableskills) _sum += Skills[_skill].LevelByOwn;
-
-    int _value = _sum / 4;
-    int _else = _sum % 4;
-
-    foreach (var _skill in _availableskills) Skills[_skill].LevelByOwn=_value;
-    //평균값 넣기
-    for (int i = 0; i < _else; i++) Skills[_availableskills[i]].LevelByOwn += _else;
-    //넣고 남은건 순서대로 넣기
-  }
-  public int ConversationLevel
-  {
-    get
-    {
-      ThemeType _theme = ThemeType.Conversation;
-      int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
-      //기술로부터 나온 값
-
-      int _sum = _onlyskill;
-      return _sum<0?0:_sum;
-    }
-  }
-  public int ForceLevel
-  {
-    get
-    {
-      ThemeType _theme = ThemeType.Force;
-      int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
-      //기술로부터 나온 값
-      int _sum = _onlyskill;
-      return _sum < 0 ? 0 : _sum;
-    }
-  }
-  public int WildLevel
-  {
-    get
-    {
-      ThemeType _theme = ThemeType.Wild;
-      int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
-      //기술로부터 나온 값
-      int _sum = _onlyskill ;
-      return _sum < 0 ? 0 : _sum;
-    }
-  }
-  public int IntelligenceLevel
-  {
-    get
-    {
-      ThemeType _theme = ThemeType.Intelligence;
-      int _onlyskill = GameManager.Instance.MyGameData.GetThemeLevelBySkill(_theme);
-      //기술로부터 나온 값
-      int _sum = _onlyskill;
-      return _sum < 0 ? 0 : _sum;
-    }
-  }
-  public int GetThemeLevel(ThemeType _themetype)
-  {
-    switch (_themetype)
-    {
-      case ThemeType.Conversation:return ConversationLevel;
-      case ThemeType.Force:return ForceLevel;
-      case ThemeType.Wild:return WildLevel;
-      case ThemeType.Intelligence:return IntelligenceLevel;
-    }
-    return -1;
   }
   public bool CanMove
   {
@@ -380,152 +300,55 @@ public class GameData    //게임 진행도 데이터
       //그 외엔 가능
     }
   }
-  public SkillName GetSkillByTheme(ThemeType _first,ThemeType _second)
-  {
-    switch (_first)
-    {
-      case ThemeType.Conversation:
-        switch (_second)
-        {
-          case ThemeType.Conversation:
-            return SkillName.Speech;
-          case ThemeType.Force:
-            return SkillName.Threat;
-          case ThemeType.Wild:
-            return SkillName.Deception;
-          case ThemeType.Intelligence:
-            return SkillName.Logic;
-          default:return SkillName.Speech;
-        }
-        
-      case ThemeType.Force:
-        switch (_second)
-        {
-          case ThemeType.Conversation:
-            return SkillName.Threat;
-          case ThemeType.Force:
-            return SkillName.Threat;
-          case ThemeType.Wild:
-            return SkillName.Bow;
-          case ThemeType.Intelligence:
-            return SkillName.Somatology;
-          default: return SkillName.Speech;
-        }
-
-      case ThemeType.Wild:
-        switch (_second)
-        {
-          case ThemeType.Conversation:
-            return SkillName.Deception;
-          case ThemeType.Force:
-            return SkillName.Bow;
-          case ThemeType.Wild:
-            return SkillName.Survivable;
-          case ThemeType.Intelligence:
-            return SkillName.Biology;
-          default: return SkillName.Speech;
-        }
-
-      case ThemeType.Intelligence:
-        switch (_second)
-        {
-          case ThemeType.Conversation:
-            return SkillName.Logic;
-          case ThemeType.Force:
-            return SkillName.Somatology;
-          case ThemeType.Wild:
-            return SkillName.Biology;
-          case ThemeType.Intelligence:
-            return SkillName.Knowledge;
-          default: return SkillName.Speech;
-        }
-      default: return SkillName.Speech;
-    }
-  }//테마 두개 넣어서 해당하는 기술 반환
-  public List<Skill> GetThemeSkills(ThemeType themetype)
-  {
-    List<Skill> _temp=new List<Skill>();
-    foreach(var _data in Skills)
-      if(_data.Value.Type_A.Equals(themetype)||_data.Value.Type_B.Equals(themetype))_temp.Add(_data.Value);
-    return _temp;
-  }//해당 기술의 테마 2개 반환
-  public int GetThemeLevelBySkill(ThemeType _theme)
-  {
-    int _level = 0;
-    foreach (var _skill in Skills)
-    {
-      if (_skill.Value.Type_A == _theme) _level += _skill.Value.LevelForPreviewOrTheme;
-      if (_skill.Value.Type_B == _theme) _level += _skill.Value.LevelForPreviewOrTheme;
-    }
-    return _level;
-  }//해당 테마의 기술 레벨 합 반환
-  public int GetSkillLevelByTheme(SkillName name)
-  {
-    List<SkillName> _skills = GetOtherSkillsBySkill(name);
-    int _sum = 0;
-    foreach (var _skillname in _skills)
-    {
-      _sum += Skills[_skillname].LevelForPreviewOrTheme;
-    }
-    return _sum / 6;
-    //기술들의 레벨(원본+경험+장소) + 성향 보정치
-  }//스킬 테마를 공유하는 타 스킬들로부터 얻는 보정치 레벨 반환
-  public List<SkillName> GetSkillsByTheme(ThemeType type)
-  {
-    List<SkillName> _temp = new List<SkillName>();
-    foreach(var _skill in Skills)
-      if(_skill.Value.Type_A.Equals(type)||_skill.Value.Type_B.Equals(type)&&!_temp.Contains(_skill.Key))_temp.Add(_skill.Key);
-    return _temp;
-  }//해당 테마에 속하는 모든 기술들 반환
-  public List<SkillName> GetOtherSkillsBySkill(SkillName name)
-  {
-    List<SkillName> _skill_a = GetSkillsByTheme(Skills[name].Type_A);
-    List<SkillName> _skill_b = GetSkillsByTheme(Skills[name].Type_B);
-    List<SkillName> _temp = new List<SkillName>();
-    foreach(var _name in _skill_a)if(!_temp.Contains(_name))_temp.Add(_name);
-    foreach (var _name in _skill_b) if (!_temp.Contains(_name)) _temp.Add(_name);
-
-    return _temp;
-  }//해당 기술의 테마에 속하는 다른 기술들 (3개) 반환
 
   public Tendency Tendency_Body = null;//(-)이성-육체(+)
   public Tendency Tendency_Head = null;//(-)정신-물질(+)
   public string GetTendencyEffectString_long(TendencyType _type)
   {
-    string _tendencydescription = "";
-    TextData _conver, _force, _wild, _intel = null;
-    TextData _sanity, _gold = null;
+    string _conver, _force, _wild, _intel = null;
+    string _result = "";
     switch (_type)
     {
       case TendencyType.Body:
+        string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
+        string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, true);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, true);
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, false, false);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, false, false);
-            _tendencydescription = $"{_conver.Name} {_intel.Name}\n\n{_force.Name} {_wild.Name}";
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation,1);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 1);
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 1);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 1);
+            _result = string.Format("{0}, {1}\n{2}, {3}",
+              string.Format(_uptext,_conver,ConstValues.ConversationByTendency_m2),
+              string.Format(_uptext,_intel,ConstValues.IntelligenceByTendency_m2),
+              string.Format(_downtext,_force,ConstValues.ForceByTendency_m2),
+              string.Format(_downtext,_wild,ConstValues.WildByTendency_m2));
             break;
           case -1:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, false);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, false);
-            _tendencydescription = $"{_conver.Name} {_intel.Name}";
-            break;
-          case 0:
-            _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 1);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 1);
+            _result = string.Format("{0}, {1}",
+              string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m1),
+              string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m1));
             break;
           case 1:
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, false);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, false);
-            _tendencydescription = $"{_force.Name} {_wild.Name}";
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 1);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 1);
+            _result = string.Format("{0}, {1}",
+              string.Format(_uptext, _force, ConstValues.ForceByTendency_p1),
+              string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
             break;
           case 2:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, false, false);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, false, false);
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, true);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, true);
-            _tendencydescription = $"{_force.Name} {_wild.Name}\n\n{_conver.Name} {_intel.Name}";
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation,1);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence,1);
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 1);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 1);
+            _result = string.Format("{0}, {1}\n{2}, {3}",
+              string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
+              string.Format(_uptext, _wild, ConstValues.WildByTendency_p2),
+              string.Format(_downtext, _conver, ConstValues.ConversationByTendency_p2),
+              string.Format(_downtext, _intel, ConstValues.IntelligenceByTendency_p2));
             break;
         }
         break;
@@ -533,67 +356,71 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, true);
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, true, false, false);
-            _tendencydescription = $"{_gold.Name}\n\n{_sanity.Name}";
+            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 12) + "," +
+              String.Format(GameManager.Instance.GetTextData("DISCOMFORTUP_TEXT"), ConstValues.DiscomfortByTendency_m2 * 100) + "\n" +
+              GameManager.Instance.GetTextData(StatusType.Gold, 15);
             break;
           case -1:
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, false);
-            _tendencydescription = _gold.Name;
-            break;
-          case 0:
-            _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
+            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 12);
             break;
           case 1:
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, false);
-            _tendencydescription = _sanity.Name;
+            _result = GameManager.Instance.GetTextData(StatusType.Gold, 12);
             break;
           case 2:
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, true);
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, true, false, false);
-            _tendencydescription = $"{_sanity.Name}\n\n{_gold.Name}";
+            _result = GameManager.Instance.GetTextData(StatusType.Gold, 12) + ", " + GameManager.Instance.GetTextData(StatusType.HP, 12) + "\n" +
+              GameManager.Instance.GetTextData(StatusType.Sanity, 15);
             break;
         }
         break;
     }
-    return _tendencydescription;
+    return _result;
   }
   public string GetTendencyEffectString_short(TendencyType _type)
   {
-    string _tendencydescription = "";
-    TextData _conver, _force, _wild, _intel = null;
-    TextData _sanity, _gold = null;
+    string _conver, _force, _wild, _intel = null;
+    string _result = "";
     switch (_type)
     {
       case TendencyType.Body:
+        string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
+        string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, false, false);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, false, false);
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, true);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, true);
-            _tendencydescription = $"{_force.Icon} {_wild.Icon}\n\n{_conver.Icon} {_intel.Icon}";
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 2);
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
+            _result = string.Format("{0} {1} {2} {3}",
+              string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m2),
+              string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m2),
+              string.Format(_downtext, _force, ConstValues.ForceByTendency_m2),
+              string.Format(_downtext, _wild, ConstValues.WildByTendency_m2));
             break;
           case -1:
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, true, false);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, true, false);
-            _tendencydescription = $"{_force.Icon} {_wild.Icon}";
-            break;
-          case 0:
-            _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 2);
+            _result = string.Format("{0} {1}",
+              string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m1),
+              string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m1));
             break;
           case 1:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, false);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, false);
-            _tendencydescription = $"{_conver.Icon} {_intel.Icon}";
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
+            _result = string.Format("{0} {1}",
+              string.Format(_uptext, _force, ConstValues.ForceByTendency_p1),
+              string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
             break;
           case 2:
-            _conver = GameManager.Instance.GetTextData(ThemeType.Conversation, true, true);
-            _intel = GameManager.Instance.GetTextData(ThemeType.Intelligence, true, true);
-            _force = GameManager.Instance.GetTextData(ThemeType.Force, false, false);
-            _wild = GameManager.Instance.GetTextData(ThemeType.Wild, false, false);
-            _tendencydescription = $"{_conver.Icon} {_intel.Icon}\n\n{_force.Icon} {_wild.Icon}";
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 2);
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
+            _result = string.Format("{0} {1} {2} {3}",
+              string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
+              string.Format(_uptext, _wild, ConstValues.WildByTendency_p2),
+              string.Format(_downtext, _conver, ConstValues.ConversationByTendency_p2),
+              string.Format(_downtext, _intel, ConstValues.IntelligenceByTendency_p2));
             break;
         }
         break;
@@ -601,30 +428,24 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, true);
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, true, false, false);
-            _tendencydescription = $"{_sanity.Icon}\n\n{_gold.Icon}";
+            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 13) +" " +
+              String.Format(GameManager.Instance.GetTextData("DISCOMFORTUP_ICON"), ConstValues.DiscomfortByTendency_m2 * 100) + " " +
+              GameManager.Instance.GetTextData(StatusType.Gold, 16);
             break;
           case -1:
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, false, false, false);
-            _tendencydescription = _sanity.Icon;
-            break;
-          case 0:
-            _tendencydescription = GameManager.Instance.GetTextData("noeffect").Name;
+            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 13);
             break;
           case 1:
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, false);
-            _tendencydescription = _gold.Icon;
+            _result = GameManager.Instance.GetTextData(StatusType.Gold, 13);
             break;
           case 2:
-            _gold = GameManager.Instance.GetTextData(StatusType.Gold, false, false, true);
-            _sanity = GameManager.Instance.GetTextData(StatusType.Sanity, true, false, false);
-            _tendencydescription = $"{_gold.Icon}\n\n{_sanity.Icon}";
+            _result = GameManager.Instance.GetTextData(StatusType.Gold, 13) + " " + GameManager.Instance.GetTextData(StatusType.HP, 12) + " " +
+              GameManager.Instance.GetTextData(StatusType.Sanity, 16);
             break;
         }
         break;
     }
-    return _tendencydescription;
+    return _result;
   }
   public int GetTendencyLevel(TendencyType _type)
   {
@@ -769,7 +590,7 @@ public class GameData    //게임 진행도 데이터
   public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
   public List<PlaceType> VisitedPlaces = new List<PlaceType>();     //현재 정착지에서 사용한 장소 목록
     public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
-    public ThemeType PlaceEffectTheme = ThemeType.Conversation;     //도서관 방문으로 증가한 테마
+    public SkillType LibraryEffectTarget = SkillType.Conversation;     //도서관 방문으로 증가한 테마
   public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
   {
     switch (placetype)
@@ -792,7 +613,7 @@ public class GameData    //게임 진행도 데이터
       case PlaceType.Library:
         if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
         else PlaceEffects.Add(placetype, 3);
-        PlaceEffectTheme = CurrentSettlement.LibraryType;
+        LibraryEffectTarget = CurrentSettlement.LibraryType;
 
         break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(3턴지속)
 
@@ -855,22 +676,16 @@ public class GameData    //게임 진행도 데이터
 
     return _count;
   }//현재 경험들 중에서 해당 효과 가진 경험 개수 반환
-  public int GetEffectModifyCount_Exp(SkillName _skill)
+  public int GetEffectModifyCount_Exp(SkillType _skill)
   {
     int _count = 0;     //반환 값
-    EffectType _targeteffect = EffectType.Logic;
+    EffectType _targeteffect = EffectType.Conversation;
     switch (_skill)
     {
-      case SkillName.Biology: _targeteffect = EffectType.Biology; break;
-      case SkillName.Bow: _targeteffect = EffectType.Bow; break;
-      case SkillName.Deception: _targeteffect = EffectType.Deception; break;
-      case SkillName.Knowledge: _targeteffect = EffectType.Knowledge; break;
-      case SkillName.Kombat: _targeteffect = EffectType.Kombat; break;
-      case SkillName.Logic: _targeteffect = EffectType.Logic; break;
-      case SkillName.Somatology: _targeteffect = EffectType.Somatology; break;
-      case SkillName.Speech: _targeteffect = EffectType.Speech; break;
-      case SkillName.Survivable: _targeteffect = EffectType.Survivable; break;
-      case SkillName.Threat: _targeteffect = EffectType.Threat; break;
+      case SkillType.Conversation: _targeteffect = EffectType.Conversation; break;
+      case SkillType.Force: _targeteffect = EffectType.Force; break;
+      case SkillType.Wild: _targeteffect = EffectType.Wild; break;
+      case SkillType.Intelligence: _targeteffect = EffectType.Intelligence; break;
       default: Debug.Log("뎃?"); break;
     }
       if (LongTermEXP != null && LongTermEXP.Effects.Contains(_targeteffect)) _count++;
@@ -881,6 +696,11 @@ public class GameData    //게임 진행도 데이터
     return _count;
 
   }//현재 경험들 중에서 해당 기술의 값 합 반환
+  /// <summary>
+  /// true: 소수, false: 정수
+  /// </summary>
+  /// <param name="_formultiply"></param>
+  /// <returns></returns>
   public float GetHPGenModify(bool _formultiply)
   {
     float _plusamount = 0;
@@ -888,13 +708,17 @@ public class GameData    //게임 진행도 데이터
     int _count = GetEffectModifyCount_Exp(EffectType.HPGen);
 
     for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.HPGen_Exp;
-
-    if (Tendency_Head.Level.Equals(1)) _plusamount += (100.0f - _plusamount) * ConstValues.HPGenByTendency_p1;
-    else if (Tendency_Head.Level.Equals(2)) _plusamount += (100.0f - _plusamount) * ConstValues.HPGenByTendency_p2;
+    
+    if (Tendency_Head.Level.Equals(2)) _plusamount += (100.0f - _plusamount) * ConstValues.HPGenByTendency_p2;
 
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) /100.0f;
   }// 체력 회복 변화량(경험,성향)
+  /// <summary>
+  /// true: 소수, false: 정수
+  /// </summary>
+  /// <param name="_formultiply"></param>
+  /// <returns></returns>
   public float GetHPLossModify(bool _formultiply)
   {
     float _minusamount = 0;
@@ -903,11 +727,14 @@ public class GameData    //게임 진행도 데이터
 
     for (int i = 0; i < _count; i++) _minusamount += (100.0f- _minusamount) * ConstValues.HPLoss_Exp;
 
-    if (Tendency_Head.Level.Equals(-2)) _minusamount += (100.0f - _minusamount) * ConstValues.HPLossByTendency_m2;
-
     if (!_formultiply) return _minusamount;
     else return (100.0f+ _minusamount) / 100.0f;
   }// 체력 감소 변화량(경험,성향)
+  /// <summary>
+  /// true: 소수, false: 정수
+  /// </summary>
+  /// <param name="_formultiply"></param>
+  /// <returns></returns>
   public float GetSanityGenModify(bool _formultiply)
   {
     float _plusamount = 0;
@@ -922,6 +749,11 @@ public class GameData    //게임 진행도 데이터
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) / 100.0f;
   }// 정신력 회복 변화량(특성,경험,성향)
+  /// <summary>
+  /// true: 소수, false: 정수
+  /// </summary>
+  /// <param name="_formultiply"></param>
+  /// <returns></returns>
   public float GetSanityLossModify(bool _formultiply)
   {
     float _plusamount = 0;
@@ -935,6 +767,11 @@ public class GameData    //게임 진행도 데이터
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) / 100.0f;
   }// 정신력 소모 변환량(특성,경험,성향)
+  /// <summary>
+  /// true: 소수, false: 정수
+  /// </summary>
+  /// <param name="_formultiply"></param>
+  /// <returns></returns>
   public float GetGoldGenModify(bool _formultiply)
   {
     float _plusamount = 0;
@@ -948,6 +785,11 @@ public class GameData    //게임 진행도 데이터
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) / 100.0f;
   }// 돈 습득 변환량(특성,경험,성향)
+  /// <summary>
+  /// true: 소수, false: 정수
+  /// </summary>
+  /// <param name="_formultiply"></param>
+  /// <returns></returns>
   public float GetGoldPayModify(bool _formultiply)
   {
     float _minusamount = 0;
@@ -966,26 +808,6 @@ public class GameData    //게임 진행도 데이터
     HP = 100;
     CurrentSanity = MaxSanity;
     Gold = ConstValues.StartGold ;
-    Skill _speech = new Skill(ThemeType.Conversation, ThemeType.Conversation,SkillName.Speech);
-    Skill _treat = new Skill(ThemeType.Conversation, ThemeType.Force, SkillName.Threat);
-    Skill _deception = new Skill(ThemeType.Conversation, ThemeType.Wild, SkillName.Deception);
-    Skill _Logic = new Skill(ThemeType.Conversation, ThemeType.Intelligence, SkillName.Logic);
-    Skill _kombat = new Skill(ThemeType.Force, ThemeType.Force, SkillName.Kombat);
-    Skill _bow = new Skill(ThemeType.Force, ThemeType.Wild, SkillName.Bow);
-    Skill _somatology = new Skill(ThemeType.Force, ThemeType.Intelligence, SkillName.Somatology);
-    Skill _survivable = new Skill(ThemeType.Wild, ThemeType.Wild, SkillName.Survivable);
-    Skill _biology = new Skill(ThemeType.Wild, ThemeType.Intelligence, SkillName.Biology);
-    Skill _knowledge = new Skill(ThemeType.Intelligence, ThemeType.Intelligence, SkillName.Knowledge);
-    Skills.Add(SkillName.Speech, _speech);
-    Skills.Add(SkillName.Threat, _treat);
-    Skills.Add(SkillName.Deception, _deception);
-    Skills.Add(SkillName.Logic, _Logic);
-    Skills.Add(SkillName.Kombat, _kombat);
-    Skills.Add(SkillName.Bow, _bow);
-    Skills.Add(SkillName.Knowledge, _knowledge);
-    Skills.Add(SkillName.Somatology, _somatology);
-    Skills.Add(SkillName.Biology, _biology);
-    Skills.Add(SkillName.Survivable, _survivable);
     Tendency_Body = new Tendency(TendencyType.Body);
     Tendency_Head = new Tendency(TendencyType.Head);
   }
@@ -998,85 +820,55 @@ public class GameData    //게임 진행도 데이터
     CurrentEvent = null;
   }
 }
-public enum ThemeType { Conversation, Force, Wild, Intelligence }
-public enum SkillName { Speech,Threat,Deception,Logic,Kombat,Bow,Somatology,Survivable,Biology,Knowledge}
+public enum SkillType { Conversation, Force, Wild, Intelligence }
 public class Skill
 {
-  public SkillName SkillType = SkillName.Speech;
-  public ThemeType Type_A, Type_B;
-    public int LevelByOwn = 0;  //오리지널 레벨 값
+  public SkillType MySkillType;
+  public int LevelByDefault = 0;//성장 레벨
+  public int Level
+  {
+    get
+    {
+      return LevelByDefault + LevelByExp + LevelByTendency+ LevelByPlace;
+    }
+  }
   public int LevelByExp
   {
-    get { return GameManager.Instance.MyGameData.GetEffectModifyCount_Exp(SkillType); }
-  }//경험으로 인한 값
-  public int LevelByPlace
-  {
-    get {
-      if (GameManager.Instance.MyGameData.PlaceEffects.Keys.Contains(PlaceType.Library) &&
-        GameManager.Instance.MyGameData.PlaceEffects[PlaceType.Library] > 0 &&
-          (GameManager.Instance.MyGameData.PlaceEffectTheme == Type_A || GameManager.Instance.MyGameData.PlaceEffectTheme == Type_B))
-      {
-        Debug.Log(GameManager.Instance.MyGameData.PlaceEffects.Count);
-        foreach(var _data in GameManager.Instance.MyGameData.PlaceEffects)
-        {
-          Debug.Log($"{_data.Key} {_data.Value} {GameManager.Instance.MyGameData.PlaceEffectTheme}");
-        }
-        return 1;
-
-      }
-      else return 0;
+    get
+    {
+      return GameManager.Instance.MyGameData.GetEffectModifyCount_Exp(MySkillType);
     }
-  }//장소로 인한 값
+  }//경험 레벨
   public int LevelByTendency
   {
     get
     {
-      int _level = 0;
-      switch (SkillType)
+      int _tendencylevel = GameManager.Instance.MyGameData.Tendency_Body.Level;
+
+      if (MySkillType== SkillType.Conversation || MySkillType == SkillType.Intelligence)
       {
-        case SkillName.Speech:
-          if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(-2)) _level = ConstValues.SpeechByTendency_m2;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(-1)) _level = ConstValues.SpeechByTendency_m1;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(2)) _level = ConstValues.SpeechByTendency_p2;
-          break;
-        case SkillName.Kombat:
-          if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(2)) _level = ConstValues.KombatByTendency_p2;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(1)) _level = ConstValues.KombatByTendency_p1;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(-2)) _level = ConstValues.KombatByTendency_m2;
-          break;
-        case SkillName.Survivable:
-          if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(2)) _level = ConstValues.SurviveByTendency_p2;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(1)) _level = ConstValues.SurviveByTendency_p1;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(-2)) _level = ConstValues.SurvieByTendency_m2;
-          break;
-        case SkillName.Knowledge:
-          if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(-2)) _level = ConstValues.KnowledgeByTendency_m2;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(-1)) _level = ConstValues.KnowledgeByTendency_m1;
-          else if (GameManager.Instance.MyGameData.Tendency_Body.Level.Equals(2)) _level = ConstValues.KnowledgeByTendency_p2;
-          break;
+        if (_tendencylevel.Equals(-2)) return ConstValues.ConversationByTendency_m2;
+        else if (_tendencylevel.Equals(-1)) return ConstValues.ConversationByTendency_m1;
+        else if (_tendencylevel.Equals(2)) return ConstValues.ConversationByTendency_p2;
       }
-      return _level;
+      else
+      {
+        if (_tendencylevel.Equals(2)) return ConstValues.ForceByTendency_p2;
+        else if (_tendencylevel.Equals(1)) return ConstValues.ForceByTendency_p1;
+        else if (_tendencylevel.Equals(-2)) return ConstValues.ForceByTendency_m2;
+      }
+      return 0;
     }
-  }//성향으로 증가한 값
-  public int LevelByTheme
-  {
-    get { return GameManager.Instance.MyGameData.GetSkillLevelByTheme(SkillType); }
-  }//테마에 속한 다른 기술들로 인한 값(스킬 체크에만 사용됨)
-  public int LevelForPreviewOrTheme
+  }//성향 레벨
+  private int LevelByPlace
   {
     get
     {
-      int level = LevelByOwn + LevelByExp+LevelByPlace;
-      return level<0?0:level;
+      if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Library) && GameManager.Instance.MyGameData.LibraryEffectTarget == MySkillType)
+        return ConstValues.PlaceEffect_Library;
+      return 0;
     }
   }
-  public int LevelForSkillCheck
-  {
-    get {
-      int _level = LevelByOwn + LevelByExp + LevelByPlace + LevelByTheme;
-      return _level<0?0:_level; }
-  }
-  public Skill(ThemeType _a, ThemeType _b,SkillName name) { Type_A = _a;Type_B= _b;SkillType = name; }
 }
 public enum TendencyType {None, Body,Head}
 public class Tendency
@@ -1120,34 +912,33 @@ public class Tendency
     }
     return _spr;
   }
-  public TextData MyTextData
-  {
-    get
-    {
-      return GameManager.Instance.GetTextData(Type, Level);
-    }
-  }
   public string Name
   {
     get
     {
-     return MyTextData.Name;
+      return GameManager.Instance.GetTextData(Type, level, 0);
     }
   }
   public string Icon
   {
     get
     {
-      return MyTextData.Icon;
+      return GameManager.Instance.GetTextData(Type, level, 1);
     }
   }
   public string Description
   {
-    get { return MyTextData.Description; }
+    get
+    {
+      return GameManager.Instance.GetTextData(Type, level, 1);
+    }
   }
   public string SubDescription
   {
-    get { return MyTextData.SelectionSubDescription; }
+    get
+    {
+      return GameManager.Instance.GetTextData(Type, level,2);
+    }
   }
   public int count = 0;
   public int MaxTendencyLevel { get { return ConstValues.MaxTendencyLevel; } }

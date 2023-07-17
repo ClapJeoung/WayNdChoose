@@ -41,10 +41,8 @@ public class UI_Tendency : UI_default
     TouchBlock.enabled = true;
     Tendency _tendency = GetTendencyByType(_tendencytype);
 
-    TextData _textdata = _tendency.MyTextData;
-
-    string _tendencyname = _textdata.Name;
-    string _description = _textdata.Description;
+    string _tendencyname = _tendency.Name;
+    string _description = _tendency.Description;
     string _effect = GameManager.Instance.MyGameData.GetTendencyEffectString_long(_tendencytype);
 
     Illust.sprite = _tendency.Illust;

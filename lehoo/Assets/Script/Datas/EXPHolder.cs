@@ -3,23 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EffectType {
-    Speech, Threat, Deception, Logic, Kombat, Bow, Somatology, Survivable, Biology, Knowledge,
+    Conversation,Force,Wild,Intelligence,
   HPGen, HPLoss,
   SanityGen, SanityLoss,
   GoldGen, GoldLoss }
 public enum ExpTypeEnum{ Normal,Bad,Mad}
 public class Experience
 {
-  private TextData textdata = null;
-  public TextData TextData
-  {
-    get { if (textdata == null) textdata = GameManager.Instance.GetTextData(ID); return textdata; }
-  }
   public string ID = "";
-  public string Name { get { return TextData.Name; } }
+  public string Name { get { return GameManager.Instance.GetTextData(ID+"_NAME"); } }
   public ExpTypeEnum ExpType = ExpTypeEnum.Normal; 
-  public string Description { get { return TextData.Description; } }
-  public string SubDescription { get { return TextData.SelectionSubDescription; } }
+  public string Description { get { return GameManager.Instance.GetTextData(ID + "_DESCRIPTION"); } }
+  public string SubDescription { get { return GameManager.Instance.GetTextData(ID + "_SUBDESCRIPTION"); } }
     public List<EffectType> Effects=new List<EffectType>();
   private int _duration = 0;
   public int Duration
@@ -42,35 +37,34 @@ public class Experience
       foreach (var _data in Effects)
       {
         if (!_str.Equals("")) _str += "\n";
-        TextData _textdata = GameManager.Instance.GetTextData(_data);
         string _temp = "";
         switch (_data)
         {
-          case EffectType.Speech:
-          case EffectType.Threat:
-          case EffectType.Deception:
-          case EffectType.Logic:
-          case EffectType.Kombat:
-          case EffectType.Bow:
-          case EffectType.Somatology:
-          case EffectType.Survivable:
-          case EffectType.Biology:
-          case EffectType.Knowledge:
-            _temp = $"{_textdata.Icon} {_textdata.Name} + 1";
+          case EffectType.Conversation:
+            _temp = $"{GameManager.Instance.GetTextData(SkillType.Conversation, 1)} + 1";
+            break;
+          case EffectType.Force:
+            _temp = $"{GameManager.Instance.GetTextData(SkillType.Force, 1)} + 1";
+            break;
+          case EffectType.Wild:
+            _temp = $"{GameManager.Instance.GetTextData(SkillType.Wild, 1)} + 1";
+            break;
+          case EffectType.Intelligence:
+            _temp = $"{GameManager.Instance.GetTextData(SkillType.Intelligence,1)} + 1";
             break;
 
           case EffectType.HPLoss:
-            _temp = $"{_textdata.Name}"; break;
+            _temp = GameManager.Instance.GetTextData(StatusType.HP, 15); break;
           case EffectType.SanityLoss:
-            _temp = $"{_textdata.Name}"; break;
+            _temp = GameManager.Instance.GetTextData(StatusType.Sanity, 15); break;
           case EffectType.GoldLoss:
-            _temp = $"{_textdata.Name}"; break;
+            _temp = GameManager.Instance.GetTextData(StatusType.Gold, 15); break;
           case EffectType.HPGen:
-            _temp = $"{_textdata.Name}"; break;
+            _temp = GameManager.Instance.GetTextData(StatusType.HP, 12); break;
           case EffectType.SanityGen:
-            _temp = $"{_textdata.Name}"; break;
+            _temp = GameManager.Instance.GetTextData(StatusType.Sanity, 12); break;
           case EffectType.GoldGen:
-            _temp = $"{_textdata.Name}"; break;
+            _temp = GameManager.Instance.GetTextData(StatusType.Gold, 12); break;
         }
         _str += _temp;
       }
@@ -85,8 +79,7 @@ public class Experience
       string _str = "";
       foreach (var _data in Effects)
       {
-        TextData _textdata = GameManager.Instance.GetTextData(_data);
-        _str += _textdata.Icon+" ";
+        _str += GameManager.Instance.GetTextData(_data,true)+" ";
       }
 
       return _str;
@@ -99,7 +92,6 @@ public class Experience
     _exp.ExpType = ExpType;
     _exp.Effects=Effects;
     _exp.Duration=Duration;
-    _exp.textdata=textdata;
     return _exp;
   }
 }
@@ -112,7 +104,6 @@ public class ExperienceJsonData
   {
     Experience _exp = new Experience();
     _exp.ID = ID;
-    TextData _textdata = GameManager.Instance.GetTextData(ID);
     _exp.ExpType = (ExpTypeEnum)GoodOrBad;
     string[] _temp = Type.Split("@");
     EffectType[] _type = new EffectType[_temp.Length];

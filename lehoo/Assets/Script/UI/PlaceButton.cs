@@ -19,7 +19,7 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
   public bool Clicked = false;
   private void Start()
   {
-    MyPlaceName.text = GameManager.Instance.GetTextData(MyPlaceType).Name;
+    MyPlaceName.text = GameManager.Instance.GetTextData(MyPlaceType,0);
   }
   public void OnPointerEnter(PointerEventData eventdata)
   {

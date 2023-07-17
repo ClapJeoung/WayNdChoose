@@ -13,13 +13,19 @@ public class ImageHolder : ScriptableObject
   public Sprite UnknownTheme = null;
   public Sprite UnknownExp = null;
   [Space(10)]
-  public Sprite ThemeIllust_Conversation = null;
-  public Sprite ThemeIllust_Force = null, ThemeIllust_Wild = null, ThemeIllust_Intelligence = null;
+  public Sprite SkillIllust_Conversation = null;
+  public Sprite SkillIllust_Force = null, SkillIllust_Wild = null, SkillIllust_Intelligence = null;
   [Space(10)]
   public Sprite[] TendencyIcon_Body = new Sprite[5];
   public Sprite[] TendencyIllust_Body=new Sprite[5];
   public Sprite[] TendencyIcon_Head=new Sprite[5];
   public Sprite[] TendencyIllust_Head = new Sprite[5];
+  public Sprite StatusIcon(StatusType status)
+  {
+    if (status == StatusType.HP) return HPIcon;
+    else if (status == StatusType.Sanity) return SanityIcon;
+    else return GoldIcon;
+  }
   public Sprite GetTendencyIcon(TendencyType type,int level)
   {
     if(type.Equals(TendencyType.Body))return TendencyIcon_Body[level+2];
@@ -187,43 +193,27 @@ public class ImageHolder : ScriptableObject
       default:return SelectionBackground_none;
     }
   }
-  public Sprite GetThemeIcon(ThemeType _type)
+  public Sprite GetSkillIcon(SkillType _type)
   {
     switch (_type)
     {
-      case ThemeType.Conversation:return ThemeIcon_Conversation;
-      case ThemeType.Force:return ThemeIcon_Force;
-        case ThemeType.Wild:return ThemeIcon_Wild;
+      case SkillType.Conversation:return ThemeIcon_Conversation;
+      case SkillType.Force:return ThemeIcon_Force;
+        case SkillType.Wild:return ThemeIcon_Wild;
       default:return ThemeIcon_Intelligence;
     }
   }
-  public Sprite GetThemeIllust(ThemeType _type)
+  public Sprite GetSkillIllust(SkillType _type)
   {
     switch (_type)
     {
-      case ThemeType.Conversation: return ThemeIllust_Conversation;
-      case ThemeType.Force: return ThemeIllust_Force;
-      case ThemeType.Wild: return ThemeIllust_Wild;
-      default: return ThemeIllust_Intelligence;
+      case SkillType.Conversation: return SkillIllust_Conversation;
+      case SkillType.Force: return SkillIllust_Force;
+      case SkillType.Wild: return SkillIllust_Wild;
+      default: return SkillIllust_Intelligence;
     }
   }
 
-  public void GetSkillIcons(SkillName _skill,ref Sprite[] _sprites)
-  {
-    switch (_skill)
-    {
-      case SkillName.Speech: _sprites[0] = ThemeIcon_Conversation;_sprites[1] = ThemeIcon_Conversation;break;
-      case SkillName.Threat: _sprites[0] = ThemeIcon_Conversation; _sprites[1] = ThemeIcon_Force; break;
-      case SkillName.Deception : _sprites[0] = ThemeIcon_Conversation; _sprites[1] = ThemeIcon_Wild; break;
-      case SkillName.Logic : _sprites[0] = ThemeIcon_Conversation; _sprites[1] = ThemeIcon_Intelligence; break;
-      case SkillName.Kombat : _sprites[0] = ThemeIcon_Force; _sprites[1] = ThemeIcon_Force; break;
-      case SkillName.Bow : _sprites[0] = ThemeIcon_Force; _sprites[1] = ThemeIcon_Wild; break;
-      case SkillName.Somatology: _sprites[0] = ThemeIcon_Force; _sprites[1] = ThemeIcon_Intelligence; break;
-      case SkillName.Survivable : _sprites[0] = ThemeIcon_Wild; _sprites[1] = ThemeIcon_Wild; break;
-      case SkillName.Biology : _sprites[0] = ThemeIcon_Wild; _sprites[1] = ThemeIcon_Intelligence; break;
-      case SkillName.Knowledge : _sprites[0] = ThemeIcon_Intelligence; _sprites[1] = ThemeIcon_Intelligence; break;
-    }
-  }
     public Sprite GetTownSprite(string _name)
   {
     Sprite _targetsprite = DefaultIllust;
@@ -264,54 +254,68 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//성채 이름에 해당하는 일러스트 가져오기
 
-  public Sprite GetEventStartIllust(string _illustid)
+  private string SeasonText(int season)
   {
-    //계절 적용된 id
+    switch (season)
+    {
+      case 0:return "_SPRING";
+      case 1:return "_SUMMER";
+      case 2: return "_AUTUMN";
+      case 3:return "_WINTER";
+      default:return "";
+    }
+  }
+  /// <summary>
+  /// 0123(사계절) 4(계절X)
+  /// </summary>
+  /// <param name="_illustid"></param>
+  /// <param name="season"></param>
+  /// <returns></returns>
+  public Sprite GetEventStartIllust(string _illustid,int season)
+  {
+    string _name = _illustid+SeasonText(season);
+
     foreach (Sprite _spr in EventIllust)
     {
-      if (_spr.name.Equals(_illustid))
+      if (string.Compare(_spr.name,_name,true).Equals(0))
       {
         return _spr;
       }
     }
     Debug.Log(_illustid);
       return DefaultIllust;
-  }//ID로 이벤트 일러스트 가져오기(계절별)
-  public Sprite GetEventFailIllusts(string _illustid, string _index)
+  }//이벤트 시작 일러스트
+  /// <summary>
+  /// 0123(사계절) 4(계절X)  -1/0,1
+  /// </summary>
+  /// <param name="illustid"></param>
+  /// <param name="season"></param>
+  /// <param name="index"></param>
+  /// <param name="issuccess"></param>
+  /// <returns></returns>
+  public Sprite GetEventResultIllust(string illustid,int season,int index,bool issuccess)
   {
-    //계절 적용된 id
-    string _temp = _illustid + "_" + _index + "_fail";
+    string _name = illustid;
+    _name += SeasonText(season);
+    _name+=index==-1?"":$"_{index}";
+    _name += issuccess == true ? "_SUCCESS" : "_FAIL";
+
     foreach (Sprite _spr in EventIllust)
     {
-      if (_spr.name.Equals(_temp))
+      if (string.Compare(_spr.name, _name, true).Equals(0))
       {
         return _spr;
       }
     }
+    Debug.Log(illustid);
     return DefaultIllust;
-  }
-  public Sprite GetEventSuccessIllusts(string _illustid, string _index)
-  {
-    //계절 적용된 id
-    string _temp = _illustid + "_" + _index + "_success";
-    foreach (Sprite _spr in EventIllust)
-    {
-      if (_spr.name.Equals(_temp))
-      {
-        return _spr;
-      }
-    }
-
-
-    return DefaultIllust;
-  }
-
+  }//이벤트 성공,실패 일러스트
   public Sprite GetEXPIllust(string _illustid)
   {
     Sprite _targetsprite = DefaultIllust;
     foreach (Sprite _spr in EXPIllust)
     {
-      if (_spr.name.Equals(_illustid))
+      if (string.Compare(_spr.name,_illustid,true)==0)
       {
         _targetsprite = _spr;
         break;

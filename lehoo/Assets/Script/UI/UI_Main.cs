@@ -103,13 +103,13 @@ public class UI_Main : MonoBehaviour
   private float MainUIFadeTime = 0.25f;
   private void Start()
   {
-    if (NewGameText.text == "") NewGameText.text = GameManager.Instance.GetTextData("newgame").Name;
-    if (LoadGameText.text == "") LoadGameText.text = GameManager.Instance.GetTextData("loadgame").Name;
-    if (OptionText.text == "") OptionText.text = GameManager.Instance.GetTextData("option").Name;
-    if (QuitText.text == "") QuitText.text = GameManager.Instance.GetTextData("quit").Name;
-    if (StartNewGameText.text == "") StartNewGameText.text = GameManager.Instance.GetTextData("startgame").Name;
-    if (BackToMainText.text == "") BackToMainText.text = GameManager.Instance.GetTextData("quit").Name;
-    if (HuntingText.text == "") HuntingText.text = GameManager.Instance.GetTextData("quest_findingmonster").Name;
+    if (NewGameText.text == "") NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
+    if (LoadGameText.text == "") LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
+    if (OptionText.text == "") OptionText.text = GameManager.Instance.GetTextData("OPTION");
+    if (QuitText.text == "") QuitText.text = GameManager.Instance.GetTextData("QUIT");
+    if (StartNewGameText.text == "") StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
+    if (BackToMainText.text == "") BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
+    if (HuntingText.text == "") HuntingText.text = "·¹ÈÄ~";
     ShowImage = showimage();
     SetupMain();
   }

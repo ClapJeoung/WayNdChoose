@@ -52,7 +52,7 @@ public class UI_dialogue : UI_default
   
   private void Start()
   {
-    if (KeepMoveText.text.Equals("null")) KeepMoveText.text = GameManager.Instance.GetTextData("keepgoing").Name;
+    if (KeepMoveText.text.Equals("null")) KeepMoveText.text = GameManager.Instance.GetTextData("KEEPGOING");
   }
   private UI_Selection GetUISelection(TendencyType _tendencytype,int index)
   {
@@ -145,7 +145,6 @@ public class UI_dialogue : UI_default
         break;
       case SelectionType.Tendency:
       case SelectionType.Experience:
-      case SelectionType.Skill:
         break;
     }
   }//선택지 선택한 후 다른 선택지들 닫기
@@ -231,7 +230,6 @@ public class UI_dialogue : UI_default
         break;
       case SelectionType.Tendency:
       case SelectionType.Experience:
-      case SelectionType.Skill:
         Selection_None.gameObject.SetActive(true);
         Selection_None.Active(_currentevent.SelectionDatas[0]);
         break;
@@ -513,7 +511,7 @@ public class UI_dialogue : UI_default
               //장소 효과의 도움을 받아 성공한 것이라면 장소 효과 만료
               _issuccess = true;
               GameManager.Instance.MyGameData.Gold = 0;
-              GameManager.Instance.MyGameData.CurrentSanity -= (int)(_elsevalue * 0.75f);
+              GameManager.Instance.MyGameData.CurrentSanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
               UIManager.Instance.UpdateGoldText();
             }//돈이 부족해 성공한 경우
             else
@@ -525,9 +523,9 @@ public class UI_dialogue : UI_default
           }//돈이 부족해 체크를 해야 하는 상황
         }
         break;
-      case SelectionTargetType.Check_Theme: //테마 선택지면 확률 검사
-        _currentvalue = GameManager.Instance.MyGameData.GetThemeLevel(_selectiondata.SelectionCheckTheme);
-        _checkvalue = GameManager.Instance.MyGameData.CheckThemeValue;
+      case SelectionTargetType.Check_Multy: //기술(단수) 선택지면 확률 검사
+        _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level;
+        _checkvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
         _successpercent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
         if (Random.Range(0, 100) < _successpercent + _pluspercent)
         {
@@ -541,9 +539,10 @@ public class UI_dialogue : UI_default
         }
         else _issuccess = false;
         break;
-      case SelectionTargetType.Check_Skill: //기술 선택지면 확률 검사
-        _currentvalue = GameManager.Instance.MyGameData.Skills[_selectiondata.SelectionCheckSkill].LevelForPreviewOrTheme;
-        _checkvalue = GameManager.Instance.MyGameData.CheckSkillValue;
+      case SelectionTargetType.Check_Single: //기술(복수) 선택지면 확률 검사
+        _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level+
+          GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
+        _checkvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
         _successpercent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
         if (Random.Range(0, 100) < _successpercent + _pluspercent)
         {
@@ -556,10 +555,6 @@ public class UI_dialogue : UI_default
           //장소 효과의 도움을 받아 성공한 것이라면 효과 만료
         }
         else _issuccess = false;
-        break;
-      case SelectionTargetType.Skill:
-        GameManager.Instance.MyGameData.MixSkill();
-        _issuccess = true;
         break;
       case SelectionTargetType.Tendency:
         GameManager.Instance.MyGameData.MixTendency();
