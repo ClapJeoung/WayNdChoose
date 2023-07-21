@@ -341,11 +341,6 @@ public class PreviewManager : MonoBehaviour
   public void OpenMapPreview()
   {
     //                                                                                                          퀘스트에 따라 다른 기능 구현 필요(기획 이후)
-    TextData _textdata = GameManager.Instance.GetTextData("movedescription");
-    if (GameManager.Instance.MyGameData.CanMove) MapMovableDescription.text = _textdata.SuccessDescription;
-    else MapMovableDescription.text = _textdata.FailDescription;
-    MapSubDescription.text = _textdata.SelectionSubDescription;
-
     CurrentPreview = MapPreview.GetComponent<RectTransform>();
 
     IEnumerator _cor = null;
@@ -598,7 +593,7 @@ public class PreviewManager : MonoBehaviour
       _skillinfo += string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(_skills[0].MySkillType, 1), _skills[0].Level);
 
 
-      if (SelectionCheckIcons[1].gameObject.activeInHierarchy.Equals(true)) SelectionCheckIcons[1].gameObject.SetActive(false);
+      if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(true)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(false);
     }
     else
     {
@@ -612,6 +607,7 @@ public class PreviewManager : MonoBehaviour
         if (_skillinfo != "") _skillinfo += " ";
         _skillinfo += string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(_skills[i].MySkillType, 1), _skills[i].Level);
       }
+      if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
     }
 
     _requiretext = string.Format(GameManager.Instance.GetTextData("REQUIRELEVEL_TEXT"), _requirelevel);

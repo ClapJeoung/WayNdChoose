@@ -13,9 +13,9 @@ public class EventHolder
   public List<EventData> AllNormalEvents = new List<EventData>();
   public List<FollowEventData> AllFollowEvents = new List<FollowEventData>();
   public List<QuestHolder> AllQuests = new List<QuestHolder>();
-  public EventDataDefulat ReturnEventDataDefault(EventJsonData _data)
+  public T ReturnEventDataDefault<T>(EventJsonData _data) where T : EventDataDefulat ,new()
   {
-    EventDataDefulat Data = new EventDataDefulat();
+    T Data = new T();
 
     Data.ID = _data.ID;
 
@@ -119,54 +119,55 @@ public class EventHolder
       case SelectionType.Body://이성육체
       case SelectionType.Head://정신물질
         Data.SelectionDatas = new SelectionData[2];
+        Data.FailureDatas = new FailureData[2];
+        Data.SuccessDatas = new SuccessData[2];
 
-        for(int i = 0; i < Data.SelectionDatas.Length; i++)
+        for (int i = 0; i < Data.SelectionDatas.Length; i++)
         {
           Data.SelectionDatas[i] = new SelectionData(Data, i);
 
-          Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
+          Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target.Split('@')[i]);
           switch (Data.SelectionDatas[i].ThisSelectionType)
           {
             case SelectionTargetType.None: //무조건
               break;
             case SelectionTargetType.Pay: //지불
-              Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
+              Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info.Split('@')[i]);
               break;
             case SelectionTargetType.Check_Single: //기술(단일)
-              Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info));
+              Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info.Split('@')[i]));
               break;
             case SelectionTargetType.Check_Multy: //기술(복수)
-              string[] _temp = _data.Selection_Info.Split(',');
+              string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
               for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[j]));
               break;
           }
+
           if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
             Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
           {
-            Data.FailureDatas = new FailureData[1];
-            Data.FailureDatas[i] = new FailureData(Data, -1);
-            Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+            Data.FailureDatas[i] = new FailureData(Data, i);
+            Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
             switch (Data.FailureDatas[i].Panelty_target)
             {
               case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
-              case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info; break;
+              case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
+              case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
             }
           }
           else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusType.Gold))
           {
-            Data.FailureDatas = new FailureData[1]; Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
+             Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
           }
-          Data.SuccessDatas = new SuccessData[1];
-          Data.SuccessDatas[i] = new SuccessData(Data, -1);
-          Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
+          Data.SuccessDatas[i] = new SuccessData(Data, i);
+          Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[i]);
           switch (Data.SuccessDatas[i].Reward_Target)
           {
-            case RewardTarget.Experience: Data.SuccessDatas[i].Reward_ID = _data.Reward_Info; break;
+            case RewardTarget.Experience: Data.SuccessDatas[i].Reward_ID = _data.Reward_Info.Split('@')[i]; break;
             case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Skill: Data.SuccessDatas[i].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+            case RewardTarget.Skill: Data.SuccessDatas[i].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
           }
-          Data.SuccessDatas[i].SubReward_target = int.Parse(_data.SubReward);
+          Data.SuccessDatas[i].SubReward_target = int.Parse(_data.SubReward.Split('@')[i]);
 
           Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
           switch (Data.SuccessDatas[i].SubReward_target)
@@ -216,13 +217,13 @@ public class EventHolder
   }
     public void ConvertData_Normal(EventJsonData _data)
   {
-    EventData Data = (EventData)ReturnEventDataDefault(_data);
+    EventData Data = ReturnEventDataDefault<EventData>(_data);
       AllNormalEvents.Add(Data);
   }
 
   public void ConvertData_Follow(FollowEventJsonData _data)
   {
-    FollowEventData Data = (FollowEventData)ReturnEventDataDefault(_data);
+    FollowEventData Data = ReturnEventDataDefault<FollowEventData>(_data);
 
     Data.FollowType = (FollowType)_data.FollowType; //선행 대상 이벤트,경험,특성,테마,기술
     Data.FollowTarget = _data.FollowTarget;         //선행 대상- 이벤트,경험,특성이면 Id   테마면 0,1,2,3  기술이면 0~9
@@ -247,8 +248,8 @@ public class EventHolder
   }
   public void ConvertData_Quest(QuestEventDataJson _data)
   {
-    QuestEventData Data = (QuestEventData)ReturnEventDataDefault(_data);
-    레후~;
+  //  QuestEventData Data = ReturnEventDataDefault<QuestEventData>(_data);
+    
   }//퀘스트 디자인 기획 끝나고 추가해야함
 
   public void SetAllEvents()
@@ -509,7 +510,7 @@ public class EventHolder
   /// </summary>
   /// <param name="tiledata"></param>
   /// <returns></returns>
-  public EventDataDefulat ReturnQuestEvent(TargetTileEventData tiledata)
+  public EventDataDefulat ReturnQuestEvent(TileInfoData tiledata)
   {
     if (!GameManager.Instance.MyGameData.QuestAble) return null;
 
@@ -565,7 +566,7 @@ public class EventHolder
 
   }
 
-  public bool IsFollowEventEnable(TargetTileEventData tiledata,PlaceType place)
+  public bool IsFollowEventEnable(TileInfoData tiledata,PlaceType place)
   {
     List<EventDataDefulat> _follows = new List<EventDataDefulat>();
     List<EventDataDefulat> _temp=new List<EventDataDefulat>();
@@ -650,7 +651,7 @@ public class EventHolder
     }
   }
 }
-public class TargetTileEventData
+public class TileInfoData
 {
   public SettlementType SettlementType; //정착지 타입
   public List<PlaceType> PlaceList = new List<PlaceType>(); //(정착지일 경우) 장소 타입과 장소 레벨
@@ -661,7 +662,7 @@ public class TargetTileEventData
 public enum FollowType { Event,EXP,Skill}
 public enum SettlementType { Town,City,Castle,Outer,None}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Academy,NULL}
-public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea}
+public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea,Beach,Land}
 public enum SelectionType { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
@@ -860,7 +861,8 @@ public class SuccessData
 }
 
 public class EventData:EventDataDefulat
-{}//기본 이벤트
+{
+}//기본 이벤트
 public class FollowEventData:EventDataDefulat
 {
   public FollowType FollowType = 0;

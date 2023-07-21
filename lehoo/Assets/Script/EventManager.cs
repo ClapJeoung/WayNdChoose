@@ -23,7 +23,7 @@ public class EventManager : MonoBehaviour
     MyEventHolder = GameManager.Instance.EventHolder;
     MyEXP = GameManager.Instance.ExpDic;
   }
-  public void SetSettleEvent(TargetTileEventData _settledata)
+  public void SetSettleEvent(TileInfoData _settledata)
   {
     if (GameManager.Instance.MyGameData.CurrentQuest != null)
     {
@@ -39,14 +39,14 @@ public class EventManager : MonoBehaviour
   }//외부 -> 정착지 도착
   public void SetSettleEvent(PlaceType place)
     {
-        TargetTileEventData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileData;
+    TileInfoData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileData;
    // Debug.Log($"{_tiledta.SettlementType} {place} {_tiledta.PlaceData[place]} {_tiledta.EnvironmentType}");
         EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.SettlementType, place, _tiledta.EnvironmentType);
         GameManager.Instance.SelectEvent( _event );
         GameManager.Instance.MyGameData.AddPlaceEffectBeforeStartEvent(place);
 
     }//정착지에서 장소를 선택
-    public void SetOutsideEvent(TargetTileEventData _tiledata)
+    public void SetOutsideEvent(TileInfoData _tiledata)
   {
         EventDataDefulat _event = null;
         if (GameManager.Instance.MyGameData.CurrentQuest != null) _event = MyEventHolder.ReturnQuestEvent(_tiledata);

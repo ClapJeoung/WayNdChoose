@@ -169,10 +169,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: aeac7940506a92d4886862aa495f244c, type: 3}
   UnknownTheme: {fileID: 21300000, guid: 5c1c0da6fe396cf488b35376520d65a3, type: 3}
   UnknownExp: {fileID: 21300000, guid: 02f2870a622fd024fbc88dc4752be781, type: 3}
-  ThemeIllust_Conversation: {fileID: 21300000, guid: 16d47ffe49052184faaa7e7e94904eca, type: 3}
-  ThemeIllust_Force: {fileID: 21300000, guid: 903ee6b4757198440a9d6b2890df78ce, type: 3}
-  ThemeIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
-  ThemeIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
+  SkillIllust_Conversation: {fileID: 21300000, guid: 16d47ffe49052184faaa7e7e94904eca, type: 3}
+  SkillIllust_Force: {fileID: 21300000, guid: 903ee6b4757198440a9d6b2890df78ce, type: 3}
+  SkillIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
+  SkillIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
   TendencyIcon_Body:
   - {fileID: 21300000, guid: 90f890b6ce10f18439b9468b01da9346, type: 3}
   - {fileID: 21300000, guid: 36d3dd0062294bf49acf7c8f48eafafe, type: 3}
@@ -650,10 +650,10 @@ MonoBehaviour:
   Arrow_Active_mental: {fileID: 21300000, guid: 6c779bf83d2052145a54db3541faad02, type: 3}
   Arrow_Active_material: {fileID: 21300000, guid: 50996e3cd6a9de448b03012ae010f376, type: 3}
   SelectionBackground_none: {fileID: 21300000, guid: 57a5c29b2f416674796854c96c001025, type: 3}
-  SelectionBackground_rational: {fileID: 21300000, guid: c5edb195c0f41164dacb79259406836e, type: 3}
-  SelectionBackground_physical: {fileID: 21300000, guid: 1a379d669eae2d5459a8f2f1a889f9e2, type: 3}
-  SelectionBackground_mental: {fileID: 21300000, guid: 87afc43fbea7f6e4ca6d5a863cc176c9, type: 3}
-  SelectionBackground_material: {fileID: 21300000, guid: 70a5ec174de25194ead7b676c7cdeb0d, type: 3}
+  SelectionBackground_rational: {fileID: 21300000, guid: f2602b3b528d174469e001f7aadb9d24, type: 3}
+  SelectionBackground_physical: {fileID: 21300000, guid: da78041cf78703346b564ebf9da0ceb7, type: 3}
+  SelectionBackground_mental: {fileID: 21300000, guid: 2a311d3dc1c77ea4288f7cae8c20b235, type: 3}
+  SelectionBackground_material: {fileID: 21300000, guid: 109ae6cfc44dda34088959fa59c47d2b, type: 3}
   NullEnvirIllust:
   - {fileID: 21300000, guid: ebc258cf7623c4f45b6cb2bdab039564, type: 3}
   - {fileID: 21300000, guid: 27aabe31a6cf0f74b932df66a3fdb954, type: 3}

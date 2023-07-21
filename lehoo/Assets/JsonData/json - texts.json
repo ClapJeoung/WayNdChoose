@@ -1,0 +1,1437 @@
+{
+  "0": {
+    "ID": "SPRING_NAME",
+    "TEXT": "봄",
+    "ETC": ""
+  },
+  "1": {
+    "ID": "SPRING_DESCRIPTION",
+    "TEXT": "냉기가 사라지고 생명이 싹트는 계절입니다.",
+    "ETC": ""
+  },
+  "2": {
+    "ID": "SUMMER_NAME",
+    "TEXT": "여름",
+    "ETC": ""
+  },
+  "3": {
+    "ID": "SUMMER_DESCRIPTION",
+    "TEXT": "열기와 성장의 계절입니다.",
+    "ETC": ""
+  },
+  "4": {
+    "ID": "AUTUMN_NAME",
+    "TEXT": "가을",
+    "ETC": ""
+  },
+  "5": {
+    "ID": "AUTUMN_DESCRIPTION",
+    "TEXT": "풍족한 수확의 계절입니다.",
+    "ETC": ""
+  },
+  "6": {
+    "ID": "WINTER_NAME",
+    "TEXT": "겨울",
+    "ETC": ""
+  },
+  "7": {
+    "ID": "WINTER_DESCRIPTION",
+    "TEXT": "차갑고 고요한 계절입니다.",
+    "ETC": ""
+  },
+  "8": {
+    "ID": "NEWGAME",
+    "TEXT": "새 게임",
+    "ETC": ""
+  },
+  "9": {
+    "ID": "OPTION",
+    "TEXT": "옵션",
+    "ETC": ""
+  },
+  "10": {
+    "ID": "LOADGAME",
+    "TEXT": "불러오기",
+    "ETC": ""
+  },
+  "11": {
+    "ID": "QUIT",
+    "TEXT": "나가기",
+    "ETC": ""
+  },
+  "12": {
+    "ID": "CLOSE",
+    "TEXT": "닫기",
+    "ETC": ""
+  },
+  "13": {
+    "ID": "STARTGAME",
+    "TEXT": "게임 시",
+    "ETC": ""
+  },
+  "14": {
+    "ID": "TURN_DESCRIPTION",
+    "TEXT": "지도를 이동하거나 정착지에서 행동을 취할 때 마다 다음 계절로 넘어갑니다.",
+    "ETC": ""
+  },
+  "15": {
+    "ID": "CANMOVE",
+    "TEXT": "이동할 수 있는 상태입니다.",
+    "ETC": ""
+  },
+  "16": {
+    "ID": "CANNOTMOVE",
+    "TEXT": "이벤트를 완료하기 전 까지 이동할 수 없습니다.",
+    "ETC": ""
+  },
+  "17": {
+    "ID": "MOVE",
+    "TEXT": "이동",
+    "ETC": ""
+  },
+  "18": {
+    "ID": "KEEPGOING",
+    "TEXT": "목표 위치로 계속 이동",
+    "ETC": ""
+  },
+  "19": {
+    "ID": "DISCOMFORT_NAME_NOICON",
+    "TEXT": "불쾌",
+    "ETC": ""
+  },
+  "20": {
+    "ID": "DISCOMFORT_NAME_ICON",
+    "TEXT": "<sprite=53> 불쾌",
+    "ETC": ""
+  },
+  "21": {
+    "ID": "DISCOMFORT_ICON",
+    "TEXT": "<sprite=53>",
+    "ETC": ""
+  },
+  "22": {
+    "ID": "DISCOMFORT_DESECRIPTION",
+    "TEXT": "당신은 멈추고 싶지 않습니다.\\n불쾌 지수가 높을 수록 정착지에서 소비하는 <sprite=17> <#BE81F7>정신력</color> 소모가 증가합니다.",
+    "ETC": ""
+  },
+  "23": {
+    "ID": "DISCOMFORTUP",
+    "TEXT": "방문 시 이 정착지의 <sprite=54> <#3A01DF>불쾌</color> 지수가 <#BE81F7>{0}</color> 증가합니다.",
+    "ETC": ""
+  },
+  "24": {
+    "ID": "CURRENTDISCOMFORT",
+    "TEXT": "이 정착지의 <sprite=53> <#3A01DF>불쾌</color> 지수는 <#BE81F7>{0}</color>",
+    "ETC": ""
+  },
+  "25": {
+    "ID": "PLACESANITYCOST",
+    "TEXT": "<sprite=17> <#BE81F7>정신력</color>을 <#BE81F7>{0}</color> 소모해 방문",
+    "ETC": ""
+  },
+  "26": {
+    "ID": "INCREASE",
+    "TEXT": "증가",
+    "ETC": ""
+  },
+  "27": {
+    "ID": "DECREASE",
+    "TEXT": "감",
+    "ETC": ""
+  },
+  "28": {
+    "ID": "RESTORE",
+    "TEXT": "회복",
+    "ETC": ""
+  },
+  "29": {
+    "ID": "PAY",
+    "TEXT": "지불",
+    "ETC": ""
+  },
+  "30": {
+    "ID": "HP_NAME_NOICON",
+    "TEXT": "<#F78181>체력</color>",
+    "ETC": ""
+  },
+  "31": {
+    "ID": "HP_NAME_ICON",
+    "TEXT": "<sprite=0> <#F78181>체력</color>",
+    "ETC": ""
+  },
+  "32": {
+    "ID": "HP_ICON",
+    "TEXT": "<sprite=0>",
+    "ETC": ""
+  },
+  "33": {
+    "ID": "HP_DESCRIPTION",
+    "TEXT": "이벤트를 통해 회복하거나 감소합니다.\\n<#F78181>체력</color>이 0까지 떨어지면 패배합니다.",
+    "ETC": ""
+  },
+  "34": {
+    "ID": "HP_SUBDESCRIPTION",
+    "TEXT": "단단하고 연약한 살덩이입니다.",
+    "ETC": ""
+  },
+  "35": {
+    "ID": "HP_RESTORE_NAME_NOICON",
+    "TEXT": "<#F78181>체력</color> 회복",
+    "ETC": ""
+  },
+  "36": {
+    "ID": "HP_RESTORE_NAME_ICON",
+    "TEXT": "<sprite=1> <#F78181>체력</color> 회복",
+    "ETC": ""
+  },
+  "37": {
+    "ID": "HP_RESTORE_ICON",
+    "TEXT": "<sprite=1>",
+    "ETC": ""
+  },
+  "38": {
+    "ID": "HP_PAY_NAME_NOICON",
+    "TEXT": "<#F78181>체력</color> 소모",
+    "ETC": ""
+  },
+  "39": {
+    "ID": "HP_PAY_NAME_ICON",
+    "TEXT": "<sprite=6> <#F78181>체력</color> 소모",
+    "ETC": ""
+  },
+  "40": {
+    "ID": "HP_PAY_ICON",
+    "TEXT": "<sprite=6>",
+    "ETC": ""
+  },
+  "41": {
+    "ID": "HP_INCREASE_NAME_NOICON",
+    "TEXT": "<#F78181>체력</color> 회복 증가",
+    "ETC": ""
+  },
+  "42": {
+    "ID": "HP_INCREASE_NAME_ICON",
+    "TEXT": "<sprite=2> <#F78181>체력</color> 회복 증가",
+    "ETC": ""
+  },
+  "43": {
+    "ID": "HP_INCREASE_ICON",
+    "TEXT": "<sprite=2>",
+    "ETC": ""
+  },
+  "44": {
+    "ID": "HP_DECREASE_NAME_NOICON",
+    "TEXT": "<#F78181>체력</color> 소모 증폭",
+    "ETC": ""
+  },
+  "45": {
+    "ID": "HP_DECREASE_NAME_ICON",
+    "TEXT": "<sprite=7> <#F78181>체력</color> 소모 증폭",
+    "ETC": ""
+  },
+  "46": {
+    "ID": "HP_DECREASE_ICON",
+    "TEXT": "<sprite=7>",
+    "ETC": ""
+  },
+  "47": {
+    "ID": "SANITY_NAME_NOICON",
+    "TEXT": "<#BE81F7>정신력</color>",
+    "ETC": ""
+  },
+  "48": {
+    "ID": "SANITY_NAME_ICON",
+    "TEXT": "<sprite=11> <#BE81F7>정신력</color>",
+    "ETC": ""
+  },
+  "49": {
+    "ID": "SANITY_ICON",
+    "TEXT": "<sprite=11>",
+    "ETC": ""
+  },
+  "50": {
+    "ID": "SANITY_DESCRIPTION",
+    "TEXT": "여러 요소를 통해 회복하거나 감소합니다.\\n0까지 떨어질 때 마다 <sprite=광기>광기에 빠지고 정신력을 회복합니다.\\n<sprite=광기>광기가 3회 중첩되면 패배합니다.",
+    "ETC": ""
+  },
+  "51": {
+    "ID": "SANITY_SUBDESCRIPTION",
+    "TEXT": "광인과 현인은 종이 한 장 차이입니다.",
+    "ETC": ""
+  },
+  "52": {
+    "ID": "SANITY_RESTORE_NAME_NOICON",
+    "TEXT": "<#BE81F7>정신력</color> 회복",
+    "ETC": ""
+  },
+  "53": {
+    "ID": "SANITY_RESTORE_NAME_ICON",
+    "TEXT": "<sprite=12> <#BE81F7>정신력</color> 회복",
+    "ETC": ""
+  },
+  "54": {
+    "ID": "SANITY_RESTORE_ICON",
+    "TEXT": "<sprite=12> <#BE81F7>정신력</color> 회복",
+    "ETC": ""
+  },
+  "55": {
+    "ID": "SANITY_PAY_NAME_NOICON",
+    "TEXT": "<#BE81F7>정신력</color> 소모",
+    "ETC": ""
+  },
+  "56": {
+    "ID": "SANITY_PAY_NAME_ICON",
+    "TEXT": "<sprite=17> <#BE81F7>정신력</color> 소모",
+    "ETC": ""
+  },
+  "57": {
+    "ID": "SANITY_PAY_ICON",
+    "TEXT": "<sprite=17>",
+    "ETC": ""
+  },
+  "58": {
+    "ID": "SANITY_INCREASE_NAME_NOICON",
+    "TEXT": "<#BE81F7>정신력</color> 회복 증가",
+    "ETC": ""
+  },
+  "59": {
+    "ID": "SANITY_INCREASE_NAME_ICON",
+    "TEXT": "<sprite=13> <#BE81F7>정신력</color> 회복 증가",
+    "ETC": ""
+  },
+  "60": {
+    "ID": "SANITY_INCREASE_ICON",
+    "TEXT": "<sprite=13>",
+    "ETC": ""
+  },
+  "61": {
+    "ID": "SANITY_DECREASE_NAME_NOICON",
+    "TEXT": "<#BE81F7>정신력</color> 소모 증폭",
+    "ETC": ""
+  },
+  "62": {
+    "ID": "SANITY_DECREASE_NAME_ICON",
+    "TEXT": "<sprite=18> <#BE81F7>정신력</color> 소모 증폭",
+    "ETC": ""
+  },
+  "63": {
+    "ID": "SANITY_DECREASE_ICON",
+    "TEXT": "<sprite=18>",
+    "ETC": ""
+  },
+  "64": {
+    "ID": "GOLD_NAME_NOICON",
+    "TEXT": "<#F3F781>골드</color>",
+    "ETC": ""
+  },
+  "65": {
+    "ID": "GOLD_NAME_ICON",
+    "TEXT": "<sprite=22> <#F3F781>골드</color>",
+    "ETC": ""
+  },
+  "66": {
+    "ID": "GOLD_ICON",
+    "TEXT": "<sprite=22> <#F3F781>골드</color>",
+    "ETC": ""
+  },
+  "67": {
+    "ID": "GOLD_DESCRIPTION",
+    "TEXT": "이벤트를 통해 습득하거나 지불합니다.\\n강제 지불에 골드가 부족할 경우 <sprite=11><#BE81F7>정신력</color>을 소모합니다.",
+    "ETC": ""
+  },
+  "68": {
+    "ID": "GOLD_SUBDESCRIPTION",
+    "TEXT": "세상을 기름칠해주는 노란 광물입니다.",
+    "ETC": ""
+  },
+  "69": {
+    "ID": "GOLD_RESTORE_NAME_NOICON",
+    "TEXT": "<#F3F781>골드</color> 습득",
+    "ETC": ""
+  },
+  "70": {
+    "ID": "GOLD_RESTORE_NAME_ICON",
+    "TEXT": "<sprite=23> <#F3F781>골드</color> 습득",
+    "ETC": ""
+  },
+  "71": {
+    "ID": "GOLD_RESTORE_ICON",
+    "TEXT": "<sprite=23>",
+    "ETC": ""
+  },
+  "72": {
+    "ID": "GOLD_PAY_NAME_NOICON",
+    "TEXT": "<#F3F781>골드</color> 소모",
+    "ETC": ""
+  },
+  "73": {
+    "ID": "GOLD_PAY_NAME_ICON",
+    "TEXT": "<sprite=28> <#F3F781>골드</color> 소모",
+    "ETC": ""
+  },
+  "74": {
+    "ID": "GOLD_PAY_ICON",
+    "TEXT": "<sprite=28>",
+    "ETC": ""
+  },
+  "75": {
+    "ID": "GOLD_INCREASE_NAME_NOICON",
+    "TEXT": "<#F3F781>골드</color> 습득 증가",
+    "ETC": ""
+  },
+  "76": {
+    "ID": "GOLD_INCREASE_NAME_ICON",
+    "TEXT": "<sprite=24> <#F3F781>골드</color> 습득 증가",
+    "ETC": ""
+  },
+  "77": {
+    "ID": "GOLD_INCREASE_ICON",
+    "TEXT": "<sprite=24>",
+    "ETC": ""
+  },
+  "78": {
+    "ID": "GOLD_DECREASE_NAME_NOICON",
+    "TEXT": "<#F3F781>골드</color> 소모 증폭",
+    "ETC": ""
+  },
+  "79": {
+    "ID": "GOLD_DECREASE_NAME_ICON",
+    "TEXT": "<sprite=29> <#F3F781>골드</color> 소모 증폭",
+    "ETC": ""
+  },
+  "80": {
+    "ID": "GOLD_DECREASE_ICON",
+    "TEXT": "<sprite=29>",
+    "ETC": ""
+  },
+  "81": {
+    "ID": "NOCHANGE",
+    "TEXT": "변동 없음",
+    "ETC": ""
+  },
+  "82": {
+    "ID": "ASSEMBLE_SKILL_DESCRIPTION",
+    "TEXT": "무작위 <#F5DA81>기술</color> <#CEF6F5>2</color>개의 레벨이 뒤섞입니다.",
+    "ETC": ""
+  },
+  "83": {
+    "ID": "ASSEMBLE_EXP_DESCRIPTION",
+    "TEXT": "무작위 <#F5DA81>경험</color> <#CEF6F5>2</color>개의 위치가 교환됩니다.",
+    "ETC": ""
+  },
+  "84": {
+    "ID": "ASSEMBLE_TENDENCY_DESCRIPTION",
+    "TEXT": "무작위 <#F5DA81>성향</color>의 <#CEF6F5>진행도</color>가 변경됩니다.",
+    "ETC": ""
+  },
+  "85": {
+    "ID": "MADNESS_NAME_NOICON",
+    "TEXT": "광기",
+    "ETC": ""
+  },
+  "86": {
+    "ID": "MADNESS_NAME_ICON",
+    "TEXT": "<sprite=광기> 광기",
+    "ETC": ""
+  },
+  "87": {
+    "ID": "MADNESS_ICON",
+    "TEXT": "<sprite=광기>",
+    "ETC": ""
+  },
+  "88": {
+    "ID": "EVENTCHECKTYPE_PAY",
+    "TEXT": "{0}을(를) {1} 지불합니다.",
+    "ETC": "0: 지불 대상\n1: 지불 값"
+  },
+  "89": {
+    "ID": "GOLDFAIL_TEXT",
+    "TEXT": "안타깝게도 가지고 있는 <sprite=28> <#F3F781>골드</color>가 부족했습니다...",
+    "ETC": "지불에 돈 부족할 때 나오는것"
+  },
+  "90": {
+    "ID": "RIVER_NAME",
+    "TEXT": "강",
+    "ETC": ""
+  },
+  "91": {
+    "ID": "FOREST_NAME",
+    "TEXT": "숲",
+    "ETC": ""
+  },
+  "92": {
+    "ID": "HIGHLAND_NAME",
+    "TEXT": "고원",
+    "ETC": ""
+  },
+  "93": {
+    "ID": "MOUNTAIN_NAME",
+    "TEXT": "산",
+    "ETC": ""
+  },
+  "94": {
+    "ID": "SEA_NAME",
+    "TEXT": "바다",
+    "ETC": ""
+  },
+  "95": {
+    "ID": "CONVERSATION_NAME_NOICON",
+    "TEXT": "대화",
+    "ETC": ""
+  },
+  "96": {
+    "ID": "CONVERSATION_NAME_ICON",
+    "TEXT": "<sprite=33> 대화",
+    "ETC": ""
+  },
+  "97": {
+    "ID": "CONVERSATION_ICON",
+    "TEXT": "<sprite=33>",
+    "ETC": ""
+  },
+  "98": {
+    "ID": "CONVERSATION_DESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "99": {
+    "ID": "CONVERSATION_SUBDESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "100": {
+    "ID": "CONVERSATION_UP_NORMAL",
+    "TEXT": "<sprite=34> 대화 강화",
+    "ETC": ""
+  },
+  "101": {
+    "ID": "CONVERSATION_UP_HIGH",
+    "TEXT": "<sprite=35> 대화 크게 강화",
+    "ETC": ""
+  },
+  "102": {
+    "ID": "CONVERSATION_DOWN_NORMAL",
+    "TEXT": "<sprite=36> 대화 약화",
+    "ETC": ""
+  },
+  "103": {
+    "ID": "CONVERSATION_DOWN_HIGH",
+    "TEXT": "<sprite=37> 대화 크게 약화",
+    "ETC": ""
+  },
+  "104": {
+    "ID": "CONVERSATION_UP_NORMAL_ICON",
+    "TEXT": "<sprite=34>",
+    "ETC": ""
+  },
+  "105": {
+    "ID": "CONVERSATION_UP_HIGH_ICON",
+    "TEXT": "<sprite=35>",
+    "ETC": ""
+  },
+  "106": {
+    "ID": "CONVERSATION_DOWN_NORMAL_ICON",
+    "TEXT": "<sprite=36>",
+    "ETC": ""
+  },
+  "107": {
+    "ID": "CONVERSATION_DOWN_HIGH_ICON",
+    "TEXT": "<sprite=37>",
+    "ETC": ""
+  },
+  "108": {
+    "ID": "FORCE_NAME_NOICON",
+    "TEXT": "무력",
+    "ETC": ""
+  },
+  "109": {
+    "ID": "FORCE_NAME_ICON",
+    "TEXT": "<sprite=38> 무력",
+    "ETC": ""
+  },
+  "110": {
+    "ID": "FORCE_ICON",
+    "TEXT": "<sprite=38>",
+    "ETC": ""
+  },
+  "111": {
+    "ID": "FORCE_DESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "112": {
+    "ID": "FORCE_SUBDESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "113": {
+    "ID": "FORCE_UP_NORMAL",
+    "TEXT": "<sprite=39> 무력 강화",
+    "ETC": ""
+  },
+  "114": {
+    "ID": "FORCE_UP_HIGH",
+    "TEXT": "<sprite=40> 무력 크게 강화",
+    "ETC": ""
+  },
+  "115": {
+    "ID": "FORCE_DOWN_NORMAL",
+    "TEXT": "<sprite=41> 무력 약화",
+    "ETC": ""
+  },
+  "116": {
+    "ID": "FORCE_DOWN_HIGH",
+    "TEXT": "<sprite=42> 무력 크게 약화",
+    "ETC": ""
+  },
+  "117": {
+    "ID": "FORCE_UP_NORMAL_ICON",
+    "TEXT": "<sprite=39>",
+    "ETC": ""
+  },
+  "118": {
+    "ID": "FORCE_UP_HIGH_ICON",
+    "TEXT": "<sprite=40>",
+    "ETC": ""
+  },
+  "119": {
+    "ID": "FORCE_DOWN_NORMAL_ICON",
+    "TEXT": "<sprite=41>",
+    "ETC": ""
+  },
+  "120": {
+    "ID": "FORCE_DOWN_HIGH_ICON",
+    "TEXT": "<sprite=42>",
+    "ETC": ""
+  },
+  "121": {
+    "ID": "WILD_NAME_NOICON",
+    "TEXT": "자연",
+    "ETC": ""
+  },
+  "122": {
+    "ID": "WILD_NAME_ICON",
+    "TEXT": "<sprite=43> 자연",
+    "ETC": ""
+  },
+  "123": {
+    "ID": "WILD_ICON",
+    "TEXT": "<sprite=43>",
+    "ETC": ""
+  },
+  "124": {
+    "ID": "WILD_DESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "125": {
+    "ID": "WILD_SUBDESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "126": {
+    "ID": "WILD_UP_NORMAL",
+    "TEXT": "<sprite=44> 자연 강화",
+    "ETC": ""
+  },
+  "127": {
+    "ID": "WILD_UP_HIGH",
+    "TEXT": "<sprite=45> 자연 크게 강화",
+    "ETC": ""
+  },
+  "128": {
+    "ID": "WILD_DOWN_NORMAL",
+    "TEXT": "<sprite=46> 자연 약화",
+    "ETC": ""
+  },
+  "129": {
+    "ID": "WILD_DOWN_HIGH",
+    "TEXT": "<sprite=47> 자연 크게 약화",
+    "ETC": ""
+  },
+  "130": {
+    "ID": "WILD_UP_NORMAL_ICON",
+    "TEXT": "<sprite=44>",
+    "ETC": ""
+  },
+  "131": {
+    "ID": "WILD_UP_HIGH_ICON",
+    "TEXT": "<sprite=45>",
+    "ETC": ""
+  },
+  "132": {
+    "ID": "WILD_DOWN_NORMAL_ICON",
+    "TEXT": "<sprite=46>",
+    "ETC": ""
+  },
+  "133": {
+    "ID": "WILD_DOWN_HIGH_ICON",
+    "TEXT": "<sprite=47>",
+    "ETC": ""
+  },
+  "134": {
+    "ID": "INTELLIGENCE_NAME_NOICON",
+    "TEXT": "지성",
+    "ETC": ""
+  },
+  "135": {
+    "ID": "INTELLIGENCE_NAME_ICON",
+    "TEXT": "<sprite=48> 지성",
+    "ETC": ""
+  },
+  "136": {
+    "ID": "INTELLIGENCE_ICON",
+    "TEXT": "<sprite=48>",
+    "ETC": ""
+  },
+  "137": {
+    "ID": "INTELLIGENCE_DESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "138": {
+    "ID": "INTELLIGENCE_SUBDESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "139": {
+    "ID": "INTELLIGENCE_UP_NORMAL",
+    "TEXT": "<sprite=49> 지성 강화",
+    "ETC": ""
+  },
+  "140": {
+    "ID": "INTELLIGENCE_UP_HIGH",
+    "TEXT": "<sprite=50> 지성 크게 강화",
+    "ETC": ""
+  },
+  "141": {
+    "ID": "INTELLIGENCE_DOWN_NORMAL",
+    "TEXT": "<sprite=51> 지성 약화",
+    "ETC": ""
+  },
+  "142": {
+    "ID": "INTELLIGENCE_DOWN_HIGH",
+    "TEXT": "<sprite=52> 지성 크게 약화",
+    "ETC": ""
+  },
+  "143": {
+    "ID": "INTELLIGENCE_UP_NORMAL_ICON",
+    "TEXT": "<sprite=49>",
+    "ETC": ""
+  },
+  "144": {
+    "ID": "INTELLIGENCE_UP_HIGH_ICON",
+    "TEXT": "<sprite=50>",
+    "ETC": ""
+  },
+  "145": {
+    "ID": "INTELLIGENCE_DOWN_NORMAL_ICON",
+    "TEXT": "<sprite=51>",
+    "ETC": ""
+  },
+  "146": {
+    "ID": "INTELLIGENCE_DOWN_HIGH_ICON",
+    "TEXT": "<sprite=52>",
+    "ETC": ""
+  },
+  "147": {
+    "ID": "TENDENCY_BODY_M2_NAME_ICON",
+    "TEXT": "<#82FA58>매우 정신적</color>",
+    "ETC": ""
+  },
+  "148": {
+    "ID": "TENDENCY_BODY_M2_DESCRIPTION",
+    "TEXT": "당신은 주로 머리를 사용해 사건을 해결합니다. 덕분에 빠른 두뇌회전을 가지게 되었으나 몸을 쓰는 일은 둔해졌군요.",
+    "ETC": ""
+  },
+  "149": {
+    "ID": "TENDENCY_BODY_M2_SUBDESCRIPTION",
+    "TEXT": "두뇌풀가동!",
+    "ETC": ""
+  },
+  "150": {
+    "ID": "TENDENCY_BODY_M2_ICON",
+    "TEXT": "<sprite=87>",
+    "ETC": ""
+  },
+  "151": {
+    "ID": "TENDENCY_BODY_M1_NAME",
+    "TEXT": "<#A9F5A9>약간 정신적</color>",
+    "ETC": ""
+  },
+  "152": {
+    "ID": "TENDENCY_BODY_M1_DESCRIPTION",
+    "TEXT": "당신은 머리에 의존하는 경향이 있습니다. 덕분에 유연한 사고를 가지게 되었군요.",
+    "ETC": ""
+  },
+  "153": {
+    "ID": "TENDENCY_BODY_M1_SUBDESCRIPTION",
+    "TEXT": "머리가 바쁩니다.",
+    "ETC": ""
+  },
+  "154": {
+    "ID": "TENDENCY_BODY_M1_ICON",
+    "TEXT": "<sprite=88>",
+    "ETC": ""
+  },
+  "155": {
+    "ID": "TENDENCY_BODY_P1_NAME",
+    "TEXT": "<#F78181>약간 육체적</color>",
+    "ETC": ""
+  },
+  "156": {
+    "ID": "TENDENCY_BODY_P1_DESCRIPTION",
+    "TEXT": "당신은 육체에 의존하는 경향이 있습니다. 덕분에 반사신경 좋은 몸을 가지게 되었군요.",
+    "ETC": ""
+  },
+  "157": {
+    "ID": "TENDENCY_BODY_P1_SUBDESCRIPTION",
+    "TEXT": "몸이 튼튼해졌습니다.",
+    "ETC": ""
+  },
+  "158": {
+    "ID": "TENDENCY_BODY_P1_ICON",
+    "TEXT": "<sprite=90>",
+    "ETC": ""
+  },
+  "159": {
+    "ID": "TENDENCY_BODY_P2_NAME",
+    "TEXT": "<#FE2E2E>매우 육체적</color>",
+    "ETC": ""
+  },
+  "160": {
+    "ID": "TENDENCY_BODY_P2_DESCRIPTION",
+    "TEXT": "당신은 주로 육체에 의존에 상황을 해결합니다. 덕분에 튼튼하고 민첩한 육체를 가졌으나 유연한 일 처리는 힘들겠군요.",
+    "ETC": ""
+  },
+  "161": {
+    "ID": "TENDENCY_BODY_P2_SUBDESCRIPTION",
+    "TEXT": "힘으로 해결해요!",
+    "ETC": ""
+  },
+  "162": {
+    "ID": "TENDENCY_BODY_P2_ICON",
+    "TEXT": "<sprite=91>",
+    "ETC": ""
+  },
+  "163": {
+    "ID": "TOOMUCHRATIONAL",
+    "TEXT": "이미 극한으로 정신적입니다!",
+    "ETC": ""
+  },
+  "164": {
+    "ID": "TOOMUCHPHYSICAL",
+    "TEXT": "이미 극한으로 육체적입니다!",
+    "ETC": ""
+  },
+  "165": {
+    "ID": "TENDENCY_HEAD_M2_NAME",
+    "TEXT": "<#2E9AFE>매우 감정적</color>",
+    "ETC": ""
+  },
+  "166": {
+    "ID": "TENDENCY_HEAD_M2_DESCRIPTION",
+    "TEXT": "당신은 주로 감정적으로 생각하는 경향이 있습니다. 당신의 감정과 익숙해졌지만 물질적인 것을 신경 쓸 여유는 없어졌네요.",
+    "ETC": ""
+  },
+  "167": {
+    "ID": "TENDENCY_HEAD_M2_SUBDESCRIPTION",
+    "TEXT": "감정 레버를 내려요!",
+    "ETC": ""
+  },
+  "168": {
+    "ID": "TENDENCY_HEAD_M2_ICON",
+    "TEXT": "<sprite=92>",
+    "ETC": ""
+  },
+  "169": {
+    "ID": "TENDENCY_HEAD_M1_NAME",
+    "TEXT": "<#A9BCF5>약간 감정적</color>",
+    "ETC": ""
+  },
+  "170": {
+    "ID": "TENDENCY_HEAD_M1_DESCRIPTION",
+    "TEXT": "당신은 감정적으로 생각하는 경향이 있습니다. 덕분에 안 좋은 일도 쉽게 넘길 수 있게 되었군요.",
+    "ETC": ""
+  },
+  "171": {
+    "ID": "TENDENCY_HEAD_M1_SUBDESCRIPTION",
+    "TEXT": "심호흡이 익숙합니다.",
+    "ETC": ""
+  },
+  "172": {
+    "ID": "TENDENCY_HEAD_M1_ICON",
+    "TEXT": "<sprite=93>",
+    "ETC": ""
+  },
+  "173": {
+    "ID": "TENDENCY_HEAD_P1_NAME",
+    "TEXT": "<#F3E2A9>약간 물질적</color>",
+    "ETC": ""
+  },
+  "174": {
+    "ID": "TENDENCY_HEAD_P1_DESCRIPTION",
+    "TEXT": "당신은 물질적으로 생각하는 경향이 있습니다. 덕분에 주머니가 두둑해지겠군요",
+    "ETC": ""
+  },
+  "175": {
+    "ID": "TENDENCY_HEAD_P1_SUBDESCRIPTION",
+    "TEXT": "능숙한 흥정가네요.",
+    "ETC": ""
+  },
+  "176": {
+    "ID": "TENDENCY_HEAD_P1_ICON",
+    "TEXT": "<sprite=94>",
+    "ETC": ""
+  },
+  "177": {
+    "ID": "TENDENCY_HEAD_P2_NAME",
+    "TEXT": "<#F7BE81>매우 물질적</color>",
+    "ETC": ""
+  },
+  "178": {
+    "ID": "TENDENCY_HEAD_P2_DESCRIPTION",
+    "TEXT": "당신은 주로 물질적으로 생각하는 경향이 있습니다. 이득을 취하는데 능숙해졌지만 자신을 다루는 데는 서툴어졌습니다.",
+    "ETC": ""
+  },
+  "179": {
+    "ID": "TENDENCY_HEAD_P2_SUBDESCRIPTION",
+    "TEXT": "돈은 언제나 옳다!",
+    "ETC": ""
+  },
+  "180": {
+    "ID": "TENDENCY_HEAD_P2_ICON",
+    "TEXT": "<sprite=95>",
+    "ETC": ""
+  },
+  "181": {
+    "ID": "TOOMUCHMENTAL",
+    "TEXT": "이미 극한으로 감정적입니다!",
+    "ETC": ""
+  },
+  "182": {
+    "ID": "TOOMUCHMATERIAL",
+    "TEXT": "이미 극한으로 물질적입니다!",
+    "ETC": ""
+  },
+  "183": {
+    "ID": "PLACE_RESIDENCE_NAME",
+    "TEXT": "거주지",
+    "ETC": ""
+  },
+  "184": {
+    "ID": "PLACE_RESIDENCE_DESCRIPTION",
+    "TEXT": "익숙함 그리고 새로움이 있습니다.",
+    "ETC": ""
+  },
+  "185": {
+    "ID": "PLACE_RESIDENCE_ICON",
+    "TEXT": "<sprite=97>",
+    "ETC": ""
+  },
+  "186": {
+    "ID": "PLACE_RESIDENCE_EFFECT_DESCRIPTION",
+    "TEXT": "<#CEF6F5>{0}</color>턴 이내 <#CEF6F5>1</color>회의 <sprite=10> <#F5A9A9>체력 감소</color> 효과가 <#81F781>{1}%</color> 완화됩니다",
+    "ETC": ""
+  },
+  "187": {
+    "ID": "PLACE_RESIDENCE_EFFECT_SUBDESCRIPTION",
+    "TEXT": "푹신한 침대로 인해 든든해졌습니다.",
+    "ETC": ""
+  },
+  "188": {
+    "ID": "MARKETPLACE_MARKETPLACE_NAME",
+    "TEXT": "시장",
+    "ETC": ""
+  },
+  "189": {
+    "ID": "MARKETPLACE_MARKETPLACE_DESCRIPTION",
+    "TEXT": "돈과 사람, 혹은 돈을 원하는 사람들로 가득찬 곳입니다.",
+    "ETC": ""
+  },
+  "190": {
+    "ID": "MARKETPLACE_MARKETPLACE_ICON",
+    "TEXT": "<sprite=98>",
+    "ETC": ""
+  },
+  "191": {
+    "ID": "PLACE_MARKETPLACE_EFFECT_DESCRIPTION",
+    "TEXT": "<sprite=22> <#F3F781>{0}</color>골드를 얻습니다.",
+    "ETC": ""
+  },
+  "192": {
+    "ID": "PLACE_MARKETPLACE_EFFECT_SUBDESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "193": {
+    "ID": "PLACE_TEMPLE_NAME",
+    "TEXT": "사원",
+    "ETC": ""
+  },
+  "194": {
+    "ID": "PLACE_TEMPLE_DESCRIPTION",
+    "TEXT": "고요와 신앙이 자리잡은 곳입니다.",
+    "ETC": ""
+  },
+  "195": {
+    "ID": "PLACE_TEMPLE_ICON",
+    "TEXT": "<sprite=99>",
+    "ETC": ""
+  },
+  "196": {
+    "ID": "PLACE_TEMPLE_EFFECT_DESCRIPTION",
+    "TEXT": "모든 정착지의 <sprite=55> 불쾌 지수가 <#CEF6F5>{0}</color> 감소합니다.",
+    "ETC": ""
+  },
+  "197": {
+    "ID": "PLACE_TEMPLE_EFFECT_SUBDESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "198": {
+    "ID": "PLACE_LIBRARY_NAME",
+    "TEXT": "도서관",
+    "ETC": ""
+  },
+  "199": {
+    "ID": "PLACE_LIBRARY_DESCRIPTION",
+    "TEXT": "지식과 역사의 무게로 채워진 곳입니다.",
+    "ETC": ""
+  },
+  "200": {
+    "ID": "PLACE_LIBRARY_ICON",
+    "TEXT": "<sprite=100>",
+    "ETC": ""
+  },
+  "201": {
+    "ID": "PLACE_LIBRARY_EFFECT_DESCRIPTION",
+    "TEXT": "<#CEF6F5>{0}</color>턴 동안 <#CEF6F5>{1}</color> 기술이  <#CEF6F5>+{1}</color>의 레벨을 얻습니다.",
+    "ETC": ""
+  },
+  "202": {
+    "ID": "PLACE_LIBRARY_EFFECT_SUBDESCRIPTION",
+    "TEXT": "책으로 인해 식견이 넓어진 느낌입니다.",
+    "ETC": ""
+  },
+  "203": {
+    "ID": "PLACE_THEATER_NAME",
+    "TEXT": "극장",
+    "ETC": ""
+  },
+  "204": {
+    "ID": "PLACE_THEATER_DESCRIPTION",
+    "TEXT": "새로운 경험, 혹은 오래된 경험이 기다리는 곳입니다.",
+    "ETC": ""
+  },
+  "205": {
+    "ID": "PLACE_THEATER_ICON",
+    "TEXT": "<sprite=101>",
+    "ETC": ""
+  },
+  "206": {
+    "ID": "PLACE_THEATER_EFFECT_DESCRIPTION",
+    "TEXT": "<#CEF6F5>모든 경험</color>의 지속 턴이 <#CEF6F5>+{0}</color> 증가합니다.",
+    "ETC": ""
+  },
+  "207": {
+    "ID": "PLACE_THEATER_EFFECT_SUBDESCRIPTION",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "208": {
+    "ID": "PLACE_ACADEMY_NAME",
+    "TEXT": "아카데미",
+    "ETC": ""
+  },
+  "209": {
+    "ID": "PLACE_ACADEMY_DESCRIPTION",
+    "TEXT": "발전을 뒤쫓는 사람들로 가득한 곳입니다.",
+    "ETC": ""
+  },
+  "210": {
+    "ID": "PLACE_ACADEMY_ICON",
+    "TEXT": "<sprite=102>",
+    "ETC": ""
+  },
+  "211": {
+    "ID": "PLACE_ACADEMY_EFFECT_DESCRIPTION",
+    "TEXT": "<#CEF6F5>{0}</color>턴 동안 모든 확률 검사가 성공할 때 까지 <#81F781>{1}%</color> 증가합니다.",
+    "ETC": ""
+  },
+  "212": {
+    "ID": "PLACE_ACADEMY_EFFECT_SUBDESCRIPTION",
+    "TEXT": "가르침은 활용하지 않으면 의미가 없습니다.",
+    "ETC": ""
+  },
+  "213": {
+    "ID": "SKILLLEVELUP_TEXT",
+    "TEXT": "{0} 레벨 증가 +{1}",
+    "ETC": "0: 기술명 1:값\n성향,경험 효과에 쓰임"
+  },
+  "214": {
+    "ID": "SKILLLEVELDOWN_TEXT",
+    "TEXT": "{0} 레벨 감소 -{1}",
+    "ETC": "0:기술명 1:값\r\n성향,경험 효과에 쓰임"
+  },
+  "215": {
+    "ID": "DISCOMFORTUP_TEXT",
+    "TEXT": "<sprite=53> 불쾌로 인한 <#BE81F7>정신력</color> 소모 <#A9F5A9>-{0}%</color>완화",
+    "ETC": "0: 감소값(정수)\n성향 효과에 쓰임"
+  },
+  "216": {
+    "ID": "DISCOMFORTUP_ICON",
+    "TEXT": "<sprite=불쾌감소>",
+    "ETC": ""
+  },
+  "217": {
+    "ID": "SKILL_NAME",
+    "TEXT": "<#F5DA81>기술</color>",
+    "ETC": ""
+  },
+  "218": {
+    "ID": "DEFAULTLEVEL_NAME",
+    "TEXT": "성장 레벨 {0}",
+    "ETC": "0:성장 레벨"
+  },
+  "219": {
+    "ID": "BYEXPLEVEL_NAME",
+    "TEXT": "경험으로 인한 레벨 {0}",
+    "ETC": "0: 경험 레벨"
+  },
+  "220": {
+    "ID": "BYTENDENCYLEVEL_NAME",
+    "TEXT": "{0}인 성향으로 인한 레벨 {1}",
+    "ETC": "0: 해당 성향\n1: 레벨 값"
+  },
+  "221": {
+    "ID": "BYPLACELEVEL_NAME",
+    "TEXT": "<sprite=100><#F5DA81>도서관</color> 방문으로 <#81F781>+1</color>",
+    "ETC": ""
+  },
+  "222": {
+    "ID": "EXP_NAME",
+    "TEXT": "<#F5DA81>경험</color>",
+    "ETC": ""
+  },
+  "223": {
+    "ID": "EXPDURATION_NAME",
+    "TEXT": "턴 남음",
+    "ETC": ""
+  },
+  "224": {
+    "ID": "SAVETHEEXP_NAME",
+    "TEXT": "<#F5DA81>경험</color> 저장 혹은 교체",
+    "ETC": ""
+  },
+  "225": {
+    "ID": "SAVEBADEXP_NAME",
+    "TEXT": "나뭇잎에 이슬이 맺히듯기억 속으로 흘러들어 갑니다...",
+    "ETC": ""
+  },
+  "226": {
+    "ID": "LONGTERMSAVE_NAME",
+    "TEXT": "장기 경험 슬롯에 저장하기",
+    "ETC": ""
+  },
+  "227": {
+    "ID": "LONGTERMSAVE_DESCRIPTION",
+    "TEXT": "<b>장기 경험 슬롯</b>은 <#BE589F>{0}</color>턴 동안 유지되지만 편집에 <sprite=17><#BE81F7>정신력</color>을 {1} 소모합니다.",
+    "ETC": ""
+  },
+  "228": {
+    "ID": "SHORTTERMSAVE_NAME",
+    "TEXT": "단기 경험 슬롯에 저장하",
+    "ETC": ""
+  },
+  "229": {
+    "ID": "SHORTTERMSAVE_DESCRIPTION",
+    "TEXT": "<b>단기 경험 슬롯</b>은 <#BE589F>{0}</color>동안 유지되고 편집에 제약이 없습니다.",
+    "ETC": ""
+  },
+  "230": {
+    "ID": "CANNOTCHANGEBADEXP_NAME",
+    "TEXT": "<#F781F3>나쁜 경험</color>은 쉽게 잊혀지지 않습니다!",
+    "ETC": ""
+  },
+  "231": {
+    "ID": "CHOICE_NAME",
+    "TEXT": "선택",
+    "ETC": ""
+  },
+  "232": {
+    "ID": "DURATIONSCRIPT_NAME",
+    "TEXT": "턴 후 망각",
+    "ETC": ""
+  },
+  "233": {
+    "ID": "CANCLE_TEXT",
+    "TEXT": "취소",
+    "ETC": ""
+  },
+  "234": {
+    "ID": "NEXT_TEXT",
+    "TEXT": "다음",
+    "ETC": ""
+  },
+  "235": {
+    "ID": "SELECTION_RATIONAL_NAME",
+    "TEXT": "<#088A08>정신적 선택지</color>",
+    "ETC": ""
+  },
+  "236": {
+    "ID": "SELECTION_PHYSICAL_NAME",
+    "TEXT": "<#8A0808>육체적 선택지</color>",
+    "ETC": ""
+  },
+  "237": {
+    "ID": "SELECTION_MENTAL_NAME",
+    "TEXT": "<#08088A>감정적 선택지</color>",
+    "ETC": ""
+  },
+  "238": {
+    "ID": "SELECTION_MATERIAL_NAME",
+    "TEXT": "<#868A08>물질적 선택지</color>",
+    "ETC": ""
+  },
+  "239": {
+    "ID": "alion",
+    "TEXT": "알리온",
+    "ETC": ""
+  },
+  "240": {
+    "ID": "amberfort",
+    "TEXT": "앰버포트",
+    "ETC": ""
+  },
+  "241": {
+    "ID": "arthurstone",
+    "TEXT": "어써스톤",
+    "ETC": ""
+  },
+  "242": {
+    "ID": "ashbrook",
+    "TEXT": "애쉬브룩",
+    "ETC": ""
+  },
+  "243": {
+    "ID": "brigelis",
+    "TEXT": "브리겔리스",
+    "ETC": ""
+  },
+  "244": {
+    "ID": "calibria",
+    "TEXT": "칼리브리아",
+    "ETC": ""
+  },
+  "245": {
+    "ID": "eldermist",
+    "TEXT": "엘더미스트",
+    "ETC": ""
+  },
+  "246": {
+    "ID": "elvendom",
+    "TEXT": "엘븐돔",
+    "ETC": ""
+  },
+  "247": {
+    "ID": "evergreenvale",
+    "TEXT": "애버그린베일",
+    "ETC": ""
+  },
+  "248": {
+    "ID": "galania",
+    "TEXT": "갈라니아",
+    "ETC": ""
+  },
+  "249": {
+    "ID": "ironcliff",
+    "TEXT": "아이언클리프",
+    "ETC": ""
+  },
+  "250": {
+    "ID": "raia",
+    "TEXT": "라이라",
+    "ETC": ""
+  },
+  "251": {
+    "ID": "rappland",
+    "TEXT": "래프랜드",
+    "ETC": ""
+  },
+  "252": {
+    "ID": "sellier",
+    "TEXT": "셀리어",
+    "ETC": ""
+  },
+  "253": {
+    "ID": "silberia",
+    "TEXT": "실베리아",
+    "ETC": ""
+  },
+  "254": {
+    "ID": "sunridge",
+    "TEXT": "선릿지",
+    "ETC": ""
+  },
+  "255": {
+    "ID": "synodia",
+    "TEXT": "시노디아",
+    "ETC": ""
+  },
+  "256": {
+    "ID": "windmere",
+    "TEXT": "윈드머",
+    "ETC": ""
+  },
+  "257": {
+    "ID": "albace",
+    "TEXT": "알베이스",
+    "ETC": ""
+  },
+  "258": {
+    "ID": "avalomia",
+    "TEXT": "알바로미아",
+    "ETC": ""
+  },
+  "259": {
+    "ID": "ellsworth",
+    "TEXT": "엘스워스",
+    "ETC": ""
+  },
+  "260": {
+    "ID": "emael",
+    "TEXT": "에맬",
+    "ETC": ""
+  },
+  "261": {
+    "ID": "iberton",
+    "TEXT": "이버톤",
+    "ETC": ""
+  },
+  "262": {
+    "ID": "lumia",
+    "TEXT": "루미아",
+    "ETC": ""
+  },
+  "263": {
+    "ID": "niverdale",
+    "TEXT": "니버데일",
+    "ETC": ""
+  },
+  "264": {
+    "ID": "solaria",
+    "TEXT": "솔라리아",
+    "ETC": ""
+  },
+  "265": {
+    "ID": "sylveria",
+    "TEXT": "사이베리아",
+    "ETC": ""
+  },
+  "266": {
+    "ID": "valtar",
+    "TEXT": "발타",
+    "ETC": ""
+  },
+  "267": {
+    "ID": "aberstead",
+    "TEXT": "에버스테드",
+    "ETC": ""
+  },
+  "268": {
+    "ID": "arcadimia",
+    "TEXT": "아카디미아",
+    "ETC": ""
+  },
+  "269": {
+    "ID": "catrua",
+    "TEXT": "카투아",
+    "ETC": ""
+  },
+  "270": {
+    "ID": "lugrea",
+    "TEXT": "루그리아",
+    "ETC": ""
+  },
+  "271": {
+    "ID": "mabrel",
+    "TEXT": "마브렐",
+    "ETC": ""
+  },
+  "272": {
+    "ID": "meridina",
+    "TEXT": "머리디나",
+    "ETC": ""
+  },
+  "273": {
+    "ID": "penbrite",
+    "TEXT": "팬브라이트",
+    "ETC": ""
+  },
+  "274": {
+    "ID": "solanum",
+    "TEXT": "솔라눔",
+    "ETC": ""
+  },
+  "275": {
+    "ID": "tryon",
+    "TEXT": "트라이온",
+    "ETC": ""
+  },
+  "276": {
+    "ID": "udrium",
+    "TEXT": "유드리움",
+    "ETC": ""
+  },
+  "277": {
+    "ID": "DEFAULTVALUE_TEXT",
+    "TEXT": "기본 값 {0}",
+    "ETC": ""
+  },
+  "278": {
+    "ID": "REQUIRELEVEL_TEXT",
+    "TEXT": "필요 레벨 <b>{0}</b>",
+    "ETC": ""
+  },
+  "279": {
+    "ID": "CURRENTLEVEL_TEXT",
+    "TEXT": "현재 레벨 <b>{0}</b>",
+    "ETC": ""
+  },
+  "280": {
+    "ID": "SUCCESSPERCENT_TEXT",
+    "TEXT": "<b>성공 확률</b>",
+    "ETC": ""
+  },
+  "281": {
+    "ID": "PAYVALUE_TEXT",
+    "TEXT": "지불 값 <b>{0}</b>",
+    "ETC": ""
+  },
+  "282": {
+    "ID": "NOGOLD_TEXT",
+    "TEXT": "가진 골드가 부족합니다!",
+    "ETC": ""
+  },
+  "283": {
+    "ID": "NOGOLD_PERCENTAGE_TEXT",
+    "TEXT": "아래 자원을 대신 지불해 성공할 확률\\n(실패 시 이벤트 실패)",
+    "ETC": ""
+  },
+  "284": {
+    "ID": "NOGOLD_PAYVALUE",
+    "TEXT": "{0}     {1}",
+    "ETC": "0:골드 1:정신"
+  },
+  "285": {
+    "ID": "CLICKTOGET_TEXT",
+    "TEXT": "클릭해 받기",
+    "ETC": ""
+  },
+  "286": {
+    "ID": "TOTHEWORLD",
+    "TEXT": "우리들의 모험은 지금부터 시작이다!",
+    "ETC": ""
+  }
+}

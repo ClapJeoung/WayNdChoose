@@ -7,6 +7,16 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int MapSize = 30;
+    
+  public const float Ratio_highland = 0.2f;
+  public const float Ratio_forest = 0.3f;
+  public const int Count_mountain = 3;
+  public const int LandSize = 17;
+  public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
+
+  public const int ForestRange = 1, RiverRange = 2, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
+
   public const int TownPlaceCount = 1, CityPlaceCount = 2, CastlePlaceCount = 3;
   public const int TownDiscomfortDeg = 1,CityDiscomfortDeg=2,CastleDiscomfortDeg=3;
 
@@ -85,6 +95,7 @@ public static class ConstValues
 }
 public class GameData    //게임 진행도 데이터
 {
+  public MapData MyMapData = null;
     public int Year = 1;//년도
 
     private int turn = -1;
@@ -202,26 +213,26 @@ public class GameData    //게임 진행도 데이터
 
   public int GetDiscomfort(string originname)
   {
-    foreach (var _settle in GameManager.Instance.MyMapData.AllSettles) if (_settle.OriginName == originname) return _settle.Discomfort;
+    foreach (var _settle in GameManager.Instance.MyGameData.MyMapData.AllSettles) if (_settle.OriginName == originname) return _settle.Discomfort;
 
     Debug.Log($"{originname} 가진 정착지가 없음???");
     return -1;
   }
   public void AddDiscomfort(Settlement settlement)
   {
-    for(int i = 0; i < GameManager.Instance.MyMapData.AllSettles.Count; i++)
+    for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
     {
-      if (settlement == GameManager.Instance.MyMapData.AllSettles[i]) settlement.AddDiscomfort();
+      if (settlement == GameManager.Instance.MyGameData.MyMapData.AllSettles[i]) settlement.AddDiscomfort();
       else
       {
-        GameManager.Instance.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyMapData.AllSettles[i].Discomfort - 1;
+        GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
       }
     }
   }
   public void DownAllDiscomfort()
   {
-    for(int i=0; i < GameManager.Instance.MyMapData.AllSettles.Count;i++)
-      GameManager.Instance.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyMapData.AllSettles[i].Discomfort - 1;
+    for(int i=0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count;i++)
+      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
   }
   public Vector2 MoveTargetPos = Vector2.zero;//이동 목표 정착지의 UI 앵커포지션
 
@@ -1035,72 +1046,6 @@ public class GameJsonData
   public bool Isriver_castle, Isforest_castle, Ismine_castle, Ismountain_castle, Issea_castle;
   public int[] Discomfort;
   //마을,마을,마을,도시,도시,성채
-  public MapData GetMapData()
-  {
-    MapData _mapdata = new MapData();
-    _mapdata.MapCode_Bottom = new int[Size, Size];
-    _mapdata.MapCode_Top = new int[Size, Size];
-    for (int i = 0; i < Size; i++)
-      for (int j = 0; j < Size; j++)
-      {
-        _mapdata.MapCode_Bottom[j, i] = BottomMapCode[i * Size + j];
-        _mapdata.MapCode_Top[j, i] = TopMapCode[i * Size + j];
-      }
-    for (int i = 0; i < TownCount; i++)
-    {
-      Settlement _town = new Settlement();
-      _town.InfoIndex = Town_InfoIndex[i];
-      _town.Type = SettlementType.Town;
-      _town.IsRiver = Isriver_town[i];
-      _town.IsForest = Isforest_town[i];
-      _town.IsMountain = Ismountain_town[i];
-      _town.IsHighland = Ismine_town[i];
-      _town.IsSea = Issea_town[i];
-
-      _town.Pose.Add(Town_Pos[i]);
-      _town.Discomfort = Discomfort[i];
-      _mapdata.Towns.Add(_town);
-      _mapdata.AllSettles.Add(_town);
-    }
-    for (int i = 0; i < CityCount; i++)
-    {
-      Settlement _city = new Settlement();
-      _city.InfoIndex = City_InfoIndex[i];
-      _city.Type = SettlementType.City;
-      _city.IsRiver = Isriver_city[i];
-      _city.IsForest = Isforest_city[i];
-      _city.IsMountain = Ismountain_city[i];
-      _city.IsHighland = Ismine_city[i];
-      _city.IsSea = Issea_city[i];
-
-      _city.Pose.Add(City_Pos[i * 2]);
-      _city.Pose.Add(City_Pos[i * 2 + 1]);
-      _city.Discomfort = Discomfort[TownCount + i];
-
-      _mapdata.Cities.Add(_city);
-      _mapdata.AllSettles.Add(_city);
-    }
-
-    Settlement _castle = new Settlement();
-    _castle.InfoIndex = Castle_InfoIndex;
-    _castle.Type = SettlementType.Castle;
-    _castle.IsRiver = Isriver_castle;
-    _castle.IsForest = Isforest_castle;
-    _castle.IsMountain = Ismountain_castle;
-    _castle.IsHighland = Ismine_castle;
-    _castle.IsSea = Issea_castle;
-
-    _castle.Pose.Add(Castle_Pos[0]);
-    _castle.Pose.Add(Castle_Pos[1]);
-    _castle.Pose.Add(Castle_Pos[2]);
-    _castle.Discomfort = Discomfort[TownCount + CityCount];
-
-    _mapdata.Castles=_castle;
-    _mapdata.AllSettles.Add(_castle);
-
-    foreach (var _settle in _mapdata.AllSettles) _settle.Setup();
-    return _mapdata;
-  }
 
   public GameData GetGameData()
   {

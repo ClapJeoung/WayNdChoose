@@ -29,7 +29,7 @@ public class UI_map : UI_default
         Debug.Log("정착지 선택 상태");
         if (MoveButton.interactable.Equals(true)) MoveButton.interactable = false;
         if(CancleButton.interactable.Equals(true)) CancleButton.interactable = false;
-        MoveButtonText.text = GameManager.Instance.GetTextData("choosesettle").asdf;      //지도 상태 문구 기획 완료 후 변경 요망
+        MoveButtonText.text = GameManager.Instance.GetTextData("choosesettle");      //지도 상태 문구 기획 완료 후 변경 요망
         CancleButton.interactable = false;
         break;
       case 1:
@@ -234,7 +234,7 @@ public class UI_map : UI_default
       SettleName.text = _settle.Name;
       UnpText.text = SelectedSettle.Discomfort.ToString();
 
-      SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.VectorPos));
+      SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.Coordinate));
       Vector2 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;
       GameManager.Instance.MyGameData.MoveTargetPos = _settlerectpos;
 
@@ -247,7 +247,7 @@ public class UI_map : UI_default
       SettleName.text = _settle.Name;
       UnpText.text = SelectedSettle.Discomfort.ToString();
     
-      SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.VectorPos));
+      SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.Coordinate));
       Vector2 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;
       GameManager.Instance.MyGameData.MoveTargetPos = _settlerectpos;
 
@@ -351,7 +351,7 @@ public class UI_map : UI_default
     Vector3 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;           //종점 위치(UI)
 
     Vector3 _playretilepos = GameManager.Instance.MyGameData.CurrentPos;//현재 위치(타일)
-    Vector3 _settletilepos = (Vector3)SelectedSettleIcon.SettlementData.VectorPos;//종점 위치(타일)
+    Vector3 _settletilepos = (Vector3)SelectedSettleIcon.SettlementData.Coordinate;//종점 위치(타일)
 
     float _currentprogress = GameManager.Instance.MyGameData.MoveProgress;//현재 이동 진행도 0.0f ~ 1.0f
     float _targetprogress = 0.0f;                                             //이번 이동에서 목표로 하는 이동 진행도
@@ -377,7 +377,7 @@ public class UI_map : UI_default
       //캐릭터 이동시킴
       //이동+줌인+종료
 
-      EventManager.Instance.SetOutsideEvent(MapCreater.GetSingleTileData(_targetrectpos));
+      EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(_targettilepos));
       //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
       IsOpen = false;
       //도중에 멈춘거니까 이동 버튼 활성화는 안함
@@ -389,7 +389,7 @@ public class UI_map : UI_default
       GameManager.Instance.MyGameData.MoveProgress = 0.0f;
       GameManager.Instance.MyGameData.CurrentSettlement = SelectedSettle;
       GameManager.Instance.MyGameData.CurrentSettlement.SetAvailablePlaces();
-     GameManager.Instance.MyGameData.AvailableSettles = GameManager.Instance.MyMapData.GetCloseSettles(GameManager.Instance.MyGameData.CurrentSettlement, 3);
+     GameManager.Instance.MyGameData.AvailableSettles = GameManager.Instance.MyGameData.MyMapData.GetCloseSettles(GameManager.Instance.MyGameData.CurrentSettlement, 3);
 
       SelectedSettle.LibraryType = (SkillType)Random.Range(0, 4);
       //목표에 완전히 도착했으니 이동 관련 정보는 초기화

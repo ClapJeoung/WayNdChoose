@@ -13,110 +13,85 @@ MonoBehaviour:
   m_Name: Tile prefabs
   m_EditorClassIdentifier: 
   Sea:
-  - {fileID: 11400000, guid: 13bb74a41b571514ab06f6f139a501fa, type: 2}
-  - {fileID: 11400000, guid: 6b552b6d2380f324199b89df551c7c04, type: 2}
-  - {fileID: 11400000, guid: 49fee194a69d50640bf8d6de3ccd02f5, type: 2}
+  - {fileID: 21300000, guid: ee55fe9d99cd3714b9e06048f1e06c5f, type: 3}
+  - {fileID: 21300000, guid: ee55fe9d99cd3714b9e06048f1e06c5f, type: 3}
+  - {fileID: 21300000, guid: 135aa68a9e740ef4099d26e6433aa98d, type: 3}
+  - {fileID: 21300000, guid: 135aa68a9e740ef4099d26e6433aa98d, type: 3}
+  - {fileID: 21300000, guid: 135aa68a9e740ef4099d26e6433aa98d, type: 3}
+  - {fileID: 21300000, guid: ee55fe9d99cd3714b9e06048f1e06c5f, type: 3}
+  - {fileID: 21300000, guid: 135aa68a9e740ef4099d26e6433aa98d, type: 3}
+  - {fileID: 21300000, guid: ee55fe9d99cd3714b9e06048f1e06c5f, type: 3}
+  - {fileID: 21300000, guid: 135aa68a9e740ef4099d26e6433aa98d, type: 3}
+  - {fileID: 21300000, guid: 0fe6622834caf2446878e9f0e47ab19c, type: 3}
   Land:
-  - {fileID: 11400000, guid: f8388d74104a6e948a6ef855012037e2, type: 2}
-  - {fileID: 11400000, guid: 1463544aefe0e634db5951f857a1a539, type: 2}
-  - {fileID: 11400000, guid: 3a46cb4909b13b847a3857188a63d2ca, type: 2}
+  - {fileID: 21300000, guid: a25c0f658d5a97d418f350e3d759146e, type: 3}
+  - {fileID: 21300000, guid: 56b69303bab6f8941b18947b03faf925, type: 3}
+  - {fileID: 21300000, guid: a25c0f658d5a97d418f350e3d759146e, type: 3}
+  - {fileID: 21300000, guid: a66fec7a93b7f84439114921bb30db29, type: 3}
+  - {fileID: 21300000, guid: a66fec7a93b7f84439114921bb30db29, type: 3}
   Highland:
-  - {fileID: 11400000, guid: be04d9235c9bc9547b155abed98e366a, type: 2}
+  - {fileID: 21300000, guid: 5c9c053e5b9c19645bce9b8fb4d53ae7, type: 3}
   Mountain:
-  - {fileID: 11400000, guid: 44fb528ad2248e847b71b1957ace2dca, type: 2}
+  - {fileID: 21300000, guid: 0339cf2f871f22e45b0685349f48febf, type: 3}
   Source_5:
-  - {fileID: 11400000, guid: 9709543c5a6b59a4f864b83955832243, type: 2}
+  - {fileID: 21300000, guid: 48101960bbb3146488ce9b52e0c218e4, type: 3}
   Source_0:
-  - {fileID: 11400000, guid: a9394fe6345c16941b17330c5032d306, type: 2}
+  - {fileID: 21300000, guid: 6cd6081ea514a224683da0b898d14235, type: 3}
   Source_1:
-  - {fileID: 11400000, guid: 56e83276b3041d04e8947da2a7bd7ed2, type: 2}
+  - {fileID: 21300000, guid: da93ca762c7c59d43bf6475a94ae4145, type: 3}
   Source_2:
-  - {fileID: 11400000, guid: eec77a1f24df0e942965fd93355f9ad6, type: 2}
+  - {fileID: 21300000, guid: 653f61813b5b16246a89f5c01b935084, type: 3}
   River_1:
-  - {fileID: 11400000, guid: e635996bab54e4945895a8be2a065190, type: 2}
+  - {fileID: 21300000, guid: e809aca7b003f6640af4b48f4ed8c7cd, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
+  - {fileID: 21300000, guid: 2f6eefff151ef3b4ca7f4af15c88aac3, type: 3}
   River_2:
-  - {fileID: 11400000, guid: a0dcd24938e568b40ab1e1b7a4a409f3, type: 2}
+  - {fileID: 21300000, guid: 4bfbef16c40910e488783fbab259f7f1, type: 3}
+  - {fileID: 21300000, guid: 4bfbef16c40910e488783fbab259f7f1, type: 3}
   River_3:
-  - {fileID: 11400000, guid: fb02a10d86f1be64a8ba21a1fd1542cd, type: 2}
+  - {fileID: 21300000, guid: 51796d97a2dd0e144862bf1aa17efe70, type: 3}
   Beach_1:
-  - {fileID: 11400000, guid: 521eb18befb2b1547843d552a288f89f, type: 2}
+  - {fileID: 21300000, guid: 004e8a5cc54249e4291ab8cdeeb270e6, type: 3}
   Beach_2:
-  - {fileID: 11400000, guid: b08728ab90ae65b44b90b9a23c25a28c, type: 2}
+  - {fileID: 21300000, guid: e932185cf9e72da4ab601f5c4e7b8d6d, type: 3}
   Beach_3:
-  - {fileID: 11400000, guid: 5259a4d408bf2de4395b4b5d36da04c9, type: 2}
+  - {fileID: 21300000, guid: 19b2f2e670b6e09479a9ad2735b3bfd5, type: 3}
   Beach_4:
-  - {fileID: 11400000, guid: 3121761e7e7dba846a710eb1b496fc93, type: 2}
+  - {fileID: 21300000, guid: afecb4a2f4d412d44a1b7270107471fd, type: 3}
+  Beach_middle:
+  - {fileID: 21300000, guid: eb0156d309f774444b6a784e5087c753, type: 3}
   RB_1_2:
-  - {fileID: 11400000, guid: 9172602747aab024791e6c8593c7ca41, type: 2}
+  - {fileID: 21300000, guid: 59f5ad9e557a72444ae75be9e22fa364, type: 3}
   RB_1_3:
-  - {fileID: 11400000, guid: ee7c6139f32e7f047a7b43c9394316a4, type: 2}
+  - {fileID: 21300000, guid: 1f8527bea9989f441b9dea89dec7d4e5, type: 3}
   RB_1_4:
-  - {fileID: 11400000, guid: 8f7595ac31f5f1c4bb0ed242e2ab9d14, type: 2}
+  - {fileID: 21300000, guid: 3a1f677bcd1cd7648b762e0855ab1aea, type: 3}
   RB_2_3:
-  - {fileID: 11400000, guid: dd5d9cf299e1d20419dff61ccfbbccf9, type: 2}
+  - {fileID: 21300000, guid: f6fb5c6b00d550246a31c4a54e19728d, type: 3}
   RB_2_4:
-  - {fileID: 11400000, guid: 0970c25c00bd77b4fa0db01bf7a30074, type: 2}
+  - {fileID: 21300000, guid: 6b691ea0a54a6c34e956caba01a8e504, type: 3}
   RB_3_4:
-  - {fileID: 11400000, guid: a5d58c33ce721b34083d37de42b4c6cb, type: 2}
-  Desert:
-  - {fileID: 11400000, guid: 2a85f76d530a2154a96e1fce6c196a73, type: 2}
-  d_Highland:
-  - {fileID: 11400000, guid: 654c9dab75588b84080056bbe526df7a, type: 2}
-  d_Mountain:
-  - {fileID: 11400000, guid: 2ca1e0edf0998db4daca13a00da8c32e, type: 2}
-  d_Source_5:
-  - {fileID: 11400000, guid: 7e493e34be6ac0c48b019150fbb07cce, type: 2}
-  d_Source_0:
-  - {fileID: 11400000, guid: 11d8cfafc5843cf4c8c4b30edc57024d, type: 2}
-  d_Source_1:
-  - {fileID: 11400000, guid: bd0c6c4137afcda4fb60f6a66dd6f07c, type: 2}
-  d_Source_2:
-  - {fileID: 11400000, guid: 85779b216eff0df4ba8fcf2f45c60a12, type: 2}
-  d_River_1:
-  - {fileID: 11400000, guid: 51480cbc293162642aa60cb3459fc16b, type: 2}
-  d_River_2:
-  - {fileID: 11400000, guid: 376505dbca66eda4fa1c60ce6d3fff43, type: 2}
-  d_River_3:
-  - {fileID: 11400000, guid: 12d0a96ac4913ca4180fde54b64dbeb6, type: 2}
-  d_Beach_1:
-  - {fileID: 11400000, guid: f38f9f20336609b428db33f8b9313faa, type: 2}
-  d_Beach_2:
-  - {fileID: 11400000, guid: 0efdc642182cda74e8f0a4e5d3b215e9, type: 2}
-  d_Beach_3:
-  - {fileID: 11400000, guid: 626a2c46a46fc2844bc4e09bab63b269, type: 2}
-  d_Beach_4:
-  - {fileID: 11400000, guid: 045ae7cca5b002e49ba3590b7b27ace5, type: 2}
-  d_RB_1_2:
-  - {fileID: 11400000, guid: 5cb35b07776942d42bf800c4bb11c680, type: 2}
-  d_RB_1_3:
-  - {fileID: 11400000, guid: 6e79a34d19ab5204ca20a034d831f020, type: 2}
-  d_RB_1_4:
-  - {fileID: 11400000, guid: ad42f9c34e852124cb0a42a28ad377c1, type: 2}
-  d_RB_2_3:
-  - {fileID: 11400000, guid: e1111a7d586dc434fad37e4ba8da388b, type: 2}
-  d_RB_2_4:
-  - {fileID: 11400000, guid: 82c4777877e32644f8c1234b6fec585a, type: 2}
-  d_RB_3_4:
-  - {fileID: 11400000, guid: a12f821bd66c77b4fb765b5536bf3e15, type: 2}
+  - {fileID: 21300000, guid: 8c886fe1af077954cacc963e0bc8af7e, type: 3}
   Town:
-  - {fileID: 11400000, guid: 4500d3ffa2c023f4e925c331c3bea556, type: 2}
+  - {fileID: 21300000, guid: 0b974e1e0650c354fa7fb50e37247d7e, type: 3}
   City:
-  - {fileID: 11400000, guid: 182d28d44679ff8409a39cfe11fd2ede, type: 2}
+  - {fileID: 21300000, guid: 49efba93604801a4fb8bca1064b63c27, type: 3}
   Castle:
-  - {fileID: 11400000, guid: b0b8800d0029f394491ff0701c1a4594, type: 2}
+  - {fileID: 21300000, guid: 7fecb0b14641dd94c9c495b33ff9a525, type: 3}
   Forest:
-  - {fileID: 11400000, guid: 14f5ec4e940695b43abcc3c3e8708194, type: 2}
-  - {fileID: 11400000, guid: 1cc0dd8de59c5fb41b9f536e40f3e5b6, type: 2}
-  - {fileID: 11400000, guid: eb2c13b867c0f054bad014da3ef48a20, type: 2}
+  - {fileID: 21300000, guid: e318e4d647fca0c429dcfc97ae08605f, type: 3}
+  - {fileID: 21300000, guid: 9838b529f543d9943b617e1bfb7b4650, type: 3}
+  - {fileID: 21300000, guid: b293a79b260c2eb4081bf522f8dc0626, type: 3}
   Forest_river:
-  - {fileID: 11400000, guid: 291df972045880b4fb3167547b49dd3d, type: 2}
-  d_Town:
-  - {fileID: 11400000, guid: 5276a2e482f4c4c48abd96685a7c67ae, type: 2}
-  d_City:
-  - {fileID: 11400000, guid: 9a837dbc393b160438a0fce10f675a75, type: 2}
-  d_Castle:
-  - {fileID: 11400000, guid: f78e0266437a9e74fa29ca17d11b04db, type: 2}
-  d_Forest:
-  - {fileID: 11400000, guid: c3d35f15760ee4144b8a3a4819cf281b, type: 2}
-  d_Forest_river:
-  - {fileID: 11400000, guid: 6816782e8baf7354aa06e6f6b190bf4a, type: 2}
+  - {fileID: 21300000, guid: 2379bbc470f6862488a9eff1d5d0cd8e, type: 3}

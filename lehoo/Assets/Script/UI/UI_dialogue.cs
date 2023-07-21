@@ -578,7 +578,7 @@ public class UI_dialogue : UI_default
       SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[_selection.Index]);
       GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
-    GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.OriginID);
+    GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.ID);
 
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
 

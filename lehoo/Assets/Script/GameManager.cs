@@ -11,9 +11,8 @@ public class GameManager : MonoBehaviour
   public static GameManager Instance { get { return instance; } }
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
-  [HideInInspector] public GameJsonData MyGameJsonData = null;
+  [HideInInspector] public GameJsonData GameJsonData = null;
   [HideInInspector] public const string GameDataName = "WNCGameData.json";
-  [HideInInspector] public MapData MyMapData = null;              //맵 데이터(맵 정보만)
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
 
   public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
@@ -277,19 +276,18 @@ public class GameManager : MonoBehaviour
   {
     if (File.Exists(Application.persistentDataPath+"/"+GameDataName ))
     {
-      MyGameJsonData = JsonUtility.FromJson<GameJsonData>(File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
-      MyGameData = MyGameJsonData.GetGameData();
-      MyMapData = MyGameJsonData.GetMapData();
+      GameJsonData = JsonUtility.FromJson<GameJsonData>(File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
+      MyGameData = GameJsonData.GetGameData();
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
-    Dictionary<string, string> _temp = JsonConvert.DeserializeObject<Dictionary<string, string>>(TextData.text);
+    Dictionary<string, TextData> _temp = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
     foreach (var _data in _temp)
     {
-      string _texttemp = _data.Value;
+      string _texttemp = _data.Value.TEXT;
       if (_texttemp.Contains("\\n")) _texttemp = _texttemp.Replace("\\n", "\n");
       if (TextDic.ContainsKey(_data.Key)) { Debug.Log($"{_data.Key} 겹침! 확인 필요!"); return; }
-      TextDic.Add(_data.Key, _data.Value);
+      TextDic.Add(_data.Value.ID, _data.Value.TEXT);
     }
 
     Dictionary<string, EventJsonData> _eventjson = new Dictionary<string, EventJsonData>();
@@ -524,6 +522,7 @@ public class GameManager : MonoBehaviour
   {
     if (Input.GetKeyDown(KeyCode.Backspace))
     {
+      MyGameData = new GameData();
       CreateNewMap();
 
     }
@@ -610,17 +609,20 @@ public class GameManager : MonoBehaviour
 
     _map.MakePerfectMap();
 
-    yield return new WaitUntil(()=>MyGameJsonData != null);
-    MyMapData = MyGameJsonData.GetMapData();
+    yield return new WaitUntil(()=>MyGameData.MyMapData != null);
 
-    Settlement _startsettle = MyMapData.AllSettles[Random.Range(0, MyMapData.AllSettles.Count)];
+    Settlement _startsettle = MyGameData.MyMapData.AllSettles[Random.Range(0, MyGameData.MyMapData.AllSettles.Count)];
 
     MyGameData.CurrentSettlement = _startsettle;
-    MyGameData.AvailableSettles = MyMapData.GetCloseSettles(_startsettle, 3);
-    MyGameData.CurrentPos = _startsettle.VectorPos;
+    MyGameData.AvailableSettles = MyGameData.MyMapData.GetCloseSettles(_startsettle, 3);
+    MyGameData.CurrentPos = _startsettle.Coordinate;
 
-    _map.MakeTilemap(MyMapData);
+    _map.MakeTilemap();
     UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle);
     yield return null;
   }
+}
+public class TextData
+{
+ public string ID = "", TEXT = "", ETC = "";
 }
