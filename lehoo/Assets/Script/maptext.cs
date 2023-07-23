@@ -245,6 +245,43 @@ public class maptext : MonoBehaviour
 
     }
 
+        _seatiles = _NewMapData.GetEnvirTiles(new List<BottomEnvirType> { BottomEnvirType.Sea });
+        List<TileData> _pureseatiles = new List<TileData>();
+        List<TileData> _detectcentertiles = new List<TileData>();
+        List<TileData> _detecttargettiles = new List<TileData>();
+        _pureseatiles.Add(_NewMapData.Tile(Vector2Int.zero));
+        _detectcentertiles.Add(_NewMapData.Tile(Vector2Int.zero));
+
+        while (_detectcentertiles.Count > 0)
+        {
+            _detecttargettiles.Clear();
+
+            foreach(var _center in _detectcentertiles)
+            {
+                for(int i = 0; i < 6; i++)
+                {
+                    TileData _target = _NewMapData.GetNextTile(_center, (HexDir)i);
+
+                    if (_target.BottomEnvir != BottomEnvirType.Sea) continue;
+                    if (_pureseatiles.Contains(_target) || _detectcentertiles.Contains(_target) || _detecttargettiles.Contains(_target)) continue;
+
+                    _detecttargettiles.Add(_target);
+                }
+            }
+
+            _detectcentertiles.Clear();
+            foreach (var _newsea in _detecttargettiles)
+            {
+                _pureseatiles.Add(_newsea);
+                _detectcentertiles.Add(_newsea);
+            }
+        }
+        foreach(var seatile in _seatiles)
+        {
+            if (_pureseatiles.Contains(seatile)) continue;
+            _NewMapData.TileDatas[seatile.Coordinate.x, seatile.Coordinate.y].BottomEnvir = BottomEnvirType.Land;
+            _NewMapData.TileDatas[seatile.Coordinate.x, seatile.Coordinate.y].BottomEnvirSprite = TileSpriteType.Land;
+        }
 
     for(int i=0;i<ConstValues.MapSize; i++)
       for(int j=0;j<ConstValues.MapSize;j++)
@@ -530,7 +567,7 @@ public class maptext : MonoBehaviour
     RiverData[] _riverdatas = new RiverData[3] { new RiverData(), new RiverData(), new RiverData() };
     for (int i=0; i < _riverdatas.Length; i++)
     {
-      List<int> _sourcetype = MixRandom(new List<int> { 0, 1, 2 });         //0,1,2(발원지 위치 코드)
+      List<int> _sourcetype = MixRandom(new List<int> { 0,2,4 });         //0,2,4(발원지 위치 코드,회전 코드)
       for(int j=0; j< _sourcetype.Count; j++)
       {
         bool _iscomplete = false;
@@ -538,8 +575,8 @@ public class maptext : MonoBehaviour
         switch (_sourcetype[j])
         {
           case 0: _sourcedirs = MixRandom( new List<int> { 0, 1 });break;
-          case 1: _sourcedirs = MixRandom(new List<int> { 2, 3 }); break;
-          case 2: _sourcedirs = MixRandom(new List<int> { 4, 5 }); break;
+          case 2: _sourcedirs = MixRandom(new List<int> { 2, 3 }); break;
+          case 4: _sourcedirs = MixRandom(new List<int> { 4, 5 }); break;
         }
         for(int k = 0; k < _sourcedirs.Count; k++)
         {
@@ -547,14 +584,15 @@ public class maptext : MonoBehaviour
           switch (_sourcetype[j])
           {
             case 0: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3],(HexDir) 1);break;
-            case 1: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3+1], (HexDir)3); break;
-            case 2: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3+2], (HexDir)5); break;
+            case 2: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3+1], (HexDir)3); break;
+            case 4: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3+2], (HexDir)5); break;
           }
 
           RiverData _riverdata = new RiverData();
           _riverdata.SourceType = _sourcetype[j];
           _riverdata.RiverCoors.Add(_sourcepos);
           _riverdata.RiverDirs.Add(_sourcedirs[k]);
+                    _riverdata.RiverCoors.Add(_NewMapData.GetNextCoor(_sourcepos,(HexDir) _sourcedirs[k]));
           int _maindir = _sourcedirs[k];
           int _curvecount = 0;
           List<Vector2Int> _failcoors=new List<Vector2Int>();
@@ -565,7 +603,7 @@ public class maptext : MonoBehaviour
             LoopCount++;
             if (LoopCount > 1000) { Debug.Log("강 생성 중 무한루프"); return null; }
 
-            if (_riverdata.RiverCoors.Count == 0) break;
+            if (_riverdata.RiverDirs.Count == 0) break;
 
             int _finishdir = 10;                                            //(0~5)
             List<int> _targetdirs = MixRandom(new List<int> { -1, 0, 1 });  //-1,0,1이 무작위로
@@ -573,17 +611,25 @@ public class maptext : MonoBehaviour
             Vector2Int _currentcoor = _riverdata.RiverCoors[_riverdata.RiverCoors.Count - 1];  //나아갈 타일 중심지
             for (int l=0; l< _targetdirs.Count; l++)
             {
-
+                            
               int _nextdir = modifydir(_maindir, _targetdirs[l]);                //현재 선택된 방향(0~5)
               TileData _nexttile = _NewMapData.GetNextTile(_currentcoor, (HexDir)_nextdir);
 
+                            if(_nexttile.Coordinate.x==0|| _nexttile.Coordinate.y==0|| _nexttile.Coordinate.x==ConstValues.MapSize-1 || _nexttile.Coordinate.y == ConstValues.MapSize - 1)
+                            {
+                                _enabledirs.Add(_targetdirs[l]);
+                                _finishdir = _nextdir;
+                            }
               if (_curvecount == -2 && _targetdirs[l] == -1) continue;
               if (_curvecount == 2 && _targetdirs[l] == 1) continue;//과도한 커브 금지
               if (_failcoors.Contains(_nexttile.Coordinate)) continue;
               if (_nexttile.TopEnvir == TopEnvirType.Mountain || _nexttile.TopEnvir == TopEnvirType.Highland) continue;//산,언덕 안됨
-              if(i>0&& _riverdatas[0].RiverCoors.Contains(_nexttile.Coordinate)) continue;
-              if (i>1 && _riverdatas[1].RiverCoors.Contains(_nexttile.Coordinate)) continue;
-
+                            bool _overlaped = false;
+                            for(int m = 0; m < i; m++)
+                            {
+                                if (_riverdatas[m].RiverCoors.Contains(_nexttile.Coordinate)) { _overlaped = true;break; }
+                            }
+                            if (_overlaped) continue;
               _enabledirs.Add(_targetdirs[l]);
               if (_nexttile.BottomEnvir == BottomEnvirType.Beach) _finishdir = _nextdir;
             }
@@ -601,7 +647,7 @@ public class maptext : MonoBehaviour
             {
               if (_riverdata.RiverCoors.Count < 6)
               {
-                Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]->({_finishdir})->[{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 기준 미충족 해변으로 제명 {_riverdata.RiverCoors.Count+1}번 타일 다시 검사");
+                Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor}->({_finishdir})->[{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 기준 미충족 해변으로 제명 {_riverdata.RiverCoors.Count+1}번 타일 다시 검사");
                 _failcoors.Add(_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir));
                 continue;
               }//해변을 찾았는데 강 개수를 채우지 못한 경우(해당 타일 failcoor)
@@ -657,9 +703,9 @@ public class maptext : MonoBehaviour
       {
         if (j == 0)
         {
-          TileData _source = _NewMapData.Tile(_river.RiverCoors[j]);
-          _source.Rotate = _river.SourceType * 2;
-          _source.BottomEnvirSprite = MyTiles.GetSource(RotateDir(_river.RiverDirs[0],_source.Rotate));
+          TileData _source = _NewMapData.Tile(_river.RiverCoors[0]);
+          _source.Rotate = _river.SourceType;
+          _source.BottomEnvirSprite = MyTiles.GetSource(RotateDir(_river.RiverDirs[0],-_source.Rotate));
 
         }//발원지
         else if (j == _river.RiverCoors.Count - 1)
@@ -671,11 +717,12 @@ public class maptext : MonoBehaviour
             if (_NewMapData.GetNextTile(_riverbeach, (HexDir)k).BottomEnvir == BottomEnvirType.Sea) _seadirs.Add(k);
           }
 
+                    int _lastdir = RotateDir(_river.RiverDirs[_river.RiverDirs.Count - 1], 3);
           for (int k = 0; k < 6; k++)
           {
             if (MaxDirIndex() == _seadirs.Count)
             {
-              _riverbeach.BottomEnvirSprite = MyTiles.GetRiverBeach(_seadirs.Count,RotateDir(_river.RiverDirs[j-1],-k+3));
+              _riverbeach.BottomEnvirSprite = MyTiles.GetRiverBeach(_seadirs.Count,RotateDir(_lastdir,-k)-1);
               _riverbeach.Rotate = k;
               break;
             }
@@ -698,7 +745,7 @@ public class maptext : MonoBehaviour
           for(int k = 0; k < 6; k++)
           {
             int _min=_combineddirs[0]<_combineddirs[1]?_combineddirs[0]:_combineddirs[1];
-            int _max = _combineddirs[0] > _combineddirs[1] ? _combineddirs[0] : _combineddirs[1];
+            int _max = _combineddirs[0] < _combineddirs[1] ? _combineddirs[1] : _combineddirs[0];
 
             if (_min == 0 && _max <= 3)
             {

@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const int MapSize = 30;
+  public const int MapSize = 40;
     
   public const float Ratio_highland = 0.2f;
   public const float Ratio_forest = 0.3f;
