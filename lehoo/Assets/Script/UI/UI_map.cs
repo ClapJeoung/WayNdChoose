@@ -63,39 +63,32 @@ public class UI_map : UI_default
     }
   }
   public maptext MapCreater = null;
-  private List<SettlementIcon> SettleIcons = new List<SettlementIcon>();
-  private SettlementIcon GetSettleIcon(string originname)
+  [HideInInspector] public GameObject CastleIcon = null;
+  [HideInInspector] public List<GameObject> CityIcons = new List<GameObject>();
+  [HideInInspector] public List<GameObject> TownIcons = new List<GameObject>();
+  public GameObject GetSettlementIcon(Settlement settle)
   {
-    foreach(SettlementIcon icon in SettleIcons)
-      if(icon.SettlementData.OriginName == originname) return icon;
-
+    switch (settle.Type)
+    {
+      case SettlementType.Town:
+        foreach (var obj in TownIcons)
+          if (obj.name.Contains(settle.OriginName)) return obj;
+        break;
+      case SettlementType.City:
+        foreach (var obj in CityIcons)
+          if (obj.name.Contains(settle.OriginName)) return obj;
+        break;
+      case SettlementType.Castle:
+        return CastleIcon;
+    }
+    Debug.Log(settle.Type);
     return null;
   }
-  private SettlementIcon GetSettleIcon(Settlement settledata)
-  {
-    foreach (SettlementIcon icon in SettleIcons)
-      if (icon.SettlementData==settledata) return icon;
 
-    return null;
-  }
   [SerializeField] private Image CurrentQuestProgress = null;
   [SerializeField] private TextMeshProUGUI CurrentQuestDescription = null;
   [SerializeField] private TextMeshProUGUI UnpText = null;
   [SerializeField] private CanvasGroup[] ArrowGroup = null;
-  [SerializeField] private RectTransform[] ArrowRect = null;
-  [SerializeField] private MapArrowButton[] ArrowButtonScript = null;
-  [SerializeField] private MapArrowButton SelectedArrow = null;
-  private SettlementIcon SelectedSettleIcon
-  {
-    get { return SelectedArrow.MySettlementIcon; }
-  }
-  private Settlement SelectedSettle
-  {
-    get
-    {
-      return SelectedSettleIcon.SettlementData;
-    }
-  }
   private int SelectedSettleCost = 0;
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private AnimationCurve ZoomOutCurve = null;
@@ -111,7 +104,6 @@ public class UI_map : UI_default
   [SerializeField] private AnimationCurve CancleMoveCurve = null;
   [SerializeField] private float CancleMoveTime = 0.5f;
 
-  public void AddSettleIcon(SettlementIcon _icon) => SettleIcons.Add(_icon);
   public void OpenUI()
   {
     if (IsOpen) { CloseUI(); IsOpen = false; return; }
@@ -123,8 +115,6 @@ public class UI_map : UI_default
     ScaleChanger.anchoredPosition = GetScaleChangerPos(PlayerRect.anchoredPosition);
 
     //                                                                                                        퀘스트 기획 후 지도에 퀘스트 정보 표기 넣기
-
-    if(SelectedArrow!=null) UnpText.text = SelectedSettle.Discomfort.ToString();
 
 
     if (GameManager.Instance.MyGameData.CanMove)  //이동 가능한 상황(야외에서 이벤트를 완료한 상황, 정착지에서 이벤트를 완료한 상황)
@@ -159,13 +149,7 @@ public class UI_map : UI_default
   }
   private IEnumerator closeui()
   {
-    SelectedArrow.deactivecolor();
-    SelectedArrow = null;
    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.2f, false));
-    var _settleicons = SettleIcons;
-    for (int i = 0; i < SettleIcons.Count; i++)
-      _settleicons[i].SetQuestIcon(0);
-    yield return null;
   }
   private IEnumerator tilemapalpha(float _startalpha,float _endalpha)
   {
@@ -188,36 +172,6 @@ public class UI_map : UI_default
     Tilemap_top.color = _color;
   }
 
-  public void SetArrow()
-  {
-    List<SettlementIcon> _targetsettles=new List<SettlementIcon>();
-    foreach (var _data in GameManager.Instance.MyGameData.AvailableSettles)
-    {
-      _targetsettles.Add(GetSettleIcon(_data.OriginName));
-      Debug.Log(_data.OriginName);
-    }
-
-    for (int i = 0; i < _targetsettles.Count; i++)
-    {
-
-      Vector2 _targetpos = _targetsettles[i].GetComponent<RectTransform>().anchoredPosition;
-      ArrowRect[i].anchoredPosition = PlayerRect.anchoredPosition;
-
-      float _length = Mathf.Clamp(Vector3.Distance(PlayerRect.anchoredPosition,_targetpos), 0.0f, 5000.0f);
-      ArrowRect[i].sizeDelta = new Vector2(100.0f, _length);
-
-      Vector2 _dir = PlayerRect.anchoredPosition - _targetpos;
-      Vector3 _angle = Vector3.back * (Mathf.Atan2(_dir.x, _dir.y) * Mathf.Rad2Deg + 180.0f);
-      ArrowRect[i].rotation = Quaternion.Euler(_angle);
-
-      ArrowButtonScript[i].Setup(PlayerRect.anchoredPosition, new Vector2(100.0f, _length), _angle, _targetsettles[i]);
-      
-    }
-  }
-  public void UpdatePanel(Settlement _settle,MapArrowButton _arrow)
-  {
-    UIManager.Instance.AddUIQueue(updatepanel(_settle, _arrow));
-  }//이동 방향표를 눌러 정착지를 선택한 상황
   private IEnumerator updatepanel(Settlement _settle, MapArrowButton _arrow)
   {
     if (_settle == null)

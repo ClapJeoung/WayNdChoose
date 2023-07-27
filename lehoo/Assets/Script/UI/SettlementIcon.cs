@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class SettlementIcon : MonoBehaviour
+/*public class SettlementIcon : MonoBehaviour
 {
   public Settlement SettlementData = null;
   Image QuestIcon = null;
@@ -52,4 +52,4 @@ public class SettlementIcon : MonoBehaviour
     if(QuestIcon.enabled.Equals(false))QuestIcon.enabled = true;
     QuestIcon.sprite = _sprite;
   }
-}
+}*/

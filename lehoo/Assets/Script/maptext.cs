@@ -28,11 +28,13 @@ public class TileData
 
 public class maptext : MonoBehaviour
 {
-   public Tilemap Tilemap_bottom, Tilemap_top;
+  [SerializeField] private UI_map MapUIScript = null;
+  public Tilemap Tilemap_bottom, Tilemap_top;
    public TilePrefabs MyTiles;
   [Space(10)]
   [SerializeField] private Transform SettlerHolder = null;
-  [SerializeField] private Transform TileHolder = null;
+  [SerializeField] private Transform TileHolder_bottomenvir = null;
+  [SerializeField] private Transform TileHolder_topenvir = null;
   [SerializeField] private Sprite Townsprite, Citysprite, Castlesprite;
     private void Start()
     {
@@ -99,31 +101,31 @@ public class maptext : MonoBehaviour
       if (_castle.IsHighland) _castlehighland = true;
       if (_castle.IsMountain) _castlemountain = true;
 
-      if (!_townriver||!_townforest||!_townhighland||!_townmountain||!_townsea||
-               !_cityriver || !_cityforest || !_cityhighland || !_citymountain || !_citysea ||
-               !_castleriver || !_castleforest || !_castlehighland || !_castlemountain )
+      if (!_townriver||!_townforest||!_townmountain||!_townsea||
+               !_cityriver || !_cityforest  || !_citymountain || !_citysea ||
+               !_castleriver || !_castleforest  || !_castlemountain )
             {
                 string _str = "";
                 if (!_townriver) _str += "마을 강  ";
                 if (!_townforest) _str += "마을 숲  ";
-                if (!_townhighland) _str += "마을 고원  ";
+              //  if (!_townhighland) _str += "마을 고원  ";
                 if (!_townmountain) _str += "마을 산  ";
                 if (!_townsea) _str += "마을 바다  ";
                 if (!_cityriver) _str += "도시 강  ";
                 if (!_cityforest) _str += "도시 숲  ";
-                if (!_cityhighland) _str += "도시 고원  ";
+              //  if (!_cityhighland) _str += "도시 고원  ";
                 if (!_citymountain) _str += "도시 산  ";
                 if (!_citysea) _str += "도시 바다  ";
                 if (!_castleriver) _str += "성채 강  ";
                 if (!_castleforest) _str += "성채 숲  ";
-                if (!_castlehighland) _str += "성채 고원  ";
+             //   if (!_castlehighland) _str += "성채 고원  ";
                 if (!_castlemountain) _str += "성채 산  ";
 
-            //    Debug.Log(_index+"번 맵    "+ _str + "없음");
+                Debug.Log(_index+"번 맵    "+ _str + "없음");
                 yield return null;
                 continue;
             }
-      if (_data.Towns.Count != 4) { yield return null;continue; }
+      if (_data.Towns.Count != 3) { yield return null;continue; }
       if (_data.Cities.Count != 2) { yield return null; continue; }
       if (_data.Castles==null) {  yield return null; continue; }
 
@@ -299,6 +301,10 @@ public class maptext : MonoBehaviour
         }
       }
 
+    TileData _centersea = _NewMapData.CenterTile;
+    _centersea.BottomEnvir = BottomEnvirType.Sea;
+    _centersea.BottomEnvirSprite = TileSpriteType.Sea;
+
     List<TileData> _beaches = _NewMapData.GetEnvirTiles(new List<BottomEnvirType> { BottomEnvirType.Beach });
     for(int i = 0; i < _beaches.Count; i++)
     {
@@ -344,21 +350,199 @@ public class maptext : MonoBehaviour
         return _max;
       }
     }
-    List<TileData> _lands=_NewMapData.GetEnvirTiles(new List<BottomEnvirType> { BottomEnvirType.Land });
-    foreach(var _land in _lands)
-    {
-      List<TileData> _around = _NewMapData.GetAroundTile(_land, 1);
-      foreach(var _tile in _around)
-      {
-        if (_tile.BottomEnvir == BottomEnvirType.Sea)
-        {
-          _NewMapData.Tile(_tile.Coordinate).BottomEnvir = BottomEnvirType.Land;
-          _NewMapData.Tile(_tile.Coordinate).BottomEnvirSprite = TileSpriteType.Land;
-        }
-      }
-    }
     #endregion
     //     Debug.Log("바다 생성 완료");
+
+    #region 강
+    LoopCount = 0;
+
+    RiverData[] _riverdatas = new RiverData[6];
+    for (int i = 0; i < _riverdatas.Length; i++)
+    {
+      bool _iscomplete = false;
+
+      RiverData _riverdata = new RiverData();
+      Vector2Int _sourcecoor = _NewMapData.GetNextCoor(_NewMapData.CenterTile, (HexDir)i);
+      _riverdata.RiverIndex = i;
+      _riverdata.RiverCoors.Add(_sourcecoor);
+      _riverdata.RiverDirs.Add(i);
+      _riverdata.RiverCoors.Add(_NewMapData.GetNextCoor(_sourcecoor, (HexDir)i));
+      int _maindir = i;
+      int _curvecount = 0;
+      List<Vector2Int> _failcoors = new List<Vector2Int>();
+
+      //  Debug.Log($"{i + 1}번째 강 발원지 {_sourcepos}에서 {_maindir}방향으로 시작");
+      while (true)
+      {
+        LoopCount++;
+        if (LoopCount > 1000) { Debug.Log("강 생성 중 무한루프"); return null; }
+
+        if (_riverdata.RiverDirs.Count == 0) break;
+
+        int _finishdir = 10;                                            //(0~5)
+        List<int> _targetdirs = MixRandom(new List<int> { -1, 0, 1 });  //-1,0,1이 무작위로
+        List<int> _enabledirs = new List<int>();                          //확보한 방향들(-1,0,1)
+        Vector2Int _currentcoor = _riverdata.RiverCoors[_riverdata.RiverCoors.Count - 1];  //나아갈 타일 중심지
+        for (int k = 0; k < _targetdirs.Count; k++)
+        {
+
+          int _nextdir = RotateDir(_maindir, _targetdirs[k]);                //현재 선택된 방향(0~5)
+          TileData _nexttile = _NewMapData.GetNextTile(_currentcoor, (HexDir)_nextdir);
+
+          if (_nexttile.Coordinate.x == 0 || _nexttile.Coordinate.y == 0 || _nexttile.Coordinate.x == ConstValues.MapSize - 1 || _nexttile.Coordinate.y == ConstValues.MapSize - 1)
+          {
+            _enabledirs.Add(_targetdirs[k]);
+            _finishdir = _nextdir;
+          }
+          if (_curvecount == -3 && _targetdirs[k] == -1) continue;
+          if (_curvecount == 3 && _targetdirs[k] == 1) continue;//과도한 커브 금지
+          if (_failcoors.Contains(_nexttile.Coordinate)) continue;
+          bool _overlaped = false;
+          for (int m = 0; m < i; m++)
+          {
+            if (_riverdatas[m].RiverCoors.Contains(_nexttile.Coordinate)) { _overlaped = true; break; }
+          }
+          if (_overlaped) continue;
+          _enabledirs.Add(_targetdirs[k]);
+          if (_nexttile.BottomEnvir == BottomEnvirType.Beach) _finishdir = _nextdir;
+        }
+
+        if (_enabledirs.Count == 0)
+        {
+          //   Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count+1}]{_currentcoor} 제명, {_riverdata.RiverCoors.Count}번으로 회귀");
+          _failcoors.Add(_currentcoor);
+          _riverdata.RiverCoors.Remove(_currentcoor);
+          _riverdata.RiverDirs.Remove(_riverdata.RiverDirs[_riverdata.RiverDirs.Count - 1]);
+          continue;
+        }//enabledir 개수가 0일 경우 여긴 진행 불가 타일이므로 좌표,방향을 1개씩 제거 (현재 타일 failcoor)
+
+        if (_finishdir != 10)
+        {
+          if (_riverdata.RiverCoors.Count < 6)
+          {
+            //   Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor}->({_finishdir})->[{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 기준 미충족 해변으로 제명 {_riverdata.RiverCoors.Count+1}번 타일 다시 검사");
+            _failcoors.Add(_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir));
+            continue;
+          }//해변을 찾았는데 강 개수를 채우지 못한 경우(해당 타일 failcoor)
+          else
+          {
+            //   Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor} ->({_finishdir})-> [{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 강 종료");
+            _riverdata.RiverCoors.Add(_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir));
+            _riverdata.RiverDirs.Add(_finishdir);
+            _iscomplete = true;
+            break;
+          }//해변을 찾았고 강 최소 개수도 만족()
+        }
+
+        int _selectdir = 0;
+        switch (_enabledirs[Random.Range(0, _enabledirs.Count - 1)])
+        {
+          case -1:
+            _selectdir = RotateDir(_maindir, -1);
+            _curvecount--;
+            break;
+          case 0:
+            _selectdir = RotateDir(_maindir, 0);
+            break;
+          case 1:
+            _selectdir = RotateDir(_maindir, 1);
+            _curvecount++;
+            break;
+        }//enabledir 개수가 1 이상일 경우 무작위 1택
+        Vector2Int _nextcoor = _NewMapData.GetNextCoor(_currentcoor, (HexDir)_selectdir);
+
+        //  Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor} ->({_selectdir})-> [{_riverdata.RiverCoors.Count + 2}]{_nextcoor} 성공");
+        _riverdata.RiverCoors.Add(_nextcoor);
+        _riverdata.RiverDirs.Add(_selectdir);
+      }
+
+      if (_iscomplete) { _riverdatas[i] = _riverdata; }
+    }
+
+    for (int i = 0; i < _riverdatas.Length; i++)
+    {
+      for (int j = 0; j < _riverdatas[i].RiverCoors.Count; j++)
+      {
+        if (j == 0 || j == _riverdatas[i].RiverCoors.Count)
+        {
+          _NewMapData.Tile(_riverdatas[i].RiverCoors[j]).BottomEnvir = BottomEnvirType.RiverBeach;
+          _NewMapData.Tile(_riverdatas[i].RiverCoors[j]).BottomEnvirSprite = MyTiles.GetRiverBeach(1, 3);
+          _NewMapData.Tile(_riverdatas[i].RiverCoors[j]).Rotate = RotateDir(i, 3);
+
+        }//발원지
+        else if (j == _riverdatas[i].RiverCoors.Count - 1)
+        {
+          TileData _riverbeach = _NewMapData.Tile(_riverdatas[i].RiverCoors[j]);
+          List<int> _seadirs = new List<int>();
+          for (int k = 0; k < 6; k++)
+          {
+            if (_NewMapData.GetNextTile(_riverbeach, (HexDir)k).BottomEnvir == BottomEnvirType.Sea) _seadirs.Add(k);
+          }
+
+          int _lastdir = RotateDir(_riverdatas[i].RiverDirs[_riverdatas[i].RiverDirs.Count - 1], 3);
+          for (int k = 0; k < 6; k++)
+          {
+            if (MaxDirIndex() == _seadirs.Count)
+            {
+              _riverbeach.BottomEnvir = BottomEnvirType.RiverBeach;
+              _riverbeach.BottomEnvirSprite = MyTiles.GetRiverBeach(_seadirs.Count, RotateDir(_lastdir, -k) - 1);
+              _riverbeach.Rotate = k + 1;
+              break;
+            }
+            for (int l = 0; l < _seadirs.Count; l++)
+              _seadirs[l] = RotateDir(_seadirs[l], -1);
+          }
+
+          int MaxDirIndex()
+          {
+            int _max = 0;
+            foreach (var _dir in _seadirs) if (_max < _dir) _max = _dir;
+            return _max;
+          }
+
+        }//해변
+        else
+        {
+          TileData _rivertile = _NewMapData.Tile(_riverdatas[i].RiverCoors[j]);
+          int[] _combineddirs = new int[2] { RotateDir(_riverdatas[i].RiverDirs[j - 1], 3), _riverdatas[i].RiverDirs[j] };
+          for (int k = 0; k < 6; k++)
+          {
+            int _min = _combineddirs[0] < _combineddirs[1] ? _combineddirs[0] : _combineddirs[1];
+            int _max = _combineddirs[0] < _combineddirs[1] ? _combineddirs[1] : _combineddirs[0];
+
+            if (_min == 0 && _max <= 3)
+            {
+              _rivertile.BottomEnvir = BottomEnvirType.River;
+              _rivertile.Rotate = k;
+              _rivertile.BottomEnvirSprite = MyTiles.GetRiver(_max);
+            }
+
+            _combineddirs[0] = RotateDir(_combineddirs[0], -1);
+            _combineddirs[1] = RotateDir(_combineddirs[1], -1);
+          }
+        }//줄기
+      }
+    }
+    string _str = "";
+    foreach (var _river in _riverdatas)
+    {
+      for (int i = 0; i < _river.RiverCoors.Count; i++)
+      {
+        if (i == _river.RiverCoors.Count - 1)
+        {
+          _str += $"{_river.RiverCoors[i]}";
+        }
+        else
+        {
+          _str += $"{_river.RiverCoors[i]}->[{_river.RiverDirs[i]}]->";
+        }
+      }
+      _str += "\n";
+    }
+    //  Debug.Log(_str);
+    #endregion
+    //    Debug.Log("강 생성 완료");
+
     #region 사막
     /*
       Vector3Int _desertorigin = Vector3Int.zero;                //사막 시작점
@@ -490,13 +674,18 @@ public class maptext : MonoBehaviour
     List<Vector2Int> _newmountain = new List<Vector2Int>(); //산 위치 리스트
     int[] _mountaindirs = Random.Range(0, 2) == 0 ? new int[3] { 1, 3, 5 } : new int[3] { 0, 2, 4 };
 
-    while (_newmountain.Count < 9)
+    while (_newmountain.Count != 9)
     {
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("산 생성 중 무한루프 "+_newmountain.Count); return null; }
 
       int _index = _newmountain.Count / 3;
-      List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, (HexDir)_mountaindirs[_index]);
+      List<TileData> _lines_origin = _NewMapData.GetDirLines(_NewMapData.CenterTile, (HexDir)_mountaindirs[_index]);
+      List<TileData> _lines=new List<TileData>();
+      for(int i= (int)((float)_lines_origin.Count * 0.3f); i< (float)_lines_origin.Count * 0.6f; i++)
+      {
+        _lines.Add(_lines_origin[i]);
+      }
       Vector2Int _mountain_0=Vector2Int.zero,_mountain_1 = Vector2Int.zero, _mountain_2=Vector2Int.zero;
       int _mountaindir_1 = 2, _mountaindir_2 = 3;
       while (true)
@@ -504,26 +693,20 @@ public class maptext : MonoBehaviour
         LoopCount++;
         if (LoopCount > 1000) { Debug.Log("산 생성 중 무한루프");return null; }
 
-        _mountain_0 = _lines[Random.Range((int)((float)_lines.Count * 0.3f), (int)((float)_lines.Count * 0.9f))].Coordinate
+        _mountain_0 = _lines[Random.Range(0, _lines.Count)].Coordinate
           +new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
-        if (checkformountain(_NewMapData.Tile(_mountain_0)) == false)
-        {
-          continue;
-        }
-
         _mountain_1 = _NewMapData.GetNextTile(_mountain_0, (HexDir)_mountaindir_1).Coordinate;
-        if (checkformountain(_NewMapData.Tile(_mountain_1)) == false)
-        {
-          continue;
-        }
-
-
         _mountain_2 = _NewMapData.GetNextTile(_mountain_0, (HexDir)_mountaindir_2).Coordinate;
-        if (checkformountain(_NewMapData.Tile(_mountain_2)) == false)
-        {
-          continue;
-        }
 
+        List<TileData> _mountaintemps =_NewMapData.GetAroundTile(new List<TileData> { _NewMapData.Tile(_mountain_0), _NewMapData.Tile(_mountain_1), _NewMapData.Tile(_mountain_2) },1) ;
+
+        bool _enable = true;
+        foreach(var _tile in _mountaintemps)
+        {
+          if (_newmountain.Contains(_tile.Coordinate)) { _enable = false; break; }
+          if(_tile.BottomEnvir==BottomEnvirType.Sea||_tile.BottomEnvir==BottomEnvirType.Beach||_tile.BottomEnvir==BottomEnvirType.RiverBeach) { _enable = false; break; }
+        }
+        if (!_enable) continue;
 
         break;
       }
@@ -532,25 +715,6 @@ public class maptext : MonoBehaviour
       _newmountain.Add(_mountain_1);
       _newmountain.Add(_mountain_2);
 
-      bool checkformountain(TileData _tile)
-      {
-        List<TileData> _aroundtiles = _NewMapData.GetAroundTile(_tile, 1);
-
-        if (_tile.BottomEnvir != BottomEnvirType.Land)
-        {
-          return false;
-        }
-
-        foreach(TileData _othertile in _aroundtiles)
-        {
-          if (_newmountain.Contains(_othertile.Coordinate) == true)
-          {
-            return false;
-          }
-        }
-
-        return true;
-      }//주변 1타일에 산이 겹칠 경우 X
     }
     foreach (var _coor in _newmountain)
     {
@@ -561,215 +725,8 @@ public class maptext : MonoBehaviour
 
     //     Debug.Log("산 생성 완료");
 
-    #region 강
-    LoopCount = 0;
-
-    RiverData[] _riverdatas = new RiverData[3] { new RiverData(), new RiverData(), new RiverData() };
-    for (int i=0; i < _riverdatas.Length; i++)
-    {
-      List<int> _sourcetype = MixRandom(new List<int> { 0,2,4 });         //0,2,4(발원지 위치 코드,회전 코드)
-      for(int j=0; j< _sourcetype.Count; j++)
-      {
-        bool _iscomplete = false;
-        List<int> _sourcedirs=new List<int>();                              //강 주 줄기 방향(0~5)
-        switch (_sourcetype[j])
-        {
-          case 0: _sourcedirs = MixRandom( new List<int> { 0, 1 });break;
-          case 2: _sourcedirs = MixRandom(new List<int> { 2, 3 }); break;
-          case 4: _sourcedirs = MixRandom(new List<int> { 4, 5 }); break;
-        }
-        for(int k = 0; k < _sourcedirs.Count; k++)
-        {
-          Vector2Int _sourcepos = Vector2Int.zero;
-          switch (_sourcetype[j])
-          {
-            case 0: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3],(HexDir) 1);break;
-            case 2: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3+1], (HexDir)3); break;
-            case 4: _sourcepos = _NewMapData.GetNextCoor(_newmountain[i * 3+2], (HexDir)5); break;
-          }
-
-          RiverData _riverdata = new RiverData();
-          _riverdata.SourceType = _sourcetype[j];
-          _riverdata.RiverCoors.Add(_sourcepos);
-          _riverdata.RiverDirs.Add(_sourcedirs[k]);
-                    _riverdata.RiverCoors.Add(_NewMapData.GetNextCoor(_sourcepos,(HexDir) _sourcedirs[k]));
-          int _maindir = _sourcedirs[k];
-          int _curvecount = 0;
-          List<Vector2Int> _failcoors=new List<Vector2Int>();
-
-          Debug.Log($"{i + 1}번째 강 발원지 {_sourcepos}에서 {_maindir}방향으로 시작");
-          while (true)
-          {
-            LoopCount++;
-            if (LoopCount > 1000) { Debug.Log("강 생성 중 무한루프"); return null; }
-
-            if (_riverdata.RiverDirs.Count == 0) break;
-
-            int _finishdir = 10;                                            //(0~5)
-            List<int> _targetdirs = MixRandom(new List<int> { -1, 0, 1 });  //-1,0,1이 무작위로
-            List<int> _enabledirs=new List<int>();                          //확보한 방향들(-1,0,1)
-            Vector2Int _currentcoor = _riverdata.RiverCoors[_riverdata.RiverCoors.Count - 1];  //나아갈 타일 중심지
-            for (int l=0; l< _targetdirs.Count; l++)
-            {
-                            
-              int _nextdir = modifydir(_maindir, _targetdirs[l]);                //현재 선택된 방향(0~5)
-              TileData _nexttile = _NewMapData.GetNextTile(_currentcoor, (HexDir)_nextdir);
-
-                            if(_nexttile.Coordinate.x==0|| _nexttile.Coordinate.y==0|| _nexttile.Coordinate.x==ConstValues.MapSize-1 || _nexttile.Coordinate.y == ConstValues.MapSize - 1)
-                            {
-                                _enabledirs.Add(_targetdirs[l]);
-                                _finishdir = _nextdir;
-                            }
-              if (_curvecount == -2 && _targetdirs[l] == -1) continue;
-              if (_curvecount == 2 && _targetdirs[l] == 1) continue;//과도한 커브 금지
-              if (_failcoors.Contains(_nexttile.Coordinate)) continue;
-              if (_nexttile.TopEnvir == TopEnvirType.Mountain || _nexttile.TopEnvir == TopEnvirType.Highland) continue;//산,언덕 안됨
-                            bool _overlaped = false;
-                            for(int m = 0; m < i; m++)
-                            {
-                                if (_riverdatas[m].RiverCoors.Contains(_nexttile.Coordinate)) { _overlaped = true;break; }
-                            }
-                            if (_overlaped) continue;
-              _enabledirs.Add(_targetdirs[l]);
-              if (_nexttile.BottomEnvir == BottomEnvirType.Beach) _finishdir = _nextdir;
-            }
-
-            if (_enabledirs.Count == 0)
-            {
-              Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count+1}]{_currentcoor} 제명, {_riverdata.RiverCoors.Count}번으로 회귀");
-              _failcoors.Add(_currentcoor);
-              _riverdata.RiverCoors.Remove(_currentcoor);
-              _riverdata.RiverDirs.Remove(_riverdata.RiverDirs[_riverdata.RiverDirs.Count - 1]);
-              continue;
-            }//enabledir 개수가 0일 경우 여긴 진행 불가 타일이므로 좌표,방향을 1개씩 제거 (현재 타일 failcoor)
-
-            if (_finishdir != 10)
-            {
-              if (_riverdata.RiverCoors.Count < 6)
-              {
-                Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor}->({_finishdir})->[{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 기준 미충족 해변으로 제명 {_riverdata.RiverCoors.Count+1}번 타일 다시 검사");
-                _failcoors.Add(_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir));
-                continue;
-              }//해변을 찾았는데 강 개수를 채우지 못한 경우(해당 타일 failcoor)
-              else
-              {
-                Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor} ->({_finishdir})-> [{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 강 종료");
-                _riverdata.RiverCoors.Add(_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir));
-                _riverdata.RiverDirs.Add(_finishdir);
-                _iscomplete = true;
-                break;
-              }//해변을 찾았고 강 최소 개수도 만족()
-            }
-
-            int _selectdir = 0;
-            switch(_enabledirs[Random.Range(0, _enabledirs.Count - 1)])
-            {
-              case -1:
-                _selectdir = modifydir(_maindir, -1);
-                _curvecount--;
-                break;
-              case 0:
-                _selectdir=modifydir(_maindir, 0);
-                break;
-              case 1:
-                _selectdir = modifydir(_maindir, 1);
-                _curvecount++;
-                break;
-            }//enabledir 개수가 1 이상일 경우 무작위 1택
-            Vector2Int _nextcoor=_NewMapData.GetNextCoor(_currentcoor,(HexDir)_selectdir);
-
-            Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor} ->({_selectdir})-> [{_riverdata.RiverCoors.Count + 2}]{_nextcoor} 성공");
-            _riverdata.RiverCoors.Add(_nextcoor);
-            _riverdata.RiverDirs.Add(_selectdir);
-          }
-
-          if (_riverdata.RiverCoors.Count < 6) continue;
-
-          if (_iscomplete) { _riverdatas[i] = _riverdata; break; }
-        }
-        if (_iscomplete) continue;
-      }
-
-      int modifydir(int maindir, int modify)
-      {
-        int _temp = maindir + modify;
-        return _temp < 0 ? _temp + 6 : _temp > 6 ? _temp - 6 : _temp;
-      }
-    }
-
-    foreach (var _river in _riverdatas)
-    {
-      for(int j = 0; j < _river.RiverCoors.Count; j++)
-      {
-        if (j == 0)
-        {
-          TileData _source = _NewMapData.Tile(_river.RiverCoors[0]);
-          _source.Rotate = _river.SourceType;
-          _source.BottomEnvirSprite = MyTiles.GetSource(RotateDir(_river.RiverDirs[0],-_source.Rotate));
-
-        }//발원지
-        else if (j == _river.RiverCoors.Count - 1)
-        {
-          TileData _riverbeach=_NewMapData.Tile(_river.RiverCoors[j]);
-          List<int> _seadirs = new List<int>();
-          for (int k= 0; k < 6; k++)
-          {
-            if (_NewMapData.GetNextTile(_riverbeach, (HexDir)k).BottomEnvir == BottomEnvirType.Sea) _seadirs.Add(k);
-          }
-
-                    int _lastdir = RotateDir(_river.RiverDirs[_river.RiverDirs.Count - 1], 3);
-          for (int k = 0; k < 6; k++)
-          {
-            if (MaxDirIndex() == _seadirs.Count)
-            {
-              _riverbeach.BottomEnvirSprite = MyTiles.GetRiverBeach(_seadirs.Count,RotateDir(_lastdir,-k)-1);
-              _riverbeach.Rotate = k;
-              break;
-            }
-            for(int l=0;l<_seadirs.Count; l++)
-            _seadirs[l] = RotateDir(_seadirs[l], -1);
-          }
-
-          int MaxDirIndex()
-          {
-            int _max = 0;
-            foreach (var _dir in _seadirs) if (_max < _dir) _max = _dir;
-            return _max;
-          }
-
-        }//해변
-        else
-        {
-          TileData _rivertile = _NewMapData.Tile(_river.RiverCoors[j]);
-          int[] _combineddirs=new int[2] { RotateDir(_river.RiverDirs[j - 1], 3), _river.RiverDirs[j] };
-          for(int k = 0; k < 6; k++)
-          {
-            int _min=_combineddirs[0]<_combineddirs[1]?_combineddirs[0]:_combineddirs[1];
-            int _max = _combineddirs[0] < _combineddirs[1] ? _combineddirs[1] : _combineddirs[0];
-
-            if (_min == 0 && _max <= 3)
-            {
-              _rivertile.Rotate = k;
-              _rivertile.BottomEnvirSprite = MyTiles.GetRiver(_max);
-            }
-
-            _combineddirs[0]= RotateDir(_combineddirs[0], -1);
-            _combineddirs[1]=RotateDir(_combineddirs[1], -1);
-          }
-        }//줄기
-      }
-    }
-
-    #endregion
-
-
-    GameManager.Instance.MyGameData.MyMapData = _NewMapData;
-    MakeTilemap();
-    return null;
-
-    //    Debug.Log("강 생성 완료");
-
     #region 고원
+    /*
     LoopCount = 0;
 
     int _highlandmaxcount = Mathf.CeilToInt((float)ConstValues.LandSize * (float)ConstValues.LandSize * ConstValues.Ratio_highland);//고원 최대 개수
@@ -853,6 +810,7 @@ public class maptext : MonoBehaviour
         return true;
       }//발원지,강,바다,고원,산이면 False 아니면 True
     }
+    */
     #endregion
     //     Debug.Log("고원 생성 완료");
 
@@ -861,59 +819,58 @@ public class maptext : MonoBehaviour
 
     int _forestmaxcount = Mathf.CeilToInt((float)ConstValues.LandSize * (float)ConstValues.LandSize * ConstValues.Ratio_forest);    //숲 최대 개수
     int _forestcountaver = _forestmaxcount / 4; //숲 더미 평균 최대개수
-    List<Vector2Int> _forests = new List<Vector2Int>();         //편성 완료된 숲 좌표들
+    List<Vector2Int> _forests = new List<Vector2Int>();         //편성 완료된 숲 좌표들 보관할 리스트
 
-    List<Vector2Int> _forestbundle_origin=new List<Vector2Int>();
-    int _forestmodifycount = 0;
-    for(int i = 1; i < 100; i++)
-    {
-      _forestbundle_origin = _NewMapData.GetAroundCoor(Vector2Int.zero,i);
-      if (_forestbundle_origin.Count > _forestcountaver)
-      {
-        _forestmodifycount = _forestbundle_origin.Count - _forestcountaver;
-        break;
-      }
-    }
-                                                                 //  Debug.Log($"숲 최대 개수 : {_forestmaxcount}  숲 더미 평균 개수 : {_forestcountaver}");
+    List<Vector2Int> _forestbundle_origin=new List<Vector2Int>();//(10,10)을 중심으로 퍼져나가는 모양새
+    _forestbundle_origin = _NewMapData.GetAroundCoor(Vector2Int.one * 10, 5);
+
+    int _forestmodifycount = (_forestbundle_origin.Count / 3) * 2;
+
+    List<TileData> _emptylandtiles = _NewMapData.GetEnvirTiles
+    (new List<BottomEnvirType> { BottomEnvirType.Land, BottomEnvirType.Source, BottomEnvirType.River }, new List<TopEnvirType> { TopEnvirType.Mountain, TopEnvirType.Highland, TopEnvirType.Forest }, 1);
+
     while (_forests.Count < _forestmaxcount)
     {
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("숲 생성 중 무한루프"); return null; }
 
       List<Vector2Int> _forestbundle=new List<Vector2Int>();
-      foreach (var _coor in _forestbundle_origin) _forestbundle.Add(_coor);
-      List<Vector2Int> _deletebundles=new List<Vector2Int>();
+      foreach (var _coor in _forestbundle_origin) _forestbundle.Add(_coor);//origin(10,10)을 복사한 _forestbundle(10,10)
 
+      List<Vector2Int> _deletebundles=new List<Vector2Int>();              //빈 구멍으로 만들 위치(10,10)
       for(int i = 0; i < _forestmodifycount; i++)
       {
-        Vector2Int _temp= _forestbundle_origin[Random.Range(0, _forestbundle_origin.Count)];
-        if (_deletebundles.Contains(_temp))
+        Vector2Int _deletetarget= _forestbundle[Random.Range(0, _forestbundle.Count)];
+        if (_deletebundles.Contains(_deletetarget))
         {
           i--;
           continue;
         }
+        _deletebundles.Add(_deletetarget);
       }
       foreach(var _deletecoor in _deletebundles)_forestbundle.Remove(_deletecoor);
 
-      List<TileData> _emptylandtiles = _NewMapData.GetEnvirTiles
-        (new List<BottomEnvirType> { BottomEnvirType.Land }, new List<TopEnvirType> { TopEnvirType.Mountain, TopEnvirType.Highland,TopEnvirType.Forest },1);
       foreach (var _tiles in _deletebundles) _forestbundle.Remove(_tiles);
-      //이거롷 개수 충족한 듬성듬성 숲 완성
+      //이거롷 개수 충족한 듬성듬성 숲 완성((10,10)기준)
       
       Vector2Int _startcoor=_emptylandtiles[Random.Range(0,_emptylandtiles.Count)].Coordinate;
-      foreach(var _tile in _forestbundle)
+      foreach(var _modify in _forestbundle)
       {
-        Vector2Int _targetcoor = _startcoor + _tile;
-        TileData _targettile = _NewMapData.TileDatas[_targetcoor.x, _targetcoor.y];
-        if (_targettile.BottomEnvir != BottomEnvirType.Land && _targettile.TopEnvir == TopEnvirType.NULL)
-        {
-          _forests.Add(_targetcoor);
-          _NewMapData.Tile(_targetcoor).TopEnvir = TopEnvirType.Forest;
-          _NewMapData.Tile(_targetcoor).TopEnvirSprite =
-            (_NewMapData.Tile(_targetcoor).BottomEnvir == BottomEnvirType.River ||
-            _NewMapData.Tile(_targetcoor).BottomEnvir == BottomEnvirType.Source ||
-            _NewMapData.Tile(_targetcoor).BottomEnvir == BottomEnvirType.RiverBeach) ? TileSpriteType.RiverForest : TileSpriteType.Forest;
-        }
+        Vector2Int _targetcoor = _startcoor + _modify-Vector2Int.one*10;
+        if (_targetcoor.x < 0 || _targetcoor.y < 0 || _targetcoor.x > ConstValues.MapSize - 1 || _targetcoor.y > ConstValues.MapSize - 1) continue;
+        TileData _targettile = _NewMapData.Tile(_targetcoor);
+
+        if (_forests.Contains(_targetcoor)) continue;
+        if (_targettile.BottomEnvir==BottomEnvirType.Sea||_targettile.BottomEnvir==BottomEnvirType.Beach||
+            _targettile.BottomEnvir==BottomEnvirType.RiverBeach) continue;
+        if (_targettile.TopEnvir == TopEnvirType.Forest || _targettile.TopEnvir == TopEnvirType.Mountain) continue;
+
+        _targettile.TopEnvir = TopEnvirType.Forest;
+        _targettile.TopEnvirSprite = (_targettile.BottomEnvir == BottomEnvirType.Source || _targettile.BottomEnvir == BottomEnvirType.River) ?
+          TileSpriteType.RiverForest : TileSpriteType.Forest;
+
+        _forests.Add(_targetcoor);
+        _emptylandtiles.Remove(_NewMapData.Tile(_targetcoor));
       }
 
     }//숲 개수 채우기 전까지 반복
@@ -921,7 +878,6 @@ public class maptext : MonoBehaviour
 
     #endregion
     //   Debug.Log("숲 생성 완료");
-
     #region 성채
     LoopCount = 0;
 
@@ -993,15 +949,18 @@ public class maptext : MonoBehaviour
     }
     foreach (HexDir _hexdir in _citydirs) _towndirs.Remove(_hexdir);
     _towndirs.Remove(_towndirs[Random.Range(0, _towndirs.Count)]);
+    List<List<TileData>> _enablelines = new List<List<TileData>>();
+    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _citydirs[0]));
+    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _citydirs[1]));
+    List<TileData> _disabletiles=new List<TileData>();
 
     while (_citytiles.Count != 2*2)
     {
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
+      int _index = _citytiles.Count / 2;
 
-      List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, _citydirs[_citytiles.Count / 2]);
-
-      Vector2Int _selectcoor = _lines[Random.Range((int)(_lines.Count * 0.4f), (int)(_lines.Count * 1.0f))].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _enablelines[_index][Random.Range((int)(_enablelines[_index].Count * 0.3f), (int)(_enablelines[_index].Count * 1.0f))].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
       TileData _firsttile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
       if(citycheck(_firsttile)==false)continue;
 
@@ -1025,6 +984,7 @@ public class maptext : MonoBehaviour
       bool citycheck(TileData tile)
       {
         if (tile.TopEnvir == TopEnvirType.Mountain) return false;
+        if (tile.BottomEnvir == BottomEnvirType.Sea) return false;
         if (tile.TileSettle != null) return false;
         if(_citytiles.Contains(tile)) return false;
 
@@ -1053,24 +1013,27 @@ public class maptext : MonoBehaviour
 
       List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, _towndirs[_towntiles.Count]);
 
-      Vector2Int _selectcoor = _lines[Random.Range((int)(_lines.Count * 0.4f), (int)(_lines.Count * 1.0f))].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
-      TileData _towntile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
+      Vector2Int _selectcoor = _lines[Random.Range((int)(_lines.Count * 0.25f), (int)(_lines.Count * 1.0f))].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
+      TileData _towntile = _NewMapData.Tile(_selectcoor);
 
       if (_towntile.TopEnvir == TopEnvirType.Mountain) continue;
       if (_towntile.TileSettle != null) continue;
       if (_towntiles.Contains(_towntile)) continue;
+      if (_towntile.BottomEnvir == BottomEnvirType.Sea) continue;
+
       List<TileData> _aroundtile = _NewMapData.GetAroundTile(_towntile, 2);
       bool _breakable = false;
       foreach(var _tile in _aroundtile)
       {
         if (_towntiles.Contains(_tile)||_tile.TileSettle!=null) { _breakable = true;break; }
       }
-      if (_breakable) continue;
+      if (_breakable) continue;//주위 2칸에 다른 정착지가 있으면 X
 
       _NewMapData.TileDatas[_towntile.Coordinate.x, _towntile.Coordinate.y].TileSettle = Towns[_towntiles.Count];
       _NewMapData.Tile(_towntile.Coordinate).LandMark = LandMarkType.Town;
       _towntiles.Add(_towntile);
     }
+
     for(int i = 0; i < _towntiles.Count; i++)
     {
       Towns[i].Tiles.Add(_towntiles[i]);
@@ -1081,13 +1044,16 @@ public class maptext : MonoBehaviour
 
     #region 정착지 정보
 
-    List<Settlement> _finishedsettles=new List<Settlement>();
-    List<Settlement> CastleTemp = new List<Settlement>() { Castle };
-    SetSettle(ref CastleTemp, ref _finishedsettles);
-    SetSettle(ref Cities,ref _finishedsettles);
-    SetSettle(ref Towns, ref _finishedsettles);
+    List<Settlement> _castlelisttemp = new List<Settlement>() { Castle };
+    SetSettle(ref _castlelisttemp);
+    SetSettle(ref Cities);
+    SetSettle(ref Towns);
 
-    _NewMapData.AllSettles.Add(Castle);
+    _NewMapData.Castles = _castlelisttemp[0];
+    _NewMapData.Cities = Cities;
+    _NewMapData.Towns= Towns;
+
+    _NewMapData.AllSettles.Add(_castlelisttemp[0]);
     _NewMapData.AllSettles.Add(Cities[0]);
     _NewMapData.AllSettles.Add(Cities[1]);
     _NewMapData.AllSettles.Add(Towns[0]);
@@ -1095,25 +1061,26 @@ public class maptext : MonoBehaviour
     _NewMapData.AllSettles.Add(Towns[2]);
 
     #endregion
-    void SetSettle(ref List<Settlement> newsettles,ref List<Settlement> completesettles)
+
+    void SetSettle(ref List<Settlement> newsettles)
     {
       for (int i = 0; i < newsettles.Count; i++)
       {
-        Settlement newsettle = newsettles[i];
-        List<TileData> _aroundtiles_1 = _NewMapData.GetAroundTile(newsettle.Tiles, 1);
-        List<TileData> _aroundtiles_2 = _NewMapData.GetAroundTile(newsettle.Tiles, 1);
+        List<TileData> _aroundtiles_1 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 1);
+        List<TileData> _aroundtiles_2 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 2);
 
-        newsettle.IsRiver = (CheckEnvir(_aroundtiles_1, BottomEnvirType.River) ||
+        newsettles[i].IsRiver = CheckEnvir(_aroundtiles_1, BottomEnvirType.River) ||
           CheckEnvir(_aroundtiles_1, BottomEnvirType.Source) ||
-          CheckEnvir(_aroundtiles_1, BottomEnvirType.RiverBeach));
-        newsettle.IsMountain = CheckEnvir(_aroundtiles_2, TopEnvirType.Mountain);
-        newsettle.IsSea = CheckEnvir(_aroundtiles_2, BottomEnvirType.Sea) || CheckEnvir(_aroundtiles_2, BottomEnvirType.Beach) || CheckEnvir(_aroundtiles_2, BottomEnvirType.RiverBeach);
-        newsettle.IsHighland = CheckEnvir(_aroundtiles_1, TopEnvirType.Highland);
-        newsettle.IsForest = CheckEnvir(_aroundtiles_1, TopEnvirType.Forest);
+          CheckEnvir(_aroundtiles_1, BottomEnvirType.RiverBeach);
+        newsettles[i].IsMountain = CheckEnvir(_aroundtiles_2, TopEnvirType.Mountain);
+        newsettles[i].IsSea = CheckEnvir(_aroundtiles_2, BottomEnvirType.Sea) || CheckEnvir(_aroundtiles_2, BottomEnvirType.Beach) || CheckEnvir(_aroundtiles_2, BottomEnvirType.RiverBeach);
+        newsettles[i].IsHighland = CheckEnvir(_aroundtiles_1, TopEnvirType.Highland);
+        newsettles[i].IsForest = CheckEnvir(_aroundtiles_1, TopEnvirType.Forest);
+
 
         string[] _namearray;
-        if (newsettle.Type == SettlementType.Town) { _namearray = SettlementName.TownNams; }
-        else if (newsettle.Type == SettlementType.City) { _namearray = SettlementName.CityNames; }
+        if (newsettles[i].Type == SettlementType.Town) { _namearray = SettlementName.TownNams; }
+        else if (newsettles[i].Type == SettlementType.City) { _namearray = SettlementName.CityNames; }
         else { _namearray = SettlementName.CastleNames; }
 
         int _infoindex = Random.Range(0, _namearray.Length);
@@ -1121,17 +1088,81 @@ public class maptext : MonoBehaviour
         {
           _infoindex = Random.Range(0, _namearray.Length);
 
-          foreach (var _othersettle in completesettles)
-            if (_othersettle.Type == newsettle.Type && _othersettle.Index == _infoindex) continue;
+          foreach (var _othersettle in newsettles)
+            if (_othersettle.Index == _infoindex) continue;
 
           break;
         }
-        newsettle.Index = _infoindex;
-        completesettles.Add(newsettle);
+        newsettles[i].Index = _infoindex;
       }
     }
 
+    bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
+    bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false, _citysea = false;
+    bool _castleriver = false, _castleforest = false, _castlehighland = false, _castlemountain = false;
+
+    foreach (var _town in _NewMapData.Towns)
+    {
+      if (_town.IsRiver) _townriver = true;
+      if (_town.IsForest) _townforest = true;
+      if (_town.IsHighland) _townhighland = true;
+      if (_town.IsMountain) _townmountain = true;
+      if (_town.IsSea) _townsea = true;
+    }
+    foreach (var _city in _NewMapData.Cities)
+    {
+      if (_city.IsRiver) _cityriver = true;
+      if (_city.IsForest) _cityforest = true;
+      if (_city.IsHighland) _cityhighland = true;
+      if (_city.IsMountain) _citymountain = true;
+      if (_city.IsSea) _citysea = true;
+    }
+    var _castle = _NewMapData.Castles;
+    if (_castle.IsRiver) _castleriver = true;
+    if (_castle.IsForest) _castleforest = true;
+    if (_castle.IsHighland) _castlehighland = true;
+    if (_castle.IsMountain) _castlemountain = true;
+
+    if (!_townriver || !_townforest || !_townmountain || !_townsea ||
+             !_cityriver || !_cityforest || !_citymountain || !_citysea ||
+             !_castleriver || !_castleforest || !_castlemountain)
+    {
+      _str = "";
+      if (!_townriver) _str += "마을 강  ";
+      if (!_townforest) _str += "마을 숲  ";
+      //  if (!_townhighland) _str += "마을 고원  ";
+      if (!_townmountain) _str += "마을 산  ";
+      if (!_townsea) _str += "마을 바다  ";
+      if (!_cityriver) _str += "도시 강  ";
+      if (!_cityforest) _str += "도시 숲  ";
+      //  if (!_cityhighland) _str += "도시 고원  ";
+      if (!_citymountain) _str += "도시 산  ";
+      if (!_citysea) _str += "도시 바다  ";
+      if (!_castleriver) _str += "성채 강  ";
+      if (!_castleforest) _str += "성채 숲  ";
+      //   if (!_castlehighland) _str += "성채 고원  ";
+      if (!_castlemountain) _str += "성채 산  ";
+
+      Debug.Log("번 맵    " + _str + "없음");
+    }
+
+    /* Debug.Log($"성채\n" +
+       $"{_NewMapData.Castles.Tiles[0].Coordinate} {_NewMapData.Castles.Tiles[1].Coordinate} {_NewMapData.Castles.Tiles[2].Coordinate}\n\n" +
+       $"도시\n" +
+       $"{_NewMapData.Cities[0].Tiles[0].Coordinate} {_NewMapData.Cities[0].Tiles[1].Coordinate}\n" +
+       $"{_NewMapData.Cities[1].Tiles[0].Coordinate} {_NewMapData.Cities[1].Tiles[1].Coordinate}\n\n" +
+       $"마을\n" +
+       $"{_NewMapData.Towns[0].Tiles[0].Coordinate}\n" +
+       $"{_NewMapData.Towns[1].Tiles[0].Coordinate}\n" +
+       $"{_NewMapData.Towns[0].Tiles[0].Coordinate}");*/
+
     return _NewMapData;
+
+
+    GameManager.Instance.MyGameData.MyMapData = _NewMapData;
+    MakeTilemap();
+    return null;
+
   }
   bool CheckEnvir(List<TileData> tiles, BottomEnvirType envir)
   {
@@ -1151,10 +1182,11 @@ public class maptext : MonoBehaviour
   }
   int RotateDir(int origindir,int modify)
   {
-    origindir += modify;
-    if (origindir < 0) origindir += 6;
-    else if (origindir > 5) origindir -= 6;
-    return origindir;
+    int _temp= origindir + modify;
+    if (_temp < 0) _temp += 6;
+    else if (_temp > 5) _temp -= 6;
+    if (_temp == 6) Debug.Log($"{origindir} {modify} 테챠아아앗");
+    return _temp;
   }
   public void MakeTilemap()
     {
@@ -1175,16 +1207,15 @@ public class maptext : MonoBehaviour
         _pos = Tilemap_bottom.CellToWorld(_newpos);
         _rotate = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].Rotate;
 
-        maketile(MyTiles.GetTile(_sprtype),_pos,_rotate,new Vector2Int(j,i));
+        maketile(MyTiles.GetTile(_sprtype),_pos,_rotate,new Vector2Int(j,i),true);
 
         _sprtype = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].TopEnvirSprite;
         _rotate = 0;
 
-        if(_sprtype!=TileSpriteType.NULL) maketile(MyTiles.GetTile(_sprtype), _pos, _rotate,new Vector2Int(j, i));
+        if(_sprtype!=TileSpriteType.NULL) maketile(MyTiles.GetTile(_sprtype), _pos, _rotate,new Vector2Int(j, i),false);
       }
         }
     //이 밑은 정착지를 버튼으로 만드는거
-    return;
 
     Vector3 _zeropos = Vector3.zero;
     Vector3 _buttonpos = Vector3.zero;
@@ -1195,40 +1226,40 @@ public class maptext : MonoBehaviour
       townpos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.Towns[i].Tiles[0].Coordinate));
       foreach (Vector3 pos in townpos) _buttonpos += pos;
       //위치(Rect로 변환) 집어넣고
-      List<GameObject> _images=new List<GameObject>();
-      foreach(Vector3 _pos in townpos)
+
+      string _townname = $"town_{GameManager.Instance.MyGameData.MyMapData.Towns[i].OriginName}";
+      GameObject _townobj =new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer)});
+      //버튼 오브젝트
+
+      RectTransform _townrect = _townobj.GetComponent<RectTransform>();
+      _townrect.anchoredPosition3D = new Vector3(_buttonpos.x,_buttonpos.y,0.0f);
+      _townobj.transform.SetParent(SettlerHolder);
+      _townobj.transform.localScale = Vector3.one;
+      _townrect.anchoredPosition3D = new Vector3(_townrect.anchoredPosition3D.x, _townrect.anchoredPosition3D.y, 0.0f);
+
+      List<GameObject> _images = new List<GameObject>();
+      foreach (Vector3 _pos in townpos)
       {
-        GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        GameObject _temp = new GameObject(_pos.ToString(), new System.Type[] { typeof(RectTransform), typeof(Image) });
         RectTransform _rect = _temp.GetComponent<RectTransform>();
         _rect.localScale = Vector3.one;
         _rect.anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
         _rect.sizeDelta = _cellsize;
         _temp.GetComponent<Image>().sprite = Townsprite;
         _temp.transform.SetParent(SettlerHolder);
-        _rect.anchoredPosition3D=new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
+        _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
         _images.Add(_temp);
       }//이미지 만들고 위치,스프라이트 넣기
-      GameObject _button =new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
-      //버튼 오브젝트
-      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x,_buttonpos.y,0.0f);
-            _button.transform.SetParent(SettlerHolder);
-      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_button.GetComponent<RectTransform>().anchoredPosition3D.x, _button.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
+
       for (int j = 0; j < _images.Count; j++)
       {
-        _images[j].transform.SetParent(_button.transform, true);
+        _images[j].transform.SetParent(_townobj.transform, true);
         _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_images[j].GetComponent<RectTransform>().anchoredPosition.x, _images[j].GetComponent<RectTransform>().anchoredPosition.y, 0.0f);
         _images[j].transform.localScale = Vector3.one;
-        _images[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
       }
-      GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-      _questicon.GetComponent<Image>().enabled = false;
-      _questicon.transform.SetParent(_button.transform);
-      _questicon.transform.localScale = Vector3.one;
-      _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-      _questicon.GetComponent<RectTransform>().sizeDelta=Vector3.one*45.0f;
-      _button.AddComponent<CanvasGroup>().alpha = 0.3f;
-      _button.GetComponent<SettlementIcon>().Setup(GameManager.Instance.MyGameData.MyMapData.Towns[i],_questicon.GetComponent<Image>());
-    //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
+      //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
+
+      MapUIScript.TownIcons.Add(_townobj);
     }
 
         _zeropos = Vector3.zero;
@@ -1236,15 +1267,25 @@ public class maptext : MonoBehaviour
     {
       _buttonpos = Vector3.zero;
       List<Vector3> citypos = new List<Vector3>();
-      citypos.Add(Tilemap_top.CellToWorld((Vector3Int) GameManager.Instance.MyGameData.MyMapData.Cities[i * 2].Tiles[0].Coordinate) );
-      citypos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.Cities[i * 2].Tiles[1].Coordinate));
+      citypos.Add(Tilemap_top.CellToWorld((Vector3Int) GameManager.Instance.MyGameData.MyMapData.Cities[i].Tiles[0].Coordinate) );
+      citypos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.Cities[i].Tiles[1].Coordinate));
       foreach (Vector3 pos in citypos) _buttonpos += pos;
             _buttonpos /= 2;
             //위치(Rect로 변환) 집어넣고
             List<GameObject> _images = new List<GameObject>();
+
+      string _cityname = $"city_{GameManager.Instance.MyGameData.MyMapData.Cities[i].OriginName}";
+      GameObject _cityobj = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), });
+      //버튼 오브젝트
+      RectTransform _cityrect = _cityobj.GetComponent<RectTransform>();
+      _cityrect.anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
+      _cityobj.transform.SetParent(SettlerHolder);
+      _cityobj.transform.localScale = Vector3.one;
+      _cityrect.anchoredPosition3D = new Vector3(_cityrect.anchoredPosition3D.x, _cityrect.anchoredPosition3D.y, 0.0f);
+
       foreach (Vector3 _pos in citypos)
       {
-        GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        GameObject _temp = new GameObject(_pos.ToString(), new System.Type[] { typeof(RectTransform), typeof(Image) });
         RectTransform _rect = _temp.GetComponent<RectTransform>();
         _rect.localScale = Vector3.one;
         _rect.anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
@@ -1253,33 +1294,21 @@ public class maptext : MonoBehaviour
         _temp.transform.SetParent(SettlerHolder);
         _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
         _images.Add(_temp);
-                _zeropos += _pos;
-            }//이미지 만들고 위치,스프라이트 넣기
-
-      GameObject _button = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
-      //버튼 오브젝트
-      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
-      _button.transform.SetParent(SettlerHolder);
-      _button.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_button.GetComponent<RectTransform>().anchoredPosition3D.x, _button.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
+        _zeropos += _pos;
+      }//이미지 만들고 위치,스프라이트 넣기
+      
       for (int j = 0; j < _images.Count; j++)
       {
-                //     Debug.Log($"원 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
-                Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _button.GetComponent<RectTransform>().anchoredPosition;
-        _images[j].transform.SetParent(_button.transform, true);
-         //       Debug.Log($"부모 변경 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
-                _images[j].transform.localScale = Vector3.one;
-                _images[j].GetComponent<RectTransform>().anchoredPosition3D=new Vector3(_newpos.x,_newpos.y,0.0f);
-        _images[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
+        //     Debug.Log($"원 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
+        Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _cityrect.anchoredPosition;
+        _images[j].transform.SetParent(_cityobj.transform, true);
+        //       Debug.Log($"부모 변경 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
+        _images[j].transform.localScale = Vector3.one;
+        _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x, _newpos.y, 0.0f);
       }
-      GameObject _questicon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-      _questicon.GetComponent<Image>().enabled = false;
-      _questicon.transform.SetParent(_button.transform);
-      _questicon.transform.localScale = Vector3.one;
-      _questicon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-      _questicon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
-      _button.AddComponent<CanvasGroup>().alpha = 0.3f;
-      _button.GetComponent<SettlementIcon>().Setup(GameManager.Instance.MyGameData.MyMapData.Cities[i], _questicon.GetComponent<Image>());
       //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
+
+      MapUIScript.CityIcons.Add(_cityobj);
     }
 
         _zeropos = Vector3.zero;
@@ -1291,10 +1320,20 @@ public class maptext : MonoBehaviour
     foreach (Vector3 pos in castlepos) _buttonpos += pos;
     _buttonpos /= 3;
     //위치(Rect로 변환) 집어넣고
+
+    string _castlename = $"castle_{GameManager.Instance.MyGameData.MyMapData.Castles.OriginName}";
+    GameObject _castleobj = new GameObject(_castlename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer)});
+    //버튼 오브젝트
+    RectTransform _castlerect = _castleobj.GetComponent<RectTransform>();
+    _castlerect.anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
+    _castleobj.transform.SetParent(SettlerHolder);
+    _castleobj.transform.localScale = Vector3.one;
+    _castlerect.anchoredPosition3D = new Vector3(_castlerect.anchoredPosition3D.x, _castlerect.anchoredPosition3D.y, 0.0f);
+
     List<GameObject> _castleimages = new List<GameObject>();
     foreach (Vector3 _pos in castlepos)
     {
-      GameObject _temp = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+      GameObject _temp = new GameObject(_pos.ToString(), new System.Type[] { typeof(RectTransform),  typeof(Image) });
       RectTransform _rect = _temp.GetComponent<RectTransform>();
       _rect.localScale = Vector3.one;
       _rect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0);
@@ -1305,33 +1344,19 @@ public class maptext : MonoBehaviour
       _castleimages.Add(_temp);
       _zeropos += _pos;
     }//이미지 만들고 위치,스프라이트 넣기
-
-    GameObject _castlebutton = new GameObject("lehoo", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(SettlementIcon) });
-    //버튼 오브젝트
-    _castlebutton.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
-    _castlebutton.transform.SetParent(SettlerHolder);
-    _castlebutton.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_castlebutton.GetComponent<RectTransform>().anchoredPosition3D.x, _castlebutton.GetComponent<RectTransform>().anchoredPosition3D.y, 0.0f);
+    
     for (int j = 0; j < _castleimages.Count; j++)
     {
-      Vector3 _newpos = _castleimages[j].GetComponent<RectTransform>().anchoredPosition - _castlebutton.GetComponent<RectTransform>().anchoredPosition;
-      _castleimages[j].transform.SetParent(_castlebutton.transform, true);
+      Vector3 _newpos = _castleimages[j].GetComponent<RectTransform>().anchoredPosition - _castlerect.anchoredPosition;
+      _castleimages[j].transform.SetParent(_castleobj.transform, true);
       _castleimages[j].transform.localScale = Vector3.one;
       _castleimages[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x, _newpos.y, 0.0f);
-      _castleimages[j].AddComponent<Outline>().effectDistance = new Vector2(1.5f, -1.5f);
     }
-    GameObject _castlequesticon = new GameObject("questicon", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-    _castlequesticon.GetComponent<Image>().enabled = false;
-    _castlequesticon.transform.SetParent(_castlebutton.transform);
-    _castlequesticon.transform.localScale = Vector3.one;
-    _castlequesticon.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-    _castlequesticon.GetComponent<RectTransform>().sizeDelta = Vector3.one * 45.0f;
-    _castlebutton.AddComponent<CanvasGroup>().alpha = 0.3f;
-    _castlebutton.GetComponent<SettlementIcon>().Setup(GameManager.Instance.MyGameData.MyMapData.Castles, _castlequesticon.GetComponent<Image>());
     //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
+    MapUIScript.CastleIcon = _castleobj;
 
 
-
-    void maketile(Sprite spr, Vector3 pos, int rot,Vector2Int coordinate)
+    void maketile(Sprite spr, Vector3 pos, int rot,Vector2Int coordinate,bool isbottom)
     {
       Vector3 _newpos = pos;
       string _name = $"{coordinate.x},{coordinate.y}  {GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).BottomEnvir},{GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).TopEnvir}";
@@ -1339,9 +1364,26 @@ public class maptext : MonoBehaviour
       _tile.GetComponent<Image>().sprite = spr;
       _tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,-60.0f*rot));
       RectTransform _rect = _tile.GetComponent<RectTransform>();
-      _rect.anchoredPosition3D =new Vector3(_newpos.x,_newpos.y,0.0f);
+
+      switch (isbottom)
+      {
+        case true:
+          _tile.transform.SetParent(TileHolder_bottomenvir);
+         Outline _outline= _tile.AddComponent<Outline>();
+          _outline.effectColor = Color.black;
+          _outline.effectDistance = Vector2.one * 2.0f;
+          Button _button= _tile.AddComponent<Button>();
+          Navigation _nav = new Navigation();
+          _nav.mode = Navigation.Mode.None;
+          _button.navigation = _nav;
+          _outline.enabled = false;
+          break;
+        case false:
+          _tile.transform.SetParent(TileHolder_topenvir);
+          break;
+      }
       _rect.sizeDelta = _cellsize;
-      _tile.transform.SetParent(TileHolder);
+      _rect.position = new Vector3(_newpos.x, _newpos.y,_rect.anchoredPosition3D.z);
       _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition3D.x, _rect.anchoredPosition3D.y, 0.0f);
       _tile.transform.localScale = Vector3.one;
     }
@@ -1378,7 +1420,7 @@ public class maptext : MonoBehaviour
 }
 public class RiverData
 {
-  public int SourceType = 0;                                            //0(우) 1(하단) 2(좌)
+  public int RiverIndex = 0;                                            //시계방향 0~5
   public List<Vector2Int> RiverCoors= new List<Vector2Int>();           //모든 강 좌표
   public List<int> RiverDirs=new List<int>();                           //모든 강 진행 방향(절대 방향)
 }

@@ -14,7 +14,7 @@ public class Settlement
   }
   public List<PlaceType> EnablePlaces=new List<PlaceType>();
   public SettlementType Type;
-  public int Index;
+  public int Index=-1;
   public string OriginName
   {
     get
@@ -99,6 +99,7 @@ public class Settlement
       return new Vector3(_pos.x/Tiles.Count,_pos.y/Tiles.Count);
     }
   }
+  public List<RectTransform> TileIcons=new List<RectTransform>();
   private TileInfoData tiledata = null;
   public TileInfoData TileData
   {
@@ -405,11 +406,12 @@ public class MapData
     {
       TileData _next = GetNextTile(_lines[_lines.Count - 1], dir);
       _lines.Add(_next);
-      if (_next.BottomEnvir == BottomEnvirType.Beach || _next.BottomEnvir == BottomEnvirType.RiverBeach)
+      if (_lines.Count>3&&( _next.BottomEnvir == BottomEnvirType.Beach || _next.BottomEnvir == BottomEnvirType.RiverBeach))
       {
         break;
       }
     }
+
     return _lines;
   }
   public TileData CenterTile

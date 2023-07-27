@@ -10,7 +10,7 @@ public static class ConstValues
   public const int MapSize = 40;
     
   public const float Ratio_highland = 0.2f;
-  public const float Ratio_forest = 0.3f;
+  public const float Ratio_forest = 0.4f;
   public const int Count_mountain = 3;
   public const int LandSize = 17;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
