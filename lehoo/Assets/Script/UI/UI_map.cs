@@ -12,11 +12,11 @@ public class UI_map : UI_default
   [SerializeField] private float MoveTime = 1.5f;
   [SerializeField] private Tilemap Tilemap_bottom = null;
   [SerializeField] private Tilemap Tilemap_top = null;
-    [SerializeField] private TextMeshProUGUI SettleName = null;
     [SerializeField] private Button MoveButton = null;
   [SerializeField] private TextMeshProUGUI MoveButtonText = null;
   [SerializeField] private Button CancleButton = null;
   [SerializeField] private TextMeshProUGUI CancleButtonText = null;
+  private TileData SelectedTile = null;
   /// <summary>
   /// 0: 정착지 선택 전 1: 이동가능 2: 이동중이라 클릭못함 3:이동불가 4:계속 이동
   /// </summary>
@@ -87,14 +87,12 @@ public class UI_map : UI_default
 
   [SerializeField] private Image CurrentQuestProgress = null;
   [SerializeField] private TextMeshProUGUI CurrentQuestDescription = null;
-  [SerializeField] private TextMeshProUGUI UnpText = null;
-  [SerializeField] private CanvasGroup[] ArrowGroup = null;
   private int SelectedSettleCost = 0;
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private AnimationCurve ZoomOutCurve = null;
   [SerializeField] private RectTransform ScaleChanger = null;
-  [SerializeField] private Vector3 IdleScale = Vector3.one * 1.8f;
-  [SerializeField] private Vector3 ZoomInScale = Vector3.one* 2.3f;
+  [SerializeField] private Vector3 IdleScale = Vector3.one * 1.0f;
+  [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
   [SerializeField] private float ZoomInTime = 1.2f;
   [SerializeField] private float ZoomOutTime = 0.4f;
 
@@ -104,6 +102,7 @@ public class UI_map : UI_default
   [SerializeField] private AnimationCurve CancleMoveCurve = null;
   [SerializeField] private float CancleMoveTime = 0.5f;
 
+  public Transform SelectTileHolder = null;
   public void OpenUI()
   {
     if (IsOpen) { CloseUI(); IsOpen = false; return; }
@@ -121,15 +120,6 @@ public class UI_map : UI_default
     {
       if (GameManager.Instance.MyGameData.CurrentSettlement != null)//현재 정착지가 공백이 아니다? 정착지에서 출발하는 상황
       {
-        int _activearrowcount = 0;
-        foreach (var _group in ArrowGroup)
-          if (_group.alpha.Equals(1.0f)) _activearrowcount++;
-
-        if (_activearrowcount <= 1)
-        {
-          SetArrow();
-        }//정착지에서 지도를 열였는데 활성화된 화살표가 하나뿐이라면 새로 길을 지정해줘야 하는 상황
-
         SetMoveButton(0);
       }
       else SetMoveButton(4);                                        //현재 정착지가 없다? 야외 이벤트를 끝내고 계속 이동해야 하는 상황
@@ -172,43 +162,33 @@ public class UI_map : UI_default
     Tilemap_top.color = _color;
   }
 
-  private IEnumerator updatepanel(Settlement _settle, MapArrowButton _arrow)
+  public void SelectTile(TileData tiledata)
   {
-    if (_settle == null)
+    if (SelectedTile != null) SelectedTile.ButtonScript.CancleTile();
+    SelectedTile = tiledata;
+  }
+  public void CancleTile()
+  {
+    SelectedTile = null;
+  }
+
+  private IEnumerator updatepanel(TileData targettile)
+  {
+    if (targettile == null)
     {
       UIManager.Instance.IsWorking = false;
       Cancle();
       //시점 플레이어로 돌아가고 취소, 이동 버튼 비활성화
     }//정착지 선택 취소
-    else if (SelectedArrow != null&& SelectedArrow != _arrow)
+    else if (SelectedTile != null&&targettile.TileSettle!=null)
     {
-      SelectedArrow.deactivecolor();
 
-      SelectedArrow = _arrow;
-      SettleName.text = _settle.Name;
-      UnpText.text = SelectedSettle.Discomfort.ToString();
+      //   SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.Coordinate));
+      Vector2 _targetrecrpos = targettile.Rect.anchoredPosition;
 
-      SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.Coordinate));
-      Vector2 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;
-      GameManager.Instance.MyGameData.MoveTargetPos = _settlerectpos;
-
-      yield return StartCoroutine(movecameratosettle(GetScaleChangerPos(_settlerectpos)));
+      yield return StartCoroutine(movecameratosettle(GetScaleChangerPos(_targetrecrpos)));
       SetMoveButton(1);
     }//방향 버튼을 눌러 카메라가 이동한 상태에서 다른 방향 버튼을 누른 경우
-    else
-    {
-      SelectedArrow = _arrow;
-      SettleName.text = _settle.Name;
-      UnpText.text = SelectedSettle.Discomfort.ToString();
-    
-      SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityValue(Vector2.Distance(GameManager.Instance.MyGameData.CurrentPos, SelectedSettle.Coordinate));
-      Vector2 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;
-      GameManager.Instance.MyGameData.MoveTargetPos = _settlerectpos;
-
-      yield return StartCoroutine(movecameratosettle(GetScaleChangerPos(_settlerectpos)));
-      SetMoveButton(1);
-      // 목표 정착지로 카메라 이동
-    }//정착지 선택
   }
   public void Cancle()
   {
@@ -218,9 +198,6 @@ public class UI_map : UI_default
   private IEnumerator cancle()
   {
     Debug.Log("방향 버튼 취소");
-    SelectedArrow.deactivecolor();
-    SelectedArrow = null;
-    SettleName.text = "";
     SetMoveButton(0);
     yield return StartCoroutine(movetoplayer());
   }
@@ -278,9 +255,8 @@ public class UI_map : UI_default
 
     if(GameManager.Instance.MyGameData.CanMove==false) return;
     //움직일 수 없는 상황(이벤트 선택 화면,이벤트 도중)이라면 못 움직인다는 UI 출력
-    if (SelectedSettle == null) return;
+    if (SelectedTile == null) return;
     //움직일 수 있는 상황에서, 정착지에서 출발할 때 목표 정착지를 선택하지 않은 경우 목표 방향이 없다는 UI 출력
-    SelectedArrow.MyGroup.interactable = false;
     UIManager.Instance.ResetEventPanels();
     UIManager.Instance.AddUIQueue(movemap());
   }//이동 버튼을 눌렀으니 해당 정착지, 해당 화살표를 제외한 다른 정착지 버튼 비활성화 및 다른 화살표 비활성화
@@ -288,101 +264,67 @@ public class UI_map : UI_default
   {
     yield return StartCoroutine(movetoplayer());
    // 타겟된 정착지에서 플레이어로 카메라 이동
-    for(int i=0;i<SettleIcons.Count;i++)
-      if (SettleIcons[i] != SelectedSettleIcon)
-      {
-        SettleIcons[i].DisableButton();
-      }
-    for (int i = 0; i < ArrowButtonScript.Length; i++)
-      if (SelectedArrow != ArrowButtonScript[i])
-      {
-        StartCoroutine(UIManager.Instance.ChangeAlpha(ArrowGroup[i], 0.0f, 0.3f, false));
-      }
+
     //이동 도중이니 이동 버튼은 비활성화
     GameManager.Instance.MyGameData.VisitedPlaces.Clear();
     SetMoveButton(2);
-    Vector3 _playerrectpos = PlayerRect.anchoredPosition;          //현재 위치(UI)
-    Vector3 _settlerectpos = SelectedSettleIcon.GetComponent<RectTransform>().anchoredPosition;           //종점 위치(UI)
+    Vector2 _playerrectpos = PlayerRect.anchoredPosition;                 //현재 위치(Rect)
+    Vector2 _targettilepos = SelectedTile.Rect.anchoredPosition;            //종점 위치(Rect)
 
-    Vector3 _playretilepos = GameManager.Instance.MyGameData.CurrentPos;//현재 위치(타일)
-    Vector3 _settletilepos = (Vector3)SelectedSettleIcon.SettlementData.Coordinate;//종점 위치(타일)
+    Vector2 _startcoor = GameManager.Instance.MyGameData.Coordinate;//현재 위치(타일)
+    Vector2 _endcoor = SelectedTile.Coordinate;//종점 위치(타일)
 
-    float _currentprogress = GameManager.Instance.MyGameData.MoveProgress;//현재 이동 진행도 0.0f ~ 1.0f
-    float _targetprogress = 0.0f;                                             //이번 이동에서 목표로 하는 이동 진행도
-    if (_currentprogress == 0.0f) _targetprogress = Random.Range(0.3f, 0.7f);
-    else _targetprogress = 1.0f;
-    Vector3 _targetrectpos = Vector3.Lerp(_playerrectpos, _settlerectpos, _targetprogress);  //이번 이동에서 목표로 하는 위치(UI)
-    Vector3 _targettilepos = Vector3.Lerp(_playretilepos, _settletilepos, _targetprogress);    //이번 이동에서 목표로 하는 위치(타일)
-    if (_currentprogress == 0.0f)//정착지 ~ 야외
-    {
-      GameManager.Instance.MyGameData.CurrentSanity -= SelectedSettleCost;
-      UIManager.Instance.UpdateSanityText();
-      GameManager.Instance.MyGameData.ClearBeforeEvents();
-      GameManager.Instance.MyGameData.CurrentPos = _targettilepos;
-      GameManager.Instance.MyGameData.MoveProgress = _targetprogress;
-      GameManager.Instance.MyGameData.CurrentSettlement = null;
-      //이전 정착지의 이벤트 관련 데이터 초기화
-      //currentprogress==0.0f면 정착지에서 중간 이벤트 지점까지 이동
-      yield return StartCoroutine(movecharacter(PlayerRect.anchoredPosition, _targetrectpos, _settlerectpos, _targetprogress));
+    GameManager.Instance.MyGameData.ClearBeforeEvents();
+    GameManager.Instance.MyGameData.CurrentSanity -= SelectedSettleCost;
 
-      yield return new WaitForSeconds(1.0f);
-
-      StartCoroutine(UIManager.Instance.CloseUI(MyGroup, true, false));
-      //캐릭터 이동시킴
-      //이동+줌인+종료
-
-      EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(_targettilepos));
-      //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
-      IsOpen = false;
-      //도중에 멈춘거니까 이동 버튼 활성화는 안함
-    }
-    else//야외 ~ 정착지
-    {
-      GameManager.Instance.MyGameData.CurrentEvent = null;
-      GameManager.Instance.MyGameData.CurrentPos = _targettilepos;
-      GameManager.Instance.MyGameData.MoveProgress = 0.0f;
-      GameManager.Instance.MyGameData.CurrentSettlement = SelectedSettle;
-      GameManager.Instance.MyGameData.CurrentSettlement.SetAvailablePlaces();
-     GameManager.Instance.MyGameData.AvailableSettles = GameManager.Instance.MyGameData.MyMapData.GetCloseSettles(GameManager.Instance.MyGameData.CurrentSettlement, 3);
-
-      SelectedSettle.LibraryType = (SkillType)Random.Range(0, 4);
-      //목표에 완전히 도착했으니 이동 관련 정보는 초기화
-
-      //currentprogress!=0.0f면 외부에서 이벤트 클리어하고 가던 정착지를 향해 다시 출발
-      yield return StartCoroutine(movecharacter(_playerrectpos, _settlerectpos, _currentprogress));
-
-      yield return new WaitForSeconds(1.0f);
-
-      yield return StartCoroutine(UIManager.Instance.CloseUI(MyGroup, true, false));
-      //캐릭터 이동시킴(이동+줌인+종료)
-      IsOpen = false;
-      //멈췄으면 바로 맵 닫기
-
-      EventManager.Instance.SetSettleEvent(SelectedSettle.TileData);
-      //캐릭터 목표 지점 정착지 정보 보내줌
-      GameManager.Instance.MyGameData.Turn++;
-      UIManager.Instance.UpdateTurnIcon();
-      //정착지에 도착했으면 새로운 목표 장소 3개 활성화
-      if (SelectedSettle != null) SelectedArrow.DeActive();
-      SelectedArrow = null;
-    }
-    Debug.Log("이동 코루틴이 끝난 레후~");
-  }
-  private IEnumerator movecharacter(Vector3 _originrectpos,Vector3 _targetrectpos,Vector3 _maxpos, float _targetprogress)
-  {
-    StartCoroutine(zoominview(_targetrectpos));
     float _time = 0.0f;
     while (_time < MoveTime)
     {
-      PlayerRect.anchoredPosition=Vector3.Lerp(_originrectpos, _targetrectpos, UIManager.Instance.CharacterMoveCurve.Evaluate(_time / MoveTime));
-      ScaleChanger.anchoredPosition= GetScaleChangerPos(Vector2.Lerp(_originrectpos,_targetrectpos,FollowMoveCurve.Evaluate(_time/ MoveTime)));
+      PlayerRect.anchoredPosition = Vector3.Lerp(_playerrectpos, _targettilepos, UIManager.Instance.CharacterMoveCurve.Evaluate(_time / MoveTime));
+      ScaleChanger.anchoredPosition = GetScaleChangerPos(Vector2.Lerp(_playerrectpos, _targettilepos, FollowMoveCurve.Evaluate(_time / MoveTime)));
       _time += Time.deltaTime;
       yield return null;
     }
-    PlayerRect.anchoredPosition = _targetrectpos;
-    ScaleChanger.anchoredPosition = GetScaleChangerPos(_targetrectpos);
-    //0.0f ~ _targetprogress 비율까지 움직임
-  }//캐릭터 움직이는 코루틴 - 정착지 ~ 야외 이벤트
+    PlayerRect.anchoredPosition = _targettilepos;
+    ScaleChanger.anchoredPosition = GetScaleChangerPos(_targettilepos);
+    UIManager.Instance.UpdateSanityText();
+
+    GameManager.Instance.MyGameData.Coordinate = _endcoor;
+
+    switch (SelectedTile.LandScape)
+    {
+      case LandscapeType.Outer:
+        GameManager.Instance.MyGameData.CurrentSettlement = null;
+        yield return new WaitForSeconds(1.0f);
+
+
+        EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
+        //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
+        IsOpen = false;
+        //도중에 멈춘거니까 이동 버튼 활성화는 안함
+
+        break;
+
+      case LandscapeType.Settlement:
+        GameManager.Instance.MyGameData.CurrentEvent = null;
+        GameManager.Instance.MyGameData.CurrentSettlement = SelectedTile.TileSettle;
+        GameManager.Instance.MyGameData.CurrentSettlement.SetAvailablePlaces();
+        GameManager.Instance.MyGameData.CurrentSettlement.LibraryType = (SkillType)Random.Range(0, 4);
+
+        yield return new WaitForSeconds(1.0f);
+
+        EventManager.Instance.SetSettleEvent(GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData);
+        break;
+    }
+
+    GameManager.Instance.MyGameData.Turn++;
+    UIManager.Instance.UpdateTurnIcon();
+    StartCoroutine(UIManager.Instance.CloseUI(MyGroup, true, false));
+        //캐릭터 이동시킴
+        //이동+줌인+종료
+
+    Debug.Log("이동 코루틴이 끝난 레후~");
+  }
   private IEnumerator zoominview(Vector2 targetpos)
   {
     float _time = 0.0f, _targettime = ZoomInTime;
@@ -437,12 +379,11 @@ public class UI_map : UI_default
     {
     }
   }
-  public void SetPlayerPos(Settlement _targetsettle)
+  public void SetPlayerPos(Vector2 coordinate)
   {
     ScaleChanger.localScale = Vector3.one;
-    Vector3 _targetpos = GetSettleIcon(_targetsettle.OriginName).GetComponent<RectTransform>().anchoredPosition;
-   // Debug.Log($"{_targetsettle.VectorPos}  {_targetsettle.Name}  {_targetpos}");
-    PlayerRect.anchoredPosition= _targetpos;
+    TileData _targettile = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
+    PlayerRect.anchoredPosition = _targettile.Rect.anchoredPosition;
     ScaleChanger.localScale =IdleScale;
   }
   public void SetPlayerPos(Vector3 _tilepos)

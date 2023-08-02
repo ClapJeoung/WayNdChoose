@@ -12,7 +12,7 @@ public class Settlement
   {
     Type = settletype;
   }
-  public List<PlaceType> EnablePlaces=new List<PlaceType>();
+  public List<PlaceType> EnablePlaces=new List<PlaceType>();//제시될 장소들
   public SettlementType Type;
   public int Index=-1;
   public string OriginName
@@ -100,51 +100,45 @@ public class Settlement
     }
   }
   public List<RectTransform> TileIcons=new List<RectTransform>();
-  private TileInfoData tiledata = null;
-  public TileInfoData TileData
+  private TileInfoData tileinfodata = null;
+  public TileInfoData TileInfoData
   {
     get { 
-      if(tiledata == null)
+      if(tileinfodata == null)
       {
-        tiledata= new TileInfoData();
-        tiledata.SettlementType = Type;
-        tiledata.PlaceList.Add(PlaceType.Residence);
-        tiledata.PlaceList.Add(PlaceType.Marketplace);
-        tiledata.PlaceList.Add(PlaceType.Temple);
-        switch (Type)
-        {
-          case SettlementType.Town:
-            break;
-          case SettlementType.City:
-            tiledata.PlaceList.Add(PlaceType.Library);
-            break;
-          case SettlementType.Castle:
-            tiledata.PlaceList.Add(PlaceType.Theater);
-            tiledata.PlaceList.Add(PlaceType.Academy);
-            break;
-        }
-        tiledata.EnvironmentType.Add(EnvironmentType.River);
-        if (IsRiver) tiledata.EnvironmentType.Add(EnvironmentType.River);
-        if (IsForest) tiledata.EnvironmentType.Add(EnvironmentType.Forest);
-        if (IsHighland) tiledata.EnvironmentType.Add(EnvironmentType.Highland);
-        if (IsMountain) tiledata.EnvironmentType.Add(EnvironmentType.Mountain);
-        if (IsSea) tiledata.EnvironmentType.Add(EnvironmentType.Sea);
-        tiledata.Season = GameManager.Instance.MyGameData.Turn + 1;
-
+        tileinfodata = new TileInfoData();
+        tileinfodata.LandScape = LandscapeType.Settlement;
+        tileinfodata.Settlement = this;
+        if (IsForest) tileinfodata.EnvirList.Add(EnvironmentType.Forest);
+        if (IsRiver) tileinfodata.EnvirList.Add(EnvironmentType.River);
+        if (IsMountain) tileinfodata.EnvirList.Add(EnvironmentType.Mountain);
+        if (IsSea) tileinfodata.EnvirList.Add(EnvironmentType.Sea);
       }
-      return tiledata; 
+      return tileinfodata; 
     }
   }
   public bool CheckAbleEvent(EventDataDefulat _event)
   {
-    if (_event.SettlementType.Equals(SettlementType.Outer)) return false;
-    //바깥 이벤트일 경우 X
-    if (!_event.SettlementType.Equals(SettlementType.None))
-      if (_event.SettlementType.Equals(TileData.SettlementType)) return false;
-    //전역 정착지 이벤트가 아닐 때 정착지 타입이 맞지 않으면 X
+
+    switch (_event.AppearSpace)
+    {
+      case EventAppearType.Outer: return false;
+      case EventAppearType.Town:
+        if (Type != SettlementType.Town) return false;
+        break;
+      case EventAppearType.City:
+        if (Type != SettlementType.Castle) return false;
+        break;
+      case EventAppearType.Castle:
+        if (Type != SettlementType.Castle) return false;
+        break;
+      case EventAppearType.Settlement:
+        break;
+    }
+
     if (_event.EnvironmentType != EnvironmentType.NULL)
     {
-      if(!TileData.EnvironmentType.Contains(_event.EnvironmentType))
+      if(!tileinfodata.EnvirList.Contains(_event.EnvironmentType))
       return false;
     }
     //환경이 맞지 않으면 X
@@ -162,7 +156,7 @@ public class Settlement
     for(int i = 0; i < 3; i++)
     {
       PlaceType _targetplce = (PlaceType)i;
-      if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, _targetplce)) _followplaces.Add(_targetplce);
+      if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, _targetplce)) _followplaces.Add(_targetplce);
       else _normalplaces.Add(_targetplce);
     }
 
@@ -176,18 +170,18 @@ public class Settlement
         break;
       case SettlementType.City:
         PlaceType _targetplce = PlaceType.Library;
-        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, _targetplce)) _followplaces.Add(_targetplce);
+        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, _targetplce)) _followplaces.Add(_targetplce);
         else _normalplaces.Add(_targetplce);
         _count= ConstValues.CityPlaceCount;
 
         break;
       case SettlementType.Castle:
         PlaceType __targetplce = PlaceType.Theater;
-        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, __targetplce)) _followplaces.Add(__targetplce);
+        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, __targetplce)) _followplaces.Add(__targetplce);
         else _normalplaces.Add(__targetplce);
 
         PlaceType ___targetplce = PlaceType.Academy;
-        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileData, ___targetplce)) _followplaces.Add(___targetplce);
+        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, ___targetplce)) _followplaces.Add(___targetplce);
         else _normalplaces.Add(___targetplce);
         _count = ConstValues.CastlePlaceCount;
 
@@ -459,7 +453,7 @@ public class MapData
 
     return _closest;
   }//_origin 정착지로부터 제일 가까운 3개
-  public TileInfoData GetTileData(Vector3 _tilepos)
+  public TileInfoData GetTileData(Vector2 _tilepos)
   {
     Vector2Int _tileintpos = new Vector2Int(Mathf.RoundToInt(_tilepos.x), Mathf.RoundToInt(_tilepos.y));
     TileData _centertile = Tile(_tileintpos);
@@ -468,27 +462,72 @@ public class MapData
     _tiles_1.Add(_centertile);
     _tiles_2.Add(_centertile);
     TileInfoData _data = new TileInfoData();
-    _data.SettlementType = _centertile.TileSettle == null ? SettlementType.Outer : _centertile.TileSettle.Type;
+    _data.LandScape = _centertile.LandScape;
+    if(_centertile.TileSettle!=null)_data.Settlement= _centertile.TileSettle;
     //월드 좌표 -> 타일 좌표
 
-    List<BottomEnvirType> _sealist = new List<BottomEnvirType> { BottomEnvirType.Sea, BottomEnvirType.Beach,BottomEnvirType.RiverBeach };
-    List<BottomEnvirType> _riverlist = new List<BottomEnvirType> { BottomEnvirType.Source, BottomEnvirType.River, BottomEnvirType.RiverBeach };
-   
-    foreach(var _tile in _tiles_1)
+    EnvironmentType _centerbottomenvir = EnvironmentType.NULL;
+    switch (_centertile.BottomEnvir)
     {
-      if (!_data.EnvironmentType.Contains(EnvironmentType.Mountain) && _tile.TopEnvir == TopEnvirType.Mountain) _data.EnvironmentType.Add(EnvironmentType.Mountain);
-      if(!_data.EnvironmentType.Contains(EnvironmentType.Forest)&&_tile.TopEnvir==TopEnvirType.Forest) _data.EnvironmentType.Add(EnvironmentType.Forest);
-      if(!_data.EnvironmentType.Contains(EnvironmentType.Highland)&& _tile.TopEnvir == TopEnvirType.Highland) _data.EnvironmentType.Add(EnvironmentType.Highland);
+      case BottomEnvirType.Land: _centerbottomenvir = EnvironmentType.Land; break;
+      case BottomEnvirType.River: _centerbottomenvir = EnvironmentType.River; break;
+      case BottomEnvirType.Sea: _centerbottomenvir = EnvironmentType.Sea; break;
+      case BottomEnvirType.Beach: _centerbottomenvir = EnvironmentType.Beach; break;
+      case BottomEnvirType.RiverBeach: _centerbottomenvir = EnvironmentType.RiverBeach; break;
     }
-    foreach(var _tile in _tiles_2)
+    EnvironmentType _centertopenvir = EnvironmentType.NULL;
+    switch (_centertile.TopEnvir)
     {
-      if (!_data.EnvironmentType.Contains(EnvironmentType.River) && _riverlist.Contains(_tile.BottomEnvir)) _data.EnvironmentType.Add(EnvironmentType.River);
-      if (!_data.EnvironmentType.Contains(EnvironmentType.Sea) && _sealist.Contains(_tile.BottomEnvir)) _data.EnvironmentType.Add(EnvironmentType.Sea);
+      case TopEnvirType.Forest: _centertopenvir = EnvironmentType.Forest; break;
+      case TopEnvirType.Mountain: _centertopenvir = EnvironmentType.Mountain; break;
+      case TopEnvirType.Highland: _centertopenvir = EnvironmentType.Highland; break;
     }
-    _data.Season = GameManager.Instance.MyGameData.Turn + 1;
+    if(!_data.EnvirList.Contains(_centerbottomenvir))_data.EnvirList.Add(_centerbottomenvir);
+    if (!_data.EnvirList.Contains(_centertopenvir)) _data.EnvirList.Add(_centertopenvir);
+
+    foreach(var tile_1 in _tiles_1)
+    {
+      EnvironmentType _range1bottomenvir = EnvironmentType.NULL;
+      switch (tile_1.BottomEnvir)
+      {
+        case BottomEnvirType.Land: _range1bottomenvir = EnvironmentType.Land; break;
+        case BottomEnvirType.River: _range1bottomenvir = EnvironmentType.River; break;
+        case BottomEnvirType.Sea: _range1bottomenvir = EnvironmentType.Sea; break;
+        case BottomEnvirType.Beach: _range1bottomenvir = EnvironmentType.Beach; break;
+        case BottomEnvirType.RiverBeach: _range1bottomenvir = EnvironmentType.RiverBeach; break;
+      }
+      EnvironmentType _range1topenvir = EnvironmentType.NULL;
+      switch (tile_1.TopEnvir)
+      {
+        case TopEnvirType.Forest: _range1topenvir = EnvironmentType.Forest; break;
+        case TopEnvirType.Mountain: _range1topenvir = EnvironmentType.Mountain; break;
+        case TopEnvirType.Highland: _range1topenvir = EnvironmentType.Highland; break;
+      }
+      if (!_data.EnvirList.Contains(_range1bottomenvir)) _data.EnvirList.Add(_range1bottomenvir);
+      if (!_data.EnvirList.Contains(_range1topenvir)) _data.EnvirList.Add(_range1topenvir);
+    }
+
+    foreach (var tile_2 in _tiles_2)
+    {
+      EnvironmentType _range2bottomenvir = EnvironmentType.NULL;
+      switch (tile_2.BottomEnvir)
+      {
+        case BottomEnvirType.Sea: _range2bottomenvir = EnvironmentType.Sea; break;
+        case BottomEnvirType.Beach: _range2bottomenvir = EnvironmentType.Beach; break;
+        case BottomEnvirType.RiverBeach: _range2bottomenvir = EnvironmentType.RiverBeach; break;
+      }
+      EnvironmentType _range2topenvir = EnvironmentType.NULL;
+      switch (tile_2.TopEnvir)
+      {
+        case TopEnvirType.Mountain: _range2topenvir = EnvironmentType.Mountain; break;
+      }
+      if (!_data.EnvirList.Contains(_range2bottomenvir)) _data.EnvirList.Add(_range2bottomenvir);
+      if (!_data.EnvirList.Contains(_range2topenvir)) _data.EnvirList.Add(_range2topenvir);
+    }
+
 
     return _data;
-  }//월드 기준 타일 1개 좌표 하나 받아서 그 주위 1칸 강,숲,언덕,산,바다 여부 반환
+  }//월드 기준 타일 1개 좌표 하나 받아서 그 주위 2칸의 산 바다, 나머지 1타일
 
 
   public TileData[,] TileDatas;

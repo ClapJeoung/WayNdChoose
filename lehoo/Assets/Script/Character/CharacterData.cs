@@ -234,7 +234,6 @@ public class GameData    //게임 진행도 데이터
     for(int i=0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count;i++)
       GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
   }
-  public Vector2 MoveTargetPos = Vector2.zero;//이동 목표 정착지의 UI 앵커포지션
 
     private int hp = 0;
     public int HP
@@ -594,8 +593,7 @@ public class GameData    //게임 진행도 데이터
     }
 
   }
-  public Vector3 CurrentPos = Vector3.zero;//맵 상 현재 좌표
-  public float MoveProgress = 0.0f;  //0.0f면 현재 정착지, 그 외면 정착지에서 출발해 야외 이벤트를 만난 상황
+  public Vector2 Coordinate = Vector2.zero;
 
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
   public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
@@ -663,20 +661,11 @@ public class GameData    //게임 진행도 데이터
   public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_All= new List<string>();
 
-  public QuestHolder CurrentQuest = null; //현재 진행 중인 퀘스트
-  public int LastQuestCount = 0;          //퀘스트 이벤트를 실행한지 얼마나 지났는지
-  public bool QuestAble
+  public QuestType CurrentQuest = QuestType.Wolf;
+  public Quest CurrentQuestData
   {
-    get
-    {
-      int _per = 0;
-      if (LastQuestCount < 1) _per = 80;
-      else _per = 100;
-      if (UnityEngine.Random.Range(0, 100) < _per) return true;
-      else return false;
-    }
+    get { return GameManager.Instance.EventHolder.GetQuest(CurrentQuest); }
   }
-
   public int GetEffectModifyCount_Exp(EffectType _modify)
   {
     int _count = 0;

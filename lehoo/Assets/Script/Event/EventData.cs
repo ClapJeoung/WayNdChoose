@@ -8,11 +8,18 @@ public class EventHolder
   private const int PlacePer = 2, LevelPer = 3, EnvirPer = 2;
   public List<EventData> AvailableNormalEvents = new List<EventData>();
   public List<FollowEventData> AvailableFollowEvents = new List<FollowEventData>();
-  public List<QuestHolder> AvailableQuests = new List<QuestHolder>();
 
   public List<EventData> AllNormalEvents = new List<EventData>();
   public List<FollowEventData> AllFollowEvents = new List<FollowEventData>();
-  public List<QuestHolder> AllQuests = new List<QuestHolder>();
+  public QuestHolder_Wolf Quest_Wolf = null;
+  public Quest GetQuest(QuestType type)
+  {
+    switch (type)
+    {
+      case QuestType.Wolf:return Quest_Wolf;
+    }
+    return null;
+  }
   public T ReturnEventDataDefault<T>(EventJsonData _data) where T : EventDataDefulat ,new()
   {
     T Data = new T();
@@ -22,25 +29,25 @@ public class EventHolder
     string[] _seasons = _data.Season.Split('@');
     for (int i = 0; i < _seasons.Length; i++) _data.Season.ElementAtOrDefault(int.Parse(_seasons[i]));
 
-    Data.SettlementType = (SettlementType)_data.Settlement;
-    switch (_data.Place)
+    Data.SettlementType = (SettlementType)int.Parse(_data.Settlement);
+    switch (int.Parse(_data.Place))
     {
       case 0: Data.PlaceType = PlaceType.Residence; break;
       case 1: Data.PlaceType = PlaceType.Marketplace; break;
       case 2: Data.PlaceType = PlaceType.Temple; break;
     }
-    if (_data.Place > 2)
+    if (int.Parse(_data.Place) > 2)
     {
       if (Data.SettlementType.Equals(SettlementType.City))
       {
-        switch (_data.Place)
+        switch (int.Parse(_data.Place))
         {
           case 3: Data.PlaceType = PlaceType.Library; break;
         }
       }
       else
       {
-        switch (_data.Place)
+        switch (int.Parse(_data.Place))
         {
           case 3: Data.PlaceType = PlaceType.Theater; break;
           case 4: Data.PlaceType = PlaceType.Academy; break;
@@ -48,9 +55,9 @@ public class EventHolder
       }
     }
 
-    Data.EnvironmentType = (EnvironmentType)_data.Environment;
+    Data.EnvironmentType = (EnvironmentType)int.Parse(_data.Environment);
 
-    Data.Selection_type = (SelectionType)_data.Selection_Type;
+    Data.Selection_type = (SelectionType)int.Parse(_data.Selection_Type);
 
     switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
     {
@@ -225,15 +232,15 @@ public class EventHolder
   {
     FollowEventData Data = ReturnEventDataDefault<FollowEventData>(_data);
 
-    Data.FollowType = (FollowType)_data.FollowType; //선행 대상 이벤트,경험,특성,테마,기술
+    Data.FollowType = (FollowType)int.Parse(_data.FollowType); //선행 대상 이벤트,경험,특성,테마,기술
     Data.FollowTarget = _data.FollowTarget;         //선행 대상- 이벤트,경험,특성이면 Id   테마면 0,1,2,3  기술이면 0~9
     if (Data.FollowType == FollowType.Event)
     {
-      Data.FollowTargetSuccess = _data.FollowTargetSuccess == 0 ? true : false;//선행 대상이 이벤트일 경우 성공 혹은 실패
-      Data.FollowTendency = _data.FollowTendency;                              //선행 대상이 이벤트일 경우 선택지 형식
+      Data.FollowTargetSuccess = int.Parse(_data.FollowTargetSuccess) == 0 ? true : false;//선행 대상이 이벤트일 경우 성공 혹은 실패
+      Data.FollowTendency = int.Parse(_data.FollowTendency);                              //선행 대상이 이벤트일 경우 선택지 형식
     }
     else if (Data.FollowType.Equals(FollowType.Skill))
-      Data.FollowTargetLevel = _data.FollowTargetSuccess;
+      Data.FollowTargetLevel = int.Parse(_data.FollowTargetSuccess);
 
     if (_data.EndingName != "")
     {
@@ -248,10 +255,101 @@ public class EventHolder
   }
   public void ConvertData_Quest(QuestEventDataJson _data)
   {
-  //  QuestEventData Data = ReturnEventDataDefault<QuestEventData>(_data);
+
+    switch ((QuestType) int.Parse(_data.QuestType))
+    {
+      case QuestType.Wolf:
+        ConvertData_Quest_wolf(_data);
+        break;
+    }
     
   }//퀘스트 디자인 기획 끝나고 추가해야함
+  public void ConvertData_Quest_wolf(QuestEventDataJson jsondata)
+  {
+    QuestEventData_Wolf eventdata = ReturnEventDataDefault<QuestEventData_Wolf>(jsondata);
+    eventdata.Type = QuestType.Wolf;
 
+    if (Quest_Wolf == null) Quest_Wolf = new QuestHolder_Wolf();
+
+    switch (int.Parse(jsondata.QuestEventType))
+    {
+      case 0:
+        Quest_Wolf.PrologueEvents_0= eventdata;
+        break;
+      case 1:
+        Quest_Wolf.PrologueEvent_Tendency0= eventdata;
+        break;
+      case 2:
+        Quest_Wolf.PrologueEvent_1= eventdata;
+        break;
+      case 3:
+        Quest_Wolf.PrologueEvent_Tendency1 = eventdata;
+        break;
+      case 4:
+        Quest_Wolf.PrologueEvent_Last = eventdata;
+        break;
+      case 5:
+        Quest_Wolf.StartEvents.Add(eventdata);
+        break;
+      case 6:
+        Quest_Wolf.Event_Wanted = eventdata;
+        break;
+      case 7:
+        Quest_Wolf.Events_Public_Common.Add(eventdata);
+        break;
+      case 8:
+        Quest_Wolf.Events_Public_Final.Add(eventdata);
+        break;
+      case 9:
+        Quest_Wolf.Events_Cult_0.Add(eventdata);
+        break;
+      case 10:
+        Quest_Wolf.Event_Cult_Hideout_0 = eventdata;
+        break;
+      case 11:
+        Quest_Wolf.Events_Cult_1.Add(eventdata);
+        break;
+      case 12:
+        Quest_Wolf.Event_Cult_Hideout_1 = eventdata;
+        break;
+      case 13:
+        Quest_Wolf.Events_Cult_2.Add(eventdata);
+        break;
+      case 14:
+        Quest_Wolf.Event_Cult_Hideout_2 = eventdata;
+        break;
+      case 15:
+        Quest_Wolf.Events_Cult_Final.Add(eventdata);
+        break;
+      case 16:
+        Quest_Wolf.Event_Cult_Hideout_Final= eventdata;
+        break;
+      case 17:
+        Quest_Wolf.Events_Wolf_0.Add(eventdata);
+        break;
+      case 18:
+        Quest_Wolf.Event_Wolf_Encounter_0 = eventdata;
+        break;
+      case 19:
+        Quest_Wolf.Events_Wolf_1.Add(eventdata);
+        break;
+      case 20:
+        Quest_Wolf.Event_Wolf_Encounter_1= eventdata;
+        break;
+      case 21:
+        Quest_Wolf.Events_Wolf_2.Add(eventdata);
+        break;
+      case 22:
+        Quest_Wolf.Event_Wolf_Encounter_2= eventdata;
+        break;
+      case 23:
+        Quest_Wolf.Events_Wolf_Final.Add(eventdata);
+        break;
+      case 24:
+        Quest_Wolf.Event_Wolf_Encounter_Final= eventdata;
+        break;
+    }
+  }
   public void SetAllEvents()
   {
     foreach (var _event in AllNormalEvents) AvailableNormalEvents.Add(_event);
@@ -373,7 +471,7 @@ public class EventHolder
     }
     foreach (var _event in _temp)
     {
-      if (_event.SettlementType.Equals(SettlementType.Outer))
+      if (_event.AppearSpace.Equals(EventAppearType.Outer))
       {
         if (_event.EnvironmentType == EnvironmentType.NULL || envir.Contains(_event.EnvironmentType))
         {
@@ -386,7 +484,7 @@ public class EventHolder
     List<EventDataDefulat> _normalevents = new List<EventDataDefulat>();
     foreach (var _event in AvailableNormalEvents)
     {
-      if (_event.SettlementType.Equals(SettlementType.Outer))
+      if (_event.AppearSpace.Equals(EventAppearType.Outer))
       {
         if(_event.EnvironmentType != EnvironmentType.NULL|| envir.Contains(_event.EnvironmentType))
           if (_event.Season.Equals(4) || _event.Season.Equals(GameManager.Instance.MyGameData.Turn))
@@ -512,58 +610,10 @@ public class EventHolder
   /// <returns></returns>
   public EventDataDefulat ReturnQuestEvent(TileInfoData tiledata)
   {
-    if (!GameManager.Instance.MyGameData.QuestAble) return null;
 
-    QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
-    if (_currentquest == null) return null;
-    switch (_currentquest.CurrentSequence)
-    {
-      case QuestSequence.Falling: //마지막 단계에서는 마지막 이벤트 딱 하나 
-        if (isenable(_currentquest.Event_Falling)) return _currentquest.Event_Falling;
-        else return null;
-      case QuestSequence.Climax:
-        var _targetevents = _currentquest.Event_Climax;
-        return _targetevents;
-      default:
-        List<QuestEventData> _temp = _currentquest.EventList_Rising_Available;
-        List<QuestEventData> _avail = new List<QuestEventData>();
-        foreach (var _event in _temp)
-        {
-          if (isenable(_event)) _avail.Add(_event);
-        }
-        if (_avail.Count.Equals(0)) return null;
-        else return _avail[Random.Range(0, _avail.Count)];
-    }
+    Settlement _targetsettlement = tiledata.Settlement;
 
-    bool isenable(EventDataDefulat eventdata)
-    {
-      if (eventdata.SettlementType.Equals(SettlementType.Outer))
-      {
-        if (!tiledata.SettlementType.Equals(SettlementType.Outer)) return false;
-      }   //야외 이벤트일 경우 야외만 받음
-      else
-      {
-        if (eventdata.SettlementType.Equals(SettlementType.None))
-        {
-          if (tiledata.SettlementType.Equals(SettlementType.Outer)) return false;
-          //야외 빼고 다 받음
-        }   //전역 정착지일 경우
-        else if (!eventdata.SettlementType.Equals(tiledata.SettlementType)) return false;
-        //그 외 동일한 것 아닐 시 X 반환
-
-      }   //정착지 이벤트일 경우
-
-      if (!tiledata.PlaceList.Contains(eventdata.PlaceType)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
-
-      if (eventdata.EnvironmentType!=EnvironmentType.NULL)                              //환경 검사일 때
-        if (!tiledata.EnvironmentType.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
-
-      if (eventdata.Season != 4 && eventdata.Season != GameManager.Instance.MyGameData.Turn) return false;  //전역 계절이 아닌데도 계절이 맞지 않으면 X
-
-      //여기까지 왔으면 다 통과했으므로 O 반환
-      return true;
-    }
-
+    return null;
   }
 
   public bool IsFollowEventEnable(TileInfoData tiledata,PlaceType place)
@@ -638,12 +688,29 @@ public class EventHolder
 
     bool isenable(EventDataDefulat eventdata)
     {
-      if (!eventdata.SettlementType.Equals(tiledata.SettlementType)) return false;     //해당 이벤트의 정착지가 맞지 않으면 X
+      switch (eventdata.AppearSpace)
+      {
+        case EventAppearType.Outer:
+          if (tiledata.LandScape != LandscapeType.Outer) return false;
+          break;
+        case EventAppearType.Town:
+          if(tiledata.Settlement.Type!=SettlementType.Town) return false;
+          break;
+        case EventAppearType.City:
+          if (tiledata.Settlement.Type != SettlementType.City) return false;
+          break;
+        case EventAppearType.Castle:
+          if (tiledata.Settlement.Type != SettlementType.Castle) return false;
+          break;
+        case EventAppearType.Settlement:
+          if (tiledata.Settlement == null) return false;
+          break;
+      }
 
       if (!eventdata.PlaceType.Equals(place)) return false;           //해당 이벤트의 장소가 맞지 않으면 X
 
       if (eventdata.EnvironmentType!=EnvironmentType.NULL)                              //환경 검사일 때
-        if (!tiledata.EnvironmentType.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
+        if (!tiledata.EnvirList.Contains(eventdata.EnvironmentType)) return false;    //해당 이벤트의 환경이 맞지 않으면 X
 
 
       //여기까지 왔으면 다 통과했으므로 O 반환
@@ -653,22 +720,22 @@ public class EventHolder
 }
 public class TileInfoData
 {
-  public SettlementType SettlementType; //정착지 타입
-  public List<PlaceType> PlaceList = new List<PlaceType>(); //(정착지일 경우) 장소 타입과 장소 레벨
-  public List<EnvironmentType> EnvironmentType = new List<EnvironmentType>();//주위 환경 타입
-  public int Season;
+  public LandscapeType LandScape = LandscapeType.Outer;
+  public Settlement Settlement=null; //정착지 타입
+  public List<EnvironmentType> EnvirList = new List<EnvironmentType>();//주위 환경 타입
+  
 }
 #region 이벤트 정보에 쓰는 배열들
 public enum FollowType { Event,EXP,Skill}
-public enum SettlementType { Town,City,Castle,Outer,None}
+public enum SettlementType {Town,City,Castle}
+public enum EventAppearType { Outer,Town,City,Castle,Settlement}
 public enum PlaceType { Residence,Marketplace,Temple,Library,Theater,Academy,NULL}
-public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea,Beach,Land}
+public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea,Beach,Land,RiverBeach}
 public enum SelectionType { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTarget { Experience,HP,Sanity,Gold,Skill,None}
 public enum EventSequence { Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
-public enum QuestSequence { Start,Rising,Climax,Falling}
 #endregion  
 public class EventDataDefulat
 {
@@ -705,6 +772,7 @@ public class EventDataDefulat
       return GameManager.Instance.MyGameData.Turn;
     }
   }
+  public EventAppearType AppearSpace;
   public SettlementType SettlementType;
   public PlaceType PlaceType;
   public EnvironmentType EnvironmentType = EnvironmentType.NULL;
@@ -880,325 +948,67 @@ public class FollowEndingData
   public string Name = "";
   public string Description = "";
 }
-public class QuestEventData : EventDataDefulat
+public class QuestEventData_Wolf : EventDataDefulat
 {
-  public string QuestID = "";
-  public QuestSequence TargetQuestSequence= QuestSequence.Start;
-  public int ClimaxIndex = 0;
+  public QuestType Type;
+  public QuestEnum_Wolf EventType;
 }
-public class QuestHolder
+public enum QuestType { Wolf}
+public enum QuestEnum_Wolf { None,Prologue,Starting, Public, Cult,Wolf}
+public class Quest
 {
-    public string QuestID = "";     //퀘스트 ID
-  public string QuestID_name
-  {
-    get
-    {
-      var _temp = QuestID.Split("_");
-      return _temp[1];
-    }
-  }//quest_(이 부분)
-  public string QuestName
-  {
-    get { return QuestTextDatas[0]; }
-  }//퀘스트의 이름
-  public QuestSequence CurrentSequence=QuestSequence.Start; //현재 퀘스트 단계
+  public const string OriginID="";
+  public string QuestName { get { return GameManager.Instance.GetTextData(OriginID + "_Name_Text"); } }
+  public string QuestDescription { get { return GameManager.Instance.GetTextData(OriginID + "_PreDescription_Text"); } }
+  public QuestType Type = QuestType.Wolf;
+}
+public class QuestHolder_Wolf:Quest
+{
+  public int Progress = 0;
+  new public const string OriginID = "Quest_Wolf";
 
-  private List<string> questtextdatas = new List<string>();
-  private List<string> QuestTextDatas
-  {
-    get
-    {
-      if (questtextdatas.Count.Equals(0))
-      {
-        questtextdatas.Add(GameManager.Instance.GetTextData(QuestID));
-        questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_rising"));
-        for (int i = 0; i < ClimaxEventCount; i++)
-          questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_climax" + "_" + i.ToString()));
-        questtextdatas.Add(GameManager.Instance.GetTextData(QuestID + "_falling"));
-      }
-      return questtextdatas;
-    }
-  }
-  public string StartDialogue
-  {
-    get { return QuestTextDatas[0]; }
-  }   //게임 내부에서 퀘스트 조우할 시 나오는 텍스트
-  public string PreDescription
-  {
-    get { return QuestTextDatas[0]; }
-  }  //시작 화면 미리보기 텍스트
-  public Sprite StartIllust = null; //시작 일러스트
+  public TileData[] RitualPlaces = new TileData[3];
 
-  public Sprite ExpSelectionIllust
-  {
-    get
-    {
-      return null;
-    }
-  }//시작 경험 선택 일러스트
-  public string ExpSelectionDescription
-  {
-    get
-    {
-      return GameManager.Instance.GetTextData(QuestID + "_expselect");
-    }
-  }//시작 경험 선택 설명
-  public Experience[] StartingExps
-  {
-    get
-    {
-      Experience[] _temp = new Experience[4];
-      _temp[0] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_0"];
-      _temp[1] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_1"];
-      _temp[2] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_2"];
-      _temp[3] = GameManager.Instance.ExpDic["exp_" + QuestID_name + "_3"];
-      return _temp;
-    }
-  }//시작 경험 4개
+  public QuestEventData_Wolf PrologueEvents_0=null;                                //QuestEventType 0
+  public QuestEventData_Wolf PrologueEvent_Tendency0 = null;                       //QuestEventType 1
+  public QuestEventData_Wolf PrologueEvent_1 = null;                               //QuestEventType 2
+  public QuestEventData_Wolf PrologueEvent_Tendency1 = null;                       //QuestEventType 3
+  public QuestEventData_Wolf PrologueEvent_Last = null;                            //QuestEventType 4
 
-  public Sprite StartingIllust
-  {
-    get { return null; }
-  }//출발 일러스트
-  public string StartingDescription
-  {
-    get { return GameManager.Instance.GetTextData(QuestID+"_starting"); }
-  }//출발 설명
-  public string StartingSelection
-  {
-    get { return GameManager.Instance.GetTextData(QuestID + "_starting"); }
-  }//출발 선택지 문구
-  public string RisingDescription
-  {
-    get { return QuestTextDatas[1]; }
-  }
-  public string ClimaxDescription
-  {
-    get { return QuestTextDatas[2 + FinishedClimaxCount]; }
-  }
-  public string FallingDescription
-  {
-    get { return QuestTextDatas[QuestTextDatas.Count - 1]; }
-  }
-  public string CurrentDescription
-  {
-    get
-    {
-      switch (CurrentSequence)
-      {
-        case QuestSequence.Rising:return RisingDescription;
-          case QuestSequence.Climax:return ClimaxDescription;
-        default:return FallingDescription;
-      }
-    }
-  }
+  public List<QuestEventData_Wolf> StartEvents = new List<QuestEventData_Wolf>();       //QuestEventType 5 
 
-  public string StopSelectionName
-  {
-    get { return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[0]; }
-  }
-  public string StopSelectionSub
-  {
-    get { return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[0]; }
-  }
-  public string ContinueSelectionName
-  {
-    get
-    {
-     return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[1];
-    }
-  }
-  public string ContinueSelectionSub {
-    get
-    {
-      return QuestTextDatas[QuestTextDatas.Count - 1].Split('@')[1];
-    }
-  }
-  public List<QuestEventData> Eventlist_Rising=new List<QuestEventData>();
-  private List<string> eventlist_rising_origin = new List<string>();
-  public List<string> Eventlist_Rising_Count
-  {
-    get
-    {
-      if (eventlist_rising_origin.Count.Equals(0))
-      {
-        foreach (var _origin in Eventlist_Rising)
-          if (!eventlist_rising_origin.Contains(_origin.ID)) eventlist_rising_origin.Add(_origin.ID);
-      }
-      return eventlist_rising_origin;
-    }
-  }
-    public List<string> Eventlist_Rising_clear = new List<string>();//완료한 전 단계 이벤트(원본 ID)
-  public List<QuestEventData> EventList_Rising_Available
-  {
-    get
-    {
-      List<QuestEventData> _temp = new List<QuestEventData>();
-      foreach (var _event in Eventlist_Rising)
-      {
-        if (Eventlist_Rising_clear.Contains(_event.ID)) continue;
-        _temp.Add(_event);
-      }
-      if (_temp.Count.Equals(0)) return null;
-      else return _temp;
-    }
-  }
-  public List<QuestEventData> Eventlist_Climax = new List<QuestEventData>();
-  private List<string> eventlist_climax_origin = new List<string>();
-  public List<string> EventList_Climax_Origin
-  {
-    get
-    {
-      if (eventlist_climax_origin.Count.Equals(0))
-      {
-        foreach (var _origin in Eventlist_Climax)
-          if (!eventlist_climax_origin.Contains(_origin.ID)) eventlist_climax_origin.Add(_origin.ID);
-      }
-      return eventlist_climax_origin;
-    }
-  }//승 단계 이벤트 ID(원본)
-  public QuestEventData Event_Falling = null;
+  public QuestEventData_Wolf Event_Wanted = null;                                  //QuestEventType 6
+  public List<QuestEventData_Wolf> Events_Public_Common = new List<QuestEventData_Wolf>(); //QuestEventType 7
+  public List<QuestEventData_Wolf> Events_Public_Final = new List<QuestEventData_Wolf>();  //QuestEventType 8
 
-  public int RisingEventCount
-  {
-    get
-    {
-      List<string> _originids = new List<string>();
-      foreach (var _rising in Eventlist_Rising) if (!_originids.Contains(_rising.ID)) _originids.Add(_rising.ID);
-      return _originids.Count;
-    }
-  }
-  public int ClimaxEventCount
-  {
-    get
-    {
-      List<string> _originids = new List<string>();
-      foreach (var _climax in Eventlist_Climax) if (!_originids.Contains(_climax.ID)) _originids.Add(_climax.ID);
-      return _originids.Count;
-    }
-  }
-  public int QuestClearCount
-  {
-    get { return SuccessRisingCount + SuccesClimaxCount; }
-  } //성공한 이벤트(rising,climax) 개수
-  public int FinishedRisingCount = 0;  //실패+성공한 Rising 개수(원본 ID)
-  public int FinishedClimaxCount = 0;  //실패+성공한 Climax 개수(원본 ID)
-  public int SuccessRisingCount = 0, SuccesClimaxCount = 0;//실패한 Rising,Climax 개수(원본 ID)
-  public QuestEventData Event_Climax
-  {
-    get
-    {
-      if (!CurrentSequence.Equals(QuestSequence.Climax)) return null;
+  public List<QuestEventData_Wolf> Events_Cult_0 = new List<QuestEventData_Wolf>();     //QuestEventType 9
+  public QuestEventData_Wolf Event_Cult_Hideout_0 = null;                          //QuestEventType 10
+  public List<QuestEventData_Wolf> Events_Cult_1 = new List<QuestEventData_Wolf>();     //QuestEventType 11
+  public QuestEventData_Wolf Event_Cult_Hideout_1 = null;                          //QuestEventType 12
+  public List<QuestEventData_Wolf> Events_Cult_2 = new List<QuestEventData_Wolf>();     //QuestEventType 13
+  public QuestEventData_Wolf Event_Cult_Hideout_2 = null;                          //QuestEventType 14
+  public List<QuestEventData_Wolf> Events_Cult_Final = new List<QuestEventData_Wolf>(); //QuestEventType 15
+  public QuestEventData_Wolf Event_Cult_Hideout_Final = null;                      //QuestEventType 16
 
-      QuestEventData _availableclimaxevent = null;
-      foreach (var _questevent in Eventlist_Climax)
-      {
-        if (_questevent.ID.Equals(EventList_Climax_Origin[FinishedClimaxCount]))
-        {
-          if(_questevent.Season.Equals(0)|| _questevent.Season.Equals(GameManager.Instance.MyGameData.Turn + 1))
-          {
-            _availableclimaxevent = _questevent;
-            break;
-          }
-        }
-      }
-      return _availableclimaxevent;//원본 ID 리스트인 EventList_Climax_Origin 활용해 현재 순서의 원본 ID에 해당하고 계절이 맞는 이벤트를 반환
-    }
-  }
-  public Settlement NextQuestSettlement = null;
-  public EnvironmentType NextQuestEnvir = EnvironmentType.NULL;
-  public void AddClearEvent(QuestEventData _eventdata)
-  {
-    GameManager.Instance.MyGameData.LastQuestCount++;
-    switch (_eventdata.TargetQuestSequence)
-    {
-      case QuestSequence.Start:
-        CurrentSequence = QuestSequence.Rising;
-        break;
-      case QuestSequence.Rising:
-        string _defaultid = _eventdata.ID;
-
-          if (!Eventlist_Rising_clear.Contains(_defaultid)) Eventlist_Rising_clear.Add(_defaultid);
-        //클리어한 이벤트의 기본 ID를 바탕으로 해결 Rising 리스트에 넣는다
-
-        SuccessRisingCount++;
-        //승리 카운트에 ++
-        FinishedRisingCount++;
-        //완료 카운트에 ++
-
-        if (RisingEventCount - 2 < FinishedRisingCount)
-        {
-          if (Random.Range(0, 100) < 80) CurrentSequence = QuestSequence.Climax;
-        }
-        else if (RisingEventCount.Equals(FinishedRisingCount)) CurrentSequence = QuestSequence.Climax;
-        //슬슬 개수 다 찬듯 하면 높은 확률로 다음장, 개수 꽉 채웠으면 즉시 다음장
-        break;
-      case QuestSequence.Climax:
-        NextQuestSettlement = null;
-        NextQuestEnvir = EnvironmentType.NULL;
-        //장소에 지정된 퀘스트를 해결했으므로(야외 퀘스트라도 상관없음)
-
-        SuccesClimaxCount++;
-        //승리 카운트에 ++
-        FinishedClimaxCount++;
-        //완료 카운트에 ++
-        if (ClimaxEventCount.Equals(FinishedClimaxCount)) CurrentSequence = QuestSequence.Falling;
-        //Climax 전부 완료했으면 최종장으로
-
-        break;
-      case QuestSequence.Falling:
-        GameManager.Instance.MyGameData.CurrentEvent = null;
-        break;
-    }
-
-  }
-  public void AddFailEvent(QuestEventData _eventdata)
-  {
-    GameManager.Instance.MyGameData.LastQuestCount++;
-    switch (_eventdata.TargetQuestSequence)
-    {
-      case QuestSequence.Start:
-        CurrentSequence = QuestSequence.Rising;
-        break;
-      case QuestSequence.Rising:
-        string _defaultid = _eventdata.ID;
-
-          if (!Eventlist_Rising_clear.Contains(_defaultid)) Eventlist_Rising_clear.Add(_defaultid);
-          //완료 목록에 넣기
-
-        FinishedRisingCount++;
-        //성공은 못했으므로 완료 카운트만 ++
-
-        if (RisingEventCount - 2 < FinishedRisingCount)
-        {
-          if (Random.Range(0, 100) < 80) CurrentSequence = QuestSequence.Climax;
-        }
-        else if (RisingEventCount.Equals(FinishedRisingCount)) CurrentSequence = QuestSequence.Climax;
-        break;
-      case QuestSequence.Climax:
-        NextQuestSettlement = null;
-        NextQuestEnvir = EnvironmentType.NULL;
-        //장소에 지정된 퀘스트를 해결했으므로(야외 퀘스트라도 상관없음)
-
-        FinishedClimaxCount++;
-        if (ClimaxEventCount.Equals(FinishedClimaxCount)) CurrentSequence = QuestSequence.Falling;
-        break;
-      case QuestSequence.Falling:
-        GameManager.Instance.MyGameData.CurrentEvent = null;
-        break;
-    }
-  }
+  public List<QuestEventData_Wolf> Events_Wolf_0 = new List<QuestEventData_Wolf>();     //QuestEventType 17
+  public QuestEventData_Wolf Event_Wolf_Encounter_0 = null;                        //QuestEventType 18
+  public List<QuestEventData_Wolf> Events_Wolf_1 = new List<QuestEventData_Wolf>();     //QuestEventType 19
+  public QuestEventData_Wolf Event_Wolf_Encounter_1 = null;                        //QuestEventType 20
+  public List<QuestEventData_Wolf> Events_Wolf_2 = new List<QuestEventData_Wolf>();     //QuestEventType 21
+  public QuestEventData_Wolf Event_Wolf_Encounter_2 = null;                        //QuestEventType 22
+  public List<QuestEventData_Wolf> Events_Wolf_Final = new List<QuestEventData_Wolf>(); //QuestEventType 23
+  public QuestEventData_Wolf Event_Wolf_Encounter_Final = null;                    //QuestEventType 24
 
 }//                                         퀘스트 디자인 후 수정
 public class EventJsonData
 {
   public string ID = "";              //ID
-  public int Settlement = 0;          //0,1,2,3
-  public int Place = 0;               //0,1,2,3,4
-    public int Environment = 0;  //없음, 숲,강,언덕,산,바다
+  public string Settlement = "";          //0,1,2,3
+  public string Place = "";               //0,1,2,3,4
+    public string Environment = "";  //없음, 숲,강,언덕,산,바다
   public string Season ;              //전역,봄,여름,가을,겨울
 
-  public int Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
+  public string Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
   public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
   public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
                                             //2:대화,무력,생존,정신
@@ -1215,16 +1025,16 @@ public class EventJsonData
 public class FollowEventJsonData:EventJsonData
 {
 
-  public int FollowType = 0;              //이벤트,경험,특성,테마,기술
+  public string FollowType = "";              //이벤트,경험,특성,테마,기술
   public string FollowTarget = "";            //해당 ID 혹은 0,1,2,3 혹은 0~9
-  public int FollowTargetSuccess = 0;            //(이벤트) 성공/실패
-  public int FollowTendency = 0;          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
+  public string FollowTargetSuccess = "";            //(이벤트) 성공/실패
+  public string FollowTendency = "";          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
 
   public string EndingName = "";            //엔딩이 있을 경우(""가 아닌 경우) 엔딩 이름
 }
 public class QuestEventDataJson:EventJsonData
 {
-  public string QuestId = "";                 //퀘스트 ID
-  public int Sequence = 0;                   //0:기  1:승   2:전   3:결
+  public string QuestType = "";
+  public string QuestEventType = "";
 }
 

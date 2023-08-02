@@ -62,50 +62,7 @@ public class UI_QuestSuggest : UI_default
   public void OpenQuestSuggestUI()
   {
     IsActivePanel = true;
-    UIManager.Instance.AddUIQueue(setquestsuggest_beginning());
-  }
-  private IEnumerator setquestsuggest_beginning()
-  {
-    NextToExpButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
-    QuestHolder _quest = GameManager.Instance.MyGameData.CurrentQuest;
-
-
-    QuestName.text = _quest.QuestName;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestNameGroup, 1.0f, QuestUIFadeTime, false));
-    StartCoroutine(UIManager.Instance.moverect(QuestNameRect, QuestNameClosePos, QuestNameOpenPos, QuestUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-    yield return Wait;
-
-    QuestIllust.sprite = _quest.StartIllust;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup,1.0f,QuestUIFadeTime,false));
-    StartCoroutine(UIManager.Instance.moverect(QuestIllustRect, QuestIllustClosePos, QuestIllustOpenPos, QuestUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-    yield return Wait;
-
-    QuestDescriptionText_size.text = _quest.StartDialogue;
-    QuestDescriptionText.text = _quest.StartDialogue;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionGroup, 1.0f, QuestUIFadeTime, false));
-    yield return StartCoroutine(UIManager.Instance.moverect(QuestDescriptionRect, QuestDescriptionClosePos, QuestDescriptionOpenPos, QuestUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(NextToExpButtonGroup,1.0f, 0.4f, false));
-  }
-  public void OpenExpSelection()
-  {
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(NextToExpButtonGroup, 0.0f, false, false));
-    UIManager.Instance.AddUIQueue(setquestsuggest_exp());
-  }
-  private IEnumerator setquestsuggest_exp()
-  {
-    QuestHolder _quest = GameManager.Instance.MyGameData.CurrentQuest;
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllust,0.0f,QuestUIFadeTime));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionText, 0.0f, QuestUIFadeTime));
-
-    QuestIllust.sprite = _quest.ExpSelectionIllust;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllust, 1.0f, QuestUIFadeTime));
-    QuestDescriptionText_size.text = _quest.ExpSelectionDescription;
-    QuestDescriptionText.text=_quest.ExpSelectionDescription;
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionText,1.0f, QuestUIFadeTime));
-    yield return Wait;
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(ExpGroup, 1.0f, QuestUIFadeTime, false));
+ //   UIManager.Instance.AddUIQueue(setquestsuggest_beginning());
   }
   public void SelectExp(int index)
   {
@@ -121,7 +78,6 @@ public class UI_QuestSuggest : UI_default
     UIManager.Instance.UpdateExpLongTermIcon();
     StartCoroutine (UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, 0.3f, false));
     StartCoroutine(UIManager.Instance.ChangeAlpha(ExpGroup, 0.0f, QuestUIFadeTime, false));
-    GameManager.Instance.MyGameData.CurrentQuest.CurrentSequence = QuestSequence.Rising;
   }
   public void AddRewardExp_Short(int _expindex)
   {
@@ -132,7 +88,6 @@ public class UI_QuestSuggest : UI_default
     UIManager.Instance.UpdateExpShortTermIcon();
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardExpGroup, 0.0f, 0.3f, false));
     StartCoroutine(UIManager.Instance.ChangeAlpha(ExpGroup, 0.0f, QuestUIFadeTime, false));
-    GameManager.Instance.MyGameData.CurrentQuest.CurrentSequence = QuestSequence.Rising;
   }
   public void OpenRewardExpPanel_reward()
   {
@@ -183,26 +138,26 @@ public class UI_QuestSuggest : UI_default
 
   public void OpenStarting()
   {
-    UIManager.Instance.AddUIQueue(setquestsuggest_starting());
+ //   UIManager.Instance.AddUIQueue(setquestsuggest_starting());
   }
   private IEnumerator setquestsuggest_starting()
   {
-    QuestHolder _quest = GameManager.Instance.MyGameData.CurrentQuest;
+    Quest _quest = GameManager.Instance.MyGameData.CurrentQuestData;
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllust, 0.0f, QuestUIFadeTime));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionText, 0.0f, QuestUIFadeTime));
 
     yield return Wait;
 
-    QuestIllust.sprite = _quest.StartingIllust;
+  //  QuestIllust.sprite = _quest.StartingIllust;
     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllust, 1.0f, QuestUIFadeTime));
-    QuestDescriptionText_size.text =string.Format(_quest.StartingDescription,SelectedExp.Name);
-    QuestDescriptionText.text = string.Format(_quest.StartingDescription, SelectedExp.Name);
+  //  QuestDescriptionText_size.text =string.Format(_quest.StartingDescription,SelectedExp.Name);
+  //  QuestDescriptionText.text = string.Format(_quest.StartingDescription, SelectedExp.Name);
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionText, 1.0f, QuestUIFadeTime));
 
     yield return Wait;
 
-    MapButtonText.text = _quest.StartingSelection;
+//MapButtonText.text = _quest.StartingSelection;
     StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, QuestUIFadeTime, false));
   }
   public void CloseQuestUI()

@@ -61,8 +61,8 @@ public class UI_EventSuggest : UI_default
   private IEnumerator opensuggest()
   {
     Settlement _currentsettle = GameManager.Instance.MyGameData.CurrentSettlement;
-    if (_currentsettle.TileData.EnvironmentType.Count.Equals(0)) UIManager.Instance.UpdateBackground(EnvironmentType.NULL);
-    else UIManager.Instance.UpdateBackground(_currentsettle.TileData.EnvironmentType[Random.Range(0, _currentsettle.TileData.EnvironmentType.Count)]);
+    if (_currentsettle.TileInfoData.EnvirList.Count.Equals(0)) UIManager.Instance.UpdateBackground(EnvironmentType.NULL);
+    else UIManager.Instance.UpdateBackground(_currentsettle.TileInfoData.EnvirList[Random.Range(0, _currentsettle.TileInfoData.EnvirList.Count)]);
 
     SettleNameGroup.alpha = 1.0f;
     SettleName.text = GameManager.Instance.GetTextData(_currentsettle.OriginName);
@@ -144,7 +144,7 @@ public class UI_EventSuggest : UI_default
     if(EnvirGroup.alpha.Equals(1.0f)) EnvirGroup.alpha = 0.0f;
 
     List<int> _activeenvir=new List<int>();
-    var _envirs = GameManager.Instance.MyGameData.CurrentSettlement.TileData.EnvironmentType;
+    var _envirs = GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData.EnvirList;
     for (int i = 0; i < EnvirObjs.Length; i++)
     {
       if (_envirs.Contains((EnvironmentType)i))

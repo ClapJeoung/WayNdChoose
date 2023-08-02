@@ -7,24 +7,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-public enum BottomEnvirType
-{
- NULL, Land,River,Sea,Source, Beach,RiverBeach
-}
-public enum TopEnvirType {NULL, Forest,Mountain,Highland }
-public enum LandMarkType { NULL,Town,City,Castle}
-public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
-public class TileData
-{
-  public Vector2Int Coordinate = Vector2Int.zero;
-  public BottomEnvirType BottomEnvir = BottomEnvirType.NULL;
-  public TopEnvirType TopEnvir = TopEnvirType.NULL;
-  public int Rotate = 0;
-  public LandMarkType LandMark = LandMarkType.NULL;
-  public Settlement TileSettle = null;
-  public TileSpriteType TopEnvirSprite = TileSpriteType.NULL;
-  public TileSpriteType BottomEnvirSprite= TileSpriteType.Sea;
-}
 
 public class maptext : MonoBehaviour
 {
@@ -908,9 +890,9 @@ public class maptext : MonoBehaviour
       _castletiles.Add(_starttile);
       _castletiles.Add(_secondtile);
       _castletiles.Add(_thirdtile);
-      _NewMapData.TileDatas[_starttile.Coordinate.x, _starttile.Coordinate.y].LandMark = LandMarkType.Castle;
-      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].LandMark = LandMarkType.Castle;
-      _NewMapData.TileDatas[_thirdtile.Coordinate.x, _thirdtile.Coordinate.y].LandMark = LandMarkType.Castle;
+      _NewMapData.TileDatas[_starttile.Coordinate.x, _starttile.Coordinate.y].LandScape = LandscapeType.Settlement;
+      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].LandScape = LandscapeType.Settlement;
+      _NewMapData.TileDatas[_thirdtile.Coordinate.x, _thirdtile.Coordinate.y].LandScape = LandscapeType.Settlement;
       bool CastleCheck(TileData tile)
       {
         if (tile.BottomEnvir == BottomEnvirType.Sea) return false;
@@ -976,8 +958,8 @@ public class maptext : MonoBehaviour
 
       _NewMapData.TileDatas[_firsttile.Coordinate.x, _firsttile.Coordinate.y].TileSettle = Cities[_citytiles.Count / 2];
       _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].TileSettle = Cities[_citytiles.Count / 2];
-      _NewMapData.Tile(_firsttile.Coordinate).LandMark = LandMarkType.City;
-      _NewMapData.Tile(_secondtile.Coordinate).LandMark = LandMarkType.Castle;
+      _NewMapData.Tile(_firsttile.Coordinate).LandScape = LandscapeType.Settlement;
+      _NewMapData.Tile(_secondtile.Coordinate).LandScape = LandscapeType.Settlement;
       _citytiles.Add(_firsttile);
       _citytiles.Add(_secondtile);
 
@@ -1030,7 +1012,7 @@ public class maptext : MonoBehaviour
       if (_breakable) continue;//주위 2칸에 다른 정착지가 있으면 X
 
       _NewMapData.TileDatas[_towntile.Coordinate.x, _towntile.Coordinate.y].TileSettle = Towns[_towntiles.Count];
-      _NewMapData.Tile(_towntile.Coordinate).LandMark = LandMarkType.Town;
+      _NewMapData.Tile(_towntile.Coordinate).LandScape = LandscapeType.Settlement;
       _towntiles.Add(_towntile);
     }
 
@@ -1190,8 +1172,7 @@ public class maptext : MonoBehaviour
   }
   public void MakeTilemap()
     {
-    Vector3 _cellsize = new Vector3(75, 75);
-    Debug.Log("맵을 만든 레후~");
+    Vector3 _cellsize = new Vector3(190, 190);    Debug.Log("맵을 만든 레후~");
         //타일로 구현화
         for (int i = 0; i < ConstValues.MapSize; i++)
         {
@@ -1358,10 +1339,10 @@ public class maptext : MonoBehaviour
 
     void maketile(Sprite spr, Vector3 pos, int rot,Vector2Int coordinate,bool isbottom)
     {
-      Vector3 _newpos = pos;
       string _name = $"{coordinate.x},{coordinate.y}  {GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).BottomEnvir},{GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).TopEnvir}";
       GameObject _tile = new GameObject(_name, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
       _tile.GetComponent<Image>().sprite = spr;
+      _tile.GetComponent<Image>().raycastTarget = isbottom ? true : false;
       _tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,-60.0f*rot));
       RectTransform _rect = _tile.GetComponent<RectTransform>();
 
@@ -1377,15 +1358,26 @@ public class maptext : MonoBehaviour
           _nav.mode = Navigation.Mode.None;
           _button.navigation = _nav;
           _outline.enabled = false;
+          _tile.AddComponent(typeof(TileButtonScript));
+          TileButtonScript _buttonscript=_tile.GetComponent<TileButtonScript>();
+          _buttonscript.OutLine = _outline;
+          _buttonscript.Button = _button;
+          _buttonscript.SelectHolder = MapUIScript.SelectTileHolder;
+          _buttonscript.OriginHolder = TileHolder_bottomenvir;
+          _buttonscript.MapUI = MapUIScript;
+          _buttonscript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
+          _button.onClick.AddListener(() => _buttonscript.Clicked());
+          GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).ButtonScript = _buttonscript;
           break;
         case false:
           _tile.transform.SetParent(TileHolder_topenvir);
           break;
       }
       _rect.sizeDelta = _cellsize;
-      _rect.position = new Vector3(_newpos.x, _newpos.y,_rect.anchoredPosition3D.z);
-      _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition3D.x, _rect.anchoredPosition3D.y, 0.0f);
+      _rect.position = new Vector3(pos.x, pos.y,_rect.position.z);
       _tile.transform.localScale = Vector3.one;
+      _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition3D.x, _rect.anchoredPosition3D.y, 0.0f);
+      GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).Rect = _rect;
     }
 
   }

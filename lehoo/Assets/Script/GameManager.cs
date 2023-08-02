@@ -302,7 +302,7 @@ public class GameManager : MonoBehaviour
 
     Dictionary<string, QuestEventDataJson> _questeventjson = new Dictionary<string, QuestEventDataJson>();
     _questeventjson = JsonConvert.DeserializeObject<Dictionary<string, QuestEventDataJson>>(QuestEventData.text);
-    foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
+  //  foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
     //퀘스트 Json -> EventHolder
 
     Dictionary<string, ExperienceJsonData> _expjson = new Dictionary<string, ExperienceJsonData>();
@@ -452,7 +452,6 @@ public class GameManager : MonoBehaviour
   }
   public void SetOuterEvent(EventDataDefulat _event)
   {
-    if (_event.GetType().Equals(typeof(QuestEventData))) MyGameData.LastQuestCount = 0;
     MyGameData.CurrentEvent = _event;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
@@ -484,7 +483,6 @@ public class GameManager : MonoBehaviour
   }//제시 패널에서 이벤트를 선택한 경우
   public void SelectQuestEvent(EventDataDefulat questevent)
   {
-    MyGameData.LastQuestCount = 0;
     Dictionary<Settlement, int> _temp = new Dictionary<Settlement, int>();
     MyGameData.CurrentEvent = questevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
@@ -529,11 +527,11 @@ public class GameManager : MonoBehaviour
     if (Input.GetKeyDown(KeyCode.F1)) MyGameData.CurrentSanity = 3;
   }
 
-  public void StartNewGame(QuestHolder newquest)
+  public void StartNewGame(QuestType newquest)
   {
     UIManager.Instance.AddUIQueue(startnewgame(newquest));
   }
-  private IEnumerator startnewgame(QuestHolder newquest)
+  private IEnumerator startnewgame(QuestType newquest)
   {
     MyGameData = new GameData();//새로운 게임 데이터 생성
     MyGameData.CurrentQuest= newquest;
@@ -615,10 +613,10 @@ public class GameManager : MonoBehaviour
 
     MyGameData.CurrentSettlement = _startsettle;
     MyGameData.AvailableSettles = MyGameData.MyMapData.GetCloseSettles(_startsettle, 3);
-    MyGameData.CurrentPos = _startsettle.Coordinate;
+    MyGameData.Coordinate = _startsettle.Coordinate;
 
     _map.MakeTilemap();
-    UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle);
+    UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle.Tiles[Random.Range(0,_startsettle.Tiles.Count)].Coordinate);
     yield return null;
   }
 }

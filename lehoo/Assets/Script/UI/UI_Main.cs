@@ -149,36 +149,22 @@ public class UI_Main : MonoBehaviour
   }
   public void SelectQuest(int index)//시나리오 버튼 누를때
   {
-    QuestHolder _quest = GameManager.Instance.EventHolder.AllQuests[index];
-    if (SelectedQuest != null)
-    {
+    QuestType _quest = (QuestType)index;
       if (_quest != SelectedQuest)
       {
         SelectedQuest = _quest;
         UIManager.Instance.AddUIQueue(selectquest());
       }
-    }
-    else
-    {
-      SelectedQuest = _quest;
-      UIManager.Instance.AddUIQueue(selectquest());
-    }
   }
   private IEnumerator selectquest()
   {
-    QuestIllust.sprite = SelectedQuest.StartIllust;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup,1.0f,0.1f,false));
-    QuestDescription_size.text = SelectedQuest.PreDescription;
-    QuestDescription_text.text = SelectedQuest.PreDescription;
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(QuestDescriptionTextGroup, 1.0f, 0.1f, false));
-    StartNewGameButton.interactable = true;
+    yield return null;
   }
-  private QuestHolder SelectedQuest = null;
+  private QuestType SelectedQuest = QuestType.Wolf;
   public void StartNewGame()//버튼으로 새 게임 시작 버튼 누르는거
   {
-    QuestHolder _quest = SelectedQuest;
     UIManager.Instance.AddUIQueue(closescenario());
-    GameManager.Instance.StartNewGame(_quest);
+    GameManager.Instance.StartNewGame(SelectedQuest);
     //게임매니저에서 데이터 생성->맵 생성->(메인->게임)전환 코루틴 실행->이후 처리
   }
   private IEnumerator openmain()
@@ -243,7 +229,6 @@ public class UI_Main : MonoBehaviour
   }
   private IEnumerator closescenario()
   {
-    SelectedQuest = null;
   StartNewGameButton.interactable = false;
     BackToMainButton.interactable = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(BackToMainGroup, 0.0f, 0.4f, false));

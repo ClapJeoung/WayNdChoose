@@ -597,15 +597,11 @@ public class UI_dialogue : UI_default
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
 
 
-    if (GameManager.Instance.MyGameData.CurrentEvent.GetType().Equals(typeof(QuestEventData)))
-      GameManager.Instance.MyGameData.CurrentQuest.AddClearEvent((QuestEventData)GameManager.Instance.MyGameData.CurrentEvent);
   }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체, 퀘스트 이벤트일 경우 진행도 ++
   public void SetFail(FailureData _fail)
   {
     SetPenalty(_fail);
     SetEventDialogue(_fail);
-    if (GameManager.Instance.MyGameData.CurrentEvent.GetType().Equals(typeof(QuestEventData)))
-      GameManager.Instance.MyGameData.CurrentQuest.AddFailEvent((QuestEventData)GameManager.Instance.MyGameData.CurrentEvent);
   }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
   public void DeleteRewardButton()
   {

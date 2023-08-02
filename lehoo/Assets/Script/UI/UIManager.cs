@@ -784,9 +784,8 @@ public class UIManager : MonoBehaviour
   }
 
   public void UpdateMap_SettleIcons(List<Settlement> _avail) => MyMap.UpdateIcons(_avail);
-  public void UpdateMap_AddSettle(SettlementIcon _icon) => MyMap.AddSettleIcon(_icon);
-  public void UpdateMap_SetPlayerPos(Settlement _settle)=>MyMap.SetPlayerPos(_settle);
-  public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.CurrentPos);
+  public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MyMap.SetPlayerPos(coordinate);
+  public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
   public void CreateMap() => MyMap.MapCreater.MakeTilemap();
   public void OpenSuggestUI() => MyEvnetSuggest.OpenSuggest();
   public void OpenBadExpUI(Experience _badexp) => MyUIReward.OpenRewardExpPanel_penalty(_badexp);

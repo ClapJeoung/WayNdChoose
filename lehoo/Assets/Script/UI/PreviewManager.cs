@@ -349,29 +349,6 @@ public class PreviewManager : MonoBehaviour
   }//현재 이동 가능 여부에 따라 텍스트만 출력
   public void OpenQuestPreview()
   {
-    QuestHolder _currentquest = GameManager.Instance.MyGameData.CurrentQuest;
-    QuestName.text = _currentquest.QuestName;
-    QuestIllust.sprite = _currentquest.StartIllust;
-    string _strid = $"{_currentquest.QuestID}_";
-    switch (_currentquest.CurrentSequence)
-    {
-      case QuestSequence.Start:
-      case QuestSequence.Rising:
-        _strid += "rising";
-        break;//퀘스트id_rising을 부 설명으로
-      case QuestSequence.Climax:
-        _strid += $"climax_{_currentquest.FinishedClimaxCount.ToString()}";
-        break;//id_climax_순서 를 부 설명으로
-      case QuestSequence.Falling:
-        _strid += "falling";
-        break;//id_falling을 부 설명으로
-    }//퀘스트가 존재할경우
-
-    CurrentPreview = QuestPreview.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(QuestPreview, true);
-    StartCoroutine(_cor);
   }//현재 퀘스트 이름, 일러스트, 다음 내용                             수정요망
   public void OpenSkillPreview(SkillType _skilltype)
   {
