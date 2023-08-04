@@ -148,70 +148,32 @@ public class Settlement
 
   public void SetAvailablePlaces()
   {
-    List<PlaceType> _followplaces = new List<PlaceType>();
-    List<PlaceType> _normalplaces=new List<PlaceType>();
-    List<PlaceType> _enableplaces=new List<PlaceType>();
 
+        int _count = 0;
+        List<PlaceType> _placepool = new List<PlaceType>() { PlaceType.Residence, PlaceType.Marketplace, PlaceType.Temple };
+        switch (Type)
+        {
+            case SettlementType.Town:_count = ConstValues.ActivePlaceCount_Town;
+                
+                break;
+            case SettlementType.City: _count = ConstValues.ActivePlaceCount_City;
+                _placepool.Add(PlaceType.Library);
+                break;
+            case SettlementType.Castle: _count = ConstValues.ActivePlaceCount_Castle;
+                _placepool.Add(PlaceType.Theater);
+                _placepool.Add(PlaceType.Academy);
+                break;
+        }
+        EnablePlaces.Clear();
+        EnablePlaces.Add(_placepool[Random.Range(0, _placepool.Count)]);
+        while (EnablePlaces.Count < _count)
+        {
+            PlaceType _place = _placepool[Random.Range(0, _placepool.Count)];
+            if (EnablePlaces.Contains(_place)) continue;
 
-    for(int i = 0; i < 3; i++)
-    {
-      PlaceType _targetplce = (PlaceType)i;
-      if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, _targetplce)) _followplaces.Add(_targetplce);
-      else _normalplaces.Add(_targetplce);
+            EnablePlaces.Add(_place);
+        }
     }
-
-    System.Random _rnd=new System.Random();
-    int _count = 0;
-    switch (Type)
-    {
-      case SettlementType.Town:
-        _count = ConstValues.TownPlaceCount;
-
-        break;
-      case SettlementType.City:
-        PlaceType _targetplce = PlaceType.Library;
-        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, _targetplce)) _followplaces.Add(_targetplce);
-        else _normalplaces.Add(_targetplce);
-        _count= ConstValues.CityPlaceCount;
-
-        break;
-      case SettlementType.Castle:
-        PlaceType __targetplce = PlaceType.Theater;
-        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, __targetplce)) _followplaces.Add(__targetplce);
-        else _normalplaces.Add(__targetplce);
-
-        PlaceType ___targetplce = PlaceType.Academy;
-        if (GameManager.Instance.EventHolder.IsFollowEventEnable(TileInfoData, ___targetplce)) _followplaces.Add(___targetplce);
-        else _normalplaces.Add(___targetplce);
-        _count = ConstValues.CastlePlaceCount;
-
-        break;
-    }
-
-    if (_followplaces.Count > _count)
-    {
-      var _temp = _followplaces.OrderBy(x => _rnd.Next()).ToList();
-      for (int i = 0; i < _count; i++)
-        _enableplaces.Add(_temp[i]);
-      _enableplaces.Sort();
-    }//연계 가능한 장소가 목표보다 많으면 그 중 무작위 선택해 반환
-    else if (_followplaces.Count == _count)
-    {
-      _enableplaces = _followplaces;
-    }//연계 가능한 장소가 목표 개수랑 동일하면 그대로 반환
-    else
-    {
-      var _temp = _normalplaces.OrderBy(x => _rnd.Next()).ToList();
-      for (int i = 0; i < _count - _followplaces.Count; i++)
-      {
-        _followplaces.Add(_temp[i]);
-      }
-      _followplaces.Sort();
-      _enableplaces = _followplaces;
-    }//연계 가능한 장소가 목표치에 못 도달하면 일반 장소 중 무작위로 선택해 반환
-
-    EnablePlaces = _enableplaces;
-  }
 }
 public class MapData
 {

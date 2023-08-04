@@ -7,6 +7,21 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+    public const int ActivePlaceCount_Town = 1, ActivePlaceCount_City = 2, ActivePlaceCount_Castle = 3;
+
+    public const int EventPer_Settle_Follow_Envir_Place = 35,
+                     EventPer_Settle_Follow_Envir_NoPlace = 14,
+                     EventPer_Settle_Follow_NoEnvir_Place = 14,
+                     EventPer_Settle_Follow_NoEnvir_NoPlace = 7,
+                     EventPer_Settle_Normal_Envir_Place = 15,
+                     EventPer_Settle_Normal_Envir_NoPlace = 6,
+                     EventPer_Settle_Normal_NoEnvir_Place = 6,
+                     EventPer_Settle_Normal_NoEnvir_NoPlace = 3;
+    public const int EventPer_Outer_Follow_Envir = 21,
+                     EventPer_Outer_Follow_NoEnvir = 7,
+                     EventPer_Outer_Normal_Envir = 9,
+                     EnvirPer_Outer_Normal_NoEnvir = 3;
+
   public const int MapSize = 40;
     
   public const float Ratio_highland = 0.2f;
@@ -597,7 +612,6 @@ public class GameData    //게임 진행도 데이터
 
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
   public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
-  public List<PlaceType> VisitedPlaces = new List<PlaceType>();     //현재 정착지에서 사용한 장소 목록
     public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
     public SkillType LibraryEffectTarget = SkillType.Conversation;     //도서관 방문으로 증가한 테마
   public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)

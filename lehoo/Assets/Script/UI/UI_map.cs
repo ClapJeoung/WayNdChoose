@@ -266,7 +266,6 @@ public class UI_map : UI_default
    // 타겟된 정착지에서 플레이어로 카메라 이동
 
     //이동 도중이니 이동 버튼은 비활성화
-    GameManager.Instance.MyGameData.VisitedPlaces.Clear();
     SetMoveButton(2);
     Vector2 _playerrectpos = PlayerRect.anchoredPosition;                 //현재 위치(Rect)
     Vector2 _targettilepos = SelectedTile.Rect.anchoredPosition;            //종점 위치(Rect)

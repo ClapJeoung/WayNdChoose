@@ -71,6 +71,21 @@ public class ImageHolder : ScriptableObject
     public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
   public List<Sprite> EndingIllusts=new List<Sprite>();//엔딩 일러스트
+    public List<Sprite> QuestIllust_Wolf = new List<Sprite>();          //늑대 관련 퀘스트 일러스트
+    public Sprite GetQuestIllust(QuestType type,string id)
+    {
+        List<Sprite> _targetlist = new List<Sprite>();
+        switch (type)
+        {
+            case QuestType.Wolf:_targetlist = QuestIllust_Wolf;break;
+        }
+        foreach(var _illust in _targetlist)
+        {
+            if (string.Compare(id, _illust.name, true).Equals(0)) return _illust;
+        }
+        Debug.Log($"{id} 이미지 없음");
+        return DefaultIllust;
+    }
   public Sprite GetEndingIllust(string index)
   {
     foreach (var _temp in EndingIllusts)
@@ -265,13 +280,13 @@ public class ImageHolder : ScriptableObject
       default:return "";
     }
   }
-  /// <summary>
-  /// 0123(사계절) 4(계절X)
-  /// </summary>
-  /// <param name="_illustid"></param>
-  /// <param name="season"></param>
-  /// <returns></returns>
-  public Sprite GetEventStartIllust(string _illustid,int season)
+    /// <summary>
+    /// 0123(사계절) 4(계절X)
+    /// </summary>
+    /// <param name="_illustid"></param>
+    /// <param name="season"></param>
+    /// <returns></returns>
+    public Sprite GetEventStartIllust(string _illustid,int season)
   {
     string _name = _illustid+SeasonText(season);
 

@@ -83,8 +83,7 @@ public class UI_Main : MonoBehaviour
   [SerializeField] private Image QuestIllust = null;
   [SerializeField] private RectTransform QuestIllustRect = null;
   private Vector2 QuestIllustOpenPos = new Vector2(-338.0f, -100.0f), QuestIllustClosePos = new Vector2(-1250.0f, -100.0f);
-  [SerializeField] private TextMeshProUGUI QuestDescription_size = null;
-  [SerializeField] private TextMeshProUGUI QuestDescription_text = null;
+  [SerializeField] private TextMeshProUGUI QuestDescription = null;
   [SerializeField] private CanvasGroup QuestDescriptionTextGroup = null;
   [SerializeField] private RectTransform QuestDescriptionRect = null;
   private Vector2 QuestDescriptionOpenPos = new Vector2(360.0f, -100.0f), QuestDescriptionClosePos = new Vector2(1250.0f, -100.0f);
@@ -109,7 +108,7 @@ public class UI_Main : MonoBehaviour
     if (QuitText.text == "") QuitText.text = GameManager.Instance.GetTextData("QUIT");
     if (StartNewGameText.text == "") StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
     if (BackToMainText.text == "") BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
-    if (HuntingText.text == "") HuntingText.text = "·¹ÈÄ~";
+    if (HuntingText.text == "") HuntingText.text = GameManager.Instance.EventHolder.Quest_Wolf.QuestName;
     ShowImage = showimage();
     SetupMain();
   }
@@ -158,6 +157,8 @@ public class UI_Main : MonoBehaviour
   }
   private IEnumerator selectquest()
   {
+        QuestDescription.text = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestDescription;
+        QuestIllust.sprite = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestIllust;
     yield return null;
   }
   private QuestType SelectedQuest = QuestType.Wolf;
@@ -212,8 +213,7 @@ public class UI_Main : MonoBehaviour
   private IEnumerator openscenario()
   {
     QuestIllust.sprite = GameManager.Instance.ImageHolder.NoneIllust;
-    QuestDescription_text.text = "";
-    QuestDescription_size.text = "";
+        QuestDescription.text = "";
     StartNewGameButton.interactable = false;
     BackToMainButton.interactable = false;
     StartCoroutine(UIManager.Instance.moverect(QuestIllustRect, QuestIllustClosePos, QuestIllustOpenPos, MainUIOpenTime, UIManager.Instance.UIPanelOpenCurve));
@@ -244,8 +244,7 @@ public class UI_Main : MonoBehaviour
     if (QuestIllustGroup.alpha.Equals(1.0f)) StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 0.0f, 0.2f, false));
     yield return StartCoroutine(UIManager.Instance.moverect(QuestIllustRect, QuestIllustOpenPos, QuestIllustClosePos, MainUICloseTime, UIManager.Instance.UIPanelCLoseCurve));
     QuestIllust.sprite = GameManager.Instance.ImageHolder.NoneIllust;
-    QuestDescription_text.text = "";
-    QuestDescription_size.text = "";
+    QuestDescription.text = "";
   }
   public void QuitGame()
   {

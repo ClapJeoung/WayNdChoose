@@ -31,7 +31,7 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
   }
   public void Setup()
     {
-    if (GameManager.Instance.MyGameData.VisitedPlaces.Contains(MyPlaceType))
+    if (GameManager.Instance.MyGameData.CurrentSettlement.EnablePlaces.Contains(MyPlaceType))
     {
       MyButton.interactable = false;
     }
