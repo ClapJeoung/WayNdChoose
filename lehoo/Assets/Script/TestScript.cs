@@ -10,14 +10,8 @@ using System.Data;
 using System.IO;
 using UnityEngine.EventSystems;
 
-public class TestScript : MonoBehaviour
+public class TestScript : ScreenPanelBasic
 {
-  public RectTransform RectA = null;
-  public RectTransform RectB = null;
-  private void Awake()
-  {
-  }
-  private void Update()
-  {
-  }
+    public string Lehoo = "·¹ÈÄ~";
+    public Vector2Int ASDF = Vector2Int.left;
 }

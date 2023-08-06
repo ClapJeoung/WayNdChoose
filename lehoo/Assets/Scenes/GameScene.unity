@@ -24225,6 +24225,7 @@ MonoBehaviour:
   MyGroup: {fileID: 255606474}
   IsOpen: 0
   MyDir: 0
+  PanelRects: []
   SkillInfoUI: {fileID: 1534803841}
 --- !u!1 &257528698
 GameObject:
@@ -30801,6 +30802,7 @@ MonoBehaviour:
   MyGroup: {fileID: 389181845}
   IsOpen: 0
   MyDir: 0
+  PanelRects: []
   TextFadeTime: 0.7
   NameTextGroup: {fileID: 1769471910}
   NameText: {fileID: 1769471908}
@@ -58402,6 +58404,37 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &736041085
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 736041086}
+  m_Layer: 0
+  m_Name: ------lehoo-------------- (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &736041086
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 736041085}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &737107077
 GameObject:
   m_ObjectHideFlags: 0
@@ -63539,6 +63572,7 @@ MonoBehaviour:
   MyGroup: {fileID: 832167206}
   IsOpen: 0
   MyDir: 0
+  PanelRects: []
   SkillInfoUI: {fileID: 1534803841}
   Icon_a: {fileID: 249135065}
   Icon_b: {fileID: 1060122490}
@@ -68555,6 +68589,7 @@ MonoBehaviour:
   MyGroup: {fileID: 919428633}
   IsOpen: 0
   MyDir: 1
+  PanelRects: []
   MyCansvas: {fileID: 1842386663}
   PanelGroup: {fileID: 82491829}
   RewardButtonHolder: {fileID: 1476144608}
@@ -77259,6 +77294,7 @@ MonoBehaviour:
   MyGroup: {fileID: 1167415684}
   IsOpen: 0
   MyDir: 0
+  PanelRects: []
   TouchBlock: {fileID: 1938466965}
   ExpName: {fileID: 1699194692}
   ExpIllust: {fileID: 1096916616}
@@ -93169,6 +93205,7 @@ MonoBehaviour:
   MyGroup: {fileID: 1399962242}
   IsOpen: 0
   MyDir: 1
+  PanelRects: []
   PlayerRect: {fileID: 348179709}
   MoveTime: 2
   Tilemap_bottom: {fileID: 1186217098}
@@ -96802,6 +96839,7 @@ MonoBehaviour:
   MyGroup: {fileID: 1468847632}
   IsOpen: 0
   MyDir: 1
+  PanelRects: []
   PanelGroup: {fileID: 2089058245}
   Name: {fileID: 1268433478}
   Description: {fileID: 1233854379}
@@ -98229,6 +98267,7 @@ GameObject:
   - component: {fileID: 1510477254}
   - component: {fileID: 1510477253}
   - component: {fileID: 1510477255}
+  - component: {fileID: 1510477256}
   m_Layer: 5
   m_Name: Panel_QuestSuggest
   m_TagString: Untagged
@@ -98294,6 +98333,11 @@ MonoBehaviour:
   MyGroup: {fileID: 1510477253}
   IsOpen: 0
   MyDir: 1
+  PanelRects:
+  - Name: 123
+    Rect: {fileID: 0}
+    InsidePos: {x: 0, y: 0}
+    OutisdePos: {x: 0, y: 0}
   QuestUIMoveTime: 0.6
   QuestUIFadeTime: 0.4
   QuestNameRect: {fileID: 909445312}
@@ -98380,6 +98424,18 @@ MonoBehaviour:
   - {fileID: 708424728}
   RewardExpDescription: {fileID: 1908460179}
   IsActivePanel: 0
+--- !u!114 &1510477256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510477251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe29cc3ec56424e43aa4f75ffd234d99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1515438691
 GameObject:
   m_ObjectHideFlags: 0
@@ -99372,6 +99428,7 @@ MonoBehaviour:
   MyGroup: {fileID: 1534803838}
   IsOpen: 0
   MyDir: 0
+  PanelRects: []
   TouchBlock: {fileID: 378332470}
   SkillName: {fileID: 0}
   SkillIllust: {fileID: 0}
@@ -135081,6 +135138,7 @@ MonoBehaviour:
   MyGroup: {fileID: 1896418049}
   IsOpen: 0
   MyDir: 0
+  PanelRects: []
   TouchBlock: {fileID: 831127846}
   Illust: {fileID: 590472018}
   Description: {fileID: 85811009}
@@ -140498,6 +140556,7 @@ MonoBehaviour:
   MyGroup: {fileID: 1913153137}
   IsOpen: 0
   MyDir: 1
+  PanelRects: []
   SettleNameGroup: {fileID: 1693073774}
   SettleNameRect: {fileID: 1693073771}
   SettleName: {fileID: 346815572}
@@ -140983,6 +141042,7 @@ MonoBehaviour:
   MyGroup: {fileID: 1925971913}
   IsOpen: 0
   MyDir: 0
+  PanelRects: []
 --- !u!1 &1927726713
 GameObject:
   m_ObjectHideFlags: 0
