@@ -25,10 +25,8 @@ public class UI_Selection : MonoBehaviour
   {
     OriginPos = GetComponent<RectTransform>().anchoredPosition;
   }
-  public void DeActive()
-  {
-    StartCoroutine(unselected());
-  }
+  public void DeActive() => StartCoroutine(unselected());
+
   private IEnumerator unselected()
   {
     float _time = 0.0f, _targettime = UIManager.Instance.SmallPanelFadeTime;
@@ -45,6 +43,7 @@ public class UI_Selection : MonoBehaviour
     }
     MyGroup.alpha = _endalpha;
     gameObject.SetActive(false);
+    MyRect.anchoredPosition = OriginPos;
   }
   public void Active(SelectionData _data)
   {

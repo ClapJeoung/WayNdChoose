@@ -28,205 +28,223 @@ public class EventHolder
 
     Data.ID = _data.ID;
 
-    string[] _seasons = _data.Season.Split('@');
-    for (int i = 0; i < _seasons.Length; i++) _data.Season.ElementAtOrDefault(int.Parse(_seasons[i]));
-
-        Data.AppearSpace = (EventAppearType)int.Parse(_data.Settlement);
-
-        string[] _places = _data.Place.Split('@');
-        foreach(string place in _places)
-        {
-            int _index = int.Parse(place);
-            PlaceType _targetplace = PlaceType.NULL;
-            if (_index < 3)
-            {
-                _targetplace = (PlaceType)_index;
-            }
-            else if (_index > 2)
-            {
-                if (Data.AppearSpace.Equals(EventAppearType.City))
-                {
-                    switch (_index)
-                    {
-                        case 3: _targetplace = PlaceType.Library; break;
-                    }
-                }
-                else
-                {
-                    switch (_index)
-                    {
-                        case 3: _targetplace = PlaceType.Theater; break;
-                        case 4: _targetplace = PlaceType.Academy; break;
-                    }
-                }
-            }
-        }
-
-        Data.EnvironmentType = (EnvironmentType)int.Parse(_data.Environment);
-
-    Data.Selection_type = (SelectionType)int.Parse(_data.Selection_Type);
-
-    switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
+    if (_data.Season != "")
     {
-      case SelectionType.Single://단일 선택지
-        Data.SelectionDatas = new SelectionData[1];
-        Data.SelectionDatas[0] = new SelectionData(Data ,-1);
+      string[] _seasons = _data.Season.Split('@');
+      for (int i = 0; i < _seasons.Length; i++) _data.Season.ElementAtOrDefault(int.Parse(_seasons[i]));
 
-        Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
-        switch (Data.SelectionDatas[0].ThisSelectionType)
+      Data.AppearSpace = (EventAppearType)int.Parse(_data.Settlement);
+
+      string[] _places = _data.Place.Split('@');
+      foreach (string place in _places)
+      {
+        int _index = int.Parse(place);
+        PlaceType _targetplace = PlaceType.NULL;
+        if (_index < 3)
         {
-          case SelectionTargetType.None: //무조건
-            break;
-          case SelectionTargetType.Pay: //지불
-            Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
-            break;
-          case SelectionTargetType.Check_Single: //기술(단일)
-            Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info));
-            break;
-          case SelectionTargetType.Check_Multy: //기술(복수)
-            string[] _temp = _data.Selection_Info.Split(',');
-            for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[i]));
-            break;
+          _targetplace = (PlaceType)_index;
         }
-        if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single)||
-          Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
+        else if (_index > 2)
         {
-          Data.FailureDatas = new FailureData[1];
-          Data.FailureDatas[0] = new FailureData(Data,-1);
-          Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-          switch (Data.FailureDatas[0].Panelty_target)
+          if (Data.AppearSpace.Equals(EventAppearType.City))
           {
-            case PenaltyTarget.None: break;
-            case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
-            case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
-          }
-        }
-        else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
-        {
-          Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
-        }
-        Data.SuccessDatas = new SuccessData[1];
-        Data.SuccessDatas[0] = new SuccessData(Data,-1);
-        Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-        switch (Data.SuccessDatas[0].Reward_Target)
-        {
-          case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-          case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-          case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
-        }
-        Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-
-        Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-        switch (Data.SuccessDatas[0].SubReward_target)
-        {
-          case 0: break;
-          case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-          case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-          case 3:
-            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-            break;
-        }
-
-        break;
-
-      case SelectionType.Body://이성육체
-      case SelectionType.Head://정신물질
-        Data.SelectionDatas = new SelectionData[2];
-        Data.FailureDatas = new FailureData[2];
-        Data.SuccessDatas = new SuccessData[2];
-
-        for (int i = 0; i < Data.SelectionDatas.Length; i++)
-        {
-          Data.SelectionDatas[i] = new SelectionData(Data, i);
-
-          Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target.Split('@')[i]);
-          switch (Data.SelectionDatas[i].ThisSelectionType)
-          {
-            case SelectionTargetType.None: //무조건
-              break;
-            case SelectionTargetType.Pay: //지불
-              Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info.Split('@')[i]);
-              break;
-            case SelectionTargetType.Check_Single: //기술(단일)
-              Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info.Split('@')[i]));
-              break;
-            case SelectionTargetType.Check_Multy: //기술(복수)
-              string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
-              for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[j]));
-              break;
-          }
-
-          if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
-            Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
-          {
-            Data.FailureDatas[i] = new FailureData(Data, i);
-            Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
-            switch (Data.FailureDatas[i].Panelty_target)
+            switch (_index)
             {
-              case PenaltyTarget.None: break;
-              case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
-              case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
+              case 3: _targetplace = PlaceType.Library; break;
             }
           }
-          else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusType.Gold))
+          else
           {
-             Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
-          }
-          Data.SuccessDatas[i] = new SuccessData(Data, i);
-          Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[i]);
-          switch (Data.SuccessDatas[i].Reward_Target)
-          {
-            case RewardTarget.Experience: Data.SuccessDatas[i].Reward_ID = _data.Reward_Info.Split('@')[i]; break;
-            case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-            case RewardTarget.Skill: Data.SuccessDatas[i].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
-          }
-          Data.SuccessDatas[i].SubReward_target = int.Parse(_data.SubReward.Split('@')[i]);
-
-          Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
-          switch (Data.SuccessDatas[i].SubReward_target)
-          {
-            case 0: break;
-            case 1: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-            case 2: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-            case 3:
-              if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-              if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold);
-              break;
+            switch (_index)
+            {
+              case 3: _targetplace = PlaceType.Theater; break;
+              case 4: _targetplace = PlaceType.Academy; break;
+            }
           }
         }
+      }
 
-        break;
-
-      case SelectionType.Tendency:
-      case SelectionType.Experience:
-        Data.SelectionDatas = new SelectionData[1];
-        Data.SelectionDatas[0] = new SelectionData(Data,-1);
-        Data.SelectionDatas[0].ThisSelectionType =Data.Selection_type.Equals(SelectionType.Tendency)?SelectionTargetType.Tendency: SelectionTargetType.Exp;
-      
-        Data.SuccessDatas = new SuccessData[1];
-        Data.SuccessDatas[0] = new SuccessData(Data,-1);
-        Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-        switch (Data.SuccessDatas[0].Reward_Target)
-        {
-          case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
-          case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-          case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
-        }
-        Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
-        Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-        switch (Data.SuccessDatas[0].SubReward_target)
-        {
-          case 0: break;
-          case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-          case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-          case 3:
-            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-            if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-            break;
-        }
-        break;
     }
+
+    if (_data.Environment != "")
+    {
+      Data.EnvironmentType = (EnvironmentType)int.Parse(_data.Environment);
+    }
+
+    if (_data.Selection_Type != "")
+    {
+      Data.Selection_type = (SelectionType)int.Parse(_data.Selection_Type);
+      switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
+      {
+        case SelectionType.Single://단일 선택지
+          Data.SelectionDatas = new SelectionData[1];
+          Data.SelectionDatas[0] = new SelectionData(Data, -1);
+
+          if (_data.Selection_Target != "")
+          {
+            Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
+            switch (Data.SelectionDatas[0].ThisSelectionType)
+            {
+              case SelectionTargetType.None: //무조건
+                break;
+              case SelectionTargetType.Pay: //지불
+                Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
+                break;
+              case SelectionTargetType.Check_Single: //기술(단일)
+                Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info));
+                break;
+              case SelectionTargetType.Check_Multy: //기술(복수)
+                string[] _temp = _data.Selection_Info.Split(',');
+                for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[i]));
+                break;
+            }
+            if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
+              Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
+            {
+              Data.FailureDatas = new FailureData[1];
+              Data.FailureDatas[0] = new FailureData(Data, -1);
+              Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+              switch (Data.FailureDatas[0].Panelty_target)
+              {
+                case PenaltyTarget.None: break;
+                case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
+                case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
+              }
+            }
+            else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
+            {
+              Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
+            }
+            Data.SuccessDatas = new SuccessData[1];
+            Data.SuccessDatas[0] = new SuccessData(Data, -1);
+            Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
+            switch (Data.SuccessDatas[0].Reward_Target)
+            {
+              case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
+              case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
+              case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+            }
+            Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
+
+            Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+            switch (Data.SuccessDatas[0].SubReward_target)
+            {
+              case 0: break;
+              case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+              case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+              case 3:
+                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                break;
+            }
+
+          }
+
+          break;
+        case SelectionType.Body://이성육체
+        case SelectionType.Head://정신물질
+          Data.SelectionDatas = new SelectionData[2];
+          Data.FailureDatas = new FailureData[2];
+          Data.SuccessDatas = new SuccessData[2];
+
+          if (_data.Selection_Target != "")
+          {
+            for (int i = 0; i < Data.SelectionDatas.Length; i++)
+            {
+              Data.SelectionDatas[i] = new SelectionData(Data, i);
+
+              Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target.Split('@')[i]);
+              switch (Data.SelectionDatas[i].ThisSelectionType)
+              {
+                case SelectionTargetType.None: //무조건
+                  break;
+                case SelectionTargetType.Pay: //지불
+                  Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info.Split('@')[i]);
+                  break;
+                case SelectionTargetType.Check_Single: //기술(단일)
+                  Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info.Split('@')[i]));
+                  break;
+                case SelectionTargetType.Check_Multy: //기술(복수)
+                  string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
+                  for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[j]));
+                  break;
+              }
+
+              if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
+                Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
+              {
+                Data.FailureDatas[i] = new FailureData(Data, i);
+                Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
+                switch (Data.FailureDatas[i].Panelty_target)
+                {
+                  case PenaltyTarget.None: break;
+                  case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
+                  case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
+                }
+              }
+              else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusType.Gold))
+              {
+                Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
+              }
+              Data.SuccessDatas[i] = new SuccessData(Data, i);
+              Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[i]);
+              switch (Data.SuccessDatas[i].Reward_Target)
+              {
+                case RewardTarget.Experience: Data.SuccessDatas[i].Reward_ID = _data.Reward_Info.Split('@')[i]; break;
+                case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
+                case RewardTarget.Skill: Data.SuccessDatas[i].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
+              }
+              Data.SuccessDatas[i].SubReward_target = int.Parse(_data.SubReward.Split('@')[i]);
+
+              Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
+              switch (Data.SuccessDatas[i].SubReward_target)
+              {
+                case 0: break;
+                case 1: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+                case 2: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+                case 3:
+                  if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                  if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                  break;
+              }
+            }
+          }
+          break;
+
+        case SelectionType.Tendency:
+        case SelectionType.Experience:
+          Data.SelectionDatas = new SelectionData[1];
+          Data.SelectionDatas[0] = new SelectionData(Data, -1);
+          if (_data.Selection_Target != "")
+          {
+            Data.SelectionDatas[0].ThisSelectionType = Data.Selection_type.Equals(SelectionType.Tendency) ? SelectionTargetType.Tendency : SelectionTargetType.Exp;
+
+            Data.SuccessDatas = new SuccessData[1];
+            Data.SuccessDatas[0] = new SuccessData(Data, -1);
+            Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
+            switch (Data.SuccessDatas[0].Reward_Target)
+            {
+              case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
+              case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
+              case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+            }
+            Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
+            Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+            switch (Data.SuccessDatas[0].SubReward_target)
+            {
+              case 0: break;
+              case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
+              case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
+              case 3:
+                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
+                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
+                break;
+            }
+          }
+          break;
+      }
+    }
+
     return Data;
   }
     public void ConvertData_Normal(EventJsonData _data)
@@ -262,6 +280,8 @@ public class EventHolder
   }
   public void ConvertData_Quest(QuestEventDataJson _data)
   {
+    if (Quest_Wolf == null) Quest_Wolf = new QuestHolder_Wolf();
+
 
     switch ((QuestType) int.Parse(_data.QuestType))
     {
@@ -275,25 +295,22 @@ public class EventHolder
   {
     QuestEventData_Wolf eventdata = ReturnEventDataDefault<QuestEventData_Wolf>(jsondata);
     eventdata.Type = QuestType.Wolf;
-
-    if (Quest_Wolf == null) Quest_Wolf = new QuestHolder_Wolf();
-
     switch (int.Parse(jsondata.QuestEventType))
     {
       case 0:
-        Quest_Wolf.PrologueEvents_0= eventdata;
+   //     Quest_Wolf.PrologueEvents_0= eventdata;
         break;
       case 1:
-        Quest_Wolf.PrologueEvent_Tendency0= eventdata;
+   //     Quest_Wolf.PrologueEvent_Tendency0= eventdata;
         break;
       case 2:
-        Quest_Wolf.PrologueEvent_1= eventdata;
+   //     Quest_Wolf.PrologueEvent_1= eventdata;
         break;
       case 3:
-        Quest_Wolf.PrologueEvent_Tendency1 = eventdata;
+    //    Quest_Wolf.PrologueEvent_Tendency1 = eventdata;
         break;
       case 4:
-        Quest_Wolf.PrologueEvent_Last = eventdata;
+    //    Quest_Wolf.PrologueEvent_Last = eventdata;
         break;
       case 5:
         Quest_Wolf.StartEvents.Add(eventdata);
@@ -1008,12 +1025,34 @@ public class QuestHolder_Wolf:Quest
 
   public TileData[] RitualPlaces = new TileData[3];
 
-  public QuestEventData_Wolf PrologueEvents_0=null;                                //QuestEventType 0
-  public QuestEventData_Wolf PrologueEvent_Tendency0 = null;                       //QuestEventType 1
-  public QuestEventData_Wolf PrologueEvent_1 = null;                               //QuestEventType 2
-  public QuestEventData_Wolf PrologueEvent_Tendency1 = null;                       //QuestEventType 3
-  public QuestEventData_Wolf PrologueEvent_Last = null;                            //QuestEventType 4
-
+  #region 프롤로그 관련
+  public Sprite Prologue_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_0_Illust"); } }
+  public string Prologue_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_0_Description"); } }
+  public string Prologue_0_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_0_Selection"); } }
+  public Sprite Prologue_Tendency_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_Tendency_0_Illust"); } }
+  public string Prologue_Tendency_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_0_Description"); } }
+  public string Prologue_Tendency_0_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_0_Selection_0"); } }
+  public Sprite Prologue_Tendency_0_Selection_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf,OriginID + "_Prologue_Tendency_0_Selection_0_Illust"); } }
+  public string Prologue_Tendency_0_Selection_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_0_Selection_0_Description"); } }
+  public string Prologue_Tendency_0_Selection_0_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_0_Selection_0_Selection"); } }
+  public string Prologue_Tendency_0_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_0_Selection_1"); } }
+  public Sprite Prologue_Tendency_0_Selection_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_Tendency_0_Selection_1_Illust"); } }
+  public string Prologue_Tendency_0_Selection_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_0_Selection_1_Description"); } }
+  public string Prologue_Tendency_0_Selection_1_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_0_Selection_1_Selection"); } }
+  public Sprite Prologue_Tendency_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_Tendency_1_Illust"); } }
+  public string Prologue_Tendency_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_1_Description"); } }
+  public string Prologue_Tendency_1_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_1_Selection_0"); } }
+  public Sprite Prologue_Tendency_1_Selection_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_Tendency_1_Selection_0_Illust"); } }
+  public string Prologue_Tendency_1_Selection_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_1_Selection_0_Description"); } }
+  public string Prologue_Tendency_1_Selection_0_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_1_Selection_0_Selection"); } }
+  public string Prologue_Tendency_1_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_1_Selection_1"); } }
+  public Sprite Prologue_Tendency_1_Selection_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_Tendency_1_Selection_1_Illust"); } }
+  public string Prologue_Tendency_1_Selection_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_1_Selection_1_Description"); } }
+  public string Prologue_Tendency_1_Selection_1_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Tendency_1_Selection_1_Selection"); } }
+  public Sprite Prologue_Tendency_Last_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_Last_Illust"); } }
+  public string Prologue_Last_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Last_Description"); } }
+  public string Prologue_Last_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Last_Selection"); } }
+  #endregion
   public List<QuestEventData_Wolf> StartEvents = new List<QuestEventData_Wolf>();       //QuestEventType 5 
 
   public QuestEventData_Wolf Event_Wanted = null;                                  //QuestEventType 6

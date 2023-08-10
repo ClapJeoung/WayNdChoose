@@ -456,7 +456,7 @@ public class PreviewManager : MonoBehaviour
         _icon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), _modifiedvalue.ToString());
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),WNCText.GetHPColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
@@ -471,7 +471,7 @@ public class PreviewManager : MonoBehaviour
         _icon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), _modifiedvalue.ToString());
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),WNCText.GetSanityColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
@@ -504,8 +504,8 @@ public class PreviewManager : MonoBehaviour
 
           PayNoGoldText.text = GameManager.Instance.GetTextData("NOGOLD_TEXT");
           PayNoGoldValue.text = string.Format(GameManager.Instance.GetTextData("NOGOLD_PAYVALUE"),
-            string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(StatusType.Gold, 2), GameManager.Instance.MyGameData.Gold),
-            string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(StatusType.Sanity, 2), _sanitypayvalue.ToString()));
+            string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(StatusType.Gold, 2),WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold)),
+            string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(StatusType.Sanity, 2),WNCText.GetSanityColor(_sanitypayvalue.ToString())));
           PayNoGoldPercentText.text = GameManager.Instance.GetTextData("NOGOLD_PERCENTAGE_TEXT");
           PayNoGoldPercentValue.text = WNCText.PercentageColor(_percent);
 
@@ -515,7 +515,7 @@ public class PreviewManager : MonoBehaviour
         }//지불 골드 값이 보유 값에 비해 높을 때
         else
         {
-          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), _modifiedvalue);
+          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),WNCText.GetGoldColor(_modifiedvalue));
 
           if(PayNoGoldHolder.activeInHierarchy.Equals(true))PayNoGoldHolder.SetActive(false);
           if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);

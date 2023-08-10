@@ -1368,6 +1368,11 @@ public class maptext : MonoBehaviour
           _buttonscript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
           _button.onClick.AddListener(() => _buttonscript.Clicked());
           GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).ButtonScript = _buttonscript;
+
+          if (GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).TopEnvir == TopEnvirType.Mountain ||
+            GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).BottomEnvir == BottomEnvirType.Sea)
+            _tile.GetComponent<Image>().raycastTarget = false;
+
           break;
         case false:
           _tile.transform.SetParent(TileHolder_topenvir);

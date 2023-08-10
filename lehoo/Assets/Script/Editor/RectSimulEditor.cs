@@ -18,10 +18,20 @@ public class RectSimulEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        if (GUILayout.Button("레후~"))
+        if (GUILayout.Button("활성화 위치"))
         {
-            Debug.Log(Target.gameObject.name);
-            Debug.Log(Target.name);
-        }
+      for (int i = 0; i < Target.PanelRects.Count; i++)
+      {
+        Target.PanelRects[i].Rect.anchoredPosition = Target.PanelRects[i].InsidePos;
+      }
+    }
+    EditorGUILayout.Space();
+    if(GUILayout.Button("비활성화 위치"))
+    {
+      for(int i = 0; i < Target.PanelRects.Count; i++)
+      {
+        Target.PanelRects[i].Rect.anchoredPosition = Target.PanelRects[i].OutisdePos;
+      }
+    }
     }
 }

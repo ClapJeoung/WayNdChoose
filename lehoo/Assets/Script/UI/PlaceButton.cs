@@ -11,7 +11,7 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] private CanvasGroup MyGroup = null;
     public TextMeshProUGUI MyText = null;
   [SerializeField] private CanvasGroup NameCanvasGroup = null;
-    [SerializeField] private UI_EventSuggest MyEventSuggest = null;
+    [SerializeField] private UI_Settlement MySettleUI = null;
     [SerializeField] private Button MyButton = null;
   [SerializeField] private RectTransform NameRect = null;
   [SerializeField] private TextMeshProUGUI MyPlaceName = null;
@@ -41,6 +41,6 @@ public class PlaceButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 }
   public void OnClick()
     {
-        MyEventSuggest.SelectPlace(MyPlaceType);
+        MySettleUI.SelectPlace(MyPlaceType);
     }
 }

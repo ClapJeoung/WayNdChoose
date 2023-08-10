@@ -16,22 +16,13 @@ public class UI_dialogue : UI_default
 
   [SerializeField] private CanvasGroup NameTextGroup = null;
   [SerializeField] private TextMeshProUGUI NameText = null;
-  [SerializeField] private CanvasGroup IllustGroup = null;
   [SerializeField] private CanvasGroup IllustImageGroup = null;
-  [SerializeField] private Image Illust = null;
-  [SerializeField] private RectTransform IllustRect = null;
-  private Vector2 IllustClosePos = new Vector2(-1125.0f, 0.0f);
-  private Vector2 IllustOpenPos = new Vector2(-385.0f, 0.0f);
+  [SerializeField] private Image IllustImage = null;
   private float IllustFullChargingTime = 3.0f;
   private float IllustChargingWaitTime = 1.0f;
   [Space(10)]
-  [SerializeField] private CanvasGroup DescriptionGroup = null;
-  [SerializeField] private TextMeshProUGUI DescriptionText_size = null;
   [SerializeField] private TextMeshProUGUI DescriptionText = null;
   [SerializeField] private CanvasGroup DescriptionTextGroup = null;
-  [SerializeField] private RectTransform DescriptionRect = null;
-  private Vector2 DescriptionClosePos = new Vector2(1150.0f, 280.0f);
-  private Vector2 DescriptionOpenPos = new Vector2(45.0f, 280.0f);
   [Space(10)]
   [SerializeField] private CanvasGroup CenterGroup = null;
   [SerializeField] private UI_Selection Selection_None = null;
@@ -42,18 +33,24 @@ public class UI_dialogue : UI_default
   [SerializeField] private ParticleSystem SuccessParticle = null;
   [SerializeField] private ParticleSystem FailParticle = null;
   [Space(10)]
-  [SerializeField] private CanvasGroup SettlementButton = null;
   [SerializeField] private UI_Reward MyUIReward = null;
+  [SerializeField] private CanvasGroup AfterEventButtonGroup = null;
   [SerializeField] private GameObject RewardButton = null;
-  [SerializeField] private CanvasGroup KeepmoveButton=null;
-  [SerializeField] private TextMeshProUGUI KeepMoveText = null;
+  [SerializeField] private Button ReturnButton = null;
+  [SerializeField] private Image ReturnButtonImage = null;
   [Space(10)]
   [SerializeField] private CanvasGroup EndingGroup = null;
-  
-  private void Start()
-  {
-    if (KeepMoveText.text.Equals("null")) KeepMoveText.text = GameManager.Instance.GetTextData("KEEPGOING");
-  }
+  [Space(10)]
+  [SerializeField] private UI_Settlement SettlementUI = null;
+  [SerializeField] private UI_map MapUI = null;
+  private EventDataDefulat CurrentEvent = null;
+  private RectTransform IllustRect { get {return GetPanelRect("illust").Rect; } }
+  private Vector2 IllustOpenPos { get { return GetPanelRect("illust").InsidePos; } }
+  private Vector2 IllustClosePos { get { return GetPanelRect("illust").OutisdePos; } }
+  private RectTransform DescriptionRect { get { return GetPanelRect("Description").Rect; } }
+  private Vector2 DescriptionOpenPos { get { return GetPanelRect("Description").InsidePos; } }
+  private Vector2 DescriptionClosePos { get { return GetPanelRect("Description").OutisdePos; } }
+
   private UI_Selection GetUISelection(TendencyType _tendencytype,int index)
   {
     switch (_tendencytype)
@@ -91,81 +88,19 @@ public class UI_dialogue : UI_default
     if (_selection.Equals(Selection_Material)) return Selection_Mental;
     return null;
   }
-  public void SetEventDialogue()
+  public void OpenUI()
   {
-
-    //초기화
-        UIManager.Instance.AddUIQueue(setnewdialogue());
-  }//이벤트 시작 열기
-  public void SetEndingDialogue(FollowEndingData endingdata,SuccessData successdata)
-  {
-    UIManager.Instance.AddUIQueue(updatedialogue(endingdata, successdata));
+    UIManager.Instance.AddUIQueue(setnewdialogue());
   }
-  public void SetEventDialogue(SuccessData _successdata)
-  {
-    UIManager.Instance.AddUIQueue(updatedialogue(_successdata));
-  }//성공 데이터를 바탕으로 열기
-  public void SetEventDialogue(FailureData _faildata)
-  {
-    UIManager.Instance.AddUIQueue(updatedialogue(_faildata));
-
-  }//성공 데이터를 바탕으로 열기
-  public void DeleteOtherSelection(int index)
-  {
-    EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
-    switch (_currentevent.Selection_type)
-    {
-      case SelectionType.Single:
-        break;
-      case SelectionType.Body:
-        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, false, false));
-        //가운데 장식품 제거
-
-        if (index.Equals(0))
-        {
-          Selection_Physical.DeActive();
-        }
-        else
-        {
-          Selection_Rational.DeActive();
-        }
-        break;
-      case SelectionType.Head:
-        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, false, false));
-        //가운데 장식품 제거
-
-        if (index.Equals(0))
-        {
-          Selection_Material.DeActive();
-        }
-        else
-        {
-          Selection_Mental.DeActive();
-        }
-        break;
-      case SelectionType.Tendency:
-      case SelectionType.Experience:
-        break;
-    }
-  }//선택지 선택한 후 다른 선택지들 닫기
-  public void SelectSelection(UI_Selection _selection)
-  {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, true, false));
-    DeleteOtherSelection(_selection.Index);
-    //다른거 사라지게 만들고
-    UIManager.Instance.AddUIQueue(selectionanimation(_selection));
-    //선택한 선택지를 중심으로 이동시키고 성공, 실패 검사 실행 
-  }//선택지 버튼 클릭했을 시
   private IEnumerator setnewdialogue()
   {
-    EventDataDefulat _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
+    CurrentEvent = GameManager.Instance.MyGameData.CurrentEvent;
+    UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
 
-    UIManager.Instance.UpdateBackground(_currentevent.EnvironmentType);
-
-    string _descriptiontemp = _currentevent.Description;
-    if (_descriptiontemp.Contains("#SETTLE#")) _descriptiontemp = _currentevent.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
-    Sprite _illust = _currentevent.Illust;
-    string _name = _currentevent.Name;
+    string _descriptiontemp = CurrentEvent.Description;
+    if (_descriptiontemp.Contains("#SETTLE#")) _descriptiontemp = CurrentEvent.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
+    Sprite _illust = CurrentEvent.Illust;
+    string _name = CurrentEvent.Name;
 
     if (Selection_None.gameObject.activeInHierarchy == true) Selection_None.gameObject.SetActive(false);
     if (Selection_Rational.gameObject.activeInHierarchy == true) Selection_Rational.gameObject.SetActive(false);
@@ -178,298 +113,91 @@ public class UI_dialogue : UI_default
     Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
     Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
     //모든 선택지 위치 초기화 및 숨기기
-    IllustRect.anchoredPosition = IllustClosePos;
-    DescriptionRect.anchoredPosition = DescriptionClosePos;
 
-    DescriptionGroup.alpha = 1.0f;
-    DescriptionTextGroup.alpha = 0.0f;
     IllustImageGroup.alpha = 0.0f;
-    IllustGroup.alpha = 1.0f;
-    DescriptionText.text = _descriptiontemp;
-    DescriptionText_size.text = _descriptiontemp;
-     StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
+    IllustImage.sprite = _illust;
+    NameText.text = _name;
+    NameTextGroup.alpha = 0.0f;
+    StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.3f);
+    //일러스트+이름 세팅해두고 투명화 -> 이동
+
+    DescriptionTextGroup.alpha = 0.0f;
+    DescriptionText.text = _descriptiontemp;
     StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return Wait;
-    NameText.text = _name;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(NameTextGroup, 1.0f, UIFadeTime,false));
+    //설명 텍스트 세팅해두고 투명화 -> 이동
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(NameTextGroup, 1.0f, UIFadeTime, false));
     yield return TextWait;
-    //일러스트, 설명 이동시키고 이름만 출현
+    //이름 투명화 -> 드러내기
 
-    Illust.sprite = _illust;
     StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup,1.0f,UIFadeTime,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
     yield return Wait;
-    //일러스트,내용 동시에 표시
+    //일러스트+설명 투명화 -> 드러내기
 
-    switch (_currentevent.Selection_type)
+    if(CurrentEvent.Selection_type==SelectionType.Body|| CurrentEvent.Selection_type==SelectionType.Head)
+      StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 1.0f, false, false));
+    //양자택일 형태 선택지일 경우 가운데 구분 이미지 활성화
+
+    switch (CurrentEvent.Selection_type)
     {
       case SelectionType.Single:
-        Selection_None.gameObject.SetActive(true);
-        Selection_None.Active(_currentevent.SelectionDatas[0]);
-        break;
-      case SelectionType.Body:
-        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 1.0f, false, false));
-                //가운데 있는 장식품
-
-        Selection_Rational.gameObject.SetActive(true);
-        Selection_Rational.Active(_currentevent.SelectionDatas[0]);
-        yield return new WaitForSeconds(0.3f);
-        Selection_Physical.gameObject.SetActive(true);
-        Selection_Physical.Active(_currentevent.SelectionDatas[1]);
-        break;
-      case SelectionType.Head:
-        StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 1.0f, false, false));
-                //가운데 있는 장식품
-
-                Selection_Mental.gameObject.SetActive(true);
-        Selection_Mental.Active(_currentevent.SelectionDatas[0]);
-        yield return new WaitForSeconds(0.3f);
-        Selection_Material.gameObject.SetActive(true);
-        Selection_Material.Active(_currentevent.SelectionDatas[1]);
-        break;
       case SelectionType.Tendency:
       case SelectionType.Experience:
         Selection_None.gameObject.SetActive(true);
-        Selection_None.Active(_currentevent.SelectionDatas[0]);
+        Selection_None.Active(CurrentEvent.SelectionDatas[0]);
+        break;
+      case SelectionType.Body:
+
+        Selection_Rational.gameObject.SetActive(true);
+        Selection_Rational.Active(CurrentEvent.SelectionDatas[0]);
+        yield return new WaitForSeconds(0.3f);
+        Selection_Physical.gameObject.SetActive(true);
+        Selection_Physical.Active(CurrentEvent.SelectionDatas[1]);
+        break;
+      case SelectionType.Head:
+
+        Selection_Mental.gameObject.SetActive(true);
+        Selection_Mental.Active(CurrentEvent.SelectionDatas[0]);
+        yield return new WaitForSeconds(0.3f);
+        Selection_Material.gameObject.SetActive(true);
+        Selection_Material.Active(CurrentEvent.SelectionDatas[1]);
         break;
     }
-        //선택지 오브젝트들이 가운데부터 등장
+    //선택지 오브젝트들 세팅 + 이동
   }
-  private IEnumerator updatedialogue(FollowEndingData endingdata,SuccessData successdata)
-  {
-    SuccessParticle.Play();
-    CurrentUISelection.DeActive();
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, UIFadeTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, UIFadeTime, false));
-    //일러스트,설명 투명화하고 약간 시간 둔 뒤 새 일러스트,설명으로 전환
-    yield return TextWait;
-
-    Illust.sprite = successdata.Illust;
-    DescriptionText.text = successdata.Description;
-    DescriptionText_size.text = successdata.Description;
-    yield return new WaitForEndOfFrame();
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
-    yield return ResultWait;
-
-    yield return StartCoroutine(openendingbuttons());
-  }
-  private IEnumerator updatedialogue(SuccessData _success)
-  {
-    SuccessParticle.Play();
-    CurrentUISelection.DeActive();
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f,UIFadeTime,false));
-   yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f,UIFadeTime,false));
-    //일러스트,설명 투명화하고 약간 시간 둔 뒤 새 일러스트,설명으로 전환
-    yield return TextWait;
-
-    Illust.sprite = _success.Illust;
-    DescriptionText_size.text = _success.Description;
-    DescriptionText.text = _success.Description;
-    yield return new WaitForEndOfFrame();
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
-    yield return ResultWait;
-
-    OpenButtons(_success);
-  }
-  private IEnumerator updatedialogue(FailureData _faiilure)
-  {
-    yield return Wait;
-    FailParticle.Play();
-    CurrentUISelection.DeActive();
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, UIFadeTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, UIFadeTime, false));
-    //일러스트,설명 투명화하고 약간 시간 둔 뒤 새 일러스트,설명으로 전환
-    yield return TextWait;
-
-    Illust.sprite = _faiilure.Illust;
-    DescriptionText_size.text = _faiilure.Description;
-    DescriptionText.text = _faiilure.Description;
-    yield return new WaitForEndOfFrame();
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
-    yield return ResultWait;
-
-
-    if (GameManager.Instance.MyGameData.CurrentSettlement == null)
-    {
-      StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false, false));
-    }
-    OpenButtons(_faiilure);
-  }
-  public override void CloseUI()
-  {
-    UIManager.Instance.AddUIQueue(closeui());
-  }//이벤트->정착지로 천천히 나갈때
-  private IEnumerator closeui()
-  {
-    CloseButtons();
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 0.0f, UIFadeTime, false));
-    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
-    yield return new WaitForSeconds(0.3f);
-    DescriptionTextGroup.alpha = 0.0f;
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, UIFadeTime, false));
-    yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustOpenPos, IllustClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
-    IllustImageGroup.alpha = 0.0f;
-    NameText.text = "";
-
-    yield return Wait;
-  }
-  public void ClosePanel_quick()
-  {
-    StartCoroutine(closepanelquick());
-  }//빠르게 닫기(지도 아래서 닫는 경우)
-  private IEnumerator closepanelquick()
-  {
-    CanvasGroup _none = Selection_None.GetComponent<CanvasGroup>();
-    _none.alpha = 0.0f;
-    _none.interactable = false;
-    _none.blocksRaycasts = false;
-    CanvasGroup _ra = Selection_Rational.GetComponent<CanvasGroup>();
-    _ra.alpha = 0.0f;
-    _ra.interactable = false;
-    _ra.blocksRaycasts = false;
-    CanvasGroup _ph = Selection_Physical.GetComponent<CanvasGroup>();
-    _ph.alpha = 0.0f;
-    _ph.interactable = false;
-    _ph.blocksRaycasts = false;
-    CanvasGroup _me = Selection_Mental.GetComponent<CanvasGroup>();
-    _me.alpha = 0.0f;
-    _me.interactable = false;
-    _me.blocksRaycasts = false;
-    CanvasGroup _ma = Selection_Material.GetComponent<CanvasGroup>();
-    _ma.alpha = 0.0f;
-    _ma.interactable = false;
-    _ma.blocksRaycasts = false;
-    CloseButtons();
-    yield return null;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f,0.3f,false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 0.0f, 0.3f, false));
-    NameText.text = "";
-    NameTextGroup.alpha = 0.0f;
-    Illust.sprite = GameManager.Instance.ImageHolder.NoneIllust;
-    IllustImageGroup.alpha = 0.0f;
-    DescriptionText_size.text = "";
-    DescriptionText.text = "";
-    DescriptionTextGroup.alpha = 0.0f;
-
-    IllustRect.anchoredPosition = IllustClosePos;
-    yield return null;
-  }
-  private void OpenButtons(SuccessData _success)
-  {
-    UIManager.Instance.AddUIQueue(openbuttons(_success));
-  }
-  private IEnumerator openbuttons(SuccessData _success)
-  {
-    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
-    {
-            SettlementButton.alpha = 0.0f;
-      if (SettlementButton.gameObject.activeInHierarchy == false) SettlementButton.gameObject.SetActive(true);
-       StartCoroutine(UIManager.Instance.ChangeAlpha(SettlementButton, 1.0f, false, false));
-    }
-    else
-    {
-            KeepmoveButton.alpha = 0.0f;
-      if (KeepmoveButton.gameObject.activeInHierarchy == false) KeepmoveButton.gameObject.SetActive(true);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false, false));
-    }
-
-    if (RewardButton.activeInHierarchy == false) RewardButton.gameObject.SetActive(true);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButton.GetComponent<CanvasGroup>(),1.0f, false, false));
-    yield return null;
-  }
-  private IEnumerator openendingbuttons()
-  {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, UIFadeTime, false));
-    yield return null;
-  }
-  public void OpenEnding()
-  {
-    if (UIManager.Instance.IsWorking) return;
-    FollowEndingData _endingdata = ((FollowEventData)GameManager.Instance.MyGameData.CurrentEvent).EndingData;
-    UIManager.Instance.OpenEnding(_endingdata);
-  }
-  public void RefuseEnding()
-  {
-    if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(refuseending());
-  }
-  private IEnumerator refuseending()
-  {
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup,0.0f,UIFadeTime,false));
-    
-    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
-    {
-      SettlementButton.alpha = 0.0f;
-      if (SettlementButton.gameObject.activeInHierarchy == false) SettlementButton.gameObject.SetActive(true);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(SettlementButton, 1.0f, false, false));
-    }
-    else
-    {
-      KeepmoveButton.alpha = 0.0f;
-      if (KeepmoveButton.gameObject.activeInHierarchy == false) KeepmoveButton.gameObject.SetActive(true);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false, false));
-    }
-
-    if (RewardButton.activeInHierarchy == false) RewardButton.gameObject.SetActive(true);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButton.GetComponent<CanvasGroup>(), 1.0f, false, false));
-    yield return null;
-  }
-  private void OpenButtons(FailureData _fail)
-  {
-    UIManager.Instance.AddUIQueue(openbuttons(_fail));
-  }
-  private IEnumerator openbuttons(FailureData _fail)
-  {
-    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
-    {
-      SettlementButton.alpha = 0.0f;
-      if (SettlementButton.gameObject.activeInHierarchy == false) SettlementButton.gameObject.SetActive(true);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(SettlementButton, 1.0f, false, false));
-    }
-    else
-    {
-      KeepmoveButton.alpha = 0.0f;
-      if (KeepmoveButton.gameObject.activeInHierarchy == false) KeepmoveButton.gameObject.SetActive(true);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(KeepmoveButton, 1.0f, false, false));
-    }
-    yield return null;
-  }
-  private void CloseButtons()
-  {
-    EndingGroup.alpha = 0.0f;
-    EndingGroup.interactable = false;
-    EndingGroup.blocksRaycasts = false;
-    if(KeepmoveButton.gameObject.activeInHierarchy == true) KeepmoveButton.gameObject.SetActive(false);
-    KeepmoveButton.alpha = 0.0f;
-    if (SettlementButton.gameObject.activeInHierarchy == true) SettlementButton.gameObject.SetActive(false);
-    SettlementButton.alpha = 0.0f;
-    if (RewardButton.activeInHierarchy == true) RewardButton.SetActive(false);
-    RewardButton.GetComponent<CanvasGroup>().alpha = 0.0f;
-  }
-
   private UI_Selection CurrentUISelection = null;
+  /// <summary>
+  /// 선택지 클릭했을때 선택지 스크립트에서 호출
+  /// </summary>
+  /// <param name="_selection"></param>
+  public void SelectSelection(UI_Selection _selection)
+  {
+    if (_selection.MyTendencyType != TendencyType.None)
+    {
+      GetOppositeSelection(_selection).DeActive();
+      StartCoroutine(UIManager.Instance.ChangeAlpha(CenterGroup, 0.0f, true, false));
+    }
+    //다른거 사라지게 만들고
+    UIManager.Instance.AddUIQueue(selectionanimation(_selection));
+    //선택한 선택지를 중심으로 이동시키고 성공, 실패 검사 실행 
+  }
   private IEnumerator selectionanimation(UI_Selection _selection)
   {
     CurrentUISelection = _selection;
     if (!_selection.MyTendencyType.Equals(TendencyType.None))
     {
-     yield return StartCoroutine(_selection.movetocenter());
+      yield return StartCoroutine(_selection.movetocenter());
     }//성향이 존재한다면 가운데로 이동시킴
-   
+
     SelectionData _selectiondata = _selection.MySelectionData;
-    int _currentvalue = 0,_checkvalue=0;
-    int _successpercent = 0;
-    bool _issuccess = false;
-        int _pluspercent = GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Academy) ? ConstValues.PlaceEffect_acardemy : 0;
+    int _currentvalue = 0, _checkvalue = 0;    //기술 체크에만 사용
+    int _successpercent = 0;                   //성공 확률(골드 혹은 기술 체크) 
+    bool _issuccess = false;  
+    int _pluspercent = GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Academy) ? ConstValues.PlaceEffect_acardemy : 0;
+                                               //학술원 방문 시 확률 증가 값
     //아카데미 장소 효과 있으면 확률 증가
     switch (_selectiondata.ThisSelectionType)
     {
@@ -540,7 +268,7 @@ public class UI_dialogue : UI_default
         else _issuccess = false;
         break;
       case SelectionTargetType.Check_Single: //기술(복수) 선택지면 확률 검사
-        _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level+
+        _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level +
           GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
         _successpercent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
@@ -570,7 +298,7 @@ public class UI_dialogue : UI_default
     {
       Debug.Log("성공함");
       SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[_selection.Index]);
-      GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType,_selection.Index);
+      GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
     else            //실패하면 실패
     {
@@ -581,7 +309,6 @@ public class UI_dialogue : UI_default
     GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.ID);
 
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
-
   public void SetSuccess(SuccessData _success)
   {
     MyUIReward.SetRewardPanel(_success);
@@ -590,8 +317,8 @@ public class UI_dialogue : UI_default
 
     if (_currentevent.GetType().Equals(typeof(FollowEventData)))
     {
-      var _currentfollow=(FollowEventData)_currentevent;
-      if(_currentfollow.EndingData!=null) SetEndingDialogue(((FollowEventData)_currentevent).EndingData, _success);
+      var _currentfollow = (FollowEventData)_currentevent;
+      if (_currentfollow.EndingData != null) SetEndingDialogue(((FollowEventData)_currentevent).EndingData, _success);
     }
     else SetEventDialogue(_success);
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
@@ -603,6 +330,171 @@ public class UI_dialogue : UI_default
     SetPenalty(_fail);
     SetEventDialogue(_fail);
   }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
+
+  public void SetEventDialogue(SuccessData _successdata)=> UIManager.Instance.AddUIQueue(updatedialogue(_successdata));
+  public void SetEventDialogue(FailureData _faildata) => UIManager.Instance.AddUIQueue(updatedialogue(_faildata));
+
+  private IEnumerator updatedialogue(SuccessData _success)
+  {
+    SuccessParticle.Play();
+    CurrentUISelection.DeActive();
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f,UIFadeTime,false));
+   yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f,UIFadeTime,false));
+    //일러스트,설명 투명화하고 약간 시간 둔 뒤 새 일러스트,설명으로 전환
+    yield return TextWait;
+
+    IllustImage.sprite = _success.Illust;
+    DescriptionText.text = _success.Description;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
+    yield return ResultWait;
+
+    Sprite _returnbottomsprite = null;
+    ReturnButton.onClick.RemoveAllListeners();
+    ReturnButton.onClick.AddListener(CloseUI);
+    if (GameManager.Instance.MyGameData.CurrentSettlement == null)
+    {
+      _returnbottomsprite = GameManager.Instance.ImageHolder.ReturnToSettleIcon;
+      ReturnButton.onClick.AddListener(SettlementUI.OpenUI);
+    }
+    else
+    {
+      _returnbottomsprite = GameManager.Instance.ImageHolder.MapIcon;
+      ReturnButton.onClick.AddListener(MapUI.OpenUI);
+    }
+
+    ReturnButtonImage.sprite = _returnbottomsprite;
+
+    if(RewardButton.activeInHierarchy==false)RewardButton.SetActive(true);
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 1.0f, false, false));
+  }
+  private IEnumerator updatedialogue(FailureData _faiilure)
+  {
+    yield return Wait;
+    FailParticle.Play();
+    CurrentUISelection.DeActive();
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, UIFadeTime, false));
+    //일러스트,설명 투명화하고 약간 시간 둔 뒤 새 일러스트,설명으로 전환
+    yield return TextWait;
+
+    IllustImage.sprite = _faiilure.Illust;
+    DescriptionText.text = _faiilure.Description;
+    yield return new WaitForEndOfFrame();
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
+    yield return ResultWait;
+
+    Sprite _returnbottomsprite = null;
+    ReturnButton.onClick.RemoveAllListeners();
+    ReturnButton.onClick.AddListener(CloseUI);
+    if (GameManager.Instance.MyGameData.CurrentSettlement == null)
+    {
+      _returnbottomsprite = GameManager.Instance.ImageHolder.ReturnToSettleIcon;
+      ReturnButton.onClick.AddListener(SettlementUI.OpenUI);
+    }
+    else
+    {
+      _returnbottomsprite = GameManager.Instance.ImageHolder.MapIcon;
+      ReturnButton.onClick.AddListener(MapUI.OpenUI);
+    }
+
+    ReturnButtonImage.sprite = _returnbottomsprite;
+
+    if(RewardButton.activeInHierarchy==true)RewardButton.SetActive(false);
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 1.0f, false, false));
+  }
+  public override void CloseUI() => UIManager.Instance.AddUIQueue(closeui());
+
+  private IEnumerator closeui()
+  {
+    EndingGroup.alpha = 0.0f;
+    EndingGroup.interactable = false;
+    EndingGroup.blocksRaycasts = false;
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 0.0f, 0.3f, false));
+
+    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+    yield return new WaitForSeconds(0.3f);
+    DescriptionTextGroup.alpha = 0.0f;
+
+    yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustOpenPos, IllustClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+    IllustImageGroup.alpha = 0.0f;
+    NameText.text = "";
+
+    yield return Wait;
+  }
+  public void SetEndingDialogue(FollowEndingData endingdata, SuccessData successdata)
+  {
+    UIManager.Instance.AddUIQueue(updatedialogue(endingdata, successdata));
+  }
+
+  private IEnumerator openendingbuttons()
+  {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, UIFadeTime, false));
+    yield return null;
+  }
+  public void OpenEnding()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    FollowEndingData _endingdata = ((FollowEventData)GameManager.Instance.MyGameData.CurrentEvent).EndingData;
+    UIManager.Instance.OpenEnding(_endingdata);
+  }
+  private IEnumerator updatedialogue(FollowEndingData endingdata, SuccessData successdata)
+  {
+    SuccessParticle.Play();
+    CurrentUISelection.DeActive();
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, UIFadeTime, false));
+    //일러스트,설명 투명화하고 약간 시간 둔 뒤 새 일러스트,설명으로 전환
+    yield return TextWait;
+
+    IllustImage.sprite = successdata.Illust;
+    DescriptionText.text = successdata.Description;
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
+    yield return ResultWait;
+
+    yield return StartCoroutine(openendingbuttons());
+  }
+  public void RefuseEnding()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    UIManager.Instance.AddUIQueue(refuseending());
+  }
+  private IEnumerator refuseending()
+  {
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup,0.0f,UIFadeTime,false));
+
+    Sprite _returnbottomsprite = null;
+    ReturnButton.onClick.RemoveAllListeners();
+    ReturnButton.onClick.AddListener(CloseUI);
+    if (GameManager.Instance.MyGameData.CurrentSettlement == null)
+    {
+      _returnbottomsprite = GameManager.Instance.ImageHolder.ReturnToSettleIcon;
+      ReturnButton.onClick.AddListener(SettlementUI.OpenUI);
+    }
+    else
+    {
+      _returnbottomsprite = GameManager.Instance.ImageHolder.MapIcon;
+      ReturnButton.onClick.AddListener(MapUI.OpenUI);
+    }
+
+    ReturnButtonImage.sprite = _returnbottomsprite;
+
+
+    if (RewardButton.activeInHierarchy == false) RewardButton.gameObject.SetActive(true);
+    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 1.0f, false, false));
+    yield return null;
+  }
+
+
   public void DeleteRewardButton()
   {
     RewardButton.SetActive(false);

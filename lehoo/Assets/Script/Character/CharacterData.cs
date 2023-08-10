@@ -7,7 +7,10 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-    public const int ActivePlaceCount_Town = 1, ActivePlaceCount_City = 2, ActivePlaceCount_Castle = 3;
+  public const float LackOfMovePointValue = 1.5f;
+  public const int MoveCost_1_min = 8, MoveCost_1_max = 15, MoveCost_2_min = 10, MoveCost_2_max = 20;
+
+  public const int ActivePlaceCount_Town = 1, ActivePlaceCount_City = 2, ActivePlaceCount_Castle = 3;
 
     public const int EventPer_Settle_Follow_Envir_Place = 35,
                      EventPer_Settle_Follow_Envir_NoPlace = 14,
@@ -97,8 +100,6 @@ public static class ConstValues
 
   public const int AmplifiedLengthMin = 6;
   public const float LengthAmplifiedValue = 1.2f;
-  public const int MoveSanity_Default_min = 5, MoveSanity_Default_max = 15;
-  public const float MoveSanity_Value_min=10,MoveSanity_Value_max=15;
 
   public const int LongTermChangeCost = 15;
 
@@ -163,16 +164,8 @@ public class GameData    //게임 진행도 데이터
             //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
         }
     }//스킬 체크, 지불 체크 최소 성공확률
-  public List<Settlement> AvailableSettles=new List<Settlement>();
+  public int MovePoint = 0;
     #region 값 프로퍼티
-    public int GetMoveSanityValue(float length)
-  { 
-    int _defaultvalue= (int)Mathf.Lerp(ConstValues.MoveSanity_Default_min, ConstValues.MoveSanity_Default_max, Year / ConstValues.MaxYear);
-    float _currentvalue = Mathf.Lerp(ConstValues.MoveSanity_Value_min, ConstValues.MoveSanity_Value_max, Year / ConstValues.MaxYear);
-    float _changedvalue = length <= 6.0f ? _currentvalue * (length / ConstValues.AmplifiedLengthMin) : _currentvalue * Mathf.Pow(length / ConstValues.AmplifiedLengthMin, ConstValues.LengthAmplifiedValue);
-
-    return _defaultvalue + (int)_changedvalue;
-  } 
     public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
     public int PaySanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear); } }
     public int PayGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear); } }
@@ -210,9 +203,28 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)(SubRewardSanityValue_origin * GetSanityGenModify(true)); } }
     public int SubRewardGoldValue_modified
     { get { return (int)(SubRewardGoldValue_origin * GetGoldGenModify(true)); } }
-    #endregion
+  public int GetMoveSanityCost(int length)
+  {
+    int _value = 0;
+    switch (length)
+    {
+      case 1:
+        _value =(int) Mathf.Lerp(ConstValues.MoveCost_1_min, ConstValues.MoveCost_1_max, Year / ConstValues.MaxYear);
+        break;
+      case 2:
+        _value = (int)Mathf.Lerp(ConstValues.MoveCost_2_min, ConstValues.MoveCost_2_max, Year / ConstValues.MaxYear);
+        break;
+      default:
+        Debug.Log($"{length}  어케 이 거리가 나옴???");
+        return 0;
+    }
+    if (MovePoint == 0) _value =(int)(_value * ConstValues.LackOfMovePointValue);
 
-    public int CheckPercent_themeorskill(int _current, int _target)
+    return _value;
+  }
+  #endregion
+
+  public int CheckPercent_themeorskill(int _current, int _target)
     {
         if (_current >= _target) return 100;
         float _per = _current / _target;
@@ -304,7 +316,10 @@ public class GameData    //게임 진행도 데이터
         }
     }//최대 정신력(현재 광기 특성 개수에 따라)
   public int MadnessCount = 0;
-  public Skill Skill_Conversation, Skill_Force, Skill_Wild, Skill_Intelligence;
+  public Skill Skill_Conversation=new Skill(SkillType.Conversation), 
+    Skill_Force = new Skill(SkillType.Force), 
+    Skill_Wild = new Skill(SkillType.Wild), 
+    Skill_Intelligence = new Skill(SkillType.Intelligence);
   public Skill GetSkill(SkillType type)
   {
     switch (type)
@@ -315,19 +330,8 @@ public class GameData    //게임 진행도 데이터
       default:return Skill_Intelligence;
     }
   }
-  public bool CanMove
-  {
-    get
-    {
-      if (CurrentEvent!=null&& CurrentEventSequence.Equals(EventSequence.Progress)) return false;
-      //현재 진행 중인 이벤트가 있으면 "이동할 수 없습니다"
-      return true;
-      //그 외엔 가능
-    }
-  }
-
-  public Tendency Tendency_Body = null;//(-)이성-육체(+)
-  public Tendency Tendency_Head = null;//(-)정신-물질(+)
+  public Tendency Tendency_Body = new Tendency(TendencyType.Body);//(-)이성-육체(+)
+  public Tendency Tendency_Head = new Tendency(TendencyType.Head);//(-)정신-물질(+)
   public string GetTendencyEffectString_long(TendencyType _type)
   {
     string _conver, _force, _wild, _intel = null;
@@ -505,7 +509,7 @@ public class GameData    //게임 진행도 데이터
     }
   }
 
-  public Experience LongTermEXP = new Experience();
+  public Experience LongTermEXP = null;
   //장기 기억 슬롯 0,1
   public Experience[] ShortTermEXP = new Experience[2];
   //단기 기억 슬롯 0,1,2,3
@@ -611,7 +615,6 @@ public class GameData    //게임 진행도 데이터
   public Vector2 Coordinate = Vector2.zero;
 
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
-  public Dictionary<Settlement, int> SettlementDebuff = new Dictionary<Settlement, int>();//정착지 이름과 디버프 진척도
     public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
     public SkillType LibraryEffectTarget = SkillType.Conversation;     //도서관 방문으로 증가한 테마
   public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
@@ -837,6 +840,10 @@ public class GameData    //게임 진행도 데이터
 public enum SkillType { Conversation, Force, Wild, Intelligence }
 public class Skill
 {
+  public Skill(SkillType type)
+  {
+    MySkillType= type;
+  }
   public SkillType MySkillType;
   public int LevelByDefault = 0;//성장 레벨
   public int Level

@@ -6,7 +6,7 @@ using TMPro;
 using System.Diagnostics.Tracing;
 using Google.Apis.Json;
 
-public class UI_EventSuggest : UI_default
+public class UI_Settlement : UI_default
 {
   private float UIOpenMoveTime = 0.6f;
   private float UIOpenFadeTime = 0.4f;
@@ -33,7 +33,6 @@ public class UI_EventSuggest : UI_default
   private Vector2 discomfortOpenPos = new Vector2(350.0f, 330.0f);
   [SerializeField] private CanvasGroup MapButtonGroup = null;
 
-  [SerializeField] private CanvasGroup ReRollButtonGroup = null;
   [SerializeField] private CanvasGroup PlaceGroup = null;
   [SerializeField] PlaceButton[] PlaceButtons = null;
   [SerializeField] RectTransform[] PlaceImageRects = null;
@@ -54,9 +53,9 @@ public class UI_EventSuggest : UI_default
       PlaceButtons[i].MyText.name = GameManager.Instance.GetTextData(PlaceButtons[i].MyPlaceType,0);
     StartButtonText.text = GameManager.Instance.GetTextData("TOTHEWORLD");
   }
-  public void OpenSuggest()
+  public void OpenUI()
   {
-    UIManager.Instance.AddUIQueue(opensuggest());
+
   }
   private IEnumerator opensuggest()
   {
@@ -87,7 +86,6 @@ public class UI_EventSuggest : UI_default
     //이 정착지의 불쾌 지수는 #UNP#
 
     yield return StartCoroutine(setplacebuttons());
-    StartCoroutine(UIManager.Instance.ChangeAlpha(ReRollButtonGroup, 1.0f, UIOpenFadeTime, false));
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 1.0f, UIOpenFadeTime, false));
     yield return LittleWait;
@@ -194,10 +192,8 @@ public class UI_EventSuggest : UI_default
     }
     StartCoroutine(UIManager.Instance.ChangeAlpha(PlaceGroup,0.0f,UICloseFadeTime,false));
   }
-  public void CloseSuggestPanel_normal()
-  {
-    UIManager.Instance.AddUIQueue(closesuggestpanel());
-  }//장소 선택해 정착지->이벤트로 넘어갈 때 절차적으로 패널 제거하는 과정
+  public void CloseUI() => UIManager.Instance.AddUIQueue(closesuggestpanel());
+
   private IEnumerator closesuggestpanel()
   {
     MyGroup.interactable = false;
@@ -221,8 +217,6 @@ public class UI_EventSuggest : UI_default
     yield return LittleWait;
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 0.0f, UICloseFadeTime, false));
-    yield return LittleWait;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(ReRollButtonGroup, 0.0f, UICloseFadeTime, false));
 
     yield return LittleWait;
     yield return LittleWait;
@@ -232,20 +226,6 @@ public class UI_EventSuggest : UI_default
         yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PlaceButtonGroups[i], 0.0f, UICloseFadeTime, false));
     CurrentPlace = PlaceType.NULL;
   }
-  public void CloseSuggestPanel_quick()
-    {
-    for (int i = 0; i < PlaceButtons.Length; i++)
-      if (PlaceButtons[i].gameObject.activeInHierarchy.Equals(true)) PlaceButtons[i].gameObject.SetActive(false);
-     StartCoroutine(UIManager.Instance.ChangeAlpha(EnvirGroup, 0.0f, UICloseFadeTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(SettleNameGroup, 0.0f, UICloseFadeTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DiscomfortGroup, 0.0f, UICloseFadeTime, false));
-   if(PlaceDescriptionGroup.alpha.Equals(1.0f)) StartCoroutine(UIManager.Instance.ChangeAlpha(PlaceDescriptionGroup, 0.0f, UICloseFadeTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(StartButtonGroup, 0.0f, UICloseFadeTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MapButtonGroup, 0.0f, UICloseFadeTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(ReRollButtonGroup, 0.0f, UICloseFadeTime, false));
-
-    CurrentPlace = PlaceType.NULL;
-    }//빠른종료(그냥 초기화만
   public void SelectPlace(PlaceType _targetplace)
   {
   //  Debug.Log(_targetplace);
@@ -290,7 +270,7 @@ public class UI_EventSuggest : UI_default
   public void StartEvent()
     {
     Debug.Log("이벤트 시작인레후~~");
-        CloseSuggestPanel_normal();
+        CloseUI();
         EventManager.Instance.SetSettleEvent(CurrentPlace);
     }//시작 버튼 눌렀을 때 호출
 }

@@ -302,8 +302,11 @@ public class GameManager : MonoBehaviour
 
     Dictionary<string, QuestEventDataJson> _questeventjson = new Dictionary<string, QuestEventDataJson>();
     _questeventjson = JsonConvert.DeserializeObject<Dictionary<string, QuestEventDataJson>>(QuestEventData.text);
-  //  foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
+    foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
     //퀘스트 Json -> EventHolder
+    if (EventHolder.Quest_Wolf == null)EventHolder.Quest_Wolf = new QuestHolder_Wolf();
+
+
 
     Dictionary<string, ExperienceJsonData> _expjson = new Dictionary<string, ExperienceJsonData>();
     _expjson = JsonConvert.DeserializeObject<Dictionary<string, ExperienceJsonData>>(EXPData.text);
@@ -415,8 +418,6 @@ public class GameManager : MonoBehaviour
   }
   public void AddShortExp(Experience _exp, int _index)
   {
-    if (UIManager.Instance.MyQuestSuggent.IsActivePanel) UIManager.Instance.MyQuestSuggent.OpenStarting();
-    //퀘스트 제시 패널에서 경험 저장하는 경우라면 다음 단계로 넘어가게
 
     if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
     _exp.Duration = ConstValues.ShortTermStartTurn;
@@ -425,8 +426,6 @@ public class GameManager : MonoBehaviour
   }
   public void AddLongExp(Experience _exp)
   {
-    if (UIManager.Instance.MyQuestSuggent.IsActivePanel) UIManager.Instance.MyQuestSuggent.OpenStarting();
-    //퀘스트 제시 패널에서 경험 저장하는 경우라면 다음 단계로 넘어가게
 
     if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
     _exp.Duration = ConstValues.LongTermStartTurn;
@@ -539,10 +538,17 @@ public class GameManager : MonoBehaviour
 
     yield return StartCoroutine(createnewmap());//새 맵 만들기
 
+    Settlement _randomsettle=MyGameData.MyMapData.AllSettles[Random.Range(0,MyGameData.MyMapData.AllSettles.Count)];
+    MyGameData.CurrentSettlement= _randomsettle;
+    MyGameData.Coordinate=_randomsettle.Tiles[Random.Range(0,_randomsettle.Tiles.Count)].Coordinate;
+
     yield return StartCoroutine(UIManager.Instance.opengamescene());
     UIManager.Instance.UpdateAllUI();
-
-    UIManager.Instance.OpenQuestDialogue();
+    UIManager.Instance.UpdateMap_SetPlayerPos(MyGameData.Coordinate);
+    switch (MyGameData.CurrentQuest)
+    {
+      case QuestType.Wolf:UIManager.Instance.QuestUI_Wolf.OpenUI((QuestHolder_Wolf)MyGameData.CurrentQuestData); break;
+    }
   }
   /// <summary>
   /// 저장된 데이터로 게임 시작
@@ -612,7 +618,6 @@ public class GameManager : MonoBehaviour
     Settlement _startsettle = MyGameData.MyMapData.AllSettles[Random.Range(0, MyGameData.MyMapData.AllSettles.Count)];
 
     MyGameData.CurrentSettlement = _startsettle;
-    MyGameData.AvailableSettles = MyGameData.MyMapData.GetCloseSettles(_startsettle, 3);
     MyGameData.Coordinate = _startsettle.Coordinate;
 
     _map.MakeTilemap();

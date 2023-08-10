@@ -177,6 +177,31 @@ public class Settlement
 }
 public class MapData
 {
+  public int GetLength(TileData a,TileData b)
+  {
+    if (a.Coordinate == b.Coordinate) return 0;
+    int _count = 0;
+    List<TileData> _list = new List<TileData>();
+    while (true)
+    {
+      _count++;
+      _list = GetAroundTile(a, _count);
+      if (_list.Contains(b)) break;
+
+      if (_count > 10)
+      {
+        Debug.Log("°³¼Ò¸®ÀÎÅ×Ã­¾Æ¾Ñ!!!!!!!!");
+        return 0;
+      }
+    }
+
+    return _count;
+  }
+  public int GetLength(Vector2 a, Vector2 b)
+  {
+    if (a == b) return 0;
+    return GetLength(Tile(a), Tile(b));
+  }
   public int CircleHexCount(int range)
   {
     List<Vector2Int> _center=new List<Vector2Int>();

@@ -30,8 +30,8 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Transform MyCanvas = null;
   [SerializeField] private UI_dialogue MyDialogue = null;
   [SerializeField] private UI_Reward MyUIReward = null;
-  [SerializeField] private UI_EventSuggest MyEvnetSuggest = null;
-  public UI_QuestSuggest MyQuestSuggent = null;
+  [SerializeField] private UI_Settlement MySettleUI = null;
+  public UI_QuestWolf QuestUI_Wolf = null;
   [SerializeField] private UI_Mad MyMadPanel = null;
   [SerializeField] private UI_PlaceEffect MyPlaceEffect = null;
   public UI_FollowEnding MyFollowEnding = null;
@@ -349,6 +349,7 @@ public class UIManager : MonoBehaviour
     if (GameManager.Instance.MyGameData.LongTermEXP == null)
     {
       LongTermIcon.enabled = true;
+      LongTermTurn.text = "";
     }
     else
     {
@@ -453,7 +454,7 @@ public class UIManager : MonoBehaviour
    
     if(istopui) CurrentTopUI = _group;
 
-    if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
+    if (_rect == MySettleUI.MyRect) yield break;
   }
   public IEnumerator OpenUI(RectTransform _rect,UIMoveDir _dir,float _movetime, bool istopui)
   {
@@ -481,7 +482,7 @@ public class UIManager : MonoBehaviour
     _rect.anchoredPosition = _endpos;
     if (istopui) CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
 
-    if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
+    if ( _rect == MySettleUI.MyRect) yield break;
   }
   public IEnumerator OpenUI(RectTransform _rect,Vector2 originpos, Vector2 targetpos, float _movetime, bool istopui)
   {
@@ -509,7 +510,7 @@ public class UIManager : MonoBehaviour
     _rect.anchoredPosition = _endpos;
 
     if (istopui) CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
-    if (_rect == MyQuestSuggent.MyRect || _rect == MyEvnetSuggest.MyRect) yield break;
+    if (_rect == MySettleUI.MyRect) yield break;
   }
   public void CloseCurrentTopUI() => StartCoroutine(closetopui());
   public IEnumerator closetopui()
@@ -787,7 +788,7 @@ public class UIManager : MonoBehaviour
   public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MyMap.SetPlayerPos(coordinate);
   public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
   public void CreateMap() => MyMap.MapCreater.MakeTilemap();
-  public void OpenSuggestUI() => MyEvnetSuggest.OpenSuggest();
+  public void OpenSuggestUI() => MySettleUI.OpenUI();
   public void OpenBadExpUI(Experience _badexp) => MyUIReward.OpenRewardExpPanel_penalty(_badexp);
     public void OpenDialogue()
     {
@@ -795,19 +796,16 @@ public class UIManager : MonoBehaviour
 
         //정착지에서 이벤트 선택하는 경우도 이미 EventSugest에서 닫기 메소드를 실행한 상태
 
-        MyDialogue.SetEventDialogue();
+        MyDialogue.OpenUI();
     }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void OpenSuccessDialogue(SuccessData _success) => MyDialogue.SetEventDialogue(_success);
   public void OpenFailDialogue(FailureData _fail) => MyDialogue.SetEventDialogue(_fail);
-
-  public void OpenQuestDialogue() => MyQuestSuggent.OpenQuestSuggestUI();
   public void ResetEventPanels()
   {
-    MyDialogue.ClosePanel_quick();
-    MyEvnetSuggest.CloseSuggestPanel_quick();
-   if(MyQuestSuggent.IsActivePanel) MyQuestSuggent.CloseQuestUI();
+    MyDialogue.CloseUI();
+    MySettleUI.CloseUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
-    public void CloseSuggestPanel_normal() => MyEvnetSuggest.CloseSuggestPanel_normal();
+    public void CloseSuggestPanel_normal() => MySettleUI.CloseUI();
   public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
   public void UpdatePlaceEffect() => MyPlaceEffect.UpdatePlace();
   public void OpenEnding(FollowEndingData endingdata)
@@ -817,67 +815,7 @@ public class UIManager : MonoBehaviour
   }
 
   #region 메인-게임 전환
-  [Space(20)]
-  [SerializeField] private RectTransform TopTitleRect = null;
-  [SerializeField] private Vector2 TopTitle_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 TopTitle_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform RightTitleRect = null;
-  [SerializeField] private Vector2 RightTitle_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 RightTitle_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform BottomTitleRect = null;
-  [SerializeField] private Vector2 BottomTitle_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 BottomTitle_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform LeftTitleRect = null;
-  [SerializeField] private Vector2 LeftTitle_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 LeftTitle_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform YearRect = null;
-  [SerializeField] private Vector2 Year_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Year_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform TurnRect = null;
-  [SerializeField] private Vector2 Turn_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Turn_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform HPRect = null;
-  [SerializeField] private Vector2 HP_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 HP_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform SanityRect = null;
-  [SerializeField] private Vector2 Sanity_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Sanity_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform GoldRect = null;
-  [SerializeField] private Vector2 Gold_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Gold_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform QuestRect = null;
-  [SerializeField] private Vector2 Quest_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Quest_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform OptionRect = null;
-  [SerializeField] private Vector2 Option_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Option_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform PlaceRect = null;
-  [SerializeField] private Vector2 Place_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Place_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform SkillRect = null;
-  [SerializeField] private Vector2 Skill_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Skill_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform ExpRect = null;
-  [SerializeField] private Vector2 Exp_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Exp_OpenPos = Vector2.zero;
-  [Space(3)]
-  [SerializeField] private RectTransform TendencyRect = null;
-  [SerializeField] private Vector2 Tendency_ClosePos = Vector2.zero;
-  [SerializeField] private Vector2 Tendency_OpenPos = Vector2.zero;
-  [Space(10)]
+  [SerializeField] private List<PanelRectEditor> TitlePanels=new List<PanelRectEditor>();
   [SerializeField] private float SceneAnimationTitleMoveTime = 0.3f;
   [SerializeField] private float SceneAnimationObjMoveTime = 0.1f;
   [SerializeField] private float TitleWaitTime = 0.2f;
@@ -888,35 +826,16 @@ public class UIManager : MonoBehaviour
     var _titlewait = new WaitForSeconds(TitleWaitTime);
     var _objwait = new WaitForSeconds(ObjWaitTime);
 
-    StartCoroutine(moverect(TopTitleRect, TopTitle_ClosePos, TopTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
-    yield return _titlewait;
-    StartCoroutine(moverect(RightTitleRect, RightTitle_ClosePos, RightTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
-    yield return _titlewait;
-    StartCoroutine(moverect(BottomTitleRect, BottomTitle_ClosePos, BottomTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
-    yield return _titlewait;
-    StartCoroutine(moverect(LeftTitleRect, LeftTitle_ClosePos, LeftTitle_OpenPos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
-    yield return _titlewait;
-    StartCoroutine(moverect(YearRect, Year_ClosePos, Year_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(TurnRect, Turn_ClosePos, Turn_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(HPRect, HP_ClosePos, HP_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(SanityRect, Sanity_ClosePos, Sanity_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(GoldRect, Gold_ClosePos, Gold_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(QuestRect, Quest_ClosePos, Quest_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(OptionRect, Option_ClosePos, Option_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(PlaceRect, Place_ClosePos, Place_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(SkillRect, Skill_ClosePos, Skill_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    StartCoroutine(moverect(ExpRect, Exp_ClosePos, Exp_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-    yield return _objwait;
-    yield return StartCoroutine(moverect(TendencyRect, Tendency_ClosePos, Tendency_OpenPos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+    for(int i = 0; i < 4; i++)
+    {
+      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].OutisdePos, TitlePanels[i].InsidePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
+      yield return _titlewait;
+    }
+    for(int i = 4; i < TitlePanels.Count; i++)
+    {
+      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].OutisdePos, TitlePanels[i].InsidePos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+      yield return _objwait;
+    }
   }
   public IEnumerator moverect(RectTransform rect, Vector2 startpos, Vector2 endpos, float targettime, AnimationCurve targetcurve)
   {
@@ -934,6 +853,30 @@ public class UIManager : MonoBehaviour
 }
 public static class WNCText
 {
+  public static string GetHPColor(string str)
+  {
+    return $"<#F78181>{str}</color>";
+  }
+  public static string GetHPColor(int value)
+  {
+    return $"<#F78181>{value.ToString()}</color>";
+  }
+  public static string GetSanityColor(string str)
+  {
+    return $"<#BE81F7>{str}</color>";
+  }
+  public static string GetSanityColor(int value)
+  {
+    return $"<#BE81F7>{value.ToString()}</color>";
+  }
+  public static string GetGoldColor(string str)
+  {
+    return $"<#F3F781>{str}</color>";
+  }
+  public static string GetGoldColor(int value)
+  {
+    return $"<#F3F781>{value.ToString()}</color>";
+  }
   private static Color SuccessColor = new Color(0.8867924f, 5621194f, 0.3471876f, 1.0f);
   private static Color FailColor = new Color(0.5648571f, 0.8862745f, 0.3490196f, 1.0f);
   public static string PercentageColor(int percent)
