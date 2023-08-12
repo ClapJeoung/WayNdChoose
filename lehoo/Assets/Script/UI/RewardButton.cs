@@ -7,45 +7,45 @@ using TMPro;
 public class RewardButton : MonoBehaviour
 {
   [SerializeField] private RewardTarget RewardType = RewardTarget.Experience;
-  [SerializeField] private Image Icon_A = null;
-  [SerializeField] private Image Icon_B = null;
   [SerializeField] private TextMeshProUGUI RewardInfo = null;
   [SerializeField] private UI_Reward MyUIReward = null;
 
-  private int MyValue = -1;
-  private string MyID = "";
-  private Vector2[] TargetThemePos;
   private SkillType MySkillName = SkillType.Conversation;
   private Experience MyExp = null;
 
-  public void Setup_value(int _value)
+  public void Setup(StatusType statustype,int value,UI_Reward rewardui)
   {
-    GetComponent<Button>().interactable = true;
-     MyValue = _value;
-    switch (RewardType)
+    string _text = "";
+    switch (statustype)
     {
-      case RewardTarget.HP: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.HP,2)+" "+ MyValue.ToString();break;
-      case RewardTarget.Sanity: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Sanity, 2) + " " + MyValue.ToString(); break;
-      case RewardTarget.Gold: RewardInfo.text = GameManager.Instance.GetTextData(StatusType.Gold, 2) + " " + MyValue.ToString(); break;
+      case StatusType.HP:RewardType = RewardTarget.HP;
+        _text = $"{GameManager.Instance.GetTextData(StatusType.HP, 2)} +{WNCText.GetHPColor(value)}";
+        break;
+      case StatusType.Sanity:RewardType = RewardTarget.Sanity;
+        _text = $"{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} +{WNCText.GetHPColor(value)}";
+        break;
+      case StatusType.Gold:RewardType = RewardTarget.Gold;
+        _text = $"{GameManager.Instance.GetTextData(StatusType.Gold, 2)} +{WNCText.GetHPColor(value)}";
+        break;
     }
+    
+    RewardInfo.text = _text;
+    MyUIReward = rewardui;
   }
-  public void Setup_Expid(string _id)
+  public void Setup(SkillType skilltype, UI_Reward rewardui)
   {
-    GetComponent<Button>().interactable = true;
-    RewardType = RewardTarget.Experience;
-    MyID = _id;
-    Debug.Log(MyID);
-    RewardInfo.text =$"{GameManager.Instance.GetTextData("EXP_NAME")} - {GameManager.Instance.ExpDic[MyID].Name}";
-    MyExp=GameManager.Instance.ExpDic[MyID];
+    MySkillName = skilltype;
+
+    RewardInfo.text = $"{GameManager.Instance.GetTextData(skilltype,1)} {GameManager.Instance.GetTextData("SKILL_NAME")} +1";
+
+    MyUIReward = rewardui;
   }
-  public void Setup_skill(SkillType skill)
+  public void Setup(Experience exp, UI_Reward rewardui)
   {
-    RewardType= RewardTarget.Skill;
-    MySkillName = skill;
-    GetComponent<Button>().interactable = true;
-    Icon_A.sprite = GameManager.Instance.ImageHolder.GetSkillIcon(skill);
-    Icon_B.sprite = GameManager.Instance.ImageHolder.UnknownTheme;
-    TargetThemePos = new Vector2[1];
+    MyExp= exp;
+
+    RewardInfo.text = $"{GameManager.Instance.GetTextData("EXP_NAME")} : {exp.Name}";
+    MyUIReward = rewardui;
   }
 
   public void GetReward()
@@ -57,13 +57,13 @@ public class RewardButton : MonoBehaviour
         MyUIReward.OpenRewardExpPanel_reward();
         break;
       case RewardTarget.HP:
-        MyUIReward.AddRewardHP(MyValue);
+        MyUIReward.AddRewardHP();
         CloseUIButton(); break;
       case RewardTarget.Sanity:
-        MyUIReward.AddRewardSanity(MyValue);
+        MyUIReward.AddRewardSanity();
         CloseUIButton(); break;
       case RewardTarget.Gold:
-        MyUIReward.AddRewardGold(MyValue);
+        MyUIReward.AddRewardGold();
         CloseUIButton(); break;
       case RewardTarget.Skill:
         MyUIReward.AddRewardSkill(MySkillName);
@@ -72,8 +72,7 @@ public class RewardButton : MonoBehaviour
   }
   public void CloseUIButton()
   {
-    GetComponent<Button>().interactable = false;
     UIManager.Instance.PreviewManager.ClosePreview();
-    gameObject.SetActive(false);
+    Destroy(gameObject);
   }
 }

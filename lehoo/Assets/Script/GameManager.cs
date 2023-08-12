@@ -603,10 +603,8 @@ public class GameManager : MonoBehaviour
 
     yield return null;
   }
-  public void CreateNewMap()
-  {
-    StartCoroutine(createnewmap());
-  }
+  public void CreateNewMap() => StartCoroutine(createnewmap());
+
   private IEnumerator createnewmap()
   {
     maptext _map = FindObjectOfType<maptext>().GetComponent<maptext>();

@@ -12,7 +12,30 @@ public class Settlement
   {
     Type = settletype;
   }
-  public List<PlaceType> EnablePlaces=new List<PlaceType>();//제시될 장소들
+  private List<PlaceType> settlementplaces=new List<PlaceType>();
+  public List<PlaceType> Settlementplaces
+  {
+    get
+    {
+      if (settlementplaces.Count == 0)
+      {
+        settlementplaces = new List<PlaceType>() { PlaceType.Residence, PlaceType.Marketplace, PlaceType.Temple };
+        switch (Type)
+        {
+          case SettlementType.Town:
+            break;
+          case SettlementType.City:
+            settlementplaces.Add(PlaceType.Library);
+            break;
+          case SettlementType.Castle:
+            settlementplaces.Add(PlaceType.Theater);
+            settlementplaces.Add(PlaceType.Academy);
+            break;
+        }
+      }
+      return settlementplaces;
+    }
+  }
   public SettlementType Type;
   public int Index=-1;
   public string OriginName
@@ -146,34 +169,6 @@ public class Settlement
     return true;
   }
 
-  public void SetAvailablePlaces()
-  {
-
-        int _count = 0;
-        List<PlaceType> _placepool = new List<PlaceType>() { PlaceType.Residence, PlaceType.Marketplace, PlaceType.Temple };
-        switch (Type)
-        {
-            case SettlementType.Town:_count = ConstValues.ActivePlaceCount_Town;
-                
-                break;
-            case SettlementType.City: _count = ConstValues.ActivePlaceCount_City;
-                _placepool.Add(PlaceType.Library);
-                break;
-            case SettlementType.Castle: _count = ConstValues.ActivePlaceCount_Castle;
-                _placepool.Add(PlaceType.Theater);
-                _placepool.Add(PlaceType.Academy);
-                break;
-        }
-        EnablePlaces.Clear();
-        EnablePlaces.Add(_placepool[Random.Range(0, _placepool.Count)]);
-        while (EnablePlaces.Count < _count)
-        {
-            PlaceType _place = _placepool[Random.Range(0, _placepool.Count)];
-            if (EnablePlaces.Contains(_place)) continue;
-
-            EnablePlaces.Add(_place);
-        }
-    }
 }
 public class MapData
 {
@@ -280,6 +275,13 @@ public class MapData
   public List<TileData> GetAroundTile(Vector2Int coor, int range)
   {
     List<Vector2Int> _coors = GetAroundCoor( coor , range);
+    List<TileData> _tiles = new List<TileData>();
+    foreach (var _coor in _coors) _tiles.Add(TileDatas[_coor.x, _coor.y]);
+    return _tiles;
+  }
+  public List<TileData> GetAroundTile(Vector2 coor, int range)
+  {
+    List<Vector2Int> _coors = GetAroundCoor(new Vector2Int((int)coor.x,(int)coor.y), range);
     List<TileData> _tiles = new List<TileData>();
     foreach (var _coor in _coors) _tiles.Add(TileDatas[_coor.x, _coor.y]);
     return _tiles;

@@ -1172,7 +1172,7 @@ public class maptext : MonoBehaviour
   }
   public void MakeTilemap()
     {
-    Vector3 _cellsize = new Vector3(190, 190);    Debug.Log("맵을 만든 레후~");
+    Vector3 _cellsize = new Vector3(190*0.7f, 190*0.7f);    Debug.Log("맵을 만든 레후~");
         //타일로 구현화
         for (int i = 0; i < ConstValues.MapSize; i++)
         {
@@ -1209,7 +1209,7 @@ public class maptext : MonoBehaviour
       //위치(Rect로 변환) 집어넣고
 
       string _townname = $"town_{GameManager.Instance.MyGameData.MyMapData.Towns[i].OriginName}";
-      GameObject _townobj =new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer)});
+      GameObject _townobj =new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(CanvasGroup)});
       //버튼 오브젝트
 
       RectTransform _townrect = _townobj.GetComponent<RectTransform>();
@@ -1256,7 +1256,7 @@ public class maptext : MonoBehaviour
             List<GameObject> _images = new List<GameObject>();
 
       string _cityname = $"city_{GameManager.Instance.MyGameData.MyMapData.Cities[i].OriginName}";
-      GameObject _cityobj = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), });
+      GameObject _cityobj = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(CanvasGroup) });
       //버튼 오브젝트
       RectTransform _cityrect = _cityobj.GetComponent<RectTransform>();
       _cityrect.anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
@@ -1303,7 +1303,7 @@ public class maptext : MonoBehaviour
     //위치(Rect로 변환) 집어넣고
 
     string _castlename = $"castle_{GameManager.Instance.MyGameData.MyMapData.Castles.OriginName}";
-    GameObject _castleobj = new GameObject(_castlename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer)});
+    GameObject _castleobj = new GameObject(_castlename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
     //버튼 오브젝트
     RectTransform _castlerect = _castleobj.GetComponent<RectTransform>();
     _castlerect.anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
@@ -1341,8 +1341,9 @@ public class maptext : MonoBehaviour
     {
       string _name = $"{coordinate.x},{coordinate.y}  {GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).BottomEnvir},{GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).TopEnvir}";
       GameObject _tile = new GameObject(_name, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-      _tile.GetComponent<Image>().sprite = spr;
-      _tile.GetComponent<Image>().raycastTarget = isbottom ? true : false;
+      Image _image = _tile.GetComponent<Image>();
+      _image.sprite = spr;
+      _image.raycastTarget = isbottom ? true : false;
       _tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,-60.0f*rot));
       RectTransform _rect = _tile.GetComponent<RectTransform>();
 
@@ -1366,16 +1367,17 @@ public class maptext : MonoBehaviour
           _buttonscript.OriginHolder = TileHolder_bottomenvir;
           _buttonscript.MapUI = MapUIScript;
           _buttonscript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
+          _buttonscript.MyImage = _image;
           _button.onClick.AddListener(() => _buttonscript.Clicked());
           GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).ButtonScript = _buttonscript;
 
-          if (GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).TopEnvir == TopEnvirType.Mountain ||
-            GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).BottomEnvir == BottomEnvirType.Sea)
-            _tile.GetComponent<Image>().raycastTarget = false;
-
+          _image.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).Interactable;
+          _button.interactable = false;
           break;
         case false:
           _tile.transform.SetParent(TileHolder_topenvir);
+          GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).ButtonScript.TopEnvirImage = _image;
+          _image.color = MapUIScript.DisableColor;
           break;
       }
       _rect.sizeDelta = _cellsize;

@@ -31,9 +31,9 @@ public class UI_Tendency : UI_default
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen && CurrentTendencyType == _tendencytype) { CloseUI(); IsOpen = false; return; }
     //동일한 성향 다시 클릭하면 닫기
-    MyGroup.alpha = 1.0f;
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
+    DefaultGroup.alpha = 1.0f;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
 
@@ -50,7 +50,7 @@ public class UI_Tendency : UI_default
 
     if (CurrentTendencyType.Equals(TendencyType.None))
     {
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, ClosePos,OpenPos, UIManager.Instance.LargePanelMoveTime,true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, ClosePos,OpenPos, UIManager.Instance.LargePanelMoveTime,true));
     }
     CurrentTendencyType = _tendencytype;
   }
@@ -59,8 +59,8 @@ public class UI_Tendency : UI_default
     IsOpen = false;
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.1f, false));
-    StartCoroutine( UIManager.Instance.CloseUI(MyRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
+    StartCoroutine( UIManager.Instance.CloseUI(DefaultRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
     UIManager.Instance.CurrentTopUI = null;
         CurrentTendencyType = TendencyType.None;
   }

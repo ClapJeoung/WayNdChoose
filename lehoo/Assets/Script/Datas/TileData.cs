@@ -21,4 +21,13 @@ public class TileData
   public TileSpriteType BottomEnvirSprite= TileSpriteType.Sea;
   public RectTransform Rect = null;
   public TileButtonScript ButtonScript = null;
+
+  public bool Interactable
+  {
+    get
+    {
+      if (TopEnvir == TopEnvirType.Mountain || BottomEnvir == BottomEnvirType.Sea) return false;
+      return true;
+    }
+  }
 }

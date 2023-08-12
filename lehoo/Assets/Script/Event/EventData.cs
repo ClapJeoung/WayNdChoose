@@ -124,19 +124,8 @@ public class EventHolder
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
               case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
             }
-            Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
 
             Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-            switch (Data.SuccessDatas[0].SubReward_target)
-            {
-              case 0: break;
-              case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-              case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-              case 3:
-                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-                break;
-            }
 
           }
 
@@ -194,19 +183,8 @@ public class EventHolder
                 case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
                 case RewardTarget.Skill: Data.SuccessDatas[i].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
               }
-              Data.SuccessDatas[i].SubReward_target = int.Parse(_data.SubReward.Split('@')[i]);
 
               Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
-              switch (Data.SuccessDatas[i].SubReward_target)
-              {
-                case 0: break;
-                case 1: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-                case 2: if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-                case 3:
-                  if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-                  if (!Data.SelectionDatas[i].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[i].SelectionSuccesRewards.Add(RewardTarget.Gold);
-                  break;
-              }
             }
           }
           break;
@@ -228,18 +206,7 @@ public class EventHolder
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
               case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
             }
-            Data.SuccessDatas[0].SubReward_target = int.Parse(_data.SubReward);
             Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-            switch (Data.SuccessDatas[0].SubReward_target)
-            {
-              case 0: break;
-              case 1: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity); break;
-              case 2: if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold); break;
-              case 3:
-                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Sanity)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Sanity);
-                if (!Data.SelectionDatas[0].SelectionSuccesRewards.Contains(RewardTarget.Gold)) Data.SelectionDatas[0].SelectionSuccesRewards.Add(RewardTarget.Gold);
-                break;
-            }
           }
           break;
       }
@@ -979,7 +946,6 @@ public class SuccessData
     }
     set { reward_value_modified = value; }
   }
-  public int SubReward_target;
 
 }
 
@@ -1097,8 +1063,6 @@ public class EventJsonData
 
   public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
   public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
-
-  public string SubReward;                  //없음,돈,정신력,돈+정신력
 }
 public class FollowEventJsonData:EventJsonData
 {

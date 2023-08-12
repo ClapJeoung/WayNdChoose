@@ -14,8 +14,38 @@ public class PanelRectEditor
 
 public class UI_default : MonoBehaviour
 {
-  public RectTransform MyRect = null;
-  public CanvasGroup MyGroup = null;
+  public float ReturnButton_ToLeft = 0.0f;
+  public float ReturnButton_ToRight = 0.0f;
+  private float ReturnButton_movetime = 0.4f;
+  /// <summary>
+  /// 0:왼쪽 1:오른쪽
+  /// </summary>
+  /// <param name="dir"></param>
+  public void MoveRectForButton(int dir)=>
+        UIManager.Instance.AddUIQueue(UIManager.Instance.moverect
+          (defaultrect,
+          Vector2.zero, 
+          Vector2.right * (dir == 0 ? ReturnButton_ToLeft : ReturnButton_ToRight), ReturnButton_movetime, 
+          UIManager.Instance.UIPanelOpenCurve));
+
+  private RectTransform defaultrect = null;
+  public RectTransform DefaultRect
+  {
+    get
+    {
+      if (defaultrect == null) defaultrect = transform.GetChild(0).GetComponent<RectTransform>();
+      return defaultrect;
+    }
+  }
+  private CanvasGroup defaultgroup = null;
+  public CanvasGroup DefaultGroup
+  {
+    get
+    {
+      if(defaultgroup==null) defaultgroup = transform.GetChild(0).GetComponent<CanvasGroup>();
+      return defaultgroup;
+    }
+  }
   public bool IsOpen = false;
   public UIMoveDir MyDir = UIMoveDir.Horizontal;
     public List<PanelRectEditor> PanelRects = new List<PanelRectEditor>();
@@ -28,22 +58,22 @@ public class UI_default : MonoBehaviour
         Debug.Log($"{name} 이름 뭔가 잘못 쓴듯");
         return null;
     }
-
     public virtual void OpenUI(bool _islarge)
   {
     if (IsOpen) { CloseUI();IsOpen = false; return; }
     IsOpen = true;
-        UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, MyGroup, MyDir, _islarge, false));
+
+        UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, DefaultGroup, MyDir, _islarge, false));
   }
   public virtual void CloseUI()
   {
-    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(MyRect, MyGroup, MyDir, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(DefaultRect, DefaultGroup, MyDir, false));
     IsOpen = false;
   }
   public virtual void CloseUiQuick()
   {
-    MyGroup.alpha = 0.0f;
-    MyGroup.interactable = false;
-    MyGroup.blocksRaycasts = false;
+    DefaultGroup.alpha = 0.0f;
+    DefaultGroup.interactable = false;
+    DefaultGroup.blocksRaycasts = false;
   }
 }

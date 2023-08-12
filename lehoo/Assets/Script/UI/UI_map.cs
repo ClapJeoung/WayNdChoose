@@ -15,24 +15,25 @@ public class UI_map : UI_default
   [HideInInspector] public GameObject CastleIcon = null;
   [HideInInspector] public List<GameObject> CityIcons = new List<GameObject>();
   [HideInInspector] public List<GameObject> TownIcons = new List<GameObject>();
-  public GameObject GetSettlementIcon(Settlement settle)
+  public GameObject GetSettleIcon(Settlement settlement)
   {
-    switch (settle.Type)
+    string _originname = settlement.OriginName;
+    switch (settlement.Type)
     {
-      case SettlementType.Town:
-        foreach (var obj in TownIcons)
-          if (obj.name.Contains(settle.OriginName)) return obj;
-        break;
+      case SettlementType.Castle:return CastleIcon;
       case SettlementType.City:
-        foreach (var obj in CityIcons)
-          if (obj.name.Contains(settle.OriginName)) return obj;
-        break;
-      case SettlementType.Castle:
-        return CastleIcon;
+        foreach (GameObject city in CityIcons)
+          if (city.name.Contains(_originname)) return city;
+        return null;
+      case SettlementType.Town:
+        foreach(GameObject town in TownIcons)
+          if(town.name.Contains(_originname)) return town;
+        return null;
     }
-    Debug.Log(settle.Type);
+    Debug.Log("뭔가 이상한 레후~");
     return null;
   }
+  public float AppearTime = 0.5f;
   private int SelectedSettleCost = 0;
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private AnimationCurve ZoomOutCurve = null;
@@ -42,17 +43,76 @@ public class UI_map : UI_default
   [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
   [SerializeField] private float ZoomInTime = 1.2f;
   [SerializeField] private float ZoomOutTime = 0.4f;
-  [SerializeField] private RectTransform PreviewRect = null;
-  [SerializeField] private CanvasGroup PreviewGroup = null;
-  [SerializeField] private GameObject SettleInfoHolder = null;
+
+  [SerializeField] private TextMeshProUGUI ClickInfoText = null;
+
+  [SerializeField] private GameObject MoveInfoHolder = null;
+  [SerializeField] private Image MovePointImage = null;
+  [SerializeField] private TextMeshProUGUI MovePointText = null;
+  [SerializeField] private TextMeshProUGUI SanityCostText = null;
+
+  [SerializeField] private RectTransform SettleInfoRect = null;
+  [SerializeField] private CanvasGroup SettleInfoGroup = null;
   [SerializeField] private TextMeshProUGUI SettleNameText = null;
   [SerializeField] private TextMeshProUGUI DiscomfortCountText = null;
-  [SerializeField] private TextMeshProUGUI SanityCostText = null;
-  [SerializeField] private TextMeshProUGUI ClickToMove = null;
   public Transform SelectTileHolder = null;
+
+  public Color NormalColor = Color.white;
+  public Color DisableColor = Color.grey;
+  private List<Settlement> ActiveSettles = new List<Settlement>();
+  private List<TileData> ActiveTileData = new List<TileData>();
+  private void ResetEnableTiles()
+  {
+    List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 2);
+    List<Settlement> _currentsettles = new List<Settlement>();
+    foreach (TileData _tile in _currents) //주위 2칸 타일 전부 가져오기
+    {
+      if (!ActiveTileData.Contains(_tile))
+      {
+        ActiveTileData.Add(_tile);
+        _tile.ButtonScript.Button.interactable = true;
+        if (_tile.ButtonScript.TopEnvirImage != null) _tile.ButtonScript.TopEnvirImage.color= NormalColor;
+      }//기존 활성화 타일 목록에 없던 타일이라면 리스트에 추가하고 활성화
+
+      if (_tile.TileSettle != null)
+      {
+        _currentsettles.Add(_tile.TileSettle);
+        if (!ActiveSettles.Contains(_tile.TileSettle))
+        {
+          ActiveSettles.Add(_tile.TileSettle);
+          StartCoroutine(UIManager.Instance.ChangeAlpha(GetSettleIcon(_tile.TileSettle).GetComponent<CanvasGroup>(), 1.0f, 0.8f,false));
+        }
+      }//기존 활성화 정착지 목록에 없던 타일이라면 리스트에 추가하고 활성화
+    }
+
+    List<TileData> _removetiles = new List<TileData>();
+    List<Settlement> _removesettles = new List<Settlement>();
+
+    foreach (TileData _tile in ActiveTileData)
+    {
+      if (!_currents.Contains(_tile))
+      {
+        _removetiles.Add(_tile);
+         _tile.ButtonScript.Button.interactable = false;
+        if (_tile.ButtonScript.TopEnvirImage != null) _tile.ButtonScript.TopEnvirImage.color = DisableColor;
+      }//화면에서 사라진 타일들은 비활성화 상태로 전환
+    }
+
+    foreach (Settlement _settle in ActiveSettles)
+    {
+      if (!_currentsettles.Contains(_settle))
+      {
+        _removesettles.Add(_settle);
+        StartCoroutine(UIManager.Instance.ChangeAlpha(GetSettleIcon(_settle).GetComponent<CanvasGroup>(), 0.0f, 0.3f, false));
+      }//화면에서 사라진 정착지들은 투명화
+    }
+
+    foreach(TileData _tile in _removetiles)ActiveTileData.Remove(_tile);
+    foreach(Settlement _settle in _removesettles)ActiveSettles.Remove(_settle);
+  }
+  
   private void Start()
   {
-    ClickToMove.text = GameManager.Instance.GetTextData("CLICKTOMOVE");
   }
   public void OpenUI()
   {
@@ -60,24 +120,32 @@ public class UI_map : UI_default
     IsOpen = true;
     UIManager.Instance.AddUIQueue(openui());
   }
-  public void OpenUI(UI_default currentui)
-  {
-    if (IsOpen) { CloseUI(); IsOpen = false; return; }
-    IsOpen = true;
-    currentui.CloseUI();
-    UIManager.Instance.AddUIQueue(openui());
-  }
+  
   private IEnumerator openui()
   {
-    HolderRect.anchoredPosition = PlayerRect.anchoredPosition*-1.0f;
-    if (MyGroup.alpha == 0.0f) MyGroup.alpha = 1.0f;
+    MoveInfoHolder.SetActive(false);
+    MovePointImage.sprite=GameManager.Instance.MyGameData.MovePoint>0?GameManager.Instance.ImageHolder.MovePointIcon_Enable:GameManager.Instance.ImageHolder.MovePointIcon_Lack;
+    MovePointText.text = GameManager.Instance.MyGameData.MovePoint > 0 ? GameManager.Instance.GetTextData("ENOUGHMOVEPOINT") : GameManager.Instance.GetTextData("NOTENOUGHMOVEPOINT");
+    HolderRect.anchoredPosition = Vector2.zero;
+    if (DefaultGroup.alpha == 1.0f) DefaultGroup.alpha = 0.0f;
+    if (DefaultGroup.interactable == true) DefaultGroup.interactable = false;
+    if (DefaultGroup.blocksRaycasts == true) DefaultGroup.blocksRaycasts = false;
     //                                                                                                        퀘스트 기획 후 지도에 퀘스트 정보 표기 넣기
 
-    if(ScaleRect.localScale!=Vector3.one) StartCoroutine(zoomoutview());
+    ClickInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE");
+    if (ScaleRect.localScale != Vector3.one) StartCoroutine(zoomoutview());
 
-    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos,0.6f, UIManager.Instance.UIPanelOpenCurve));
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
+    float _time = 0.0f;
+    while (_time < AppearTime)
+    {
+      DefaultGroup.alpha = Mathf.Lerp(0.0f, 1.0f, _time / AppearTime);
+      _time += Time.deltaTime;
+      yield return null;
+    }
+
+    DefaultGroup.alpha = 1.0f;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
   }
   public override void CloseUI()
   {
@@ -86,46 +154,50 @@ public class UI_map : UI_default
   }
   private IEnumerator closeui()
   {
-    MyGroup.blocksRaycasts = false;
+    DefaultGroup.blocksRaycasts = false;
     yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
-    MyGroup.interactable = false;
+    DefaultGroup.interactable = false;
   }
 
   public void SelectTile(TileData tiledata,Vector2 position)
   {
     if (SelectedTile != null) SelectedTile.ButtonScript.CancleTile();
     SelectedTile = tiledata;
+    ClickInfoText.text = GameManager.Instance.GetTextData("CHOSSETILEAGAIN");
 
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
     int _length = GameManager.Instance.MyGameData.MyMapData.GetLength(_currenttile, SelectedTile);
     SelectedSettleCost = GameManager.Instance.MyGameData.GetMoveSanityCost(_length);
 
-    SanityCostText.text = string.Format(GameManager.Instance.GetTextData("MOVESANITYCOST"), SelectedSettleCost);
+    SanityCostText.text = GameManager.Instance.MyGameData.MovePoint > 0 ? string.Format(GameManager.Instance.GetTextData("MOVESANITYCOST_ENOUGH"), "<#FFBF00>-1</color>", WNCText.GetSanityColor("-"+SelectedSettleCost)) :
+    string.Format(GameManager.Instance.GetTextData("MOVESANITYCOST_ENOUGH"), "<#FFBF00>-1</color>", WNCText.GetSanityColor("-"+SelectedSettleCost));
+    if (MoveInfoHolder.activeInHierarchy == false) MoveInfoHolder.SetActive(true);
+
     if (SelectedTile.TileSettle != null)
     {
+      SettleInfoRect.position = position;
+      SettleInfoRect.anchoredPosition3D = new Vector3(SettleInfoRect.anchoredPosition.x, SettleInfoRect.anchoredPosition.y, 0.0f);
+      SettleInfoGroup.alpha = 1.0f;
+
       SettleNameText.text = _currenttile.TileSettle.Name;
       DiscomfortCountText.text = "<#5F04B4>" + _currenttile.TileSettle.Discomfort.ToString() + "</color>";
-      if (SettleInfoHolder.activeInHierarchy == false) SettleInfoHolder.SetActive(true);
     }
     else
     {
-        if (SettleInfoHolder.activeInHierarchy == true) SettleInfoHolder.SetActive(false);
+      SettleInfoGroup.alpha = 0.0f;
     }
-    PreviewRect.position = position;
-    PreviewRect.anchoredPosition3D = new Vector3(PreviewRect.anchoredPosition.x, PreviewRect.anchoredPosition.y, 0.0f);
-    PreviewGroup.alpha = 1.0f;
   }
   public void CancleTile()
   {
     SelectedTile = null;
-    PreviewGroup.alpha = 0.0f;
+    SettleInfoGroup.alpha = 0.0f;
   }
   public void MoveMap()
   {
     if (UIManager.Instance.IsWorking) return;
     //다른 UI가 움직이고 있으면 작동 안함
-    PreviewGroup.alpha = 0.0f;
-    MyGroup.blocksRaycasts = true;
+    SettleInfoGroup.alpha = 0.0f;
+    DefaultGroup.blocksRaycasts = true;
     UIManager.Instance.ResetEventPanels();
     UIManager.Instance.AddUIQueue(movemap());
   }//이동 버튼을 눌렀으니 해당 정착지, 해당 화살표를 제외한 다른 정착지 버튼 비활성화 및 다른 화살표 비활성화
@@ -154,6 +226,7 @@ public class UI_map : UI_default
     UIManager.Instance.UpdateSanityText();
 
     GameManager.Instance.MyGameData.Coordinate = _endcoor;
+    ResetEnableTiles();
 
     switch (SelectedTile.LandScape)
     {
@@ -185,11 +258,11 @@ public class UI_map : UI_default
     UIManager.Instance.UpdateTurnIcon();
 
     StartCoroutine(zoominview());
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, ZoomInTime + 1.0f, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, ZoomInTime + 1.0f, false));
     yield return new WaitForSeconds(0.1f);
     GetPanelRect("myrect").Rect.anchoredPosition = GetPanelRect("myrect").OutisdePos;
-    MyGroup.interactable = false;
-    MyGroup.blocksRaycasts = false;
+    DefaultGroup.interactable = false;
+    DefaultGroup.blocksRaycasts = false;
     SelectedTile.ButtonScript.CancleTile();
     SelectedTile = null;
     Debug.Log("이동 코루틴이 끝난 레후~");
@@ -241,5 +314,9 @@ public class UI_map : UI_default
     TileData _targettile = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
     PlayerRect.anchoredPosition = _targettile.Rect.anchoredPosition;
     ScaleRect.localScale =IdleScale;
+    HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
+    GameManager.Instance.MyGameData.Coordinate = coordinate;
+    ResetEnableTiles();
+
   }
 }

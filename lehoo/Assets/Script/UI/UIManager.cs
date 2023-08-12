@@ -65,6 +65,8 @@ public class UIManager : MonoBehaviour
   [SerializeField] private CanvasGroup EnvirGroup = null;
   [SerializeField] private float EnvirChangeTime = 1.5f;
   private float EnvirBackgroundIdleAlpha = 0.7f;
+  public MapButton MapButton = null;
+  public SettleButton SettleButton = null;
   public void UpdateBackground(EnvironmentType envir)
   {
     Sprite _newbackground = GameManager.Instance.ImageHolder.GetEnvirBackground(envir);
@@ -454,7 +456,7 @@ public class UIManager : MonoBehaviour
    
     if(istopui) CurrentTopUI = _group;
 
-    if (_rect == MySettleUI.MyRect) yield break;
+    if (_rect == MySettleUI.DefaultRect) yield break;
   }
   public IEnumerator OpenUI(RectTransform _rect,UIMoveDir _dir,float _movetime, bool istopui)
   {
@@ -482,7 +484,7 @@ public class UIManager : MonoBehaviour
     _rect.anchoredPosition = _endpos;
     if (istopui) CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
 
-    if ( _rect == MySettleUI.MyRect) yield break;
+    if ( _rect == MySettleUI.DefaultRect) yield break;
   }
   public IEnumerator OpenUI(RectTransform _rect,Vector2 originpos, Vector2 targetpos, float _movetime, bool istopui)
   {
@@ -510,7 +512,7 @@ public class UIManager : MonoBehaviour
     _rect.anchoredPosition = _endpos;
 
     if (istopui) CurrentTopUI = _rect.GetComponent<CanvasGroup>() != null ? _rect.GetComponent<CanvasGroup>() : null;
-    if (_rect == MySettleUI.MyRect) yield break;
+    if (_rect == MySettleUI.DefaultRect) yield break;
   }
   public void CloseCurrentTopUI() => StartCoroutine(closetopui());
   public IEnumerator closetopui()

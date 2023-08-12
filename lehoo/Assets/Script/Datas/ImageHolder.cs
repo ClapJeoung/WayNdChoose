@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class ImageHolder : ScriptableObject
 {
-  public Sprite ReturnToSettleIcon = null;
-  public Sprite MapIcon = null;
+  public Sprite MovePointIcon_Enable = null;
+  public Sprite MovePointIcon_Lack = null;
   public List<Sprite> TownIllust=new List<Sprite>();                 //마을 일러스트
   public List<Sprite> CityIllust=new List<Sprite>();                 //도시 일러스트
   public List<Sprite> CastleIllust=new List<Sprite>();               //성채 일러스트

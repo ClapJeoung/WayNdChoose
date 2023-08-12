@@ -20,9 +20,9 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
   {
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen && CurrentThemeIndex.Equals(_index)) { CloseUI(); return; }
-    MyGroup.alpha = 1.0f;
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
+    DefaultGroup.alpha = 1.0f;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
 
@@ -41,7 +41,7 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
 
     if (CurrentThemeIndex.Equals(-1))
     {
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect,ClosePos,OpenPos,UIManager.Instance.LargePanelMoveTime,true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect,ClosePos,OpenPos,UIManager.Instance.LargePanelMoveTime,true));
     }//´ÝÇô ÀÖ´ø »óÅÂ¿¡¼­ Ã³À½À¸·Î ¿­¾úÀ»¶§¸é UI ¿­±â ÀÌÆåÆ®
     else
     {
@@ -55,8 +55,8 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
     TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.1f, false));
-    StartCoroutine(UIManager.Instance.CloseUI(MyRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
+    StartCoroutine(UIManager.Instance.CloseUI(DefaultRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime, false));
     UIManager.Instance.CurrentTopUI = null;
     CurrentThemeIndex = -1;
   }

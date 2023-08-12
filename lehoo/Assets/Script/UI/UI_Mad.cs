@@ -15,12 +15,12 @@ public class UI_Mad : UI_default
     MadExp = exp;
     Name.text = exp.Name;
     Description.text = GameManager.Instance.GetTextData(exp.ID + "_GENERATEDESCRIPTION");
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, true,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, true,false));
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup,1.0f,false,UIFadeMoveDir.Down, false));
   }
   public override void CloseUI()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,true, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f,true, false));
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup, 0.0f, true, UIFadeMoveDir.Down, false));
   }
   public void AddMad()

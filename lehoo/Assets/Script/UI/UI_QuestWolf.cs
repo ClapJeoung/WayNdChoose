@@ -28,6 +28,7 @@ public class UI_QuestWolf : UI_default
   public int CurrentIndex = 0;
   public void OpenUI(QuestHolder_Wolf wolf)
   {
+    if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
     CurrentIndex = 0;
     QuestHolder = wolf;
     PanelActive = true;
@@ -57,17 +58,14 @@ public class UI_QuestWolf : UI_default
     Button_A.onClick.AddListener(Next);
     ButtonHolderGroup.interactable = true;
     ButtonHolderGroup.blocksRaycasts = true;
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
     yield return null;
   }
-  public override void CloseUI()
-  {
-    StartCoroutine(closeui());
-  }
+  public override void CloseUI() => UIManager.Instance.AddUIQueue(closeui());
   private IEnumerator closeui()
   {
-    MyGroup.interactable = false;
+    DefaultGroup.interactable = false;
     CurrentIndex = 0;
     PanelActive = false;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust").Rect, GetPanelRect("illust").InsidePos, GetPanelRect("illust").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
@@ -222,8 +220,6 @@ public class UI_QuestWolf : UI_default
     IllustImage.sprite = QuestHolder.Prologue_Tendency_Last_Illust;
     Description.text = QuestHolder.Prologue_Last_Description;
 
-    //지도 버튼 오른쪽에 활성화
-
     Canvas.ForceUpdateCanvases();
     LayoutRebuilder.ForceRebuildLayoutImmediate(ButtonHolderGroup.GetComponent<RectTransform>());
     LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("description").Rect);
@@ -231,6 +227,9 @@ public class UI_QuestWolf : UI_default
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, FadeInTime, false));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 1.0f, FadeInTime, false));
     StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonHolderGroup, 1.0f, FadeInTime, false));
+
+    MoveRectForButton(0);
+    UIManager.Instance.SettleButton.Open(1, this);
 
   }//지도 여는 상황 세팅
 

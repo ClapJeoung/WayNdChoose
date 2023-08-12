@@ -33,11 +33,11 @@ public class UI_dialogue : UI_default
   [SerializeField] private ParticleSystem SuccessParticle = null;
   [SerializeField] private ParticleSystem FailParticle = null;
   [Space(10)]
-  [SerializeField] private UI_Reward MyUIReward = null;
-  [SerializeField] private CanvasGroup AfterEventButtonGroup = null;
-  [SerializeField] private GameObject RewardButton = null;
-  [SerializeField] private Button ReturnButton = null;
-  [SerializeField] private Image ReturnButtonImage = null;
+  [SerializeField] private CanvasGroup RewardButtonGroup = null;
+  [SerializeField] private Image RewardIcon = null;
+  [SerializeField] private TextMeshProUGUI RewardName = null;
+  [SerializeField] private TextMeshProUGUI RewardDescription = null;
+  [SerializeField] private TextMeshProUGUI Reward_clicktoget = null;
   [Space(10)]
   [SerializeField] private CanvasGroup EndingGroup = null;
   [Space(10)]
@@ -94,6 +94,8 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator setnewdialogue()
   {
+    if (Reward_clicktoget.text == "") Reward_clicktoget.text = GameManager.Instance.GetTextData("GETREWARD");
+    if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
     CurrentEvent = GameManager.Instance.MyGameData.CurrentEvent;
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
 
@@ -309,9 +311,43 @@ public class UI_dialogue : UI_default
     GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.ID);
 
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
+  private SuccessData CurrentSuccessData = null;
   public void SetSuccess(SuccessData _success)
   {
-    MyUIReward.SetRewardPanel(_success);
+    CurrentSuccessData = _success;
+    Sprite _icon = null;
+    string _name = "";
+    string _description = "";
+    switch (_success.Reward_Target)
+    {
+      case RewardTarget.HP:
+        _icon = GameManager.Instance.ImageHolder.HPIcon;
+        _name=GameManager.Instance.GetTextData(StatusType.HP,0);
+        _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue_modified)}";
+        break;
+      case RewardTarget.Sanity:
+        _icon = GameManager.Instance.ImageHolder.SanityIcon;
+        _name = GameManager.Instance.GetTextData(StatusType.Sanity, 0);
+        _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue_modified)}";
+        break;
+      case RewardTarget.Gold:
+        _icon = GameManager.Instance.ImageHolder.GoldIcon;
+        _name = GameManager.Instance.GetTextData(StatusType.Gold, 0);
+        _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue_modified)}";
+        break;
+      case RewardTarget.Experience:
+        _icon = GameManager.Instance.ImageHolder.UnknownExp;
+        _name = GameManager.Instance.GetTextData("EXP_NAME");
+        _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID].Name;
+        break;
+      case RewardTarget.Skill:
+        _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_Skill);
+        _name = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_Skill,0)} +1";
+        break;
+    }
+    RewardIcon.sprite = _icon;
+    RewardName.text = _name;
+    RewardDescription.text = _description;
 
     var _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
 
@@ -350,25 +386,18 @@ public class UI_dialogue : UI_default
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
     yield return ResultWait;
 
-    Sprite _returnbottomsprite = null;
-    ReturnButton.onClick.RemoveAllListeners();
-    ReturnButton.onClick.AddListener(CloseUI);
-    if (GameManager.Instance.MyGameData.CurrentSettlement == null)
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, false, false));
+
+    MoveRectForButton(1);
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
-      _returnbottomsprite = GameManager.Instance.ImageHolder.ReturnToSettleIcon;
-      ReturnButton.onClick.AddListener(SettlementUI.OpenUI);
-    }
+      UIManager.Instance.SettleButton.Open(0, this);
+    }//정착지에서 이벤트를 끝낸 경우 정착지로 돌아가는 버튼 활성화
     else
     {
-      _returnbottomsprite = GameManager.Instance.ImageHolder.MapIcon;
-      ReturnButton.onClick.AddListener(MapUI.OpenUI);
-    }
-
-    ReturnButtonImage.sprite = _returnbottomsprite;
-
-    if(RewardButton.activeInHierarchy==false)RewardButton.SetActive(true);
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 1.0f, false, false));
+      UIManager.Instance.MapButton.Open(0, this);
+    }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
   }
   private IEnumerator updatedialogue(FailureData _faiilure)
   {
@@ -388,25 +417,15 @@ public class UI_dialogue : UI_default
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
     yield return ResultWait;
 
-    Sprite _returnbottomsprite = null;
-    ReturnButton.onClick.RemoveAllListeners();
-    ReturnButton.onClick.AddListener(CloseUI);
-    if (GameManager.Instance.MyGameData.CurrentSettlement == null)
+    MoveRectForButton(1);
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
-      _returnbottomsprite = GameManager.Instance.ImageHolder.ReturnToSettleIcon;
-      ReturnButton.onClick.AddListener(SettlementUI.OpenUI);
-    }
+      UIManager.Instance.SettleButton.Open(0, this);
+    }//정착지에서 이벤트를 끝낸 경우 정착지로 돌아가는 버튼 활성화
     else
     {
-      _returnbottomsprite = GameManager.Instance.ImageHolder.MapIcon;
-      ReturnButton.onClick.AddListener(MapUI.OpenUI);
-    }
-
-    ReturnButtonImage.sprite = _returnbottomsprite;
-
-    if(RewardButton.activeInHierarchy==true)RewardButton.SetActive(false);
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 1.0f, false, false));
+      UIManager.Instance.MapButton.Open(0, this);
+    }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
   }
   public override void CloseUI() => UIManager.Instance.AddUIQueue(closeui());
 
@@ -416,7 +435,7 @@ public class UI_dialogue : UI_default
     EndingGroup.interactable = false;
     EndingGroup.blocksRaycasts = false;
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 0.0f, 0.3f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f, false));
 
     StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
     yield return new WaitForSeconds(0.3f);
@@ -472,32 +491,44 @@ public class UI_dialogue : UI_default
   {
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup,0.0f,UIFadeTime,false));
 
-    Sprite _returnbottomsprite = null;
-    ReturnButton.onClick.RemoveAllListeners();
-    ReturnButton.onClick.AddListener(CloseUI);
-    if (GameManager.Instance.MyGameData.CurrentSettlement == null)
-    {
-      _returnbottomsprite = GameManager.Instance.ImageHolder.ReturnToSettleIcon;
-      ReturnButton.onClick.AddListener(SettlementUI.OpenUI);
-    }
-    else
-    {
-      _returnbottomsprite = GameManager.Instance.ImageHolder.MapIcon;
-      ReturnButton.onClick.AddListener(MapUI.OpenUI);
-    }
-
-    ReturnButtonImage.sprite = _returnbottomsprite;
-
-
-    if (RewardButton.activeInHierarchy == false) RewardButton.gameObject.SetActive(true);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(AfterEventButtonGroup, 1.0f, false, false));
     yield return null;
   }
 
+  public void GetReward()
+  {
+    if(CurrentSuccessData.Reward_Target==RewardTarget.Experience)
+    {
+
+    }
+
+    else
+    {
+      switch (CurrentSuccessData.Reward_Target)
+      {
+        case RewardTarget.HP:
+          GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
+          UIManager.Instance.UpdateHPText();
+          break;
+        case RewardTarget.Sanity:
+          GameManager.Instance.MyGameData.CurrentSanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
+          UIManager.Instance.UpdateSanityText();
+          break;
+        case RewardTarget.Gold:
+          GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
+          UIManager.Instance.UpdateGoldText();
+          break;
+        case RewardTarget.Skill:
+          GameManager.Instance.MyGameData.GetSkill(skill).LevelByDefault++;
+          break;
+      }
+    }
+  }
 
   public void DeleteRewardButton()
   {
-    RewardButton.SetActive(false);
+    RewardButtonGroup.alpha = 0.0f;
+    RewardButtonGroup.interactable = false;
+    RewardButtonGroup.blocksRaycasts = false;
   }
   public void SetPenalty(FailureData _fail)
   {

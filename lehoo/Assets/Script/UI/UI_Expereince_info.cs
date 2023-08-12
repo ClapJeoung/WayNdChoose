@@ -21,9 +21,9 @@ public class UI_Expereince_info : UI_default
     //나중에 인수도 받아야함
     if (UIManager.Instance.IsWorking || _exp == null) return;
     if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
-    MyGroup.alpha = 1.0f;
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
+    DefaultGroup.alpha = 1.0f;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
 
@@ -42,7 +42,7 @@ public class UI_Expereince_info : UI_default
       ExpEffect.text = _description + "\n\n" + _effect;
       ExpTurn.text = _exp.Duration.ToString();
 
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, ClosePos, OpenPos, UIManager.Instance.LargePanelMoveTime, true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, ClosePos, OpenPos, UIManager.Instance.LargePanelMoveTime, true));
     }//최초는 아무 경험이나 클릭하면 열기
     else
     {
@@ -64,9 +64,9 @@ public class UI_Expereince_info : UI_default
     //나중에 인수도 받아야함
     if (UIManager.Instance.IsWorking || _exp == null) return;
     if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
-    MyGroup.alpha = 1.0f;
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
+    DefaultGroup.alpha = 1.0f;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
 
@@ -85,7 +85,7 @@ public class UI_Expereince_info : UI_default
       ExpEffect.text = _description + "\n\n" + _effect;
       ExpTurn.text = _exp.Duration.ToString();
 
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(MyRect, ClosePos, OpenPos, UIManager.Instance.LargePanelMoveTime, true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, ClosePos, OpenPos, UIManager.Instance.LargePanelMoveTime, true));
     }//최초는 아무 경험이나 클릭하면 열기
     else
     {
@@ -110,7 +110,7 @@ public class UI_Expereince_info : UI_default
     UIManager.Instance.CurrentTopUI = null;
 
     TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.1f, false));
-    StartCoroutine( UIManager.Instance.CloseUI(MyRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
+    StartCoroutine( UIManager.Instance.CloseUI(DefaultRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
   }
 }

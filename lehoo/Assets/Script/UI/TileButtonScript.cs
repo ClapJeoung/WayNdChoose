@@ -12,6 +12,8 @@ public class TileButtonScript : MonoBehaviour
   public Transform OriginHolder = null;
   public UI_map MapUI = null;
   public TileData TileData = null;
+  public Image MyImage = null;
+  public Image TopEnvirImage = null;
   public void Clicked()
   {
     if (TileData.Coordinate == GameManager.Instance.MyGameData.Coordinate) return;

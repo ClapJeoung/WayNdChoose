@@ -6,53 +6,40 @@ using TMPro;
 
 public class UI_Reward : UI_default
 {
-  [SerializeField] private Canvas MyCansvas = null;
-  [SerializeField] private CanvasGroup PanelGroup = null;
   [SerializeField] private Transform RewardButtonHolder = null;
-  [SerializeField] private RewardButton Reward_HP = null;
-  [SerializeField] private RewardButton Reward_Sanity = null;
-  [SerializeField] private RewardButton Reward_Gold = null;
-  [SerializeField] private RewardButton Reward_Exp = null;
-  [SerializeField] private RewardButton Reward_Skill = null;
+  [SerializeField] private GameObject RewardButtonPrefab = null;
+  [SerializeField] private TextMeshProUGUI QuitText = null;
   [Space(10)]
   [SerializeField] private CanvasGroup RewardExpGroup = null;
-    [SerializeField] private CanvasGroup[] RewardLongExpNameGroup = new CanvasGroup[2];
-  [SerializeField] private TextMeshProUGUI[] RewardLongExpName = new TextMeshProUGUI[2];
-    [SerializeField] private Image[] RewardLongExpCap = new Image[2];
-  [SerializeField] private Image[] RewardLongExpIllust=new Image[2];
-    [SerializeField] private CanvasGroup[] RewardLongExpTurnGroup = new CanvasGroup[2];
-  [SerializeField] private TextMeshProUGUI[] RewardLongExpTurn = new TextMeshProUGUI[2];
-  [SerializeField] private PreviewInteractive[] RewardLongExpPreview=new PreviewInteractive[2];
+  [SerializeField] private CanvasGroup RewardLongExpNameGroup = null;
+  [SerializeField] private TextMeshProUGUI RewardLongExpName = null;
+  [SerializeField] private Image RewardLongExpCap = null;
+  [SerializeField] private Image RewardLongExpIllust = null;
+    [SerializeField] private CanvasGroup RewardLongExpTurnGroup = null;
+  [SerializeField] private TextMeshProUGUI RewardLongExpTurn = null;
+  [SerializeField] private PreviewInteractive RewardLongExpPreview= null;
 
-    [SerializeField] private CanvasGroup[] RewardShortExpNameGroup = new CanvasGroup[4];
-  [SerializeField] private TextMeshProUGUI[] RewardShortExpName = new TextMeshProUGUI[4];
-    [SerializeField] private Image[] RewardShortExpCap = new Image[4];
-  [SerializeField] private Image[] RewardShortExpIllust = new Image[4];
-    [SerializeField] private CanvasGroup[] RewardShortExpTurnGroup = new CanvasGroup[4];
-  [SerializeField] private TextMeshProUGUI[] RewardShortExpTurn = new TextMeshProUGUI[4];
-  [SerializeField] private PreviewInteractive[] RewardShortExpPreview = new PreviewInteractive[4];
+  [SerializeField] private CanvasGroup[] RewardShortExpNameGroup = new CanvasGroup[2];
+  [SerializeField] private TextMeshProUGUI[] RewardShortExpName = new TextMeshProUGUI[2];
+    [SerializeField] private Image[] RewardShortExpCap = new Image[2];
+  [SerializeField] private Image[] RewardShortExpIllust = new Image[2];
+    [SerializeField] private CanvasGroup[] RewardShortExpTurnGroup = new CanvasGroup[2];
+  [SerializeField] private TextMeshProUGUI[] RewardShortExpTurn = new TextMeshProUGUI[2];
+  [SerializeField] private PreviewInteractive[] RewardShortExpPreview = new PreviewInteractive[2];
   [SerializeField] private GameObject RewardExpQuitButton = null;
   [SerializeField] private TextMeshProUGUI RewardExpDescription = null;
 
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [Space(10)]
-  [SerializeField] private VerticalLayoutGroup LayoutGroup = null;
 
   public SuccessData CurrentSuccesData = null;
 
   public void SetRewardPanel(SuccessData _success)
   {
-    StartCoroutine(setreward(_success));
-  }
-  private IEnumerator setreward(SuccessData _success)
-  {
-    LayoutGroup.enabled = true;
+    if (QuitText.text !="") QuitText.text = GameManager.Instance.GetTextData("QUIT");
+
     CurrentSuccesData = _success;
-    if (Reward_HP.gameObject.activeSelf.Equals(true)) Reward_HP.gameObject.SetActive(false);
-    if (Reward_Sanity.gameObject.activeSelf.Equals(true)) Reward_Sanity.gameObject.SetActive(false);
-    if (Reward_Gold.gameObject.activeSelf.Equals(true)) Reward_Gold.gameObject.SetActive(false);
-    if (Reward_Exp.gameObject.activeSelf.Equals(true)) Reward_Exp.gameObject.SetActive(false);
-    if (Reward_Skill.gameObject.activeSelf.Equals(true)) Reward_Skill.gameObject.SetActive(false);
+
     switch (_success.Reward_Target)
     {
       case RewardTarget.Experience:
@@ -98,15 +85,14 @@ public class UI_Reward : UI_default
         Reward_Gold.Setup_value(GameManager.Instance.MyGameData.RewardGoldValue_modified);
         break;
     }
-    yield return new WaitForEndOfFrame();
     LayoutGroup.enabled = false;
   }
   public override void OpenUI(bool _islarge)
   {
     if (UIManager.Instance.IsWorking) return;
 
-    MyGroup.interactable = true;
-    MyGroup.blocksRaycasts = true;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
         UIManager.Instance.AddUIQueue(openui());
   }
     private IEnumerator openui()
@@ -216,8 +202,8 @@ public class UI_Reward : UI_default
   }
   public override void CloseUI()
   {
-    MyGroup.interactable = false;
-    MyGroup.blocksRaycasts = false;
+    DefaultGroup.interactable = false;
+    DefaultGroup.blocksRaycasts = false;
     StartCoroutine(closeui());
   }
   private IEnumerator closeui()
@@ -226,26 +212,26 @@ public class UI_Reward : UI_default
         yield return null;
     }
 
-  public void AddRewardHP(int _value)
+  public void AddRewardHP()
   {
       Reward_HP.gameObject.SetActive(false);
-    GameManager.Instance.MyGameData.HP += _value;
+    GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
     UIManager.Instance.UpdateHPText();
  //   StartCoroutine(moveicons(RewardTarget.HP,_value, _icon, _startpos, _endpos));
     AutoClose();
   }
-  public void AddRewardSanity(int _value)
+  public void AddRewardSanity()
   {
     Reward_Sanity.gameObject.SetActive(false);
-    GameManager.Instance.MyGameData.CurrentSanity += _value;
+    GameManager.Instance.MyGameData.CurrentSanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
     UIManager.Instance.UpdateSanityText();
  //   StartCoroutine(moveicons(RewardTarget.Sanity, _value, _icon, _startpos, _endpos));
     AutoClose();
   }
-  public void AddRewardGold(int _value)
+  public void AddRewardGold()
   {
     Reward_Gold.gameObject.SetActive(false);
-    GameManager.Instance.MyGameData.Gold += _value;
+    GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
     UIManager.Instance.UpdateGoldText();
  //   StartCoroutine(moveicons(RewardTarget.Gold, _value, _icon, _startpos, _endpos));
     AutoClose();
@@ -282,51 +268,5 @@ public class UI_Reward : UI_default
     for (int i = 0; i < RewardButtonHolder.childCount; i++)
       if (RewardButtonHolder.GetChild(i).gameObject.activeInHierarchy == true) { _isdone = false; }
     if (_isdone) {CloseUI();MyUIDialogue.DeleteRewardButton(); }
-  }
-  private IEnumerator moveicons(RewardTarget _reward,int _value, Sprite[] _icon, Vector2[] _startpos, Vector2[] _endpos)
-  {
-    for(int i = 0; i < _icon.Length; i++)
-    {
-      System.Type[] _objtype = new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) };
-      GameObject _obj = new GameObject($"icon_{i}", _objtype);
-      RectTransform _rect = _obj.GetComponent<RectTransform>();
-      Image _image=_obj.GetComponent<Image>();
-      _rect.rect.Set(_startpos[i].x, _startpos[i].y, 30.0f, 30.0f);
-      _rect.position = _startpos[i];
-      _image.sprite = _icon[i];
-      _obj.transform.SetParent(MyCansvas.transform);
-      _obj.transform.SetAsLastSibling();
-      _rect.localScale = Vector3.one;
-
-      StartCoroutine(movesingleicon(_rect, _image, _startpos[i], _endpos[i], UIManager.Instance.SmallPanelFadeTime));
-      yield return new WaitForSeconds(0.1f);
-    }
-    switch (_reward)
-    {
-      case RewardTarget.HP:GameManager.Instance.MyGameData.HP += _value;UIManager.Instance.UpdateHPText();break;
-      case RewardTarget.Sanity:GameManager.Instance.MyGameData.CurrentSanity+=_value;UIManager.Instance.UpdateSanityText();break;
-      case RewardTarget.Gold:GameManager.Instance.MyGameData.Gold+=_value;UIManager.Instance.UpdateGoldText();break;
-    }
-  }//체력,정신력,돈
-  private IEnumerator movesingleicon(RectTransform _rect,Image _img,Vector2 _startpos,Vector2 _endpos,float _targettime)
-  {
-    float _time = 0.0f;
-    Vector2 _currentpos = _startpos;
-    float _currentalpha = 1.0f;
-    Color _color = Color.white;
-    while (_time < _targettime)
-    {
-      _currentpos = Vector2.Lerp(_startpos, _endpos, Mathf.Pow(_time / _targettime, 2.5f));
-      _currentalpha = Mathf.Lerp(1.0f, 0.0f, Mathf.Pow(_time / _targettime, 0.3f));
-
-      _rect.position = _currentpos;
-    //  _color.a = _currentalpha;
-      _img.color = _color;
-
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    yield return null;
-    Destroy(_rect.gameObject);
   }
 }
