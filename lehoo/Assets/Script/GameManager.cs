@@ -327,7 +327,6 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   public void SuccessCurrentEvent(TendencyType _tendencytype,int index)
   {
-   if(MyGameData.CurrentSettlement!=null)MyGameData.CurrentSettlement.SetAvailablePlaces();
     EventHolder.RemoveEvent(MyGameData.CurrentEvent.ID);
     switch (_tendencytype)
     {
@@ -356,7 +355,6 @@ public class GameManager : MonoBehaviour
   }
   public void FailCurrentEvent(TendencyType _tendencytype, int index)
   {
-    if (MyGameData.CurrentSettlement != null) MyGameData.CurrentSettlement.SetAvailablePlaces();
     switch (_tendencytype)
     {
       case TendencyType.None:
@@ -468,10 +466,6 @@ public class GameManager : MonoBehaviour
   }//정착지의 장소 세팅
   public void SelectEvent(EventDataDefulat _targetevent)
   {
-    MyGameData.CurrentSanity -= MyGameData.SettleSanityLoss;
-    UIManager.Instance.UpdateSanityText();
-    Dictionary<Settlement,int> _temp=new Dictionary<Settlement,int>();
-    MyGameData.AddDiscomfort(MyGameData.CurrentSettlement);
     MyGameData.CurrentEvent = _targetevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
@@ -566,6 +560,7 @@ public class GameManager : MonoBehaviour
     yield return StartCoroutine(UIManager.Instance.opengamescene());
     UIManager.Instance.UpdateAllUI();
 
+    /*
     if (MyGameData.CurrentEvent == null)
     {
       UIManager.Instance.OpenSuggestUI();
@@ -600,7 +595,7 @@ public class GameManager : MonoBehaviour
         //이벤트 있을 때, 완료 단계일 경우 완료 리스트에서 현재 이벤트 찾고 완료 결과에 따라 설명, 보상 세팅 열고 이벤트 패널 열기
       }
     }
-
+    */
     yield return null;
   }
   public void CreateNewMap() => StartCoroutine(createnewmap());

@@ -6,6 +6,7 @@ using TMPro;
 
 public class RewardButton : MonoBehaviour
 {
+  /*
   [SerializeField] private RewardTarget RewardType = RewardTarget.Experience;
   [SerializeField] private TextMeshProUGUI RewardInfo = null;
   [SerializeField] private UI_Reward MyUIReward = null;
@@ -75,4 +76,5 @@ public class RewardButton : MonoBehaviour
     UIManager.Instance.PreviewManager.ClosePreview();
     Destroy(gameObject);
   }
+  */
 }

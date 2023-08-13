@@ -10,8 +10,26 @@ using System.Data;
 using System.IO;
 using UnityEngine.EventSystems;
 
-public class TestScript : ScreenPanelBasic
+public class lehoo:MonoBehaviour
 {
-    public string Lehoo = "레후~";
-    public Vector2Int ASDF = Vector2Int.left;
+  public virtual void asdf()
+  {
+    Debug.Log("asdf");
+  }
+  public void techa()
+  {
+    asdf();
+  }
+}
+public class TestScript : lehoo
+{
+  public override void asdf()
+  {
+    base.asdf();
+    Debug.Log("asdf강화판");
+  }
+  private void Awake()
+  {
+    techa();
+  }
 }

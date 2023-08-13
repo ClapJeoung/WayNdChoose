@@ -6,6 +6,7 @@ using TMPro;
 
 public class UI_Reward : UI_default
 {
+  /*
   [SerializeField] private Transform RewardButtonHolder = null;
   [SerializeField] private GameObject RewardButtonPrefab = null;
   [SerializeField] private TextMeshProUGUI QuitText = null;
@@ -269,4 +270,5 @@ public class UI_Reward : UI_default
       if (RewardButtonHolder.GetChild(i).gameObject.activeInHierarchy == true) { _isdone = false; }
     if (_isdone) {CloseUI();MyUIDialogue.DeleteRewardButton(); }
   }
+  */
 }

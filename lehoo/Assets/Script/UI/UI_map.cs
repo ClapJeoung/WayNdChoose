@@ -245,7 +245,6 @@ public class UI_map : UI_default
       case LandscapeType.Settlement:
         GameManager.Instance.MyGameData.CurrentEvent = null;
         GameManager.Instance.MyGameData.CurrentSettlement = SelectedTile.TileSettle;
-        GameManager.Instance.MyGameData.CurrentSettlement.SetAvailablePlaces();
         GameManager.Instance.MyGameData.CurrentSettlement.LibraryType = (SkillType)Random.Range(0, 4);
 
         yield return new WaitForSeconds(1.0f);

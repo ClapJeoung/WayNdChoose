@@ -19,17 +19,17 @@ public class Settlement
     {
       if (settlementplaces.Count == 0)
       {
-        settlementplaces = new List<PlaceType>() { PlaceType.Residence, PlaceType.Marketplace, PlaceType.Temple };
+        settlementplaces = new List<PlaceType>() { PlaceType.Residence, PlaceType.Marketplace};
         switch (Type)
         {
           case SettlementType.Town:
             break;
           case SettlementType.City:
-            settlementplaces.Add(PlaceType.Library);
+            settlementplaces.Add(PlaceType.Temple);
             break;
           case SettlementType.Castle:
-            settlementplaces.Add(PlaceType.Theater);
-            settlementplaces.Add(PlaceType.Academy);
+            settlementplaces.Add(PlaceType.Temple);
+            settlementplaces.Add(PlaceType.Library);
             break;
         }
       }
@@ -58,9 +58,9 @@ public class Settlement
   {
     switch (Type)
     {
-      case SettlementType.Town:Discomfort += ConstValues.TownDiscomfortGrowth;return;
-      case SettlementType.City:Discomfort += ConstValues.CityDiscomfortGrowth; return;
-      default: Discomfort += ConstValues.CastleDiscomfortGrowth; return;
+      case SettlementType.Town:Discomfort += ConstValues.RestDiscomfort_Town;return;
+      case SettlementType.City:Discomfort += ConstValues.RestDiscomfort_City; return;
+      default: Discomfort += ConstValues.RestDiscomfort_Castle; return;
     }
   }
   private string name;

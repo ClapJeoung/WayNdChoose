@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int RestMovePoint_Town = 1, RestMovePoint_City = 2, RestMovePoint_Castle = 3;
+  public const int RestDiscomfort_Town=1, RestDiscomfort_City = 2, RestDiscomfort_Castle = 3;
   public const float LackOfMovePointValue = 1.5f;
   public const int MoveCost_1_min = 8, MoveCost_1_max = 15, MoveCost_2_min = 10, MoveCost_2_max = 20;
 
@@ -37,8 +39,6 @@ public static class ConstValues
 
   public const int TownPlaceCount = 1, CityPlaceCount = 2, CastlePlaceCount = 3;
   public const int TownDiscomfortDeg = 1,CityDiscomfortDeg=2,CastleDiscomfortDeg=3;
-
-  public const int TownDiscomfortGrowth = 1,CityDiscomfortGrowth=2,CastleDiscomfortGrowth=3;
 
   public const int StartGold = 50;
   public const float  HPGen_Exp = 0.08f,  HPLoss_Exp = 0.01f;
@@ -85,18 +85,19 @@ public static class ConstValues
   public const int LongTermStartTurn =  12;
   public const int Tendency0to1 = 2, Tendency1to2 = 2, Tendency2to3 = 3;
   public const int TendencyRegress = 2;
-  public const int SettleEventSanity_Min = 5;
-  public const int SettleEventUnpleasantExpansion = 3;
+  public const int RestCost = 5;
+  public const float RestDiscomfortExpansion = 1.5f;
 
     public const int SanityByMadness_0 = 100, SanityByMadness_1 = 80, SanityByMadness_2 = 60, SanityByMadness_3 = 40;
 
     public const int PlaceEffectMaxTurn = 3;
-    public const float PlaceEffect_residence = 0.3f;
+    public const int PlaceEffect_residence = 1;
     public const int PlaceEffect_marketplace = 20;
     public const int PlaceEffect_temple = 1;
   public const int PlaceEffect_Library = 2;
     public const int PlaceEffect_theater = 3;
     public const int PlaceEffect_acardemy = 10;
+  public const int PlaceDuration = 5;
 
   public const int AmplifiedLengthMin = 6;
   public const float LengthAmplifiedValue = 1.2f;
@@ -179,8 +180,8 @@ public class GameData    //게임 진행도 데이터
     public int RewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max); } }
     public int SubRewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardSanity_min, ConstValues.SubRewardSanity_max); } }
     public int SubRewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardGold_min, ConstValues.SubRewardGold_max); } }
-    public int SettleSanityLoss
-    { get { return (int)(ConstValues.SettleEventSanity_Min * Mathf.Pow(ConstValues.SettleEventUnpleasantExpansion, CurrentSettlement.Discomfort)); } }
+    public int SettleRestCost
+    { get { return (int)(ConstValues.RestCost * Mathf.Pow(ConstValues.RestDiscomfortExpansion, CurrentSettlement.Discomfort)); } }
     public int PayHPValue_modified
     { get { return (int)(PayHPValue_origin * GetHPLossModify(true)); } }
     public int PaySanityValue_modified
@@ -267,11 +268,6 @@ public class GameData    //게임 진행도 데이터
     {
         get { return hp; }
         set {
-      if (value < hp && PlaceEffects.ContainsKey(PlaceType.Residence))
-      {
-        PlaceEffects.Remove(PlaceType.Residence);
-        if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
-      }
             //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
             hp = value;
             if (hp > 100) hp = 100;
@@ -623,10 +619,7 @@ public class GameData    //게임 진행도 데이터
     {
       case PlaceType.Residence:
 
-        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
-        else PlaceEffects.Add(placetype, 3);
-        //이후 연출
-        break;//정착지- 다음 체력 감소 완화(3턴지속)
+        break;//거주지 - 휴식 시 추가 이동력 회복
 
       case PlaceType.Marketplace:
         Gold += ConstValues.PlaceEffect_marketplace;
@@ -637,11 +630,11 @@ public class GameData    //게임 진행도 데이터
         break;//사원- 모든 불쾌 1 감소
 
       case PlaceType.Library:
-        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
-        else PlaceEffects.Add(placetype, 3);
+        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
+        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
         LibraryEffectTarget = CurrentSettlement.LibraryType;
 
-        break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(3턴지속)
+        break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
 
       case PlaceType.Theater:
 
@@ -650,12 +643,12 @@ public class GameData    //게임 진행도 데이터
           if (ShortTermEXP[i] != null) ShortTermEXP[i].Duration =
                   ShortTermEXP[i].Duration + 2 > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortTermEXP[i].Duration + 2;
 
-        break;//극장- 모든 경험 2턴 증가
+        break;//극장- 모든 경험 2턴 증가(삭제됨)
 
       case PlaceType.Academy:
-        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = 3;
-        else PlaceEffects.Add(placetype, 3);
-        break;//아카데미- 다음 체크 확률 증가(3턴 지속, 성공할 때 까지)
+        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
+        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
+        break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
     }
     if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
   }

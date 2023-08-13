@@ -43,6 +43,7 @@ public class UI_dialogue : UI_default
   [Space(10)]
   [SerializeField] private UI_Settlement SettlementUI = null;
   [SerializeField] private UI_map MapUI = null;
+  [SerializeField] private UI_RewardExp RewardExpUI = null;
   private EventDataDefulat CurrentEvent = null;
   private RectTransform IllustRect { get {return GetPanelRect("illust").Rect; } }
   private Vector2 IllustOpenPos { get { return GetPanelRect("illust").InsidePos; } }
@@ -88,10 +89,8 @@ public class UI_dialogue : UI_default
     if (_selection.Equals(Selection_Material)) return Selection_Mental;
     return null;
   }
-  public void OpenUI()
-  {
-    UIManager.Instance.AddUIQueue(setnewdialogue());
-  }
+  public void OpenUI() => UIManager.Instance.AddUIQueue(setnewdialogue());
+
   private IEnumerator setnewdialogue()
   {
     if (Reward_clicktoget.text == "") Reward_clicktoget.text = GameManager.Instance.GetTextData("GETREWARD");
@@ -311,10 +310,14 @@ public class UI_dialogue : UI_default
     GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.ID);
 
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
+
+
   private SuccessData CurrentSuccessData = null;
+  public bool RemainReward = false;
   public void SetSuccess(SuccessData _success)
   {
     CurrentSuccessData = _success;
+    RemainReward = true;
     Sprite _icon = null;
     string _name = "";
     string _description = "";
@@ -356,27 +359,16 @@ public class UI_dialogue : UI_default
       var _currentfollow = (FollowEventData)_currentevent;
       if (_currentfollow.EndingData != null) SetEndingDialogue(((FollowEventData)_currentevent).EndingData, _success);
     }
-    else SetEventDialogue(_success);
+    else UIManager.Instance.AddUIQueue(updatedialogue(_success));
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
-
-
   }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체, 퀘스트 이벤트일 경우 진행도 ++
-  public void SetFail(FailureData _fail)
-  {
-    SetPenalty(_fail);
-    SetEventDialogue(_fail);
-  }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
-
-  public void SetEventDialogue(SuccessData _successdata)=> UIManager.Instance.AddUIQueue(updatedialogue(_successdata));
-  public void SetEventDialogue(FailureData _faildata) => UIManager.Instance.AddUIQueue(updatedialogue(_faildata));
-
   private IEnumerator updatedialogue(SuccessData _success)
   {
     SuccessParticle.Play();
     CurrentUISelection.DeActive();
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f,UIFadeTime,false));
-   yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f,UIFadeTime,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, UIFadeTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, UIFadeTime, false));
     //일러스트,설명 투명화하고 약간 시간 둔 뒤 새 일러스트,설명으로 전환
     yield return TextWait;
 
@@ -389,16 +381,17 @@ public class UI_dialogue : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, false, false));
 
-    MoveRectForButton(1);
-    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
-    {
-      UIManager.Instance.SettleButton.Open(0, this);
-    }//정착지에서 이벤트를 끝낸 경우 정착지로 돌아가는 버튼 활성화
-    else
-    {
-      UIManager.Instance.MapButton.Open(0, this);
-    }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
+    OpenReturnButton();
   }
+
+
+  private FailureData CurrentFailData = null;
+  public void SetFail(FailureData _fail)
+  {
+    CurrentFailData = _fail;
+    SetPenalty(_fail);
+    UIManager.Instance.AddUIQueue(updatedialogue(_fail));
+  }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
   private IEnumerator updatedialogue(FailureData _faiilure)
   {
     yield return Wait;
@@ -417,6 +410,17 @@ public class UI_dialogue : UI_default
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, UIFadeTime, false));
     yield return ResultWait;
 
+    if (_faiilure.Panelty_target == PenaltyTarget.EXP)
+    {
+    }
+    else
+    {
+      OpenReturnButton();
+    }
+  }
+
+  public void OpenReturnButton()
+  {
     MoveRectForButton(1);
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
@@ -428,9 +432,10 @@ public class UI_dialogue : UI_default
     }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
   }
   public override void CloseUI() => UIManager.Instance.AddUIQueue(closeui());
-
   private IEnumerator closeui()
   {
+    CurrentSuccessData = null;
+    CurrentFailData = null;
     EndingGroup.alpha = 0.0f;
     EndingGroup.interactable = false;
     EndingGroup.blocksRaycasts = false;
@@ -447,6 +452,8 @@ public class UI_dialogue : UI_default
 
     yield return Wait;
   }
+
+  #region 엔딩?
   public void SetEndingDialogue(FollowEndingData endingdata, SuccessData successdata)
   {
     UIManager.Instance.AddUIQueue(updatedialogue(endingdata, successdata));
@@ -493,43 +500,60 @@ public class UI_dialogue : UI_default
 
     yield return null;
   }
+  #endregion
 
   public void GetReward()
   {
-    if(CurrentSuccessData.Reward_Target==RewardTarget.Experience)
+    if (CurrentSuccessData != null)
     {
-
-    }
-
-    else
-    {
-      switch (CurrentSuccessData.Reward_Target)
+      if (CurrentSuccessData.Reward_Target == RewardTarget.Experience)
       {
-        case RewardTarget.HP:
-          GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
-          UIManager.Instance.UpdateHPText();
-          break;
-        case RewardTarget.Sanity:
-          GameManager.Instance.MyGameData.CurrentSanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
-          UIManager.Instance.UpdateSanityText();
-          break;
-        case RewardTarget.Gold:
-          GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
-          UIManager.Instance.UpdateGoldText();
-          break;
-        case RewardTarget.Skill:
-          GameManager.Instance.MyGameData.GetSkill(skill).LevelByDefault++;
-          break;
+
+
+        RewardExpUI.Setup_RewardExp(GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID]);
+        return;
+      }
+      else
+      {
+        switch (CurrentSuccessData.Reward_Target)
+        {
+          case RewardTarget.HP:
+            GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
+            UIManager.Instance.UpdateHPText();
+            break;
+          case RewardTarget.Sanity:
+            GameManager.Instance.MyGameData.CurrentSanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
+            UIManager.Instance.UpdateSanityText();
+            break;
+          case RewardTarget.Gold:
+            GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
+            UIManager.Instance.UpdateGoldText();
+            break;
+          case RewardTarget.Skill:
+            GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_Skill).LevelByDefault++;
+            break;
+        }
+
+        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
+        RemainReward = false;
       }
     }
+    else if (CurrentFailData != null)
+    {
+      RewardExpUI.Setup_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
+    }
+  }
+  public void GetExp_Long()
+  {
+    GameManager.Instance.MyGameData.LongTermEXP = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID];
+    UIManager.Instance.UpdateExpLongTermIcon();
+  }
+  public void GetExp_Short(int index)
+  {
+    GameManager.Instance.MyGameData.ShortTermEXP[index] = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID];
+    UIManager.Instance.UpdateExpShortTermIcon();
   }
 
-  public void DeleteRewardButton()
-  {
-    RewardButtonGroup.alpha = 0.0f;
-    RewardButtonGroup.interactable = false;
-    RewardButtonGroup.blocksRaycasts = false;
-  }
   public void SetPenalty(FailureData _fail)
   {
     switch (_fail.Panelty_target)
@@ -554,7 +578,11 @@ public class UI_dialogue : UI_default
         }
         break;
       case PenaltyTarget.EXP:
-        GameManager.Instance.AddBadExp(GameManager.Instance.ExpDic[_fail.ExpID]);
+        RewardIcon.sprite = GameManager.Instance.ImageHolder.UnknownExp;
+        RewardName.text = GameManager.Instance.GetTextData("EXP_NAME");
+        RewardDescription.text = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID].Name;
+        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, false, false));
+
         break;
     }
   }//실패할 경우 패널티 부과하는 연출

@@ -791,7 +791,6 @@ public class UIManager : MonoBehaviour
   public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
   public void CreateMap() => MyMap.MapCreater.MakeTilemap();
   public void OpenSuggestUI() => MySettleUI.OpenUI();
-  public void OpenBadExpUI(Experience _badexp) => MyUIReward.OpenRewardExpPanel_penalty(_badexp);
     public void OpenDialogue()
     {
         //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
@@ -800,8 +799,6 @@ public class UIManager : MonoBehaviour
 
         MyDialogue.OpenUI();
     }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
-  public void OpenSuccessDialogue(SuccessData _success) => MyDialogue.SetEventDialogue(_success);
-  public void OpenFailDialogue(FailureData _fail) => MyDialogue.SetEventDialogue(_fail);
   public void ResetEventPanels()
   {
     MyDialogue.CloseUI();
@@ -855,6 +852,22 @@ public class UIManager : MonoBehaviour
 }
 public static class WNCText
 {
+  public static string GetDiscomfortColor(string str)
+  {
+    return $"<#5F04B4>{str}</color>";
+  }
+  public static string GetDiscomfortColor(int value)
+  {
+    return $"<#5F04B4>{value}</color>";
+  }
+  public static string GetMovepointColor(string str)
+  {
+    return $"<#FFBF00>{str}</color>";
+  }
+  public static string GetMovepointColor(int value)
+  {
+    return $"<#FFBF00>{value}</color>";
+  }
   public static string GetHPColor(string str)
   {
     return $"<#F78181>{str}</color>";
