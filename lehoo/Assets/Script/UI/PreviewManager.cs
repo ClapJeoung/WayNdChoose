@@ -129,8 +129,8 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
   [Space(10)]
-  [SerializeField] private GameObject ExpSelectionBadPanel = null;
-  [SerializeField] private TextMeshProUGUI ExpSelectionBadText = null;
+  [SerializeField] private GameObject JustDescriptionPanel = null;
+  [SerializeField] private TextMeshProUGUI JustDescriptionText = null;
   [Space(10)]
   [SerializeField] private GameObject DisComfortPanel = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
@@ -168,7 +168,7 @@ public class PreviewManager : MonoBehaviour
     AllCanvasGroup.Add(RewardSkillPanel.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(ExpSelectEmptyPanel.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(ExpSelectExistPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(ExpSelectionBadPanel.GetComponent<CanvasGroup>());
+    AllCanvasGroup.Add(JustDescriptionPanel.GetComponent<CanvasGroup>());
   }
   private RectTransform CurrentPreview = null;
 
@@ -774,20 +774,20 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(ExpSelectExistPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenExpSelectionBadPreview()
+  public void OpenJustDescriptionPreview(string text)
   {
-    ExpSelectionBadText.text = GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME");
+    JustDescriptionText.text = text;
 
-    CurrentPreview=ExpSelectionBadPanel.GetComponent<RectTransform>();
+    CurrentPreview = JustDescriptionPanel.GetComponent<RectTransform>();
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(true)) ExpSelectClickText.gameObject.SetActive(false);
 
     IEnumerator _cor = null;
-    _cor = fadepreview(ExpSelectionBadPanel, true);
+    _cor = fadepreview(JustDescriptionPanel, true);
     StartCoroutine(_cor);
   }
   public void OpenDisComfortPanel()
   {
-     DiscomfortText.text = GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION");
+     DiscomfortText.text = GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME");
 
     CurrentPreview = DisComfortPanel.GetComponent<RectTransform>();
 

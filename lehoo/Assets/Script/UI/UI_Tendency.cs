@@ -8,9 +8,9 @@ public class UI_Tendency : UI_default
 {
   [SerializeField] private Image TouchBlock = null;
   [SerializeField] private Image Illust = null;
+  [SerializeField] private TextMeshProUGUI Name = null;
     [SerializeField] private TextMeshProUGUI Description = null;
-  private Vector2 ClosePos =new Vector2(1500.0f,0.0f);
-  private Vector2 OpenPos =new Vector2(304.0f,0.0f);
+  [SerializeField] private Image Icon = null;
     private TendencyType CurrentTendencyType = TendencyType.None;
     private Tendency GetTendencyByType(TendencyType _type)
     {
@@ -23,7 +23,6 @@ public class UI_Tendency : UI_default
             default:return null;
         }
     }
-  [SerializeField] private CanvasGroup BackButton = null;
   public void OpenUI(int _index)
   {
     TendencyType _tendencytype = (TendencyType)_index;
@@ -34,33 +33,33 @@ public class UI_Tendency : UI_default
     DefaultGroup.alpha = 1.0f;
     DefaultGroup.interactable = true;
     DefaultGroup.blocksRaycasts = true;
-    BackButton.interactable = true;
-    BackButton.blocksRaycasts = true;
 
     IsOpen = true;
     TouchBlock.enabled = true;
     Tendency _tendency = GetTendencyByType(_tendencytype);
 
     string _tendencyname = _tendency.Name;
+    Sprite _icon = _tendency.CurrentIcon;
     string _description = _tendency.Description;
     string _effect = GameManager.Instance.MyGameData.GetTendencyEffectString_long(_tendencytype);
 
+    Name.text= _tendencyname;
+    Icon.sprite= _icon;
     Illust.sprite = _tendency.Illust;
-    Description.text = _description + "\n\n" + _effect;
+    Description.text = _description + "<br><br>" + _effect;
 
     if (CurrentTendencyType.Equals(TendencyType.None))
     {
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, ClosePos,OpenPos, UIManager.Instance.LargePanelMoveTime,true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime,true));
     }
     CurrentTendencyType = _tendencytype;
   }
   public override void CloseUI()
   {
+    TouchBlock.enabled = false;
     IsOpen = false;
-    BackButton.interactable = false;
-    BackButton.blocksRaycasts = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
-    StartCoroutine( UIManager.Instance.CloseUI(DefaultRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
+    StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime,false));
     UIManager.Instance.CurrentTopUI = null;
         CurrentTendencyType = TendencyType.None;
   }

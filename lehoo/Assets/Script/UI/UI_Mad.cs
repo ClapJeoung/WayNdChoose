@@ -6,26 +6,68 @@ using TMPro;
 
 public class UI_Mad : UI_default
 {
-  [SerializeField] private CanvasGroup PanelGroup = null;
-  [SerializeField] private TextMeshProUGUI Name = null;
+  [SerializeField] private float MoveTime = 2.5f;
+  [SerializeField] private Vector2 DownPos = new Vector2(0.0f, -920.0f);
+  [SerializeField] private CanvasGroup BlockGroup = null;
+  [SerializeField] private Image Illust = null;
   [SerializeField] private TextMeshProUGUI Description = null;
-  private Experience MadExp = null;
-    public void OpenUI(Experience exp)
+  [SerializeField] private Button YesButton = null;
+  [SerializeField] private TextMeshProUGUI YesButtonText = null;
+  [SerializeField] private Button NoButton = null;
+  [SerializeField] private TextMeshProUGUI NoButtonText = null;
+
+  private Experience CurrentExp = null;
+  public void OpenUI(Experience madexp)
   {
-    MadExp = exp;
-    Name.text = exp.Name;
-    Description.text = GameManager.Instance.GetTextData(exp.ID + "_GENERATEDESCRIPTION");
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, true,false));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup,1.0f,false,UIFadeMoveDir.Down, false));
+    CurrentExp = madexp;
+    DefaultGroup.interactable = true;
+    BlockGroup.blocksRaycasts = true;
+
+    Illust.sprite = madexp.Illust;
+    Description.text = GameManager.Instance.GetTextData(madexp.ID+ "_GENERATEDESCRIPTION") + "<br><br>" + GameManager.Instance.GetTextData("YOULOSEMAXIMUNSANITY");
+   
+    YesButtonText.text = (GameManager.Instance.GetTextData("ACCEPTMADNESS"));
+    NoButtonText.text = GameManager.Instance.GetTextData("REFUSEMADNESS");
+
+    StartCoroutine(changealpha(true));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, MoveTime / 2.0f, UIManager.Instance.UIPanelOpenCurve));
+
   }
   public override void CloseUI()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f,true, false));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(PanelGroup, 0.0f, true, UIFadeMoveDir.Down, false));
+    StartCoroutine(changealpha(false));
+    DefaultGroup.interactable = false;
+    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, DownPos, MoveTime / 2.0f, UIManager.Instance.UIPanelCLoseCurve));
   }
-  public void AddMad()
+  private IEnumerator changealpha(bool open)
   {
-    GameManager.Instance.MadExpDic.Clear();
-    GameManager.Instance.AddBadExp(MadExp);
+    float _time = 0.0f;
+    float _startalpha = open ? 0.0f : 1.0f;
+    float _endalpha = open ? 1.0f : 0.0f;
+    while(_time< MoveTime)
+    {
+      BlockGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, _time / MoveTime);
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    BlockGroup.alpha = _endalpha;
+  }
+
+  public void AccepMadness()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    UIManager.Instance.ExpRewardUI.OpenUI_Madness(CurrentExp);
+  }
+  public void RefuseMadness()
+  {
+    if (UIManager.Instance.IsWorking) return;
+
+    GameManager.Instance.MyGameData.HP -= ConstValues.MaddnesRefuseHPCost;
+    GameManager.Instance.MyGameData.CurrentSanity = ConstValues.MadnessRefuseSanityRestore;
+
+    UIManager.Instance.UpdateHPText();
+    UIManager.Instance.UpdateSanityText();
+
+    CloseUI();
   }
 }

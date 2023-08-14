@@ -262,7 +262,6 @@ public class UI_dialogue : UI_default
           if (_successpercent < 100 && _pluspercent > 0)
           {
             GameManager.Instance.MyGameData.PlaceEffects.Remove(PlaceType.Academy);
-            if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
           }
           //장소 효과의 도움을 받아 성공한 것이라면 효과 만료
         }
@@ -279,7 +278,6 @@ public class UI_dialogue : UI_default
           if (_successpercent < 100 && _pluspercent > 0)
           {
             GameManager.Instance.MyGameData.PlaceEffects.Remove(PlaceType.Academy);
-            if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
           }
           //장소 효과의 도움을 받아 성공한 것이라면 효과 만료
         }
@@ -342,6 +340,7 @@ public class UI_dialogue : UI_default
         _icon = GameManager.Instance.ImageHolder.UnknownExp;
         _name = GameManager.Instance.GetTextData("EXP_NAME");
         _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID].Name;
+
         break;
       case RewardTarget.Skill:
         _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_Skill);
@@ -386,6 +385,7 @@ public class UI_dialogue : UI_default
 
 
   private FailureData CurrentFailData = null;
+  public Button CurrentReturnButton = null;
   public void SetFail(FailureData _fail)
   {
     CurrentFailData = _fail;
@@ -412,6 +412,18 @@ public class UI_dialogue : UI_default
 
     if (_faiilure.Panelty_target == PenaltyTarget.EXP)
     {
+      MoveRectForButton(1);
+      if (GameManager.Instance.MyGameData.CurrentSettlement != null)
+      {
+        UIManager.Instance.SettleButton.Open(0, this);
+        CurrentReturnButton=UIManager.Instance.SettleButton.GetComponent<Button>();
+      }//정착지에서 이벤트를 끝낸 경우 정착지로 돌아가는 버튼 활성화
+      else
+      {
+        UIManager.Instance.MapButton.Open(0, this);
+        CurrentReturnButton = UIManager.Instance.MapButton.GetComponent<Button>();
+      }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
+      CurrentReturnButton.interactable = false;
     }
     else
     {
@@ -508,9 +520,18 @@ public class UI_dialogue : UI_default
     {
       if (CurrentSuccessData.Reward_Target == RewardTarget.Experience)
       {
+        if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
+        {
+          GameManager.Instance.MyGameData.CurrentSanity += ConstValues.GoodExpAsSanity;
+          UIManager.Instance.UpdateSanityText();
 
-
-        RewardExpUI.Setup_RewardExp(GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID]);
+          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
+          RemainReward = false;
+        }
+        else
+        {
+          RewardExpUI.OpenUI_RewardExp(GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID]);
+        }
         return;
       }
       else
@@ -540,18 +561,17 @@ public class UI_dialogue : UI_default
     }
     else if (CurrentFailData != null)
     {
-      RewardExpUI.Setup_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
+      if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
+      {
+        GameManager.Instance.MyGameData.CurrentSanity -= ConstValues.BadExpAsSanity;
+        UIManager.Instance.UpdateSanityText();
+
+        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
+        RemainReward = false;
+      }
+      else
+      RewardExpUI.OpenUI_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
     }
-  }
-  public void GetExp_Long()
-  {
-    GameManager.Instance.MyGameData.LongTermEXP = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID];
-    UIManager.Instance.UpdateExpLongTermIcon();
-  }
-  public void GetExp_Short(int index)
-  {
-    GameManager.Instance.MyGameData.ShortTermEXP[index] = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID];
-    UIManager.Instance.UpdateExpShortTermIcon();
   }
 
   public void SetPenalty(FailureData _fail)
@@ -578,9 +598,21 @@ public class UI_dialogue : UI_default
         }
         break;
       case PenaltyTarget.EXP:
-        RewardIcon.sprite = GameManager.Instance.ImageHolder.UnknownExp;
-        RewardName.text = GameManager.Instance.GetTextData("EXP_NAME");
-        RewardDescription.text = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID].Name;
+        Sprite _icon = GameManager.Instance.ImageHolder.UnknownExp;
+        string _name = "";
+        string _description = "";
+
+        if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
+        {
+          _name = "<s>" + GameManager.Instance.GetTextData("EXP_NAME") + "</s>";
+          _description = "<s>" + GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID].Name + "</s><br>" + string.Format(GameManager.Instance.GetTextData("NOEMPTYSLOT"), WNCText.GetSanityColor(ConstValues.BadExpAsSanity));
+        }
+        else
+        {
+          _name = GameManager.Instance.GetTextData("EXP_NAME");
+          _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_ID].Name;
+        }
+
         StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, false, false));
 
         break;

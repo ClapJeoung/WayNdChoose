@@ -12,51 +12,15 @@ public class UI_Expereince_info : UI_default
   [SerializeField] private Image ExpIllust = null;
   [SerializeField] private TextMeshProUGUI ExpEffect = null;
   [SerializeField] private TextMeshProUGUI ExpTurn = null;
+  [SerializeField] private Image MadnessIcon = null;
   [SerializeField] private CanvasGroup BackButton = null; 
-  private Vector2 ClosePos =new Vector2(1500.0f,0.0f);
-  private Vector2 OpenPos =new Vector2(309.0f,0.0f);
   public void OpenLongExpUI()
   {
     Experience _exp = GameManager.Instance.MyGameData.LongTermEXP;
-    //나중에 인수도 받아야함
     if (UIManager.Instance.IsWorking || _exp == null) return;
     if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
-    DefaultGroup.alpha = 1.0f;
-    DefaultGroup.interactable = true;
-    DefaultGroup.blocksRaycasts = true;
-    BackButton.interactable = true;
-    BackButton.blocksRaycasts = true;
 
-    TouchBlock.enabled = true;
-    IsOpen = true;
-
-    string _name = _exp.Name;
-    Sprite _illust = _exp.Illust;
-    string _description = _exp.Description;
-    string _effect = _exp.EffectString;
-    if (CurrentExp == null)
-    {
-      CurrentExp= _exp;
-      ExpName.text = _name;
-      ExpIllust.sprite = _illust;
-      ExpEffect.text = _description + "\n\n" + _effect;
-      ExpTurn.text = _exp.Duration.ToString();
-
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, ClosePos, OpenPos, UIManager.Instance.LargePanelMoveTime, true));
-    }//최초는 아무 경험이나 클릭하면 열기
-    else
-    {
-      if (CurrentExp == _exp) CloseUI();    //같은 경험 클릭하면 닫기
-      else
-      {
-        CurrentExp = _exp;
-        ExpName.text = _name;
-        ExpIllust.sprite = _illust;
-        ExpEffect.text = _description + "\n\n" + _effect;
-        ExpTurn.text = _exp.Duration.ToString();
-
-      }//다른 경험 클릭하면 해당 경험 정보로 대체
-    }
+    Setup(_exp);
   }
   public void OpenShortExpUI(int _index)
   {
@@ -64,6 +28,11 @@ public class UI_Expereince_info : UI_default
     //나중에 인수도 받아야함
     if (UIManager.Instance.IsWorking || _exp == null) return;
     if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
+    
+    Setup(_exp);
+  }
+  public void Setup(Experience exp)
+  {
     DefaultGroup.alpha = 1.0f;
     DefaultGroup.interactable = true;
     DefaultGroup.blocksRaycasts = true;
@@ -73,33 +42,47 @@ public class UI_Expereince_info : UI_default
     TouchBlock.enabled = true;
     IsOpen = true;
 
-    string _name = _exp.Name;
-    Sprite _illust = _exp.Illust;
-    string _description = _exp.Description;
-    string _effect = _exp.EffectString;
+    string _name = exp.Name;
+    Sprite _illust = exp.Illust;
+    string _description = exp.Description;
+    string _effect = exp.EffectString;
     if (CurrentExp == null)
     {
-      CurrentExp = _exp;
+      CurrentExp = exp;
       ExpName.text = _name;
       ExpIllust.sprite = _illust;
-      ExpEffect.text = _description + "\n\n" + _effect;
-      ExpTurn.text = _exp.Duration.ToString();
+      ExpEffect.text = _description + "<br><br>" + _effect;
 
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, ClosePos, OpenPos, UIManager.Instance.LargePanelMoveTime, true));
+      if (exp.ExpType == ExpTypeEnum.Mad)
+      {
+        if (MadnessIcon.enabled == false)
+        {
+          MadnessIcon.enabled = true;
+          ExpTurn.text = "";
+        }
+      }
+      else
+      {
+        if (MadnessIcon.enabled == true) MadnessIcon.enabled = false;
+        ExpTurn.text = exp.Duration.ToString();
+      }
+
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime, true));
     }//최초는 아무 경험이나 클릭하면 열기
     else
     {
-      if (CurrentExp == _exp) CloseUI();    //같은 경험 클릭하면 닫기
+      if (CurrentExp == exp) CloseUI();    //같은 경험 클릭하면 닫기
       else
       {
-        CurrentExp = _exp;
+        CurrentExp = exp;
         ExpName.text = _name;
         ExpIllust.sprite = _illust;
-        ExpEffect.text = _description + "\n\n" + _effect;
-        ExpTurn.text = _exp.Duration.ToString();
+        ExpEffect.text = _description + "<br><br>" + _effect;
+        ExpTurn.text = exp.Duration.ToString();
 
       }//다른 경험 클릭하면 해당 경험 정보로 대체
     }
+
   }
   public override void CloseUI()
   {
@@ -111,6 +94,6 @@ public class UI_Expereince_info : UI_default
 
     TouchBlock.enabled = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
-    StartCoroutine( UIManager.Instance.CloseUI(DefaultRect, OpenPos,ClosePos, UIManager.Instance.LargePanelMoveTime,false));
+    StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime,false));
   }
 }

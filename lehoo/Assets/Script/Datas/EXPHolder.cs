@@ -21,7 +21,7 @@ public class Experience
   {
     get { return _duration; }
     set { _duration = value;
-      if (_duration.Equals(0)) GameManager.Instance.MyGameData.DeleteExp(this);
+      if (_duration.Equals(0)&&ExpType!=ExpTypeEnum.Mad) GameManager.Instance.MyGameData.DeleteExp(this);
     }
   }
   private Sprite illust = null;

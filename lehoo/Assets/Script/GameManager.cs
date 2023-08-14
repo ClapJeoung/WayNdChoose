@@ -380,57 +380,31 @@ public class GameManager : MonoBehaviour
       UIManager.Instance.UpdateTurnIcon();
     }
   }
-  public void AddBadExp(Experience badexp)
+  public void AddExp_Long(Experience exp)
   {
-    int _targetslot = 0;
-    List<int> _emptylist = new List<int>();
-    for (int i = 0; i < MyGameData.ShortTermEXP.Length; i++)
-      if (MyGameData.ShortTermEXP[i] == null) _emptylist.Add(i);
-    //단기 슬롯에서 빈 칸 가져오기
-    if (_emptylist.Count > 0)
+    if (exp.ExpType == ExpTypeEnum.Mad)
     {
-      _targetslot=Random.Range(0,_emptylist.Count);
-      MyGameData.ShortTermEXP[_targetslot] = badexp;
-      UIManager.Instance.UpdateExpShortTermIcon();
-      return;
-    } //단기 슬롯 중 빈 칸이 있다면 무작위로 악경험 삽입하고 종료
-
-    if (MyGameData.LongTermEXP==null)
-    {
-      MyGameData.LongTermEXP = badexp;
-      UIManager.Instance.UpdateExpLongTermIcon();
-      return;
-    } //단기 슬롯에 빈 칸이 없다면 장기 슬롯 중 무작위로 악경험 삽입하고 종료
-
-    if (Random.Range(0, 100) < 75)
-    {
-      _targetslot = Random.Range(0, 2);
-      MyGameData.ShortTermEXP[_targetslot] = badexp;
-      UIManager.Instance.UpdateExpShortTermIcon();
-    } //장기,단기 둘 다 꽉 차있다면 75% 확률로 단기 경험 하나 대체
-    else
-    {
-      MyGameData.LongTermEXP = badexp;
-      UIManager.Instance.UpdateExpLongTermIcon();
-    } //15% 확률로 장기 경험 하나 대체
-  }
-  public void AddShortExp(Experience _exp, int _index)
-  {
-
-    if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
-    _exp.Duration = ConstValues.ShortTermStartTurn;
-    MyGameData.ShortTermEXP[_index] = _exp;
-    UIManager.Instance.UpdateExpShortTermIcon();
-  }
-  public void AddLongExp(Experience _exp)
-  {
-
-    if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MyGameData.MadnessCount++;
-    _exp.Duration = ConstValues.LongTermStartTurn;
-    MyGameData.LongTermEXP = _exp;
-    MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;
-    UIManager.Instance.UpdateSanityText();
+      MyGameData.MadnessCount++;
+      MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
+      MyGameData.CurrentSanity = MyGameData.MaxSanity;
+      UIManager.Instance.UpdateSanityText();
+      UIManager.Instance.MyMadPanel.CloseUI();
+    }
+    MyGameData.LongTermEXP = exp;
     UIManager.Instance.UpdateExpLongTermIcon();
+  }
+  public void AddExp_Short(Experience exp,int index)
+  {
+    if (exp.ExpType == ExpTypeEnum.Mad)
+    {
+      MyGameData.MadnessCount++;
+      MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
+      MyGameData.CurrentSanity = MyGameData.MaxSanity;
+      UIManager.Instance.UpdateSanityText();
+      UIManager.Instance.MyMadPanel.CloseUI();
+    }
+    MyGameData.ShortTermEXP[index] = exp;
+    UIManager.Instance.UpdateExpShortTermIcon();
   }
   public void ShiftShortExp(Experience _exp, int _index)
   {

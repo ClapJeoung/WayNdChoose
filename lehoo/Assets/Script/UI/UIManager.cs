@@ -27,13 +27,12 @@ public class UIManager : MonoBehaviour
   public AnimationCurve UIPanelCLoseCurve = null;
   public AnimationCurve CharacterMoveCurve = null;
   [Space(10)]
-  [SerializeField] private Transform MyCanvas = null;
-  [SerializeField] private UI_dialogue MyDialogue = null;
-  [SerializeField] private UI_Reward MyUIReward = null;
-  [SerializeField] private UI_Settlement MySettleUI = null;
+  public Transform MyCanvas = null;
+  public UI_dialogue MyDialogue = null;
+  public UI_RewardExp ExpRewardUI = null;
+  public UI_Settlement MySettleUI = null;
   public UI_QuestWolf QuestUI_Wolf = null;
-  [SerializeField] private UI_Mad MyMadPanel = null;
-  [SerializeField] private UI_PlaceEffect MyPlaceEffect = null;
+  public UI_Mad MyMadPanel = null;
   public UI_FollowEnding MyFollowEnding = null;
   [SerializeField] private RectTransform HpTextRect = null;
   [SerializeField] private RectTransform SanityTextRect = null;
@@ -344,26 +343,41 @@ public class UIManager : MonoBehaviour
     }
     rect.anchoredPosition = _targetpos;
   }
-  [SerializeField] private Image LongTermIcon = null;
+  [SerializeField] private Image LongTermCover = null;
+  [SerializeField] private Image LongTermMadness = null;
   [SerializeField] private TextMeshProUGUI LongTermTurn = null;
   public void UpdateExpLongTermIcon()
   {
     if (GameManager.Instance.MyGameData.LongTermEXP == null)
     {
-      LongTermIcon.enabled = true;
+      if(LongTermCover.enabled==false) LongTermCover.enabled = true;
       LongTermTurn.text = "";
     }
     else
     {
-      LongTermIcon.enabled = false;
-      LongTermTurn.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
+      if (LongTermCover.enabled == true) LongTermCover.enabled = false;
+
+      if (GameManager.Instance.MyGameData.LongTermEXP.ExpType == ExpTypeEnum.Mad)
+      {
+        if (LongTermMadness.enabled == false)
+        {
+          LongTermMadness.enabled = true;
+          LongTermTurn.text = "";
+        }
+      }
+      else
+      {
+        if (LongTermMadness.enabled == true) LongTermMadness.enabled = false;
+        LongTermTurn.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
+      }
     }
   }
-  [SerializeField] private Image[] ShortTermIcon = new Image[2];
+  [SerializeField] private Image[] ShortTermCover = new Image[2];
+  [SerializeField] private Image[] ShortTermMadness=new Image[2];
   [SerializeField] private TextMeshProUGUI[] ShortTermTurn=new TextMeshProUGUI[2];
   public void UpdateExpShortTermIcon()
   {
-    for (int i = 0; i < ShortTermIcon.Length; i++)
+    for (int i = 0; i < ShortTermCover.Length; i++)
     {
       if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null)
       {
@@ -371,8 +385,21 @@ public class UIManager : MonoBehaviour
       }
       else
       {
-        ShortTermIcon[i].enabled = false;
-        ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
+        if(ShortTermCover[i].enabled==true) ShortTermCover[i].enabled = false;
+
+        if (GameManager.Instance.MyGameData.ShortTermEXP[i].ExpType == ExpTypeEnum.Mad)
+        {
+          if (ShortTermMadness[i].enabled == false)
+          {
+            ShortTermMadness[i].enabled = true;
+            ShortTermTurn[i].text = "";
+          }
+        }
+        else
+        {
+          if (ShortTermMadness[i].enabled == true) ShortTermMadness[i].enabled = false;
+          ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
+        }
       }
     }
   }
@@ -806,7 +833,6 @@ public class UIManager : MonoBehaviour
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MySettleUI.CloseUI();
   public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
-  public void UpdatePlaceEffect() => MyPlaceEffect.UpdatePlace();
   public void OpenEnding(FollowEndingData endingdata)
   {
     MyDialogue.CloseUI();

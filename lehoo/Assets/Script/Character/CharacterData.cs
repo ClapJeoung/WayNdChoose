@@ -7,6 +7,12 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int GoodExpAsSanity = 15;
+  public const int BadExpAsSanity = 20;
+  public const int MadnessDefaultSanityLose = 15;
+  public const int MaddnesRefuseHPCost = 30;
+  public const int MadnessRefuseSanityRestore = 40;
+
   public const int RestMovePoint_Town = 1, RestMovePoint_City = 2, RestMovePoint_Castle = 3;
   public const int RestDiscomfort_Town=1, RestDiscomfort_City = 2, RestDiscomfort_Castle = 3;
   public const float LackOfMovePointValue = 1.5f;
@@ -88,7 +94,7 @@ public static class ConstValues
   public const int RestCost = 5;
   public const float RestDiscomfortExpansion = 1.5f;
 
-    public const int SanityByMadness_0 = 100, SanityByMadness_1 = 80, SanityByMadness_2 = 60, SanityByMadness_3 = 40;
+  public const int SanityLoseByMadnessExp = 20;
 
     public const int PlaceEffectMaxTurn = 3;
     public const int PlaceEffect_residence = 1;
@@ -150,7 +156,6 @@ public class GameData    //게임 진행도 데이터
                 }
                 foreach (var _place in _deleteplace) PlaceEffects.Remove(_place);
                 foreach (var _place in _downplace) PlaceEffects[_place]--;
-        if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
       }
     }
   }
@@ -287,31 +292,40 @@ public class GameData    //게임 진행도 데이터
         set {
             currentsanity = value;
             if (currentsanity > MaxSanity) currentsanity = MaxSanity;
-      if (currentsanity < 0)
+      if (currentsanity <= 0)
       {
         List<string> _madnesskeys=GameManager.Instance.MadExpDic.Keys.ToList();
-        Experience _madness = GameManager.Instance.MadExpDic[_madnesskeys[UnityEngine.Random.Range(0, _madnesskeys.Count)]];
+        Experience _madness = null;
+        while (_madness == null)
+        {
+          _madness= GameManager.Instance.MadExpDic[_madnesskeys[UnityEngine.Random.Range(0, _madnesskeys.Count)]];
+          if((LongTermEXP!=null&&LongTermEXP==_madness)||
+            (ShortTermEXP[0]!=null&&ShortTermEXP[0]==_madness)||
+            (ShortTermEXP[1] != null && ShortTermEXP[1] == _madness))
+          {
+            _madness = null;
+            continue;
+          }
+        }
+        currentsanity = 0;
+        MaxSanity -= ConstValues.MadnessDefaultSanityLose;
+
         UIManager.Instance.GetMad(_madness);
-        currentsanity = MaxSanity;
         //광기 경험 채우는거로 대체되야 함
       }
         }
     }
-    public int MaxSanity
+  public int MaxSanity = 100;
+  private int madnesscount = 0;
+  public int MadnessCount
+  {
+    get { return madnesscount; }
+    set 
     {
-        get
-        {
-            switch (MadnessCount)
-            {
-                case 0:return ConstValues.SanityByMadness_0;
-                case 1:return ConstValues.SanityByMadness_1;
-                case 2:return ConstValues.SanityByMadness_2;
-                case 3:return ConstValues.SanityByMadness_3;
-                default:return 0;
-            }
-        }
-    }//최대 정신력(현재 광기 특성 개수에 따라)
-  public int MadnessCount = 0;
+      
+      madnesscount = value;
+    }
+  }
   public Skill Skill_Conversation=new Skill(SkillType.Conversation), 
     Skill_Force = new Skill(SkillType.Force), 
     Skill_Wild = new Skill(SkillType.Wild), 
@@ -509,6 +523,19 @@ public class GameData    //게임 진행도 데이터
   //장기 기억 슬롯 0,1
   public Experience[] ShortTermEXP = new Experience[2];
   //단기 기억 슬롯 0,1,2,3
+  public bool AvailableExpSlot
+  {
+    get
+    {
+      if (LongTermEXP != null && LongTermEXP.ExpType != ExpTypeEnum.Normal) return false;
+
+      if (ShortTermEXP[0] != null && ShortTermEXP[0].ExpType != ExpTypeEnum.Normal) return false;
+
+      if (ShortTermEXP[1] != null && ShortTermEXP[1].ExpType != ExpTypeEnum.Normal) return false;
+
+      return true;
+    }
+  }
   public void MixExp()
   {
     bool _longenable = LongTermEXP != null;
@@ -650,7 +677,6 @@ public class GameData    //게임 진행도 데이터
         else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
         break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
     }
-    if (UIManager.Instance != null) UIManager.Instance.UpdatePlaceEffect();
   }
 
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트

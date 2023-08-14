@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
-Place,Environment}
+Place,Environment,MadnessAccept,MadnessRefuse}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -79,8 +79,9 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,true);
         else
         {
-          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP,true);
-          else UIManager.Instance.PreviewManager.OpenExpSelectionBadPreview();
+          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP, true);
+          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"));
+          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"));
         }
         break;
       case PreviewPanelType.RewardExpSelect_short:
@@ -89,7 +90,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         else
         {
           if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP,false);
-          else UIManager.Instance.PreviewManager.OpenExpSelectionBadPreview();
+          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"));
+          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"));
         }
         break;
       case PreviewPanelType.Discomfort:
@@ -97,6 +99,16 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.Environment:
         UIManager.Instance.PreviewManager.OpenEnvirPanel(MyEnvironmentType);
+        break;
+      case PreviewPanelType.MadnessAccept:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview
+          ( string.Format(GameManager.Instance.GetTextData("ACCEPTMADNESS_DESCRIPTOIN"), WNCText.GetSanityColor(ConstValues.SanityLoseByMadnessExp)));
+        break;
+      case PreviewPanelType.MadnessRefuse:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
+          string.Format(GameManager.Instance.GetTextData("REFUSEMADNESS_DESCRIPTION"),
+          WNCText.GetHPColor(ConstValues.MaddnesRefuseHPCost),
+          WNCText.GetSanityColor(ConstValues.MadnessRefuseSanityRestore)));
         break;
     }
     }

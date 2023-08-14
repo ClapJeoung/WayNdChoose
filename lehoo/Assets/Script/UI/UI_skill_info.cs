@@ -14,8 +14,6 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
   [SerializeField] private CanvasGroup BackButton = null;
 
   private int CurrentThemeIndex = -1;
-  private Vector2 ClosePos =new Vector2(1608.0f, -470.0f);
-  private Vector2 OpenPos =new Vector2( 342.0f,-470.0f);
   public void OpenUI(int _index)
   {
     if (UIManager.Instance.IsWorking) return;
@@ -33,15 +31,15 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
     Sprite _illust = GameManager.Instance.ImageHolder.GetSkillIllust(_skilltype);
     string _name = GameManager.Instance.GetTextData(_skilltype, 0), _desscription = GameManager.Instance.GetTextData(_skilltype, 3);
 
-    SkillName.text = _name;
-    SkillDescription.text = _desscription;
     SkillIcon.sprite = _icon;
-    SkillIllust.sprite= _illust;
+    SkillName.text = _name;
     SkillLevel.text = GameManager.Instance.MyGameData.GetSkill(_skilltype).Level.ToString();
+    SkillIllust.sprite= _illust;
+    SkillDescription.text = _desscription;
 
     if (CurrentThemeIndex.Equals(-1))
     {
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect,ClosePos,OpenPos,UIManager.Instance.LargePanelMoveTime,true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime,true));
     }//´ÝÇô ÀÖ´ø »óÅÂ¿¡¼­ Ã³À½À¸·Î ¿­¾úÀ»¶§¸é UI ¿­±â ÀÌÆåÆ®
     else
     {
@@ -56,7 +54,7 @@ public class UI_skill_info : UI_default//½ºÅ©¸³Æ® ÀÌ¸§Àº SkillÀÎµ¥ Theme Ç¥½ÃÇÏ´
     BackButton.blocksRaycasts = false;
     TouchBlock.enabled = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
-    StartCoroutine(UIManager.Instance.CloseUI(DefaultRect,OpenPos,ClosePos,UIManager.Instance.LargePanelMoveTime, false));
+    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime, false));
     UIManager.Instance.CurrentTopUI = null;
     CurrentThemeIndex = -1;
   }
