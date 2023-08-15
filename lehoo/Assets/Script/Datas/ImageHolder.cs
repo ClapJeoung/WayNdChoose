@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class ImageHolder : ScriptableObject
 {
+  public List<Sprite> GameoverIllusts = new List<Sprite>();
+  public Sprite GetGameoverIllust()
+  {
+    return DefaultIllust;
+  }
   public Sprite MovePointIcon_Enable = null;
   public Sprite MovePointIcon_Lack = null;
   public List<Sprite> TownIllust=new List<Sprite>();                 //마을 일러스트

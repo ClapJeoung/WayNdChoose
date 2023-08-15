@@ -63,4 +63,13 @@ public class UI_Tendency : UI_default
     UIManager.Instance.CurrentTopUI = null;
         CurrentTendencyType = TendencyType.None;
   }
+  public override void CloseForGameover()
+  {
+    TouchBlock.enabled = false;
+    IsOpen = false;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
+    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime, false));
+    UIManager.Instance.CurrentTopUI = null;
+    CurrentTendencyType = TendencyType.None;
+  }
 }

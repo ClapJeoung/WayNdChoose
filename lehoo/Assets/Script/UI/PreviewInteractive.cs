@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
-Place,Environment,MadnessAccept,MadnessRefuse}
+Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -110,8 +110,20 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           WNCText.GetHPColor(ConstValues.MaddnesRefuseHPCost),
           WNCText.GetSanityColor(ConstValues.MadnessRefuseSanityRestore)));
         break;
+      case PreviewPanelType.MoveCostSanity:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), UIManager.Instance.MyMap.SanityCost));
+        break;
+      case PreviewPanelType.MoveCostGold:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), UIManager.Instance.MyMap.GoldCost));
+        break;
+      case PreviewPanelType.RestSanity:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_SANITY"));
+        break;
+      case PreviewPanelType.RestGold:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"));
+        break;
     }
-    }
+  }
     public void OnPointerExit(PointerEventData eventData) 
     {
     UIManager.Instance.PreviewManager.ClosePreview();

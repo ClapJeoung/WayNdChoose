@@ -89,7 +89,11 @@ public class UI_dialogue : UI_default
     if (_selection.Equals(Selection_Material)) return Selection_Mental;
     return null;
   }
-  public void OpenUI() => UIManager.Instance.AddUIQueue(setnewdialogue());
+  public void OpenUI()
+  {
+    IsOpen = true;
+    UIManager.Instance.AddUIQueue(setnewdialogue());
+  }
 
   private IEnumerator setnewdialogue()
   {
@@ -103,16 +107,7 @@ public class UI_dialogue : UI_default
     Sprite _illust = CurrentEvent.Illust;
     string _name = CurrentEvent.Name;
 
-    if (Selection_None.gameObject.activeInHierarchy == true) Selection_None.gameObject.SetActive(false);
-    if (Selection_Rational.gameObject.activeInHierarchy == true) Selection_Rational.gameObject.SetActive(false);
-    if (Selection_Physical.gameObject.activeInHierarchy == true) Selection_Physical.gameObject.SetActive(false);
-    if (Selection_Mental.gameObject.activeInHierarchy == true) Selection_Mental.gameObject.SetActive(false);
-    if (Selection_Material.gameObject.activeInHierarchy == true) Selection_Material.gameObject.SetActive(false);
-    Selection_None.GetComponent<RectTransform>().anchoredPosition = Selection_None.OriginPos;
-    Selection_Rational.GetComponent<RectTransform>().anchoredPosition = Selection_Rational.OriginPos;
-    Selection_Physical.GetComponent<RectTransform>().anchoredPosition = Selection_Physical.OriginPos;
-    Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
-    Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
+    ResetSelectionPos();
     //모든 선택지 위치 초기화 및 숨기기
 
     IllustImageGroup.alpha = 0.0f;
@@ -147,27 +142,49 @@ public class UI_dialogue : UI_default
       case SelectionType.Single:
       case SelectionType.Tendency:
       case SelectionType.Experience:
-        Selection_None.gameObject.SetActive(true);
         Selection_None.Active(CurrentEvent.SelectionDatas[0]);
         break;
       case SelectionType.Body:
 
-        Selection_Rational.gameObject.SetActive(true);
         Selection_Rational.Active(CurrentEvent.SelectionDatas[0]);
         yield return new WaitForSeconds(0.3f);
-        Selection_Physical.gameObject.SetActive(true);
         Selection_Physical.Active(CurrentEvent.SelectionDatas[1]);
         break;
       case SelectionType.Head:
 
-        Selection_Mental.gameObject.SetActive(true);
         Selection_Mental.Active(CurrentEvent.SelectionDatas[0]);
         yield return new WaitForSeconds(0.3f);
-        Selection_Material.gameObject.SetActive(true);
         Selection_Material.Active(CurrentEvent.SelectionDatas[1]);
         break;
     }
     //선택지 오브젝트들 세팅 + 이동
+  }
+  private void ResetSelectionPos()
+  {
+    Selection_None.MyGroup.alpha = 0.0f;
+    Selection_None.MyGroup.interactable = false;
+    Selection_None.MyGroup.blocksRaycasts = false;
+    Selection_None.GetComponent<RectTransform>().anchoredPosition = Selection_None.OriginPos;
+
+    Selection_Rational.MyGroup.alpha = 0.0f;
+    Selection_Rational.MyGroup.interactable = false;
+    Selection_Rational.MyGroup.blocksRaycasts = false;
+    Selection_Rational.GetComponent<RectTransform>().anchoredPosition = Selection_Rational.OriginPos;
+
+    Selection_Physical.MyGroup.alpha = 0.0f;
+    Selection_Physical.MyGroup.interactable = false;
+    Selection_Physical.MyGroup.blocksRaycasts = false;
+    Selection_Physical.GetComponent<RectTransform>().anchoredPosition = Selection_Physical.OriginPos;
+
+    Selection_Mental.MyGroup.alpha = 0.0f;
+    Selection_Mental.MyGroup.interactable = false;
+    Selection_Mental.MyGroup.blocksRaycasts = false;
+    Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
+
+    Selection_Material.MyGroup.alpha = 0.0f;
+    Selection_Material.MyGroup.interactable = false;
+    Selection_Material.MyGroup.blocksRaycasts = false;
+    Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
   }
   private UI_Selection CurrentUISelection = null;
   /// <summary>
@@ -443,7 +460,28 @@ public class UI_dialogue : UI_default
       UIManager.Instance.MapButton.Open(0, this);
     }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
   }
-  public override void CloseUI() => UIManager.Instance.AddUIQueue(closeui());
+  public override void CloseForGameover()
+  {
+    StopAllCoroutines();
+
+    IsOpen = false;
+    CurrentSuccessData = null;
+    CurrentFailData = null;
+    EndingGroup.alpha = 0.0f;
+    EndingGroup.interactable = false;
+    EndingGroup.blocksRaycasts = false;
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f, false));
+
+    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionRect.anchoredPosition, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+
+    StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustRect.anchoredPosition, IllustClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+  }
+  public override void CloseUI()
+  {
+    IsOpen = false;
+    UIManager.Instance.AddUIQueue(closeui());
+  }
   private IEnumerator closeui()
   {
     CurrentSuccessData = null;
@@ -516,6 +554,7 @@ public class UI_dialogue : UI_default
 
   public void GetReward()
   {
+    if (UIManager.Instance.IsWorking) return;
     if (CurrentSuccessData != null)
     {
       if (CurrentSuccessData.Reward_Target == RewardTarget.Experience)

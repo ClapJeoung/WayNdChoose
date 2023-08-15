@@ -42,7 +42,6 @@ public class UI_Selection : MonoBehaviour
       yield return null;
     }
     MyGroup.alpha = _endalpha;
-    gameObject.SetActive(false);
     MyRect.anchoredPosition = OriginPos;
   }
   public void Active(SelectionData _data)

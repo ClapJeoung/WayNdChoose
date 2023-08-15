@@ -10,6 +10,7 @@ public enum UIFadeMoveDir { Left, Right, Up, Down }
 //퇴장 시 왼쪽, 오른쪽, 위쪽, 아래쪽으로 이동
 public class UIManager : MonoBehaviour
 {
+   public List<UI_default> AllUIDefault=new List<UI_default>();
     private static UIManager instance;
   public static UIManager Instance
   {
@@ -66,6 +67,15 @@ public class UIManager : MonoBehaviour
   private float EnvirBackgroundIdleAlpha = 0.7f;
   public MapButton MapButton = null;
   public SettleButton SettleButton = null;
+  public void GameOver(GameOverTypeEnum gameovertype)
+  {
+    StopAllCoroutines();
+    for(int i = 0; i < AllUIDefault.Count; i++)
+    {
+      if (AllUIDefault[i].IsOpen) AllUIDefault[i].CloseForGameover();
+    }
+    StartCoroutine(closegamescene());
+  }
   public void UpdateBackground(EnvironmentType envir)
   {
     Sprite _newbackground = GameManager.Instance.ImageHolder.GetEnvirBackground(envir);
@@ -872,6 +882,22 @@ public class UIManager : MonoBehaviour
       yield return null;
     }
     rect.anchoredPosition = endpos;
+  }
+  public IEnumerator closegamescene()
+  {
+    var _titlewait = new WaitForSeconds(TitleWaitTime);
+    var _objwait = new WaitForSeconds(ObjWaitTime);
+
+    for (int i = TitlePanels.Count-1; i >3; i++)
+    {
+      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+      yield return _objwait;
+    }
+    for (int i = 3; i >-1; i++)
+    {
+      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
+      yield return _titlewait;
+    }
   }
   #endregion
 

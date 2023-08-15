@@ -16,16 +16,13 @@ public class TileButtonScript : MonoBehaviour
   public Image TopEnvirImage = null;
   public void Clicked()
   {
+    if (UIManager.Instance.IsWorking) return;
     if (TileData.Coordinate == GameManager.Instance.MyGameData.Coordinate) return;
 
+    MapUI.SelectTile(TileData, TileData.Rect.position);
     if (transform.parent == OriginHolder)
     {
-      MapUI.SelectTile(TileData,TileData.Rect.position);
       SelectTile();
-    }
-    else
-    {
-      MapUI.MoveMap();
     }
   }
 

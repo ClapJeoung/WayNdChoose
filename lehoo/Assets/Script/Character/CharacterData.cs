@@ -16,8 +16,8 @@ public static class ConstValues
   public const int RestMovePoint_Town = 1, RestMovePoint_City = 2, RestMovePoint_Castle = 3;
   public const int RestDiscomfort_Town=1, RestDiscomfort_City = 2, RestDiscomfort_Castle = 3;
   public const float LackOfMovePointValue = 1.5f;
-  public const int MoveCost_1_min = 8, MoveCost_1_max = 15, MoveCost_2_min = 10, MoveCost_2_max = 20;
-
+  public const int MoveCost_Sanity_1_min = 8, MoveCost_Sanity_1_max = 15, MoveCost_Sanity_2_min = 10, MoveCost_Sanity_2_max = 20;
+  public const int MoveCost_Gold_1_min = 5, MoveCost_Gold_1_max = 12, MoveCost_Gold_2_min = 8, MoveCost_Gold_2_max = 15;
   public const int ActivePlaceCount_Town = 1, ActivePlaceCount_City = 2, ActivePlaceCount_Castle = 3;
 
     public const int EventPer_Settle_Follow_Envir_Place = 35,
@@ -91,7 +91,9 @@ public static class ConstValues
   public const int LongTermStartTurn =  12;
   public const int Tendency0to1 = 2, Tendency1to2 = 2, Tendency2to3 = 3;
   public const int TendencyRegress = 2;
-  public const int RestCost = 5;
+
+  public const int RestCost_Sanity = 5;
+  public const int RestCost_Gold = 10;
   public const float RestDiscomfortExpansion = 1.5f;
 
   public const int SanityLoseByMadnessExp = 20;
@@ -185,9 +187,11 @@ public class GameData    //게임 진행도 데이터
     public int RewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max); } }
     public int SubRewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardSanity_min, ConstValues.SubRewardSanity_max); } }
     public int SubRewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardGold_min, ConstValues.SubRewardGold_max); } }
-    public int SettleRestCost
-    { get { return (int)(ConstValues.RestCost * Mathf.Pow(ConstValues.RestDiscomfortExpansion, CurrentSettlement.Discomfort)); } }
-    public int PayHPValue_modified
+    public int SettleRestCost_Sanity
+    { get { return (int)(ConstValues.RestCost_Sanity * Mathf.Pow(ConstValues.RestDiscomfortExpansion, CurrentSettlement.Discomfort)); } }
+  public int SettleRestCost_Gold
+  { get { return (int)(ConstValues.RestCost_Gold * Mathf.Pow(ConstValues.RestDiscomfortExpansion, CurrentSettlement.Discomfort)*GetGoldPayModify(true)); } }
+  public int PayHPValue_modified
     { get { return (int)(PayHPValue_origin * GetHPLossModify(true)); } }
     public int PaySanityValue_modified
     { get { return (int)(PaySanityValue_origin * GetSanityLossModify(true)); } }
@@ -215,10 +219,10 @@ public class GameData    //게임 진행도 데이터
     switch (length)
     {
       case 1:
-        _value =(int) Mathf.Lerp(ConstValues.MoveCost_1_min, ConstValues.MoveCost_1_max, Year / ConstValues.MaxYear);
+        _value =(int) Mathf.Lerp(ConstValues.MoveCost_Sanity_1_min, ConstValues.MoveCost_Sanity_1_max, Year / ConstValues.MaxYear);
         break;
       case 2:
-        _value = (int)Mathf.Lerp(ConstValues.MoveCost_2_min, ConstValues.MoveCost_2_max, Year / ConstValues.MaxYear);
+        _value = (int)Mathf.Lerp(ConstValues.MoveCost_Sanity_2_min, ConstValues.MoveCost_Sanity_2_max, Year / ConstValues.MaxYear);
         break;
       default:
         Debug.Log($"{length}  어케 이 거리가 나옴???");
@@ -226,7 +230,26 @@ public class GameData    //게임 진행도 데이터
     }
     if (MovePoint == 0) _value =(int)(_value * ConstValues.LackOfMovePointValue);
 
-    return _value;
+    return (int)(_value*GetSanityLossModify(true));
+  }
+  public int GetMoveGoldCost(int length)
+  {
+    int _value = 0;
+    switch (length)
+    {
+      case 1:
+        _value = (int)Mathf.Lerp(ConstValues.MoveCost_Gold_1_min, ConstValues.MoveCost_Gold_1_max, Year / ConstValues.MaxYear);
+        break;
+      case 2:
+        _value = (int)Mathf.Lerp(ConstValues.MoveCost_Gold_2_min, ConstValues.MoveCost_Gold_2_max, Year / ConstValues.MaxYear);
+        break;
+      default:
+        Debug.Log($"{length}  어케 이 거리가 나옴???");
+        return 0;
+    }
+    if (MovePoint == 0) _value = (int)(_value * ConstValues.LackOfMovePointValue);
+
+    return (int)(_value*GetGoldPayModify(true));
   }
   #endregion
 
@@ -276,7 +299,7 @@ public class GameData    //게임 진행도 데이터
             //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
             hp = value;
             if (hp > 100) hp = 100;
-            if (hp < 0) { Debug.Log("지벳"); }
+            if (hp < 0) { hp = 0;GameManager.Instance.GameOver(GameOverTypeEnum.HP); }
         }
     }
     private int gold = 0;
@@ -286,46 +309,44 @@ public class GameData    //게임 진행도 데이터
         set { gold = value; }
     }
     private int currentsanity = 0;
-    public int CurrentSanity
+  public int CurrentSanity
+  {
+    get { return currentsanity; }
+    set
     {
-        get { return currentsanity; }
-        set {
-            currentsanity = value;
-            if (currentsanity > MaxSanity) currentsanity = MaxSanity;
+      currentsanity = value;
+      if (currentsanity > MaxSanity) currentsanity = MaxSanity;
+
       if (currentsanity <= 0)
       {
-        List<string> _madnesskeys=GameManager.Instance.MadExpDic.Keys.ToList();
-        Experience _madness = null;
-        while (_madness == null)
+        if (MaxSanity > ConstValues.MadnessDefaultSanityLose)
         {
-          _madness= GameManager.Instance.MadExpDic[_madnesskeys[UnityEngine.Random.Range(0, _madnesskeys.Count)]];
-          if((LongTermEXP!=null&&LongTermEXP==_madness)||
-            (ShortTermEXP[0]!=null&&ShortTermEXP[0]==_madness)||
-            (ShortTermEXP[1] != null && ShortTermEXP[1] == _madness))
+          List<string> _madnesskeys = GameManager.Instance.MadExpDic.Keys.ToList();
+          Experience _madness = null;
+          while (_madness == null)
           {
-            _madness = null;
-            continue;
+            _madness = GameManager.Instance.MadExpDic[_madnesskeys[UnityEngine.Random.Range(0, _madnesskeys.Count)]];
+            if ((LongTermEXP != null && LongTermEXP == _madness) ||
+              (ShortTermEXP[0] != null && ShortTermEXP[0] == _madness) ||
+              (ShortTermEXP[1] != null && ShortTermEXP[1] == _madness))
+            {
+              _madness = null;
+              continue;
+            }
           }
-        }
-        currentsanity = 0;
-        MaxSanity -= ConstValues.MadnessDefaultSanityLose;
+          currentsanity = 0;
+          MaxSanity -= ConstValues.MadnessDefaultSanityLose;
 
-        UIManager.Instance.GetMad(_madness);
-        //광기 경험 채우는거로 대체되야 함
-      }
+          UIManager.Instance.GetMad(_madness);
         }
-    }
-  public int MaxSanity = 100;
-  private int madnesscount = 0;
-  public int MadnessCount
-  {
-    get { return madnesscount; }
-    set 
-    {
-      
-      madnesscount = value;
+        else
+        {
+          GameManager.Instance.GameOver(GameOverTypeEnum.Sanity);
+        }
+      }
     }
   }
+  public int MaxSanity = 100;
   public Skill Skill_Conversation=new Skill(SkillType.Conversation), 
     Skill_Force = new Skill(SkillType.Force), 
     Skill_Wild = new Skill(SkillType.Wild), 

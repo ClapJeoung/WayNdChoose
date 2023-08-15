@@ -33,6 +33,8 @@ public class UI_Expereince_info : UI_default
   }
   public void Setup(Experience exp)
   {
+    IsOpen = true;
+
     DefaultGroup.alpha = 1.0f;
     DefaultGroup.interactable = true;
     DefaultGroup.blocksRaycasts = true;
@@ -95,5 +97,15 @@ public class UI_Expereince_info : UI_default
     TouchBlock.enabled = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
     StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime,false));
+  }
+  public override void CloseForGameover()
+  {
+    IsOpen = false;
+    BackButton.interactable = false;
+    BackButton.blocksRaycasts = false;
+    CurrentExp = null;
+    TouchBlock.enabled = false;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
+    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime, false));
   }
 }

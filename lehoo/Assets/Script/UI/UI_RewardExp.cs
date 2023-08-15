@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UI_RewardExp : MonoBehaviour
+public class UI_RewardExp : UI_default
 {
   [SerializeField] private CanvasGroup MyGroup = null;
 
@@ -32,6 +32,9 @@ public class UI_RewardExp : MonoBehaviour
   public Experience CurrentExp = null;
   public void OpenUI_RewardExp(Experience rewardexp)
   {
+    if (IsOpen) return;
+    IsOpen = true;
+
     ExpIllustIcon.GetComponent<Image>().sprite = rewardexp.Illust;
     ExpIllustIcon.SetActive(true);
     if (ExpQuitButton.activeInHierarchy == false) ExpQuitButton.SetActive(true);
@@ -45,6 +48,9 @@ public class UI_RewardExp : MonoBehaviour
   }
   public void OpenUI_Penalty(Experience badexp)
   {
+    if (IsOpen) return;
+    IsOpen = true;
+
     ExpIllustIcon.GetComponent<Image>().sprite = badexp.Illust;
     ExpIllustIcon.SetActive(true);
     if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
@@ -58,6 +64,9 @@ public class UI_RewardExp : MonoBehaviour
   }
   public void OpenUI_Madness(Experience madexp)
   {
+    if (IsOpen) return;
+    IsOpen = true;
+
     ExpIllustIcon.GetComponent<Image>().sprite = madexp.Illust;
     ExpIllustIcon.SetActive(true);
     if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
@@ -139,14 +148,23 @@ public class UI_RewardExp : MonoBehaviour
 
     }
   }
-  public void CloseUI()
+  public override void CloseUI()
   {
+    IsOpen = false;
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f, false));
+    ExpIllustIcon.SetActive(false);
+  }
+  public override void CloseForGameover()
+  {
+    IsOpen = false;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f, false));
     ExpIllustIcon.SetActive(false);
   }
 
   public void GetExp_Long()
   {
+    if (UIManager.Instance.IsWorking) return;
+
     Experience _selectexp = GameManager.Instance.MyGameData.LongTermEXP;
 
     switch (CurrentExp.ExpType)
@@ -174,6 +192,8 @@ public class UI_RewardExp : MonoBehaviour
   }
   public void GetExp_Short(int index)
   {
+    if (UIManager.Instance.IsWorking) return;
+
     Experience _selectexp = GameManager.Instance.MyGameData.ShortTermEXP[index];
 
     switch (CurrentExp.ExpType)

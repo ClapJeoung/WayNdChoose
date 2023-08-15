@@ -19,6 +19,8 @@ public class UI_Mad : UI_default
   private Experience CurrentExp = null;
   public void OpenUI(Experience madexp)
   {
+    IsOpen = true;
+
     CurrentExp = madexp;
     DefaultGroup.interactable = true;
     BlockGroup.blocksRaycasts = true;
@@ -33,8 +35,16 @@ public class UI_Mad : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, MoveTime / 2.0f, UIManager.Instance.UIPanelOpenCurve));
 
   }
-  public override void CloseUI()
+  public override void CloseForGameover()
   {
+    IsOpen = false;
+    StartCoroutine(changealpha(false));
+    DefaultGroup.interactable = false;
+    UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, DownPos, MoveTime / 2.0f, UIManager.Instance.UIPanelCLoseCurve);
+  }
+public override void CloseUI()
+  {
+    IsOpen = false;
     StartCoroutine(changealpha(false));
     DefaultGroup.interactable = false;
     UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, DownPos, MoveTime / 2.0f, UIManager.Instance.UIPanelCLoseCurve));

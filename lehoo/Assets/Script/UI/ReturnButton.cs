@@ -111,4 +111,16 @@ public class ReturnButton : MonoBehaviour
         break;
     }
   }
+  public virtual void CloseForGameover()
+  {
+    switch (Dir)
+    {
+      case 0:
+        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, LeftOutsidePos, 0.4f, UIManager.Instance.UIPanelCLoseCurve));
+        break;
+      case 1:
+        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, RightOutsidePos, 0.4f, UIManager.Instance.UIPanelCLoseCurve));
+        break;
+    }
+  }
 }

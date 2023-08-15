@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Text;
 
+public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
   private static GameManager instance;
@@ -384,7 +385,6 @@ public class GameManager : MonoBehaviour
   {
     if (exp.ExpType == ExpTypeEnum.Mad)
     {
-      MyGameData.MadnessCount++;
       MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
       MyGameData.CurrentSanity = MyGameData.MaxSanity;
       UIManager.Instance.UpdateSanityText();
@@ -397,7 +397,6 @@ public class GameManager : MonoBehaviour
   {
     if (exp.ExpType == ExpTypeEnum.Mad)
     {
-      MyGameData.MadnessCount++;
       MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
       MyGameData.CurrentSanity = MyGameData.MaxSanity;
       UIManager.Instance.UpdateSanityText();
@@ -493,7 +492,10 @@ public class GameManager : MonoBehaviour
     }
     if (Input.GetKeyDown(KeyCode.F1)) MyGameData.CurrentSanity = 3;
   }
+  public void GameOver(GameOverTypeEnum gameovertype)
+  {
 
+  }
   public void StartNewGame(QuestType newquest)
   {
     UIManager.Instance.AddUIQueue(startnewgame(newquest));
