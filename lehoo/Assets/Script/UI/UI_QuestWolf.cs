@@ -229,7 +229,7 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonHolderGroup, 1.0f, FadeInTime, false));
 
     MoveRectForButton(0);
-    UIManager.Instance.SettleButton.Open(1, this);
+    UIManager.Instance.MapButton.Open(1, this);
 
   }//지도 여는 상황 세팅
 

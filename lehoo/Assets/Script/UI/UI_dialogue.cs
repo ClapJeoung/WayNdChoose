@@ -44,7 +44,10 @@ public class UI_dialogue : UI_default
   [SerializeField] private UI_Settlement SettlementUI = null;
   [SerializeField] private UI_map MapUI = null;
   [SerializeField] private UI_RewardExp RewardExpUI = null;
-  private EventDataDefulat CurrentEvent = null;
+  private EventDataDefulat CurrentEvent
+  {
+    get { return GameManager.Instance.MyGameData.CurrentEvent; }
+  }
   private RectTransform IllustRect { get {return GetPanelRect("illust").Rect; } }
   private Vector2 IllustOpenPos { get { return GetPanelRect("illust").InsidePos; } }
   private Vector2 IllustClosePos { get { return GetPanelRect("illust").OutisdePos; } }
@@ -99,7 +102,6 @@ public class UI_dialogue : UI_default
   {
     if (Reward_clicktoget.text == "") Reward_clicktoget.text = GameManager.Instance.GetTextData("GETREWARD");
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
-    CurrentEvent = GameManager.Instance.MyGameData.CurrentEvent;
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
 
     string _descriptiontemp = CurrentEvent.Description;
@@ -313,16 +315,15 @@ public class UI_dialogue : UI_default
     if (_issuccess) //성공하면 성공
     {
       Debug.Log("성공함");
-      SetSuccess(GameManager.Instance.MyGameData.CurrentEvent.SuccessDatas[_selection.Index]);
+      SetSuccess(CurrentEvent.SuccessDatas[_selection.Index]);
       GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
     else            //실패하면 실패
     {
       Debug.Log("실패함");
-      SetFail(GameManager.Instance.MyGameData.CurrentEvent.FailureDatas[_selection.Index]);
+      SetFail(CurrentEvent.FailureDatas[_selection.Index]);
       GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
-    GameManager.Instance.EventHolder.RemoveEvent(GameManager.Instance.MyGameData.CurrentEvent.ID);
 
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
 
@@ -368,12 +369,10 @@ public class UI_dialogue : UI_default
     RewardName.text = _name;
     RewardDescription.text = _description;
 
-    var _currentevent = GameManager.Instance.MyGameData.CurrentEvent;
-
-    if (_currentevent.GetType().Equals(typeof(FollowEventData)))
+    if (CurrentEvent.GetType().Equals(typeof(FollowEventData)))
     {
-      var _currentfollow = (FollowEventData)_currentevent;
-      if (_currentfollow.EndingData != null) SetEndingDialogue(((FollowEventData)_currentevent).EndingData, _success);
+      var _currentfollow = (FollowEventData)CurrentEvent;
+      if (_currentfollow.EndingData != null) SetEndingDialogue(((FollowEventData)CurrentEvent).EndingData, _success);
     }
     else UIManager.Instance.AddUIQueue(updatedialogue(_success));
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
@@ -517,7 +516,7 @@ public class UI_dialogue : UI_default
   public void OpenEnding()
   {
     if (UIManager.Instance.IsWorking) return;
-    FollowEndingData _endingdata = ((FollowEventData)GameManager.Instance.MyGameData.CurrentEvent).EndingData;
+    FollowEndingData _endingdata = ((FollowEventData)CurrentEvent).EndingData;
     UIManager.Instance.OpenEnding(_endingdata);
   }
   private IEnumerator updatedialogue(FollowEndingData endingdata, SuccessData successdata)

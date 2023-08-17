@@ -703,7 +703,8 @@ public class GameData    //게임 진행도 데이터
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
-  public List<string> RemoveEvent = new List<string>();//이벤트 풀에서 사라질 이벤트들(일반,연계)
+  public List<string> RemoveEvent = new List<string>();//이벤트 풀에서 사라질 이벤트들(일반,연계,퀘스트)
+
   public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
@@ -863,6 +864,8 @@ public class GameData    //게임 진행도 데이터
   {
     Turn = 0;
     HP = 100;
+    MaxSanity = 100;
+    MovePoint = 2;
     CurrentSanity = MaxSanity;
     Gold = ConstValues.StartGold ;
     Tendency_Body = new Tendency(TendencyType.Body);

@@ -29,12 +29,14 @@ public class UIManager : MonoBehaviour
   public AnimationCurve CharacterMoveCurve = null;
   [Space(10)]
   public Transform MyCanvas = null;
+  public UI_Main MainUI = null;
   public UI_dialogue MyDialogue = null;
   public UI_RewardExp ExpRewardUI = null;
   public UI_Settlement MySettleUI = null;
   public UI_QuestWolf QuestUI_Wolf = null;
   public UI_Mad MyMadPanel = null;
   public UI_FollowEnding MyFollowEnding = null;
+  public UI_Gameover GameOverUI = null;
   [SerializeField] private RectTransform HpTextRect = null;
   [SerializeField] private RectTransform SanityTextRect = null;
   [SerializeField] private RectTransform GoldTextRect = null;
@@ -75,6 +77,7 @@ public class UIManager : MonoBehaviour
       if (AllUIDefault[i].IsOpen) AllUIDefault[i].CloseForGameover();
     }
     StartCoroutine(closegamescene());
+    GameOverUI.OpenUI(gameovertype);
   }
   public void UpdateBackground(EnvironmentType envir)
   {

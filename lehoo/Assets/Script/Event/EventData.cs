@@ -7,9 +7,6 @@ using UnityEditor.PackageManager;
 
 public class EventHolder
 {
-  private const int PlacePer = 2, LevelPer = 3, EnvirPer = 2;
-  public List<EventData> AvailableNormalEvents = new List<EventData>();
-  public List<FollowEventData> AvailableFollowEvents = new List<FollowEventData>();
 
   public List<EventData> AllNormalEvents = new List<EventData>();
   public List<FollowEventData> AllFollowEvents = new List<FollowEventData>();
@@ -341,59 +338,67 @@ public class EventHolder
         break;
     }
   }
-  public void SetAllEvents()
+  /// <summary>
+  /// 0:없음 1:정신 2:육체 3:감정 4:물질
+  /// </summary>
+  /// <typeparam name="t"></typeparam>
+  /// <param name="eventdata"></param>
+  /// <param name="success"></param>
+  /// <param name="tendency"></param>
+  public void RemoveEvent(EventDataDefulat eventdata,bool success,int tendency)
   {
-    foreach (var _event in AllNormalEvents) AvailableNormalEvents.Add(_event);
-    foreach(var _followevent in AllFollowEvents) AvailableFollowEvents.Add(_followevent);
-  }//처음 시작 시 모든 이벤트를 사용 가능 이벤트 풀에 넣기
-  public void LoadAllEvents()
-  {
-    bool _isenable = true;
-    foreach (var _event in AllNormalEvents)
+    if (eventdata.GetType() == typeof(QuestEventData_Wolf))
     {
-      _isenable = true;
-      foreach (var _removeoriginid in GameManager.Instance.MyGameData.RemoveEvent)
-      {
-        if (_event.ID.Equals(_removeoriginid))
-        {
-          Debug.Log(_event.ID);
-          _isenable = false;
-          break;
-        }
-      }
-      if (_isenable) AvailableNormalEvents.Add(_event);
+      GameManager.Instance.MyGameData.RemoveEvent.Add(eventdata.ID);
     }
-    foreach (var _event in AllFollowEvents)
+    else
     {
-      _isenable = true;
-      foreach (var _removeoriginid in GameManager.Instance.MyGameData.RemoveEvent)
+      if (success == true)
       {
-        if (_event.ID.Equals(_removeoriginid))
+        switch (tendency)
         {
-          _isenable = false;
-          break;
+          case 0:
+            GameManager.Instance.MyGameData.SuccessEvent_None.Add(eventdata.ID);
+            break;
+          case 1:
+            GameManager.Instance.MyGameData.SuccessEvent_Rational.Add(eventdata.ID);
+            break;
+          case 2:
+            GameManager.Instance.MyGameData.SuccessEvent_Physical.Add(eventdata.ID);
+            break;
+          case 3:
+            GameManager.Instance.MyGameData.SuccessEvent_Mental.Add(eventdata.ID);
+            break;
+          case 4:
+            GameManager.Instance.MyGameData.SuccessEvent_Material.Add(eventdata.ID);
+            break;
         }
+        GameManager.Instance.MyGameData.SuccessEvent_All.Add(eventdata.ID);
       }
-      if (_isenable) AvailableFollowEvents.Add(_event);
+      else
+      {
+        switch (tendency)
+        {
+          case 0:
+            GameManager.Instance.MyGameData.FailEvent_None.Add(eventdata.ID);
+            break;
+          case 1:
+            GameManager.Instance.MyGameData.FailEvent_Rational.Add(eventdata.ID);
+            break;
+          case 2:
+            GameManager.Instance.MyGameData.FailEvent_Physical.Add(eventdata.ID);
+            break;
+          case 3:
+            GameManager.Instance.MyGameData.FailEvent_Mental.Add(eventdata.ID);
+            break;
+          case 4:
+            GameManager.Instance.MyGameData.FailEvent_Material.Add(eventdata.ID);
+            break;
+        }
+        GameManager.Instance.MyGameData.FailEvent_All.Add(eventdata.ID);
+      }
     }
-  }//Gamemanager.instance.GameData를 기반으로 이미 클리어한 이벤트 빼고 다 활성화 리스트에 넣기
-  public void RemoveEvent(string _originid)
-  {
-
-    List<EventData> _normals = new List<EventData>();
-    List<FollowEventData> _follows = new List<FollowEventData>();
-
-    foreach (var _data in AvailableNormalEvents)
-      if (_data.ID.Equals(_originid))
-        _normals.Add(_data);
-
-    foreach (var _data in AvailableFollowEvents)
-      if (_data.ID.Equals(_originid))
-        _follows.Add(_data);
-
-    foreach (var _deletenormal in _normals) AvailableNormalEvents.Remove(_deletenormal);
-    foreach (var _deletfollow in _follows) AvailableFollowEvents.Remove(_deletfollow);
-    GameManager.Instance.MyGameData.RemoveEvent.Add(_originid);
+    GameManager.Instance.MyGameData.RemoveEvent.Add(eventdata.ID);
   }
   /// <summary>
   /// 외부 이벤트 반환
@@ -408,8 +413,9 @@ public class EventHolder
         List<EventDataDefulat> _normal_noenvir = new List<EventDataDefulat>();
 
         List<EventDataDefulat> _temp = new List<EventDataDefulat>();
-    foreach (var _follow in AvailableFollowEvents)
+    foreach (var _follow in AllFollowEvents)
     {
+      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
       switch (_follow.FollowType)
       {
         case FollowType.Event:  //이벤트 연계일 경우 
@@ -473,8 +479,9 @@ public class EventHolder
       }
     }//연계 충족된 이벤트들 중 환경, 계절 가능한 것들 리스트
     _temp.Clear();
-    foreach (var _event in AvailableNormalEvents)
+    foreach (var _event in AllNormalEvents)
     {
+      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
             if (_event.AppearSpace.Equals(EventAppearType.Outer))
             {
                 if (_event.EnvironmentType == EnvironmentType.NULL) _normal_noenvir.Add(_event);
@@ -537,65 +544,66 @@ public class EventHolder
         List<EventDataDefulat> _normal_noenvir_noplace = new List<EventDataDefulat>();
 
         List<EventDataDefulat> _temp = new List<EventDataDefulat>();
-        foreach (var _follow in AvailableFollowEvents)
-        {
-            if (_follow.RightSpace(settletype) == false) continue;
+    foreach (var _follow in AllFollowEvents)
+    {
+      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
+      if (_follow.RightSpace(settletype) == false) continue;
 
-            switch (_follow.FollowType)
+      switch (_follow.FollowType)
+      {
+        case FollowType.Event:  //이벤트 연계일 경우 
+          List<string> _checktarget = new List<string>();
+          if (_follow.FollowTargetSuccess == true)
+          {
+            switch (_follow.FollowTendency)
             {
-                case FollowType.Event:  //이벤트 연계일 경우 
-                    List<string> _checktarget = new List<string>();
-                    if (_follow.FollowTargetSuccess == true)
-                    {
-                        switch (_follow.FollowTendency)
-                        {
-                            case 0: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_None; break;
-                            case 1: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Rational; break;
-                            case 2: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Physical; break;
-                            case 3: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Mental; break;
-                            case 4: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Material; break;
-                            case 5: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_All; break;
-                        }
-                    }
-                    else
-                    {
-                        switch (_follow.FollowTendency)
-                        {
-                            case 0: _checktarget = GameManager.Instance.MyGameData.FailEvent_None; break;
-                            case 1: _checktarget = GameManager.Instance.MyGameData.FailEvent_Rational; break;
-                            case 2: _checktarget = GameManager.Instance.MyGameData.FailEvent_Physical; break;
-                            case 3: _checktarget = GameManager.Instance.MyGameData.FailEvent_Mental; break;
-                            case 4: _checktarget = GameManager.Instance.MyGameData.FailEvent_Material; break;
-                            case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
-                        }
-                    }
-                    if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
-                    break;
-                case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-                        if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _temp.Add(_follow);
-                    foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-                        if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
-                    break;
-                case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
-                    int _targetlevel = 0;
-          SkillType _type = SkillType.Conversation; ;
-                    switch (_follow.FollowTarget)
-                    {
-                        case "0"://대화 테마
-                            _type = SkillType.Conversation; break;
-                        case "1"://무력 테마
-                            _type = SkillType.Force; break;
-                        case "2"://생존 테마
-                            _type = SkillType.Wild; break;
-                        case "3"://학식 테마
-                            _type = SkillType.Intelligence; break;
-                    }
-          _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
-                    if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
-                    break;
+              case 0: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_None; break;
+              case 1: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Rational; break;
+              case 2: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Physical; break;
+              case 3: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Mental; break;
+              case 4: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Material; break;
+              case 5: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_All; break;
             }
-        }
-        foreach(var _event in _temp)
+          }
+          else
+          {
+            switch (_follow.FollowTendency)
+            {
+              case 0: _checktarget = GameManager.Instance.MyGameData.FailEvent_None; break;
+              case 1: _checktarget = GameManager.Instance.MyGameData.FailEvent_Rational; break;
+              case 2: _checktarget = GameManager.Instance.MyGameData.FailEvent_Physical; break;
+              case 3: _checktarget = GameManager.Instance.MyGameData.FailEvent_Mental; break;
+              case 4: _checktarget = GameManager.Instance.MyGameData.FailEvent_Material; break;
+              case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
+            }
+          }
+          if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
+          break;
+        case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
+          if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _temp.Add(_follow);
+          foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
+            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+          break;
+        case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+          int _targetlevel = 0;
+          SkillType _type = SkillType.Conversation; ;
+          switch (_follow.FollowTarget)
+          {
+            case "0"://대화 테마
+              _type = SkillType.Conversation; break;
+            case "1"://무력 테마
+              _type = SkillType.Force; break;
+            case "2"://생존 테마
+              _type = SkillType.Wild; break;
+            case "3"://학식 테마
+              _type = SkillType.Intelligence; break;
+          }
+          _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
+          if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
+          break;
+      }
+    }
+    foreach (var _event in _temp)
         {
             if (_event.EnvironmentType == EnvironmentType.NULL)
             {
@@ -609,23 +617,24 @@ public class EventHolder
             }
         }//해당 장소의 적합한 연계 이벤트 리스트
 
-        foreach (var _event in AvailableNormalEvents)
-        {
-            if (_event.RightSpace(settletype) == false) continue;
+    foreach (var _event in AllNormalEvents)
+    {
+      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
+      if (_event.RightSpace(settletype) == false) continue;
 
-            if (_event.EnvironmentType == EnvironmentType.NULL)
-            {
-                if (_event.Places.Contains(placetype)) _normal_noenvir_place.Add(_event);
-                else _normal_noenvir_noplace.Add(_event);
-            }
-            else if (envir.Contains(_event.EnvironmentType))
-            {
-                if (_event.Places.Contains(placetype)) _normal_envir_place.Add(_event);
-                else _normal_envir_noplace.Add(_event);
-            }
-        }//해당 장소의 적합한 일반 이벤트 리스트
+      if (_event.EnvironmentType == EnvironmentType.NULL)
+      {
+        if (_event.Places.Contains(placetype)) _normal_noenvir_place.Add(_event);
+        else _normal_noenvir_noplace.Add(_event);
+      }
+      else if (envir.Contains(_event.EnvironmentType))
+      {
+        if (_event.Places.Contains(placetype)) _normal_envir_place.Add(_event);
+        else _normal_envir_noplace.Add(_event);
+      }
+    }//해당 장소의 적합한 일반 이벤트 리스트
 
-        List<int> _perlist = new List<int>();
+    List<int> _perlist = new List<int>();
         Dictionary<int, List<EventDataDefulat>> _listbyper = new Dictionary<int, List<EventDataDefulat>>();
 
         if (_follow_envir_place.Count > 0)

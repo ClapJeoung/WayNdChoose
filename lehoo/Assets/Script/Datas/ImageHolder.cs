@@ -7,10 +7,16 @@ using UnityEngine;
 public class ImageHolder : ScriptableObject
 {
   public List<Sprite> GameoverIllusts = new List<Sprite>();
-  public Sprite GetGameoverIllust()
+  public Sprite GetGameoverIllust(string name)
   {
+    foreach(var illust in GameoverIllusts)
+    {
+      if (string.Compare(illust.name, name, true) == 0) return illust;
+    }
+    Debug.Log(name + " 이란 이름의 게임 오버 일러스트가 없는 레후");
     return DefaultIllust;
   }
+
   public Sprite MovePointIcon_Enable = null;
   public Sprite MovePointIcon_Lack = null;
   public List<Sprite> TownIllust=new List<Sprite>();                 //마을 일러스트

@@ -319,8 +319,6 @@ public class GameManager : MonoBehaviour
     }
     //경험 Json -> EXPDic
 
-   if(MyGameData!=null)EventHolder.LoadAllEvents();
-
   }//각종 Json 가져와서 변환
   public void SaveData()
   {
@@ -328,25 +326,23 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   public void SuccessCurrentEvent(TendencyType _tendencytype,int index)
   {
-    EventHolder.RemoveEvent(MyGameData.CurrentEvent.ID);
+    int _tendencyindex = 0;
     switch (_tendencytype)
     {
       case TendencyType.None:
-        MyGameData.SuccessEvent_None.Add(MyGameData.CurrentEvent.ID); break;
+        _tendencyindex = 0;
+        break;
       case TendencyType.Body:
-        if(index.Equals(0))
-          MyGameData.SuccessEvent_Rational.Add(MyGameData.CurrentEvent.ID); 
-        else
-          MyGameData.SuccessEvent_Physical.Add(MyGameData.CurrentEvent.ID); 
+        if (index.Equals(0)) _tendencyindex = 1;
+        else _tendencyindex = 2;
         break;
       case TendencyType.Head:
-        if(index.Equals(0))
-        MyGameData.SuccessEvent_Mental.Add(MyGameData.CurrentEvent.ID);
-        else
-        MyGameData.SuccessEvent_Material.Add(MyGameData.CurrentEvent.ID); 
+        if (index.Equals(0)) _tendencyindex = 3;
+        else _tendencyindex = 4;
         break;
     }
-    MyGameData.SuccessEvent_All.Add(MyGameData.CurrentEvent.ID);
+    EventHolder.RemoveEvent(MyGameData.CurrentEvent,true,_tendencyindex);
+
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -356,24 +352,23 @@ public class GameManager : MonoBehaviour
   }
   public void FailCurrentEvent(TendencyType _tendencytype, int index)
   {
+    int _tendencyindex = 0;
     switch (_tendencytype)
     {
       case TendencyType.None:
-        MyGameData.FailEvent_None.Add(MyGameData.CurrentEvent.ID); break;
+        _tendencyindex = 0;
+        break;
       case TendencyType.Body:
-        if (index.Equals(0))
-          MyGameData.FailEvent_Rational.Add(MyGameData.CurrentEvent.ID);
-        else
-          MyGameData.FailEvent_Physical.Add(MyGameData.CurrentEvent.ID);
+        if (index.Equals(0)) _tendencyindex = 1;
+        else _tendencyindex = 2;
         break;
       case TendencyType.Head:
-        if (index.Equals(0))
-          MyGameData.FailEvent_Mental.Add(MyGameData.CurrentEvent.ID);
-        else
-          MyGameData.FailEvent_Material.Add(MyGameData.CurrentEvent.ID);
+        if (index.Equals(0)) _tendencyindex = 3;
+        else _tendencyindex = 4;
         break;
     }
-    MyGameData.FailEvent_All.Add(MyGameData.CurrentEvent.ID);
+    EventHolder.RemoveEvent(MyGameData.CurrentEvent, false, _tendencyindex);
+
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     if (MyGameData.CurrentSettlement != null)
     {
@@ -425,8 +420,6 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = _event;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(_event.ID);
-    //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
     //다이어로그 열기
   }//야외 이동을 통해 이벤트를 받은 경우
@@ -442,8 +435,6 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = _targetevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(_targetevent.ID);
-    //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
     SaveData();
   }//제시 패널에서 이벤트를 선택한 경우
@@ -453,8 +444,6 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = questevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    MyGameData.RemoveEvent.Add(questevent.ID);
-    //추후 등장하지 않게
     UIManager.Instance.OpenDialogue();
     SaveData();
   }
@@ -494,7 +483,7 @@ public class GameManager : MonoBehaviour
   }
   public void GameOver(GameOverTypeEnum gameovertype)
   {
-
+    UIManager.Instance.GameOver(gameovertype);
   }
   public void StartNewGame(QuestType newquest)
   {
@@ -504,7 +493,6 @@ public class GameManager : MonoBehaviour
   {
     MyGameData = new GameData();//새로운 게임 데이터 생성
     MyGameData.CurrentQuest= newquest;
-    EventHolder.SetAllEvents();
 
     yield return StartCoroutine(createnewmap());//새 맵 만들기
 

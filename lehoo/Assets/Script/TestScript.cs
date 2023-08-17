@@ -10,26 +10,24 @@ using System.Data;
 using System.IO;
 using UnityEngine.EventSystems;
 
-public class lehoo:MonoBehaviour
+public class lehoo
 {
-  public virtual void asdf()
-  {
-    Debug.Log("asdf");
-  }
-  public void techa()
-  {
-    asdf();
-  }
 }
-public class TestScript : lehoo
+public class techa : lehoo
 {
-  public override void asdf()
-  {
-    base.asdf();
-    Debug.Log("asdf°­È­ÆÇ");
-  }
+
+}
+public class TestScript:MonoBehaviour
+{
+  public lehoo asdf = null;
   private void Awake()
   {
-    techa();
+    techa t = new techa();
+    asdf = t;
+    qwer(asdf);
+  }
+  public void qwer(lehoo _techa)
+  {
+    Debug.Log(_techa.GetType());
   }
 }

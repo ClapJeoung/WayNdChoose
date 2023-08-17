@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0243efb5b6eeda4894a0e0cacf0e556, type: 3}
   m_Name: ImageHolder
   m_EditorClassIdentifier: 
+  GameoverIllusts: []
+  MovePointIcon_Enable: {fileID: 21300000, guid: cfdf7cb8ba959524e90a6ac0ba00007f, type: 3}
+  MovePointIcon_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
   TownIllust:
   - {fileID: 21300000, guid: 029a6e6ad7a1da741972869b6e49099f, type: 3}
   - {fileID: 21300000, guid: bd22ec0042ded0e4e9f414c1a867a36b, type: 3}
@@ -616,6 +619,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 55448ca771db7f947b128b9b4884ff2c, type: 3}
   - {fileID: 21300000, guid: 946ac2f33d390ae40b18155a1e22edb5, type: 3}
   EndingIllusts: []
+  QuestIllust_Wolf: []
   NoGoldIllust: {fileID: 21300000, guid: 5ce237ac48c060f48a83877139e6918f, type: 3}
   EmptyLongExpIcon: {fileID: 21300000, guid: c8859889966423244b72eb0209f9a7b0, type: 3}
   EmptyShortExpIcon: {fileID: 21300000, guid: 909c3af100c69bb48b88201269d8348a, type: 3}

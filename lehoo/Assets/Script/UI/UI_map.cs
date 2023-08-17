@@ -356,7 +356,6 @@ public class UI_map : UI_default
         break;
 
       case LandscapeType.Settlement:
-        GameManager.Instance.MyGameData.CurrentEvent = null;
         GameManager.Instance.MyGameData.CurrentSettlement = SelectedTile.TileSettle;
         GameManager.Instance.MyGameData.CurrentSettlement.LibraryType = (SkillType)Random.Range(0, 4);
 
