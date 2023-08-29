@@ -35,20 +35,17 @@ public class UI_map : UI_default
   }
   public float AppearTime = 0.5f;
   [SerializeField] private AnimationCurve ZoomInCurve = null;
-  [SerializeField] private AnimationCurve ZoomOutCurve = null;
   [SerializeField] private RectTransform HolderRect = null;
   [SerializeField] private RectTransform ScaleRect = null;
   private Vector3 IdleScale = Vector3.one;
   [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
   [SerializeField] private float ZoomInTime = 1.2f;
-  [SerializeField] private float ZoomOutTime = 0.4f;
 
   [SerializeField] private TextMeshProUGUI ClickInfoText = null;
 
   [SerializeField] private GameObject MoveCostInfoHolder = null;
   [SerializeField] private Image MovePointImage = null;
   [SerializeField] private TextMeshProUGUI MovePointText = null;
-  [SerializeField] private TextMeshProUGUI MoveCostText = null;
   [SerializeField] private GameObject MoveCostTypeHolder = null;
 
   [SerializeField] private RectTransform SettleInfoRect = null;
@@ -61,7 +58,11 @@ public class UI_map : UI_default
   public Color DisableColor = Color.grey;
   private List<Settlement> ActiveSettles = new List<Settlement>();
   private List<TileData> ActiveTileData = new List<TileData>();
-  public int MapProgress = 0;//0: 타일 선택(목표 선택)  1: 지불 방식 선택  2:타일 선택(확정,출발)
+  public int SelectProgress = 0;//0: 타일 선택(목표 선택)  1: 지불 방식 선택  2:타일 선택(확정,출발)
+
+  /// <summary>
+  /// 주위 2칸 타일 업데이트
+  /// </summary>
   private void ResetEnableTiles()
   {
     List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 2);
@@ -128,10 +129,11 @@ public class UI_map : UI_default
     if (DefaultGroup.alpha == 1.0f) DefaultGroup.alpha = 0.0f;
     if (DefaultGroup.interactable == true) DefaultGroup.interactable = false;
     if (DefaultGroup.blocksRaycasts == true) DefaultGroup.blocksRaycasts = false;
-    //                                                                                                        퀘스트 기획 후 지도에 퀘스트 정보 표기 넣기
 
     ClickInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
-    if (ScaleRect.localScale != Vector3.one) StartCoroutine(zoomoutview());
+
+    ScaleRect.localScale = IdleScale;
+    ScaleRect.anchoredPosition = Vector2.zero;
 
     float _time = 0.0f;
     while (_time < AppearTime)
@@ -145,30 +147,12 @@ public class UI_map : UI_default
     DefaultGroup.interactable = true;
     DefaultGroup.blocksRaycasts = true;
   }
-  public override void CloseUI()
-  {
-    MapProgress = 0;
-    UIManager.Instance.AddUIQueue(closeui());
-    IsOpen = false;
-  }
-  private IEnumerator closeui()
-  {
-    DefaultGroup.blocksRaycasts = false;
-    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
-    DefaultGroup.interactable = false;
-  }
-  public override void CloseForGameover()
-  {
-    MapProgress = 0;
-    DefaultGroup.blocksRaycasts = false;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
-  }
   public int SanityCost = 0, GoldCost = 0;
   public void SelectTile(TileData tiledata,Vector2 position)
   {
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
     int _length = GameManager.Instance.MyGameData.MyMapData.GetLength(_currenttile, SelectedTile);
-    switch (MapProgress)
+    switch (SelectProgress)
     {
       case 0: //0단계는 타일을 하나도 선택하지 않은 상태이므로 지불 방식 선택으로 넘어가기
         SelectedTile = tiledata;
@@ -191,7 +175,7 @@ public class UI_map : UI_default
           SettleInfoGroup.alpha = 0.0f;
         }
 
-        MapProgress=1;  //0->1
+        SelectProgress=1;  //0->1
         break;
       case 1:
         if (SelectedTile == tiledata)
@@ -201,7 +185,7 @@ public class UI_map : UI_default
           ClickInfoText.text = GameManager.Instance.GetTextData("CHOSSETILEAGAIN_MAP");
           if (MoveCostTypeHolder.activeInHierarchy == true) MoveCostTypeHolder.SetActive(false);
           if (SettleInfoGroup.alpha == 1.0f) SettleInfoGroup.alpha = 0.0f;
-          MapProgress = 0;
+          SelectProgress = 0;
           return;
         }//동일한 타일 선택했으면 이전 단계로 회귀(타일 선택)  0<-1
         else //다른 타일 선택했으면 정보만 변경 (1단계)
@@ -254,7 +238,7 @@ public class UI_map : UI_default
 
           MoveCostInfoHolder.SetActive(false);
           MoveCostTypeHolder.SetActive(true);
-          MapProgress = 1;
+          SelectProgress = 1;
         }
         break;
     }
@@ -275,7 +259,7 @@ public class UI_map : UI_default
     if (MoveCostInfoHolder.activeInHierarchy == false) MoveCostInfoHolder.SetActive(true);
     MoveCostTypeHolder.SetActive(false);
 
-    MapProgress=2;
+    SelectProgress=2;
   }
   public void SelectCostType_Gold()
   {
@@ -289,7 +273,7 @@ public class UI_map : UI_default
     if (MoveCostInfoHolder.activeInHierarchy == false) MoveCostInfoHolder.SetActive(true);
     MoveCostTypeHolder.SetActive(false);
 
-    MapProgress = 2;
+    SelectProgress = 2;
   }
   public StatusType SelectedCostType = StatusType.Sanity;
   public void MoveMap()
@@ -346,22 +330,13 @@ public class UI_map : UI_default
       case LandscapeType.Outer:
         GameManager.Instance.MyGameData.CurrentSettlement = null;
         yield return new WaitForSeconds(1.0f);
-
-
         EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
         //캐릭터 멈춘 위치 주위 1칸 강,숲,언덕,산,바다 유무 파악해서 EventManager에 던져줌
         IsOpen = false;
-        //도중에 멈춘거니까 이동 버튼 활성화는 안함
-
         break;
 
       case LandscapeType.Settlement:
-        GameManager.Instance.MyGameData.CurrentSettlement = SelectedTile.TileSettle;
-        GameManager.Instance.MyGameData.CurrentSettlement.LibraryType = (SkillType)Random.Range(0, 4);
-
-        yield return new WaitForSeconds(1.0f);
-
-        EventManager.Instance.SetSettleEvent(GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData);
+        GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;
     }
 
@@ -396,29 +371,6 @@ public class UI_map : UI_default
     ScaleRect.localScale = _endscale;
     ScaleRect.anchoredPosition = _endposition;
   }//정착지,야외 이동 후 지도 줌인 하는 코루틴
-  private IEnumerator zoomoutview()
-  {
-    float _time = 0.0f, _targettime = ZoomOutTime;
-    Vector3 _startscale = ZoomInScale, _endscale = IdleScale;
-    Vector2 _startposition = ScaleRect.anchoredPosition, _endposition = Vector2.zero;
- float _degree = 0.0f;
-    while (_time < _targettime)
-    {
-      _degree = ZoomOutCurve.Evaluate(_time / _targettime);
-      ScaleRect.localScale = Vector3.Lerp(_startscale, _endscale, _degree);
-      ScaleRect.anchoredPosition = Vector2.Lerp(_startposition, _endposition, _degree);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    ScaleRect.localScale = _endscale;
-    ScaleRect.anchoredPosition = _endposition;
-  }//지도 켰을때 줌 인 된 상태라면 줌아웃 시키는 코루틴
-  public void UpdateIcons(List<Settlement> _settles)
-  {
-    foreach (Settlement _settle in _settles)
-    {
-    }
-  }
   public void SetPlayerPos(Vector2 coordinate)
   {
     Debug.Log("시작 플레이어 위치 설정");
@@ -428,6 +380,24 @@ public class UI_map : UI_default
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
     GameManager.Instance.MyGameData.Coordinate = coordinate;
     ResetEnableTiles();
-
   }
+  public override void CloseUI()
+  {
+    SelectProgress = 0;
+    UIManager.Instance.AddUIQueue(closeui());
+    IsOpen = false;
+  }
+  private IEnumerator closeui()
+  {
+    DefaultGroup.blocksRaycasts = false;
+    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
+    DefaultGroup.interactable = false;
+  }
+  public override void CloseForGameover()
+  {
+    SelectProgress = 0;
+    DefaultGroup.blocksRaycasts = false;
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
+  }
+
 }

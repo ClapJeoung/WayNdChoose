@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class PanelObjRectSimulator : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+[System.Serializable]
+public class PanelGroup
+{
+  public string Name="새 패널 그룹";
+  public List<string> Panels=new List<string>();
 }

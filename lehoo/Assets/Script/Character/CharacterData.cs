@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int Quest_Wolf_Searching_Sanityrewardvalue = 15;
+
   public const int GoodExpAsSanity = 15;
   public const int BadExpAsSanity = 20;
   public const int MadnessDefaultSanityLose = 15;
@@ -120,10 +122,54 @@ public static class ConstValues
 }
 public class GameData    //게임 진행도 데이터
 {
+  #region #지도 관련#
   public MapData MyMapData = null;
-    public int Year = 1;//년도
+  public Vector2 Coordinate = Vector2.zero;
+  public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
+  public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
+  public SkillType LibraryEffectTarget = SkillType.Conversation;     //도서관 방문으로 증가한 테마
+  public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
+  {
+    switch (placetype)
+    {
+      case PlaceType.Residence:
 
-    private int turn = -1;
+        break;//거주지 - 휴식 시 추가 이동력 회복
+
+      case PlaceType.Marketplace:
+        Gold += ConstValues.PlaceEffect_marketplace;
+        break;//시장- 일시불 골드 획득
+
+      case PlaceType.Temple:
+        DownAllDiscomfort();
+        break;//사원- 모든 불쾌 1 감소
+
+      case PlaceType.Library:
+        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
+        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
+        LibraryEffectTarget = CurrentSettlement.LibraryType;
+
+        break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
+
+      case PlaceType.Theater:
+
+        LongTermEXP.Duration = LongTermEXP.Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP.Duration + 2;
+        for (int i = 0; i < ShortTermEXP.Length; i++)
+          if (ShortTermEXP[i] != null) ShortTermEXP[i].Duration =
+                  ShortTermEXP[i].Duration + 2 > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortTermEXP[i].Duration + 2;
+
+        break;//극장- 모든 경험 2턴 증가(삭제됨)
+
+      case PlaceType.Academy:
+        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
+        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
+        break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
+    }
+  }
+  #endregion
+
+  public int Year = 1;//년도
+  private int turn = -1;
   public int Turn
   {
     get { return turn; }
@@ -162,19 +208,35 @@ public class GameData    //게임 진행도 데이터
     }
   }
   public const int MaxTurn = 3;//최대 턴(0,1,2,3)
-    public float MinSuccesPer
+
+  #region #턴에 비례한 성공 확률들#
+  public float MinSuccesPer
+  {
+    get
     {
-        get
-        {
-            if (Year >= ConstValues.MaxYear) return ConstValues.minsuccesper_min;
-            //10턴 이상이면 최솟값만 반환
-            return Mathf.Lerp(ConstValues.minsuccesper_min, ConstValues.minsuccesper_max, Mathf.Clamp(0, 1, Year / ConstValues.MaxYear));
-            //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
-        }
-    }//스킬 체크, 지불 체크 최소 성공확률
-  public int MovePoint = 0;
-    #region 값 프로퍼티
-    public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
+      if (Year >= ConstValues.MaxYear) return ConstValues.minsuccesper_min;
+      //10턴 이상이면 최솟값만 반환
+      return Mathf.Lerp(ConstValues.minsuccesper_min, ConstValues.minsuccesper_max, Mathf.Clamp(0, 1, Year / ConstValues.MaxYear));
+      //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
+    }
+  }//스킬 체크, 지불 체크 최소 성공확률
+  public int CheckPercent_themeorskill(int _current, int _target)
+  {
+    if (_current >= _target) return 100;
+    float _per = _current / _target;
+    return Mathf.CeilToInt((1 - MinSuccesPer) * Mathf.Pow(_per, 1.5f) + MinSuccesPer);
+  }//origin : 대상 레벨   target : 목표 레벨
+  public int CheckPercent_money(int _target)
+  {
+    float _per = Gold / _target;
+    //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
+    return Mathf.CeilToInt(Mathf.Pow(_per, Mathf.Lerp(ConstValues.MoneyCheck_min, ConstValues.MoneyCheck_max, Year / ConstValues.MaxYear)));
+    //좌상향 곡선 ~ 우상향 곡선
+  }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
+  #endregion
+
+  #region #값 프로퍼티#
+  public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
     public int PaySanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear); } }
     public int PayGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear); } }
     public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, Year / ConstValues.MaxYear); } }
@@ -253,27 +315,7 @@ public class GameData    //게임 진행도 데이터
   }
   #endregion
 
-  public int CheckPercent_themeorskill(int _current, int _target)
-    {
-        if (_current >= _target) return 100;
-        float _per = _current / _target;
-        return Mathf.CeilToInt((1 - MinSuccesPer) * Mathf.Pow(_per, 1.5f) + MinSuccesPer);
-    }//origin : 대상 레벨   target : 목표 레벨
-    public int CheckPercent_money(int _target)
-    {
-        float _per = Gold / _target;
-        //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
-        return Mathf.CeilToInt(Mathf.Pow(_per, Mathf.Lerp(ConstValues.MoneyCheck_min, ConstValues.MoneyCheck_max, Year / ConstValues.MaxYear)));
-        //좌상향 곡선 ~ 우상향 곡선
-    }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
 
-  public int GetDiscomfort(string originname)
-  {
-    foreach (var _settle in GameManager.Instance.MyGameData.MyMapData.AllSettles) if (_settle.OriginName == originname) return _settle.Discomfort;
-
-    Debug.Log($"{originname} 가진 정착지가 없음???");
-    return -1;
-  }
   public void AddDiscomfort(Settlement settlement)
   {
     for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
@@ -291,24 +333,26 @@ public class GameData    //게임 진행도 데이터
       GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
   }
 
-    private int hp = 0;
-    public int HP
+  #region #수치#
+  private int hp = 0;
+  public int HP
+  {
+    get { return hp; }
+    set
     {
-        get { return hp; }
-        set {
-            //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
-            hp = value;
-            if (hp > 100) hp = 100;
-            if (hp < 0) { hp = 0;GameManager.Instance.GameOver(GameOverTypeEnum.HP); }
-        }
+      //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
+      hp = value;
+      if (hp > 100) hp = 100;
+      if (hp < 0) { hp = 0; GameManager.Instance.GameOver(GameOverTypeEnum.HP); }
     }
-    private int gold = 0;
-    public int Gold
-    {
-        get { return gold; }
-        set { gold = value; }
-    }
-    private int currentsanity = 0;
+  }
+  private int gold = 0;
+  public int Gold
+  {
+    get { return gold; }
+    set { gold = value; }
+  }
+  private int currentsanity = 0;
   public int CurrentSanity
   {
     get { return currentsanity; }
@@ -347,6 +391,10 @@ public class GameData    //게임 진행도 데이터
     }
   }
   public int MaxSanity = 100;
+  public int MovePoint = 0;
+  #endregion
+
+  #region #기술#
   public Skill Skill_Conversation=new Skill(SkillType.Conversation), 
     Skill_Force = new Skill(SkillType.Force), 
     Skill_Wild = new Skill(SkillType.Wild), 
@@ -361,6 +409,8 @@ public class GameData    //게임 진행도 데이터
       default:return Skill_Intelligence;
     }
   }
+  #endregion
+  #region #성향#
   public Tendency Tendency_Body = new Tendency(TendencyType.Body);//(-)이성-육체(+)
   public Tendency Tendency_Head = new Tendency(TendencyType.Head);//(-)정신-물질(+)
   public string GetTendencyEffectString_long(TendencyType _type)
@@ -539,7 +589,8 @@ public class GameData    //게임 진행도 데이터
       _currenttendency.Level *= -1;
     }
   }
-
+  #endregion
+  #region #경험#
   public Experience LongTermEXP = null;
   //장기 기억 슬롯 0,1
   public Experience[] ShortTermEXP = new Experience[2];
@@ -656,50 +707,10 @@ public class GameData    //게임 진행도 데이터
     }
 
   }
-  public Vector2 Coordinate = Vector2.zero;
+  #endregion
 
-  public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
-    public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
-    public SkillType LibraryEffectTarget = SkillType.Conversation;     //도서관 방문으로 증가한 테마
-  public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
-  {
-    switch (placetype)
-    {
-      case PlaceType.Residence:
 
-        break;//거주지 - 휴식 시 추가 이동력 회복
-
-      case PlaceType.Marketplace:
-        Gold += ConstValues.PlaceEffect_marketplace;
-        break;//시장- 일시불 골드 획득
-
-      case PlaceType.Temple:
-        DownAllDiscomfort();
-        break;//사원- 모든 불쾌 1 감소
-
-      case PlaceType.Library:
-        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
-        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
-        LibraryEffectTarget = CurrentSettlement.LibraryType;
-
-        break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
-
-      case PlaceType.Theater:
-
-       LongTermEXP.Duration =LongTermEXP.Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP.Duration + 2;
-        for (int i = 0; i < ShortTermEXP.Length; i++)
-          if (ShortTermEXP[i] != null) ShortTermEXP[i].Duration =
-                  ShortTermEXP[i].Duration + 2 > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortTermEXP[i].Duration + 2;
-
-        break;//극장- 모든 경험 2턴 증가(삭제됨)
-
-      case PlaceType.Academy:
-        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
-        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
-        break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
-    }
-  }
-
+  #region #이벤트 관련#
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
 
@@ -718,12 +729,23 @@ public class GameData    //게임 진행도 데이터
   public List<string> FailEvent_Mental = new List<string>(); //정신 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_All= new List<string>();
+  #endregion
 
+  #region #퀘스트 관련#
   public QuestType CurrentQuest = QuestType.Wolf;
   public Quest CurrentQuestData
   {
     get { return GameManager.Instance.EventHolder.GetQuest(CurrentQuest); }
   }
+  public int Quest_Wolf_Phase = 0;
+  /// <summary>
+  /// 0:컬트 1:늑대
+  /// </summary>
+  public int Quest_Wolf_Type = 0;
+  public int Quest_Wolf_Progress = 0;
+  #endregion
+
+  #region #각종 보정치 가져오기#
   public int GetEffectModifyCount_Exp(EffectType _modify)
   {
     int _count = 0;
@@ -860,6 +882,7 @@ public class GameData    //게임 진행도 데이터
     if (!_formultiply) return _minusamount;
     else return (100.0f+ _minusamount) / 100.0f;
   }// 돈 소모 변화량(특성,경험,성향)
+  #endregion
   public GameData()
   {
     Turn = 0;

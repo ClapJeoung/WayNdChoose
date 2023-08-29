@@ -423,13 +423,6 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.OpenDialogue();
     //다이어로그 열기
   }//야외 이동을 통해 이벤트를 받은 경우
-  public void SetSettlementPlace()
-  {
-    
-    UIManager.Instance.OpenSuggestUI();
-    //제시 UI 열기
-    SaveData();
-  }//정착지의 장소 세팅
   public void SelectEvent(EventDataDefulat _targetevent)
   {
     MyGameData.CurrentEvent = _targetevent;
@@ -505,7 +498,7 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.UpdateMap_SetPlayerPos(MyGameData.Coordinate);
     switch (MyGameData.CurrentQuest)
     {
-      case QuestType.Wolf:UIManager.Instance.QuestUI_Wolf.OpenUI((QuestHolder_Wolf)MyGameData.CurrentQuestData); break;
+      case QuestType.Wolf:UIManager.Instance.QuestUI_Wolf.OpenUI_Prologue((QuestHolder_Wolf)MyGameData.CurrentQuestData); break;
     }
   }
   /// <summary>
@@ -580,6 +573,34 @@ public class GameManager : MonoBehaviour
     _map.MakeTilemap();
     UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle.Tiles[Random.Range(0,_startsettle.Tiles.Count)].Coordinate);
     yield return null;
+  }
+  public void EnterSettlement(Settlement targetsettlement)
+  {
+    MyGameData.CurrentSettlement=targetsettlement;
+    if(MyGameData.CurrentSettlement.Type==SettlementType.Castle) MyGameData.CurrentSettlement.LibraryType = (SkillType)Random.Range(0, 4);
+
+    if (MyGameData.CurrentQuest == QuestType.Wolf)
+    {
+      if (MyGameData.Quest_Wolf_Phase == 0)
+      {
+
+      }//탐문 단계
+      else if (MyGameData.Quest_Wolf_Phase == 1)
+      {
+        switch (MyGameData.Quest_Wolf_Type)
+        {
+          case 0:
+            break;
+
+          case 1:
+            break;
+        }
+      }
+    }
+    else
+    {
+    }
+
   }
 }
 public class TextData

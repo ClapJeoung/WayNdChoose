@@ -277,7 +277,7 @@ public class EventHolder
     //    Quest_Wolf.PrologueEvent_Last = eventdata;
         break;
       case 5:
-        Quest_Wolf.StartEvents.Add(eventdata);
+        Quest_Wolf.SearchingEvents.Add(eventdata);
         break;
       case 6:
         Quest_Wolf.Event_Wanted = eventdata;
@@ -1028,7 +1028,7 @@ public class QuestHolder_Wolf:Quest
   public string Prologue_Last_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Last_Description"); } }
   public string Prologue_Last_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Last_Selection"); } }
   #endregion
-  public List<QuestEventData_Wolf> StartEvents = new List<QuestEventData_Wolf>();       //QuestEventType 5 
+  public List<QuestEventData_Wolf> SearchingEvents = new List<QuestEventData_Wolf>();       //QuestEventType 5 
 
   public QuestEventData_Wolf Event_Wanted = null;                                  //QuestEventType 6
   public List<QuestEventData_Wolf> Events_Public_Common = new List<QuestEventData_Wolf>(); //QuestEventType 7

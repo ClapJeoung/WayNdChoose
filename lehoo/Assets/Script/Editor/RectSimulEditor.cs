@@ -18,20 +18,61 @@ public class RectSimulEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        if (GUILayout.Button("활성화 위치"))
-        {
+    EditorGUILayout.BeginHorizontal();
+    EditorGUILayout.LabelField("전체",GUILayout.MaxWidth(60));
+    GUILayout.FlexibleSpace();
+    if (GUILayout.Button("패널 활성화",GUILayout.Width(150)))
+    {
       for (int i = 0; i < Target.PanelRects.Count; i++)
       {
         Target.PanelRects[i].Rect.anchoredPosition = Target.PanelRects[i].InsidePos;
       }
     }
-    EditorGUILayout.Space();
-    if(GUILayout.Button("비활성화 위치"))
+    if (GUILayout.Button("패널 비활성화", GUILayout.Width(150)))
     {
-      for(int i = 0; i < Target.PanelRects.Count; i++)
+      for (int i = 0; i < Target.PanelRects.Count; i++)
       {
         Target.PanelRects[i].Rect.anchoredPosition = Target.PanelRects[i].OutisdePos;
       }
     }
+    EditorGUILayout.EndHorizontal();
+    EditorGUILayout.Space();
+    EditorGUILayout.Space();
+    for(int i = 0; i < Target.PanelGroups.Count; i++)
+    {
+      EditorGUILayout.BeginHorizontal();
+      EditorGUILayout.LabelField(Target.PanelGroups[i].Name, GUILayout.MaxWidth(60));
+      GUILayout.FlexibleSpace();
+      if (GUILayout.Button("패널 활성화", GUILayout.Width(150)))
+      {
+        for(int j=0;j< Target.PanelGroups[i].Panels.Count;j++)
+        {
+          for(int k = 0; k < Target.PanelRects.Count; k++)
+          {
+            if(Target.PanelRects[k].Name== Target.PanelGroups[i].Panels[j])
+            {
+              Target.PanelRects[k].Rect.anchoredPosition = Target.PanelRects[k].InsidePos;
+              break;
+            }
+          }
+        }
+      }
+      if (GUILayout.Button("패널 비활성화", GUILayout.Width(150)))
+      {
+        for (int j = 0; j < Target.PanelGroups[i].Panels.Count; j++)
+        {
+          for (int k = 0; k < Target.PanelRects.Count; k++)
+          {
+            if (Target.PanelRects[k].Name == Target.PanelGroups[i].Panels[j])
+            {
+              Target.PanelRects[k].Rect.anchoredPosition = Target.PanelRects[k].OutisdePos;
+              break;
+            }
+          }
+        }
+      }
+      EditorGUILayout.EndHorizontal();
+      EditorGUILayout.Space();
     }
+  }
 }

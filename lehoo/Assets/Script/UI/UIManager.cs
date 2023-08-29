@@ -37,6 +37,7 @@ public class UIManager : MonoBehaviour
   public UI_Mad MyMadPanel = null;
   public UI_FollowEnding MyFollowEnding = null;
   public UI_Gameover GameOverUI = null;
+  public SidePanel_Quest_Wolf WolfSidePanel = null;
   [SerializeField] private RectTransform HpTextRect = null;
   [SerializeField] private RectTransform SanityTextRect = null;
   [SerializeField] private RectTransform GoldTextRect = null;
@@ -825,12 +826,10 @@ public class UIManager : MonoBehaviour
     _color.a = _alpha;
     _tmp.color = _color;
   }
-
-  public void UpdateMap_SettleIcons(List<Settlement> _avail) => MyMap.UpdateIcons(_avail);
   public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MyMap.SetPlayerPos(coordinate);
   public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
   public void CreateMap() => MyMap.MapCreater.MakeTilemap();
-  public void OpenSuggestUI() => MySettleUI.OpenUI();
+  public void OpenSettlement() => MySettleUI.OpenUI();
     public void OpenDialogue()
     {
         //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태

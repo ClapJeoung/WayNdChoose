@@ -53,7 +53,8 @@ public class UI_default : MonoBehaviour
   public bool IsOpen = false;
   public UIMoveDir MyDir = UIMoveDir.Horizontal;
     public List<PanelRectEditor> PanelRects = new List<PanelRectEditor>();
-    public PanelRectEditor GetPanelRect(string name)
+  public List<PanelGroup> PanelGroups = new List<PanelGroup>();
+  public PanelRectEditor GetPanelRect(string name)
     {
         foreach (var target in PanelRects)
         {
