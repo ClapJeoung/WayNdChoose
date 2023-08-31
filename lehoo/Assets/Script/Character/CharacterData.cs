@@ -104,7 +104,7 @@ public static class ConstValues
     public const int PlaceEffect_residence = 1;
     public const int PlaceEffect_marketplace = 20;
     public const int PlaceEffect_temple = 1;
-  public const int PlaceEffect_Library = 2;
+  public const int PlaceEffect_Library = 15;
     public const int PlaceEffect_theater = 3;
     public const int PlaceEffect_acardemy = 10;
   public const int PlaceDuration = 5;
@@ -126,8 +126,7 @@ public class GameData    //게임 진행도 데이터
   public MapData MyMapData = null;
   public Vector2 Coordinate = Vector2.zero;
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
-  public Dictionary<PlaceType, int> PlaceEffects = new Dictionary<PlaceType, int>();//장소 방문 효과들
-  public SkillType LibraryEffectTarget = SkillType.Conversation;     //도서관 방문으로 증가한 테마
+  public bool LibraryEffect = false;
   public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
   {
     switch (placetype)
@@ -145,9 +144,7 @@ public class GameData    //게임 진행도 데이터
         break;//사원- 모든 불쾌 1 감소
 
       case PlaceType.Library:
-        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
-        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
-        LibraryEffectTarget = CurrentSettlement.LibraryType;
+        if (GameManager.Instance.MyGameData.LibraryEffect == false) GameManager.Instance.MyGameData.LibraryEffect = true;
 
         break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
 
@@ -161,8 +158,6 @@ public class GameData    //게임 진행도 데이터
         break;//극장- 모든 경험 2턴 증가(삭제됨)
 
       case PlaceType.Academy:
-        if (PlaceEffects.ContainsKey(placetype)) PlaceEffects[placetype] = ConstValues.PlaceDuration;
-        else PlaceEffects.Add(placetype, ConstValues.PlaceDuration);
         break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
     }
   }
@@ -194,7 +189,7 @@ public class GameData    //게임 진행도 데이터
 
         UIManager.Instance.UpdateExpLongTermIcon();
         UIManager.Instance.UpdateExpShortTermIcon();
-
+        /*
                 List<PlaceType> _deleteplace = new List<PlaceType>();
                 List<PlaceType> _downplace = new List<PlaceType>();
                 foreach(var _data in PlaceEffects)
@@ -204,6 +199,7 @@ public class GameData    //게임 진행도 데이터
                 }
                 foreach (var _place in _deleteplace) PlaceEffects.Remove(_place);
                 foreach (var _place in _downplace) PlaceEffects[_place]--;
+        */
       }
     }
   }
@@ -712,8 +708,7 @@ public class GameData    //게임 진행도 데이터
 
   #region #이벤트 관련#
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
-  public EventSequence CurrentEventSequence;  //현재 이벤트 진행 단계
-
+  public EventSequence CurrentEventSequence = EventSequence.Progress;
   public List<string> RemoveEvent = new List<string>();//이벤트 풀에서 사라질 이벤트들(일반,연계,퀘스트)
 
   public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
@@ -732,17 +727,22 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #퀘스트 관련#
-  public QuestType CurrentQuest = QuestType.Wolf;
+  public QuestType QuestType = QuestType.Wolf;
   public Quest CurrentQuestData
   {
-    get { return GameManager.Instance.EventHolder.GetQuest(CurrentQuest); }
+    get { return GameManager.Instance.EventHolder.GetQuest(QuestType); }
   }
+  /// <summary>
+  /// 0,(1,2,3),4
+  /// </summary>
   public int Quest_Wolf_Phase = 0;
   /// <summary>
   /// 0:컬트 1:늑대
   /// </summary>
   public int Quest_Wolf_Type = 0;
   public int Quest_Wolf_Progress = 0;
+  public List<PlaceType> Quest_Wolf_Cult_BlockedPlaces = new List<PlaceType>();
+  public Dictionary<PlaceType,int> Quest_Wolf_Cult_PlaceTokens=new Dictionary<PlaceType,int>();
   #endregion
 
   #region #각종 보정치 가져오기#
@@ -951,9 +951,12 @@ public class Skill
   {
     get
     {
-      if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Library) && GameManager.Instance.MyGameData.LibraryEffectTarget == MySkillType)
+      return 0;
+
+     /* if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Library) && GameManager.Instance.MyGameData.LibraryEffectTarget == MySkillType)
         return ConstValues.PlaceEffect_Library;
       return 0;
+     */
     }
   }
 }

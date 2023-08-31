@@ -216,8 +216,8 @@ public class UI_dialogue : UI_default
     int _currentvalue = 0, _checkvalue = 0;    //기술 체크에만 사용
     int _successpercent = 0;                   //성공 확률(골드 혹은 기술 체크) 
     bool _issuccess = false;  
-    int _pluspercent = GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Academy) ? ConstValues.PlaceEffect_acardemy : 0;
-                                               //학술원 방문 시 확률 증가 값
+    int _pluspercent = GameManager.Instance.MyGameData.LibraryEffect ? ConstValues.PlaceEffect_Library : 0;
+                                               //도서관 방문 시 확률 증가 값
     //아카데미 장소 효과 있으면 확률 증가
     switch (_selectiondata.ThisSelectionType)
     {
@@ -243,7 +243,7 @@ public class UI_dialogue : UI_default
           int _goldsuccesspercent = GameManager.Instance.MyGameData.Gold >= _paygoldvalue ? 100 : GameManager.Instance.MyGameData.CheckPercent_money(_paygoldvalue);
           if (_goldsuccesspercent + _pluspercent >= 100)
           {
-            if (_goldsuccesspercent < 100 && !_pluspercent.Equals(0)) GameManager.Instance.MyGameData.PlaceEffects.Remove(PlaceType.Academy);
+            if (_goldsuccesspercent < 100 && !_pluspercent.Equals(0)) GameManager.Instance.MyGameData.LibraryEffect = false;
             //장소 효과의 도움을 받아 성공한 것이라면 장소 효과 만료
             _issuccess = true;
             GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.PayGoldValue_modified;
@@ -254,7 +254,7 @@ public class UI_dialogue : UI_default
           {
             if (Random.Range(0, 100) < _goldsuccesspercent + _pluspercent)
             {
-              if (_goldsuccesspercent < 100 && !_pluspercent.Equals(0)) GameManager.Instance.MyGameData.PlaceEffects.Remove(PlaceType.Academy);
+              if (_goldsuccesspercent < 100 && !_pluspercent.Equals(0)) GameManager.Instance.MyGameData.LibraryEffect = false;
               int _elsevalue = GameManager.Instance.MyGameData.PayGoldValue_modified - GameManager.Instance.MyGameData.Gold;
               //장소 효과의 도움을 받아 성공한 것이라면 장소 효과 만료
               _issuccess = true;
@@ -280,7 +280,7 @@ public class UI_dialogue : UI_default
           _issuccess = true;
           if (_successpercent < 100 && _pluspercent > 0)
           {
-            GameManager.Instance.MyGameData.PlaceEffects.Remove(PlaceType.Academy);
+            GameManager.Instance.MyGameData.LibraryEffect = false;
           }
           //장소 효과의 도움을 받아 성공한 것이라면 효과 만료
         }
@@ -296,7 +296,7 @@ public class UI_dialogue : UI_default
           _issuccess = true;
           if (_successpercent < 100 && _pluspercent > 0)
           {
-            GameManager.Instance.MyGameData.PlaceEffects.Remove(PlaceType.Academy);
+            GameManager.Instance.MyGameData.LibraryEffect = false;
           }
           //장소 효과의 도움을 받아 성공한 것이라면 효과 만료
         }

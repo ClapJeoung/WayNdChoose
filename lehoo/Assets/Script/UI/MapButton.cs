@@ -9,18 +9,20 @@ public class MapButton : ReturnButton
     base.Clicked();
     UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.4f,UIManager.Instance.UIPanelCLoseCurve));
 
-    if (GameManager.Instance.MyGameData.CurrentQuest == QuestType.Wolf)
+    switch (GameManager.Instance.MyGameData.QuestType)
     {
-      switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
-      {
-        case 0:
-          if (UIManager.Instance.QuestUI_Wolf.IsOpen) UIManager.Instance.QuestUI_Wolf.CloseUI_Prologue();
-          break;
-        case 1:
-          break;
-        case 2:
-          break;
-      }
+      case QuestType.Wolf:
+        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+        {
+          case 0:
+            if (UIManager.Instance.QuestUI_Wolf.IsOpen) UIManager.Instance.QuestUI_Wolf.CloseUI_Prologue();
+            break;
+          case 1:
+            break;
+          case 2:
+            break;
+        }
+        break;
     }
     UIManager.Instance.MyMap.OpenUI();
 

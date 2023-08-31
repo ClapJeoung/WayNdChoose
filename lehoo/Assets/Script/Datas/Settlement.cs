@@ -7,7 +7,6 @@ using System.Linq;
 
 public class Settlement
 {
-  public SkillType LibraryType = SkillType.Conversation;
   public Settlement(SettlementType settletype)
   {
     Type = settletype;
@@ -35,6 +34,71 @@ public class Settlement
       }
       return settlementplaces;
     }
+  }
+  public void SetBlockedPlaces()
+  {
+    int _count = 0;
+    float _progress = GameManager.Instance.MyGameData.Quest_Wolf_Progress/100.0f;
+    List<PlaceType> _randomplaces = new List<PlaceType>();
+    foreach (var place in Settlementplaces) _randomplaces.Add(place);
+    _randomplaces.Sort((a, b) => Random.Range(0, 2) == 0 ? 0:1);
+    switch (Type)
+    {
+      case SettlementType.Town:
+        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+        {
+          case 1:
+            if (Random.Range(0, 100) < Mathf.Lerp(0, 100,  _progress)) _count = 0;
+            else _count = 1;
+            break;
+          case 2:
+            if (Random.Range(0, 100) < Mathf.Lerp(0, 100, Mathf.Pow(_progress, 0.5f))) _count = 0;
+            else _count = 1;
+            break;
+          case 3:
+            _count = 1;
+            break;
+        }
+
+        break;
+      case SettlementType.City:
+        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+        {
+          case 1:
+            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, _progress)) _count = 0;
+            else _count = 1;
+            break;
+          case 2:
+            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, _progress)) _count = 1;
+            else _count = 2;
+            break;
+          case 3:
+            _count = 1;
+            break;
+        }
+
+        break;
+      case SettlementType.Castle:
+        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+        {
+          case 1:
+            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, Mathf.Pow(_progress, 0.4f))) _count = 1;
+            else _count = 2;
+            break;
+          case 2:
+            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, _progress)) _count = 2;
+            else _count = 3;
+            break;
+          case 3:
+            _count = 3;
+            break;
+        }
+
+        break;
+    }
+
+    GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Clear();
+    for (int i = 0; i < _count; i++) GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Add(_randomplaces[i]);
   }
   public SettlementType Type;
   public int Index=-1;

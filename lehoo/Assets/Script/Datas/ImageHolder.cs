@@ -84,6 +84,12 @@ public class ImageHolder : ScriptableObject
     public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
   public List<Sprite> EndingIllusts=new List<Sprite>();//엔딩 일러스트
+  public Sprite QuestIcon_Cult = null;
+  public Sprite QuestIcon_Hideout_Idle = null;
+  public Sprite QuestIcon_Hideout_Finish = null;
+  public Sprite QuestIcon_Wolf = null;
+  public Sprite QuestIcon_Ritual_Idle = null;
+  public Sprite QuestIcon_Ritual_Finish = null;
     public List<Sprite> QuestIllust_Wolf = new List<Sprite>();          //늑대 관련 퀘스트 일러스트
     public Sprite GetQuestIllust(QuestType type,string id)
     {

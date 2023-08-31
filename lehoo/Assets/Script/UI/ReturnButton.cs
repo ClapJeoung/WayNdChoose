@@ -14,6 +14,8 @@ public class ReturnButton : MonoBehaviour
   public UI_default CurrentUI = null;
   public RectTransform MyRect = null;
   public CanvasGroup MyGroup = null;
+  public TextMeshProUGUI MyText = null;
+  public bool IsMapButton = false;
   public Vector2 LeftOutsidePos = Vector2.zero;
   public Vector2 LeftInsidePos = Vector2.zero;
   public Vector2 RightOutsidePos=Vector2.zero;
@@ -98,6 +100,7 @@ public class ReturnButton : MonoBehaviour
     Vector2 _startpos = Dir == 0 ? LeftOutsidePos : RightOutsidePos;
     Vector2 _endpos = Dir == 0 ? LeftInsidePos : RightInsidePos;
     StartCoroutine(UIManager.Instance.moverect(MyRect, _startpos, _endpos, AppearTime, UIManager.Instance.UIPanelOpenCurve));
+    MyText.text = IsMapButton == true ? GameManager.Instance.GetTextData("GOTOMAP") : GameManager.Instance.GetTextData("GOTOSETTLEMENT");
   }
   public virtual void Close()
   {

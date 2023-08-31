@@ -485,7 +485,7 @@ public class GameManager : MonoBehaviour
   private IEnumerator startnewgame(QuestType newquest)
   {
     MyGameData = new GameData();//새로운 게임 데이터 생성
-    MyGameData.CurrentQuest= newquest;
+    MyGameData.QuestType= newquest;
 
     yield return StartCoroutine(createnewmap());//새 맵 만들기
 
@@ -496,7 +496,7 @@ public class GameManager : MonoBehaviour
     yield return StartCoroutine(UIManager.Instance.opengamescene());
     UIManager.Instance.UpdateAllUI();
     UIManager.Instance.UpdateMap_SetPlayerPos(MyGameData.Coordinate);
-    switch (MyGameData.CurrentQuest)
+    switch (MyGameData.QuestType)
     {
       case QuestType.Wolf:UIManager.Instance.QuestUI_Wolf.OpenUI_Prologue((QuestHolder_Wolf)MyGameData.CurrentQuestData); break;
     }
@@ -577,28 +577,26 @@ public class GameManager : MonoBehaviour
   public void EnterSettlement(Settlement targetsettlement)
   {
     MyGameData.CurrentSettlement=targetsettlement;
-    if(MyGameData.CurrentSettlement.Type==SettlementType.Castle) MyGameData.CurrentSettlement.LibraryType = (SkillType)Random.Range(0, 4);
 
-    if (MyGameData.CurrentQuest == QuestType.Wolf)
+    switch (MyGameData.QuestType)
     {
-      if (MyGameData.Quest_Wolf_Phase == 0)
-      {
-
-      }//탐문 단계
-      else if (MyGameData.Quest_Wolf_Phase == 1)
-      {
-        switch (MyGameData.Quest_Wolf_Type)
+      case QuestType.Wolf:
+        if (MyGameData.Quest_Wolf_Phase == 0)
         {
-          case 0:
-            break;
+          EventManager.Instance.SetQuestEvent_Wolf_Searching(MyGameData.Quest_Wolf_Progress);
+        }//탐문 단계
+        else if (MyGameData.Quest_Wolf_Phase == 1)
+        {
+          switch (MyGameData.Quest_Wolf_Type)
+          {
+            case 0:
+              break;
 
-          case 1:
-            break;
+            case 1:
+              break;
+          }
         }
-      }
-    }
-    else
-    {
+        break;
     }
 
   }

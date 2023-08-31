@@ -12,9 +12,17 @@ public class UI_Settlement : UI_default
   private WaitForSeconds LittleWait = new WaitForSeconds(0.2f);
   private float UICloseMoveTime = 0.5f;
 
-  [SerializeField] private TextMeshProUGUI SettleNameText = null;
+  [SerializeField] private TextMeshProUGUI SettlementNameText = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
-  [SerializeField] private List<Button> PlaceIcons=new List<Button>();
+  [SerializeField] private List<PlaceIconScript> PlaceIcons=new List<PlaceIconScript>();
+  private PlaceIconScript GetPlacIconScript(PlaceType placeType)
+  {
+    for(int i=0;i<PlaceIcons.Count;i++)
+    {
+      if (PlaceIcons[i].MyType == placeType) return PlaceIcons[i];
+    }
+    return null;
+  }
   [SerializeField] private TextMeshProUGUI PlaceName = null;
   [SerializeField] private TextMeshProUGUI PlaceDescription = null;
   [SerializeField] private TextMeshProUGUI PlaceEffect = null;
@@ -35,13 +43,27 @@ public class UI_Settlement : UI_default
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
 
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
-    SettleNameText.text = CurrentSettlement.Name;
+    SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
 
-    for(int i=0; i < PlaceIcons.Count; i++)
+    int _placecount = 0;
+    switch (CurrentSettlement.Type)
     {
-      if (CurrentSettlement.Settlementplaces.Contains((PlaceType)i)) PlaceIcons[i].interactable = true;
-      else PlaceIcons[i].interactable = false;
+      case SettlementType.Town: _placecount = 2; break;
+      case SettlementType.City:_placecount = 3;break;
+      case SettlementType.Castle:_placecount = 4;break;
+    }
+    for (int i = 0; i < PlaceIcons.Count; i++)
+    {
+      if (i < _placecount)
+      {
+        if (PlaceIcons[i].gameObject.activeInHierarchy == false) PlaceIcons[i].gameObject.SetActive(true);
+        PlaceIcons[i].OpenIcon();
+      }
+      else
+      {
+        if (PlaceIcons[i].gameObject.activeInHierarchy == true) PlaceIcons[i].gameObject.SetActive(false);
+      }
     }
 
     PlaceName.text = "";
@@ -108,70 +130,89 @@ public class UI_Settlement : UI_default
   }
   public void SelectPlace(int index)
   {
+    GetPlacIconScript(SelectedPlace).SetIdleColor();
     SelectedPlace = (PlaceType)index;
 
-    PlaceName.text = GameManager.Instance.GetTextData(SelectedPlace, 0);
-    PlaceDescription.text = GameManager.Instance.GetTextData(SelectedPlace, 1);
-    string _effect = GameManager.Instance.GetTextData(SelectedPlace, 3);
-    switch (SelectedPlace)
+    switch (GameManager.Instance.MyGameData.QuestType)
     {
-      case PlaceType.Residence:
-        _effect = string.Format(_effect, ConstValues.PlaceEffect_residence);
-        break;
-      case PlaceType.Marketplace:
-        _effect = string.Format(_effect, ConstValues.PlaceEffect_marketplace);
-        break;
-      case PlaceType.Temple:
-        _effect = string.Format(_effect, ConstValues.PlaceEffect_temple);
-        break;
-      case PlaceType.Library:
-        _effect = string.Format(_effect, ConstValues.PlaceDuration,CurrentSettlement.LibraryType, ConstValues.PlaceEffect_Library);
-        break;
-      case PlaceType.Theater:
-        //서비스 종료다...!
-        break;
-      case PlaceType.Academy:
-        _effect = string.Format(_effect,ConstValues.PlaceDuration, ConstValues.PlaceEffect_acardemy);
+      case QuestType.Wolf:
+        GetPlacIconScript(SelectedPlace).SetSelectColor();
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Contains(SelectedPlace))
+        {
+          PlaceName.text = "";
+          PlaceDescription.text = GameManager.Instance.GetTextData("Quest_Wolf_Cult_Blocked");
+          RestButtonText_Gold.text = GameManager.Instance.GetTextData("REST");
+          RestButtonText_Sanity.text= GameManager.Instance.GetTextData("REST");
+          RestButton_Gold.interactable = false;
+          RestButton_Sanity.interactable = false;
+        }
+        else
+        {
+          PlaceName.text = GameManager.Instance.GetTextData(SelectedPlace, 0);
+          PlaceDescription.text = GameManager.Instance.GetTextData(SelectedPlace, 1);
+          string _effect = GameManager.Instance.GetTextData(SelectedPlace, 3);
+          switch (SelectedPlace)
+          {
+            case PlaceType.Residence:
+              _effect = string.Format(_effect, ConstValues.PlaceEffect_residence);
+              break;
+            case PlaceType.Marketplace:
+              _effect = string.Format(_effect, ConstValues.PlaceEffect_marketplace);
+              break;
+            case PlaceType.Temple:
+              _effect = string.Format(_effect, ConstValues.PlaceEffect_temple);
+              break;
+            case PlaceType.Library:
+              _effect = string.Format(_effect, ConstValues.PlaceEffect_Library);
+              break;
+            case PlaceType.Theater:
+              //서비스 종료다...!
+              break;
+            case PlaceType.Academy:
+              _effect = string.Format(_effect, ConstValues.PlaceDuration, ConstValues.PlaceEffect_acardemy);
+              break;
+          }
+          PlaceEffect.text = _effect;
+
+          int _movepointvalue = 0;
+          int _discomfortvalue = 0;
+          switch (CurrentSettlement.Type)
+          {
+            case SettlementType.Town:
+              _movepointvalue = ConstValues.RestMovePoint_Town;
+              _discomfortvalue = ConstValues.RestDiscomfort_Town;
+              break;
+            case SettlementType.City:
+              _movepointvalue = ConstValues.RestMovePoint_City;
+              _discomfortvalue = ConstValues.RestDiscomfort_City;
+              break;
+            case SettlementType.Castle:
+              _movepointvalue = ConstValues.RestMovePoint_Castle;
+              _discomfortvalue = ConstValues.RestDiscomfort_Castle;
+              break;
+          }
+          if (SelectedPlace == PlaceType.Residence) _movepointvalue++;
+
+          RestButtonText_Sanity.text = string.Format(GameManager.Instance.GetTextData("REST"),
+            GameManager.Instance.GetTextData(StatusType.Sanity, 2),
+            WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.SettleRestCost_Sanity),
+            WNCText.GetMovepointColor("+" + _movepointvalue),
+            WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+          RestButton_Sanity.interactable = true;
+
+          int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
+
+          RestButtonText_Gold.text = string.Format(GameManager.Instance.GetTextData("REST"),
+            GameManager.Instance.GetTextData(StatusType.Gold, 2),
+            WNCText.GetSanityColor("-" + _goldpayvalue),
+            WNCText.GetMovepointColor("+" + _movepointvalue),
+            WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+
+          if (GameManager.Instance.MyGameData.Gold >= _goldpayvalue) RestButton_Gold.interactable = true;
+          else RestButton_Gold.interactable = false;
+        }
         break;
     }
-    PlaceEffect.text = _effect;
-
-    int _movepointvalue = 0;
-    int _discomfortvalue = 0;
-    switch (CurrentSettlement.Type)
-    {
-      case SettlementType.Town:
-        _movepointvalue = ConstValues.RestMovePoint_Town;
-        _discomfortvalue = ConstValues.RestDiscomfort_Town;
-        break;
-      case SettlementType.City: 
-        _movepointvalue = ConstValues.RestMovePoint_City;
-        _discomfortvalue = ConstValues.RestDiscomfort_City;
-        break;
-      case SettlementType.Castle: 
-        _movepointvalue = ConstValues.RestMovePoint_Castle;
-        _discomfortvalue = ConstValues.RestDiscomfort_Castle;
-        break;
-    }
-    if (SelectedPlace == PlaceType.Residence) _movepointvalue++;
-
-    RestButtonText_Sanity.text = string.Format(GameManager.Instance.GetTextData("REST"),
-      GameManager.Instance.GetTextData(StatusType.Sanity,2),
-      WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.SettleRestCost_Sanity),
-      WNCText.GetMovepointColor("+" + _movepointvalue),
-      WNCText.GetDiscomfortColor("+" + _discomfortvalue));
-    RestButton_Sanity.interactable = true;
-
-    int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
-
-    RestButtonText_Gold.text = string.Format(GameManager.Instance.GetTextData("REST"),
-      GameManager.Instance.GetTextData(StatusType.Gold, 2),
-      WNCText.GetSanityColor("-" + _goldpayvalue),
-      WNCText.GetMovepointColor("+" + _movepointvalue),
-      WNCText.GetDiscomfortColor("+" + _discomfortvalue));
-
-    if (GameManager.Instance.MyGameData.Gold >= _goldpayvalue) RestButton_Gold.interactable = true;
-    else RestButton_Gold.interactable = false;
   }
   public void StartRest_Sanity()
     {
