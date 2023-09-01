@@ -19,8 +19,14 @@ public class ImageHolder : ScriptableObject
 
   public Sprite MovePointIcon_Enable = null;
   public Sprite MovePointIcon_Lack = null;
+  public Sprite TownIcon_black = null;
+  public Sprite TownIcon_white = null;
   public List<Sprite> TownIllust=new List<Sprite>();                 //마을 일러스트
+  public Sprite CityIcon_black = null;
+  public Sprite CityIcon_white = null;
   public List<Sprite> CityIllust=new List<Sprite>();                 //도시 일러스트
+  public Sprite CastleIcon_black = null;
+  public Sprite CastleIcon_white = null;
   public List<Sprite> CastleIllust=new List<Sprite>();               //성채 일러스트
   [Space(10)]
   public Sprite UnknownTheme = null;
@@ -68,15 +74,15 @@ public class ImageHolder : ScriptableObject
   public Sprite LibraryIcon = null;
   public Sprite TheaterIcon = null;
   public Sprite AcademyIcon = null;
-  public Sprite GetPlaceIcon(PlaceType placetype)
+  public Sprite GetPlaceIcon(SectorType placetype)
   {
     switch (placetype)
     {
-      case PlaceType.Residence:return ResidenceIcon;
-      case PlaceType.Marketplace:return MarketPlaceIcon;
-      case PlaceType.Temple:return TempleIcon;
-      case PlaceType.Library:return LibraryIcon;
-      case PlaceType.Theater:return TheaterIcon;
+      case SectorType.Residence:return ResidenceIcon;
+      case SectorType.Marketplace:return MarketPlaceIcon;
+      case SectorType.Temple:return TempleIcon;
+      case SectorType.Library:return LibraryIcon;
+      case SectorType.Theater:return TheaterIcon;
       default:return AcademyIcon;
     }
   }

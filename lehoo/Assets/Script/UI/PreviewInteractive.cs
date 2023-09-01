@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
-Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold}
+Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,WolfPanel_Cult,WolfPanel_Wolf}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -18,7 +18,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public int RewardValue = 0;
   public int ExpIndex = 0;
   public Experience MyEXP = null;
-  public PlaceType MyPlaceType = PlaceType.NULL;
+  public SectorType MyPlaceType = SectorType.NULL;
   public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -121,6 +121,12 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.RestGold:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"));
+        break;
+      case PreviewPanelType.WolfPanel_Cult:
+        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle, GameManager.Instance.GetTextData("Quest_Wolf_Cult_Sidepanel_Preview"), new Vector2(1.1f, 0.5f)) ;
+        break;
+      case PreviewPanelType.WolfPanel_Wolf:
+        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Ritual_Idle,GameManager.Instance.GetTextData("Quest_Wolf_Wolf_Sidepanel_Preview"), new Vector2(1.1f, 0.5f));
         break;
     }
   }

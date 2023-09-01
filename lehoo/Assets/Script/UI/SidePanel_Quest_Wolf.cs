@@ -47,7 +47,7 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
       {
         Cult_Normal_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle;
         Cult_Normal_Icons[i].color = ActiveColor;
-        Cult_Normal_Progresses[i].text = GameManager.Instance.MyGameData.Quest_Wolf_Progress.ToString()+"%";
+        Cult_Normal_Progresses[i].text = GameManager.Instance.MyGameData.Quest_Wolf_Progress <=100? GameManager.Instance.MyGameData.Quest_Wolf_Progress .ToString():"100"+ "%";
       }
       else
       {

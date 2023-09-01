@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int Quest_Wolf_TokenDuration = 7;
+  public const int Quest_Wolf_Cult_Progress_TokenSector = 20, Quest_Wolf_Cult_Progress_NoTokenSector = 10,
+   Quest_Wolf_Cult_Progress_EventClear = 15, Quest_Wolf_Cult_Progress_EventFail = 5;
   public const int Quest_Wolf_Searching_Sanityrewardvalue = 15;
 
   public const int GoodExpAsSanity = 15;
@@ -20,20 +23,11 @@ public static class ConstValues
   public const float LackOfMovePointValue = 1.5f;
   public const int MoveCost_Sanity_1_min = 8, MoveCost_Sanity_1_max = 15, MoveCost_Sanity_2_min = 10, MoveCost_Sanity_2_max = 20;
   public const int MoveCost_Gold_1_min = 5, MoveCost_Gold_1_max = 12, MoveCost_Gold_2_min = 8, MoveCost_Gold_2_max = 15;
-  public const int ActivePlaceCount_Town = 1, ActivePlaceCount_City = 2, ActivePlaceCount_Castle = 3;
+  public const int ActiveSectorCount_Town = 1, ActiveSectorCount_City = 2, ActiveSectorCount_Castle = 3;
 
-    public const int EventPer_Settle_Follow_Envir_Place = 35,
-                     EventPer_Settle_Follow_Envir_NoPlace = 14,
-                     EventPer_Settle_Follow_NoEnvir_Place = 14,
-                     EventPer_Settle_Follow_NoEnvir_NoPlace = 7,
-                     EventPer_Settle_Normal_Envir_Place = 15,
-                     EventPer_Settle_Normal_Envir_NoPlace = 6,
-                     EventPer_Settle_Normal_NoEnvir_Place = 6,
-                     EventPer_Settle_Normal_NoEnvir_NoPlace = 3;
-    public const int EventPer_Outer_Follow_Envir = 21,
-                     EventPer_Outer_Follow_NoEnvir = 7,
-                     EventPer_Outer_Normal_Envir = 9,
-                     EnvirPer_Outer_Normal_NoEnvir = 3;
+  public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
+                   EventPer_Sector = 2, EventPer_NoSector = 1,
+                   EventPer_Quest = 2, EventPer_Follow = 3, EventPer_Normal = 1;
 
   public const int MapSize = 40;
     
@@ -45,7 +39,7 @@ public static class ConstValues
 
   public const int ForestRange = 1, RiverRange = 2, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
-  public const int TownPlaceCount = 1, CityPlaceCount = 2, CastlePlaceCount = 3;
+  public const int TownSectorCount = 1, CitySectorCount = 2, CastleSectorCount = 3;
   public const int TownDiscomfortDeg = 1,CityDiscomfortDeg=2,CastleDiscomfortDeg=3;
 
   public const int StartGold = 50;
@@ -100,14 +94,14 @@ public static class ConstValues
 
   public const int SanityLoseByMadnessExp = 20;
 
-    public const int PlaceEffectMaxTurn = 3;
-    public const int PlaceEffect_residence = 1;
-    public const int PlaceEffect_marketplace = 20;
-    public const int PlaceEffect_temple = 1;
-  public const int PlaceEffect_Library = 15;
-    public const int PlaceEffect_theater = 3;
-    public const int PlaceEffect_acardemy = 10;
-  public const int PlaceDuration = 5;
+    public const int SectorEffectMaxTurn = 3;
+    public const int SectorEffect_residence = 1;
+    public const int SectorEffect_marketSector = 20;
+    public const int SectorEffect_temple = 1;
+  public const int SectorEffect_Library = 15;
+    public const int SectorEffect_theater = 3;
+    public const int SectorEffect_acardemy = 10;
+  public const int SectorDuration = 5;
 
   public const int AmplifiedLengthMin = 6;
   public const float LengthAmplifiedValue = 1.2f;
@@ -122,33 +116,50 @@ public static class ConstValues
 }
 public class GameData    //게임 진행도 데이터
 {
-  #region #지도 관련#
+  #region #지도,정착지 관련#
   public MapData MyMapData = null;
   public Vector2 Coordinate = Vector2.zero;
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
+  public void AddDiscomfort(Settlement settlement)
+  {
+    for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
+    {
+      if (settlement == GameManager.Instance.MyGameData.MyMapData.AllSettles[i]) settlement.AddDiscomfort();
+      else
+      {
+        GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
+      }
+    }
+  }
+  public void DownAllDiscomfort()
+  {
+    for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
+      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
+  }
+
   public bool LibraryEffect = false;
-  public void AddPlaceEffectBeforeStartEvent(PlaceType placetype)
+  public void AddPlaceEffectBeforeStartEvent(SectorType placetype)
   {
     switch (placetype)
     {
-      case PlaceType.Residence:
+      case SectorType.Residence:
 
         break;//거주지 - 휴식 시 추가 이동력 회복
 
-      case PlaceType.Marketplace:
-        Gold += ConstValues.PlaceEffect_marketplace;
+      case SectorType.Marketplace:
+        Gold += ConstValues.SectorEffect_marketSector;
         break;//시장- 일시불 골드 획득
 
-      case PlaceType.Temple:
+      case SectorType.Temple:
         DownAllDiscomfort();
         break;//사원- 모든 불쾌 1 감소
 
-      case PlaceType.Library:
+      case SectorType.Library:
         if (GameManager.Instance.MyGameData.LibraryEffect == false) GameManager.Instance.MyGameData.LibraryEffect = true;
 
         break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
 
-      case PlaceType.Theater:
+      case SectorType.Theater:
 
         LongTermEXP.Duration = LongTermEXP.Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP.Duration + 2;
         for (int i = 0; i < ShortTermEXP.Length; i++)
@@ -157,7 +168,7 @@ public class GameData    //게임 진행도 데이터
 
         break;//극장- 모든 경험 2턴 증가(삭제됨)
 
-      case PlaceType.Academy:
+      case SectorType.Academy:
         break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
     }
   }
@@ -189,9 +200,24 @@ public class GameData    //게임 진행도 데이터
 
         UIManager.Instance.UpdateExpLongTermIcon();
         UIManager.Instance.UpdateExpShortTermIcon();
+
+        switch (QuestType)
+        {
+          case QuestType.Wolf:
+            if (Quest_Wolf_Phase > 0 && Quest_Wolf_Type == 0)
+            {
+              for(int i = 0; i < Quest_Wolf_Cult_TokenedSectors.Count; i++)
+              {
+                if (Quest_Wolf_Cult_TokenedSectors[(SectorType)i] > 0) Quest_Wolf_Cult_TokenedSectors[(SectorType)i]--;
+              }
+            }
+            
+            break;
+        }
+
         /*
-                List<PlaceType> _deleteplace = new List<PlaceType>();
-                List<PlaceType> _downplace = new List<PlaceType>();
+                List<SectorType> _deleteplace = new List<SectorType>();
+                List<SectorType> _downplace = new List<SectorType>();
                 foreach(var _data in PlaceEffects)
                 {
                     if (_data.Value.Equals(1)) _deleteplace.Add(_data.Key);
@@ -310,24 +336,6 @@ public class GameData    //게임 진행도 데이터
     return (int)(_value*GetGoldPayModify(true));
   }
   #endregion
-
-
-  public void AddDiscomfort(Settlement settlement)
-  {
-    for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
-    {
-      if (settlement == GameManager.Instance.MyGameData.MyMapData.AllSettles[i]) settlement.AddDiscomfort();
-      else
-      {
-        GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
-      }
-    }
-  }
-  public void DownAllDiscomfort()
-  {
-    for(int i=0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count;i++)
-      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
-  }
 
   #region #수치#
   private int hp = 0;
@@ -741,8 +749,8 @@ public class GameData    //게임 진행도 데이터
   /// </summary>
   public int Quest_Wolf_Type = 0;
   public int Quest_Wolf_Progress = 0;
-  public List<PlaceType> Quest_Wolf_Cult_BlockedPlaces = new List<PlaceType>();
-  public Dictionary<PlaceType,int> Quest_Wolf_Cult_PlaceTokens=new Dictionary<PlaceType,int>();
+  public List<SectorType> Quest_Wolf_Cult_BlockedPlaces = new List<SectorType>();
+  public Dictionary<SectorType,int> Quest_Wolf_Cult_TokenedSectors=new Dictionary<SectorType,int>();
   #endregion
 
   #region #각종 보정치 가져오기#
@@ -953,7 +961,7 @@ public class Skill
     {
       return 0;
 
-     /* if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(PlaceType.Library) && GameManager.Instance.MyGameData.LibraryEffectTarget == MySkillType)
+     /* if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(SectorType.Library) && GameManager.Instance.MyGameData.LibraryEffectTarget == MySkillType)
         return ConstValues.PlaceEffect_Library;
       return 0;
      */

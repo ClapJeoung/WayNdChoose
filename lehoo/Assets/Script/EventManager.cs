@@ -32,7 +32,7 @@ public class EventManager : MonoBehaviour
   /// 정착지에서 장소를 선택해 이벤트 실행
   /// </summary>
   /// <param name="place"></param>
-  public void SetSettleEvent(PlaceType place)
+  public void SetSettleEvent(SectorType place)
   {
     GameManager.Instance.MyGameData.AddPlaceEffectBeforeStartEvent(place);
 
@@ -48,8 +48,7 @@ public class EventManager : MonoBehaviour
   /// <param name="_tiledata"></param>
   public void SetOutsideEvent(TileInfoData _tiledata)
   {
-    EventDataDefulat _event = null;
-    _event = MyEventHolder.ReturnQuestEvent(_tiledata);
+    EventDataDefulat _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
     if (_event == null) _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
     //퀘스트가 존재한다면 해당 퀘스트 이벤트를 받아오고 적합한 퀘스트 이벤트가 없을 시 평범한 이벤트를
 

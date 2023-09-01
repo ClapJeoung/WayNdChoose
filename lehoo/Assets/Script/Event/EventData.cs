@@ -30,39 +30,9 @@ public class EventHolder
       string[] _seasons = _data.Season.Split('@');
       for (int i = 0; i < _seasons.Length; i++) _data.Season.ElementAtOrDefault(int.Parse(_seasons[i]));
 
-      Data.AppearSpace = (EventAppearType)int.Parse(_data.Settlement);
-
-      string[] _places = _data.Place.Split('@');
-      foreach (string place in _places)
-      {
-        int _index = int.Parse(place);
-        PlaceType _targetplace = PlaceType.NULL;
-        if (_index < 3)
-        {
-          _targetplace = (PlaceType)_index;
-        }
-        else if (_index > 2)
-        {
-          if (Data.AppearSpace.Equals(EventAppearType.City))
-          {
-            switch (_index)
-            {
-              case 3: _targetplace = PlaceType.Library; break;
-            }
-          }
-          else
-          {
-            switch (_index)
-            {
-              case 3: _targetplace = PlaceType.Theater; break;
-              case 4: _targetplace = PlaceType.Academy; break;
-            }
-          }
-        }
-      }
-
+      Data.AppearSpace = (EventAppearType)int.Parse(_data.AppearPlace);
     }
-
+    if(_data.Sector!="")Data.Sector=(SectorType)int.Parse(_data.Sector);
     if (_data.Environment != "")
     {
       Data.EnvironmentType = (EnvironmentType)int.Parse(_data.Environment);
@@ -405,17 +375,25 @@ public class EventHolder
   /// </summary>
   /// <param name="envir"></param>
   /// <returns></returns>
-  public EventDataDefulat ReturnOutsideEvent(List<EnvironmentType> envir)
+  public EventDataDefulat ReturnOutsideEvent(List<EnvironmentType> envirs)
   {
-        List<EventDataDefulat> _follow_envir = new List<EventDataDefulat>();
-        List<EventDataDefulat> _follow_noenvir = new List<EventDataDefulat>();
-        List<EventDataDefulat> _normal_envir = new List<EventDataDefulat>();
-        List<EventDataDefulat> _normal_noenvir = new List<EventDataDefulat>();
+    List<EventDataDefulat> _allevents = new List<EventDataDefulat>();
 
-        List<EventDataDefulat> _temp = new List<EventDataDefulat>();
+    switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Wolf:
+        foreach (var _questevent in Quest_Wolf.GetAvailableEvents())
+        {
+          if (_questevent.AppearSpace != EventAppearType.Outer) continue;
+          _allevents.Add(_questevent);
+        }
+        break;
+    }
     foreach (var _follow in AllFollowEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
+      if (_follow.AppearSpace!=EventAppearType.Outer) continue;
+
       switch (_follow.FollowType)
       {
         case FollowType.Event:  //이벤트 연계일 경우 
@@ -444,12 +422,12 @@ public class EventHolder
               case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
             }
           }
-          if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
+          if (_checktarget.Contains(_follow.FollowTarget)) _allevents.Add(_follow);
           break;
         case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-            if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _temp.Add(_follow);
+          if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _allevents.Add(_follow);
           foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+            if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);
           break;
         case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
           int _targetlevel = 0;
@@ -466,84 +444,82 @@ public class EventHolder
               _type = SkillType.Intelligence; break;
           }
           _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
-          if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
+          if (_follow.FollowTargetLevel <= _targetlevel) _allevents.Add(_follow);
           break;
       }
     }
-    foreach (var _event in _temp)
-    {
-      if (_event.AppearSpace.Equals(EventAppearType.Outer))
-      {
-                if (_event.EnvironmentType == EnvironmentType.NULL) _follow_noenvir.Add(_event);
-                else if (envir.Contains(_event.EnvironmentType)) _follow_envir.Add(_event);
-      }
-    }//연계 충족된 이벤트들 중 환경, 계절 가능한 것들 리스트
-    _temp.Clear();
     foreach (var _event in AllNormalEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
-            if (_event.AppearSpace.Equals(EventAppearType.Outer))
-            {
-                if (_event.EnvironmentType == EnvironmentType.NULL) _normal_noenvir.Add(_event);
-                else if (envir.Contains(_event.EnvironmentType)) _normal_envir.Add(_event);
-            }
-        }//일반 야외 이벤트 중 환경, 계절 가능한 것 들 리스트
+      if (_event.AppearSpace!=EventAppearType.Outer) continue;
 
-        List<int> _perlist = new List<int>();
-        Dictionary<int, List<EventDataDefulat>> _listbyper = new Dictionary<int, List<EventDataDefulat>>();
-        if (_follow_envir.Count > 0) 
-        { 
-            _perlist.Add(ConstValues.EventPer_Outer_Follow_Envir);
-            _listbyper.Add(ConstValues.EventPer_Outer_Follow_Envir, _follow_envir);
-        }
-        if (_follow_noenvir.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Outer_Follow_NoEnvir);
-            _listbyper.Add(ConstValues.EventPer_Outer_Follow_NoEnvir, _follow_noenvir);
-        }
-        if (_normal_envir.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Outer_Normal_Envir);
-            _listbyper.Add(ConstValues.EventPer_Outer_Normal_Envir, _normal_envir);
-        }
-        if (_normal_noenvir.Count > 0)
-        {
-            _perlist.Add(ConstValues.EnvirPer_Outer_Normal_NoEnvir);
-            _listbyper.Add(ConstValues.EnvirPer_Outer_Normal_NoEnvir, _normal_noenvir);
-        }
-        int _max = 0;
-        foreach (var value in _perlist) _max += value;
+      _allevents.Add(_event);
+    }//해당 장소의 적합한 일반 이벤트 리스트
 
-        int _value = Random.Range(0, _max);
-        int _sum = 0;
-        List<EventDataDefulat> _targetlist = new List<EventDataDefulat>();
-        for(int i = 0; i < _perlist.Count; i++)
-        {
-            _sum += _perlist[i];
-            if (_value < _sum) { _targetlist = _listbyper[_perlist[i]];break; }
-        }
-        return _targetlist[Random.Range(0,_targetlist.Count)];
-    }
-    /// <summary>
-    /// 정착지의 장소 이벤트 반환
-    /// </summary>
-    /// <param name="settletype"></param>
-    /// <param name="placetype"></param>
-    /// <param name="placelevel"></param>
-    /// <param name="envir"></param>
-    /// <returns></returns>
-    public EventDataDefulat ReturnPlaceEvent(SettlementType settletype,PlaceType placetype,List<EnvironmentType> envir)
+    List<EventDataDefulat> _envirevents = new List<EventDataDefulat>();
+    List<EventDataDefulat> _noenvirevents = new List<EventDataDefulat>();
+    for (int i = 0; i < _allevents.Count; i++)
     {
-        List<EventDataDefulat> _follow_envir_place = new List<EventDataDefulat>();
-        List<EventDataDefulat> _follow_envir_noplace = new List<EventDataDefulat>();
-        List<EventDataDefulat> _follow_noenvir_place = new List<EventDataDefulat>();
-        List<EventDataDefulat> _follow_noenvir_noplace = new List<EventDataDefulat>();
-        List<EventDataDefulat> _normal_envir_place = new List<EventDataDefulat>();
-        List<EventDataDefulat> _normal_envir_noplace = new List<EventDataDefulat>();
-        List<EventDataDefulat> _normal_noenvir_place = new List<EventDataDefulat>();
-        List<EventDataDefulat> _normal_noenvir_noplace = new List<EventDataDefulat>();
+      if (envirs.Contains(_allevents[i].EnvironmentType)) _envirevents.Add(_allevents[i]);
+      else if (_allevents[i].EnvironmentType == EnvironmentType.NULL) _noenvirevents.Add(_allevents[i]);
+    }
+    _allevents.Clear();
+    if (_envirevents.Count > 0 && _noenvirevents.Count > 0)
+    {
+      if (Random.Range(0, ConstValues.EventPer_Envir + ConstValues.EventPer_NoEnvir) < ConstValues.EventPer_Envir)
+        foreach (var _event in _envirevents) _allevents.Add(_event);
+      else
+        foreach (var _event in _noenvirevents) _allevents.Add(_event);
+    }
+    else if (_envirevents.Count == 0 && _noenvirevents.Count > 0)
+    {
+      foreach (var _event in _noenvirevents) _allevents.Add(_event);
+    }
+    else if (_envirevents.Count > 0 && _noenvirevents.Count == 0)
+    {
+      foreach (var _event in _envirevents) _allevents.Add(_event);
+    }
 
-        List<EventDataDefulat> _temp = new List<EventDataDefulat>();
+    List<EventDataDefulat> _questevents = new List<EventDataDefulat>();
+    List<EventDataDefulat> _followevents = new List<EventDataDefulat>();
+    List<EventDataDefulat> _normalevents = new List<EventDataDefulat>();
+    foreach (var _event in _allevents)
+    {
+      if (_event.GetType() == typeof(QuestEventData_Wolf)) _questevents.Add(_event);
+      else if (_event.GetType() == typeof(FollowEventData)) _followevents.Add(_event);
+      else if (_event.GetType() == typeof(EventData)) _normalevents.Add(_event);
+    }
+    _allevents.Clear();
+    Dictionary<List<EventDataDefulat>, int> _dic = new Dictionary<List<EventDataDefulat>, int>();
+    _dic.Add(_questevents, ConstValues.EventPer_Quest);
+    _dic.Add(_followevents, ConstValues.EventPer_Follow);
+    _dic.Add(_normalevents, ConstValues.EventPer_Normal);
+    var _result = GetListByRatio(_dic);
+
+    return _result[Random.Range(0, _result.Count)];
+  }
+  /// <summary>
+  /// 정착지의 장소 이벤트 반환
+  /// </summary>
+  /// <param name="settletype"></param>
+  /// <param name="placetype"></param>
+  /// <param name="placelevel"></param>
+  /// <param name="envir"></param>
+  /// <returns></returns>
+  public EventDataDefulat ReturnPlaceEvent(SettlementType settletype, SectorType sectortype, List<EnvironmentType> envirs)
+  {
+    List<EventDataDefulat> _allevents= new List<EventDataDefulat>();
+
+    switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Wolf:
+        foreach(var _questevent in Quest_Wolf.GetAvailableEvents())
+        {
+          if (_questevent.RightSpace(settletype) == false) continue;
+          _allevents.Add(_questevent);
+        }
+        break;
+    }
     foreach (var _follow in AllFollowEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
@@ -577,12 +553,12 @@ public class EventHolder
               case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
             }
           }
-          if (_checktarget.Contains(_follow.FollowTarget)) _temp.Add(_follow);
+          if (_checktarget.Contains(_follow.FollowTarget)) _allevents.Add(_follow);
           break;
         case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-          if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _temp.Add(_follow);
+          if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _allevents.Add(_follow);
           foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-            if (_follow.FollowTarget.Equals(_data.ID)) _temp.Add(_follow);
+            if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);
           break;
         case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
           int _targetlevel = 0;
@@ -599,112 +575,105 @@ public class EventHolder
               _type = SkillType.Intelligence; break;
           }
           _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
-          if (_follow.FollowTargetLevel <= _targetlevel) _temp.Add(_follow);
+          if (_follow.FollowTargetLevel <= _targetlevel) _allevents.Add(_follow);
           break;
       }
     }
-    foreach (var _event in _temp)
-        {
-            if (_event.EnvironmentType == EnvironmentType.NULL)
-            {
-                if (_event.Places.Contains(placetype)) _follow_noenvir_place.Add(_event);
-                else _follow_noenvir_noplace.Add(_event);
-            }
-            else if (envir.Contains(_event.EnvironmentType))
-            {
-                if (_event.Places.Contains(placetype)) _follow_envir_place.Add(_event);
-                else _follow_envir_noplace.Add(_event);
-            }
-        }//해당 장소의 적합한 연계 이벤트 리스트
-
     foreach (var _event in AllNormalEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
       if (_event.RightSpace(settletype) == false) continue;
 
-      if (_event.EnvironmentType == EnvironmentType.NULL)
-      {
-        if (_event.Places.Contains(placetype)) _normal_noenvir_place.Add(_event);
-        else _normal_noenvir_noplace.Add(_event);
-      }
-      else if (envir.Contains(_event.EnvironmentType))
-      {
-        if (_event.Places.Contains(placetype)) _normal_envir_place.Add(_event);
-        else _normal_envir_noplace.Add(_event);
-      }
+      _allevents.Add(_event);
     }//해당 장소의 적합한 일반 이벤트 리스트
 
-    List<int> _perlist = new List<int>();
-        Dictionary<int, List<EventDataDefulat>> _listbyper = new Dictionary<int, List<EventDataDefulat>>();
-
-        if (_follow_envir_place.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Follow_Envir_Place);
-            _listbyper.Add(ConstValues.EventPer_Settle_Follow_Envir_Place, _follow_envir_place);
-        }
-        if (_follow_envir_noplace.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Follow_Envir_NoPlace);
-            _listbyper.Add(ConstValues.EventPer_Settle_Follow_Envir_NoPlace, _follow_envir_noplace);
-        }
-        if (_follow_noenvir_place.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Follow_NoEnvir_Place);
-            _listbyper.Add(ConstValues.EventPer_Settle_Follow_NoEnvir_Place, _follow_noenvir_place);
-        }
-        if (_follow_noenvir_noplace.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Follow_NoEnvir_NoPlace);
-            _listbyper.Add(ConstValues.EventPer_Settle_Follow_NoEnvir_NoPlace, _follow_noenvir_noplace);
-        }
-        if (_normal_envir_place.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Normal_Envir_Place);
-            _listbyper.Add(ConstValues.EventPer_Settle_Normal_Envir_Place, _normal_envir_place);
-        }
-        if (_normal_envir_noplace.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Normal_Envir_NoPlace);
-            _listbyper.Add(ConstValues.EventPer_Settle_Normal_Envir_NoPlace, _normal_envir_noplace);
-        }
-        if (_normal_noenvir_place.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Normal_NoEnvir_Place);
-            _listbyper.Add(ConstValues.EventPer_Settle_Normal_NoEnvir_Place, _normal_noenvir_place);
-        }
-        if (_normal_noenvir_noplace.Count > 0)
-        {
-            _perlist.Add(ConstValues.EventPer_Settle_Normal_NoEnvir_NoPlace);
-            _listbyper.Add(ConstValues.EventPer_Settle_Normal_NoEnvir_NoPlace, _normal_noenvir_noplace);
-        }
-
-        int _max = 0;
-        foreach (var value in _perlist) _max += value;
-
-        int _value = Random.Range(0, _max);
-        int _sum = 0;
-        List<EventDataDefulat> _targetlist = new List<EventDataDefulat>();
-        for (int i = 0; i < _perlist.Count; i++)
-        {
-            _sum += _perlist[i];
-            if (_value < _sum) { _targetlist = _listbyper[_perlist[i]]; break; }
-        }
-        return _targetlist[Random.Range(0, _targetlist.Count)];
-
+    List<EventDataDefulat> _envirevents= new List<EventDataDefulat>();
+    List<EventDataDefulat> _noenvirevents = new List<EventDataDefulat>();
+    for(int i = 0; i < _allevents.Count; i++)
+    {
+      if (envirs.Contains(_allevents[i].EnvironmentType)) _envirevents.Add(_allevents[i]);
+      else if (_allevents[i].EnvironmentType == EnvironmentType.NULL) _noenvirevents.Add(_allevents[i]);
     }
-    /// <summary>
-    /// 해당 정착지나 외부에서 사용 가능한 퀘스트 이벤트 하나 반환
-    /// </summary>
-    /// <param name="tiledata"></param>
-    /// <returns></returns>
-    public EventDataDefulat ReturnQuestEvent(TileInfoData tiledata)
-  {
+    _allevents.Clear();
+    if (_envirevents.Count > 0 && _noenvirevents.Count > 0)
+    {
+      if(Random.Range(0,ConstValues.EventPer_Envir+ConstValues.EventPer_NoEnvir)<ConstValues.EventPer_Envir)
+        foreach (var _event in _envirevents) _allevents.Add(_event);
+      else
+        foreach (var _event in _noenvirevents) _allevents.Add(_event);
+    }
+    else if (_envirevents.Count == 0 && _noenvirevents.Count > 0)
+    {
+      foreach(var _event in _noenvirevents)_allevents.Add(_event);
+    }
+    else if (_envirevents.Count > 0 && _noenvirevents.Count == 0)
+    {
+      foreach (var _event in _envirevents) _allevents.Add(_event);
+    }
 
-    Settlement _targetsettlement = tiledata.Settlement;
+    List<EventDataDefulat> _sectorevents = new List<EventDataDefulat>();
+    List<EventDataDefulat> _notsectorevents= new List<EventDataDefulat>();
+    foreach(var _event in _allevents)
+    {
+      if(sectortype==_event.Sector)_sectorevents.Add(_event);
+      else _notsectorevents.Add(_event);
+    }
+    if (_sectorevents.Count > 0 && _notsectorevents.Count > 0)
+    {
+      if (Random.Range(0, ConstValues.EventPer_Sector + ConstValues.EventPer_NoSector) < ConstValues.EventPer_Sector)
+        foreach (var _event in _sectorevents) _allevents.Add(_event);
+      else
+        foreach (var _event in _notsectorevents) _allevents.Add(_event);
+    }
+    else if (_sectorevents.Count == 0 && _notsectorevents.Count > 0)
+    {
+      foreach (var _event in _notsectorevents) _allevents.Add(_event);
+    }
+    else if (_sectorevents.Count > 0 && _notsectorevents.Count == 0)
+    {
+      foreach (var _event in _sectorevents) _allevents.Add(_event);
+    }
 
-    return null;
+    List<EventDataDefulat> _questevents= new List<EventDataDefulat>();
+    List<EventDataDefulat> _followevents= new List<EventDataDefulat>();
+    List<EventDataDefulat> _normalevents=new List<EventDataDefulat>();
+    foreach(var _event in _allevents)
+    {
+      if (_event.GetType() == typeof(QuestEventData_Wolf)) _questevents.Add(_event);
+      else if(_event.GetType()==typeof(FollowEventData))_followevents.Add(_event);
+      else if(_event.GetType()==typeof(EventData))_normalevents.Add(_event);
+    }
+    _allevents.Clear();
+    Dictionary<List<EventDataDefulat>, int> _dic = new Dictionary<List<EventDataDefulat>, int>();
+    _dic.Add(_questevents, ConstValues.EventPer_Quest);
+    _dic.Add(_followevents, ConstValues.EventPer_Follow);
+    _dic.Add(_normalevents, ConstValues.EventPer_Normal);
+    var _result = GetListByRatio(_dic);
+
+    return _result[Random.Range(0,_result.Count)];
   }
+  private List<T> GetListByRatio<T>(Dictionary<List<T>,int> listAndvalue)
+  {
+    List<List<T>> _availabelists= new List<List<T>>();
+    List<int> _availablevalues= new List<int>();
+    int _max = 0;
+    foreach(var dic in listAndvalue)
+    {
+      if (dic.Key.Count == 0) continue;
 
+      _availabelists.Add(dic.Key);
+      _availablevalues.Add(dic.Value);
+      _max += dic.Value;
+    }
+    _max = Random.Range(0, _max);
+    int _sum = 0;
+    for(int i = 0; i < _availabelists.Count; i++)
+    {
+      _sum += _availablevalues[i];
+      if (_max < _sum) return _availabelists[i];
+    }
+    return _availabelists[_availabelists.Count];
+  }
 }
 public class TileInfoData
 {
@@ -717,7 +686,7 @@ public class TileInfoData
 public enum FollowType { Event,EXP,Skill}
 public enum SettlementType {Town,City,Castle,Outer}
 public enum EventAppearType { Outer,Town,City,Castle,Settlement}
-public enum PlaceType {NULL, Residence,Marketplace,Temple,Library,Theater,Academy}
+public enum SectorType {NULL, Residence,Marketplace,Temple,Library,Theater,Academy}
 public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea,Beach,Land,RiverBeach}
 public enum SelectionType { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum CheckTarget { None,Pay,Theme,Skill}
@@ -761,28 +730,6 @@ public class EventDataDefulat
     }
   }
   public EventAppearType AppearSpace;
-    public bool RightSpace(EventAppearType currentspace)
-    {
-        switch (AppearSpace)
-        {
-            case EventAppearType.Outer:
-                if (currentspace == EventAppearType.Outer) return true;
-                break;
-            case EventAppearType.Town:
-                if (currentspace == EventAppearType.Settlement || currentspace == EventAppearType.Town) return true;
-                break;
-            case EventAppearType.City:
-                if (currentspace == EventAppearType.Settlement || currentspace == EventAppearType.City) return true;
-                break;
-            case EventAppearType.Castle:
-                if (currentspace == EventAppearType.Settlement || currentspace == EventAppearType.Castle) return true;
-                break;
-            case EventAppearType.Settlement:
-                if (currentspace == EventAppearType.Outer) return false;
-                return true;
-        }
-        return false;
-    } 
     public bool RightSpace(SettlementType currentsettle)
     {
         switch (AppearSpace)
@@ -805,7 +752,7 @@ public class EventDataDefulat
         return false;
     }
 
-    public List<PlaceType> Places=new List<PlaceType>();
+  public SectorType Sector = SectorType.NULL;
   public EnvironmentType EnvironmentType = EnvironmentType.NULL;
 
   public SelectionType Selection_type;
@@ -1052,12 +999,45 @@ public class QuestHolder_Wolf:Quest
   public List<QuestEventData_Wolf> Events_Wolf_Final = new List<QuestEventData_Wolf>(); //QuestEventType 23
   public QuestEventData_Wolf Event_Wolf_Encounter_Final = null;                    //QuestEventType 24
 
+  /// <summary>
+  /// Phase에 맞춰 사용 가능한 이벤트들을 반환(1,2,3,4)
+  /// </summary>
+  /// <returns></returns>
+  public List<EventDataDefulat> GetAvailableEvents()
+  {
+    List<List<QuestEventData_Wolf>> _availablelists = new List<List<QuestEventData_Wolf>>();
+
+    _availablelists.Add(Events_Public_Common);
+    if (GameManager.Instance.MyGameData.Quest_Wolf_Phase == 4) _availablelists.Add(Events_Public_Final);
+
+    switch (GameManager.Instance.MyGameData.Quest_Wolf_Type)
+    {
+      case 0:
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 0) _availablelists.Add(Events_Cult_0);
+        if(GameManager.Instance.MyGameData.Quest_Wolf_Phase>1)_availablelists.Add(Events_Cult_1);
+        if(GameManager.Instance.MyGameData.Quest_Wolf_Phase>2)_availablelists.Add(Events_Cult_2);
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 3) _availablelists.Add(Events_Cult_Final);
+        break;
+      case 1:
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 0) _availablelists.Add(Events_Wolf_0);
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 1) _availablelists.Add(Events_Wolf_1);
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 2) _availablelists.Add(Events_Wolf_2);
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 3) _availablelists.Add(Events_Wolf_Final);
+        break;
+    }
+
+    List<EventDataDefulat> _availableevents=new List<EventDataDefulat>();
+    foreach(var list in _availablelists)
+      foreach(var _event in list) _availableevents.Add(_event);
+
+    return _availableevents;
+  }
 }//                                         퀘스트 디자인 후 수정
 public class EventJsonData
 {
   public string ID = "";              //ID
-  public string Settlement = "";          //0,1,2,3
-  public string Place = "";               //0,1,2,3,4
+  public string AppearPlace = "";          //0,1,2,3
+  public string Sector = "";               //0,1,2,3,4
     public string Environment = "";  //없음, 숲,강,언덕,산,바다
   public string Season ;              //전역,봄,여름,가을,겨울
 

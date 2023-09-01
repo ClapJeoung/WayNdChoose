@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlaceIconScript : MonoBehaviour
 {
-  public PlaceType MyType = PlaceType.Residence;
+  public SectorType MyType = SectorType.Residence;
   public Image MyImage = null;
   public Image Quest_Wolf_CultBlock_Effect = null;    //이건 일단 보류...
   public Image Quest_Wolf_CultBlock = null;
@@ -28,7 +28,7 @@ public class PlaceIconScript : MonoBehaviour
         {
           MyImage.color = IdleColor;
           if (Quest_Wolf_CultBlock.enabled == true) Quest_Wolf_CultBlock.enabled = false;
-          if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_PlaceTokens[MyType] == 0)
+          if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_TokenedSectors[MyType] == 0)
           {
             if (Quest_Wolf_HideoutToken.enabled == false) Quest_Wolf_HideoutToken.enabled = true;
           }

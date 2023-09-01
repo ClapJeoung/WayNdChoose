@@ -11,24 +11,24 @@ public class Settlement
   {
     Type = settletype;
   }
-  private List<PlaceType> settlementplaces=new List<PlaceType>();
-  public List<PlaceType> Settlementplaces
+  private List<SectorType> settlementplaces=new List<SectorType>();
+  public List<SectorType> Settlementplaces
   {
     get
     {
       if (settlementplaces.Count == 0)
       {
-        settlementplaces = new List<PlaceType>() { PlaceType.Residence, PlaceType.Marketplace};
+        settlementplaces = new List<SectorType>() { SectorType.Residence, SectorType.Marketplace};
         switch (Type)
         {
           case SettlementType.Town:
             break;
           case SettlementType.City:
-            settlementplaces.Add(PlaceType.Temple);
+            settlementplaces.Add(SectorType.Temple);
             break;
           case SettlementType.Castle:
-            settlementplaces.Add(PlaceType.Temple);
-            settlementplaces.Add(PlaceType.Library);
+            settlementplaces.Add(SectorType.Temple);
+            settlementplaces.Add(SectorType.Library);
             break;
         }
       }
@@ -39,7 +39,7 @@ public class Settlement
   {
     int _count = 0;
     float _progress = GameManager.Instance.MyGameData.Quest_Wolf_Progress/100.0f;
-    List<PlaceType> _randomplaces = new List<PlaceType>();
+    List<SectorType> _randomplaces = new List<SectorType>();
     foreach (var place in Settlementplaces) _randomplaces.Add(place);
     _randomplaces.Sort((a, b) => Random.Range(0, 2) == 0 ? 0:1);
     switch (Type)

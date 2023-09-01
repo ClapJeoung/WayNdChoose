@@ -20,6 +20,8 @@ public class UI_dialogue : UI_default
   [SerializeField] private Image IllustImage = null;
   private float IllustFullChargingTime = 3.0f;
   private float IllustChargingWaitTime = 1.0f;
+  [SerializeField] private Image EventIcon = null;
+  private GameObject EventIconHolder { get { return EventIcon.transform.parent.gameObject; } }
   [Space(10)]
   [SerializeField] private TextMeshProUGUI DescriptionText = null;
   [SerializeField] private CanvasGroup DescriptionTextGroup = null;
@@ -108,6 +110,21 @@ public class UI_dialogue : UI_default
     if (_descriptiontemp.Contains("#SETTLE#")) _descriptiontemp = CurrentEvent.Description.Replace("#SETTLE#", GameManager.Instance.MyGameData.CurrentSettlement.Name);
     Sprite _illust = CurrentEvent.Illust;
     string _name = CurrentEvent.Name;
+
+    if (CurrentEvent.GetType() == typeof(EventData))
+    {
+      if (EventIconHolder.activeInHierarchy == true) EventIconHolder.SetActive(false);
+    }
+    else if(CurrentEvent.GetType() == typeof(FollowEventData))
+    {
+      if (EventIconHolder.activeInHierarchy == true) EventIconHolder.SetActive(false);
+    }
+    else if (CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
+    {
+      if (EventIconHolder.activeInHierarchy == false) EventIconHolder.SetActive(true);
+      if (GameManager.Instance.MyGameData.Quest_Wolf_Type == 0) EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
+      else EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
+    }
 
     ResetSelectionPos();
     //모든 선택지 위치 초기화 및 숨기기
@@ -216,7 +233,7 @@ public class UI_dialogue : UI_default
     int _currentvalue = 0, _checkvalue = 0;    //기술 체크에만 사용
     int _successpercent = 0;                   //성공 확률(골드 혹은 기술 체크) 
     bool _issuccess = false;  
-    int _pluspercent = GameManager.Instance.MyGameData.LibraryEffect ? ConstValues.PlaceEffect_Library : 0;
+    int _pluspercent = GameManager.Instance.MyGameData.LibraryEffect ? ConstValues.SectorEffect_Library : 0;
                                                //도서관 방문 시 확률 증가 값
     //아카데미 장소 효과 있으면 확률 증가
     switch (_selectiondata.ThisSelectionType)

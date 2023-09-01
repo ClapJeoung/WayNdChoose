@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
       return goldfaildata;
     }
   }
+  #region #데이터 관련#
   public string GetTextData(string _id)
   {
     // Debug.Log($"{_id} ID를 가진 텍스트 데이터 {(TextDic.ContainsKey(_id)?"있음":"없음")}");
@@ -199,17 +200,17 @@ public class GameManager : MonoBehaviour
   /// <param name="_place"></param>
   /// <param name="texttype"></param>
   /// <returns></returns>
-  public string GetTextData(PlaceType _place,int texttype)
+  public string GetTextData(SectorType sector,int texttype)
   {
     string _str = "PLACE_";
-    switch (_place)
+    switch (sector)
     {
-      case PlaceType.Residence: _str += "RESIDENCE";break;
-      case PlaceType.Marketplace: _str += "MARKETPLACE"; break;
-      case PlaceType.Temple: _str += "TEMPLE"; break;
-      case PlaceType.Library: _str += "LIBRARY"; break;
-      case PlaceType.Theater: _str += "THEATER"; break;
-      case PlaceType.Academy: _str += "ACADEMY"; break;
+      case SectorType.Residence: _str += "RESIDENCE";break;
+      case SectorType.Marketplace: _str += "MARKETPLACE"; break;
+      case SectorType.Temple: _str += "TEMPLE"; break;
+      case SectorType.Library: _str += "LIBRARY"; break;
+      case SectorType.Theater: _str += "THEATER"; break;
+      case SectorType.Academy: _str += "ACADEMY"; break;
     }
     _str += "_";
     switch (texttype)
@@ -324,6 +325,39 @@ public class GameManager : MonoBehaviour
   {
 
   }//현재 데이터 저장
+  #endregion
+
+  public void RestInSector(SectorType sectortype,bool issanity)
+  {
+    if (issanity)
+    {
+      MyGameData.CurrentSanity -= MyGameData.SettleRestCost_Sanity;
+      UIManager.Instance.UpdateSanityText();
+    }
+    else
+    {
+      MyGameData.Gold -= MyGameData.SettleRestCost_Gold;
+      UIManager.Instance.UpdateGoldText();
+    }
+    MyGameData.AddDiscomfort(MyGameData.CurrentSettlement);
+
+    EventManager.Instance.SetSettleEvent(sectortype);
+
+    switch (MyGameData.QuestType)
+    {
+      case QuestType.Wolf:
+        if (MyGameData.Quest_Wolf_Cult_TokenedSectors[sectortype] == 0)
+        {
+          MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_TokenSector;
+          MyGameData.Quest_Wolf_Cult_TokenedSectors[sectortype] = ConstValues.Quest_Wolf_TokenDuration;
+        }
+        else
+        {
+          MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_NoTokenSector;
+        }
+        break;
+    }
+  }
   public void SuccessCurrentEvent(TendencyType _tendencytype,int index)
   {
     int _tendencyindex = 0;
@@ -348,6 +382,27 @@ public class GameManager : MonoBehaviour
     {
       MyGameData.Turn++;
       UIManager.Instance.UpdateTurnIcon();
+    }
+
+    switch (MyGameData.QuestType)
+    {
+      case QuestType.Wolf:
+        if (MyGameData.CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
+        {
+          if (MyGameData.Quest_Wolf_Phase > 0)
+          {
+            switch (MyGameData.Quest_Wolf_Type)
+            {
+              case 0:
+                MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_EventClear;
+                UIManager.Instance.WolfSidePanel.UpdateCultNormalPanel();
+                break;
+              case 1:
+                break;
+            }
+          }
+        }
+        break;
     }
   }
   public void FailCurrentEvent(TendencyType _tendencytype, int index)
@@ -374,6 +429,26 @@ public class GameManager : MonoBehaviour
     {
       MyGameData.Turn++;
       UIManager.Instance.UpdateTurnIcon();
+    }
+    switch (MyGameData.QuestType)
+    {
+      case QuestType.Wolf:
+        if (MyGameData.CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
+        {
+          if (MyGameData.Quest_Wolf_Phase > 0)
+          {
+            switch (MyGameData.Quest_Wolf_Type)
+            {
+              case 0:
+                MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_EventFail;
+                UIManager.Instance.WolfSidePanel.UpdateCultNormalPanel();
+                break;
+              case 1:
+                break;
+            }
+          }
+        }
+        break;
     }
   }
   public void AddExp_Long(Experience exp)

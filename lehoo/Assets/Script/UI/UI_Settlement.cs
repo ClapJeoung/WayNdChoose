@@ -12,26 +12,26 @@ public class UI_Settlement : UI_default
   private WaitForSeconds LittleWait = new WaitForSeconds(0.2f);
   private float UICloseMoveTime = 0.5f;
 
+  [SerializeField] private Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementNameText = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
-  [SerializeField] private List<PlaceIconScript> PlaceIcons=new List<PlaceIconScript>();
-  private PlaceIconScript GetPlacIconScript(PlaceType placeType)
+  [SerializeField] private List<PlaceIconScript> SectorIcons=new List<PlaceIconScript>();
+  private PlaceIconScript GetSectorIconScript(SectorType sectortype)
   {
-    for(int i=0;i<PlaceIcons.Count;i++)
+    for(int i=0;i< SectorIcons.Count;i++)
     {
-      if (PlaceIcons[i].MyType == placeType) return PlaceIcons[i];
+      if (SectorIcons[i].MyType == sectortype) return SectorIcons[i];
     }
     return null;
   }
-  [SerializeField] private TextMeshProUGUI PlaceName = null;
-  [SerializeField] private TextMeshProUGUI PlaceDescription = null;
-  [SerializeField] private TextMeshProUGUI PlaceEffect = null;
+  [SerializeField] private TextMeshProUGUI SectorName = null;
+  [SerializeField] private TextMeshProUGUI SectorSelectDescription = null;
   [SerializeField] private Button RestButton_Sanity = null;
   [SerializeField] private TextMeshProUGUI RestButtonText_Sanity = null;
   [SerializeField] private Button RestButton_Gold = null;
   [SerializeField] private TextMeshProUGUI RestButtonText_Gold = null;
   private Settlement CurrentSettlement = null;
-  private PlaceType SelectedPlace = PlaceType.NULL;
+  private SectorType SelectedSector = SectorType.NULL;
   public void OpenUI()
   {
     IsOpen = true;
@@ -42,42 +42,41 @@ public class UI_Settlement : UI_default
     if (DefaultGroup.interactable == true) DefaultGroup.interactable = false;
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
 
+    SelectedSector = SectorType.NULL;
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
     SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
 
+    Sprite _settlementicon = null;
     int _placecount = 0;
     switch (CurrentSettlement.Type)
     {
-      case SettlementType.Town: _placecount = 2; break;
-      case SettlementType.City:_placecount = 3;break;
-      case SettlementType.Castle:_placecount = 4;break;
+      case SettlementType.Town: _placecount = 2;_settlementicon = GameManager.Instance.ImageHolder.TownIcon_black; break;
+      case SettlementType.City:_placecount = 3; _settlementicon = GameManager.Instance.ImageHolder.CityIcon_black; break;
+      case SettlementType.Castle:_placecount = 4; _settlementicon = GameManager.Instance.ImageHolder.CastleIcon_black; break;
     }
-    for (int i = 0; i < PlaceIcons.Count; i++)
+    for (int i = 0; i < SectorIcons.Count; i++)
     {
       if (i < _placecount)
       {
-        if (PlaceIcons[i].gameObject.activeInHierarchy == false) PlaceIcons[i].gameObject.SetActive(true);
-        PlaceIcons[i].OpenIcon();
+        if (SectorIcons[i].gameObject.activeInHierarchy == false) SectorIcons[i].gameObject.SetActive(true);
+        SectorIcons[i].OpenIcon();
       }
       else
       {
-        if (PlaceIcons[i].gameObject.activeInHierarchy == true) PlaceIcons[i].gameObject.SetActive(false);
+        if (SectorIcons[i].gameObject.activeInHierarchy == true) SectorIcons[i].gameObject.SetActive(false);
       }
     }
 
-    PlaceName.text = "";
-    PlaceDescription.text = "";
-    PlaceEffect.text = "";
+    SettlementIcon.sprite = _settlementicon;
+    SectorName.text = "";
+    SectorSelectDescription.text = "";
     RestButton_Gold.interactable = false;
     RestButtonText_Gold.text = GameManager.Instance.GetTextData("SELECTPLACE");
     RestButton_Sanity.interactable = false;
     RestButtonText_Sanity.text = GameManager.Instance.GetTextData("SELECTPLACE");
 
-    string _rectname = "name";
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).OutisdePos, GetPanelRect(_rectname).InsidePos, UIOpenMoveTime, UIManager.Instance.UIPanelOpenCurve));
-    yield return LittleWait;
-    _rectname = "discomfort";
+    string _rectname = "nameholder";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).OutisdePos, GetPanelRect(_rectname).InsidePos, UIOpenMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return LittleWait;
     _rectname = "placepanel";
@@ -104,10 +103,7 @@ public class UI_Settlement : UI_default
     string _rectname = "description";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).InsidePos, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, UIManager.Instance.UIPanelCLoseCurve));
     yield return LittleWait;
-    _rectname = "name";
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).InsidePos, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, UIManager.Instance.UIPanelCLoseCurve));
-    yield return LittleWait;
-    _rectname = "discomfort";
+    _rectname = "nameholder";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).InsidePos, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, UIManager.Instance.UIPanelCLoseCurve));
     yield return LittleWait;
     _rectname = "placepanel";
@@ -121,26 +117,26 @@ public class UI_Settlement : UI_default
 
     string _rectname = "description";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, UIManager.Instance.UIPanelCLoseCurve));
-    _rectname = "name";
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, UIManager.Instance.UIPanelCLoseCurve));
-    _rectname = "discomfort";
+    _rectname = "nameholder";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, UIManager.Instance.UIPanelCLoseCurve));
     _rectname = "placepanel";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, UIManager.Instance.UIPanelCLoseCurve));
   }
   public void SelectPlace(int index)
   {
-    GetPlacIconScript(SelectedPlace).SetIdleColor();
-    SelectedPlace = (PlaceType)index;
+    if (SelectedSector == (SectorType)index) return;
+
+    if(SelectedSector!=SectorType.NULL) GetSectorIconScript(SelectedSector).SetIdleColor();
+    SelectedSector = (SectorType)index;
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Wolf:
-        GetPlacIconScript(SelectedPlace).SetSelectColor();
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Contains(SelectedPlace))
+        GetSectorIconScript(SelectedSector).SetSelectColor();
+        if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Contains(SelectedSector))
         {
-          PlaceName.text = "";
-          PlaceDescription.text = GameManager.Instance.GetTextData("Quest_Wolf_Cult_Blocked");
+          SectorName.text = "";
+          SectorSelectDescription.text = GameManager.Instance.GetTextData("Quest_Wolf_Cult_Blocked");
           RestButtonText_Gold.text = GameManager.Instance.GetTextData("REST");
           RestButtonText_Sanity.text= GameManager.Instance.GetTextData("REST");
           RestButton_Gold.interactable = false;
@@ -148,31 +144,39 @@ public class UI_Settlement : UI_default
         }
         else
         {
-          PlaceName.text = GameManager.Instance.GetTextData(SelectedPlace, 0);
-          PlaceDescription.text = GameManager.Instance.GetTextData(SelectedPlace, 1);
-          string _effect = GameManager.Instance.GetTextData(SelectedPlace, 3);
-          switch (SelectedPlace)
+          SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
+          string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
+          switch (SelectedSector)
           {
-            case PlaceType.Residence:
-              _effect = string.Format(_effect, ConstValues.PlaceEffect_residence);
+            case SectorType.Residence:
+              _effect = string.Format(_effect, ConstValues.SectorEffect_residence);
               break;
-            case PlaceType.Marketplace:
-              _effect = string.Format(_effect, ConstValues.PlaceEffect_marketplace);
+            case SectorType.Marketplace:
+              _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
               break;
-            case PlaceType.Temple:
-              _effect = string.Format(_effect, ConstValues.PlaceEffect_temple);
+            case SectorType.Temple:
+              _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
               break;
-            case PlaceType.Library:
-              _effect = string.Format(_effect, ConstValues.PlaceEffect_Library);
+            case SectorType.Library:
+              _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
               break;
-            case PlaceType.Theater:
+            case SectorType.Theater:
               //서비스 종료다...!
               break;
-            case PlaceType.Academy:
-              _effect = string.Format(_effect, ConstValues.PlaceDuration, ConstValues.PlaceEffect_acardemy);
+            case SectorType.Academy:
+              _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
               break;
           }
-          PlaceEffect.text = _effect;
+          string _progress = "";
+          if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_TokenedSectors[SelectedSector] == 0)
+          {
+            _progress = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Cult_TokenedPlaceDescription"), ConstValues.Quest_Wolf_Cult_Progress_TokenSector);
+          }
+          else
+          {
+            _progress = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Cult_NoTokenedPlaceDescription"), ConstValues.Quest_Wolf_Cult_Progress_NoTokenSector);
+          }
+          SectorSelectDescription.text = _effect + "<br><br>" + _progress;
 
           int _movepointvalue = 0;
           int _discomfortvalue = 0;
@@ -191,7 +195,7 @@ public class UI_Settlement : UI_default
               _discomfortvalue = ConstValues.RestDiscomfort_Castle;
               break;
           }
-          if (SelectedPlace == PlaceType.Residence) _movepointvalue++;
+          if (SelectedSector == SectorType.Residence) _movepointvalue++;
 
           RestButtonText_Sanity.text = string.Format(GameManager.Instance.GetTextData("REST"),
             GameManager.Instance.GetTextData(StatusType.Sanity, 2),
@@ -217,23 +221,13 @@ public class UI_Settlement : UI_default
   public void StartRest_Sanity()
     {
     if (UIManager.Instance.IsWorking) return;
-
-    GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.SettleRestCost_Sanity;
-    UIManager.Instance.UpdateSanityText();
-    GameManager.Instance.MyGameData.AddDiscomfort(CurrentSettlement);
-
     CloseUI();
-    EventManager.Instance.SetSettleEvent(SelectedPlace);
+    GameManager.Instance.RestInSector(SelectedSector, true);
   }
   public void StartRest_Gold()
   {
     if (UIManager.Instance.IsWorking) return;
-
-    GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.SettleRestCost_Gold;
-    UIManager.Instance.UpdateGoldText();
-    GameManager.Instance.MyGameData.AddDiscomfort(CurrentSettlement);
-
     CloseUI();
-    EventManager.Instance.SetSettleEvent(SelectedPlace);
+    GameManager.Instance.RestInSector(SelectedSector, false);
   }
 }

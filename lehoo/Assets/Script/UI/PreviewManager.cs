@@ -10,58 +10,33 @@ public class PreviewManager : MonoBehaviour
 {
   [SerializeField] private RectTransform WholeRect = null;
   [SerializeField] private Camera MainCamera = null;
-  [SerializeField] private Color PositiveColor;
-  [SerializeField] private Color NegativeColor;
   [Space(10)]
-  [SerializeField] private GameObject TurnPreview = null;
-  [SerializeField] private Image TurnIcon = null;
-  [SerializeField] private TextMeshProUGUI TurnDescription = null;
-  [SerializeField] private TextMeshProUGUI TurnSubDescription = null;
+  [SerializeField] private GameObject IconAndDescription_Panel = null;
+  [SerializeField] private Image IconAndDescription_Icon = null;
+  [SerializeField] private TextMeshProUGUI IconAndDescription_Description = null;
   [Space(10)]
-  [SerializeField] private GameObject HPPreview = null;
-  [SerializeField] private TextMeshProUGUI HPDescription = null;
-  [SerializeField] private TextMeshProUGUI HPInfoText = null;
-  [SerializeField] private TextMeshProUGUI HpSubDescription = null;
-  [Space(10)]
-  [Space(10)]
-  [SerializeField] private GameObject SanityPreview = null;
-  [SerializeField] private TextMeshProUGUI SanityDescription = null;
-  [SerializeField] private Image[] SanityMadnessIcons = new Image[3];
-  [SerializeField] private TextMeshProUGUI SanityInfoText = null;
-  [SerializeField] private TextMeshProUGUI SanitySubDescription = null;
-  [Space(10)]
-  [SerializeField] private GameObject GoldPreview = null;
-  [SerializeField] private TextMeshProUGUI GoldDescription = null;
-  [SerializeField] private TextMeshProUGUI GoldInfoText = null;
-  [SerializeField] private TextMeshProUGUI GoldSubDescription = null;
-  [Space(10)]
-  [SerializeField] private GameObject MapPreview = null;
-  [SerializeField] private TextMeshProUGUI MapMovableDescription = null;
-  [SerializeField] private TextMeshProUGUI MapSubDescription = null;
-  [Space(10)]
-  [SerializeField] private GameObject QuestPreview = null;
-  [SerializeField] private TextMeshProUGUI QuestName = null;
-  [SerializeField] private Image QuestIllust = null;
-  [SerializeField] private TextMeshProUGUI NextQuestEventDescription = null;
-  [SerializeField] private TextMeshProUGUI QuestSubDescription = null;
+  [SerializeField] private GameObject JustDescription_Panel = null;
+  [SerializeField] private TextMeshProUGUI JustDescriptionText = null;
+  private int EffectFontSize = 35;
+  private int SubdescriptionSize = 17;
+  private Vector2 TurnPivot = new Vector2(0.5f, 1.1f);
+  private Vector2 HPPivot= new Vector2(0.5f, 1.1f);
+  private Vector2 SanityPivot= new Vector2(0.5f, 1.1f);
+  private Vector2 GoldPivot= new Vector2(0.5f, 1.1f);
+  private Vector2 MovePointPivot= new Vector2(0.5f, 1.1f);
+  private Vector2 MapPivot= new Vector2(0.5f, 1.1f);
+  private Vector2 TendencyPivot = new Vector2(1.1f, -0.1f);
+  private Vector2 DiscomfortPivot = new Vector2(0.5f, 1.1f);
   [Space(10)]
   [SerializeField] private GameObject SkillPreview = null;
-  [SerializeField] private TextMeshProUGUI SkillName = null;
-  [SerializeField] private TextMeshProUGUI SkillLevel = null;
   [SerializeField] private Image SkillIcon = null;
-  [SerializeField] private TextMeshProUGUI SkillSubDescription = null;
+  [SerializeField] private TextMeshProUGUI SkillLevel = null;
+  [SerializeField] private TextMeshProUGUI SkillName = null;
   [Space(10)]
   [SerializeField] private GameObject ExpPreview = null;
   [SerializeField] private TextMeshProUGUI ExpName = null;
   [SerializeField] private TextMeshProUGUI ExpDuration = null;
-  [SerializeField] private TextMeshProUGUI ExpEffect = null;
-  [SerializeField] private TextMeshProUGUI ExpSubDescription = null;
-  [Space(10)]
-  [SerializeField] private GameObject TendencyPreview = null;
-  [SerializeField] private Image TendencyIcon = null;
-  [SerializeField] private TextMeshProUGUI TendencyName = null;
-  [SerializeField] private TextMeshProUGUI TendencyDescription = null;
-  [SerializeField] private TextMeshProUGUI TendencySubDescription = null;
+  [SerializeField] private TextMeshProUGUI ExpDescription = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionNonePanel = null;
   [SerializeField] private Image SelectionNoneBackground = null;
@@ -75,10 +50,10 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI PayInfo = null;
   [SerializeField] private TextMeshProUGUI PayRequireValue = null;
   [SerializeField] private GameObject PayNoGoldHolder = null;
-  [SerializeField] private TextMeshProUGUI PayNoGoldText = null;
-  [SerializeField] private TextMeshProUGUI PayNoGoldValue = null;
-  [SerializeField] private TextMeshProUGUI PayNoGoldPercentText = null;
-  [SerializeField] private TextMeshProUGUI PayNoGoldPercentValue = null;
+  [SerializeField] private TextMeshProUGUI PayNoGold_Text = null;
+  [SerializeField] private TextMeshProUGUI PayNoGold_PercentText = null;
+  [SerializeField] private TextMeshProUGUI PayNoGold_PercentValue = null;
+  [SerializeField] private TextMeshProUGUI PayNoGold_Alternative = null;
   [SerializeField] private TextMeshProUGUI PaySubDescription = null;
   [SerializeField] private Transform PayRewardIcons = null;
   [SerializeField] private PreviewSelectionTendency SelectionPayTendendcy = null;
@@ -129,12 +104,6 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
   [Space(10)]
-  [SerializeField] private GameObject JustDescriptionPanel = null;
-  [SerializeField] private TextMeshProUGUI JustDescriptionText = null;
-  [Space(10)]
-  [SerializeField] private GameObject DisComfortPanel = null;
-  [SerializeField] private TextMeshProUGUI DiscomfortText = null;
-  [Space(10)]
   [SerializeField] private GameObject PlacePanel = null;
   [SerializeField] private Image PlaceIcon = null;
   [SerializeField] private Image PlaceThemeIcon = null;
@@ -150,15 +119,10 @@ public class PreviewManager : MonoBehaviour
   private List<CanvasGroup> AllCanvasGroup = new List<CanvasGroup>();
   private void Awake()
   {
-    AllCanvasGroup.Add(TurnPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(HPPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(SanityPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(GoldPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(MapPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(QuestPreview.GetComponent<CanvasGroup>());
+    AllCanvasGroup.Add(IconAndDescription_Panel.GetComponent<CanvasGroup>());
+    AllCanvasGroup.Add(JustDescription_Panel.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(SkillPreview.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(ExpPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(TendencyPreview.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(SelectionNonePanel.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(SelectionPayPanel.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(SelectionCheckPanel.GetComponent<CanvasGroup>());
@@ -168,10 +132,24 @@ public class PreviewManager : MonoBehaviour
     AllCanvasGroup.Add(RewardSkillPanel.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(ExpSelectEmptyPanel.GetComponent<CanvasGroup>());
     AllCanvasGroup.Add(ExpSelectExistPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(JustDescriptionPanel.GetComponent<CanvasGroup>());
   }
   private RectTransform CurrentPreview = null;
 
+  private void OpenPreviewPanel(GameObject panel,Vector2 pivot)
+  {
+    CurrentPreview = panel.GetComponent<RectTransform>();
+    CurrentPreview.pivot = pivot;
+    IEnumerator _cor = null;
+    _cor = fadepreview(panel, true);
+    StartCoroutine(_cor);
+  }
+  private void OpenPreviewPanel(GameObject panel)
+  {
+    CurrentPreview = panel.GetComponent<RectTransform>();
+    IEnumerator _cor = null;
+    _cor = fadepreview(panel, true);
+    StartCoroutine(_cor);
+  }
   public void SetRewardIcons(Transform _holder,List<RewardTarget> _rewards)
   {
     List<int> _rewardindex=new List<int>();
@@ -218,134 +196,105 @@ public class PreviewManager : MonoBehaviour
         break;
 
     }
-    TurnIcon.sprite = _turnsprite;
-      TurnDescription.text = _description;
-      TurnSubDescription.text = GameManager.Instance.GetTextData("TURN_DESCRIPTION");
-    CurrentPreview = TurnPreview.GetComponent<RectTransform>();
-    IEnumerator _cor = null;
-    _cor= fadepreview(TurnPreview, true);
-    StartCoroutine(_cor);
+    IconAndDescription_Icon.sprite = _turnsprite;
+    IconAndDescription_Description.text = _name + "<br><br>" + WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(_description));
+
+    OpenPreviewPanel(IconAndDescription_Panel,TurnPivot);
   }//턴 미리보기 패널 세팅 후 열기
   public void OpenHPPreview()
   {
     StatusType _currenttype = StatusType.HP;
 
-    string _description = "", _subdescription = "", _gendescription = "", _paydescription = "", _infodescription = "";
+    string _description = "";
     int _genvalue = 0, _payvalue = 0;
 
     _genvalue = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
     _payvalue = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
 
+    _description = GameManager.Instance.GetTextData(_currenttype, 3);
     if (_genvalue > 0)
     {
-      _gendescription = GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+"+_genvalue.ToString()));
-      _infodescription += _gendescription;
+      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
     }
     if (_payvalue > 0)
     {
-      if (_infodescription != "") _infodescription += "\n\n";
-      _paydescription = GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
+    _description+="<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
-    HPDescription.text = _description;
-    if (_infodescription == "")
-    {
-      if (HPInfoText.gameObject.activeInHierarchy.Equals(false)) HPInfoText.gameObject.SetActive(true);
-      HPInfoText.text = _infodescription;
-    }
-    else
-    {
-      if(HPInfoText.gameObject.activeInHierarchy.Equals(true))HPInfoText.gameObject.SetActive(false);
-    }
-    HpSubDescription.text = _subdescription;
-    CurrentPreview = HPPreview.GetComponent<RectTransform>();
- 
-    IEnumerator _cor = null;
-    _cor = fadepreview(HPPreview, true);
-    StartCoroutine(_cor);
+
+    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.HPIcon;
+    IconAndDescription_Description.text = _description;
+    OpenPreviewPanel(IconAndDescription_Panel,HPPivot);
   }//체력 설명, 증감량 표기 후 열기
   public void OpenSanityPreview()
   {
     StatusType _currenttype = StatusType.Sanity;
-    string _description = "", _subdescription = "", _gendescription = "", _paydescription = "", _infodescription = "";
+
+    string _description = "";
     int _genvalue = 0, _payvalue = 0;
 
     _genvalue = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
     _payvalue = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
 
+    _description = GameManager.Instance.GetTextData(_currenttype, 3);
     if (_genvalue > 0)
     {
-      _gendescription = GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
-      _infodescription += _gendescription;
+      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
     }
     if (_payvalue > 0)
     {
-      if (_infodescription != "") _infodescription += "\n\n";
-      _paydescription = GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
+    _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
-    SanityDescription.text = _description;
-    if (_infodescription == "")
-    {
-      if (SanityInfoText.gameObject.activeInHierarchy.Equals(false)) SanityInfoText.gameObject.SetActive(true);
-      SanityInfoText.text = _infodescription;
-    }
-    else
-    {
-      if (SanityInfoText.gameObject.activeInHierarchy.Equals(true)) SanityInfoText.gameObject.SetActive(false);
-    }
-    SanitySubDescription.text = _subdescription;
-    CurrentPreview = SanityPreview.GetComponent<RectTransform>();
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(SanityPreview, true);
-    StartCoroutine(_cor);
+    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.SanityIcon;
+    IconAndDescription_Description.text = _description;
+    OpenPreviewPanel(IconAndDescription_Panel,SanityPivot);
   }//정신력 설명,증감량 표기 후 열기
   public void OpenGoldPreview()
   {
-    StatusType _currenttype = StatusType.Gold;
-    string _description = "", _subdescription = "", _gendescription = "", _paydescription = "", _infodescription = "";
+    StatusType _currenttype = StatusType.Sanity;
+
+    string _description = "";
     int _genvalue = 0, _payvalue = 0;
 
-    _genvalue = (int)GameManager.Instance.MyGameData.GetGoldGenModify(false);
-    _payvalue = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
+    _genvalue = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
+    _payvalue = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
 
+    _description = GameManager.Instance.GetTextData(_currenttype, 3);
     if (_genvalue > 0)
     {
-      _gendescription = GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
-      _infodescription += _gendescription;
+      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
     }
     if (_payvalue > 0)
     {
-      if (_infodescription != "") _infodescription += "\n\n";
-      _paydescription = GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
+    _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
-    GoldDescription.text = _description;
-    if (_infodescription == "")
-    {
-      if (GoldInfoText.gameObject.activeInHierarchy.Equals(false)) GoldInfoText.gameObject.SetActive(true);
-      GoldInfoText.text = _infodescription;
-    }
-    else
-    {
-      if (GoldInfoText.gameObject.activeInHierarchy.Equals(true)) GoldInfoText.gameObject.SetActive(false);
-    }
-    GoldSubDescription.text = _subdescription;
-    CurrentPreview = GoldPreview.GetComponent<RectTransform>();
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(GoldPreview, true);
-    StartCoroutine(_cor);
+    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.SanityIcon;
+    IconAndDescription_Description.text = _description;
+    OpenPreviewPanel(IconAndDescription_Panel,GoldPivot);
   }//골드 설명,증감량 표기 후 열기
+  public void OpenMovePointPreview()
+  {
+    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+    string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION") + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData("MOVEPOINT_SUBDESCRIPTION")));
+
+    IconAndDescription_Icon.sprite = _icon;
+    IconAndDescription_Description.text = _description;
+
+    OpenPreviewPanel(IconAndDescription_Panel,MovePointPivot);
+  }
   public void OpenMapPreview()
   {
-    //                                                                                                          퀘스트에 따라 다른 기능 구현 필요(기획 이후)
-    CurrentPreview = MapPreview.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(MapPreview, true);
-    StartCoroutine(_cor);
+    Debug.Log("이거 어디서 나옴???");
   }//현재 이동 가능 여부에 따라 텍스트만 출력
   public void OpenQuestPreview()
   {
@@ -353,33 +302,24 @@ public class PreviewManager : MonoBehaviour
   public void OpenSkillPreview(SkillType _skilltype)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype);
-    string _skillname = GameManager.Instance.GetTextData(_skilltype,0);
-    SkillName.text = _skillname;
+    string _description = GameManager.Instance.GetTextData(_skilltype,0)+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4)));
 
     int _level = GameManager.Instance.MyGameData.GetSkill(_skilltype).Level ;
     SkillLevel.text = _level.ToString();
 
-    SkillSubDescription.text = GameManager.Instance.GetTextData(_skilltype,4);
+    SkillName.text = _description;
     SkillIcon.sprite = _icon;
 
-    CurrentPreview = SkillPreview.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(SkillPreview, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(RewardSkillPanel);
   }
   public void OpenExpPreview(Experience _exp)
   {
     ExpName.text =_exp.Name;
     ExpDuration.text = $"{_exp.Duration}";
-    ExpEffect.text = _exp.ShortEffectString;
-    ExpSubDescription.text = _exp.SubDescription;
+    string _description = WNCText.SetSize(EffectFontSize, _exp.ShortEffectString) + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_exp.SubDescription));
+    ExpDescription.text = _description;
 
-    CurrentPreview = ExpPreview.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(ExpPreview, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(ExpPreview);
   }
   public void OpenTendencyPreview(TendencyType _type)
   {
@@ -396,18 +336,13 @@ public class PreviewManager : MonoBehaviour
         _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
         break;
     }
-    string _tendencyeffect = GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type);
+    string _description = WNCText.SetSize(30, "<b>" + _targettendency.Name + "</b>") + "<br><br>" + WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
+      "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
-    TendencyIcon.sprite = _tendencyicon;
-    TendencyName.text = _targettendency.Name;
-    TendencyDescription.text = _tendencyeffect;
-    TendencySubDescription.text = _targettendency.SubDescription;
+    IconAndDescription_Icon.sprite = _tendencyicon;
+    IconAndDescription_Description.text = _description;
 
-    CurrentPreview = TendencyPreview.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(TendencyPreview, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(IconAndDescription_Panel, TendencyPivot);
   }
   public void OpenSelectionNonePreview(SelectionData _selection,TendencyType tendencytype,bool dir)
   {
@@ -502,12 +437,12 @@ public class PreviewManager : MonoBehaviour
           _percent = GameManager.Instance.MyGameData.CheckPercent_money(_modifiedvalue);
           int _sanitypayvalue = (int)((_modifiedvalue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue);
 
-          PayNoGoldText.text = GameManager.Instance.GetTextData("NOGOLD_TEXT");
-          PayNoGoldValue.text = string.Format(GameManager.Instance.GetTextData("NOGOLD_PAYVALUE"),
-            string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(StatusType.Gold, 2),WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold)),
-            string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(StatusType.Sanity, 2),WNCText.GetSanityColor(_sanitypayvalue.ToString())));
-          PayNoGoldPercentText.text = GameManager.Instance.GetTextData("NOGOLD_PERCENTAGE_TEXT");
-          PayNoGoldPercentValue.text = WNCText.PercentageColor(_percent);
+          PayNoGold_Text.text = GameManager.Instance.GetTextData("NOGOLD_TEXT");
+          PayNoGold_PercentText.text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
+          PayNoGold_PercentValue.text = WNCText.PercentageColor(_percent);
+          PayNoGold_Alternative.text = string.Format(GameManager.Instance.GetTextData("NOGOLD_PERCENTAGE_TEXT"),
+            GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold),
+            GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetSanityColor(_sanitypayvalue.ToString()));
 
           if (PayNoGoldHolder.activeInHierarchy.Equals(false)) PayNoGoldHolder.SetActive(true);
           if (PayRequireValue.gameObject.activeInHierarchy.Equals(true)) PayRequireValue.gameObject.SetActive(false);
@@ -731,18 +666,15 @@ public class PreviewManager : MonoBehaviour
     }
     else
     {
-      _description = GameManager.Instance.GetTextData("LONGTERMSAVE_NAME") + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
+      _description = GameManager.Instance.GetTextData("SHORTTERMSAVE_NAME") + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
     ExpSelectEmptyDescription.text = _description;
-    CurrentPreview=ExpSelectEmptyPanel.GetComponent<RectTransform>();
     ExpSelectClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(false)) ExpSelectClickText.gameObject.SetActive(true);
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(ExpSelectEmptyPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(ExpSelectEmptyPanel);
   }
   public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong)
   {
@@ -750,11 +682,11 @@ public class PreviewManager : MonoBehaviour
     string _description = "";
     if (islong)
     {
-      _description = GameManager.Instance.GetTextData("LONGTERMSAVE_NAME") + string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
+      _description = GameManager.Instance.GetTextData("LONGTERMSHIFT_NAME") + string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
     }
     else
     {
-      _description = GameManager.Instance.GetTextData("LONGTERMSAVE_NAME") + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
+      _description = GameManager.Instance.GetTextData("SHORTTERMSHIFT_NAME") + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
     }
 
     string _origineffect = _origin.ShortEffectString;
@@ -770,30 +702,40 @@ public class PreviewManager : MonoBehaviour
     ExpSelectClickText.text = GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(false)) ExpSelectClickText.gameObject.SetActive(true);
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(ExpSelectExistPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(ExpSelectExistPanel);
   }
   public void OpenJustDescriptionPreview(string text)
   {
     JustDescriptionText.text = text;
 
-    CurrentPreview = JustDescriptionPanel.GetComponent<RectTransform>();
-    if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(true)) ExpSelectClickText.gameObject.SetActive(false);
+    OpenPreviewPanel(JustDescription_Panel);
+  }
+  public void OpenJustDescriptionPreview(string text,Vector2 pivot)
+  {
+    JustDescriptionText.text = text;
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(JustDescriptionPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(JustDescription_Panel,pivot);
+  }
+  public void OpenIconAndDescriptionPanel(Sprite icon,string text)
+  {
+    IconAndDescription_Icon.sprite = icon;
+    IconAndDescription_Description.text = text;
+
+    OpenPreviewPanel(IconAndDescription_Panel);
+  }
+  public void OpenIconAndDescriptionPanel(Sprite icon, string text,Vector2 pivot)
+  {
+    IconAndDescription_Icon.sprite = icon;
+    IconAndDescription_Description.text = text;
+
+    OpenPreviewPanel(IconAndDescription_Panel,pivot);
   }
   public void OpenDisComfortPanel()
   {
-     DiscomfortText.text = GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME");
+    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.DisComfort;
+     IconAndDescription_Description.text = GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME");
 
-    CurrentPreview = DisComfortPanel.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(DisComfortPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(IconAndDescription_Panel,DiscomfortPivot);
   }
   public void OpenEnvirPanel(EnvironmentType envir)
   {

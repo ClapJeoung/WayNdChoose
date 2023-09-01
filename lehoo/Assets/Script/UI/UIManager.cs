@@ -906,6 +906,14 @@ public class UIManager : MonoBehaviour
 }
 public static class WNCText
 {
+  public static string SetSize(int size,string str)
+  {
+    return $"<size={size}>{str}</size>";
+  }
+  public static string GetSubdescriptionColor(string str)
+  {
+    return $"<i><#989898>{str}</color></i>";
+  }
   public static string GetDiscomfortColor(string str)
   {
     return $"<#5F04B4>{str}</color>";
