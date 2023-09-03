@@ -10,8 +10,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
     [Space(15)]
-    public TendencyType MyTendency = TendencyType.None;
-  public TendencyType MySelectionTendency= TendencyType.None;
+    public TendencyTypeEnum MyTendency = TendencyTypeEnum.None;
+  public TendencyTypeEnum MySelectionTendency= TendencyTypeEnum.None;
   public bool MySelectionTendencyDir = false;
   public int MySelectionTendencyIndex = 0;
   public SkillType Myskill = SkillType.Conversation;
@@ -45,19 +45,18 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         SelectionData _selection = new SelectionData(null,0);
         switch (MySelectionTendency)
         {
-          case TendencyType.None:
+          case TendencyTypeEnum.None:
             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[0];
             break;
-          case TendencyType.Head:
+          case TendencyTypeEnum.Head:
              _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyIndex];
             break;
-          case TendencyType.Body:
+          case TendencyTypeEnum.Body:
             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyIndex];
             break;
         }
         switch (_selection.ThisSelectionType)
         {
-          case SelectionTargetType.None:UIManager.Instance.PreviewManager.OpenSelectionNonePreview(_selection,MySelectionTendency,MySelectionTendencyDir); break;
           case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection, MySelectionTendency, MySelectionTendencyDir); break;
           case SelectionTargetType.Check_Single:case SelectionTargetType.Check_Multy:
             UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection, MySelectionTendency, MySelectionTendencyDir); break;

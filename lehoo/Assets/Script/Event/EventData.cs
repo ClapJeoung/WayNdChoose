@@ -28,15 +28,13 @@ public class EventHolder
     if (_data.Season != "")
     {
       string[] _seasons = _data.Season.Split('@');
-      for (int i = 0; i < _seasons.Length; i++) _data.Season.ElementAtOrDefault(int.Parse(_seasons[i]));
+      for (int i = 0; i < _seasons.Length; i++) Data.EnableSeasons.Add(int.Parse(_seasons[i]));
+    }
 
-      Data.AppearSpace = (EventAppearType)int.Parse(_data.AppearPlace);
-    }
-    if(_data.Sector!="")Data.Sector=(SectorType)int.Parse(_data.Sector);
-    if (_data.Environment != "")
-    {
-      Data.EnvironmentType = (EnvironmentType)int.Parse(_data.Environment);
-    }
+    string[] _placeinfos = _data.PlaceInfo.Split('@');
+    Data.AppearSpace = (EventAppearType)int.Parse(_placeinfos[0]);
+    Data.Sector = (SectorType)int.Parse(_placeinfos[1]);
+    Data.EnvironmentType = (EnvironmentType)int.Parse(_placeinfos[2]);
 
     if (_data.Selection_Type != "")
     {
@@ -45,15 +43,13 @@ public class EventHolder
       {
         case SelectionType.Single://단일 선택지
           Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData(Data, -1);
+          Data.SelectionDatas[0] = new SelectionData(Data);
 
           if (_data.Selection_Target != "")
           {
             Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
             switch (Data.SelectionDatas[0].ThisSelectionType)
             {
-              case SelectionTargetType.None: //무조건
-                break;
               case SelectionTargetType.Pay: //지불
                 Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
                 break;
@@ -69,7 +65,7 @@ public class EventHolder
               Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
             {
               Data.FailureDatas = new FailureData[1];
-              Data.FailureDatas[0] = new FailureData(Data, -1);
+              Data.FailureDatas[0] = new FailureData(Data);
               Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
               switch (Data.FailureDatas[0].Panelty_target)
               {
@@ -83,13 +79,13 @@ public class EventHolder
               Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
             }
             Data.SuccessDatas = new SuccessData[1];
-            Data.SuccessDatas[0] = new SuccessData(Data, -1);
+            Data.SuccessDatas[0] = new SuccessData(Data);
             Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
             switch (Data.SuccessDatas[0].Reward_Target)
             {
-              case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
+              case RewardTarget.Experience: Data.SuccessDatas[0].Reward_EXPID = _data.Reward_Info; break;
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-              case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+              case RewardTarget.Skill: Data.SuccessDatas[0].Reward_SkillType = (SkillType)int.Parse(_data.Reward_Info); break;
             }
 
             Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
@@ -98,84 +94,68 @@ public class EventHolder
 
           break;
         case SelectionType.Body://이성육체
+          maketendencydata(TendencyTypeEnum.Body);
+          break;
         case SelectionType.Head://정신물질
-          Data.SelectionDatas = new SelectionData[2];
-          Data.FailureDatas = new FailureData[2];
-          Data.SuccessDatas = new SuccessData[2];
-
-          if (_data.Selection_Target != "")
-          {
-            for (int i = 0; i < Data.SelectionDatas.Length; i++)
-            {
-              Data.SelectionDatas[i] = new SelectionData(Data, i);
-
-              Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target.Split('@')[i]);
-              switch (Data.SelectionDatas[i].ThisSelectionType)
-              {
-                case SelectionTargetType.None: //무조건
-                  break;
-                case SelectionTargetType.Pay: //지불
-                  Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info.Split('@')[i]);
-                  break;
-                case SelectionTargetType.Check_Single: //기술(단일)
-                  Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info.Split('@')[i]));
-                  break;
-                case SelectionTargetType.Check_Multy: //기술(복수)
-                  string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
-                  for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[j]));
-                  break;
-              }
-
-              if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
-                Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
-              {
-                Data.FailureDatas[i] = new FailureData(Data, i);
-                Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
-                switch (Data.FailureDatas[i].Panelty_target)
-                {
-                  case PenaltyTarget.None: break;
-                  case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
-                  case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
-                }
-              }
-              else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusType.Gold))
-              {
-                Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
-              }
-              Data.SuccessDatas[i] = new SuccessData(Data, i);
-              Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[i]);
-              switch (Data.SuccessDatas[i].Reward_Target)
-              {
-                case RewardTarget.Experience: Data.SuccessDatas[i].Reward_ID = _data.Reward_Info.Split('@')[i]; break;
-                case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-                case RewardTarget.Skill: Data.SuccessDatas[i].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
-              }
-
-              Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
-            }
-          }
+          maketendencydata(TendencyTypeEnum.Head);
           break;
+      }
+      void maketendencydata(TendencyTypeEnum tendencytype)
+      {
+        Data.SelectionDatas = new SelectionData[2];
+        Data.FailureDatas = new FailureData[2];
+        Data.SuccessDatas = new SuccessData[2];
 
-        case SelectionType.Tendency:
-        case SelectionType.Experience:
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData(Data, -1);
-          if (_data.Selection_Target != "")
+        if (_data.Selection_Target != "")
+        {
+          for (int i = 0; i < Data.SelectionDatas.Length; i++)
           {
-            Data.SelectionDatas[0].ThisSelectionType = Data.Selection_type.Equals(SelectionType.Tendency) ? SelectionTargetType.Tendency : SelectionTargetType.Exp;
+            Data.SelectionDatas[i] = new SelectionData(Data,tendencytype, i);
 
-            Data.SuccessDatas = new SuccessData[1];
-            Data.SuccessDatas[0] = new SuccessData(Data, -1);
-            Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-            switch (Data.SuccessDatas[0].Reward_Target)
+            Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target.Split('@')[i]);
+            switch (Data.SelectionDatas[i].ThisSelectionType)
             {
-              case RewardTarget.Experience: Data.SuccessDatas[0].Reward_ID = _data.Reward_Info; break;
+              case SelectionTargetType.Pay: //지불
+                Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info.Split('@')[i]);
+                break;
+              case SelectionTargetType.Check_Single: //기술(단일)
+                Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info.Split('@')[i]));
+                break;
+              case SelectionTargetType.Check_Multy: //기술(복수)
+                string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
+                for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[j]));
+                break;
+            }
+
+            if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
+              Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
+            {
+              Data.FailureDatas[i] = new FailureData(Data,tendencytype, i);
+              Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
+              switch (Data.FailureDatas[i].Panelty_target)
+              {
+                case PenaltyTarget.None: break;
+                case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
+                case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
+              }
+            }
+            else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusType.Gold))
+            {
+              Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
+            }
+            Data.SuccessDatas[i] = new SuccessData(Data,tendencytype, i);
+            Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[i]);
+            switch (Data.SuccessDatas[i].Reward_Target)
+            {
+              case RewardTarget.Experience: Data.SuccessDatas[i].Reward_EXPID = _data.Reward_Info.Split('@')[i]; break;
               case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-              case RewardTarget.Skill: Data.SuccessDatas[0].Reward_Skill = (SkillType)int.Parse(_data.Reward_Info); break;
+              case RewardTarget.Skill: Data.SuccessDatas[i].Reward_SkillType = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
             }
-            Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
+
+            Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
           }
-          break;
+        }
+
       }
     }
 
@@ -392,6 +372,7 @@ public class EventHolder
     foreach (var _follow in AllFollowEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
+      if (_follow.RightSeason == false) continue;
       if (_follow.AppearSpace!=EventAppearType.Outer) continue;
 
       switch (_follow.FollowType)
@@ -451,6 +432,7 @@ public class EventHolder
     foreach (var _event in AllNormalEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
+      if (_event.RightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
 
       _allevents.Add(_event);
@@ -523,6 +505,7 @@ public class EventHolder
     foreach (var _follow in AllFollowEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
+      if (_follow.RightSeason == false) continue;
       if (_follow.RightSpace(settletype) == false) continue;
 
       switch (_follow.FollowType)
@@ -582,6 +565,7 @@ public class EventHolder
     foreach (var _event in AllNormalEvents)
     {
       if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
+      if (_event.RightSeason == false) continue;
       if (_event.RightSpace(settletype) == false) continue;
 
       _allevents.Add(_event);
@@ -684,24 +668,26 @@ public class TileInfoData
 }
 #region 이벤트 정보에 쓰는 배열들
 public enum FollowType { Event,EXP,Skill}
-public enum SettlementType {Town,City,Castle,Outer}
-public enum EventAppearType { Outer,Town,City,Castle,Settlement}
-public enum SectorType {NULL, Residence,Marketplace,Temple,Library,Theater,Academy}
-public enum EnvironmentType { NULL, River,Forest,Highland,Mountain,Sea,Beach,Land,RiverBeach}
+public enum SettlementType {Village,Town,City,Outer}
+public enum EventAppearType { Outer, Village, Town, City, Settlement}
+public enum SectorType {NULL, Residence, Temple,Marketplace, Library,Theater,Academy}
+public enum EnvironmentType { NULL, River,Forest,Mountain,Sea,Beach,Land,RiverBeach, Highland }
 public enum SelectionType { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
-public enum CheckTarget { None,Pay,Theme,Skill}
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTarget { Experience,HP,Sanity,Gold,Skill,None}
 public enum EventSequence { Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
 #endregion  
 public class EventDataDefulat
 {
+  /// <summary>
+  /// "Event_이름"
+  /// </summary>
   public string ID = "";
-  public Sprite Illust
+  public int BeginningLength
   {
     get
     {
-     return  GameManager.Instance.ImageHolder.GetEventStartIllust(ID, Season);
+      return BeginningDescriptions.Count;
     }
   }
   public string Name
@@ -712,12 +698,28 @@ public class EventDataDefulat
       return WNCText.GetSeasonText(_str);
     }
   }
-  public string Description
+  public List<EventIllustHolder> BeginningIllusts
   {
     get
     {
-      string _str = GameManager.Instance.GetTextData(ID + "_DESCRIPTION");
-      return WNCText.GetSeasonText(_str);
+     return  GameManager.Instance.ImageHolder.GetEventIllusts(ID+"_Beginning",BeginningLength );
+    }
+  }
+  private List<string> beginningdescriptions=new List<string>();
+  public List<string> BeginningDescriptions
+  {
+    get
+    {
+      if (beginningdescriptions.Count == 0)
+      {
+        string _str = GameManager.Instance.GetTextData(ID + "_Descriptions");
+        List<string> beginningdescriptions = _str.Split('@').ToList();
+        for (int i = 0; i < beginningdescriptions.Count; i++)
+        {
+          beginningdescriptions[i] = WNCText.GetSeasonText(beginningdescriptions[i]);
+        }
+      }
+      return beginningdescriptions;
     }
   }
   public List<int> EnableSeasons = new List<int>();  //0개면 사계절 분화 없음
@@ -729,6 +731,18 @@ public class EventDataDefulat
       return GameManager.Instance.MyGameData.Turn;
     }
   }
+  public bool RightSeason
+  {
+    get
+    {
+      if (EnableSeasons.Count == 0) return true;
+      else
+      {
+        if (EnableSeasons.Contains(GameManager.Instance.MyGameData.Turn - 1)) return true;
+      }
+      return false;
+    }
+  }
   public EventAppearType AppearSpace;
     public bool RightSpace(SettlementType currentsettle)
     {
@@ -736,14 +750,14 @@ public class EventDataDefulat
         {
             case EventAppearType.Outer:
                 return false;
+            case EventAppearType.Village:
+                if (currentsettle == SettlementType.Village) return true;
+                break;
             case EventAppearType.Town:
                 if (currentsettle == SettlementType.Town) return true;
                 break;
             case EventAppearType.City:
                 if (currentsettle == SettlementType.City) return true;
-                break;
-            case EventAppearType.Castle:
-                if (currentsettle == SettlementType.Castle) return true;
                 break;
             case EventAppearType.Settlement:
                 if (currentsettle == SettlementType.Outer) return false;
@@ -765,144 +779,140 @@ public class EventDataDefulat
 public class SelectionData
 {
   private EventDataDefulat MyEvent = null;
-  public SelectionData(EventDataDefulat myevent,int index)
+  public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;
+  /// <summary>
+  /// 0,1
+  /// </summary>
+  private int Index = 0;
+  /// <summary>
+  /// 성향 없는 경우
+  /// </summary>
+  /// <param name="myevent"></param>
+  public SelectionData(EventDataDefulat myevent)
   {
-    MyEvent = myevent;Index = index;
+    MyEvent = myevent;
+    Tendencytype = TendencyTypeEnum.None;
+    Index = 0;
   }
-  private string ID { get { return MyEvent.ID + SearchWord_SubDescriptoin + SearchIndex; } }
-  public int Index = 0; //-1(단일),0,1(복수)
-    private string SearchIndex
-    {
-      get
-      {
-        return Index == -1 ? "" : string.Format("_{0}", Index.ToString());
-      }
-    }
-    public SelectionTargetType ThisSelectionType = SelectionTargetType.None;
-    private const string SearchWord_Name = "_SELECTION";
-    public string Name
+  public SelectionData(EventDataDefulat myevent,TendencyTypeEnum tendencytype, int index)
   {
-    get {
-        return WNCText.GetSeasonText(ID + SearchWord_Name + SearchIndex); 
-      }
+    MyEvent = myevent;Index = index; Tendencytype = tendencytype;
   }
-    private const string SearchWord_SubDescriptoin = "_SELECTIONDESCRIPTION";
+  private string ID { get { return MyEvent.ID; } }
+  public string Name
+  {
+    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "Selecting_Names").Split('@')[Index]); }
+  }
   public string SubDescription
   {
-    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID)); }
+    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "Selecting_Subdescriptions").Split('@')[Index]); }
   }
-  public StatusType SelectionPayTarget = StatusType.HP;
-  public List<SkillType> SelectionCheckSkill = new List<SkillType>();
+
+  public SelectionTargetType ThisSelectionType = SelectionTargetType.Pay;
+
+  public StatusType SelectionPayTarget = StatusType.HP;                       //Pay일때 사용
+  public List<SkillType> SelectionCheckSkill = new List<SkillType>();         //Check_Single,Check_Multy일때 사용
   public List<RewardTarget> SelectionSuccesRewards=new List<RewardTarget>();
 }    
 
 public class FailureData
 {
   private EventDataDefulat MyEvent = null;
-  public FailureData(EventDataDefulat myevent, int index)
+  public int Index = 0;
+  public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;
+  /// <summary>
+  /// 성향 없는 경우
+  /// </summary>
+  /// <param name="myevent"></param>
+  public FailureData(EventDataDefulat myevent)
   {
-    MyEvent = myevent; Index = index;
+    MyEvent = myevent; Index = 0; Tendencytype = TendencyTypeEnum.None;
   }
-  private string ID { get { return MyEvent.ID + SearchWord_Description + SearchIndex; } }
-  public int Index = -1;   //-1(단일),0,1(복수)
-    private string SearchIndex
-    {
-      get
-      {
-        return Index == -1 ? "" : string.Format("_{0}", Index.ToString());
-      }
-    }
-    private const string SearchWord_Description = "_FAIL_DESCRIPTION";
-    public string Description
+  public FailureData(EventDataDefulat myevent,TendencyTypeEnum tendencytype, int index)
   {
-    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(MyEvent.ID)); }
+    MyEvent = myevent; Index = index; Tendencytype = tendencytype;
+  }
+  private string ID { get { return ID +(Tendencytype==TendencyTypeEnum.None?"":Index==0?"L":"R")+"Fail"; } }
+  private List<string> descriptions=new List<string>();
+  public List<string> Descriptions
+  {
+    get
+    {
+      if (descriptions.Count == 0)
+      {
+        descriptions = GameManager.Instance.GetTextData(ID + "_Description").Split('@').ToList();
+        for (int i = 0; i < descriptions.Count; i++)
+        {
+          descriptions[i] = WNCText.GetSeasonText(descriptions[i]);
+        }
+      }
+      return descriptions;
+    }
+  }
+  public List<EventIllustHolder> Illusts
+  {
+    get
+    {
+      return GameManager.Instance.ImageHolder.GetEventIllusts(ID, Descriptions.Count);
+    }
   }
   public PenaltyTarget Panelty_target;
   public StatusType Loss_target= StatusType.HP;
   public string ExpID;
-  public Sprite Illust
-  {
-    get
-    {
-      return GameManager.Instance.ImageHolder.GetEventResultIllust(MyEvent.ID, MyEvent.Season,Index, false);
-    }
-  }
 }
 public class GoldFailData : FailureData
 {
-  public GoldFailData() : base(null, -1) { }
-  new public string Description = "";
-  new public Sprite Illust = null;
+  public GoldFailData() : base(null,TendencyTypeEnum.None, -1) { }
+  public string Description = "";
+  public Sprite Illust = null;
 }
-public enum SelectionTargetType { None, Pay, Check_Single,Check_Multy ,Tendency, Exp }//선택지 개별 내용
+public enum SelectionTargetType { Pay, Check_Single,Check_Multy}//선택지 개별 내용
 public enum StatusType { HP,Sanity,Gold}
 public class SuccessData
 {
+  public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;
   private EventDataDefulat MyEvent = null;
-  public SuccessData(EventDataDefulat myevent, int index)
+  public int Index = 0;
+  /// <summary>
+  /// 성향 없는 경우
+  /// </summary>
+  /// <param name="myevent"></param>
+  public SuccessData(EventDataDefulat myevent)
   {
-    MyEvent = myevent; Index = index;
+    MyEvent = myevent; Index = 0; Tendencytype = TendencyTypeEnum.None;
   }
-  private string ID { get { return MyEvent.ID + SearchWord_Description + SearchIndex; } }
-  public int Index = -1;   //-1(단일),0,1(복수)
-  private string SearchIndex
+  public SuccessData(EventDataDefulat myevent,TendencyTypeEnum tendencytype, int index)
+  {
+    MyEvent = myevent; Index = index; Tendencytype = tendencytype;
+  }
+  private string ID { get { return ID + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
+  private List<string> descriptions= new List<string>();
+  public List<string> Descriptions
   {
     get
     {
-      return Index == -1 ? "" : string.Format("_{0}", Index.ToString());
+      if (descriptions.Count == 0)
+      {
+        descriptions = GameManager.Instance.GetTextData(ID + "_Description").Split('@').ToList();
+        for (int i = 0; i < descriptions.Count; i++)
+        {
+          descriptions[i] = WNCText.GetSeasonText(descriptions[i]);
+        }
+      }
+      return descriptions;
     }
   }
-  private const string SearchWord_Description = "_SUCCESS_DESCRIPTION";
-  public string Description
+  public List<EventIllustHolder> Illusts
   {
     get
     {
-      return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID));
-    }
-  }
-  public Sprite Illust
-  {
-    get
-    {
-      return GameManager.Instance.ImageHolder.GetEventResultIllust(MyEvent.ID, MyEvent.Season, Index, true);
+      return GameManager.Instance.ImageHolder.GetEventIllusts(ID, Descriptions.Count);
     }
   }
   public RewardTarget Reward_Target;
-  public SkillType Reward_Skill;
-  public string Reward_ID;
-  private int reward_value_origin = -1;
-  public int Reward_Value_Origin
-  {
-    get 
-    { if (reward_value_origin.Equals(-1))
-        switch (Reward_Target)
-        {
-          case RewardTarget.HP: reward_value_origin = GameManager.Instance.MyGameData.RewardHPValue_origin; break;
-          case RewardTarget.Sanity: reward_value_origin = GameManager.Instance.MyGameData.RewardSanityValue_origin; break;
-          case RewardTarget.Gold: reward_value_origin = GameManager.Instance.MyGameData.RewardGoldValue_origin; break;
-        }
-      return reward_value_origin;
-    }
-    set { reward_value_origin = value; }
-  }
 
-  private int reward_value_modified = -1;
-  public int Reward_Value_Modified
-  {
-    get
-    {
-      if (reward_value_modified.Equals(-1))
-        switch (Reward_Target)
-        {
-          case RewardTarget.HP: reward_value_modified = GameManager.Instance.MyGameData.RewardHPValue_modified; break;
-          case RewardTarget.Sanity: reward_value_modified = GameManager.Instance.MyGameData.RewardSanityValue_modified; break;
-          case RewardTarget.Gold: reward_value_modified = GameManager.Instance.MyGameData.RewardGoldValue_modified; break;
-        }
-      return reward_value_modified;
-    }
-    set { reward_value_modified = value; }
-  }
-
+  public SkillType Reward_SkillType;
+  public string Reward_EXPID;
 }
 
 public class EventData:EventDataDefulat
@@ -1036,9 +1046,7 @@ public class QuestHolder_Wolf:Quest
 public class EventJsonData
 {
   public string ID = "";              //ID
-  public string AppearPlace = "";          //0,1,2,3
-  public string Sector = "";               //0,1,2,3,4
-    public string Environment = "";  //없음, 숲,강,언덕,산,바다
+  public string PlaceInfo = "";          //0,1,2,3
   public string Season ;              //전역,봄,여름,가을,겨울
 
   public string Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술

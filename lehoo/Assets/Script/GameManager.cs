@@ -173,9 +173,9 @@ public class GameManager : MonoBehaviour
   /// <param name="tendency"></param>
   /// <param name="level"></param>
   /// <returns></returns>
-  public string GetTextData(TendencyType tendency,int level,int texttype)
+  public string GetTextData(TendencyTypeEnum tendency,int level,int texttype)
   {
-    string _name = tendency.Equals(TendencyType.Body) ? "TENDENCY_BODY" : "TENDENCY_HEAD";
+    string _name = tendency.Equals(TendencyTypeEnum.Body) ? "TENDENCY_BODY" : "TENDENCY_HEAD";
     string _level = "";
     switch (level)
     {
@@ -206,8 +206,8 @@ public class GameManager : MonoBehaviour
     switch (sector)
     {
       case SectorType.Residence: _str += "RESIDENCE";break;
-      case SectorType.Marketplace: _str += "MARKETPLACE"; break;
       case SectorType.Temple: _str += "TEMPLE"; break;
+      case SectorType.Marketplace: _str += "MARKETPLACE"; break;
       case SectorType.Library: _str += "LIBRARY"; break;
       case SectorType.Theater: _str += "THEATER"; break;
       case SectorType.Academy: _str += "ACADEMY"; break;
@@ -339,7 +339,20 @@ public class GameManager : MonoBehaviour
       MyGameData.Gold -= MyGameData.SettleRestCost_Gold;
       UIManager.Instance.UpdateGoldText();
     }
+    switch (MyGameData.CurrentSettlement.Type)
+    {
+      case SettlementType.Village:
+        MyGameData.MovePoint += ConstValues.RestMovePoint_Village;
+        break;
+      case SettlementType.Town:
+        MyGameData.MovePoint += ConstValues.RestMovePoint_Town;
+        break;
+      case SettlementType.City:
+        MyGameData.MovePoint += ConstValues.RestMovePoint_City;
+        break;
+    }
     MyGameData.AddDiscomfort(MyGameData.CurrentSettlement);
+    MyGameData.ApplySectorEffect(sectortype);
 
     EventManager.Instance.SetSettleEvent(sectortype);
 
@@ -358,19 +371,19 @@ public class GameManager : MonoBehaviour
         break;
     }
   }
-  public void SuccessCurrentEvent(TendencyType _tendencytype,int index)
+  public void SuccessCurrentEvent(TendencyTypeEnum _tendencytype,int index)
   {
     int _tendencyindex = 0;
     switch (_tendencytype)
     {
-      case TendencyType.None:
+      case TendencyTypeEnum.None:
         _tendencyindex = 0;
         break;
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (index.Equals(0)) _tendencyindex = 1;
         else _tendencyindex = 2;
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (index.Equals(0)) _tendencyindex = 3;
         else _tendencyindex = 4;
         break;
@@ -405,19 +418,19 @@ public class GameManager : MonoBehaviour
         break;
     }
   }
-  public void FailCurrentEvent(TendencyType _tendencytype, int index)
+  public void FailCurrentEvent(TendencyTypeEnum _tendencytype, int index)
   {
     int _tendencyindex = 0;
     switch (_tendencytype)
     {
-      case TendencyType.None:
+      case TendencyTypeEnum.None:
         _tendencyindex = 0;
         break;
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (index.Equals(0)) _tendencyindex = 1;
         else _tendencyindex = 2;
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (index.Equals(0)) _tendencyindex = 3;
         else _tendencyindex = 4;
         break;
@@ -515,14 +528,14 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.OpenDialogue();
     SaveData();
   }
-  public void AddTendencyCount(TendencyType _tendencytype,int index)
+  public void AddTendencyCount(TendencyTypeEnum _tendencytype,int index)
   {
     switch (_tendencytype)
     {
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         MyGameData.Tendency_Body.AddCount(index.Equals(0) ? false : true);
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         MyGameData.Tendency_Head.AddCount(index.Equals(0) ? false : true);
         break;
     }

@@ -18,16 +18,16 @@ public class Settlement
     {
       if (settlementplaces.Count == 0)
       {
-        settlementplaces = new List<SectorType>() { SectorType.Residence, SectorType.Marketplace};
+        settlementplaces = new List<SectorType>() { SectorType.Residence, SectorType.Temple};
         switch (Type)
         {
+          case SettlementType.Village:
+            break;
           case SettlementType.Town:
+            settlementplaces.Add(SectorType.Marketplace);
             break;
           case SettlementType.City:
-            settlementplaces.Add(SectorType.Temple);
-            break;
-          case SettlementType.Castle:
-            settlementplaces.Add(SectorType.Temple);
+            settlementplaces.Add(SectorType.Marketplace);
             settlementplaces.Add(SectorType.Library);
             break;
         }
@@ -44,7 +44,7 @@ public class Settlement
     _randomplaces.Sort((a, b) => Random.Range(0, 2) == 0 ? 0:1);
     switch (Type)
     {
-      case SettlementType.Town:
+      case SettlementType.Village:
         switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
         {
           case 1:
@@ -61,7 +61,7 @@ public class Settlement
         }
 
         break;
-      case SettlementType.City:
+      case SettlementType.Town:
         switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
         {
           case 1:
@@ -78,7 +78,7 @@ public class Settlement
         }
 
         break;
-      case SettlementType.Castle:
+      case SettlementType.City:
         switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
         {
           case 1:
@@ -108,12 +108,12 @@ public class Settlement
     {
       switch (Type)
       {
+        case SettlementType.Village:
+          return SettlementName.VillageNames[Index];
         case SettlementType.Town:
-          return SettlementName.TownNams[Index];
-        case SettlementType.City:
-          return SettlementName.CityNames[Index];
+          return SettlementName.TownNames[Index];
         default:
-          return SettlementName.CastleNames[Index];
+          return SettlementName.CityNames[Index];
       }
     }
   }
@@ -122,9 +122,9 @@ public class Settlement
   {
     switch (Type)
     {
-      case SettlementType.Town:Discomfort += ConstValues.RestDiscomfort_Town;return;
-      case SettlementType.City:Discomfort += ConstValues.RestDiscomfort_City; return;
-      default: Discomfort += ConstValues.RestDiscomfort_Castle; return;
+      case SettlementType.Village:Discomfort += ConstValues.RestDiscomfort_Village;return;
+      case SettlementType.Town:Discomfort += ConstValues.RestDiscomfort_Town; return;
+      default: Discomfort += ConstValues.RestDiscomfort_City; return;
     }
   }
   private string name;
@@ -138,22 +138,22 @@ public class Settlement
   {
     switch (Type)
     {
+      case SettlementType.Village:
+        SpringIllust = GameManager.Instance.ImageHolder.GetVillageSprite($"{OriginName}_spring");
+        SummerIllust = GameManager.Instance.ImageHolder.GetVillageSprite($"{OriginName}_summer");
+        FallIllust = GameManager.Instance.ImageHolder.GetVillageSprite($"{OriginName}autumn");
+        WinterIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_winter"); 
+        break;
       case SettlementType.Town:
         SpringIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_summer");
         FallIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}autumn");
-        WinterIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_winter"); 
-        break;
+        WinterIllust = GameManager.Instance.ImageHolder.GetTownSprite($"{OriginName}_winter"); break;
       case SettlementType.City:
         SpringIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_spring");
         SummerIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_summer");
         FallIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}autumn");
         WinterIllust = GameManager.Instance.ImageHolder.GetCitySprite($"{OriginName}_winter"); break;
-      case SettlementType.Castle:
-        SpringIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_spring");
-        SummerIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_summer");
-        FallIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}autumn");
-        WinterIllust = GameManager.Instance.ImageHolder.GetCastleSprite($"{OriginName}_winter"); break;
     }
   }
   public Sprite SpringIllust = null, SummerIllust = null, FallIllust = null, WinterIllust = null;
@@ -210,14 +210,14 @@ public class Settlement
     switch (_event.AppearSpace)
     {
       case EventAppearType.Outer: return false;
+      case EventAppearType.Village:
+        if (Type != SettlementType.Village) return false;
+        break;
       case EventAppearType.Town:
         if (Type != SettlementType.Town) return false;
         break;
       case EventAppearType.City:
-        if (Type != SettlementType.Castle) return false;
-        break;
-      case EventAppearType.Castle:
-        if (Type != SettlementType.Castle) return false;
+        if (Type != SettlementType.City) return false;
         break;
       case EventAppearType.Settlement:
         break;
@@ -584,23 +584,23 @@ public class MapData
 
 
   public TileData[,] TileDatas;
+  public List<Settlement> Villages = new List<Settlement>();
   public List<Settlement> Towns = new List<Settlement>();
-  public List<Settlement> Cities = new List<Settlement>();
-  public Settlement Castles = null;
+  public Settlement City = null;
   public List<Settlement> AllSettles = new List<Settlement>();
 
 }//게임 상에서 꺼내 쓰기 편리하게 변환한 지도 데이터
 public static class SettlementName
 {
-  public static string[] TownNams =
+  public static string[] VillageNames =
   {
     "alion","amberfort","arthurstone","ashbrook","brigelis","calibria","eldermist","elvendom","evergreenvale","galania","ironcliff","raia","rappland","sellier","silberia","sunridge","synodia","windmere"
   };
-  public static string[] CityNames =
+  public static string[] TownNames =
   {
     "albace","avalomia","ellsworth","emael","iberton","lumia","niverdale","solaria","sylveria","valtar"
   };
-  public static string[] CastleNames =
+  public static string[] CityNames =
   {
     "aberstead","arcadimia","catrua","lugrea","mabrel","meridina","penbrite","solanum","tryon","udrium"
   };

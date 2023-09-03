@@ -15,7 +15,9 @@ MonoBehaviour:
   GameoverIllusts: []
   MovePointIcon_Enable: {fileID: 21300000, guid: cfdf7cb8ba959524e90a6ac0ba00007f, type: 3}
   MovePointIcon_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
-  TownIllust:
+  VillageIcon_black: {fileID: 21300000, guid: a4e91d81e0dd57b45888a932340e1161, type: 3}
+  VillageIcon_white: {fileID: 21300000, guid: 3f20511af86d5a545964d57952d19432, type: 3}
+  VillageIllust:
   - {fileID: 21300000, guid: 029a6e6ad7a1da741972869b6e49099f, type: 3}
   - {fileID: 21300000, guid: bd22ec0042ded0e4e9f414c1a867a36b, type: 3}
   - {fileID: 21300000, guid: 1a89e2b2570af994a9ab6f926ab2eab4, type: 3}
@@ -88,7 +90,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f99436d238c204b439383603137aacc6, type: 3}
   - {fileID: 21300000, guid: 3482f74ce083c4644a6540f69f296f8d, type: 3}
   - {fileID: 21300000, guid: c564cf210bec76148a9923bf512466d8, type: 3}
-  CityIllust:
+  TownIcon_black: {fileID: 21300000, guid: 072f841cd5022f243b1d8773d1fab94e, type: 3}
+  TownIcon_white: {fileID: 21300000, guid: fe46ae87ac098644081abe4d9693bef1, type: 3}
+  TownIllust:
   - {fileID: 21300000, guid: 4c025250b3610ed40b850ece331fa078, type: 3}
   - {fileID: 21300000, guid: 5863b445dc2e0684bb3a049810ef251b, type: 3}
   - {fileID: 21300000, guid: b9fe1a5bab2527241815663222d68db2, type: 3}
@@ -129,7 +133,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: c461aa7f12754874e8035b4cc45c91b5, type: 3}
   - {fileID: 21300000, guid: 7f91d15af61de5c48973e63444ca8a7f, type: 3}
   - {fileID: 21300000, guid: 795738c466781874984b08a2d560ce44, type: 3}
-  CastleIllust:
+  CityIcon_black: {fileID: 21300000, guid: 9b091495955a09844988bd6ffa5c8a78, type: 3}
+  CityIcon_white: {fileID: 21300000, guid: 964452aecc598b2418822a2971a5cf39, type: 3}
+  CityIllust:
   - {fileID: 21300000, guid: 956ff299bf852994f8464c2b01a8c30b, type: 3}
   - {fileID: 21300000, guid: d18af543f6dd8674db862807873136a8, type: 3}
   - {fileID: 21300000, guid: eba95fdd2f741d944a9f39a2e93a3f76, type: 3}
@@ -213,8 +219,8 @@ MonoBehaviour:
   SkillSelectionIcon: {fileID: 21300000, guid: 26356723fc80c754191e894eba06a850, type: 3}
   NoneIllust: {fileID: 21300000, guid: 622e8cc81030c2543be848d6ac0035b8, type: 3}
   ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
-  MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
   TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
+  MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
   LibraryIcon: {fileID: 21300000, guid: 9c71aa13cdd3beb42b347760c03a7b9d, type: 3}
   TheaterIcon: {fileID: 21300000, guid: e0a1aff2efc28ba49bf9fea542b9288a, type: 3}
   AcademyIcon: {fileID: 21300000, guid: b2ed8b7c7cf8da349b1685bebb032fbb, type: 3}
@@ -619,11 +625,17 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 55448ca771db7f947b128b9b4884ff2c, type: 3}
   - {fileID: 21300000, guid: 946ac2f33d390ae40b18155a1e22edb5, type: 3}
   EndingIllusts: []
+  QuestIcon_Cult: {fileID: 21300000, guid: c94eefcacec954c4b85530c631592644, type: 3}
+  QuestIcon_Hideout_Idle: {fileID: 21300000, guid: 8d40cd6ccf29e9643bb8ffae3018dc1b, type: 3}
+  QuestIcon_Hideout_Finish: {fileID: 21300000, guid: c7ec4e0fcd3108c43899d37d506454ca, type: 3}
+  QuestIcon_Wolf: {fileID: 21300000, guid: 99700f1c2d684784b8712bc8f4e6a592, type: 3}
+  QuestIcon_Ritual_Idle: {fileID: 21300000, guid: f84b81a4c74f7ad41a7dc84f0b6b3ea1, type: 3}
+  QuestIcon_Ritual_Finish: {fileID: 21300000, guid: 578de4cf5dda664498c09108536df112, type: 3}
   QuestIllust_Wolf: []
-  NoGoldIllust: {fileID: 21300000, guid: 5ce237ac48c060f48a83877139e6918f, type: 3}
+  NoGoldIllust: {fileID: 21300000, guid: 96893358702234646bba9ec7b9dd1ffc, type: 3}
   EmptyLongExpIcon: {fileID: 21300000, guid: c8859889966423244b72eb0209f9a7b0, type: 3}
   EmptyShortExpIcon: {fileID: 21300000, guid: 909c3af100c69bb48b88201269d8348a, type: 3}
-  DefaultIllust: {fileID: 21300000, guid: defbae7f3b864944da30a00b49ba4a5f, type: 3}
+  DefaultIllust: {fileID: 21300000, guid: 05a87a754e340fb4d933a04dd808c5b7, type: 3}
   DefaultIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
   SpringIcon_active: {fileID: 21300000, guid: 7f4699aae6a48f548815bbfc1037ae17, type: 3}
   SpringIcon_deactive: {fileID: 21300000, guid: 4bde7fd814d2af24f968614c37474f8a, type: 3}

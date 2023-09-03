@@ -321,17 +321,17 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(ExpPreview);
   }
-  public void OpenTendencyPreview(TendencyType _type)
+  public void OpenTendencyPreview(TendencyTypeEnum _type)
   {
     Sprite _tendencyicon = null;
     Tendency _targettendency = null;
     switch (_type)
     {
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type,GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _targettendency = GameManager.Instance.MyGameData.Tendency_Head;
         break;
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type, GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
         break;
@@ -344,7 +344,7 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(IconAndDescription_Panel, TendencyPivot);
   }
-  public void OpenSelectionNonePreview(SelectionData _selection,TendencyType tendencytype,bool dir)
+  public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir)
   {
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
@@ -355,14 +355,14 @@ public class PreviewManager : MonoBehaviour
 
     switch (tendencytype)
     {
-      case TendencyType.None:
+      case TendencyTypeEnum.None:
         if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(true)) SelectionNoneTendency.gameObject.SetActive(false);
         break;
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(false)) SelectionNoneTendency.gameObject.SetActive(true);
         SelectionNoneTendency.Setup(GameManager.Instance.MyGameData.Tendency_Body,dir);
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(false)) SelectionNoneTendency.gameObject.SetActive(true);
         SelectionNoneTendency.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
         break;
@@ -372,7 +372,7 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(SelectionNonePanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionPayPreview(SelectionData _selection, TendencyType tendencytype, bool dir)
+  public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
   {
     SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
@@ -466,14 +466,14 @@ public class PreviewManager : MonoBehaviour
 
     switch (tendencytype)//성향 존재하는거면 그거 활성화
     {
-      case TendencyType.None:
+      case TendencyTypeEnum.None:
         if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionPayTendendcy.gameObject.SetActive(false);
         break;
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionPayTendendcy.gameObject.SetActive(true);
         SelectionPayTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionPayTendendcy.gameObject.SetActive(true);
         SelectionPayTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
         break;
@@ -483,7 +483,7 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(SelectionPayPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyType tendencytype, bool dir)
+  public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
   {
     SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
@@ -537,14 +537,14 @@ public class PreviewManager : MonoBehaviour
 
     switch (tendencytype)//성향 존재하는거면 그거 활성화
     {
-      case TendencyType.None:
+      case TendencyTypeEnum.None:
         if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionCheckTendendcy.gameObject.SetActive(false);
         break;
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
         SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
         SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
         break;
@@ -554,14 +554,13 @@ public class PreviewManager : MonoBehaviour
     _cor = fadepreview(SelectionCheckPanel, true);
     StartCoroutine(_cor);
   }
-  public void OpenSelectionElsePreview(SelectionData _selection, TendencyType tendencytype, bool dir)
+  public void OpenSelectionElsePreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
   {
+    //안쓰는 상태
     SelectionElseBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
     SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite _icon = null;
-    if (_selection.ThisSelectionType.Equals(SelectionTargetType.Exp)) _icon = GameManager.Instance.ImageHolder.ExpSelectionIcon;
-    else _icon = GameManager.Instance.ImageHolder.TendencySelectionIcon;
 
     SelectionElseIcon.sprite = _icon;
     SelectionElseDescription.text = _selection.SubDescription;
@@ -570,14 +569,14 @@ public class PreviewManager : MonoBehaviour
 
     switch (tendencytype)
     {
-      case TendencyType.None:
+      case TendencyTypeEnum.None:
         if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionCheckTendendcy.gameObject.SetActive(false);
         break;
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
         SelectionElseTendency.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
         SelectionElseTendency.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
         break;

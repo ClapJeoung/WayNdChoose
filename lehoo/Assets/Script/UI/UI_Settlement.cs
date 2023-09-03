@@ -51,9 +51,9 @@ public class UI_Settlement : UI_default
     int _placecount = 0;
     switch (CurrentSettlement.Type)
     {
-      case SettlementType.Town: _placecount = 2;_settlementicon = GameManager.Instance.ImageHolder.TownIcon_black; break;
-      case SettlementType.City:_placecount = 3; _settlementicon = GameManager.Instance.ImageHolder.CityIcon_black; break;
-      case SettlementType.Castle:_placecount = 4; _settlementicon = GameManager.Instance.ImageHolder.CastleIcon_black; break;
+      case SettlementType.Village: _placecount = 2;_settlementicon = GameManager.Instance.ImageHolder.VillageIcon_black; break;
+      case SettlementType.Town:_placecount = 3; _settlementicon = GameManager.Instance.ImageHolder.TownIcon_black; break;
+      case SettlementType.City:_placecount = 4; _settlementicon = GameManager.Instance.ImageHolder.CityIcon_black; break;
     }
     for (int i = 0; i < SectorIcons.Count; i++)
     {
@@ -151,11 +151,11 @@ public class UI_Settlement : UI_default
             case SectorType.Residence:
               _effect = string.Format(_effect, ConstValues.SectorEffect_residence);
               break;
-            case SectorType.Marketplace:
-              _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
-              break;
             case SectorType.Temple:
               _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
+              break;
+            case SectorType.Marketplace:
+              _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
               break;
             case SectorType.Library:
               _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
@@ -182,6 +182,10 @@ public class UI_Settlement : UI_default
           int _discomfortvalue = 0;
           switch (CurrentSettlement.Type)
           {
+            case SettlementType.Village:
+              _movepointvalue = ConstValues.RestMovePoint_Village;
+              _discomfortvalue = ConstValues.RestDiscomfort_Village;
+              break;
             case SettlementType.Town:
               _movepointvalue = ConstValues.RestMovePoint_Town;
               _discomfortvalue = ConstValues.RestDiscomfort_Town;
@@ -189,10 +193,6 @@ public class UI_Settlement : UI_default
             case SettlementType.City:
               _movepointvalue = ConstValues.RestMovePoint_City;
               _discomfortvalue = ConstValues.RestDiscomfort_City;
-              break;
-            case SettlementType.Castle:
-              _movepointvalue = ConstValues.RestMovePoint_Castle;
-              _discomfortvalue = ConstValues.RestDiscomfort_Castle;
               break;
           }
           if (SelectedSector == SectorType.Residence) _movepointvalue++;

@@ -12,21 +12,21 @@ public class UI_map : UI_default
   [SerializeField] private float MoveTime = 1.5f;
   private TileData SelectedTile = null;
   public maptext MapCreater = null;
-  [HideInInspector] public GameObject CastleIcon = null;
-  [HideInInspector] public List<GameObject> CityIcons = new List<GameObject>();
+  [HideInInspector] public GameObject CityIcon = null;
   [HideInInspector] public List<GameObject> TownIcons = new List<GameObject>();
+  [HideInInspector] public List<GameObject> VillageIcons = new List<GameObject>();
   public GameObject GetSettleIcon(Settlement settlement)
   {
     string _originname = settlement.OriginName;
     switch (settlement.Type)
     {
-      case SettlementType.Castle:return CastleIcon;
-      case SettlementType.City:
-        foreach (GameObject city in CityIcons)
+      case SettlementType.City:return CityIcon;
+      case SettlementType.Town:
+        foreach (GameObject city in TownIcons)
           if (city.name.Contains(_originname)) return city;
         return null;
-      case SettlementType.Town:
-        foreach(GameObject town in TownIcons)
+      case SettlementType.Village:
+        foreach(GameObject town in VillageIcons)
           if(town.name.Contains(_originname)) return town;
         return null;
     }

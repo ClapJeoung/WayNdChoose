@@ -34,8 +34,6 @@ public class EventManager : MonoBehaviour
   /// <param name="place"></param>
   public void SetSettleEvent(SectorType place)
   {
-    GameManager.Instance.MyGameData.AddPlaceEffectBeforeStartEvent(place);
-
     TileInfoData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData;
     EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.Settlement.Type, place, _tiledta.EnvirList); ;
     GameManager.Instance.SelectEvent(_event);

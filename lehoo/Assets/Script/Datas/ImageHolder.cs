@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// 시작 성공(일반) 실패(일반) 성공,실패(성향 좌측) 성공,실패(성향 우측)
+/// </summary>
+public enum EventPhaseTypeEnum { Beginning,Selecting,Success,Fail,LSuccess,LFail,RSuccess,RFail}
 [CreateAssetMenu(menuName ="ImageHolder")]
-
 public class ImageHolder : ScriptableObject
 {
   public List<Sprite> GameoverIllusts = new List<Sprite>();
@@ -19,15 +23,15 @@ public class ImageHolder : ScriptableObject
 
   public Sprite MovePointIcon_Enable = null;
   public Sprite MovePointIcon_Lack = null;
+  public Sprite VillageIcon_black = null;
+  public Sprite VillageIcon_white = null;
+  public List<Sprite> VillageIllust=new List<Sprite>();                 //마을 일러스트
   public Sprite TownIcon_black = null;
   public Sprite TownIcon_white = null;
-  public List<Sprite> TownIllust=new List<Sprite>();                 //마을 일러스트
+  public List<Sprite> TownIllust=new List<Sprite>();                 //도시 일러스트
   public Sprite CityIcon_black = null;
   public Sprite CityIcon_white = null;
-  public List<Sprite> CityIllust=new List<Sprite>();                 //도시 일러스트
-  public Sprite CastleIcon_black = null;
-  public Sprite CastleIcon_white = null;
-  public List<Sprite> CastleIllust=new List<Sprite>();               //성채 일러스트
+  public List<Sprite> CityIllust=new List<Sprite>();               //성채 일러스트
   [Space(10)]
   public Sprite UnknownTheme = null;
   public Sprite UnknownExp = null;
@@ -45,14 +49,14 @@ public class ImageHolder : ScriptableObject
     else if (status == StatusType.Sanity) return SanityIcon;
     else return GoldIcon;
   }
-  public Sprite GetTendencyIcon(TendencyType type,int level)
+  public Sprite GetTendencyIcon(TendencyTypeEnum type,int level)
   {
-    if(type.Equals(TendencyType.Body))return TendencyIcon_Body[level+2];
+    if(type.Equals(TendencyTypeEnum.Body))return TendencyIcon_Body[level+2];
     else return TendencyIcon_Head[level+2];
   }
-  public Sprite GettendencyIllust(TendencyType type,int level)
+  public Sprite GettendencyIllust(TendencyTypeEnum type,int level)
   {
-    if (type.Equals(TendencyType.Body)) return TendencyIllust_Body[level + 2];
+    if (type.Equals(TendencyTypeEnum.Body)) return TendencyIllust_Body[level + 2];
     else return TendencyIllust_Head[level + 2];
   }
   [Space(10)]
@@ -69,8 +73,8 @@ public class ImageHolder : ScriptableObject
   public Sprite SkillSelectionIcon = null;
     public Sprite NoneIllust = null;
   public Sprite ResidenceIcon = null;
-  public Sprite MarketPlaceIcon = null;
   public Sprite TempleIcon = null;
+  public Sprite MarketPlaceIcon = null;
   public Sprite LibraryIcon = null;
   public Sprite TheaterIcon = null;
   public Sprite AcademyIcon = null;
@@ -79,8 +83,8 @@ public class ImageHolder : ScriptableObject
     switch (placetype)
     {
       case SectorType.Residence:return ResidenceIcon;
+      case SectorType.Temple: return TempleIcon;
       case SectorType.Marketplace:return MarketPlaceIcon;
-      case SectorType.Temple:return TempleIcon;
       case SectorType.Library:return LibraryIcon;
       case SectorType.Theater:return TheaterIcon;
       default:return AcademyIcon;
@@ -149,10 +153,6 @@ public class ImageHolder : ScriptableObject
   public Sprite GoldIncreaseIcon = null;
   public Sprite GoldDecreaseIcon = null;
   [Space(10)]
-  public Sprite Quest_risig = null;
-  public Sprite Quest_climax = null;
-  public Sprite Quest_fall = null;
-  [Space(10)]
   public Sprite DisComfort = null;
   public Sprite MadnessIdle = null;
   public Sprite MadnessActive = null;
@@ -161,14 +161,14 @@ public class ImageHolder : ScriptableObject
   public Sprite Arrow_Active_physical = null;
   public Sprite Arrow_Active_mental = null;
   public Sprite Arrow_Active_material = null;
-  public Sprite Arrow_Active(TendencyType tendencytype,bool dir)
+  public Sprite Arrow_Active(TendencyTypeEnum tendencytype,bool dir)
   {
     switch (tendencytype)
     {
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (dir.Equals(false)) return Arrow_Active_rational;
         else return Arrow_Active_physical;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (dir.Equals(false)) return Arrow_Active_mental;
         else return Arrow_Active_material;
       default: return DefaultIcon;
@@ -220,14 +220,14 @@ public class ImageHolder : ScriptableObject
         return NullEnvirIllust[GameManager.Instance.MyGameData.Turn];
     }
   }
-  public Sprite SelectionBackground (TendencyType tendencytype,bool dir)
+  public Sprite SelectionBackground (TendencyTypeEnum tendencytype,bool dir)
   {
     switch (tendencytype)
     {
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         if (dir.Equals(false)) return SelectionBackground_rational;
         else return SelectionBackground_physical;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         if (dir.Equals(false)) return SelectionBackground_mental;
         else return SelectionBackground_material;
       default:return SelectionBackground_none;
@@ -254,10 +254,10 @@ public class ImageHolder : ScriptableObject
     }
   }
 
-    public Sprite GetTownSprite(string _name)
+    public Sprite GetVillageSprite(string _name)
   {
     Sprite _targetsprite = DefaultIllust;
-    foreach (Sprite _spr in TownIllust)
+    foreach (Sprite _spr in VillageIllust)
     {
       if (_spr.name.Equals(_name))
       {
@@ -280,10 +280,10 @@ public class ImageHolder : ScriptableObject
     }
     return _targetsprite;
   }//도시 이름에 해당하는 일러스트 가져오기
-  public Sprite GetCastleSprite(string _name)
+  public Sprite GetTownSprite(string _name)
   {
     Sprite _targetsprite = DefaultIllust;
-    foreach (Sprite _spr in CastleIllust)
+    foreach (Sprite _spr in TownIllust)
     {
       if (_spr.name.Equals(_name))
       {
@@ -294,62 +294,29 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//성채 이름에 해당하는 일러스트 가져오기
 
-  private string SeasonText(int season)
-  {
-    switch (season)
+    public List<EventIllustHolder> GetEventIllusts(string eventid,int length)
     {
-      case 0:return "_SPRING";
-      case 1:return "_SUMMER";
-      case 2: return "_AUTUMN";
-      case 3:return "_WINTER";
-      default:return "";
-    }
-  }
-    /// <summary>
-    /// 0123(사계절) 4(계절X)
-    /// </summary>
-    /// <param name="_illustid"></param>
-    /// <param name="season"></param>
-    /// <returns></returns>
-    public Sprite GetEventStartIllust(string _illustid,int season)
-  {
-    string _name = _illustid+SeasonText(season);
-
+    string _name = eventid;
+    _name += "_Illust";
+    List<Sprite> _illusts = new List<Sprite>();
     foreach (Sprite _spr in EventIllust)
     {
-      if (string.Compare(_spr.name,_name,true).Equals(0))
+      if (_spr.name.Contains(_name, System.StringComparison.InvariantCultureIgnoreCase) == true)
       {
-        return _spr;
+        _illusts.Add(_spr);
       }
     }
-    Debug.Log(_illustid);
-      return DefaultIllust;
+    List<EventIllustHolder> _holders= new List<EventIllustHolder>();
+    for(int i = 0; i < length; i++)
+    {
+      List<Sprite> _listtemp=new List<Sprite>();
+      foreach(Sprite _spr in _illusts) if(_spr.name.Contains(i.ToString()))_listtemp.Add(_spr);
+
+      _holders.Add(new EventIllustHolder(_listtemp));
+    }
+
+    return _holders;
   }//이벤트 시작 일러스트
-  /// <summary>
-  /// 0123(사계절) 4(계절X)  -1/0,1
-  /// </summary>
-  /// <param name="illustid"></param>
-  /// <param name="season"></param>
-  /// <param name="index"></param>
-  /// <param name="issuccess"></param>
-  /// <returns></returns>
-  public Sprite GetEventResultIllust(string illustid,int season,int index,bool issuccess)
-  {
-    string _name = illustid;
-    _name += SeasonText(season);
-    _name+=index==-1?"":$"_{index}";
-    _name += issuccess == true ? "_SUCCESS" : "_FAIL";
-
-    foreach (Sprite _spr in EventIllust)
-    {
-      if (string.Compare(_spr.name, _name, true).Equals(0))
-      {
-        return _spr;
-      }
-    }
-    Debug.Log(illustid);
-    return DefaultIllust;
-  }//이벤트 성공,실패 일러스트
   public Sprite GetEXPIllust(string _illustid)
   {
     Sprite _targetsprite = DefaultIllust;
@@ -364,4 +331,45 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//ID로 경험 일러스트 가져오기
 
+}
+public class EventIllustHolder
+{
+  private Sprite IdleIllust = null;
+  private Sprite SpringIllust = null;
+  private Sprite SummerIllust = null;
+  private Sprite AutumnIllust = null;
+  private Sprite WinterIllust = null;
+  public EventIllustHolder(List<Sprite> illusts)
+  {
+    for(int i=0;i<illusts.Count;i++)
+    {
+      if (illusts[i].name.Contains("spring")) SpringIllust = illusts[i];
+      else if (illusts[i].name.Contains("summer")) SummerIllust = illusts[i];
+      else if (illusts[i].name.Contains("winter")) AutumnIllust = illusts[i];
+      else if (illusts[i].name.Contains("autumn")) WinterIllust = illusts[i];
+      else IdleIllust = illusts[i];
+    }
+  }
+  public Sprite CurrentIllust
+  {
+    get
+    {
+      switch (GameManager.Instance.MyGameData.Turn)
+      {
+        case 0:
+          if (SpringIllust != null) return SpringIllust;
+          break;
+        case 1:
+          if (SummerIllust != null) return SummerIllust;
+          break;
+        case 2:
+          if (AutumnIllust != null) return AutumnIllust;
+          break;
+        case 4:
+          if (WinterIllust != null) return WinterIllust;
+          break;
+      }
+      return IdleIllust;
+    }
+  }
 }

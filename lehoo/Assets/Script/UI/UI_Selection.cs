@@ -16,7 +16,7 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private Image ThemeIcon_A = null;
   [SerializeField] private GameObject ThemeObj_B = null;
   [SerializeField] private Image ThemeIcon_B = null;
-  public TendencyType MyTendencyType = TendencyType.None;
+  public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
   public int Index = 0;
   //현재 이 선택지가 가지는 설명문
   public SelectionData MySelectionData = null;
@@ -48,11 +48,6 @@ public class UI_Selection : MonoBehaviour
   {
     switch (_data.ThisSelectionType)
     {
-      case SelectionTargetType.None:
-        if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
-        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
-        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        break;
       case SelectionTargetType.Pay:
         if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
         if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
@@ -78,18 +73,6 @@ public class UI_Selection : MonoBehaviour
         _sprs[0] = GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[0]);
         _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[1]);
         ThemeIcon_A.sprite = _sprs[0];ThemeIcon_B.sprite = _sprs[1];
-        break;
-      case SelectionTargetType.Tendency:
-        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
-        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
-        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.TendencySelectionIcon;
-        break;
-      case SelectionTargetType.Exp:
-        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
-        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
-        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.ExpSelectionIcon;
         break;
     }
     MySelectionData = _data;
@@ -122,7 +105,7 @@ public class UI_Selection : MonoBehaviour
   public void Select()
   {
     MyUIDialogue.SelectSelection(this);
-    if (MyTendencyType.Equals(TendencyType.None)) return;
+    if (MyTendencyType.Equals(TendencyTypeEnum.None)) return;
     GameManager.Instance.AddTendencyCount(MyTendencyType,Index);
   }
 

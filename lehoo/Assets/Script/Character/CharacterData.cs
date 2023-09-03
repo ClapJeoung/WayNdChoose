@@ -18,8 +18,8 @@ public static class ConstValues
   public const int MaddnesRefuseHPCost = 30;
   public const int MadnessRefuseSanityRestore = 40;
 
-  public const int RestMovePoint_Town = 1, RestMovePoint_City = 2, RestMovePoint_Castle = 3;
-  public const int RestDiscomfort_Town=1, RestDiscomfort_City = 2, RestDiscomfort_Castle = 3;
+  public const int RestMovePoint_Village = 1, RestMovePoint_Town = 2, RestMovePoint_City = 3;
+  public const int RestDiscomfort_Village=1, RestDiscomfort_Town = 2, RestDiscomfort_City = 3;
   public const float LackOfMovePointValue = 1.5f;
   public const int MoveCost_Sanity_1_min = 8, MoveCost_Sanity_1_max = 15, MoveCost_Sanity_2_min = 10, MoveCost_Sanity_2_max = 20;
   public const int MoveCost_Gold_1_min = 5, MoveCost_Gold_1_max = 12, MoveCost_Gold_2_min = 8, MoveCost_Gold_2_max = 15;
@@ -138,21 +138,21 @@ public class GameData    //게임 진행도 데이터
   }
 
   public bool LibraryEffect = false;
-  public void AddPlaceEffectBeforeStartEvent(SectorType placetype)
+  public void ApplySectorEffect(SectorType placetype)
   {
     switch (placetype)
     {
       case SectorType.Residence:
-
+        MovePoint++;
         break;//거주지 - 휴식 시 추가 이동력 회복
-
-      case SectorType.Marketplace:
-        Gold += ConstValues.SectorEffect_marketSector;
-        break;//시장- 일시불 골드 획득
 
       case SectorType.Temple:
         DownAllDiscomfort();
         break;//사원- 모든 불쾌 1 감소
+
+      case SectorType.Marketplace:
+        Gold += ConstValues.SectorEffect_marketSector;
+        break;//시장- 일시불 골드 획득
 
       case SectorType.Library:
         if (GameManager.Instance.MyGameData.LibraryEffect == false) GameManager.Instance.MyGameData.LibraryEffect = true;
@@ -176,6 +176,9 @@ public class GameData    //게임 진행도 데이터
 
   public int Year = 1;//년도
   private int turn = -1;
+  /// <summary>
+  /// 0 1 2 3
+  /// </summary>
   public int Turn
   {
     get { return turn; }
@@ -415,15 +418,15 @@ public class GameData    //게임 진행도 데이터
   }
   #endregion
   #region #성향#
-  public Tendency Tendency_Body = new Tendency(TendencyType.Body);//(-)이성-육체(+)
-  public Tendency Tendency_Head = new Tendency(TendencyType.Head);//(-)정신-물질(+)
-  public string GetTendencyEffectString_long(TendencyType _type)
+  public Tendency Tendency_Body = new Tendency(TendencyTypeEnum.Body);//(-)이성-육체(+)
+  public Tendency Tendency_Head = new Tendency(TendencyTypeEnum.Head);//(-)정신-물질(+)
+  public string GetTendencyEffectString_long(TendencyTypeEnum _type)
   {
     string _conver, _force, _wild, _intel = null;
     string _result = "";
     switch (_type)
     {
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
         string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
@@ -466,7 +469,7 @@ public class GameData    //게임 진행도 데이터
             break;
         }
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
@@ -489,13 +492,13 @@ public class GameData    //게임 진행도 데이터
     }
     return _result;
   }
-  public string GetTendencyEffectString_short(TendencyType _type)
+  public string GetTendencyEffectString_short(TendencyTypeEnum _type)
   {
     string _conver, _force, _wild, _intel = null;
     string _result = "";
     switch (_type)
     {
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
         string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
@@ -538,7 +541,7 @@ public class GameData    //게임 진행도 데이터
             break;
         }
         break;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
@@ -561,13 +564,13 @@ public class GameData    //게임 진행도 데이터
     }
     return _result;
   }
-  public int GetTendencyLevel(TendencyType _type)
+  public int GetTendencyLevel(TendencyTypeEnum _type)
   {
     switch (_type)
     {
-      case TendencyType.Body:
+      case TendencyTypeEnum.Body:
         return Tendency_Body.Level;
-      case TendencyType.Head:
+      case TendencyTypeEnum.Head:
         return Tendency_Head.Level;
     }
     return 100;
@@ -899,8 +902,8 @@ public class GameData    //게임 진행도 데이터
     MovePoint = 2;
     CurrentSanity = MaxSanity;
     Gold = ConstValues.StartGold ;
-    Tendency_Body = new Tendency(TendencyType.Body);
-    Tendency_Head = new Tendency(TendencyType.Head);
+    Tendency_Body = new Tendency(TendencyTypeEnum.Body);
+    Tendency_Head = new Tendency(TendencyTypeEnum.Head);
   }
   /// <summary>
   /// 이전 정착지 제시 리스트, 이전 이벤트 지우기
@@ -968,11 +971,11 @@ public class Skill
     }
   }
 }
-public enum TendencyType {None, Body,Head}
+public enum TendencyTypeEnum {None, Body,Head}
 public class Tendency
 {
   public int ChangedDir = 0;
-  public TendencyType Type;
+  public TendencyTypeEnum Type;
   public Sprite Illust
   {
     get
@@ -1101,7 +1104,7 @@ public class Tendency
       if(UIManager.Instance!=null) UIManager.Instance.UpdateTendencyIcon();
     }
   }
-  public Tendency(TendencyType type) { Type = type; }
+  public Tendency(TendencyTypeEnum type) { Type = type; }
 }
 public class GameJsonData
 {
@@ -1122,15 +1125,15 @@ public class GameJsonData
   public int[] TopMapCode;
   public int[] TopTileCode;
   public int[] RotCode;
+  public Vector3Int[] Village_Pos;
   public Vector3Int[] Town_Pos;
   public Vector3Int[] City_Pos;
-  public Vector3Int[] Castle_Pos;
-  public int[] Town_InfoIndex, City_InfoIndex;
-  public int Castle_InfoIndex;
-  public const int TownCount = 3, CityCount = 2, CastleCount = 1;
-  public bool[] Isriver_town, Isforest_town, Ismine_town, Ismountain_town, Issea_town;
-  public bool[] Isriver_city, Isforest_city, Ismine_city, Ismountain_city, Issea_city;
-  public bool Isriver_castle, Isforest_castle, Ismine_castle, Ismountain_castle, Issea_castle;
+  public int[] Village_InfoIndex, Town_InfoIndex;
+  public int City_InfoIndex;
+  public const int VillageCount = 3, TownCount = 2, CityCount = 1;
+  public bool[] Isriver_Village, Isforest_Village, Ismine_Village, Ismountain_Village, Issea_Village;
+  public bool[] Isriver_Town, Isforest_Town, Ismine_Town, Ismountain_Town, Issea_Town;
+  public bool Isriver_City, Isforest_City, Ismine_City, Ismountain_City, Issea_City;
   public int[] Discomfort;
   //마을,마을,마을,도시,도시,성채
 

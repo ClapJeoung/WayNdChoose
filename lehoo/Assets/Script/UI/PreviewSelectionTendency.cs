@@ -29,10 +29,10 @@ public class PreviewSelectionTendency : MonoBehaviour
       string _limittext = null;
       switch (tendency.Type)
       {
-        case TendencyType.Body:
+        case TendencyTypeEnum.Body:
           _limittext = tendency.Level.Equals(-2) ? GameManager.Instance.GetTextData("TOOMUCHRATIONAL") : GameManager.Instance.GetTextData("TOOMUCHPHYSICAL");
           break;
-        case TendencyType.Head:
+        case TendencyTypeEnum.Head:
           _limittext = tendency.Level.Equals(-2) ? GameManager.Instance.GetTextData("TOOMUCHMENTAL") : GameManager.Instance.GetTextData("TOOMUCHMATERIAL");
           break;
       }
@@ -143,7 +143,7 @@ public class PreviewSelectionTendency : MonoBehaviour
       RightIcon.sprite = _rightsprite;
     }
   }
-  public void SetArrow(TendencyType tendency, bool dir,int count,int effectindex)
+  public void SetArrow(TendencyTypeEnum tendency, bool dir,int count,int effectindex)
   {
     Sprite _activearrow = GameManager.Instance.ImageHolder.Arrow_Active(tendency, dir);
     int _currentindex = 0;
