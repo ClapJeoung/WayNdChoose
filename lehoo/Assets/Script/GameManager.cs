@@ -671,7 +671,7 @@ public class GameManager : MonoBehaviour
       case QuestType.Wolf:
         if (MyGameData.Quest_Wolf_Phase == 0)
         {
-          EventManager.Instance.SetQuestEvent_Wolf_Searching(MyGameData.Quest_Wolf_Progress);
+          EventManager.Instance.SetQuestEvent_Wolf_Searching();
         }//Å½¹® ´Ü°è
         else if (MyGameData.Quest_Wolf_Phase == 1)
         {

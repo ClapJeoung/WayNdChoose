@@ -104,6 +104,7 @@ public class UI_Selection : MonoBehaviour
   }
   public void Select()
   {
+    if (UIManager.Instance.IsWorking) return;
     MyUIDialogue.SelectSelection(this);
     if (MyTendencyType.Equals(TendencyTypeEnum.None)) return;
     GameManager.Instance.AddTendencyCount(MyTendencyType,Index);

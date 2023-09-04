@@ -251,20 +251,38 @@ public class UI_QuestWolf : UI_default
 
   }//지도 여는 상황 세팅
 
-  public void OpenUI_Searching(int index)
+  public void OpenUI_Searching()
   {
     if (DefaultRect.anchoredPosition != Vector2.zero) DefaultRect.anchoredPosition = Vector2.zero;
     IsOpen = true;
 
-    UIManager.Instance.AddUIQueue(openui_searching(index));
+    UIManager.Instance.AddUIQueue(openui_searching());
   }
-  private IEnumerator openui_searching(int index)
+  private IEnumerator openui_searching()
   {
     GameManager.Instance.MyGameData.Quest_Wolf_Progress++;
-    QuestEventData_Wolf _data = QuestHolder.SearchingEvents[index];
-    GameManager.Instance.MyGameData.CurrentEvent= _data;
-    Searching_IllustImage.sprite = _data.Illust;
-    Searching_Description.text = _data.Description;
+
+    Sprite _illust = null;
+    string _description = "";
+
+    switch (GameManager.Instance.MyGameData.Quest_Wolf_Progress)
+    {
+      case 0:
+        _illust = QuestHolder.Searching_0_Illust;
+        _description = QuestHolder.Searching_0_Description;
+        break;
+      case 1:
+        _illust = QuestHolder.Searching_1_Illust;
+        _description = QuestHolder.Searching_1_Description;
+        break;
+      case 2:
+        _illust = QuestHolder.Searching_2_Illust;
+        _description = QuestHolder.Searching_2_Description;
+        break;
+    }
+
+    Searching_IllustImage.sprite = _illust;
+    Searching_Description.text = _description;
     Searching_ButtonText.text = $"{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetSanityColor(ConstValues.Quest_Wolf_Searching_Sanityrewardvalue)}";
     if (Searching_RewardButton_Group.alpha == 0.0f)
     {

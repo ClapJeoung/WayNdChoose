@@ -24,9 +24,9 @@ public class EventManager : MonoBehaviour
     MyEXP = GameManager.Instance.ExpDic;
   }
 
-  public void SetQuestEvent_Wolf_Searching(int index)
+  public void SetQuestEvent_Wolf_Searching()
   {
-    UIManager.Instance.QuestUI_Wolf.OpenUI_Searching(index);
+    UIManager.Instance.QuestUI_Wolf.OpenUI_Searching();
   }
   /// <summary>
   /// 정착지에서 장소를 선택해 이벤트 실행

@@ -42,7 +42,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.Tendency:UIManager.Instance.PreviewManager.OpenTendencyPreview(MyTendency);break;
       case PreviewPanelType.Selection:
-        SelectionData _selection = new SelectionData(null,0);
+        SelectionData _selection = null;
         switch (MySelectionTendency)
         {
           case TendencyTypeEnum.None:

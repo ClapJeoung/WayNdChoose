@@ -227,7 +227,7 @@ public class EventHolder
     //    Quest_Wolf.PrologueEvent_Last = eventdata;
         break;
       case 5:
-        Quest_Wolf.SearchingEvents.Add(eventdata);
+      //  Quest_Wolf.SearchingEvents.Add(eventdata);
         break;
       case 6:
         Quest_Wolf.Event_Wanted = eventdata;
@@ -985,8 +985,30 @@ public class QuestHolder_Wolf:Quest
   public string Prologue_Last_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Last_Description"); } }
   public string Prologue_Last_Selection { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_Last_Selection"); } }
   #endregion
-  public List<QuestEventData_Wolf> SearchingEvents = new List<QuestEventData_Wolf>();       //QuestEventType 5 
-
+  public Sprite Searching_0_Illust
+  {
+    get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Searching_0"); }
+  }
+  public string Searching_0_Description
+  {
+    get { return GameManager.Instance.GetTextData(OriginID + "_Searching_0"); }
+  }
+  public Sprite Searching_1_Illust
+  {
+    get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Searching_1"); }
+  }
+  public string Searching_1_Description
+  {
+    get { return GameManager.Instance.GetTextData(OriginID + "_Searching_1"); }
+  }
+  public Sprite Searching_2_Illust
+  {
+    get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Searching_2"); }
+  }
+  public string Searching_2_Description
+  {
+    get { return GameManager.Instance.GetTextData(OriginID + "_Searching_2"); }
+  }
   public QuestEventData_Wolf Event_Wanted = null;                                  //QuestEventType 6
   public List<QuestEventData_Wolf> Events_Public_Common = new List<QuestEventData_Wolf>(); //QuestEventType 7
   public List<QuestEventData_Wolf> Events_Public_Final = new List<QuestEventData_Wolf>();  //QuestEventType 8
