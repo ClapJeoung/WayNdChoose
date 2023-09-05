@@ -13,6 +13,9 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private float UIMoveOutTime = 0.4f;//Rect 움직이는거
   [SerializeField] private float FadeInTime = 1.0f;
   [SerializeField] private float FadeOutTime = 0.4f;  //이미지,텍스트 투명도
+  private QuestHolder_Wolf QuestHolder = null;
+
+  #region 프롤로그
   [Space(5)]
   [SerializeField] private Image Prologue_IllustImage = null;
   [SerializeField] private CanvasGroup Prologue_IllustGroup = null;
@@ -24,26 +27,6 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private Button Prologue_Button_B = null;
   [SerializeField] private TextMeshProUGUI Prologue_ButtonText_B = null;
   public int CurrentPrologueIndex = 0;
-  [Space(5)]
-  [SerializeField] private Image Searching_IllustImage = null;
-  [SerializeField] private TextMeshProUGUI Searching_Description = null;
-  [SerializeField] private CanvasGroup Searching_RewardButton_Group = null;
-  [SerializeField] private Button Searching_RewardButton = null;
-  [SerializeField] private TextMeshProUGUI Searching_ButtonText = null;
-  [SerializeField] private Button Searching_NextButton = null;
-  [SerializeField] private TextMeshProUGUI Searching_NextButtonText = null;
-  [Space(5)]
-  [SerializeField] private TextMeshProUGUI Wanted_Description = null;
-  [SerializeField] private CanvasGroup Wanted_Cult_Group = null;
-  [SerializeField] private TextMeshProUGUI Wanted_Cult_Description = null;
-  [SerializeField] private CanvasGroup Wanted_Wolf_Group = null;
-  [SerializeField] private TextMeshProUGUI Wanted_Wolf_Description = null;
-  [Space(10)]
-  [SerializeField] private Image WantedResult_Icon = null;
-  [SerializeField] private Image WantedResult_Illust = null;
-  [SerializeField] private TextMeshProUGUI WantedResult_Description = null;
-  [SerializeField] private TextMeshProUGUI WantedResult_SettlebuttonText = null;
-  private QuestHolder_Wolf QuestHolder = null;
   public void OpenUI_Prologue(QuestHolder_Wolf wolf)
   {
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
@@ -56,24 +39,24 @@ public class UI_QuestWolf : UI_default
   {
     Prologue_IllustImage.sprite = QuestHolder.Prologue_0_Illust;
     Prologue_IllustGroup.alpha = 0.0f;
+
     Prologue_Description.text = QuestHolder.Prologue_0_Description;
     Prologue_DescriptionGroup.alpha = 0.0f;
+
     Prologue_ButtonHolderGroup.alpha = 0.0f;
     Prologue_Button_A.gameObject.SetActive(true);
-    Prologue_ButtonText_A.text = QuestHolder.Prologue_0_Selection;
+    Prologue_Button_A.onClick.RemoveAllListeners();
+    Prologue_Button_A.onClick.AddListener(Next);
+    Prologue_ButtonText_A.text = GameManager.Instance.GetTextData("NEXT_TEXT");
     Prologue_Button_B.gameObject.SetActive(false);
-    Canvas.ForceUpdateCanvases();
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
-    LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("description_start").Rect); 
+
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_start").Rect, GetPanelRect("illust_start").OutisdePos, GetPanelRect("illust_start").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.1f);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_start").Rect, GetPanelRect("description_start").OutisdePos, GetPanelRect("description_start").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.5f);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime, false));
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime, false));
-    Prologue_Button_A.onClick.RemoveAllListeners();
-    Prologue_Button_A.onClick.AddListener(Next);
     Prologue_ButtonHolderGroup.interactable = true;
     Prologue_ButtonHolderGroup.blocksRaycasts = true;
     DefaultGroup.interactable = true;
@@ -93,42 +76,6 @@ public class UI_QuestWolf : UI_default
     Prologue_ButtonText_A.gameObject.SetActive(true);
   }
 
-  public void SelectTendency(int index)
-  {
-    Prologue_ButtonHolderGroup.interactable = false;
-    switch (CurrentPrologueIndex)
-    {
-      case 1:
-        if (index == 0)
-        {
-          GameManager.Instance.MyGameData.Skill_Conversation.LevelByDefault += 1;
-          GameManager.Instance.MyGameData.Tendency_Body.Level = -1;
-          UIManager.Instance.AddUIQueue(setaftertendencypanel(QuestHolder.Prologue_Tendency_0_Selection_0_Illust, QuestHolder.Prologue_Tendency_0_Selection_0_Description, QuestHolder.Prologue_Tendency_0_Selection_0_Selection));
-        }
-        else
-        {
-          GameManager.Instance.MyGameData.Skill_Force.LevelByDefault += 1;
-          GameManager.Instance.MyGameData.Tendency_Body.Level = +1;
-          UIManager.Instance.AddUIQueue(setaftertendencypanel(QuestHolder.Prologue_Tendency_0_Selection_1_Illust, QuestHolder.Prologue_Tendency_0_Selection_1_Description, QuestHolder.Prologue_Tendency_0_Selection_1_Selection));
-        }
-        break;//(정신적+대화)선택 , (육체적+무력)선택
-
-      case 2:
-        if (index == 0)
-        {
-          GameManager.Instance.MyGameData.Skill_Wild.LevelByDefault += 1;
-          GameManager.Instance.MyGameData.Tendency_Head.Level = -1;
-          UIManager.Instance.AddUIQueue(setaftertendencypanel(QuestHolder.Prologue_Tendency_1_Selection_0_Illust, QuestHolder.Prologue_Tendency_1_Selection_0_Description, QuestHolder.Prologue_Tendency_1_Selection_0_Selection));
-        }
-        else
-        {
-          GameManager.Instance.MyGameData.Skill_Intelligence.LevelByDefault += 1;
-          GameManager.Instance.MyGameData.Tendency_Head.Level = +1;
-          UIManager.Instance.AddUIQueue(setaftertendencypanel(QuestHolder.Prologue_Tendency_1_Selection_1_Illust, QuestHolder.Prologue_Tendency_1_Selection_1_Description, QuestHolder.Prologue_Tendency_1_Selection_1_Selection));
-        }
-        break;//(감정적+자연)선택 , (물질적+지성)선택
-    }
-  }
   private IEnumerator setaftertendencypanel(Sprite illust,string description,string selection)
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 0.0f, FadeOutTime, false));
@@ -154,103 +101,182 @@ public class UI_QuestWolf : UI_default
   }
   public void Next()
   {
+    if (UIManager.Instance.IsWorking) return;
     if (Skip)
     {
-      UIManager.Instance.AddUIQueue(setprologue_3());
+      CurrentPrologueIndex = 7;
+      GameManager.Instance.MyGameData.Tendency_Head.Level = 1;
+      GameManager.Instance.MyGameData.Tendency_Body.Level = -1;
+      UIManager.Instance.AddUIQueue(next());
       return;
     }
+    Prologue_ButtonHolderGroup.interactable = false;
+
+    UIManager.Instance.AddUIQueue(next());
+  }
+  private IEnumerator next()
+  {
     CurrentPrologueIndex++;
+
+    Sprite _illust = null;
+    string _description = null;
+    string _buttontext_a = null;
+    string _buttontext_b = null;
+
+    switch (CurrentPrologueIndex)
+    {
+      case 1:
+        _illust = QuestHolder.Prologue_1_Illust;
+        _description = QuestHolder.Prologue_1_Description;
+        _buttontext_a = QuestHolder.Prologue_1_Selection_0;
+        _buttontext_b=QuestHolder.Prologue_1_Selection_1;
+        break;
+      case 2:
+        if (GameManager.Instance.MyGameData.Tendency_Body.Level == -1)
+        {
+          _illust = QuestHolder.Prologue_2_0_Illust;
+          _description = QuestHolder.Prologue_2_0_Description;
+          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        }
+        else
+        {
+          _illust = QuestHolder.Prologue_2_1_Illust;
+          _description = QuestHolder.Prologue_2_1_Description;
+          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        }
+        break;
+      case 3:
+        _illust = QuestHolder.Prologue_3_Illust;
+        _description = QuestHolder.Prologue_3_Description;
+        _buttontext_a = QuestHolder.Prologue_3_Selection_0;
+        _buttontext_b = QuestHolder.Prologue_3_Selection_1;
+        break;
+      case 4:
+        if (GameManager.Instance.MyGameData.Tendency_Head.Level == -1)
+        {
+          _illust = QuestHolder.Prologue_4_0_Illust;
+          _description = QuestHolder.Prologue_4_0_Description;
+          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        }
+        else
+        {
+          _illust = QuestHolder.Prologue_4_1_Illust;
+          _description = QuestHolder.Prologue_4_1_Description;
+          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        }
+        break;
+      case 5:
+        _illust = QuestHolder.Prologue_5_Illust;
+        _description = QuestHolder.Prologue_5_Description;
+        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        break;
+      case 6:
+        _illust = QuestHolder.Prologue_6_Illust;
+        _description = QuestHolder.Prologue_6_Description;
+        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        break;
+      case 7:
+        _illust = QuestHolder.Prologue_7_Illust;
+        _description = QuestHolder.Prologue_7_Description;
+        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        break;
+      case 8:
+        _illust = QuestHolder.Prologue_8_Illust;
+        _description = QuestHolder.Prologue_8_Description;
+        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        break;
+    }
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 0.0f, FadeOutTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 0.0f, FadeOutTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 0.0f, FadeOutTime, false));
+    yield return new WaitForSeconds(FadeOutTime);
+
+    Prologue_IllustImage.sprite = _illust;
+    Prologue_Description.text = _description;
+    Prologue_ButtonText_A.text= _buttontext_a;
+    Prologue_Button_A.onClick.RemoveAllListeners();
+
+    if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
+    {
+      Prologue_Button_A.gameObject.SetActive(false);
+    }
+    else
+    {
+      if (_buttontext_b == null)                //선택지 없는 상황 - A 세팅하고 B 비활성화
+      {
+        Prologue_Button_A.onClick.AddListener(Next);
+
+        if (Prologue_Button_B.gameObject.activeInHierarchy == true) Prologue_Button_B.gameObject.SetActive(false);
+      }
+      else                                      //선택지 있는 상황 - A 세팅하고 B 활성화,세팅
+      {
+        Prologue_Button_A.onClick.AddListener(() => SelectTendency(0));
+
+        if (Prologue_Button_B.gameObject.activeInHierarchy == false) Prologue_Button_B.gameObject.SetActive(true);
+        Prologue_ButtonText_B.text = _buttontext_b;
+      }
+    }
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime, false));
+
+    Prologue_ButtonHolderGroup.interactable = true;
+
+    if (CurrentPrologueIndex == 8)
+    {
+      MoveRectForButton(0);
+      UIManager.Instance.MapButton.Open(1, this);
+    }
+  }
+  public void SelectTendency(int index)
+  {
+    if (UIManager.Instance.IsWorking) return;
+
     Prologue_ButtonHolderGroup.interactable = false;
     switch (CurrentPrologueIndex)
     {
       case 1:
-        UIManager.Instance.AddUIQueue(setprologue_1());
-        break;
-      case 2:
-        UIManager.Instance.AddUIQueue(setprologue_2());
-        break;
+        if (index == 0)
+        {
+          GameManager.Instance.MyGameData.Skill_Conversation.LevelByDefault += 1;
+          GameManager.Instance.MyGameData.Tendency_Body.Level = -1;
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.Skill_Force.LevelByDefault += 1;
+          GameManager.Instance.MyGameData.Tendency_Body.Level = +1;
+        }
+        break;//(정신적+대화)선택 , (육체적+무력)선택
+
       case 3:
-        UIManager.Instance.AddUIQueue(setprologue_3());
-        break;
+        if (index == 0)
+        {
+          GameManager.Instance.MyGameData.Skill_Wild.LevelByDefault += 1;
+          GameManager.Instance.MyGameData.Tendency_Head.Level = -1;
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.Skill_Intelligence.LevelByDefault += 1;
+          GameManager.Instance.MyGameData.Tendency_Head.Level = +1;
+        }
+        break;//(감정적+자연)선택 , (물질적+지성)선택
     }
+
+    UIManager.Instance.AddUIQueue(next());
   }
-  private IEnumerator setprologue_1()
-  {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 0.0f, FadeOutTime, false));
-    yield return new WaitForSeconds(FadeOutTime);
-    Prologue_Button_B.gameObject.SetActive(true);
-    Prologue_IllustImage.sprite = QuestHolder.Prologue_Tendency_0_Illust;
-    Prologue_Description.text = QuestHolder.Prologue_Tendency_0_Description;
-    Prologue_ButtonText_A.text = QuestHolder.Prologue_Tendency_0_Selection_0;
-    Prologue_ButtonText_B.text = QuestHolder.Prologue_Tendency_0_Selection_1;
-    Prologue_Button_A.onClick.RemoveAllListeners();
-    Prologue_Button_A.onClick.AddListener(()=>SelectTendency(0));
-    Prologue_Button_B.onClick.AddListener(()=>SelectTendency(1));
-    Canvas.ForceUpdateCanvases();
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
-    LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("description").Rect);
-    yield return new WaitForEndOfFrame();
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime, false));
+  #endregion
 
-    Prologue_ButtonHolderGroup.interactable = true;
-
-    yield return new WaitForSeconds(0.4f);
-  }//정신적,육체적 선택지 세팅
-  private IEnumerator setprologue_2()
-  {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 0.0f, FadeOutTime, false));
-    yield return new WaitForSeconds(FadeOutTime);
-    Prologue_Button_B.gameObject.SetActive(true);
-    Prologue_IllustImage.sprite = QuestHolder.Prologue_Tendency_1_Illust;
-    Prologue_Description.text = QuestHolder.Prologue_Tendency_1_Description;
-    Prologue_ButtonText_A.text = QuestHolder.Prologue_Tendency_1_Selection_0;
-    Prologue_ButtonText_B.text = QuestHolder.Prologue_Tendency_1_Selection_1;
-    Prologue_Button_A.onClick.RemoveAllListeners();
-    Prologue_Button_A.onClick.AddListener(() => SelectTendency(0));
-    Prologue_Button_B.onClick.AddListener(() => SelectTendency(1));
-    Canvas.ForceUpdateCanvases();
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
-    LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("description").Rect);
-    yield return new WaitForEndOfFrame();
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime, false));
-
-    Prologue_ButtonHolderGroup.interactable = true;
-
-    yield return new WaitForSeconds(0.4f);
-  }//감정적,물질적 선택지 세팅
-  private IEnumerator setprologue_3()
-  {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 0.0f, FadeOutTime, false));
-    yield return new WaitForSeconds(FadeOutTime);
-    Prologue_Button_A.gameObject.SetActive(false);
-    Prologue_Button_B.gameObject.SetActive(false);
-
-    Prologue_IllustImage.sprite = QuestHolder.Prologue_Tendency_Last_Illust;
-    Prologue_Description.text = QuestHolder.Prologue_Last_Description;
-
-    Canvas.ForceUpdateCanvases();
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
-    LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("description").Rect);
-
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime, false));
-
-    MoveRectForButton(0);
-    UIManager.Instance.MapButton.Open(1, this);
-
-  }//지도 여는 상황 세팅
-
+  #region 탐문
+  [Space(5)]
+  [SerializeField] private Image Searching_IllustImage = null;
+  [SerializeField] private TextMeshProUGUI Searching_Description = null;
+  [SerializeField] private CanvasGroup Searching_RewardButton_Group = null;
+  [SerializeField] private Button Searching_RewardButton = null;
+  [SerializeField] private TextMeshProUGUI Searching_ButtonText = null;
+  [SerializeField] private Button Searching_NextButton = null;
+  [SerializeField] private TextMeshProUGUI Searching_NextButtonText = null;
   public void OpenUI_Searching()
   {
     if (DefaultRect.anchoredPosition != Vector2.zero) DefaultRect.anchoredPosition = Vector2.zero;
@@ -316,6 +342,21 @@ public class UI_QuestWolf : UI_default
     Searching_RewardButton.interactable = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_RewardButton_Group, 0.0f, 0.8f, false));
   }
+  #endregion
+
+  #region 선택
+  [Space(5)]
+  [SerializeField] private TextMeshProUGUI Wanted_Description = null;
+  [SerializeField] private CanvasGroup Wanted_Cult_Group = null;
+  [SerializeField] private TextMeshProUGUI Wanted_Cult_Description = null;
+  [SerializeField] private CanvasGroup Wanted_Wolf_Group = null;
+  [SerializeField] private TextMeshProUGUI Wanted_Wolf_Description = null;
+  [Space(10)]
+  [SerializeField] private Image WantedResult_Icon = null;
+  [SerializeField] private Image WantedResult_Illust = null;
+  [SerializeField] private TextMeshProUGUI WantedResult_Description = null;
+  [SerializeField] private TextMeshProUGUI WantedResult_SettlebuttonText = null;
+
   public void NextToChoose()
   {
     if (UIManager.Instance.IsWorking) return;
@@ -405,4 +446,5 @@ public class UI_QuestWolf : UI_default
     UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").InsidePos, GetPanelRect("wantedresult_description").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelOpenCurve));
     SettlementUI.OpenUI();
   }
+  #endregion
 }

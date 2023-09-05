@@ -23,7 +23,7 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
   [SerializeField] private CanvasGroup Wolf_Normal_Group = null;
   public void UpdateSearchingPanel()
   {
-    Searching_description.text = string.Format(GameManager.Instance.GetTextData("Quest_Sidepanel_Searching_description"), GameManager.Instance.MyGameData.Quest_Wolf_Progress);
+    Searching_description.text = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Sidepanel_Searching_description"), GameManager.Instance.MyGameData.Quest_Wolf_Progress);
     for(int i = 0; i < 3; i++)
     {
       Searching_Icons[i].color = GameManager.Instance.MyGameData.Quest_Wolf_Progress > i ? ActiveColor : DeactiveColor;

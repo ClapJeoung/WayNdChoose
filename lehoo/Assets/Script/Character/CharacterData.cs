@@ -1001,14 +1001,15 @@ public class Tendency
       case -1:
         _spr=dir.Equals(false)?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-0);
         break;
-      case 0:
-        _spr = dir.Equals(false) ? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, +1);
-        break;
       case 1:
         _spr = dir.Equals(false) ? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 0) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
         break;
       case 2:
         _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1);
+        break;
+      case 0:
+        Debug.Log("데샤아앗!!!!");
+        _spr = GameManager.Instance.ImageHolder.DefaultIcon;
         break;
     }
     return _spr;
@@ -1063,11 +1064,11 @@ public class Tendency
         case 1:
           if (_abs.Equals(ConstValues.Tendency1to2)) Level = 2; //1레벨일때 count 개수를 충족하면 2레벨로
           break;
-        case 0:
-          if (_abs.Equals(ConstValues.Tendency0to1)) Level = 1; //0단계일때 count 개수를 충족하면 1레벨로
+        case -1:
+          if (_abs.Equals(ConstValues.TendencyRegress)) Level = 1;
           break;
-        default:
-          if ( _abs.Equals(ConstValues.TendencyRegress)) Level++;  //음수 단계일때 count 개수를 충족하면 양수 레벨로 끌어오기
+        case -2:
+          if (_abs.Equals(ConstValues.TendencyRegress)) Level = -1;
           break;
       }
     }
@@ -1084,11 +1085,11 @@ public class Tendency
         case -1:
           if (_abs.Equals(ConstValues.Tendency1to2)) Level = -2; //-1레벨일때 count 개수를 충족하면 -2레벨로
           break;
-        case 0:
-          if (_abs.Equals(ConstValues.Tendency0to1)) Level = -1; //0단계일때 count 개수를 충족하면 -1레벨로
+        case 1:
+          if (_abs.Equals(ConstValues.Tendency1to2)) Level = -1; //-1레벨일때 count 개수를 충족하면 -2레벨로
           break;
-        default:
-          if (_abs.Equals(ConstValues.TendencyRegress)) Level--;  //양수 단계일때 count 개수를 충족하면 음수 레벨로 끌어오기
+        case 2:
+          if (_abs.Equals(ConstValues.Tendency1to2)) Level = 1; //-1레벨일때 count 개수를 충족하면 -2레벨로
           break;
       }
     }
