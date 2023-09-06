@@ -7,13 +7,7 @@ using Unity.VisualScripting;
 
 public class UI_dialogue : UI_default
 {
-  private float DialogueUIMoveTime = 0.9f;
-  private WaitForSeconds Wait = new WaitForSeconds(0.9f);
-  public float TextFadeTime = 0.7f;
-  private WaitForSeconds TextWait = new WaitForSeconds(0.8f);
-  private WaitForSeconds ResultWait = new WaitForSeconds(1.0f);
-  private float UIFadeTime = 0.6f;
-  [Space(10)]
+  private float DialogueUIMoveTime = 0.5f;
 
   [SerializeField] private CanvasGroup NameTextGroup = null;
   [SerializeField] private TextMeshProUGUI NameText = null;
@@ -174,10 +168,7 @@ public class UI_dialogue : UI_default
 
           DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
-          StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-          yield return Wait;
-          //설명 텍스트 세팅해두고  이동
-
+          yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
         }
         else                                 //다음 버튼 눌러서 선택지에 도달할때
         {
@@ -235,10 +226,7 @@ public class UI_dialogue : UI_default
 
           DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
-          StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-          yield return Wait;
-          //설명 텍스트 세팅해두고  이동
-
+         yield return  StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
           NextButton.interactable = true;
         }
         else                                 //다음 버튼 눌러서 다음 내용 전개하기
@@ -656,8 +644,6 @@ public class UI_dialogue : UI_default
     yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustOpenPos, IllustClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
     IllustImageGroup.alpha = 0.0f;
     NameText.text = "";
-
-    yield return Wait;
   }
 
   #region 엔딩?
@@ -667,7 +653,7 @@ public class UI_dialogue : UI_default
 
   private IEnumerator openendingbuttons()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, UIFadeTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, 0.2f, false));
     yield return null;
   }
   public void OpenEnding()
@@ -683,8 +669,6 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator refuseending()
   {
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup,0.0f,UIFadeTime,false));
-
     yield return null;
   }
   #endregion

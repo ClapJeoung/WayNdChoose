@@ -286,8 +286,6 @@ public class UI_QuestWolf : UI_default
   }
   private IEnumerator openui_searching()
   {
-    GameManager.Instance.MyGameData.Quest_Wolf_Progress++;
-
     Sprite _illust = null;
     string _description = "";
 
@@ -301,11 +299,8 @@ public class UI_QuestWolf : UI_default
         _illust = QuestHolder.Searching_1_Illust;
         _description = QuestHolder.Searching_1_Description;
         break;
-      case 2:
-        _illust = QuestHolder.Searching_2_Illust;
-        _description = QuestHolder.Searching_2_Description;
-        break;
     }
+    GameManager.Instance.MyGameData.Quest_Wolf_Progress++;
 
     Searching_IllustImage.sprite = _illust;
     Searching_Description.text = _description;
@@ -321,7 +316,7 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_searching").Rect, GetPanelRect("illust_searching").OutisdePos, GetPanelRect("illust_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_searching").Rect, GetPanelRect("description_searching").OutisdePos, GetPanelRect("description_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
 
-    if (GameManager.Instance.MyGameData.Quest_Wolf_Progress == 3)
+    if (GameManager.Instance.MyGameData.Quest_Wolf_Progress == 1)
     {
       StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").OutisdePos, GetPanelRect("nextbutton_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
       if (Searching_NextButton.interactable == false) Searching_NextButton.interactable = true;
@@ -373,9 +368,9 @@ public class UI_QuestWolf : UI_default
       Wanted_Wolf_Group.interactable = true;
       Wanted_Wolf_Group.blocksRaycasts = true;
     }
-    Wanted_Description.text = GameManager.Instance.GetTextData("Quest_Wolf_Wanted_Description");
-    Wanted_Cult_Description.text = GameManager.Instance.GetTextData("Quest_Wolf_Wanted_Cult");
-    Wanted_Wolf_Description.text = GameManager.Instance.GetTextData("Quest_Wolf_Wanted_Wolf");
+    Wanted_Description.text = QuestHolder.Wanted_Description;
+    Wanted_Cult_Description.text = QuestHolder.Wanted_Description_Cult;
+    Wanted_Wolf_Description.text = QuestHolder.Wanted_Description_Wolf;
     WaitForSeconds _wait = new WaitForSeconds(0.3f);
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").InsidePos, GetPanelRect("nextbutton_searching").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
@@ -406,8 +401,8 @@ public class UI_QuestWolf : UI_default
     yield return new WaitForSeconds(1.0f);
 
     WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
-    WantedResult_Illust.sprite = GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, "Quest_Wolf_Wanted_Cult");
-    WantedResult_Description.text = GameManager.Instance.GetTextData("Quest_Wolf_WantedResult_Cult_Description");
+    WantedResult_Illust.sprite = QuestHolder.Wanted_Cult_Illust;
+    WantedResult_Description.text = QuestHolder.Wanted_Cult_Description;
     WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
@@ -431,8 +426,8 @@ public class UI_QuestWolf : UI_default
     yield return new WaitForSeconds(1.0f);
 
     WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
-    WantedResult_Illust.sprite = GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, "Quest_Wolf_Wanted_Wolf");
-    WantedResult_Description.text = GameManager.Instance.GetTextData("Quest_Wolf_WantedResult_Wolf_Description");
+    WantedResult_Illust.sprite = QuestHolder.Wanted_Wolf_Illust;
+    WantedResult_Description.text = QuestHolder.Wanted_Wolf_Description;
     WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
