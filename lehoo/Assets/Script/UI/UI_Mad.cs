@@ -75,9 +75,6 @@ public override void CloseUI()
     GameManager.Instance.MyGameData.HP -= ConstValues.MaddnesRefuseHPCost;
     GameManager.Instance.MyGameData.CurrentSanity = ConstValues.MadnessRefuseSanityRestore;
 
-    UIManager.Instance.UpdateHPText();
-    UIManager.Instance.UpdateSanityText();
-
     CloseUI();
   }
 }

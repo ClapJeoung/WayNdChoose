@@ -10,6 +10,18 @@ public class EventHolder
 
   public List<EventData> AllNormalEvents = new List<EventData>();
   public List<FollowEventData> AllFollowEvents = new List<FollowEventData>();
+  public EventDataDefulat IsEventExist(string id)
+  {
+    for(int i = 0; i < AllNormalEvents.Count; i++)
+    {
+      if (string.Compare(AllNormalEvents[i].ID,id,false)==0) return AllNormalEvents[i];
+    }
+    for (int i = 0; i < AllFollowEvents.Count; i++)
+    {
+      if (string.Compare(AllFollowEvents[i].ID, id, false) == 0) return AllFollowEvents[i];
+    }
+    return null;
+  }
   public QuestHolder_Wolf Quest_Wolf = null;
   private EventData defaultevent_outer = null;
   private EventData defaultevent_settlement = null;
@@ -345,7 +357,8 @@ public class EventHolder
   {
     if (eventdata.GetType() == typeof(QuestEventData_Wolf))
     {
-      GameManager.Instance.MyGameData.RemoveEvent.Add(eventdata.ID);
+      if (success) GameManager.Instance.MyGameData.SuccessEvent_All.Add(eventdata.ID);
+      else GameManager.Instance.MyGameData.FailEvent_All.Add(eventdata.ID);
     }
     else
     {
@@ -394,7 +407,6 @@ public class EventHolder
         GameManager.Instance.MyGameData.FailEvent_All.Add(eventdata.ID);
       }
     }
-    GameManager.Instance.MyGameData.RemoveEvent.Add(eventdata.ID);
   }
   /// <summary>
   /// 외부 이벤트 반환
@@ -417,7 +429,7 @@ public class EventHolder
     }
     foreach (var _follow in AllFollowEvents)
     {
-      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
+      if (GameManager.Instance.MyGameData.IsAbleEvent(_follow.ID)) continue;
       if (_follow.RightSeason == false) continue;
       if (_follow.AppearSpace!=EventAppearType.Outer) continue;
 
@@ -477,7 +489,7 @@ public class EventHolder
     }
     foreach (var _event in AllNormalEvents)
     {
-      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
+      if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
       if (_event.RightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
 
@@ -524,7 +536,14 @@ public class EventHolder
     _dic.Add(_normalevents, ConstValues.EventPer_Normal);
     var _result = GetListByRatio(_dic);
 
-    return _result[Random.Range(0, _result.Count)];
+    if (_result.Count == 0)
+    {
+      return DefaultEvent_Outer;
+    }
+    else
+    {
+      return _result[Random.Range(0, _result.Count)];
+    }
   }
   /// <summary>
   /// 정착지의 장소 이벤트 반환
@@ -550,7 +569,7 @@ public class EventHolder
     }
     foreach (var _follow in AllFollowEvents)
     {
-      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_follow.ID)) continue;
+      if (GameManager.Instance.MyGameData.IsAbleEvent(_follow.ID)) continue;
       if (_follow.RightSeason == false) continue;
       if (_follow.RightSpace(settletype) == false) continue;
 
@@ -610,7 +629,7 @@ public class EventHolder
     }
     foreach (var _event in AllNormalEvents)
     {
-      if (GameManager.Instance.MyGameData.RemoveEvent.Contains(_event.ID)) continue;
+      if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
       if (_event.RightSeason == false) continue;
       if (_event.RightSpace(settletype) == false) continue;
 
@@ -680,6 +699,11 @@ public class EventHolder
     _dic.Add(_normalevents, ConstValues.EventPer_Normal);
     var _result = GetListByRatio(_dic);
 
+    if (_result.Count == 0)
+    {
+      return DefaultEvent_Settlement;
+    }
+    else
     return _result[Random.Range(0,_result.Count)];
   }
   private List<T> GetListByRatio<T>(Dictionary<List<T>,int> listAndvalue)

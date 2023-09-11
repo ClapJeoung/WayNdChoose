@@ -67,6 +67,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Image EnvirBackground = null;
   [SerializeField] private CanvasGroup EnvirGroup = null;
   [SerializeField] private float EnvirChangeTime = 1.5f;
+  [SerializeField] private DebugScript DebugUI = null;
   private float EnvirBackgroundIdleAlpha = 0.7f;
   public MapButton MapButton = null;
   public SettleButton SettleButton = null;
@@ -106,35 +107,10 @@ public class UIManager : MonoBehaviour
     EnvirGroup.alpha = EnvirBackgroundIdleAlpha;
   }
   [Space(10)]
-  [SerializeField] private TextMeshProUGUI YearText_a = null;//(시작 기준) 아래 텍스트
-  [SerializeField] private TextMeshProUGUI YearText_b = null;//(시작 기준) 위 텍스트
-  private bool CurrentYearTextCount = true;
-  private float YearTextMoveUnit = 140.0f;
+  [SerializeField] private TextMeshProUGUI YearText = null;
   public void UpdateYearText()
   {
-    RectTransform _currentrect = CurrentYearTextCount ? YearText_a.rectTransform:YearText_b.rectTransform;
-    RectTransform _targetrect = CurrentYearTextCount ? YearText_b.rectTransform : YearText_a.rectTransform;
-    if (CurrentYearTextCount.Equals(true)) YearText_b.text = GameManager.Instance.MyGameData.Year.ToString();
-    else YearText_a.text= GameManager.Instance.MyGameData.Year.ToString();
-
-    StartCoroutine(moveyeartext(_currentrect,_targetrect));
-  }
-  private IEnumerator moveyeartext(RectTransform currentrect,RectTransform targetrect)
-  {
-    float _time = 0.0f, _targettime = 0.8f;
-    Vector2 _toppos=new Vector2(0.0f,YearTextMoveUnit),_middlepos=Vector2.zero,_bottompos=new Vector2(0.0f,-YearTextMoveUnit);
-    
-    while (_time < _targettime)
-    {
-      currentrect.anchoredPosition = Vector2.Lerp(_middlepos, _bottompos, _time / _targettime);
-      targetrect.anchoredPosition = Vector2.Lerp(_toppos, _bottompos, _time / _targettime);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    currentrect.anchoredPosition = _toppos;
-    targetrect.anchoredPosition = _middlepos;
-
-    CurrentYearTextCount = !CurrentYearTextCount;
+    YearText.text= GameManager.Instance.MyGameData.Year.ToString();
   }
   [SerializeField] private Image SpringIcon = null, SummerIcon = null, FallIcon = null, WinterIcon = null;
   public void UpdateTurnIcon()
@@ -156,11 +132,12 @@ public class UIManager : MonoBehaviour
   private int lasthp = -1;
   public void UpdateHPText()
   {
+
     if (!lasthp.Equals(-1))
     {
-      int _value = GameManager.Instance.MyGameData.HP - lasthp;
-      if (_value < 0) { StartCoroutine(lossstatus(_value, HpTextRect.position)); HPLossParticle.Play(); }
-      else if(_value > 0){ StartCoroutine(genstatus(_value, HpTextRect.position));HPGenParticle.Play(); }
+      int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
+    //  if (_value < 0) { StartCoroutine(lossstatus(_value, HpTextRect.position)); HPLossParticle.Play(); }
+    //  else if(_value > 0){ StartCoroutine(genstatus(_value, HpTextRect.position));HPGenParticle.Play(); }
     }
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
     lasthp = GameManager.Instance.MyGameData.HP;
@@ -171,11 +148,13 @@ public class UIManager : MonoBehaviour
   {
     if (!lastsanity.Equals(-1))
     {
-      int _value = GameManager.Instance.MyGameData.CurrentSanity - lastsanity;
-      if (_value < 0) { StartCoroutine(lossstatus(_value, SanityTextRect.position)); SanityLossParticle.Play();}
-      else if(_value>0) { StartCoroutine(genstatus(_value, SanityTextRect.position)); SanityGenParticle.Play(); }
+      int _changedvalue = GameManager.Instance.MyGameData.CurrentSanity - lastsanity;
+    //  if (_value < 0) { StartCoroutine(lossstatus(_value, SanityTextRect.position)); SanityLossParticle.Play();}
+    //  else if(_value>0) { StartCoroutine(genstatus(_value, SanityTextRect.position)); SanityGenParticle.Play(); }
     }
-    SanityText.text = GameManager.Instance.MyGameData.CurrentSanity.ToString();
+    SanityText.text = string.Format("<size=70><#BE81F7>{0}</color></size> <size=30><#8A1BD4>({1})</color></size>",
+      GameManager.Instance.MyGameData.CurrentSanity,
+      GameManager.Instance.MyGameData.MaxSanity);
   lastsanity= GameManager.Instance.MyGameData.CurrentSanity;
   }
   [SerializeField] private TextMeshProUGUI GoldText = null;
@@ -184,12 +163,17 @@ public class UIManager : MonoBehaviour
   {
     if (!lastgold.Equals(-1))
     {
-      int _value = GameManager.Instance.MyGameData.Gold - lastgold;
-      if (_value < 0) { StartCoroutine(lossstatus(_value, GoldTextRect.position)); GoldLossParticle.Play(); }
-      else if (_value > 0) { StartCoroutine(genstatus(_value, GoldTextRect.position)); GoldGenParticle.Play(); }
+      int _changedvalue = GameManager.Instance.MyGameData.Gold - lastgold;
+   //   if (_value < 0) { StartCoroutine(lossstatus(_value, GoldTextRect.position)); GoldLossParticle.Play(); }
+   //   else if (_value > 0) { StartCoroutine(genstatus(_value, GoldTextRect.position)); GoldGenParticle.Play(); }
     }
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
     lastgold= GameManager.Instance.MyGameData.Gold;
+  }
+  [SerializeField] private TextMeshProUGUI MovePointText = null;
+  public void UpdateMovePointText()
+  {
+    MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
   }
   [Space(10)]
   [SerializeField] private ParticleSystem HPLossParticle = null;
@@ -305,57 +289,55 @@ public class UIManager : MonoBehaviour
   }
 
   [Space(5)]
-  [SerializeField] private RectTransform TendencyHeadRect = null;
-  [SerializeField] private RectTransform TendencyHeadIcon = null;
   [SerializeField] private RectTransform TendencyBodyRect = null;
   [SerializeField] private RectTransform TendencyBodyIcon = null;
-  private float TendendcyIconMoveUnit = 66.0f;
-
+  [SerializeField] private RectTransform TendencyHeadRect = null;
+  [SerializeField] private RectTransform TendencyHeadIcon = null;
+  private Vector2 TendencyPos_m2 = new Vector2(-98.0f, -55.0f);
+  private Vector2 TendencyPos_m1 = new Vector2(-30.0f, -55.0f);
+  private Vector2 TendencyPos_p1 = new Vector2(35.0f, -55.0f);
+  private Vector2 TendencyPos_p2 = new Vector2(101.0f, -55.0f);
   public void UpdateTendencyIcon()
   {
-    if(GameManager.Instance.MyGameData.Tendency_Body.ChangedDir!=0)
+    Vector2 _bodypos = Vector2.zero;
+    Vector2 _headpos= Vector2.zero;
+    switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
     {
-      StartCoroutine(movetendencyrect( TendencyBodyRect, GameManager.Instance.MyGameData.Tendency_Body.ChangedDir));
-      StartCoroutine(movetendencyicon(TendencyBodyIcon, GameManager.Instance.MyGameData.Tendency_Body.ChangedDir));
-      GameManager.Instance.MyGameData.Tendency_Body.ChangedDir = 0;
+      case -2:_bodypos = TendencyPos_m2;break;
+      case -1: _bodypos = TendencyPos_m1; break;
+      case 1: _bodypos = TendencyPos_p1; break;
+      case 2: _bodypos = TendencyPos_p2; break;
+    }
+    switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+    {
+      case -2: _headpos = TendencyPos_m2; break;
+      case -1: _headpos = TendencyPos_m1; break;
+      case 1: _headpos = TendencyPos_p1; break;
+      case 2: _headpos = TendencyPos_p2; break;
+    }
+    StartCoroutine(movetendencyrect(TendencyBodyRect, TendencyBodyIcon, _bodypos));
+    StartCoroutine(movetendencyrect(TendencyHeadRect,TendencyHeadIcon, _headpos));
+  }
+  private IEnumerator movetendencyrect(RectTransform titlerect,RectTransform iconrect,Vector2 targetpos)
+  {
+    if (titlerect.anchoredPosition == targetpos) yield break;
+
+    Vector2 _originpos_title = titlerect.anchoredPosition;
+    Vector2 _originpos_icon= iconrect.anchoredPosition;
+    Vector2 _targetpos_title = targetpos;
+    Vector2 _targetpos_icon =_originpos_title- (_targetpos_title - _originpos_title);
+    float _time = 0.0f, _targettime = 0.8f;
+
+    while (_time < _targettime)
+    {
+      titlerect.anchoredPosition = Vector2.Lerp(_originpos_title, _targetpos_title, _time / _targettime);
+      iconrect.anchoredPosition=Vector2.Lerp(_originpos_icon,_targetpos_icon,_time / _targettime);
+
+      _time += Time.deltaTime; yield return null;
     }
 
-    if (GameManager.Instance.MyGameData.Tendency_Head.ChangedDir != 0)
-    {
-      StartCoroutine(movetendencyrect(TendencyHeadRect, GameManager.Instance.MyGameData.Tendency_Head.ChangedDir));
-      StartCoroutine(movetendencyicon(TendencyHeadIcon, GameManager.Instance.MyGameData.Tendency_Head.ChangedDir));
-      GameManager.Instance.MyGameData.Tendency_Head.ChangedDir = 0;
-    }
-  }
-  private IEnumerator movetendencyrect(RectTransform rect,int degree)
-  {
-    Vector2 _originpos = rect.anchoredPosition;
-    Vector2 _targetpos=new Vector2(_originpos.x+TendendcyIconMoveUnit*degree, _originpos.y);
-    Vector2 _currentpos = _originpos;
-    float _time = 0.0f, _targetime = 0.4f;
-    while(_time< _targetime)
-    {
-      rect.anchoredPosition = _currentpos;
-      _currentpos = Vector2.Lerp(_originpos, _targetpos, _time / _targetime);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    rect.anchoredPosition = _targetpos;
-  }
-  private IEnumerator movetendencyicon(RectTransform rect, int degree)
-  {
-    Vector2 _originpos = rect.anchoredPosition;
-    Vector2 _targetpos = new Vector2(_originpos.x - TendendcyIconMoveUnit * degree, _originpos.y);
-    Vector2 _currentpos = _originpos;
-    float _time = 0.0f, _targetime = 0.4f;
-    while (_time < _targetime)
-    {
-      rect.anchoredPosition = _currentpos;
-      _currentpos = Vector2.Lerp(_originpos, _targetpos, _time / _targetime);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    rect.anchoredPosition = _targetpos;
+    titlerect.anchoredPosition = _targetpos_title;
+    iconrect.anchoredPosition = _targetpos_icon;
   }
   [SerializeField] private Image LongTermCover = null;
   [SerializeField] private Image LongTermMadness = null;
@@ -425,14 +407,22 @@ public class UIManager : MonoBehaviour
     UpdateHPText();
     UpdateSanityText();
     UpdateGoldText();
+    UpdateMovePointText();
     UpdateExpLongTermIcon();
     UpdateExpShortTermIcon();
     UpdateTendencyIcon();
   }
   private void Update()
   {
-    if (Input.GetMouseButtonDown(1) && IsWorking == false) CloseCurrentTopUI();
-    if (Input.GetKeyDown(KeyCode.W)) SanityLossParticle.Play();
+    if (Input.GetKeyDown(KeyCode.F4))
+    {
+      if(DebugUI.gameObject.activeInHierarchy==true)DebugUI.gameObject.SetActive(false);
+      else
+      {
+        DebugUI.gameObject.SetActive(true);
+        DebugUI.UpdateValues();
+      }
+    }
   }
     private Queue<IEnumerator> UIAnimationQueue = new Queue<IEnumerator>();
     public void AddUIQueue(IEnumerator _anim)
@@ -936,7 +926,7 @@ public static class WNCText
   }
   public static string GetHPColor(int value)
   {
-    return $"<#F78181>{value.ToString()}</color>";
+    return $"<#F78181>{value.ToString()}</color>"; 
   }
   public static string GetSanityColor(string str)
   {
@@ -946,6 +936,15 @@ public static class WNCText
   {
     return $"<#BE81F7>{value.ToString()}</color>";
   }
+  public static string GetMaxSanityColor(string str)
+  {
+    return $"<#8A1BD4>{str}</color>";
+  }
+  public static string GetMaxSanityColor(int value)
+  {
+    return $"<#8A1BD4>{value.ToString()}</color>";
+  }
+
   public static string GetGoldColor(string str)
   {
     return $"<#F3F781>{str}</color>";

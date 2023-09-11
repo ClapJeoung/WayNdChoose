@@ -320,7 +320,6 @@ public class UI_map : UI_default
     }
     PlayerRect.anchoredPosition = _targettilepos;
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
-    UIManager.Instance.UpdateSanityText();
 
     GameManager.Instance.MyGameData.Coordinate = _endcoor;
     ResetEnableTiles();
@@ -341,7 +340,6 @@ public class UI_map : UI_default
     }
 
     GameManager.Instance.MyGameData.Turn++;
-    UIManager.Instance.UpdateTurnIcon();
 
     StartCoroutine(zoominview());
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, ZoomInTime + 1.0f, false));

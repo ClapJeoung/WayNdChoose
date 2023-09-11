@@ -32,12 +32,28 @@ public class EventManager : MonoBehaviour
   /// 정착지에서 장소를 선택해 이벤트 실행
   /// </summary>
   /// <param name="place"></param>
-  public void SetSettleEvent(SectorType place)
+  public void SetSettlementEvent(SectorType place)
   {
+    if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != ""&&GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID!= "WRONG ID!")
+    {
+      EventDataDefulat _customevent = MyEventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
+      if (_customevent.AppearSpace != EventAppearType.Outer)
+      {
+        if (_customevent != null)
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "";
+          GameManager.Instance.SelectEvent(_customevent);
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "WRONG ID!";
+        }
+      }
+    }
+
     TileInfoData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData;
     EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.Settlement.Type, place, _tiledta.EnvirList); ;
     GameManager.Instance.SelectEvent(_event);
-
   }
 
   /// <summary>
@@ -46,9 +62,25 @@ public class EventManager : MonoBehaviour
   /// <param name="_tiledata"></param>
   public void SetOutsideEvent(TileInfoData _tiledata)
   {
+    if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "" && GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "WRONG ID!")
+    {
+      EventDataDefulat _customevent = MyEventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
+      if (_customevent.AppearSpace == EventAppearType.Outer)
+      {
+        if (_customevent != null)
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "";
+          GameManager.Instance.SelectEvent(_customevent);
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "WRONG ID!";
+        }
+      }
+    }
+
     EventDataDefulat _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
     if (_event == null) _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
-    //퀘스트가 존재한다면 해당 퀘스트 이벤트를 받아오고 적합한 퀘스트 이벤트가 없을 시 평범한 이벤트를
 
     GameManager.Instance.SetOuterEvent(_event);
 

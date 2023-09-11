@@ -326,14 +326,13 @@ public class UI_QuestWolf : UI_default
     {
       UIManager.Instance.SettleButton.Open(1, this);
     }
-    UIManager.Instance.WolfSidePanel.UpdateSearchingPanel();
+    UIManager.Instance.WolfSidePanel.UpdateUI();
 
     yield return null;
   }
   public void SearchingSanityReward()
   {
     GameManager.Instance.MyGameData.CurrentSanity += ConstValues.Quest_Wolf_Searching_Sanityrewardvalue;
-    UIManager.Instance.UpdateSanityText();
     Searching_RewardButton.interactable = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_RewardButton_Group, 0.0f, 0.8f, false));
   }
@@ -407,7 +406,7 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
   
-    UIManager.Instance.WolfSidePanel.UpdateCultNormalPanel();
+    UIManager.Instance.WolfSidePanel.UpdateUI();
   }
   public void SelectWolfLine()
   {
@@ -432,7 +431,7 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
 
-    UIManager.Instance.WolfSidePanel.UpdateWolfNormalPanel();
+    UIManager.Instance.WolfSidePanel.UpdateUI();
   }
   public void WantedResult_GoSettlement()
   {

@@ -191,13 +191,9 @@ public class GameData    //게임 진행도 데이터
       else
       {
         if (value > MaxTurn)
-        { turn = 0; Year++; if (UIManager.Instance != null) UIManager.Instance.UpdateYearText(); }
+        { turn = 0; Year++;  UIManager.Instance.UpdateYearText(); }
         else turn = value;
 
-        if (UIManager.Instance != null)
-        {
-          UIManager.Instance.UpdateTurnIcon();
-        }
         if (LongTermEXP != null) LongTermEXP.Duration--;
         for (int i=0;i<ShortTermEXP.Length;i++)if(ShortTermEXP[i] != null) ShortTermEXP[i].Duration--;
 
@@ -230,6 +226,8 @@ public class GameData    //게임 진행도 데이터
                 foreach (var _place in _downplace) PlaceEffects[_place]--;
         */
       }
+
+      UIManager.Instance.UpdateTurnIcon();
     }
   }
   public const int MaxTurn = 3;//최대 턴(0,1,2,3)
@@ -351,13 +349,16 @@ public class GameData    //게임 진행도 데이터
       hp = value;
       if (hp > 100) hp = 100;
       if (hp < 0) { hp = 0; GameManager.Instance.GameOver(GameOverTypeEnum.HP); }
+      UIManager.Instance.UpdateHPText();
     }
   }
   private int gold = 0;
   public int Gold
   {
     get { return gold; }
-    set { gold = value; }
+    set { gold = value;
+      UIManager.Instance.UpdateGoldText();
+    }
   }
   private int currentsanity = 0;
   public int CurrentSanity
@@ -388,6 +389,8 @@ public class GameData    //게임 진행도 데이터
           currentsanity = 0;
           MaxSanity -= ConstValues.MadnessDefaultSanityLose;
 
+          UIManager.Instance.UpdateSanityText();
+
           UIManager.Instance.GetMad(_madness);
         }
         else
@@ -398,7 +401,16 @@ public class GameData    //게임 진행도 데이터
     }
   }
   public int MaxSanity = 100;
-  public int MovePoint = 0;
+  private int movepoint = 0;
+  public int MovePoint
+  {
+    get { return movepoint; }
+    set
+    {
+      movepoint = value;
+      UIManager.Instance.UpdateMovePointText();
+    }
+  }
   #endregion
 
   #region #기술#
@@ -720,7 +732,12 @@ public class GameData    //게임 진행도 데이터
   #region #이벤트 관련#
   public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence = EventSequence.Progress;
-  public List<string> RemoveEvent = new List<string>();//이벤트 풀에서 사라질 이벤트들(일반,연계,퀘스트)
+  public bool IsAbleEvent(string eventid)
+  {
+    if (SuccessEvent_All.Contains(eventid)) return false;
+    if(FailEvent_All.Contains(eventid)) return false;
+    return true;
+  }
 
   public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
@@ -913,6 +930,8 @@ public class GameData    //게임 진행도 데이터
     CurrentSettlement = null;
     CurrentEvent = null;
   }
+  public string DEBUG_NEXTEVENTID = "";
+
 }
 public enum SkillType { Conversation, Force, Wild, Intelligence }
 public class Skill
@@ -974,7 +993,6 @@ public class Skill
 public enum TendencyTypeEnum {None, Body,Head}
 public class Tendency
 {
-  public int ChangedDir = 0;
   public TendencyTypeEnum Type;
   public Sprite Illust
   {
@@ -1099,13 +1117,13 @@ public class Tendency
   {
     get { return level; }
     set {
-      ChangedDir = value - level;
       level = value;
       count = 0;
       if(UIManager.Instance!=null) UIManager.Instance.UpdateTendencyIcon();
     }
   }
   public Tendency(TendencyTypeEnum type) { Type = type; }
+
 }
 public class GameJsonData
 {

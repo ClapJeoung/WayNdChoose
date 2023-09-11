@@ -21,6 +21,29 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
   [SerializeField] private TextMeshProUGUI[] Cult_Normal_Progresses=new TextMeshProUGUI[3];
   [Space(10)]
   [SerializeField] private CanvasGroup Wolf_Normal_Group = null;
+
+  public void UpdateUI()
+  {
+    switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+    {
+      case 0:
+        UpdateSearchingPanel();
+        break;
+      case 1:
+      case 2:
+        case 3:
+        switch (GameManager.Instance.MyGameData.Quest_Wolf_Type)
+        {
+          case 0:
+            UpdateCultNormalPanel();
+            break;
+          case 1:
+            UpdateRitualNormalPanel();
+            break;
+        }
+        break;
+    }
+  }
   public void UpdateSearchingPanel()
   {
     Searching_description.text = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Sidepanel_Searching_description"), GameManager.Instance.MyGameData.Quest_Wolf_Progress);
@@ -31,6 +54,7 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
 
     if(Searching_Group.alpha==0.0f)Searching_Group.alpha=1.0f;
     if (Cult_Normal_Group.alpha == 1.0f) Cult_Normal_Group.alpha = 0.0f;
+    if (Wolf_Normal_Group.alpha == 1.0f) Wolf_Normal_Group.alpha = 0.0f;
   }
 
   public void UpdateCultNormalPanel()
@@ -41,17 +65,20 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
       {
         Cult_Normal_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Finish;
         Cult_Normal_Icons[i].color = ActiveColor;
+        Cult_Normal_Icons[i].fillAmount = 1.0f;
         Cult_Normal_Progresses[i].text = "";
       }
       else if (i == GameManager.Instance.MyGameData.Quest_Wolf_Phase - 1)
       {
         Cult_Normal_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle;
         Cult_Normal_Icons[i].color = ActiveColor;
+        Cult_Normal_Icons[i].fillAmount = GameManager.Instance.MyGameData.Quest_Wolf_Progress / 100.0f;
         Cult_Normal_Progresses[i].text = GameManager.Instance.MyGameData.Quest_Wolf_Progress <=100? GameManager.Instance.MyGameData.Quest_Wolf_Progress .ToString():"100"+ "%";
       }
       else
       {
         Cult_Normal_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle;
+        Cult_Normal_Icons[i].fillAmount = 1.0f;
         Cult_Normal_Icons[i].color = DeactiveColor;
         Cult_Normal_Progresses[i].text = "";
       }
@@ -60,9 +87,14 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
 
     if (Searching_Group.alpha == 1.0f) Searching_Group.alpha = 0.0f;
     if (Cult_Normal_Group.alpha == 0.0f) Cult_Normal_Group.alpha = 1.0f;
+    if (Wolf_Normal_Group.alpha == 1.0f) Wolf_Normal_Group.alpha = 0.0f;
   }
-  public void UpdateWolfNormalPanel()
+  public void UpdateRitualNormalPanel()
   {
 
+
+    if (Searching_Group.alpha == 1.0f) Searching_Group.alpha = 0.0f;
+    if (Cult_Normal_Group.alpha == 1.0f) Cult_Normal_Group.alpha = 0.0f;
+    if (Wolf_Normal_Group.alpha == 0.0f) Wolf_Normal_Group.alpha = 1.0f;
   }
 }

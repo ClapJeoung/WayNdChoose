@@ -332,12 +332,10 @@ public class GameManager : MonoBehaviour
     if (issanity)
     {
       MyGameData.CurrentSanity -= MyGameData.SettleRestCost_Sanity;
-      UIManager.Instance.UpdateSanityText();
     }
     else
     {
       MyGameData.Gold -= MyGameData.SettleRestCost_Gold;
-      UIManager.Instance.UpdateGoldText();
     }
     switch (MyGameData.CurrentSettlement.Type)
     {
@@ -354,7 +352,7 @@ public class GameManager : MonoBehaviour
     MyGameData.AddDiscomfort(MyGameData.CurrentSettlement);
     MyGameData.ApplySectorEffect(sectortype);
 
-    EventManager.Instance.SetSettleEvent(sectortype);
+    EventManager.Instance.SetSettlementEvent(sectortype);
 
     switch (MyGameData.QuestType)
     {
@@ -394,7 +392,6 @@ public class GameManager : MonoBehaviour
     if (MyGameData.CurrentSettlement != null)
     {
       MyGameData.Turn++;
-      UIManager.Instance.UpdateTurnIcon();
     }
 
     switch (MyGameData.QuestType)
@@ -408,12 +405,12 @@ public class GameManager : MonoBehaviour
             {
               case 0:
                 MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_EventClear;
-                UIManager.Instance.WolfSidePanel.UpdateCultNormalPanel();
                 break;
               case 1:
                 break;
             }
           }
+          UIManager.Instance.WolfSidePanel.UpdateUI();
         }
         break;
     }
@@ -441,7 +438,6 @@ public class GameManager : MonoBehaviour
     if (MyGameData.CurrentSettlement != null)
     {
       MyGameData.Turn++;
-      UIManager.Instance.UpdateTurnIcon();
     }
     switch (MyGameData.QuestType)
     {
@@ -454,12 +450,12 @@ public class GameManager : MonoBehaviour
             {
               case 0:
                 MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_EventFail;
-                UIManager.Instance.WolfSidePanel.UpdateCultNormalPanel();
                 break;
               case 1:
                 break;
             }
           }
+          UIManager.Instance.WolfSidePanel.UpdateUI();
         }
         break;
     }
@@ -470,7 +466,6 @@ public class GameManager : MonoBehaviour
     {
       MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
       MyGameData.CurrentSanity = MyGameData.MaxSanity;
-      UIManager.Instance.UpdateSanityText();
       UIManager.Instance.MyMadPanel.CloseUI();
     }
     MyGameData.LongTermEXP = exp;
@@ -482,7 +477,6 @@ public class GameManager : MonoBehaviour
     {
       MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
       MyGameData.CurrentSanity = MyGameData.MaxSanity;
-      UIManager.Instance.UpdateSanityText();
       UIManager.Instance.MyMadPanel.CloseUI();
     }
     MyGameData.ShortTermEXP[index] = exp;

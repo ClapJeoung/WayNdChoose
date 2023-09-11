@@ -238,7 +238,7 @@ public class PreviewManager : MonoBehaviour
     _genvalue = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
     _payvalue = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
 
-    _description = GameManager.Instance.GetTextData(_currenttype, 3);
+    _description = string.Format(GameManager.Instance.GetTextData(_currenttype, 3),GameManager.Instance.MyGameData.MaxSanity);
     if (_genvalue > 0)
     {
       _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));

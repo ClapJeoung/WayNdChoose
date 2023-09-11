@@ -427,13 +427,11 @@ public class UI_dialogue : UI_default
         {
           _issuccess = true;
           GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.PayHPValue_modified;
-          UIManager.Instance.UpdateHPText();
         }
         else if (_selectiondata.SelectionPayTarget.Equals(StatusType.Sanity))
         {
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
           GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.PaySanityValue_modified;
-          UIManager.Instance.UpdateSanityText();
         }
         else        //돈 지불일 경우 돈 적을 때 실행하는 뭔가 있어야 함
         {
@@ -445,7 +443,6 @@ public class UI_dialogue : UI_default
             //장소 효과의 도움을 받아 성공한 것이라면 장소 효과 만료
             _issuccess = true;
             GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.PayGoldValue_modified;
-            UIManager.Instance.UpdateGoldText();
             Debug.Log("정당한 값을 지불한 레후~");
           }//100% 확률이 나온 상황(돈이 부족하거나 돈이 충분하거나 둘 다)
           else
@@ -458,13 +455,10 @@ public class UI_dialogue : UI_default
               _issuccess = true;
               GameManager.Instance.MyGameData.Gold = 0;
               GameManager.Instance.MyGameData.CurrentSanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
-              UIManager.Instance.UpdateGoldText();
             }//돈이 부족해 성공한 경우
             else
             {
               _issuccess = false;
-              UIManager.Instance.UpdateSanityText();
-              UIManager.Instance.UpdateGoldText();
             }//돈이 부족해 실패한 경우
           }//돈이 부족해 체크를 해야 하는 상황
         }
@@ -683,7 +677,6 @@ public class UI_dialogue : UI_default
         if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
         {
           GameManager.Instance.MyGameData.CurrentSanity += ConstValues.GoodExpAsSanity;
-          UIManager.Instance.UpdateSanityText();
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
           RemainReward = false;
@@ -700,15 +693,12 @@ public class UI_dialogue : UI_default
         {
           case RewardTarget.HP:
             GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
-            UIManager.Instance.UpdateHPText();
             break;
           case RewardTarget.Sanity:
             GameManager.Instance.MyGameData.CurrentSanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
-            UIManager.Instance.UpdateSanityText();
             break;
           case RewardTarget.Gold:
             GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
-            UIManager.Instance.UpdateGoldText();
             break;
           case RewardTarget.Skill:
             GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
@@ -724,7 +714,6 @@ public class UI_dialogue : UI_default
       if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
       {
         GameManager.Instance.MyGameData.CurrentSanity -= ConstValues.BadExpAsSanity;
-        UIManager.Instance.UpdateSanityText();
 
         StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
         RemainReward = false;
@@ -745,15 +734,12 @@ public class UI_dialogue : UI_default
         {
           case StatusType.HP:
             GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.FailHPValue_modified;
-            UIManager.Instance.UpdateHPText();
             break;
           case StatusType.Sanity:
             GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.FailSanityValue_modified;
-            UIManager.Instance.UpdateSanityText();
             break;
           case StatusType.Gold:
             GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.FailGoldValue_modified;
-            UIManager.Instance.UpdateGoldText();
             break;
         }
         break;
