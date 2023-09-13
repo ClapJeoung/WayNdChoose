@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using static UnityEditor.PlayerSettings;
 
 public class maptext : MonoBehaviour
 {
@@ -14,9 +15,9 @@ public class maptext : MonoBehaviour
   public Tilemap Tilemap_bottom, Tilemap_top;
    public TilePrefabs MyTiles;
   [Space(10)]
-  [SerializeField] private Transform SettlerHolder = null;
   [SerializeField] private Transform TileHolder_bottomenvir = null;
   [SerializeField] private Transform TileHolder_topenvir = null;
+  [SerializeField] private Transform TileHolder_landmark = null;
   [SerializeField] private Sprite Villagesprite, Townsprite, Citysprite;
     private void Start()
     {
@@ -890,9 +891,9 @@ public class maptext : MonoBehaviour
       _citytiles.Add(_starttile);
       _citytiles.Add(_secondtile);
       _citytiles.Add(_thirdtile);
-      _NewMapData.TileDatas[_starttile.Coordinate.x, _starttile.Coordinate.y].LandScape = LandscapeType.Settlement;
-      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].LandScape = LandscapeType.Settlement;
-      _NewMapData.TileDatas[_thirdtile.Coordinate.x, _thirdtile.Coordinate.y].LandScape = LandscapeType.Settlement;
+      _NewMapData.TileDatas[_starttile.Coordinate.x, _starttile.Coordinate.y].Landmark = LandmarkType.City;
+      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].Landmark = LandmarkType.City;
+      _NewMapData.TileDatas[_thirdtile.Coordinate.x, _thirdtile.Coordinate.y].Landmark = LandmarkType.City;
       bool cityCheck(TileData tile)
       {
         if (tile.BottomEnvir == BottomEnvirType.Sea) return false;
@@ -958,8 +959,8 @@ public class maptext : MonoBehaviour
 
       _NewMapData.TileDatas[_firsttile.Coordinate.x, _firsttile.Coordinate.y].TileSettle = Towns[_towntiles.Count / 2];
       _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].TileSettle = Towns[_towntiles.Count / 2];
-      _NewMapData.Tile(_firsttile.Coordinate).LandScape = LandscapeType.Settlement;
-      _NewMapData.Tile(_secondtile.Coordinate).LandScape = LandscapeType.Settlement;
+      _NewMapData.Tile(_firsttile.Coordinate).Landmark = LandmarkType.Town;
+      _NewMapData.Tile(_secondtile.Coordinate).Landmark = LandmarkType.Town;
       _towntiles.Add(_firsttile);
       _towntiles.Add(_secondtile);
 
@@ -1012,7 +1013,7 @@ public class maptext : MonoBehaviour
       if (_breakable) continue;//주위 2칸에 다른 정착지가 있으면 X
 
       _NewMapData.TileDatas[_villagetile.Coordinate.x, _villagetile.Coordinate.y].TileSettle = Villages[_villagetiles.Count];
-      _NewMapData.Tile(_villagetile.Coordinate).LandScape = LandscapeType.Settlement;
+      _NewMapData.Tile(_villagetile.Coordinate).Landmark = LandmarkType.Village;
       _villagetiles.Add(_villagetile);
     }
 
@@ -1061,8 +1062,8 @@ public class maptext : MonoBehaviour
 
 
         string[] _namearray;
-        if (newsettles[i].Type == SettlementType.Village) { _namearray = SettlementName.VillageNames; }
-        else if (newsettles[i].Type == SettlementType.Town) { _namearray = SettlementName.TownNames; }
+        if (newsettles[i].SettlementType == SettlementType.Village) { _namearray = SettlementName.VillageNames; }
+        else if (newsettles[i].SettlementType == SettlementType.Town) { _namearray = SettlementName.TownNames; }
         else { _namearray = SettlementName.CityNames; }
 
         int _infoindex = Random.Range(0, _namearray.Length);
@@ -1171,231 +1172,156 @@ public class maptext : MonoBehaviour
     return _temp;
   }
   public void MakeTilemap()
+  {
+    Vector3 _cellsize = new Vector3(190 * 0.7f, 190 * 0.7f); Debug.Log("맵을 만든 레후~");
+    //타일로 구현화
+    for (int i = 0; i < ConstValues.MapSize; i++)
     {
-    Vector3 _cellsize = new Vector3(190*0.7f, 190*0.7f);    Debug.Log("맵을 만든 레후~");
-        //타일로 구현화
-        for (int i = 0; i < ConstValues.MapSize; i++)
-        {
       for (int j = 0; j < ConstValues.MapSize; j++)
       {
-        Vector3Int _newpos = new Vector3Int(j, i, 0);
+        Vector3Int _coordinate = new Vector3Int(j, i, 0);
 
-        TileSpriteType _sprtype = TileSpriteType.NULL;
-        Vector3 _pos = Vector3.zero;
-        int _rotate = 0;
+        Vector3 _pos = Tilemap_bottom.CellToWorld(_coordinate);
+        int _rotate = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].Rotate;
 
-        _sprtype = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].BottomEnvirSprite;
-        _pos = Tilemap_bottom.CellToWorld(_newpos);
-        _rotate = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].Rotate;
+        string _bottomname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).BottomEnvir}";
+        Sprite _bottomspr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].BottomEnvirSprite);
+        GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        _bottomtile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, -60.0f * _rotate));
+        _bottomtile.transform.SetParent(TileHolder_bottomenvir);
+        Image _bottomimage = _bottomtile.GetComponent<Image>();
+        _bottomimage.sprite = _bottomspr;
+        RectTransform _bottomrect = _bottomtile.GetComponent<RectTransform>();
+        _bottomrect.sizeDelta = _cellsize;
+        _bottomrect.position = new Vector3(_pos.x, _pos.y, _bottomrect.position.z);
+        _bottomrect.transform.localScale = Vector3.one;
+        _bottomrect.anchoredPosition3D = new Vector3(_bottomrect.anchoredPosition3D.x, _bottomrect.anchoredPosition3D.y, 0.0f);
+        GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Rect = _bottomrect;
+        Outline _bottomoutline = _bottomtile.AddComponent<Outline>();
+        _bottomoutline.effectColor = Color.black;
+        _bottomoutline.effectDistance = Vector2.one * 2.0f;
+        Button _button = _bottomtile.AddComponent<Button>();
+        Navigation _nav = new Navigation();
+        _nav.mode = Navigation.Mode.None;
+        _button.navigation = _nav;
+        _bottomoutline.enabled = false;
+        _bottomtile.AddComponent(typeof(TileButtonScript));
+        _bottomimage.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
+        _button.interactable = false;
 
-        maketile(MyTiles.GetTile(_sprtype),_pos,_rotate,new Vector2Int(j,i),true);
+        string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
+        Sprite _topespr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].TopEnvirSprite);
+        GameObject _toptile = new GameObject(_topname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        RectTransform _toprect = _toptile.GetComponent<RectTransform>();
+        _toprect.sizeDelta = _cellsize;
+        _toprect.position = new Vector3(_pos.x, _pos.y, _toprect.position.z);
+        _toprect.transform.localScale = Vector3.one;
+        _toprect.anchoredPosition3D = new Vector3(_toprect.anchoredPosition3D.x, _toprect.anchoredPosition3D.y, 0.0f);
+        Image _topimage = _toptile.GetComponent<Image>();
+        _topimage.raycastTarget = false;
+        _toptile.transform.SetParent(TileHolder_topenvir);
 
-        _sprtype = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].TopEnvirSprite;
-        _rotate = 0;
+        string _landmarkname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Landmark}";
+        Sprite _landmarkspr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].landmarkSprite);
+        GameObject _landmarktile= new GameObject(_landmarkname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        RectTransform _landmarkrect = _landmarktile.GetComponent<RectTransform>();
+        _landmarkrect.sizeDelta = _cellsize;
+        _landmarkrect.position = new Vector3(_pos.x, _pos.y, _landmarkrect.position.z);
+        _landmarkrect.transform.localScale = Vector3.one;
+        _landmarkrect.anchoredPosition3D = new Vector3(_landmarkrect.anchoredPosition3D.x, _landmarkrect.anchoredPosition3D.y, 0.0f);
+        Image _landmarkimage = _landmarktile.GetComponent<Image>();
+        _landmarkimage.raycastTarget = false;
+        _landmarktile.transform.SetParent(TileHolder_landmark);
 
-        if(_sprtype!=TileSpriteType.NULL) maketile(MyTiles.GetTile(_sprtype), _pos, _rotate,new Vector2Int(j, i),false);
+
+        TileButtonScript _buttonscript = _bottomtile.GetComponent<TileButtonScript>();
+        _buttonscript.OutLine = _bottomoutline;
+        _buttonscript.Button = _button;
+        _buttonscript.SelectHolder = MapUIScript.SelectTileHolder;
+        _buttonscript.OriginHolder = TileHolder_bottomenvir;
+        _buttonscript.MapUI = MapUIScript;
+        _buttonscript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
+        _buttonscript.BottomImage = _bottomimage;
+        _buttonscript.TopImage = _topimage;
+        _buttonscript.LandmarkImage= _landmarkimage;
+        _button.onClick.AddListener(() => _buttonscript.Clicked());
+
+        GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _buttonscript;
       }
-        }
+    }
     //이 밑은 정착지를 버튼으로 만드는거
 
-    Vector3 _zeropos = Vector3.zero;
-    Vector3 _buttonpos = Vector3.zero;
-        for(int i = 0; i < GameJsonData.VillageCount; i++)
+    List<RectTransform> _settlementrectlist= new List<RectTransform>();
+    Vector2 _settlementpos = Vector2.zero;
+
+    for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
     {
-      _buttonpos = Vector3.zero;
-      List<Vector3> villagepos = new List<Vector3>();
-      villagepos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.Villages[i].Tiles[0].Coordinate));
-      foreach (Vector3 pos in villagepos) _buttonpos += pos;
-      //위치(Rect로 변환) 집어넣고
+      Settlement _village = GameManager.Instance.MyGameData.MyMapData.Villages[i];
+      _settlementpos = _village.Tiles[0].Rect.anchoredPosition;
 
-      string _villagename = $"village_{GameManager.Instance.MyGameData.MyMapData.Villages[i].OriginName}";
-      GameObject _villageobj =new GameObject(_villagename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(CanvasGroup)});
-      //버튼 오브젝트
+      string _villagename = _village.OriginName;
+      GameObject _villageholder = new GameObject(_villagename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+      _villageholder.transform.SetParent(TileHolder_landmark);
+      _villageholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
 
-      RectTransform _villagerect = _villageobj.GetComponent<RectTransform>();
-      _villagerect.anchoredPosition3D = new Vector3(_buttonpos.x,_buttonpos.y,0.0f);
-      _villageobj.transform.SetParent(SettlerHolder);
-      _villageobj.transform.localScale = Vector3.one;
-      _villagerect.anchoredPosition3D = new Vector3(_villagerect.anchoredPosition3D.x, _villagerect.anchoredPosition3D.y, 0.0f);
+      _village.Tiles[0].Rect.SetParent(_villageholder.transform);
+      MapUIScript.VillageIcons.Add(_villageholder);
+    }
 
-      List<GameObject> _images = new List<GameObject>();
-      foreach (Vector3 _pos in villagepos)
+    _settlementrectlist.Clear();
+    _settlementpos = Vector2.zero;
+    for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Towns.Count; i++)
+    {
+      Settlement _town = GameManager.Instance.MyGameData.MyMapData.Towns[i];
+      for(int j = 0; j < _town.Tiles.Count; j++)
       {
-        GameObject _temp = new GameObject(_pos.ToString(), new System.Type[] { typeof(RectTransform), typeof(Image) });
-        RectTransform _rect = _temp.GetComponent<RectTransform>();
-        _rect.localScale = Vector3.one;
-        _rect.anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
-        _rect.sizeDelta = _cellsize;
-        _temp.GetComponent<Image>().sprite = Villagesprite;
-        _temp.transform.SetParent(SettlerHolder);
-        _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
-        _images.Add(_temp);
-      }//이미지 만들고 위치,스프라이트 넣기
-
-      for (int j = 0; j < _images.Count; j++)
-      {
-        _images[j].transform.SetParent(_villageobj.transform, true);
-        _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_images[j].GetComponent<RectTransform>().anchoredPosition.x, _images[j].GetComponent<RectTransform>().anchoredPosition.y, 0.0f);
-        _images[j].transform.localScale = Vector3.one;
+        _settlementrectlist.Add(_town.Tiles[j].Rect);
+        _settlementpos += _town.Tiles[j].Rect.anchoredPosition;
       }
-      //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
+      _settlementpos /= 2.0f;
 
-      MapUIScript.VillageIcons.Add(_villageobj);
-    }
+      string _townname = _town.OriginName;
+      GameObject _townholder = new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+      _townholder.transform.SetParent(TileHolder_landmark);
+      _townholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
 
-        _zeropos = Vector3.zero;
-    for (int i = 0; i < GameJsonData.TownCount; i++)
-    {
-      _buttonpos = Vector3.zero;
-      List<Vector3> townpos = new List<Vector3>();
-      townpos.Add(Tilemap_top.CellToWorld((Vector3Int) GameManager.Instance.MyGameData.MyMapData.Towns[i].Tiles[0].Coordinate) );
-      townpos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.Towns[i].Tiles[1].Coordinate));
-      foreach (Vector3 pos in townpos) _buttonpos += pos;
-            _buttonpos /= 2;
-            //위치(Rect로 변환) 집어넣고
-            List<GameObject> _images = new List<GameObject>();
-
-      string _townname = $"town_{GameManager.Instance.MyGameData.MyMapData.Towns[i].OriginName}";
-      GameObject _townobj = new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(CanvasGroup) });
-      //버튼 오브젝트
-      RectTransform _townrect = _townobj.GetComponent<RectTransform>();
-      _townrect.anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
-      _townobj.transform.SetParent(SettlerHolder);
-      _townobj.transform.localScale = Vector3.one;
-      _townrect.anchoredPosition3D = new Vector3(_townrect.anchoredPosition3D.x, _townrect.anchoredPosition3D.y, 0.0f);
-
-      foreach (Vector3 _pos in townpos)
+      for(int j = 0; j < _settlementrectlist.Count; j++)
       {
-        GameObject _temp = new GameObject(_pos.ToString(), new System.Type[] { typeof(RectTransform), typeof(Image) });
-        RectTransform _rect = _temp.GetComponent<RectTransform>();
-        _rect.localScale = Vector3.one;
-        _rect.anchoredPosition = new Vector3(_pos.x, _pos.y, 0);
-        _rect.sizeDelta = _cellsize;
-        _temp.GetComponent<Image>().sprite = Townsprite;
-        _temp.transform.SetParent(SettlerHolder);
-        _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
-        _images.Add(_temp);
-        _zeropos += _pos;
-      }//이미지 만들고 위치,스프라이트 넣기
-      
-      for (int j = 0; j < _images.Count; j++)
-      {
-        //     Debug.Log($"원 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
-        Vector3 _newpos = _images[j].GetComponent<RectTransform>().anchoredPosition - _townrect.anchoredPosition;
-        _images[j].transform.SetParent(_townobj.transform, true);
-        //       Debug.Log($"부모 변경 위치 : {_images[j].GetComponent<RectTransform>().anchoredPosition}");
-        _images[j].transform.localScale = Vector3.one;
-        _images[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x, _newpos.y, 0.0f);
+        _settlementrectlist[j].SetParent(_townholder.transform);
       }
-      //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
-
-      MapUIScript.TownIcons.Add(_townobj);
+      MapUIScript.TownIcons.Add(_townholder);
     }
 
-        _zeropos = Vector3.zero;
-    _buttonpos = Vector3.zero;
-    List<Vector3> citypos = new List<Vector3>();
-    citypos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.City.Tiles[0].Coordinate));
-    citypos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.City.Tiles[1].Coordinate));
-    citypos.Add(Tilemap_top.CellToWorld((Vector3Int)GameManager.Instance.MyGameData.MyMapData.City.Tiles[2].Coordinate));
-    foreach (Vector3 pos in citypos) _buttonpos += pos;
-    _buttonpos /= 3;
-    //위치(Rect로 변환) 집어넣고
-
-    string _cityname = $"city_{GameManager.Instance.MyGameData.MyMapData.City.OriginName}";
-    GameObject _cityobj = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
-    //버튼 오브젝트
-    RectTransform _cityrect = _cityobj.GetComponent<RectTransform>();
-    _cityrect.anchoredPosition3D = new Vector3(_buttonpos.x, _buttonpos.y, 0.0f);
-    _cityobj.transform.SetParent(SettlerHolder);
-    _cityobj.transform.localScale = Vector3.one;
-    _cityrect.anchoredPosition3D = new Vector3(_cityrect.anchoredPosition3D.x, _cityrect.anchoredPosition3D.y, 0.0f);
-
-    List<GameObject> _cityimages = new List<GameObject>();
-    foreach (Vector3 _pos in citypos)
+    _settlementrectlist.Clear();
+    _settlementpos = Vector2.zero;
+    Settlement _city = GameManager.Instance.MyGameData.MyMapData.City;
+    for (int i = 0; i < _city.Tiles.Count; i++)
     {
-      GameObject _temp = new GameObject(_pos.ToString(), new System.Type[] { typeof(RectTransform),  typeof(Image) });
-      RectTransform _rect = _temp.GetComponent<RectTransform>();
-      _rect.localScale = Vector3.one;
-      _rect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0);
-      _rect.sizeDelta = _cellsize;
-      _temp.GetComponent<Image>().sprite = Citysprite;
-      _temp.transform.SetParent(SettlerHolder);
-      _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y, 0);
-      _cityimages.Add(_temp);
-      _zeropos += _pos;
-    }//이미지 만들고 위치,스프라이트 넣기
-    
-    for (int j = 0; j < _cityimages.Count; j++)
-    {
-      Vector3 _newpos = _cityimages[j].GetComponent<RectTransform>().anchoredPosition - _cityrect.anchoredPosition;
-      _cityimages[j].transform.SetParent(_cityobj.transform, true);
-      _cityimages[j].transform.localScale = Vector3.one;
-      _cityimages[j].GetComponent<RectTransform>().anchoredPosition3D = new Vector3(_newpos.x, _newpos.y, 0.0f);
+      _settlementrectlist.Add(_city.Tiles[i].Rect);
+      _settlementpos += _city.Tiles[i].Rect.anchoredPosition;
     }
-    //버튼 스크립트가 들어갈 중심부 오브젝트 만들고 꾸겨넣기
-    MapUIScript.CityIcon = _cityobj;
+    _settlementpos /= 3.0f;
 
+    string _cityname = _city.OriginName;
+    GameObject _cityholder = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+    _cityholder.transform.SetParent(TileHolder_landmark);
+    _cityholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
 
-    void maketile(Sprite spr, Vector3 pos, int rot,Vector2Int coordinate,bool isbottom)
+    for (int j = 0; j < _settlementrectlist.Count; j++)
     {
-      string _name = $"{coordinate.x},{coordinate.y}  {GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).BottomEnvir},{GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).TopEnvir}";
-      GameObject _tile = new GameObject(_name, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-      Image _image = _tile.GetComponent<Image>();
-      _image.sprite = spr;
-      _image.raycastTarget = isbottom ? true : false;
-      _tile.transform.rotation = Quaternion.Euler(new Vector3(0,0,-60.0f*rot));
-      RectTransform _rect = _tile.GetComponent<RectTransform>();
-
-      switch (isbottom)
-      {
-        case true:
-          _tile.transform.SetParent(TileHolder_bottomenvir);
-         Outline _outline= _tile.AddComponent<Outline>();
-          _outline.effectColor = Color.black;
-          _outline.effectDistance = Vector2.one * 2.0f;
-          Button _button= _tile.AddComponent<Button>();
-          Navigation _nav = new Navigation();
-          _nav.mode = Navigation.Mode.None;
-          _button.navigation = _nav;
-          _outline.enabled = false;
-          _tile.AddComponent(typeof(TileButtonScript));
-          TileButtonScript _buttonscript=_tile.GetComponent<TileButtonScript>();
-          _buttonscript.OutLine = _outline;
-          _buttonscript.Button = _button;
-          _buttonscript.SelectHolder = MapUIScript.SelectTileHolder;
-          _buttonscript.OriginHolder = TileHolder_bottomenvir;
-          _buttonscript.MapUI = MapUIScript;
-          _buttonscript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
-          _buttonscript.MyImage = _image;
-          _button.onClick.AddListener(() => _buttonscript.Clicked());
-          GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).ButtonScript = _buttonscript;
-
-          _image.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).Interactable;
-          _button.interactable = false;
-          break;
-        case false:
-          _tile.transform.SetParent(TileHolder_topenvir);
-          GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).ButtonScript.TopEnvirImage = _image;
-          _image.color = MapUIScript.DisableColor;
-          break;
-      }
-      _rect.sizeDelta = _cellsize;
-      _rect.position = new Vector3(pos.x, pos.y,_rect.position.z);
-      _tile.transform.localScale = Vector3.one;
-      _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition3D.x, _rect.anchoredPosition3D.y, 0.0f);
-      GameManager.Instance.MyGameData.MyMapData.Tile(coordinate).Rect = _rect;
+      _settlementrectlist[j].SetParent(_cityholder.transform);
     }
+    MapUIScript.CityIcon=_cityholder;
 
   }
 
-    /// <summary>
-    /// startpos에서 dir(0~6) 방향 1칸 타일 좌표 반환
-    /// </summary>
-    /// <param name="startpos"></param>
-    /// <param name="dir"></param>
-    /// <returns></returns>
-    public Vector2Int GetNextPos(Vector2Int startpos,int dir)
+  /// <summary>
+  /// startpos에서 dir(0~6) 방향 1칸 타일 좌표 반환
+  /// </summary>
+  /// <param name="startpos"></param>
+  /// <param name="dir"></param>
+  /// <returns></returns>
+  public Vector2Int GetNextPos(Vector2Int startpos,int dir)
     {
         bool _iseven = startpos.y % 2 == 0;  //startpos의 y가 짝수인지 판별
         Vector2Int _modify=new Vector2Int();

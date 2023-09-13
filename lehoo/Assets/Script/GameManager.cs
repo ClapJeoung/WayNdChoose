@@ -283,8 +283,8 @@ public class GameManager : MonoBehaviour
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
-    Dictionary<string, TextData> _temp = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
-    foreach (var _data in _temp)
+    Dictionary<string, TextData> _textdatas = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
+    foreach (var _data in _textdatas)
     {
       string _texttemp = _data.Value.TEXT;
       if (_texttemp.Contains("\\n")) _texttemp = _texttemp.Replace("\\n", "\n");
@@ -292,33 +292,44 @@ public class GameManager : MonoBehaviour
       TextDic.Add(_data.Value.ID, _data.Value.TEXT);
     }
 
-    Dictionary<string, EventJsonData> _eventjson = new Dictionary<string, EventJsonData>();
-    _eventjson = JsonConvert.DeserializeObject<Dictionary<string, EventJsonData>>(NormalEventData.text);
-    foreach (var _data in _eventjson) EventHolder.ConvertData_Normal(_data.Value);
-    //이벤트 Json -> EventHolder
-
-    Dictionary<string, FollowEventJsonData> _followeventjson = new Dictionary<string, FollowEventJsonData>();
-    _followeventjson = JsonConvert.DeserializeObject<Dictionary<string, FollowEventJsonData>>(FollowEventData.text);
-    foreach (var _data in _followeventjson) EventHolder.ConvertData_Follow(_data.Value);
-    //연계 이벤트 Json -> EventHolder
-
-    Dictionary<string, QuestEventDataJson> _questeventjson = new Dictionary<string, QuestEventDataJson>();
-    _questeventjson = JsonConvert.DeserializeObject<Dictionary<string, QuestEventDataJson>>(QuestEventData.text);
-    foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
-    //퀘스트 Json -> EventHolder
-    if (EventHolder.Quest_Wolf == null)EventHolder.Quest_Wolf = new QuestHolder_Wolf();
-
-
-
-    Dictionary<string, ExperienceJsonData> _expjson = new Dictionary<string, ExperienceJsonData>();
-    _expjson = JsonConvert.DeserializeObject<Dictionary<string, ExperienceJsonData>>(EXPData.text);
-    foreach (var _data in _expjson)
+    if (NormalEventData != null)
     {
-      Experience _exp = _data.Value.ReturnEXPClass();
-      ExpDic.Add(_data.Value.ID, _exp);
-      if(_exp.ExpType.Equals(ExpTypeEnum.Mad))MadExpDic.Add(_data.Value.ID, _exp);
+      Dictionary<string, EventJsonData> _eventjson = new Dictionary<string, EventJsonData>();
+      _eventjson = JsonConvert.DeserializeObject<Dictionary<string, EventJsonData>>(NormalEventData.text);
+      foreach (var _data in _eventjson) EventHolder.ConvertData_Normal(_data.Value);
+      //이벤트 Json -> EventHolder
     }
-    //경험 Json -> EXPDic
+
+    if (FollowEventData != null)
+    {
+      Dictionary<string, FollowEventJsonData> _followeventjson = new Dictionary<string, FollowEventJsonData>();
+      _followeventjson = JsonConvert.DeserializeObject<Dictionary<string, FollowEventJsonData>>(FollowEventData.text);
+      foreach (var _data in _followeventjson) EventHolder.ConvertData_Follow(_data.Value);
+      //연계 이벤트 Json -> EventHolder
+    }
+
+    if (QuestEventData != null)
+    {
+      Dictionary<string, QuestEventDataJson> _questeventjson = new Dictionary<string, QuestEventDataJson>();
+      _questeventjson = JsonConvert.DeserializeObject<Dictionary<string, QuestEventDataJson>>(QuestEventData.text);
+      foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
+      //퀘스트 Json -> EventHolder
+      if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Quest0", QuestType.Cult);
+    }
+
+
+    if (EXPData != null)
+    {
+      Dictionary<string, ExperienceJsonData> _expjson = new Dictionary<string, ExperienceJsonData>();
+      _expjson = JsonConvert.DeserializeObject<Dictionary<string, ExperienceJsonData>>(EXPData.text);
+      foreach (var _data in _expjson)
+      {
+        Experience _exp = _data.Value.ReturnEXPClass();
+        ExpDic.Add(_data.Value.ID, _exp);
+        if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MadExpDic.Add(_data.Value.ID, _exp);
+      }
+      //경험 Json -> EXPDic
+    }
 
   }//각종 Json 가져와서 변환
   public void SaveData()
@@ -337,7 +348,7 @@ public class GameManager : MonoBehaviour
     {
       MyGameData.Gold -= MyGameData.SettleRestCost_Gold;
     }
-    switch (MyGameData.CurrentSettlement.Type)
+    switch (MyGameData.CurrentSettlement.SettlementType)
     {
       case SettlementType.Village:
         MyGameData.MovePoint += ConstValues.RestMovePoint_Village;
@@ -356,15 +367,15 @@ public class GameManager : MonoBehaviour
 
     switch (MyGameData.QuestType)
     {
-      case QuestType.Wolf:
-        if (MyGameData.Quest_Wolf_Cult_TokenedSectors[sectortype] == 0)
+      case QuestType.Cult:
+        if (MyGameData.Quest_Cult_Sabbat_TokenedSectors[sectortype] == 0)
         {
-          MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_TokenSector;
-          MyGameData.Quest_Wolf_Cult_TokenedSectors[sectortype] = ConstValues.Quest_Wolf_TokenDuration;
+          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Sabbat_Progress_TokenSector;
+          MyGameData.Quest_Cult_Sabbat_TokenedSectors[sectortype] = ConstValues.Quest_Wolf_TokenDuration;
         }
         else
         {
-          MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_NoTokenSector;
+          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Sabbat_Progress_NoTokenSector;
         }
         break;
     }
@@ -396,15 +407,15 @@ public class GameManager : MonoBehaviour
 
     switch (MyGameData.QuestType)
     {
-      case QuestType.Wolf:
+      case QuestType.Cult:
         if (MyGameData.CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
         {
-          if (MyGameData.Quest_Wolf_Phase > 0)
+          if (MyGameData.Quest_Cult_Phase > 0)
           {
-            switch (MyGameData.Quest_Wolf_Type)
+            switch (MyGameData.Quest_Cult_Type)
             {
               case 0:
-                MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_EventClear;
+                MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Ritual_Progress_EventClear;
                 break;
               case 1:
                 break;
@@ -441,15 +452,15 @@ public class GameManager : MonoBehaviour
     }
     switch (MyGameData.QuestType)
     {
-      case QuestType.Wolf:
+      case QuestType.Cult:
         if (MyGameData.CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
         {
-          if (MyGameData.Quest_Wolf_Phase > 0)
+          if (MyGameData.Quest_Cult_Phase > 0)
           {
-            switch (MyGameData.Quest_Wolf_Type)
+            switch (MyGameData.Quest_Cult_Type)
             {
               case 0:
-                MyGameData.Quest_Wolf_Progress += ConstValues.Quest_Wolf_Cult_Progress_EventFail;
+                MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Ritual_Progress_EventFail;
                 break;
               case 1:
                 break;
@@ -580,7 +591,7 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.UpdateMap_SetPlayerPos(MyGameData.Coordinate);
     switch (MyGameData.QuestType)
     {
-      case QuestType.Wolf:UIManager.Instance.QuestUI_Wolf.OpenUI_Prologue((QuestHolder_Wolf)MyGameData.CurrentQuestData); break;
+      case QuestType.Cult: UIManager.Instance.QuestUI_Cult.OpenUI_Prologue((QuestHolder_Cult)MyGameData.CurrentQuestData); break;
     }
   }
   /// <summary>
@@ -662,14 +673,14 @@ public class GameManager : MonoBehaviour
 
     switch (MyGameData.QuestType)
     {
-      case QuestType.Wolf:
-        if (MyGameData.Quest_Wolf_Phase == 0)
+      case QuestType.Cult:
+        if (MyGameData.Quest_Cult_Phase == 0)
         {
           EventManager.Instance.SetQuestEvent_Wolf_Searching();
         }//탐문 단계
-        else if (MyGameData.Quest_Wolf_Phase == 1)
+        else if (MyGameData.Quest_Cult_Phase == 1)
         {
-          switch (MyGameData.Quest_Wolf_Type)
+          switch (MyGameData.Quest_Cult_Type)
           {
             case 0:
               break;

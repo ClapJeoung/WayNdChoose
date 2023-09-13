@@ -33,9 +33,6 @@ public class ImageHolder : ScriptableObject
   public Sprite CityIcon_white = null;
   public List<Sprite> CityIllust=new List<Sprite>();               //성채 일러스트
   [Space(10)]
-  public Sprite UnknownTheme = null;
-  public Sprite UnknownExp = null;
-  [Space(10)]
   public Sprite SkillIllust_Conversation = null;
   public Sprite SkillIllust_Force = null, SkillIllust_Wild = null, SkillIllust_Intelligence = null;
   [Space(10)]
@@ -60,24 +57,30 @@ public class ImageHolder : ScriptableObject
     else return TendencyIllust_Head[level + 2];
   }
   [Space(10)]
-  public Sprite TendencyIllust_Rational = null;
-  public Sprite TendencyIllust_Physical = null, TendencyIllust_Mental = null, TendencyIllust_Material = null;
-  [Space(10)]
   public Sprite ThemeIcon_Conversation = null;
   public Sprite ThemeIcon_Force = null;
   public Sprite ThemeIcon_Wild = null;
   public Sprite ThemeIcon_Intelligence = null;
+  public Sprite GetSkillIcon(SkillType _type)
+  {
+    switch (_type)
+    {
+      case SkillType.Conversation: return ThemeIcon_Conversation;
+      case SkillType.Force: return ThemeIcon_Force;
+      case SkillType.Wild: return ThemeIcon_Wild;
+      default: return ThemeIcon_Intelligence;
+    }
+  }
   [Space(10)]
-  public Sprite TendencySelectionIcon = null;
-  public Sprite ExpSelectionIcon = null;
-  public Sprite SkillSelectionIcon = null;
-    public Sprite NoneIllust = null;
+ // public Sprite TendencySelectionIcon = null;
+ // public Sprite ExpSelectionIcon = null;
+ // public Sprite SkillSelectionIcon = null;
   public Sprite ResidenceIcon = null;
-  public Sprite TempleIcon = null;
   public Sprite MarketPlaceIcon = null;
+  public Sprite TempleIcon = null;
   public Sprite LibraryIcon = null;
-  public Sprite TheaterIcon = null;
-  public Sprite AcademyIcon = null;
+//  public Sprite TheaterIcon = null;
+//  public Sprite AcademyIcon = null;
   public Sprite GetPlaceIcon(SectorType placetype)
   {
     switch (placetype)
@@ -86,14 +89,36 @@ public class ImageHolder : ScriptableObject
       case SectorType.Temple: return TempleIcon;
       case SectorType.Marketplace:return MarketPlaceIcon;
       case SectorType.Library:return LibraryIcon;
-      case SectorType.Theater:return TheaterIcon;
-      default:return AcademyIcon;
+  //    case SectorType.Theater:return TheaterIcon;
+    //  default:return AcademyIcon;
     }
+    return null;
   }
   [Space(10)]
+
     public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
+  public Sprite GetRandomMainIllust(Sprite lastillust)
+  {
+    Sprite _spr = Random.Range(0, 2).Equals(0) ? EventIllust[Random.Range(0, EventIllust.Count)] : EXPIllust[Random.Range(0, EXPIllust.Count)];
+    while (_spr == lastillust) _spr = Random.Range(0, 2).Equals(0) ? EventIllust[Random.Range(0, EventIllust.Count)] : EXPIllust[Random.Range(0, EXPIllust.Count)];
+    return _spr;
+  }//대문에 넣을 일러스트 무작위로 전달
+  [Space(5)]
+  public Sprite DefaultIllust = null;                                 //빈 일러스트
+  public Sprite DefaultIcon = null;
+  public Sprite NoGoldIllust = null;
+  public Sprite Transparent = null;
+  [Space(10)]
   public List<Sprite> EndingIllusts=new List<Sprite>();//엔딩 일러스트
+  public Sprite GetEndingIllust(string index)
+  {
+    foreach (var _temp in EndingIllusts)
+      if (_temp.name.Equals(index)) return _temp;
+
+    return DefaultIllust;
+  }
+  [Space(10)]
   public Sprite QuestIcon_Cult = null;
   public Sprite QuestIcon_Hideout_Idle = null;
   public Sprite QuestIcon_Hideout_Finish = null;
@@ -106,7 +131,7 @@ public class ImageHolder : ScriptableObject
         List<Sprite> _targetlist = new List<Sprite>();
         switch (type)
         {
-            case QuestType.Wolf:_targetlist = QuestIllust_Wolf;break;
+            case QuestType.Cult:_targetlist = QuestIllust_Wolf;break;
         }
         foreach(var _illust in _targetlist)
         {
@@ -115,25 +140,9 @@ public class ImageHolder : ScriptableObject
         Debug.Log($"{id} 이미지 없음");
         return DefaultIllust;
     }
-  public Sprite GetEndingIllust(string index)
-  {
-    foreach (var _temp in EndingIllusts)
-      if (_temp.name.Equals(index)) return _temp;
-
-    return DefaultIllust;
-  }
-  public Sprite GetRandomMainIllust(Sprite lastillust)
-  {
-    Sprite _spr=Random.Range(0,2).Equals(0)?EventIllust[Random.Range(0,EventIllust.Count)]:EXPIllust[Random.Range(0,EXPIllust.Count)];
-    while(_spr==lastillust) _spr = Random.Range(0, 2).Equals(0) ? EventIllust[Random.Range(0, EventIllust.Count)] : EXPIllust[Random.Range(0, EXPIllust.Count)];
-    return _spr;
-  }//대문에 넣을 일러스트 무작위로 전달
-  public Sprite NoGoldIllust = null;
     public Sprite EmptyLongExpIcon = null;
     public Sprite EmptyShortExpIcon = null;
-  public Sprite DefaultIllust = null;                                 //빈 일러스트
-  public Sprite DefaultIcon = null;
-    [Space(10)]
+  [Space(10)]
     public Sprite SpringIcon_active = null;
   public Sprite SpringIcon_deactive = null;
   public Sprite SummerIcon_active = null;
@@ -152,6 +161,7 @@ public class ImageHolder : ScriptableObject
   public Sprite GoldIcon = null;
   public Sprite GoldIncreaseIcon = null;
   public Sprite GoldDecreaseIcon = null;
+  public Sprite UnknownExpRewardIcon = null;
   [Space(10)]
   public Sprite DisComfort = null;
   public Sprite MadnessIdle = null;
@@ -180,6 +190,19 @@ public class ImageHolder : ScriptableObject
   public Sprite SelectionBackground_physical = null;
   public Sprite SelectionBackground_mental = null;
   public Sprite SelectionBackground_material = null;
+  public Sprite SelectionBackground(TendencyTypeEnum tendencytype, bool dir)
+  {
+    switch (tendencytype)
+    {
+      case TendencyTypeEnum.Body:
+        if (dir.Equals(false)) return SelectionBackground_rational;
+        else return SelectionBackground_physical;
+      case TendencyTypeEnum.Head:
+        if (dir.Equals(false)) return SelectionBackground_mental;
+        else return SelectionBackground_material;
+      default: return SelectionBackground_none;
+    }
+  }
   [Space(10)]
   public Sprite[] NullEnvirIllust=new Sprite[0];
   public Sprite[] RiverEnvirIllust=null;
@@ -187,21 +210,6 @@ public class ImageHolder : ScriptableObject
   public Sprite[] HighlandEnvirIllust = null;
   public Sprite[] MountainEnvirIllust = null;
   public Sprite[] SeaEnvirIllust = null;
-  [Space(10)]
-  public Sprite RiverTile = null;
-  public Sprite ForestTile=null,HighlandTile=null,MountainTile=null,SeaTile=null;
-  public Sprite GetEnvirTile(EnvironmentType envir)
-  {
-    switch (envir)
-    {
-      case EnvironmentType.River: return RiverTile;
-      case EnvironmentType.Forest: return ForestTile;
-      case EnvironmentType.Highland: return HighlandTile;
-      case EnvironmentType.Mountain: return MountainTile;
-      case EnvironmentType.Sea: return SeaTile;
-      default: return DefaultIcon;
-    }
-  }
   public Sprite GetEnvirBackground(EnvironmentType envir)
   {
     switch (envir)
@@ -220,27 +228,19 @@ public class ImageHolder : ScriptableObject
         return NullEnvirIllust[GameManager.Instance.MyGameData.Turn];
     }
   }
-  public Sprite SelectionBackground (TendencyTypeEnum tendencytype,bool dir)
+  [Space(10)]
+  public Sprite RiverTile = null;
+  public Sprite ForestTile=null,HighlandTile=null,MountainTile=null,SeaTile=null;
+  public Sprite GetEnvirTile(EnvironmentType envir)
   {
-    switch (tendencytype)
+    switch (envir)
     {
-      case TendencyTypeEnum.Body:
-        if (dir.Equals(false)) return SelectionBackground_rational;
-        else return SelectionBackground_physical;
-      case TendencyTypeEnum.Head:
-        if (dir.Equals(false)) return SelectionBackground_mental;
-        else return SelectionBackground_material;
-      default:return SelectionBackground_none;
-    }
-  }
-  public Sprite GetSkillIcon(SkillType _type)
-  {
-    switch (_type)
-    {
-      case SkillType.Conversation:return ThemeIcon_Conversation;
-      case SkillType.Force:return ThemeIcon_Force;
-        case SkillType.Wild:return ThemeIcon_Wild;
-      default:return ThemeIcon_Intelligence;
+      case EnvironmentType.River: return RiverTile;
+      case EnvironmentType.Forest: return ForestTile;
+      case EnvironmentType.Highland: return HighlandTile;
+      case EnvironmentType.Mountain: return MountainTile;
+      case EnvironmentType.Sea: return SeaTile;
+      default: return DefaultIcon;
     }
   }
   public Sprite GetSkillIllust(SkillType _type)

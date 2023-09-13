@@ -17,7 +17,7 @@ public class UI_Main : UI_default
   private IEnumerator showimage()
   {
     float _time = 0.0f, _targettime = ImageTime;
-    if(GameManager.Instance.ImageHolder.NoneIllust) MainImage_A.sprite =GameManager.Instance.ImageHolder.GetRandomMainIllust(null);
+    if(GameManager.Instance.ImageHolder.Transparent) MainImage_A.sprite =GameManager.Instance.ImageHolder.GetRandomMainIllust(null);
     MainImageGroup_A.alpha = 0.0f;
     MainImageGroup_B.alpha = 0.0f;
     while (_time < _targettime)
@@ -87,7 +87,7 @@ public class UI_Main : UI_default
     if (QuitText.text == "") QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
     if (StartNewGameText.text == "") StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
     if (BackToMainText.text == "") BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
-    if (Quest_0_Text.text == "") Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Wolf.QuestName;
+    if (Quest_0_Text.text == "") Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Cult.QuestName;
     ShowImage = showimage();
     SetupMain();
   }
@@ -145,7 +145,7 @@ public class UI_Main : UI_default
     StartNewGameButton.interactable = true;
     yield return null;
   }
-  private QuestType SelectedQuest = QuestType.Wolf;
+  private QuestType SelectedQuest = QuestType.Cult;
   public void StartNewGame()//버튼으로 새 게임 시작 버튼 누르는거
   {
     UIManager.Instance.AddUIQueue(startscenario());
@@ -215,7 +215,7 @@ public class UI_Main : UI_default
   }
   private IEnumerator openscenario()
   {
-    QuestIllust.sprite = GameManager.Instance.ImageHolder.NoneIllust;
+    QuestIllust.sprite = GameManager.Instance.ImageHolder.Transparent;
         QuestDescription.text = "";
  //   StartNewGameButton.interactable = false;
     BackToMainButton.interactable = false;
@@ -246,7 +246,7 @@ public class UI_Main : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("questdescription").Rect, GetPanelRect("questdescription").InsidePos, GetPanelRect("questdescription").OutisdePos, MainUIOpenTime, UIManager.Instance.UIPanelOpenCurve));
     yield return LittleWait;
     yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("questillust").Rect, GetPanelRect("questillust").InsidePos, GetPanelRect("questillust").OutisdePos, MainUIOpenTime, UIManager.Instance.UIPanelOpenCurve));
-    QuestIllust.sprite = GameManager.Instance.ImageHolder.NoneIllust;
+    QuestIllust.sprite = GameManager.Instance.ImageHolder.Transparent;
     QuestDescription.text = "";
   }
   public void QuitGame()

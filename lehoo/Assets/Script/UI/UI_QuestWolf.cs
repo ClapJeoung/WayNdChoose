@@ -13,7 +13,7 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private float UIMoveOutTime = 0.4f;//Rect 움직이는거
   [SerializeField] private float FadeInTime = 1.0f;
   [SerializeField] private float FadeOutTime = 0.4f;  //이미지,텍스트 투명도
-  private QuestHolder_Wolf QuestHolder = null;
+  private QuestHolder_Cult QuestHolder = null;
 
   #region 프롤로그
   [Space(5)]
@@ -27,7 +27,7 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private Button Prologue_Button_B = null;
   [SerializeField] private TextMeshProUGUI Prologue_ButtonText_B = null;
   public int CurrentPrologueIndex = 0;
-  public void OpenUI_Prologue(QuestHolder_Wolf wolf)
+  public void OpenUI_Prologue(QuestHolder_Cult wolf)
   {
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
     CurrentPrologueIndex = 0;
@@ -289,7 +289,7 @@ public class UI_QuestWolf : UI_default
     Sprite _illust = null;
     string _description = "";
 
-    switch (GameManager.Instance.MyGameData.Quest_Wolf_Progress)
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Progress)
     {
       case 0:
         _illust = QuestHolder.Searching_0_Illust;
@@ -300,7 +300,7 @@ public class UI_QuestWolf : UI_default
         _description = QuestHolder.Searching_1_Description;
         break;
     }
-    GameManager.Instance.MyGameData.Quest_Wolf_Progress++;
+    GameManager.Instance.MyGameData.Quest_Cult_Progress++;
 
     Searching_IllustImage.sprite = _illust;
     Searching_Description.text = _description;
@@ -316,7 +316,7 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_searching").Rect, GetPanelRect("illust_searching").OutisdePos, GetPanelRect("illust_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_searching").Rect, GetPanelRect("description_searching").OutisdePos, GetPanelRect("description_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
 
-    if (GameManager.Instance.MyGameData.Quest_Wolf_Progress == 1)
+    if (GameManager.Instance.MyGameData.Quest_Cult_Progress == 1)
     {
       StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").OutisdePos, GetPanelRect("nextbutton_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
       if (Searching_NextButton.interactable == false) Searching_NextButton.interactable = true;
@@ -341,10 +341,10 @@ public class UI_QuestWolf : UI_default
   #region 선택
   [Space(5)]
   [SerializeField] private TextMeshProUGUI Wanted_Description = null;
-  [SerializeField] private CanvasGroup Wanted_Cult_Group = null;
-  [SerializeField] private TextMeshProUGUI Wanted_Cult_Description = null;
-  [SerializeField] private CanvasGroup Wanted_Wolf_Group = null;
-  [SerializeField] private TextMeshProUGUI Wanted_Wolf_Description = null;
+  [SerializeField] private CanvasGroup Wanted_Sabbat_Group = null;
+  [SerializeField] private TextMeshProUGUI Wanted_Sabbat_Description = null;
+  [SerializeField] private CanvasGroup Wanted_Ritual_Group = null;
+  [SerializeField] private TextMeshProUGUI Wanted_Ritual_Description = null;
   [Space(10)]
   [SerializeField] private Image WantedResult_Icon = null;
   [SerializeField] private Image WantedResult_Illust = null;
@@ -358,18 +358,18 @@ public class UI_QuestWolf : UI_default
   }
   private IEnumerator nexttowanted()
   {
-    if (Wanted_Cult_Group.alpha == 0.0f)
+    if (Wanted_Sabbat_Group.alpha == 0.0f)
     {
-      Wanted_Cult_Group.alpha = 1.0f;
-      Wanted_Cult_Group.interactable = true;
-      Wanted_Cult_Group.blocksRaycasts = true;
-      Wanted_Wolf_Group.alpha = 1.0f;
-      Wanted_Wolf_Group.interactable = true;
-      Wanted_Wolf_Group.blocksRaycasts = true;
+      Wanted_Sabbat_Group.alpha = 1.0f;
+      Wanted_Sabbat_Group.interactable = true;
+      Wanted_Sabbat_Group.blocksRaycasts = true;
+      Wanted_Ritual_Group.alpha = 1.0f;
+      Wanted_Ritual_Group.interactable = true;
+      Wanted_Ritual_Group.blocksRaycasts = true;
     }
     Wanted_Description.text = QuestHolder.Wanted_Description;
-    Wanted_Cult_Description.text = QuestHolder.Wanted_Description_Cult;
-    Wanted_Wolf_Description.text = QuestHolder.Wanted_Description_Wolf;
+    Wanted_Sabbat_Description.text = QuestHolder.Wanted_Description_Sabbat;
+    Wanted_Ritual_Description.text = QuestHolder.Wanted_Description_Ritual;
     WaitForSeconds _wait = new WaitForSeconds(0.3f);
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").InsidePos, GetPanelRect("nextbutton_searching").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
@@ -390,8 +390,8 @@ public class UI_QuestWolf : UI_default
   }
   private IEnumerator selectcultline()
   {
-    GameManager.Instance.MyGameData.Quest_Wolf_Phase = 1;
-    GameManager.Instance.MyGameData.Quest_Wolf_Type = 0;
+    GameManager.Instance.MyGameData.Quest_Cult_Phase = 1;
+    GameManager.Instance.MyGameData.Quest_Cult_Type = 0;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").OutisdePos, GetPanelRect("wanted_description").InsidePos, UIMoveOutTime, UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.3f);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_wolf").Rect, GetPanelRect("wanted_wolf").InsidePos, GetPanelRect("wanted_wolf").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
@@ -400,8 +400,8 @@ public class UI_QuestWolf : UI_default
     yield return new WaitForSeconds(1.0f);
 
     WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
-    WantedResult_Illust.sprite = QuestHolder.Wanted_Cult_Illust;
-    WantedResult_Description.text = QuestHolder.Wanted_Cult_Description;
+    WantedResult_Illust.sprite = QuestHolder.Wanted_Sabbat_Illust;
+    WantedResult_Description.text = QuestHolder.Wanted_Sabbat_Description;
     WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
@@ -415,8 +415,8 @@ public class UI_QuestWolf : UI_default
   }
   private IEnumerator selectwolfline()
   {
-    GameManager.Instance.MyGameData.Quest_Wolf_Phase = 1;
-    GameManager.Instance.MyGameData.Quest_Wolf_Type = 1;
+    GameManager.Instance.MyGameData.Quest_Cult_Phase = 1;
+    GameManager.Instance.MyGameData.Quest_Cult_Type = 1;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").OutisdePos, GetPanelRect("wanted_description").InsidePos, UIMoveOutTime, UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.3f);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_cult").Rect, GetPanelRect("wanted_cult").InsidePos, GetPanelRect("wanted_cult").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
@@ -425,8 +425,8 @@ public class UI_QuestWolf : UI_default
     yield return new WaitForSeconds(1.0f);
 
     WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
-    WantedResult_Illust.sprite = QuestHolder.Wanted_Wolf_Illust;
-    WantedResult_Description.text = QuestHolder.Wanted_Wolf_Description;
+    WantedResult_Illust.sprite = QuestHolder.Wanted_Ritual_Illust;
+    WantedResult_Description.text = QuestHolder.Wanted_Ritual_Description;
     WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));

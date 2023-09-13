@@ -7,7 +7,7 @@ public enum BottomEnvirType
  NULL, Land,River,Sea,Source, Beach,RiverBeach
 }
 public enum TopEnvirType {NULL, Forest,Mountain,Highland }
-public enum LandscapeType { Outer,Settlement}
+public enum LandmarkType { Outer,Village,Town,City,RitualProgress,Ritual}
 public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
 public class TileData
 {
@@ -15,10 +15,25 @@ public class TileData
   public BottomEnvirType BottomEnvir = BottomEnvirType.NULL;
   public TopEnvirType TopEnvir = TopEnvirType.NULL;
   public int Rotate = 0;
-  public LandscapeType LandScape = LandscapeType.Outer;
+  public LandmarkType Landmark = LandmarkType.Outer;
   public Settlement TileSettle = null;
   public TileSpriteType TopEnvirSprite = TileSpriteType.NULL;
   public TileSpriteType BottomEnvirSprite= TileSpriteType.Sea;
+  public TileSpriteType landmarkSprite
+  {
+    get 
+    {
+      switch (Landmark)
+      {
+        case LandmarkType.Village:return TileSpriteType.Village;
+          case LandmarkType.Town:return TileSpriteType.Town;
+          case LandmarkType.City:return TileSpriteType.City;
+          case LandmarkType.Ritual:return TileSpriteType.Ritual;
+        case LandmarkType.RitualProgress:return TileSpriteType.RitualProgress;
+      }
+      return TileSpriteType.NULL;
+    }
+  }
   public RectTransform Rect = null;
   public TileButtonScript ButtonScript = null;
 

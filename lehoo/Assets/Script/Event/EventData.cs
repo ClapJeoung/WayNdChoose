@@ -22,7 +22,7 @@ public class EventHolder
     }
     return null;
   }
-  public QuestHolder_Wolf Quest_Wolf = null;
+  public QuestHolder_Cult Quest_Cult = null;
   private EventData defaultevent_outer = null;
   private EventData defaultevent_settlement = null;
   public EventData DefaultEvent_Outer
@@ -73,7 +73,7 @@ public class EventHolder
   {
     switch (type)
     {
-      case QuestType.Wolf:return Quest_Wolf;
+      case QuestType.Cult: return Quest_Cult;
     }
     return null;
   }
@@ -146,8 +146,9 @@ public class EventHolder
               case RewardTarget.Skill: Data.SuccessDatas[0].Reward_SkillType = (SkillType)int.Parse(_data.Reward_Info); break;
             }
 
-            Data.SelectionDatas[0].SelectionSuccesRewards.Add(Data.SuccessDatas[0].Reward_Target);
-
+            Data.SelectionDatas[0].SelectionSuccesReward=Data.SuccessDatas[0].Reward_Target;
+            if (Data.SuccessDatas[0].Reward_Target == RewardTarget.Skill)
+              Data.SelectionDatas[0].SelectionRewardSkillType = Data.SuccessDatas[0].Reward_SkillType;
           }
 
           break;
@@ -210,7 +211,9 @@ public class EventHolder
               case RewardTarget.Skill: Data.SuccessDatas[i].Reward_SkillType = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
             }
 
-            Data.SelectionDatas[i].SelectionSuccesRewards.Add(Data.SuccessDatas[i].Reward_Target);
+            Data.SelectionDatas[i].SelectionSuccesReward=(Data.SuccessDatas[i].Reward_Target);
+            if (Data.SuccessDatas[i].Reward_Target == RewardTarget.Skill)
+              Data.SelectionDatas[i].SelectionRewardSkillType = Data.SuccessDatas[i].Reward_SkillType;
           }
         }
 
@@ -252,21 +255,21 @@ public class EventHolder
   }
   public void ConvertData_Quest(QuestEventDataJson _data)
   {
-    if (Quest_Wolf == null) Quest_Wolf = new QuestHolder_Wolf();
+    if (Quest_Cult == null) Quest_Cult = new QuestHolder_Cult("Quest0",QuestType.Cult);
 
 
     switch ((QuestType) int.Parse(_data.QuestType))
     {
-      case QuestType.Wolf:
-        ConvertData_Quest_wolf(_data);
+      case QuestType.Cult:
+        ConvertData_Quest_cult(_data);
         break;
     }
     
   }//퀘스트 디자인 기획 끝나고 추가해야함
-  public void ConvertData_Quest_wolf(QuestEventDataJson jsondata)
+  public void ConvertData_Quest_cult(QuestEventDataJson jsondata)
   {
     QuestEventData_Wolf eventdata = ReturnEventDataDefault<QuestEventData_Wolf>(jsondata);
-    eventdata.Type = QuestType.Wolf;
+    eventdata.Type = QuestType.Cult;
     switch (int.Parse(jsondata.QuestEventType))
     {
       case 0:
@@ -291,58 +294,58 @@ public class EventHolder
       //  Quest_Wolf.Event_Wanted = eventdata;
         break;
       case 7:
-        Quest_Wolf.Events_Public_Common.Add(eventdata);
+        Quest_Cult.Events_Public_Common.Add(eventdata);
         break;
       case 8:
-        Quest_Wolf.Events_Public_Final.Add(eventdata);
+        Quest_Cult.Events_Public_Final.Add(eventdata);
         break;
       case 9:
-        Quest_Wolf.Events_Cult_0.Add(eventdata);
+        Quest_Cult.Events_Cult_0.Add(eventdata);
         break;
       case 10:
-        Quest_Wolf.Event_Cult_Hideout_0 = eventdata;
+        Quest_Cult.Event_Cult_Hideout_0 = eventdata;
         break;
       case 11:
-        Quest_Wolf.Events_Cult_1.Add(eventdata);
+        Quest_Cult.Events_Cult_1.Add(eventdata);
         break;
       case 12:
-        Quest_Wolf.Event_Cult_Hideout_1 = eventdata;
+        Quest_Cult.Event_Cult_Hideout_1 = eventdata;
         break;
       case 13:
-        Quest_Wolf.Events_Cult_2.Add(eventdata);
+        Quest_Cult.Events_Cult_2.Add(eventdata);
         break;
       case 14:
-        Quest_Wolf.Event_Cult_Hideout_2 = eventdata;
+        Quest_Cult.Event_Cult_Hideout_2 = eventdata;
         break;
       case 15:
-        Quest_Wolf.Events_Cult_Final.Add(eventdata);
+        Quest_Cult.Events_Cult_Final.Add(eventdata);
         break;
       case 16:
-        Quest_Wolf.Event_Cult_Hideout_Final= eventdata;
+        Quest_Cult.Event_Cult_Hideout_Final= eventdata;
         break;
       case 17:
-        Quest_Wolf.Events_Wolf_0.Add(eventdata);
+        Quest_Cult.Events_Wolf_0.Add(eventdata);
         break;
       case 18:
-        Quest_Wolf.Event_Wolf_Encounter_0 = eventdata;
+        Quest_Cult.Event_Wolf_Encounter_0 = eventdata;
         break;
       case 19:
-        Quest_Wolf.Events_Wolf_1.Add(eventdata);
+        Quest_Cult.Events_Wolf_1.Add(eventdata);
         break;
       case 20:
-        Quest_Wolf.Event_Wolf_Encounter_1= eventdata;
+        Quest_Cult.Event_Wolf_Encounter_1= eventdata;
         break;
       case 21:
-        Quest_Wolf.Events_Wolf_2.Add(eventdata);
+        Quest_Cult.Events_Wolf_2.Add(eventdata);
         break;
       case 22:
-        Quest_Wolf.Event_Wolf_Encounter_2= eventdata;
+        Quest_Cult.Event_Wolf_Encounter_2= eventdata;
         break;
       case 23:
-        Quest_Wolf.Events_Wolf_Final.Add(eventdata);
+        Quest_Cult.Events_Wolf_Final.Add(eventdata);
         break;
       case 24:
-        Quest_Wolf.Event_Wolf_Encounter_Final= eventdata;
+        Quest_Cult.Event_Wolf_Encounter_Final= eventdata;
         break;
     }
   }
@@ -419,8 +422,8 @@ public class EventHolder
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
-      case QuestType.Wolf:
-        foreach (var _questevent in Quest_Wolf.GetAvailableEvents())
+      case QuestType.Cult:
+        foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
           if (_questevent.AppearSpace != EventAppearType.Outer) continue;
           _allevents.Add(_questevent);
@@ -559,8 +562,8 @@ public class EventHolder
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
-      case QuestType.Wolf:
-        foreach(var _questevent in Quest_Wolf.GetAvailableEvents())
+      case QuestType.Cult:
+        foreach(var _questevent in Quest_Cult.GetAvailableEvents())
         {
           if (_questevent.RightSpace(settletype) == false) continue;
           _allevents.Add(_questevent);
@@ -731,7 +734,7 @@ public class EventHolder
 }
 public class TileInfoData
 {
-  public LandscapeType LandScape = LandscapeType.Outer;
+  public LandmarkType Landmark = LandmarkType.Outer;
   public Settlement Settlement=null; //정착지 타입
   public List<EnvironmentType> EnvirList = new List<EnvironmentType>();//주위 환경 타입
   
@@ -882,7 +885,8 @@ public class SelectionData
 
   public StatusType SelectionPayTarget = StatusType.HP;                       //Pay일때 사용
   public List<SkillType> SelectionCheckSkill = new List<SkillType>();         //Check_Single,Check_Multy일때 사용
-  public List<RewardTarget> SelectionSuccesRewards=new List<RewardTarget>();
+  public RewardTarget SelectionSuccesReward= RewardTarget.None;
+  public SkillType SelectionRewardSkillType = SkillType.Conversation;
 }    
 
 public class FailureData
@@ -1010,62 +1014,80 @@ public class QuestEventData_Wolf : EventDataDefulat
   public QuestType Type;
   public QuestEnum_Wolf EventType;
 }
-public enum QuestType { Wolf}
-public enum QuestEnum_Wolf { None,Prologue,Starting, Public, Cult,Wolf}
+public enum QuestType { Cult}
+public enum QuestEnum_Wolf { None,Prologue,Starting, Public, Sabbat,Ritual}
 public class Quest
 {
-  public const string OriginID="";
+  public string OriginID="";
   public string QuestName { get { return GameManager.Instance.GetTextData(OriginID + "_Name_Text"); } }
   public string QuestDescription { get { return GameManager.Instance.GetTextData(OriginID + "_PreDescription_Text"); } }
-    public Sprite QuestIllust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "MainIllust"); } }
-  public QuestType Type = QuestType.Wolf;
+    public Sprite QuestIllust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(Type, OriginID + "_MainIllust"); } }
+  public QuestType Type = QuestType.Cult;
+  public Quest(string id,QuestType type)
+  {
+    OriginID = id;
+    Type = type;
+  }
 }
-public class QuestHolder_Wolf:Quest
+public class QuestHolder_Cult:Quest
 {
+  public QuestHolder_Cult(string id, QuestType type) : base(id, type)
+  {
+    OriginID = id;
+    Type = type;
+  }
   public int Progress = 0;
-  new public const string OriginID = "Quest_Wolf";
 
   public TileData[] RitualPlaces = new TileData[3];
 
   #region 프롤로그 관련
-  public Sprite Prologue_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_0_Illust"); } }
+  public Sprite Prologue_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_0_Illust"); } }
   public string Prologue_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_0_Description"); } }
 
-  public Sprite Prologue_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_1_Illust"); } }
+  public Sprite Prologue_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_1_Illust"); } }
   public string Prologue_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Description"); } }
   public string Prologue_1_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Selection_0"); } }
   public string Prologue_1_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Selection_1"); } }
  
-  public Sprite Prologue_2_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf,OriginID + "_Prologue_2_0_Illust"); } }
+  public Sprite Prologue_2_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_2_0_Illust"); } }
   public string Prologue_2_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_2_0_Description"); } }
 
-  public Sprite Prologue_2_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_2_1_Illust"); } }
+  public Sprite Prologue_2_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_2_1_Illust"); } }
   public string Prologue_2_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_2_1_Description"); } }
  
-  public Sprite Prologue_3_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_3_Illust"); } }
+  public Sprite Prologue_3_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_3_Illust"); } }
   public string Prologue_3_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Description"); } }
   public string Prologue_3_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Selection_0"); } }
   public string Prologue_3_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Selection_1"); } }
 
-  public Sprite Prologue_4_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_4_0_Illust"); } }
+  public Sprite Prologue_4_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_4_0_Illust"); } }
   public string Prologue_4_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_4_0_Description"); } }
-  public Sprite Prologue_4_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_4_1_Illust"); } }
+  public Sprite Prologue_4_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_4_1_Illust"); } }
   public string Prologue_4_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_4_1_Description"); } }
 
-  public Sprite Prologue_5_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_5_Illust"); } }
+  public Sprite Prologue_5_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_5_Illust"); } }
   public string Prologue_5_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_5_Description"); } }
-  public Sprite Prologue_6_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_6_Illust"); } }
+  public Sprite Prologue_6_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_6_Illust"); } }
   public string Prologue_6_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_6_Description"); } }
-  public Sprite Prologue_7_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_7_Illust"); } }
+  public Sprite Prologue_7_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_7_Illust"); } }
   public string Prologue_7_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_7_Description"); } }
-  public Sprite Prologue_8_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Prologue_8_Illust"); } }
+  public Sprite Prologue_8_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_8_Illust"); } }
   public string Prologue_8_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_8_Description"); } }
   #endregion
 
   #region 탐문
   public Sprite Searching_0_Illust
   {
-    get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Searching_0_Illust"); }
+    get {
+      string _seasontext = "";
+      switch (GameManager.Instance.MyGameData.Turn)
+      {
+        case 0:_seasontext = "_spring";break;
+        case 1:_seasontext = "_summer";break;
+        case 2: _seasontext = "_autumn"; break;
+        case 3: _seasontext = "_winter"; break;
+      }
+      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Searching_0_Illust"+ _seasontext); }
   }
   public string Searching_0_Description
   {
@@ -1073,7 +1095,16 @@ public class QuestHolder_Wolf:Quest
   }
   public Sprite Searching_1_Illust
   {
-    get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, OriginID + "_Searching_1_Illust"); }
+    get {
+      string _seasontext = "";
+      switch (GameManager.Instance.MyGameData.Turn)
+      {
+        case 0: _seasontext = "_spring"; break;
+        case 1: _seasontext = "_summer"; break;
+        case 2: _seasontext = "_autumn"; break;
+        case 3: _seasontext = "_winter"; break;
+      }
+          return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Searching_1_Illust"+_seasontext); }
   }
   public string Searching_1_Description
   {
@@ -1082,15 +1113,15 @@ public class QuestHolder_Wolf:Quest
   #endregion
 
   #region 선택
-  public string Wanted_Description { get { return GameManager.Instance.GetTextData("Quest_Wolf_Wanted_Description"); } }
-  public string Wanted_Description_Cult { get { return GameManager.Instance.GetTextData("Quest_Wolf_Wanted_Cult"); } }
-  public string Wanted_Description_Wolf { get { return GameManager.Instance.GetTextData("Quest_Wolf_Wanted_Wolf"); } }
+  public string Wanted_Description { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Description"); } }
+  public string Wanted_Description_Sabbat { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Sabbat"); } }
+  public string Wanted_Description_Ritual { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Ritual"); } }
 
-  public Sprite Wanted_Cult_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, "Quest_Wolf_Wanted_Cult_Illust"); } }
-  public string Wanted_Cult_Description { get { return GameManager.Instance.GetTextData("Quest_Wolf_WantedResult_Cult_Description"); } }
+  public Sprite Wanted_Sabbat_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Wanted_Sabbat_Illust"); } }
+  public string Wanted_Sabbat_Description { get { return GameManager.Instance.GetTextData("Quest0_WantedResult_Sabbat_Description"); } }
 
-  public Sprite Wanted_Wolf_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Wolf, "Quest_Wolf_Wanted_Wolf_Illust"); } }
-  public string Wanted_Wolf_Description { get { return GameManager.Instance.GetTextData("Quest_Wolf_WantedResult_Wolf_Description"); } }
+  public Sprite Wanted_Ritual_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Wanted_Ritual_Illust"); } }
+  public string Wanted_Ritual_Description { get { return GameManager.Instance.GetTextData("Quest0_WantedResult_Ritual_Description"); } }
   #endregion
 
   public List<QuestEventData_Wolf> Events_Public_Common = new List<QuestEventData_Wolf>(); //QuestEventType 7
@@ -1123,21 +1154,21 @@ public class QuestHolder_Wolf:Quest
     List<List<QuestEventData_Wolf>> _availablelists = new List<List<QuestEventData_Wolf>>();
 
     _availablelists.Add(Events_Public_Common);
-    if (GameManager.Instance.MyGameData.Quest_Wolf_Phase == 4) _availablelists.Add(Events_Public_Final);
+    if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 4) _availablelists.Add(Events_Public_Final);
 
-    switch (GameManager.Instance.MyGameData.Quest_Wolf_Type)
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Type)
     {
       case 0:
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 0) _availablelists.Add(Events_Cult_0);
-        if(GameManager.Instance.MyGameData.Quest_Wolf_Phase>1)_availablelists.Add(Events_Cult_1);
-        if(GameManager.Instance.MyGameData.Quest_Wolf_Phase>2)_availablelists.Add(Events_Cult_2);
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 3) _availablelists.Add(Events_Cult_Final);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Cult_0);
+        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 1)_availablelists.Add(Events_Cult_1);
+        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 2)_availablelists.Add(Events_Cult_2);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 3) _availablelists.Add(Events_Cult_Final);
         break;
       case 1:
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 0) _availablelists.Add(Events_Wolf_0);
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 1) _availablelists.Add(Events_Wolf_1);
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 2) _availablelists.Add(Events_Wolf_2);
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Phase > 3) _availablelists.Add(Events_Wolf_Final);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Wolf_0);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 1) _availablelists.Add(Events_Wolf_1);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 2) _availablelists.Add(Events_Wolf_2);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 3) _availablelists.Add(Events_Wolf_Final);
         break;
     }
 

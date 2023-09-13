@@ -54,7 +54,7 @@ public class UI_FollowEnding : MonoBehaviour
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, 0.4f, false));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup,0.0f,0.4f,false ));
-    IllustImage.sprite = GameManager.Instance.ImageHolder.NoneIllust;
+    IllustImage.sprite = GameManager.Instance.ImageHolder.Transparent;
     IllustRect.anchoredPosition = IllustClosePos;
     DescriptionRect.anchoredPosition = DescriptionClosePos;
   }

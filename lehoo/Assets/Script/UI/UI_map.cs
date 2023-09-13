@@ -18,7 +18,7 @@ public class UI_map : UI_default
   public GameObject GetSettleIcon(Settlement settlement)
   {
     string _originname = settlement.OriginName;
-    switch (settlement.Type)
+    switch (settlement.SettlementType)
     {
       case SettlementType.City:return CityIcon;
       case SettlementType.Town:
@@ -73,7 +73,7 @@ public class UI_map : UI_default
       {
         ActiveTileData.Add(_tile);
         _tile.ButtonScript.Button.interactable = true;
-        if (_tile.ButtonScript.TopEnvirImage != null) _tile.ButtonScript.TopEnvirImage.color= NormalColor;
+        if (_tile.ButtonScript.TopImage != null) _tile.ButtonScript.TopImage.color= NormalColor;
       }//기존 활성화 타일 목록에 없던 타일이라면 리스트에 추가하고 활성화
 
       if (_tile.TileSettle != null)
@@ -96,7 +96,7 @@ public class UI_map : UI_default
       {
         _removetiles.Add(_tile);
          _tile.ButtonScript.Button.interactable = false;
-        if (_tile.ButtonScript.TopEnvirImage != null) _tile.ButtonScript.TopEnvirImage.color = DisableColor;
+        if (_tile.ButtonScript.TopImage != null) _tile.ButtonScript.TopImage.color = DisableColor;
       }//화면에서 사라진 타일들은 비활성화 상태로 전환
     }
 
@@ -324,9 +324,9 @@ public class UI_map : UI_default
     GameManager.Instance.MyGameData.Coordinate = _endcoor;
     ResetEnableTiles();
 
-    switch (SelectedTile.LandScape)
+    switch (SelectedTile.Landmark)
     {
-      case LandscapeType.Outer:
+      case LandmarkType.Outer:
         GameManager.Instance.MyGameData.CurrentSettlement = null;
         yield return new WaitForSeconds(1.0f);
         EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
@@ -334,7 +334,9 @@ public class UI_map : UI_default
         IsOpen = false;
         break;
 
-      case LandscapeType.Settlement:
+      case LandmarkType.Village:
+      case LandmarkType.Town:
+      case LandmarkType.City:
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;
     }

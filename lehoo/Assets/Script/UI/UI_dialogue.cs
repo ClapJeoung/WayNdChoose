@@ -146,7 +146,7 @@ public class UI_dialogue : UI_default
           else if (CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
           {
             if (EventIconHolder.activeInHierarchy == false) EventIconHolder.SetActive(true);
-            if (GameManager.Instance.MyGameData.Quest_Wolf_Type == 0) EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
+            if (GameManager.Instance.MyGameData.Quest_Cult_Type == 0) EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
             else EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
           }
 
@@ -204,7 +204,7 @@ public class UI_dialogue : UI_default
           else if (CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
           {
             if (EventIconHolder.activeInHierarchy == false) EventIconHolder.SetActive(true);
-            if (GameManager.Instance.MyGameData.Quest_Wolf_Type == 0) EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
+            if (GameManager.Instance.MyGameData.Quest_Cult_Type == 0) EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
             else EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
           }
 
@@ -539,7 +539,7 @@ public class UI_dialogue : UI_default
         _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue_modified)}";
         break;
       case RewardTarget.Experience:
-        _icon = GameManager.Instance.ImageHolder.UnknownExp;
+        _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
         _name = GameManager.Instance.GetTextData("EXP_NAME");
         _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
 
@@ -744,7 +744,7 @@ public class UI_dialogue : UI_default
         }
         break;
       case PenaltyTarget.EXP:
-        Sprite _icon = GameManager.Instance.ImageHolder.UnknownExp;
+        Sprite _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
         string _name = "";
         string _description = "";
 

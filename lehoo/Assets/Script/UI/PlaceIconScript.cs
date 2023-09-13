@@ -17,8 +17,8 @@ public class PlaceIconScript : MonoBehaviour
   {
     switch (GameManager.Instance.MyGameData.QuestType)
     {
-      case QuestType.Wolf:
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Contains(MyType))
+      case QuestType.Cult:
+        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType))
         {
           MyImage.color = BlockedColor;
           if (Quest_Wolf_CultBlock.enabled == false) Quest_Wolf_CultBlock.enabled = true;
@@ -28,7 +28,7 @@ public class PlaceIconScript : MonoBehaviour
         {
           MyImage.color = IdleColor;
           if (Quest_Wolf_CultBlock.enabled == true) Quest_Wolf_CultBlock.enabled = false;
-          if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_TokenedSectors[MyType] == 0)
+          if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors[MyType] == 0)
           {
             if (Quest_Wolf_HideoutToken.enabled == false) Quest_Wolf_HideoutToken.enabled = true;
           }
@@ -44,8 +44,8 @@ public class PlaceIconScript : MonoBehaviour
   {
     switch (GameManager.Instance.MyGameData.QuestType)
     {
-      case QuestType.Wolf:
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Contains(MyType)) { MyImage.color = BlockedColor; }
+      case QuestType.Cult:
+        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
         else MyImage.color = SelectedColor;
         break;
     }
@@ -54,8 +54,8 @@ public class PlaceIconScript : MonoBehaviour
   {
   switch (GameManager.Instance.MyGameData.QuestType)
   {
-      case QuestType.Wolf:
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Contains(MyType)) { MyImage.color = BlockedColor; }
+      case QuestType.Cult:
+        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
         else MyImage.color = IdleColor;
         break;
     }

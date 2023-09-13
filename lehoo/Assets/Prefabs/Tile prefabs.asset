@@ -83,11 +83,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6b691ea0a54a6c34e956caba01a8e504, type: 3}
   RB_3_4:
   - {fileID: 21300000, guid: 8c886fe1af077954cacc963e0bc8af7e, type: 3}
-  Town:
+  Village:
   - {fileID: 21300000, guid: 0b974e1e0650c354fa7fb50e37247d7e, type: 3}
-  City:
+  Town:
   - {fileID: 21300000, guid: 49efba93604801a4fb8bca1064b63c27, type: 3}
-  Castle:
+  City:
   - {fileID: 21300000, guid: 7fecb0b14641dd94c9c495b33ff9a525, type: 3}
   Forest:
   - {fileID: 21300000, guid: e318e4d647fca0c429dcfc97ae08605f, type: 3}
@@ -95,3 +95,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b293a79b260c2eb4081bf522f8dc0626, type: 3}
   Forest_river:
   - {fileID: 21300000, guid: 2379bbc470f6862488a9eff1d5d0cd8e, type: 3}
+  RitualProgress:
+  - {fileID: 21300000, guid: f84b81a4c74f7ad41a7dc84f0b6b3ea1, type: 3}
+  Ritual:
+  - {fileID: 21300000, guid: f84b81a4c74f7ad41a7dc84f0b6b3ea1, type: 3}

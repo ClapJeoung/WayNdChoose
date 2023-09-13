@@ -49,7 +49,7 @@ public class UI_Settlement : UI_default
 
     Sprite _settlementicon = null;
     int _placecount = 0;
-    switch (CurrentSettlement.Type)
+    switch (CurrentSettlement.SettlementType)
     {
       case SettlementType.Village: _placecount = 2;_settlementicon = GameManager.Instance.ImageHolder.VillageIcon_black; break;
       case SettlementType.Town:_placecount = 3; _settlementicon = GameManager.Instance.ImageHolder.TownIcon_black; break;
@@ -131,9 +131,9 @@ public class UI_Settlement : UI_default
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
-      case QuestType.Wolf:
+      case QuestType.Cult:
         GetSectorIconScript(SelectedSector).SetSelectColor();
-        if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Contains(SelectedSector))
+        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(SelectedSector))
         {
           SectorName.text = "";
           SectorSelectDescription.text = GameManager.Instance.GetTextData("Quest_Wolf_Cult_Blocked");
@@ -168,19 +168,19 @@ public class UI_Settlement : UI_default
               break;
           }
           string _progress = "";
-          if (GameManager.Instance.MyGameData.Quest_Wolf_Cult_TokenedSectors[SelectedSector] == 0)
+          if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors[SelectedSector] == 0)
           {
-            _progress = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Cult_TokenedPlaceDescription"), ConstValues.Quest_Wolf_Cult_Progress_TokenSector);
+            _progress = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Cult_TokenedPlaceDescription"), ConstValues.Quest_Cult_Sabbat_Progress_TokenSector);
           }
           else
           {
-            _progress = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Cult_NoTokenedPlaceDescription"), ConstValues.Quest_Wolf_Cult_Progress_NoTokenSector);
+            _progress = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Cult_NoTokenedPlaceDescription"), ConstValues.Quest_Cult_Sabbat_Progress_NoTokenSector);
           }
           SectorSelectDescription.text = _effect + "<br><br>" + _progress;
 
           int _movepointvalue = 0;
           int _discomfortvalue = 0;
-          switch (CurrentSettlement.Type)
+          switch (CurrentSettlement.SettlementType)
           {
             case SettlementType.Village:
               _movepointvalue = ConstValues.RestMovePoint_Village;

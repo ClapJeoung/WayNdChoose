@@ -11,11 +11,11 @@ public class MapButton : ReturnButton
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
-      case QuestType.Wolf:
-        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+      case QuestType.Cult:
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            if (UIManager.Instance.QuestUI_Wolf.IsOpen) UIManager.Instance.QuestUI_Wolf.CloseUI_Prologue();
+            if (UIManager.Instance.QuestUI_Cult.IsOpen) UIManager.Instance.QuestUI_Cult.CloseUI_Prologue();
             break;
           case 1:
             break;

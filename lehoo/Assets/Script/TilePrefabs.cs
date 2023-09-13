@@ -19,9 +19,12 @@ public class TilePrefabs : ScriptableObject
     public Sprite[] RB_3_4;
 
     [Space(10)]
-    public Sprite[] Town;
-    public Sprite[] City, Castle;
+    public Sprite[] Village;
+    public Sprite[] Town, City;
     public Sprite[] Forest, Forest_river;
+  [Space(10)]
+  public Sprite[] RitualProgress;
+  public Sprite[] Ritual;
 
 
   private Sprite RandomTile(Sprite[] tile)
@@ -59,9 +62,11 @@ public class TilePrefabs : ScriptableObject
       case TileSpriteType.RiverBeach_3_4: _target = RB_3_4; break;
       case TileSpriteType.Forest: _target = Forest;break;
       case TileSpriteType.RiverForest: _target = Forest_river; break;
+      case TileSpriteType.Village: _target = Village; break;
       case TileSpriteType.Town: _target = Town; break;
       case TileSpriteType.City: _target = City; break;
-      case TileSpriteType.Castle: _target = Castle; break;
+      case TileSpriteType.RitualProgress: _target = RitualProgress; break;
+      case TileSpriteType.Ritual: _target = Ritual; break;
     }
     return RandomTile(_target);
   }
@@ -141,5 +146,6 @@ public enum TileSpriteType
   RiverBeach_3_4,
   Forest,
   RiverForest,
-  Town, City, Castle
+  Village, Town, City,
+  RitualProgress,Ritual
 }

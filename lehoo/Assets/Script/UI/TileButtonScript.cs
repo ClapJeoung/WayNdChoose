@@ -12,8 +12,9 @@ public class TileButtonScript : MonoBehaviour
   public Transform OriginHolder = null;
   public UI_map MapUI = null;
   public TileData TileData = null;
-  public Image MyImage = null;
-  public Image TopEnvirImage = null;
+  public Image BottomImage = null;
+  public Image TopImage = null;
+  public Image LandmarkImage = null;
   public void Clicked()
   {
     if (UIManager.Instance.IsWorking) return;

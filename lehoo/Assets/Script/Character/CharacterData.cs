@@ -8,8 +8,8 @@ using UnityEngine.UIElements;
 public static class ConstValues
 {
   public const int Quest_Wolf_TokenDuration = 7;
-  public const int Quest_Wolf_Cult_Progress_TokenSector = 20, Quest_Wolf_Cult_Progress_NoTokenSector = 10,
-   Quest_Wolf_Cult_Progress_EventClear = 15, Quest_Wolf_Cult_Progress_EventFail = 5;
+  public const int Quest_Cult_Sabbat_Progress_TokenSector = 20, Quest_Cult_Sabbat_Progress_NoTokenSector = 10,
+   Quest_Cult_Ritual_Progress_EventClear = 15, Quest_Cult_Ritual_Progress_EventFail = 5;
   public const int Quest_Wolf_Searching_Sanityrewardvalue = 15;
 
   public const int GoodExpAsSanity = 15;
@@ -202,12 +202,12 @@ public class GameData    //게임 진행도 데이터
 
         switch (QuestType)
         {
-          case QuestType.Wolf:
-            if (Quest_Wolf_Phase > 0 && Quest_Wolf_Type == 0)
+          case QuestType.Cult:
+            if (Quest_Cult_Phase > 0 && Quest_Cult_Type == 0)
             {
-              for(int i = 0; i < Quest_Wolf_Cult_TokenedSectors.Count; i++)
+              for(int i = 0; i < Quest_Cult_Sabbat_TokenedSectors.Count; i++)
               {
-                if (Quest_Wolf_Cult_TokenedSectors[(SectorType)i] > 0) Quest_Wolf_Cult_TokenedSectors[(SectorType)i]--;
+                if (Quest_Cult_Sabbat_TokenedSectors[(SectorType)i] > 0) Quest_Cult_Sabbat_TokenedSectors[(SectorType)i]--;
               }
             }
             
@@ -755,7 +755,7 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #퀘스트 관련#
-  public QuestType QuestType = QuestType.Wolf;
+  public QuestType QuestType = QuestType.Cult;
   public Quest CurrentQuestData
   {
     get { return GameManager.Instance.EventHolder.GetQuest(QuestType); }
@@ -763,14 +763,14 @@ public class GameData    //게임 진행도 데이터
   /// <summary>
   /// 0,(1,2,3),4
   /// </summary>
-  public int Quest_Wolf_Phase = 0;
+  public int Quest_Cult_Phase = 0;
   /// <summary>
   /// 0:컬트 1:늑대
   /// </summary>
-  public int Quest_Wolf_Type = 0;
-  public int Quest_Wolf_Progress = 0;
-  public List<SectorType> Quest_Wolf_Cult_BlockedPlaces = new List<SectorType>();
-  public Dictionary<SectorType,int> Quest_Wolf_Cult_TokenedSectors=new Dictionary<SectorType,int>();
+  public int Quest_Cult_Type = 0;
+  public int Quest_Cult_Progress = 0;
+  public List<SectorType> Quest_Cult_Sabbat_BlockedSectors = new List<SectorType>();
+  public Dictionary<SectorType,int> Quest_Cult_Sabbat_TokenedSectors=new Dictionary<SectorType,int>();
   #endregion
 
   #region #각종 보정치 가져오기#

@@ -26,7 +26,7 @@ public class EventManager : MonoBehaviour
 
   public void SetQuestEvent_Wolf_Searching()
   {
-    UIManager.Instance.QuestUI_Wolf.OpenUI_Searching();
+    UIManager.Instance.QuestUI_Cult.OpenUI_Searching();
   }
   /// <summary>
   /// 정착지에서 장소를 선택해 이벤트 실행
@@ -52,7 +52,7 @@ public class EventManager : MonoBehaviour
     }
 
     TileInfoData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData;
-    EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.Settlement.Type, place, _tiledta.EnvirList); ;
+    EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.Settlement.SettlementType, place, _tiledta.EnvirList); ;
     GameManager.Instance.SelectEvent(_event);
   }
 
@@ -90,6 +90,6 @@ public class EventManager : MonoBehaviour
   /// </summary>
   public void SetWolfEvent_Starting()
   {
-    int _index = GameManager.Instance.MyGameData.Quest_Wolf_Progress;
+    int _index = GameManager.Instance.MyGameData.Quest_Cult_Progress;
   }
 }

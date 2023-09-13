@@ -9,7 +9,7 @@ public class Settlement
 {
   public Settlement(SettlementType settletype)
   {
-    Type = settletype;
+    SettlementType = settletype;
   }
   private List<SectorType> settlementplaces=new List<SectorType>();
   public List<SectorType> Settlementplaces
@@ -19,7 +19,7 @@ public class Settlement
       if (settlementplaces.Count == 0)
       {
         settlementplaces = new List<SectorType>() { SectorType.Residence, SectorType.Temple};
-        switch (Type)
+        switch (SettlementType)
         {
           case SettlementType.Village:
             break;
@@ -38,14 +38,14 @@ public class Settlement
   public void SetBlockedPlaces()
   {
     int _count = 0;
-    float _progress = GameManager.Instance.MyGameData.Quest_Wolf_Progress/100.0f;
+    float _progress = GameManager.Instance.MyGameData.Quest_Cult_Progress/100.0f;
     List<SectorType> _randomplaces = new List<SectorType>();
     foreach (var place in Settlementplaces) _randomplaces.Add(place);
     _randomplaces.Sort((a, b) => Random.Range(0, 2) == 0 ? 0:1);
-    switch (Type)
+    switch (SettlementType)
     {
       case SettlementType.Village:
-        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 1:
             if (Random.Range(0, 100) < Mathf.Lerp(0, 100,  _progress)) _count = 0;
@@ -62,7 +62,7 @@ public class Settlement
 
         break;
       case SettlementType.Town:
-        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 1:
             if (Random.Range(0, 100) > Mathf.Lerp(0, 100, _progress)) _count = 0;
@@ -79,7 +79,7 @@ public class Settlement
 
         break;
       case SettlementType.City:
-        switch (GameManager.Instance.MyGameData.Quest_Wolf_Phase)
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 1:
             if (Random.Range(0, 100) > Mathf.Lerp(0, 100, Mathf.Pow(_progress, 0.4f))) _count = 1;
@@ -97,16 +97,16 @@ public class Settlement
         break;
     }
 
-    GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Clear();
-    for (int i = 0; i < _count; i++) GameManager.Instance.MyGameData.Quest_Wolf_Cult_BlockedPlaces.Add(_randomplaces[i]);
+    GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Clear();
+    for (int i = 0; i < _count; i++) GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Add(_randomplaces[i]);
   }
-  public SettlementType Type;
+  public SettlementType SettlementType;
   public int Index=-1;
   public string OriginName
   {
     get
     {
-      switch (Type)
+      switch (SettlementType)
       {
         case SettlementType.Village:
           return SettlementName.VillageNames[Index];
@@ -120,7 +120,7 @@ public class Settlement
   public int Discomfort = 0;
   public void AddDiscomfort()
   {
-    switch (Type)
+    switch (SettlementType)
     {
       case SettlementType.Village:Discomfort += ConstValues.RestDiscomfort_Village;return;
       case SettlementType.Town:Discomfort += ConstValues.RestDiscomfort_Town; return;
@@ -136,7 +136,7 @@ public class Settlement
   }
   public void Setup()
   {
-    switch (Type)
+    switch (SettlementType)
     {
       case SettlementType.Village:
         SpringIllust = GameManager.Instance.ImageHolder.GetVillageSprite($"{OriginName}_spring");
@@ -194,7 +194,13 @@ public class Settlement
       if(tileinfodata == null)
       {
         tileinfodata = new TileInfoData();
-        tileinfodata.LandScape = LandscapeType.Settlement;
+        tileinfodata.Landmark = LandmarkType.Outer;
+        switch (SettlementType)
+        {
+          case SettlementType.Village:tileinfodata.Landmark = LandmarkType.Village;break;
+          case SettlementType.Town:tileinfodata.Landmark = LandmarkType.Town;break;
+          case SettlementType.City: tileinfodata.Landmark= LandmarkType.City;break;
+        }
         tileinfodata.Settlement = this;
         if (IsForest) tileinfodata.EnvirList.Add(EnvironmentType.Forest);
         if (IsRiver) tileinfodata.EnvirList.Add(EnvironmentType.River);
@@ -211,13 +217,13 @@ public class Settlement
     {
       case EventAppearType.Outer: return false;
       case EventAppearType.Village:
-        if (Type != SettlementType.Village) return false;
+        if (SettlementType != SettlementType.Village) return false;
         break;
       case EventAppearType.Town:
-        if (Type != SettlementType.Town) return false;
+        if (SettlementType != SettlementType.Town) return false;
         break;
       case EventAppearType.City:
-        if (Type != SettlementType.City) return false;
+        if (SettlementType != SettlementType.City) return false;
         break;
       case EventAppearType.Settlement:
         break;
@@ -515,7 +521,7 @@ public class MapData
     _tiles_1.Add(_centertile);
     _tiles_2.Add(_centertile);
     TileInfoData _data = new TileInfoData();
-    _data.LandScape = _centertile.LandScape;
+    _data.Landmark = _centertile.Landmark;
     if(_centertile.TileSettle!=null)_data.Settlement= _centertile.TileSettle;
     //¿ùµå ÁÂÇ¥ -> Å¸ÀÏ ÁÂÇ¥
 

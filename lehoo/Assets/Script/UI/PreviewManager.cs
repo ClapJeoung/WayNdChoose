@@ -42,7 +42,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Image SelectionNoneBackground = null;
   [SerializeField] private TextMeshProUGUI SelectionNoneText = null;
   [SerializeField] private PreviewSelectionTendency SelectionNoneTendency = null;
-  [SerializeField] private Transform NoneRewardIcons = null;
+  [SerializeField] private Image SelectionNoneRewardIcon = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionPayPanel = null;
   [SerializeField] private Image SelectionPayBackground = null;
@@ -55,7 +55,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI PayNoGold_PercentValue = null;
   [SerializeField] private TextMeshProUGUI PayNoGold_Alternative = null;
   [SerializeField] private TextMeshProUGUI PaySubDescription = null;
-  [SerializeField] private Transform PayRewardIcons = null;
+  [SerializeField] private Image PayRewardIcon = null;
   [SerializeField] private PreviewSelectionTendency SelectionPayTendendcy = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionCheckPanel = null;
@@ -65,7 +65,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI SelectionCheckCurrentLevel = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_text = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_int = null;
-  [SerializeField] private Transform CheckRewardIcons = null;
+  [SerializeField] private Image CheckRewardIcon = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckDescription = null;
   [SerializeField] private PreviewSelectionTendency SelectionCheckTendendcy = null;
   [Space(10)]
@@ -134,7 +134,6 @@ public class PreviewManager : MonoBehaviour
     AllCanvasGroup.Add(ExpSelectExistPanel.GetComponent<CanvasGroup>());
   }
   private RectTransform CurrentPreview = null;
-
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot)
   {
     CurrentPreview = panel.GetComponent<RectTransform>();
@@ -149,24 +148,6 @@ public class PreviewManager : MonoBehaviour
     IEnumerator _cor = null;
     _cor = fadepreview(panel, true);
     StartCoroutine(_cor);
-  }
-  public void SetRewardIcons(Transform _holder,List<RewardTarget> _rewards)
-  {
-    List<int> _rewardindex=new List<int>();
-    foreach (var _target in _rewards) switch (_target)
-      {
-        case RewardTarget.Experience:_rewardindex.Add(5);break;
-        case RewardTarget.HP: _rewardindex.Add(0);break;
-        case RewardTarget.Sanity:_rewardindex.Add(1);break;
-        case RewardTarget.Gold:_rewardindex.Add(2);break;
-        case RewardTarget.Skill: _rewardindex.Add(4);break;
-      }
-    for(int i = 0; i < _holder.childCount; i++)
-    {
-      GameObject _chilcicon = _holder.GetChild(i).gameObject;
-      if (_rewardindex.Contains(i)) _chilcicon.SetActive(true);
-      else _chilcicon.SetActive(false);
-    }
   }
   public void OpenTurnPreview()
   {
@@ -349,7 +330,25 @@ public class PreviewManager : MonoBehaviour
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
     SelectionNoneText.text = _selection.SubDescription;
-    SetRewardIcons(NoneRewardIcons, _selection.SelectionSuccesRewards);
+
+    Sprite _rewardsprite = null;
+    switch (_selection.SelectionSuccesReward)
+    {
+      case RewardTarget.HP:_rewardsprite = GameManager.Instance.ImageHolder.HPIcon;break;
+      case RewardTarget.Sanity:_rewardsprite = GameManager.Instance.ImageHolder.SanityIcon;break;
+      case RewardTarget.Gold:_rewardsprite = GameManager.Instance.ImageHolder.GoldIcon;break;
+      case RewardTarget.Experience:_rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;break;
+      case RewardTarget.Skill:
+        switch (_selection.SelectionRewardSkillType)
+        {
+          case SkillType.Conversation:_rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Conversation;break;
+          case SkillType.Force: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Force; break;
+          case SkillType.Wild: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Wild; break;
+          case SkillType.Intelligence: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Intelligence; break;
+        }
+        break;
+    }
+    SelectionNoneRewardIcon.sprite= _rewardsprite;
 
     CurrentPreview = SelectionNonePanel.GetComponent<RectTransform>();
 
@@ -377,8 +376,27 @@ public class PreviewManager : MonoBehaviour
     SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
     PaySubDescription.text = _selection.SubDescription;
-    SetRewardIcons(PayRewardIcons, _selection.SelectionSuccesRewards);
-    Sprite _icon = null;
+
+    Sprite _rewardsprite = null;
+    switch (_selection.SelectionSuccesReward)
+    {
+      case RewardTarget.HP: _rewardsprite = GameManager.Instance.ImageHolder.HPIcon; break;
+      case RewardTarget.Sanity: _rewardsprite = GameManager.Instance.ImageHolder.SanityIcon; break;
+      case RewardTarget.Gold: _rewardsprite = GameManager.Instance.ImageHolder.GoldIcon; break;
+      case RewardTarget.Experience: _rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon; break;
+      case RewardTarget.Skill:
+        switch (_selection.SelectionRewardSkillType)
+        {
+          case SkillType.Conversation: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Conversation; break;
+          case SkillType.Force: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Force; break;
+          case SkillType.Wild: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Wild; break;
+          case SkillType.Intelligence: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Intelligence; break;
+        }
+        break;
+    }
+    PayRewardIcon.sprite = _rewardsprite;
+
+    Sprite _payicon = null;
     int _modifiedvalue = 0;
     int _modify = 0;
     string _payvaluetext="", _statusinfo = "";
@@ -388,10 +406,10 @@ public class PreviewManager : MonoBehaviour
     {
       case StatusType.HP:
         _status = StatusType.HP;
-        _icon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
+        _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),WNCText.GetHPColor(_modifiedvalue.ToString()));
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusType.HP,0), WNCText.GetHPColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
@@ -403,10 +421,10 @@ public class PreviewManager : MonoBehaviour
 
       case StatusType.Sanity:
         _status = StatusType.Sanity;
-        _icon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
+        _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),WNCText.GetSanityColor(_modifiedvalue.ToString()));
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Sanity, 0), WNCText.GetSanityColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
@@ -423,7 +441,7 @@ public class PreviewManager : MonoBehaviour
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
       case StatusType.Gold:
         _status = StatusType.Gold;
-        _icon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
+        _payicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayGoldValue_modified;
         if (_modify.Equals(0)) _statusinfo = "";
@@ -450,7 +468,7 @@ public class PreviewManager : MonoBehaviour
         }//지불 골드 값이 보유 값에 비해 높을 때
         else
         {
-          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),WNCText.GetGoldColor(_modifiedvalue));
+          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Gold, 0), WNCText.GetGoldColor(_modifiedvalue));
 
           if(PayNoGoldHolder.activeInHierarchy.Equals(true))PayNoGoldHolder.SetActive(false);
           if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
@@ -459,7 +477,7 @@ public class PreviewManager : MonoBehaviour
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
     }
 
-    PayIcon.sprite = _icon;
+    PayIcon.sprite = _payicon;
     PayRequireValue.text = _payvaluetext;
 
     CurrentPreview = SelectionPayPanel.GetComponent<RectTransform>();
@@ -486,6 +504,26 @@ public class PreviewManager : MonoBehaviour
   public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
   {
     SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+
+    Sprite _rewardsprite = null;
+    switch (_selection.SelectionSuccesReward)
+    {
+      case RewardTarget.HP: _rewardsprite = GameManager.Instance.ImageHolder.HPIcon; break;
+      case RewardTarget.Sanity: _rewardsprite = GameManager.Instance.ImageHolder.SanityIcon; break;
+      case RewardTarget.Gold: _rewardsprite = GameManager.Instance.ImageHolder.GoldIcon; break;
+      case RewardTarget.Experience: _rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon; break;
+      case RewardTarget.Skill:
+        switch (_selection.SelectionRewardSkillType)
+        {
+          case SkillType.Conversation: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Conversation; break;
+          case SkillType.Force: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Force; break;
+          case SkillType.Wild: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Wild; break;
+          case SkillType.Intelligence: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Intelligence; break;
+        }
+        break;
+    }
+    CheckRewardIcon.sprite = _rewardsprite;
+
 
     Sprite[] _icons = new Sprite[2];
     Skill[] _skills= new Skill[2];
@@ -559,7 +597,6 @@ public class PreviewManager : MonoBehaviour
     //안쓰는 상태
     SelectionElseBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
-    SetRewardIcons(CheckRewardIcons, _selection.SelectionSuccesRewards);
     Sprite _icon = null;
 
     SelectionElseIcon.sprite = _icon;
@@ -751,8 +788,6 @@ public class PreviewManager : MonoBehaviour
   public void Update()
   {
     if (CurrentPreview == null) return;
-    RectTransformUtility.ScreenPointToLocalPointInRectangle(WholeRect, Input.mousePosition, MainCamera, out Newpos);
-    CurrentPreview.localPosition = Newpos;
   //  CurrentPreview.anchoredPosition = Camera.main.ScreenToViewportPoint(Input.mousePosition);
   }
   public void ClosePreview() 
@@ -769,6 +804,9 @@ public class PreviewManager : MonoBehaviour
 
   private IEnumerator fadepreview(GameObject _targetobj, bool _isopen)
   {
+    RectTransformUtility.ScreenPointToLocalPointInRectangle(WholeRect, Input.mousePosition, MainCamera, out Newpos);
+    CurrentPreview.localPosition = Newpos;
+
     CanvasGroup _mygroup = _targetobj.GetComponent<CanvasGroup>();
     if (_isopen) yield return new WaitForSeconds(0.1f);
 

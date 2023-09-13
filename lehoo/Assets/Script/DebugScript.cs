@@ -29,9 +29,9 @@ public class DebugScript : MonoBehaviour
   public TMP_InputField EXP_Short_1_ID = null;
   public TMP_InputField EXP_Short_1_Turn = null;
   [Space(10)]
-  public TMP_InputField Wolf_Phase = null;
-  public TMP_InputField Wolf_Type = null;
-  public TMP_InputField Wolf_Progress = null;
+  public TMP_InputField Cult_Phase = null;
+  public TMP_InputField Cult_Type = null;
+  public TMP_InputField Cult_Progress = null;
   [Space(10)]
   public TMP_InputField NextEventId = null;
 
@@ -60,11 +60,11 @@ public class DebugScript : MonoBehaviour
     EXP_Short_1_ID.text = GameManager.Instance.MyGameData.ShortTermEXP[1] != null ? GameManager.Instance.MyGameData.ShortTermEXP[1].ID : "";
     EXP_Short_1_Turn.text = GameManager.Instance.MyGameData.ShortTermEXP[1] != null ? GameManager.Instance.MyGameData.ShortTermEXP[1].Duration.ToString() : "";
 
-    if (GameManager.Instance.MyGameData.QuestType == QuestType.Wolf)
+    if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
-      Wolf_Phase.text = GameManager.Instance.MyGameData.Quest_Wolf_Phase.ToString();
-      Wolf_Type.text = GameManager.Instance.MyGameData.Quest_Wolf_Type.ToString();
-      Wolf_Progress.text = GameManager.Instance.MyGameData.Quest_Wolf_Progress.ToString();
+      Cult_Phase.text = GameManager.Instance.MyGameData.Quest_Cult_Phase.ToString();
+      Cult_Type.text = GameManager.Instance.MyGameData.Quest_Cult_Type.ToString();
+      Cult_Progress.text = GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString();
     }
   }
   public void ApplyValues()
@@ -138,11 +138,11 @@ public class DebugScript : MonoBehaviour
     }
     UIManager.Instance.UpdateExpShortTermIcon();
 
-    if (GameManager.Instance.MyGameData.QuestType == QuestType.Wolf)
+    if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
-      GameManager.Instance.MyGameData.Quest_Wolf_Phase = int.Parse(Wolf_Phase.text);
-      GameManager.Instance.MyGameData.Quest_Wolf_Type = int.Parse(Wolf_Type.text);
-      GameManager.Instance.MyGameData.Quest_Wolf_Progress = int.Parse(Wolf_Progress.text);
+      GameManager.Instance.MyGameData.Quest_Cult_Phase = int.Parse(Cult_Phase.text);
+      GameManager.Instance.MyGameData.Quest_Cult_Type = int.Parse(Cult_Type.text);
+      GameManager.Instance.MyGameData.Quest_Cult_Progress = int.Parse(Cult_Progress.text);
       UIManager.Instance.WolfSidePanel.UpdateUI();
     }
 

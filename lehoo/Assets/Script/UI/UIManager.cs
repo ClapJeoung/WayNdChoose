@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour
   public UI_dialogue MyDialogue = null;
   public UI_RewardExp ExpRewardUI = null;
   public UI_Settlement MySettleUI = null;
-  public UI_QuestWolf QuestUI_Wolf = null;
+  public UI_QuestWolf QuestUI_Cult = null;
   public UI_Mad MyMadPanel = null;
   public UI_FollowEnding MyFollowEnding = null;
   public UI_Gameover GameOverUI = null;
@@ -299,6 +299,9 @@ public class UIManager : MonoBehaviour
   private Vector2 TendencyPos_p2 = new Vector2(101.0f, -55.0f);
   public void UpdateTendencyIcon()
   {
+    if (TendencyBodyIcon.gameObject.activeInHierarchy == false) TendencyBodyIcon.gameObject.SetActive(true);
+    if (TendencyHeadIcon.gameObject.activeInHierarchy == false) TendencyHeadIcon.gameObject.SetActive(true);
+
     Vector2 _bodypos = Vector2.zero;
     Vector2 _headpos= Vector2.zero;
     switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
