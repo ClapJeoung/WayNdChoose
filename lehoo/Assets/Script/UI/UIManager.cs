@@ -142,7 +142,8 @@ public class UIManager : MonoBehaviour
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
     lasthp = GameManager.Instance.MyGameData.HP;
   }
-  [SerializeField] private TextMeshProUGUI SanityText = null;
+  [SerializeField] private TextMeshProUGUI SanityText_current = null;
+  [SerializeField] private TextMeshProUGUI SanityText_max = null;
   private int lastsanity = -1;
   public void UpdateSanityText()
   {
@@ -152,10 +153,9 @@ public class UIManager : MonoBehaviour
     //  if (_value < 0) { StartCoroutine(lossstatus(_value, SanityTextRect.position)); SanityLossParticle.Play();}
     //  else if(_value>0) { StartCoroutine(genstatus(_value, SanityTextRect.position)); SanityGenParticle.Play(); }
     }
-    SanityText.text = string.Format("<size=70><#BE81F7>{0}</color></size> <size=30><#8A1BD4>({1})</color></size>",
-      GameManager.Instance.MyGameData.CurrentSanity,
-      GameManager.Instance.MyGameData.MaxSanity);
-  lastsanity= GameManager.Instance.MyGameData.CurrentSanity;
+    SanityText_current.text = GameManager.Instance.MyGameData.CurrentSanity.ToString();
+    SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
+  lastsanity = GameManager.Instance.MyGameData.CurrentSanity;
   }
   [SerializeField] private TextMeshProUGUI GoldText = null;
   private int lastgold = -1;
@@ -293,14 +293,14 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform TendencyBodyIcon = null;
   [SerializeField] private RectTransform TendencyHeadRect = null;
   [SerializeField] private RectTransform TendencyHeadIcon = null;
-  private Vector2 TendencyPos_m2 = new Vector2(-98.0f, -55.0f);
-  private Vector2 TendencyPos_m1 = new Vector2(-30.0f, -55.0f);
-  private Vector2 TendencyPos_p1 = new Vector2(35.0f, -55.0f);
-  private Vector2 TendencyPos_p2 = new Vector2(101.0f, -55.0f);
+  private Vector2 TendencyPos_m2 = new Vector2(-98.0f, 0.0f);
+  private Vector2 TendencyPos_m1 = new Vector2(-30.0f, 0.0f);
+  private Vector2 TendencyPos_p1 = new Vector2(35.0f, 0.0f);
+  private Vector2 TendencyPos_p2 = new Vector2(101.0f, 0.0f);
   public void UpdateTendencyIcon()
   {
-    if (TendencyBodyIcon.gameObject.activeInHierarchy == false) TendencyBodyIcon.gameObject.SetActive(true);
-    if (TendencyHeadIcon.gameObject.activeInHierarchy == false) TendencyHeadIcon.gameObject.SetActive(true);
+    if (GameManager.Instance.MyGameData.Tendency_Body.Level!=0&&TendencyBodyIcon.gameObject.activeInHierarchy == false) TendencyBodyIcon.gameObject.SetActive(true);
+    if (GameManager.Instance.MyGameData.Tendency_Head.Level!=0&&TendencyHeadIcon.gameObject.activeInHierarchy == false) TendencyHeadIcon.gameObject.SetActive(true);
 
     Vector2 _bodypos = Vector2.zero;
     Vector2 _headpos= Vector2.zero;
@@ -308,6 +308,7 @@ public class UIManager : MonoBehaviour
     {
       case -2:_bodypos = TendencyPos_m2;break;
       case -1: _bodypos = TendencyPos_m1; break;
+      case 0: _bodypos = new Vector2(0.0f, 0.0f); break;
       case 1: _bodypos = TendencyPos_p1; break;
       case 2: _bodypos = TendencyPos_p2; break;
     }
@@ -315,6 +316,7 @@ public class UIManager : MonoBehaviour
     {
       case -2: _headpos = TendencyPos_m2; break;
       case -1: _headpos = TendencyPos_m1; break;
+      case 0: _headpos = new Vector2(0.0f, 0.0f);break;
       case 1: _headpos = TendencyPos_p1; break;
       case 2: _headpos = TendencyPos_p2; break;
     }
@@ -653,6 +655,8 @@ public class UIManager : MonoBehaviour
   }
   public IEnumerator ChangeAlpha(Image _img, float _targetalpha)
   {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_img.transform as RectTransform);
+
     float _startalpha = _targetalpha==1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha==1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
@@ -674,6 +678,8 @@ public class UIManager : MonoBehaviour
   }
   public IEnumerator ChangeAlpha(Image _img, float _targetalpha,float targettime)
   {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_img.transform as RectTransform);
+
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
@@ -696,6 +702,8 @@ public class UIManager : MonoBehaviour
   public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, float targettime, bool istopui)
   {
     if (istopui&&_targetalpha.Equals(1.0f)) CloseCurrentTopUI();
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);
 
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
@@ -725,6 +733,9 @@ public class UIManager : MonoBehaviour
   public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha,bool _islarge, bool istopui)
   {
     if (istopui) CloseCurrentTopUI();
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);
+
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
@@ -752,6 +763,9 @@ public class UIManager : MonoBehaviour
   public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, bool _islarge, UIFadeMoveDir _movedir, bool istopui)
   {
     if (istopui) CloseCurrentTopUI();
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);
+
     Vector2 _dir = Vector2.zero;
     switch (_movedir)
     {
@@ -798,6 +812,8 @@ public class UIManager : MonoBehaviour
   }
   public IEnumerator ChangeAlpha(TextMeshProUGUI _tmp, float _targetalpha,float targettime)
   {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_tmp.transform as RectTransform);
+
     float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
@@ -833,8 +849,8 @@ public class UIManager : MonoBehaviour
     }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void ResetEventPanels()
   {
-    MyDialogue.CloseUI();
-    MySettleUI.CloseUI();
+    if(MyDialogue.IsOpen) MyDialogue.CloseUI();
+    if(MySettleUI.IsOpen) MySettleUI.CloseUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MySettleUI.CloseUI();
   public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
@@ -869,6 +885,8 @@ public class UIManager : MonoBehaviour
   }
   public IEnumerator moverect(RectTransform rect, Vector2 startpos, Vector2 endpos, float targettime, AnimationCurve targetcurve)
   {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(rect.transform as RectTransform);
+
     float _time = 0.0f, _targettime = targettime;
     while (_time < _targettime)
     {

@@ -110,7 +110,7 @@ public class UI_Main : UI_default
   {
     UIManager.Instance.AddUIQueue(closemain());
 
-    StartCoroutine(selectquest());
+    SelectQuest(0);
 
     UIManager.Instance.AddUIQueue(openscenario());
   }
@@ -131,19 +131,17 @@ public class UI_Main : UI_default
   }
   public void SelectQuest(int index)//시나리오 버튼 누를때
   {
+    Debug.Log("scenario opened");
     QuestType _quest = (QuestType)index;
+    SelectedQuest = _quest;
+    QuestDescription.text = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestDescription;
+    QuestIllust.sprite = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestIllust;
+    StartNewGameButton.interactable = true;
+
+    return;
       if (_quest != SelectedQuest)
       {
-        SelectedQuest = _quest;
-        UIManager.Instance.AddUIQueue(selectquest());
-      }
-  }
-  private IEnumerator selectquest()
-  {
-        QuestDescription.text = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestDescription;
-        QuestIllust.sprite = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestIllust;
-    StartNewGameButton.interactable = true;
-    yield return null;
+    }
   }
   private QuestType SelectedQuest = QuestType.Cult;
   public void StartNewGame()//버튼으로 새 게임 시작 버튼 누르는거
@@ -215,8 +213,6 @@ public class UI_Main : UI_default
   }
   private IEnumerator openscenario()
   {
-    QuestIllust.sprite = GameManager.Instance.ImageHolder.Transparent;
-        QuestDescription.text = "";
  //   StartNewGameButton.interactable = false;
     BackToMainButton.interactable = false;
     if (QuestIllustGroup.alpha == 0.0f) QuestIllustGroup.alpha = 1.0f;

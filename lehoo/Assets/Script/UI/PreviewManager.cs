@@ -17,7 +17,7 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject JustDescription_Panel = null;
   [SerializeField] private TextMeshProUGUI JustDescriptionText = null;
-  private int EffectFontSize = 35;
+  private int EffectFontSize = 25;
   private int SubdescriptionSize = 17;
   private Vector2 TurnPivot = new Vector2(0.5f, 1.1f);
   private Vector2 HPPivot= new Vector2(0.5f, 1.1f);
@@ -31,7 +31,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private GameObject SkillPreview = null;
   [SerializeField] private Image SkillIcon = null;
   [SerializeField] private TextMeshProUGUI SkillLevel = null;
-  [SerializeField] private TextMeshProUGUI SkillName = null;
+  [SerializeField] private TextMeshProUGUI SkillDescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpPreview = null;
   [SerializeField] private TextMeshProUGUI ExpName = null;
@@ -238,13 +238,13 @@ public class PreviewManager : MonoBehaviour
   }//정신력 설명,증감량 표기 후 열기
   public void OpenGoldPreview()
   {
-    StatusType _currenttype = StatusType.Sanity;
+    StatusType _currenttype = StatusType.Gold;
 
     string _description = "";
     int _genvalue = 0, _payvalue = 0;
 
-    _genvalue = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
-    _payvalue = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
+    _genvalue = (int)GameManager.Instance.MyGameData.GetGoldGenModify(false);
+    _payvalue = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
 
     _description = GameManager.Instance.GetTextData(_currenttype, 3);
     if (_genvalue > 0)
@@ -259,7 +259,7 @@ public class PreviewManager : MonoBehaviour
     _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
 
-    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.SanityIcon;
+    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.GoldIcon;
     IconAndDescription_Description.text = _description;
     OpenPreviewPanel(IconAndDescription_Panel,GoldPivot);
   }//골드 설명,증감량 표기 후 열기
@@ -283,15 +283,15 @@ public class PreviewManager : MonoBehaviour
   public void OpenSkillPreview(SkillType _skilltype)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype);
-    string _description = GameManager.Instance.GetTextData(_skilltype,0)+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4)));
+    string _description = GameManager.Instance.GetTextData(_skilltype,0)+"<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4)));
 
     int _level = GameManager.Instance.MyGameData.GetSkill(_skilltype).Level ;
     SkillLevel.text = _level.ToString();
 
-    SkillName.text = _description;
+    SkillDescription.text = _description;
     SkillIcon.sprite = _icon;
 
-    OpenPreviewPanel(RewardSkillPanel);
+    OpenPreviewPanel(SkillPreview);
   }
   public void OpenExpPreview(Experience _exp)
   {
@@ -317,7 +317,7 @@ public class PreviewManager : MonoBehaviour
         _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
         break;
     }
-    string _description = WNCText.SetSize(30, "<b>" + _targettendency.Name + "</b>") + "<br><br>" + WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
+    string _description = WNCText.SetSize(20, "<b>" + _targettendency.Name + "</b>") + "<br><br>" + WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
       "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
     IconAndDescription_Icon.sprite = _tendencyicon;
@@ -804,6 +804,8 @@ public class PreviewManager : MonoBehaviour
 
   private IEnumerator fadepreview(GameObject _targetobj, bool _isopen)
   {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_targetobj.transform as RectTransform);
+
     RectTransformUtility.ScreenPointToLocalPointInRectangle(WholeRect, Input.mousePosition, MainCamera, out Newpos);
     CurrentPreview.localPosition = Newpos;
 

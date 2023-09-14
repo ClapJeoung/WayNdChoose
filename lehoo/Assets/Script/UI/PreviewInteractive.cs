@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
-Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,WolfPanel_Cult,WolfPanel_Wolf}
+Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -40,7 +40,9 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
          _exp = GameManager.Instance.MyGameData.ShortTermEXP[ExpIndex];
         if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp);
         break;
-      case PreviewPanelType.Tendency:UIManager.Instance.PreviewManager.OpenTendencyPreview(MyTendency);break;
+      case PreviewPanelType.Tendency:
+        if (GameManager.Instance.MyGameData.GetTendencyLevel(MyTendency) == 0) return;
+        UIManager.Instance.PreviewManager.OpenTendencyPreview(MyTendency);break;
       case PreviewPanelType.Selection:
         SelectionData _selection = null;
         switch (MySelectionTendency)
@@ -121,11 +123,14 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.RestGold:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"));
         break;
-      case PreviewPanelType.WolfPanel_Cult:
+      case PreviewPanelType.CultPanel_Sabbat:
         UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle, GameManager.Instance.GetTextData("Quest_Wolf_Cult_Sidepanel_Preview"), new Vector2(1.1f, 0.5f)) ;
         break;
-      case PreviewPanelType.WolfPanel_Wolf:
+      case PreviewPanelType.CultPanel_Ritual:
         UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Ritual_Idle,GameManager.Instance.GetTextData("Quest_Wolf_Wolf_Sidepanel_Preview"), new Vector2(1.1f, 0.5f));
+        break;
+      case PreviewPanelType.MovePoint:
+        UIManager.Instance.PreviewManager.OpenMovePointPreview();
         break;
     }
   }

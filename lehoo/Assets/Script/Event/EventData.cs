@@ -255,9 +255,6 @@ public class EventHolder
   }
   public void ConvertData_Quest(QuestEventDataJson _data)
   {
-    if (Quest_Cult == null) Quest_Cult = new QuestHolder_Cult("Quest0",QuestType.Cult);
-
-
     switch ((QuestType) int.Parse(_data.QuestType))
     {
       case QuestType.Cult:

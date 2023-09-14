@@ -177,13 +177,20 @@ public class Settlement
   public bool IsSea = false;    //주변 1칸에 바다 여부
 
   public List<TileData> Tiles=new List<TileData>();//일반 타일맵 기준
-  public Vector3 Coordinate
+  public Vector3 Position
   {
     get
     {
       Vector2Int _pos = Vector2Int.zero;
       foreach (var asdf in Tiles) _pos += asdf.Coordinate;
       return new Vector3(_pos.x/Tiles.Count,_pos.y/Tiles.Count);
+    }
+  }
+  public GameObject HolderObject
+  {
+    get
+    {
+      return Tiles[0].Rect.transform.parent.gameObject;
     }
   }
   public List<RectTransform> TileIcons=new List<RectTransform>();
@@ -471,7 +478,7 @@ public class MapData
   {
     get
     {
-      return TileDatas[ConstValues.MapSize / 2 + ConstValues.MapSize % 2, ConstValues.MapSize / 2 + ConstValues.MapSize % 2];
+      return TileDatas[ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1, ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1];
     }
   }
   public Settlement GetSettle(string originname)
@@ -484,7 +491,7 @@ public class MapData
   }
   public List<Settlement> GetCloseSettles(Settlement _origin,int _count)
   {
-    Vector2 _originpos = _origin.Coordinate;
+    Vector2 _originpos = _origin.Position;
 
     List<float> _distance=new List<float>();
     List<Settlement> _settlement=new List<Settlement>();
@@ -492,7 +499,7 @@ public class MapData
     {
       if (_settle == _origin) continue;
 
-      float _dis=Vector2.Distance(_settle.Coordinate, _originpos);
+      float _dis=Vector2.Distance(_settle.Position, _originpos);
       //  Debug.Log($"_originpos 에서 _settle.VectorPos()까지의 거리 : {_dis}");
       _distance.Add(_dis);
       _settlement.Add(_settle);

@@ -288,7 +288,8 @@ public class GameManager : MonoBehaviour
     {
       string _texttemp = _data.Value.TEXT;
       if (_texttemp.Contains("\\n")) _texttemp = _texttemp.Replace("\\n", "\n");
-      if (TextDic.ContainsKey(_data.Key)) { Debug.Log($"{_data.Key} 겹침! 확인 필요!"); return; }
+      if (TextDic.ContainsKey(_data.Key)) { Debug.Log($"{_data.Key} 겹침! 확인 필요!"); continue; }
+      if (TextDic.ContainsValue(_data.Value.TEXT)) { Debug.Log($"{_data.Value.TEXT} 겹침! 확인 필요!"); continue; }
       TextDic.Add(_data.Value.ID, _data.Value.TEXT);
     }
 
@@ -308,13 +309,13 @@ public class GameManager : MonoBehaviour
       //연계 이벤트 Json -> EventHolder
     }
 
+    if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Quest0", QuestType.Cult);
     if (QuestEventData != null)
     {
       Dictionary<string, QuestEventDataJson> _questeventjson = new Dictionary<string, QuestEventDataJson>();
       _questeventjson = JsonConvert.DeserializeObject<Dictionary<string, QuestEventDataJson>>(QuestEventData.text);
       foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
       //퀘스트 Json -> EventHolder
-      if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Quest0", QuestType.Cult);
     }
 
 
@@ -585,9 +586,9 @@ public class GameManager : MonoBehaviour
     Settlement _randomsettle=MyGameData.MyMapData.AllSettles[Random.Range(0,MyGameData.MyMapData.AllSettles.Count)];
     MyGameData.CurrentSettlement= _randomsettle;
     MyGameData.Coordinate=_randomsettle.Tiles[Random.Range(0,_randomsettle.Tiles.Count)].Coordinate;
+    UIManager.Instance.UpdateAllUI();
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
-    UIManager.Instance.UpdateAllUI();
     UIManager.Instance.UpdateMap_SetPlayerPos(MyGameData.Coordinate);
     switch (MyGameData.QuestType)
     {
@@ -661,7 +662,7 @@ public class GameManager : MonoBehaviour
     Settlement _startsettle = MyGameData.MyMapData.AllSettles[Random.Range(0, MyGameData.MyMapData.AllSettles.Count)];
 
     MyGameData.CurrentSettlement = _startsettle;
-    MyGameData.Coordinate = _startsettle.Coordinate;
+    MyGameData.Coordinate = _startsettle.Position;
 
     _map.MakeTilemap();
     UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle.Tiles[Random.Range(0,_startsettle.Tiles.Count)].Coordinate);

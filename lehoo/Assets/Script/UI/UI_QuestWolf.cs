@@ -50,6 +50,9 @@ public class UI_QuestWolf : UI_default
     Prologue_ButtonText_A.text = GameManager.Instance.GetTextData("NEXT_TEXT");
     Prologue_Button_B.gameObject.SetActive(false);
 
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.transform.parent.GetComponent<RectTransform>());
+
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_start").Rect, GetPanelRect("illust_start").OutisdePos, GetPanelRect("illust_start").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.1f);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_start").Rect, GetPanelRect("description_start").OutisdePos, GetPanelRect("description_start").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
@@ -72,32 +75,8 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_start").Rect, GetPanelRect("illust_start").InsidePos, GetPanelRect("illust_start").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
     yield return new WaitForSeconds(0.1f);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_start").Rect, GetPanelRect("description_start").InsidePos, GetPanelRect("description_start").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
-    yield return new WaitForSeconds(2.0f);
+    yield return new WaitForSeconds(0.5f);
     Prologue_ButtonText_A.gameObject.SetActive(true);
-  }
-
-  private IEnumerator setaftertendencypanel(Sprite illust,string description,string selection)
-  {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 0.0f, FadeOutTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 0.0f, FadeOutTime, false));
-    yield return new WaitForSeconds(FadeOutTime);
-    Prologue_IllustImage.sprite = illust;
-    Prologue_Description.text = description;
-    Prologue_ButtonText_A.text = selection;
-    Prologue_Button_A.onClick.RemoveAllListeners();
-    Prologue_Button_A.onClick.AddListener(() => Next());
-    Prologue_Button_B.gameObject.SetActive(false);
-    Canvas.ForceUpdateCanvases();
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
-    LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("description").Rect);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime, false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime, false));
-
-    Prologue_ButtonHolderGroup.interactable = true;
-
-    yield return new WaitForSeconds(0.4f);
   }
   public void Next()
   {
@@ -196,6 +175,8 @@ public class UI_QuestWolf : UI_default
     Prologue_Description.text = _description;
     Prologue_ButtonText_A.text= _buttontext_a;
     Prologue_Button_A.onClick.RemoveAllListeners();
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.transform.parent.GetComponent<RectTransform>());
 
     if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
     {

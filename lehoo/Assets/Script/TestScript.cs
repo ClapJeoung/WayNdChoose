@@ -19,15 +19,4 @@ public class techa : lehoo
 }
 public class TestScript:MonoBehaviour
 {
-  public lehoo asdf = null;
-  private void Awake()
-  {
-    techa t = new techa();
-    asdf = t;
-    qwer(asdf);
-  }
-  public void qwer(lehoo _techa)
-  {
-    Debug.Log(_techa.GetType());
-  }
 }

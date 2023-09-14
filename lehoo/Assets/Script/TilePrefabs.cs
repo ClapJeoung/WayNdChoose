@@ -37,7 +37,7 @@ public class TilePrefabs : ScriptableObject
     Sprite[] _target = null;
     switch (tiletype)
     {
-      case TileSpriteType.NULL:_target = null;break;
+      case TileSpriteType.NULL: return GameManager.Instance.ImageHolder.Transparent;
       case TileSpriteType.Sea: _target = Sea;break;
       case TileSpriteType.Land: _target = Land;break;
       case TileSpriteType.HighLand: _target = Highland; break;

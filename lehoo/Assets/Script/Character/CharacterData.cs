@@ -29,12 +29,13 @@ public static class ConstValues
                    EventPer_Sector = 2, EventPer_NoSector = 1,
                    EventPer_Quest = 2, EventPer_Follow = 3, EventPer_Normal = 1;
 
-  public const int MapSize = 40;
-    
+  public const int MapSize = 21;
+
+  public const int MinRiverCount = 5;
   public const float Ratio_highland = 0.2f;
   public const float Ratio_forest = 0.4f;
   public const int Count_mountain = 3;
-  public const int LandSize = 17;
+  public const int LandSize = 10;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
 
   public const int ForestRange = 1, RiverRange = 2, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
@@ -191,7 +192,7 @@ public class GameData    //게임 진행도 데이터
       else
       {
         if (value > MaxTurn)
-        { turn = 0; Year++;  UIManager.Instance.UpdateYearText(); }
+        { turn = 0; Year++; if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateYearText(); }
         else turn = value;
 
         if (LongTermEXP != null) LongTermEXP.Duration--;
@@ -227,7 +228,7 @@ public class GameData    //게임 진행도 데이터
         */
       }
 
-      UIManager.Instance.UpdateTurnIcon();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateTurnIcon();
     }
   }
   public const int MaxTurn = 3;//최대 턴(0,1,2,3)
@@ -349,7 +350,7 @@ public class GameData    //게임 진행도 데이터
       hp = value;
       if (hp > 100) hp = 100;
       if (hp < 0) { hp = 0; GameManager.Instance.GameOver(GameOverTypeEnum.HP); }
-      UIManager.Instance.UpdateHPText();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateHPText();
     }
   }
   private int gold = 0;
@@ -357,7 +358,7 @@ public class GameData    //게임 진행도 데이터
   {
     get { return gold; }
     set { gold = value;
-      UIManager.Instance.UpdateGoldText();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText();
     }
   }
   private int currentsanity = 0;
@@ -389,7 +390,7 @@ public class GameData    //게임 진행도 데이터
           currentsanity = 0;
           MaxSanity -= ConstValues.MadnessDefaultSanityLose;
 
-          UIManager.Instance.UpdateSanityText();
+          if(GameManager.Instance.MyGameData!=null) UIManager.Instance.UpdateSanityText();
 
           UIManager.Instance.GetMad(_madness);
         }
@@ -408,7 +409,7 @@ public class GameData    //게임 진행도 데이터
     set
     {
       movepoint = value;
-      UIManager.Instance.UpdateMovePointText();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateMovePointText();
     }
   }
   #endregion
@@ -521,24 +522,24 @@ public class GameData    //게임 진행도 데이터
             _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
             _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
             _result = string.Format("{0} {1} {2} {3}",
-              string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m2),
-              string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m2),
-              string.Format(_downtext, _force, ConstValues.ForceByTendency_m2),
-              string.Format(_downtext, _wild, ConstValues.WildByTendency_m2));
+              _conver,
+              _intel,
+              _force,
+              _wild);
             break;
           case -1:
             _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
             _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 2);
             _result = string.Format("{0} {1}",
-              string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m1),
-              string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m1));
+              _conver,
+              _intel);
             break;
           case 1:
             _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
             _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
             _result = string.Format("{0} {1}",
-              string.Format(_uptext, _force, ConstValues.ForceByTendency_p1),
-              string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
+              _force,
+              _wild);
             break;
           case 2:
             _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
@@ -546,15 +547,15 @@ public class GameData    //게임 진행도 데이터
             _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
             _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
             _result = string.Format("{0} {1} {2} {3}",
-              string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
-              string.Format(_uptext, _wild, ConstValues.WildByTendency_p2),
-              string.Format(_downtext, _conver, ConstValues.ConversationByTendency_p2),
-              string.Format(_downtext, _intel, ConstValues.IntelligenceByTendency_p2));
+              _conver,
+              _intel,
+              _force,
+              _wild);
             break;
         }
         break;
       case TendencyTypeEnum.Head:
-        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
         {
           case -2:
             _result = GameManager.Instance.GetTextData(StatusType.Sanity, 13) +" " +
@@ -913,14 +914,18 @@ public class GameData    //게임 진행도 데이터
   #endregion
   public GameData()
   {
-    Turn = 0;
-    HP = 100;
+    turn = 0;
+    hp = 100;
     MaxSanity = 100;
-    MovePoint = 2;
-    CurrentSanity = MaxSanity;
-    Gold = ConstValues.StartGold ;
+    movepoint = 2;
+    currentsanity = MaxSanity;
+    gold = ConstValues.StartGold ;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
+    Skill_Conversation = new Skill(SkillType.Conversation);
+    Skill_Force = new Skill(SkillType.Force);
+    Skill_Wild= new Skill(SkillType.Wild);
+    Skill_Intelligence=new Skill(SkillType.Intelligence);
   }
   /// <summary>
   /// 이전 정착지 제시 리스트, 이전 이벤트 지우기
@@ -1119,7 +1124,7 @@ public class Tendency
     set {
       level = value;
       count = 0;
-      if(UIManager.Instance!=null) UIManager.Instance.UpdateTendencyIcon();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateTendencyIcon();
     }
   }
   public Tendency(TendencyTypeEnum type) { Type = type; }

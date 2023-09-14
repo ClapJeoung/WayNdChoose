@@ -401,7 +401,7 @@ public class maptext : MonoBehaviour
 
         if (_finishdir != 10)
         {
-          if (_riverdata.RiverCoors.Count < 6)
+          if (_riverdata.RiverCoors.Count < ConstValues.MinRiverCount)
           {
             //   Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor}->({_finishdir})->[{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 기준 미충족 해변으로 제명 {_riverdata.RiverCoors.Count+1}번 타일 다시 검사");
             _failcoors.Add(_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir));
@@ -663,12 +663,8 @@ public class maptext : MonoBehaviour
       if (LoopCount > 1000) { Debug.Log("산 생성 중 무한루프 "+_newmountain.Count); return null; }
 
       int _index = _newmountain.Count / 3;
-      List<TileData> _lines_origin = _NewMapData.GetDirLines(_NewMapData.CenterTile, (HexDir)_mountaindirs[_index]);
-      List<TileData> _lines=new List<TileData>();
-      for(int i= (int)((float)_lines_origin.Count * 0.3f); i< (float)_lines_origin.Count * 0.6f; i++)
-      {
-        _lines.Add(_lines_origin[i]);
-      }
+      List<TileData> _lines= _NewMapData.GetDirLines(_NewMapData.CenterTile, (HexDir)_mountaindirs[_index]);
+      int _mintileindex = 2, _maxtileindex = _lines.Count - 1;
       Vector2Int _mountain_0=Vector2Int.zero,_mountain_1 = Vector2Int.zero, _mountain_2=Vector2Int.zero;
       int _mountaindir_1 = 2, _mountaindir_2 = 3;
       while (true)
@@ -676,7 +672,7 @@ public class maptext : MonoBehaviour
         LoopCount++;
         if (LoopCount > 1000) { Debug.Log("산 생성 중 무한루프");return null; }
 
-        _mountain_0 = _lines[Random.Range(0, _lines.Count)].Coordinate
+        _mountain_0 = _lines[Random.Range(_mintileindex, _maxtileindex)].Coordinate
           +new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
         _mountain_1 = _NewMapData.GetNextTile(_mountain_0, (HexDir)_mountaindir_1).Coordinate;
         _mountain_2 = _NewMapData.GetNextTile(_mountain_0, (HexDir)_mountaindir_2).Coordinate;
@@ -687,7 +683,7 @@ public class maptext : MonoBehaviour
         foreach(var _tile in _mountaintemps)
         {
           if (_newmountain.Contains(_tile.Coordinate)) { _enable = false; break; }
-          if(_tile.BottomEnvir==BottomEnvirType.Sea||_tile.BottomEnvir==BottomEnvirType.Beach||_tile.BottomEnvir==BottomEnvirType.RiverBeach) { _enable = false; break; }
+          if(_tile.BottomEnvir==BottomEnvirType.Sea) { _enable = false; break; }
         }
         if (!_enable) continue;
 
@@ -844,8 +840,7 @@ public class maptext : MonoBehaviour
         TileData _targettile = _NewMapData.Tile(_targetcoor);
 
         if (_forests.Contains(_targetcoor)) continue;
-        if (_targettile.BottomEnvir==BottomEnvirType.Sea||_targettile.BottomEnvir==BottomEnvirType.Beach||
-            _targettile.BottomEnvir==BottomEnvirType.RiverBeach) continue;
+        if (_targettile.BottomEnvir==BottomEnvirType.Sea||_targettile.BottomEnvir==BottomEnvirType.Beach) continue;
         if (_targettile.TopEnvir == TopEnvirType.Forest || _targettile.TopEnvir == TopEnvirType.Mountain) continue;
 
         _targettile.TopEnvir = TopEnvirType.Forest;
@@ -872,7 +867,7 @@ public class maptext : MonoBehaviour
     while (_citytiles.Count != 3)
     {
       LoopCount++;
-      if (LoopCount > 1000) { Debug.Log("성채 생성 중 무한루프"); return null; }
+      if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
 
       Vector2Int _starcoor = _citystartrange[Random.Range(0, _citystartrange.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
      
@@ -940,10 +935,10 @@ public class maptext : MonoBehaviour
     while (_towntiles.Count != 2*2)
     {
       LoopCount++;
-      if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
+      if (LoopCount > 1000) { Debug.Log("마을 생성 중 무한루프"); return null; }
       int _index = _towntiles.Count / 2;
 
-      Vector2Int _selectcoor = _enablelines[_index][Random.Range((int)(_enablelines[_index].Count * 0.3f), (int)(_enablelines[_index].Count * 1.0f))].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _enablelines[_index][Random.Range(1, _enablelines.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
       TileData _firsttile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
       if(towncheck(_firsttile)==false)continue;
 
@@ -971,7 +966,7 @@ public class maptext : MonoBehaviour
         if (tile.TileSettle != null) return false;
         if(_towntiles.Contains(tile)) return false;
 
-        List<TileData> _aroundtiles = _NewMapData.GetAroundTile(tile, 2);
+        List<TileData> _aroundtiles = _NewMapData.GetAroundTile(tile, 1);
         foreach (var _tile in _aroundtiles) if (_tile.TileSettle != null) return false;
 
         return true;
@@ -992,11 +987,11 @@ public class maptext : MonoBehaviour
     while (_villagetiles.Count < 3)
     {
       LoopCount++;
-      if (LoopCount > 1000) { Debug.Log("마을 생성 중 무한루프"); return null; }
+      if (LoopCount > 1000) { Debug.Log("촌락 생성 중 무한루프"); return null; }
 
       List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedirs[_villagetiles.Count]);
 
-      Vector2Int _selectcoor = _lines[Random.Range((int)(_lines.Count * 0.25f), (int)(_lines.Count * 1.0f))].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _lines[Random.Range(1, _lines.Count-1)].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
       TileData _villagetile = _NewMapData.Tile(_selectcoor);
 
       if (_villagetile.TopEnvir == TopEnvirType.Mountain) continue;
@@ -1212,6 +1207,7 @@ public class maptext : MonoBehaviour
         string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
         Sprite _topespr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].TopEnvirSprite);
         GameObject _toptile = new GameObject(_topname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        _toptile.transform.SetParent(TileHolder_topenvir);
         RectTransform _toprect = _toptile.GetComponent<RectTransform>();
         _toprect.sizeDelta = _cellsize;
         _toprect.position = new Vector3(_pos.x, _pos.y, _toprect.position.z);
@@ -1219,11 +1215,12 @@ public class maptext : MonoBehaviour
         _toprect.anchoredPosition3D = new Vector3(_toprect.anchoredPosition3D.x, _toprect.anchoredPosition3D.y, 0.0f);
         Image _topimage = _toptile.GetComponent<Image>();
         _topimage.raycastTarget = false;
-        _toptile.transform.SetParent(TileHolder_topenvir);
+        _topimage.sprite = _topespr;
 
         string _landmarkname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Landmark}";
         Sprite _landmarkspr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].landmarkSprite);
         GameObject _landmarktile= new GameObject(_landmarkname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        _landmarktile.transform.SetParent(TileHolder_landmark);
         RectTransform _landmarkrect = _landmarktile.GetComponent<RectTransform>();
         _landmarkrect.sizeDelta = _cellsize;
         _landmarkrect.position = new Vector3(_pos.x, _pos.y, _landmarkrect.position.z);
@@ -1231,7 +1228,7 @@ public class maptext : MonoBehaviour
         _landmarkrect.anchoredPosition3D = new Vector3(_landmarkrect.anchoredPosition3D.x, _landmarkrect.anchoredPosition3D.y, 0.0f);
         Image _landmarkimage = _landmarktile.GetComponent<Image>();
         _landmarkimage.raycastTarget = false;
-        _landmarktile.transform.SetParent(TileHolder_landmark);
+        _landmarkimage.sprite = _landmarkspr;
 
 
         TileButtonScript _buttonscript = _bottomtile.GetComponent<TileButtonScript>();
@@ -1251,7 +1248,7 @@ public class maptext : MonoBehaviour
     }
     //이 밑은 정착지를 버튼으로 만드는거
 
-    List<RectTransform> _settlementrectlist= new List<RectTransform>();
+    List<TileData> _settlementrectlist= new List<TileData>();
     Vector2 _settlementpos = Vector2.zero;
 
     for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
@@ -1260,11 +1257,12 @@ public class maptext : MonoBehaviour
       _settlementpos = _village.Tiles[0].Rect.anchoredPosition;
 
       string _villagename = _village.OriginName;
-      GameObject _villageholder = new GameObject(_villagename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+      GameObject _villageholder = new GameObject(_villagename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
       _villageholder.transform.SetParent(TileHolder_landmark);
       _villageholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
+      _villageholder.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-      _village.Tiles[0].Rect.SetParent(_villageholder.transform);
+      _village.Tiles[0].ButtonScript.LandmarkImage.transform.SetParent(_villageholder.transform);
       MapUIScript.VillageIcons.Add(_villageholder);
     }
 
@@ -1275,19 +1273,20 @@ public class maptext : MonoBehaviour
       Settlement _town = GameManager.Instance.MyGameData.MyMapData.Towns[i];
       for(int j = 0; j < _town.Tiles.Count; j++)
       {
-        _settlementrectlist.Add(_town.Tiles[j].Rect);
+        _settlementrectlist.Add(_town.Tiles[j]);
         _settlementpos += _town.Tiles[j].Rect.anchoredPosition;
       }
       _settlementpos /= 2.0f;
 
       string _townname = _town.OriginName;
-      GameObject _townholder = new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+      GameObject _townholder = new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(CanvasGroup) });
       _townholder.transform.SetParent(TileHolder_landmark);
       _townholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
+      _townholder.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-      for(int j = 0; j < _settlementrectlist.Count; j++)
+      for (int j = 0; j < _settlementrectlist.Count; j++)
       {
-        _settlementrectlist[j].SetParent(_townholder.transform);
+        _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_townholder.transform);
       }
       MapUIScript.TownIcons.Add(_townholder);
     }
@@ -1297,19 +1296,20 @@ public class maptext : MonoBehaviour
     Settlement _city = GameManager.Instance.MyGameData.MyMapData.City;
     for (int i = 0; i < _city.Tiles.Count; i++)
     {
-      _settlementrectlist.Add(_city.Tiles[i].Rect);
+      _settlementrectlist.Add(_city.Tiles[i]);
       _settlementpos += _city.Tiles[i].Rect.anchoredPosition;
     }
     _settlementpos /= 3.0f;
 
     string _cityname = _city.OriginName;
-    GameObject _cityholder = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+    GameObject _cityholder = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
     _cityholder.transform.SetParent(TileHolder_landmark);
     _cityholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
+    _cityholder.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
     for (int j = 0; j < _settlementrectlist.Count; j++)
     {
-      _settlementrectlist[j].SetParent(_cityholder.transform);
+      _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_cityholder.transform);
     }
     MapUIScript.CityIcon=_cityholder;
 
