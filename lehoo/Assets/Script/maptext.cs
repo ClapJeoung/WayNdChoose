@@ -51,72 +51,73 @@ public class maptext : MonoBehaviour
   {
     StartCoroutine(makeperfectmap());
   }
-    private IEnumerator makeperfectmap()
+  private IEnumerator makeperfectmap()
+  {
+    int _index = 0;
+    while (true)
     {
-        int _index = 0;
-        while (true)
-        {
-            _index++;
+      _index++;
       MapData _data = MakeMap();
-            bool _villageriver = false, _villageforest = false, _villagehighland = false, _villagemountain = false, _villagesea = false;
-            bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
-            bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false;
+      if (_data == null) continue;
+      bool _villageriver = false, _villageforest = false, _villagehighland = false, _villagemountain = false, _villagesea = false;
+      bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
+      bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false;
 
-            foreach (var _village in _data.Villages)
-            {
-                if (_village.IsRiver) _villageriver = true;
-                if (_village.IsForest) _villageforest = true;
-                if (_village.IsHighland) _villagehighland = true;
-                if (_village.IsMountain) _villagemountain = true;
-                if (_village.IsSea) _villagesea = true;
-            }
-            foreach (var _town in _data.Towns)
-            {
-                if (_town.IsRiver) _townriver = true;
-                if (_town.IsForest) _townforest = true;
-                if (_town.IsHighland) _townhighland = true;
-                if (_town.IsMountain) _townmountain = true;
-                if (_town.IsSea) _townsea = true;
-            }
+      foreach (var _village in _data.Villages)
+      {
+        if (_village.IsRiver) _villageriver = true;
+        if (_village.IsForest) _villageforest = true;
+        if (_village.IsHighland) _villagehighland = true;
+        if (_village.IsMountain) _villagemountain = true;
+        if (_village.IsSea) _villagesea = true;
+      }
+      foreach (var _town in _data.Towns)
+      {
+        if (_town.IsRiver) _townriver = true;
+        if (_town.IsForest) _townforest = true;
+        if (_town.IsHighland) _townhighland = true;
+        if (_town.IsMountain) _townmountain = true;
+        if (_town.IsSea) _townsea = true;
+      }
       var _city = _data.City;
       if (_city.IsRiver) _cityriver = true;
       if (_city.IsForest) _cityforest = true;
       if (_city.IsHighland) _cityhighland = true;
       if (_city.IsMountain) _citymountain = true;
 
-      if (!_villageriver||!_villageforest||!_villagemountain||!_villagesea||
-               !_townriver || !_townforest  || !_townmountain || !_townsea ||
-               !_cityriver || !_cityforest  || !_citymountain )
-            {
-                string _str = "";
-                if (!_villageriver) _str += "마을 강  ";
-                if (!_villageforest) _str += "마을 숲  ";
-              //  if (!_villagehighland) _str += "마을 고원  ";
-                if (!_villagemountain) _str += "마을 산  ";
-                if (!_villagesea) _str += "마을 바다  ";
-                if (!_townriver) _str += "도시 강  ";
-                if (!_townforest) _str += "도시 숲  ";
-              //  if (!_townhighland) _str += "도시 고원  ";
-                if (!_townmountain) _str += "도시 산  ";
-                if (!_townsea) _str += "도시 바다  ";
-                if (!_cityriver) _str += "성채 강  ";
-                if (!_cityforest) _str += "성채 숲  ";
-             //   if (!_cityhighland) _str += "성채 고원  ";
-                if (!_citymountain) _str += "성채 산  ";
+      if (!_villageriver || !_villageforest || !_villagemountain || !_villagesea ||
+               !_townriver || !_townforest || !_townmountain || !_townsea ||
+               !_cityriver || !_cityforest || !_citymountain)
+      {
+        string _str = "";
+        if (!_villageriver) _str += "마을 강  ";
+        if (!_villageforest) _str += "마을 숲  ";
+        //  if (!_villagehighland) _str += "마을 고원  ";
+        if (!_villagemountain) _str += "마을 산  ";
+        if (!_villagesea) _str += "마을 바다  ";
+        if (!_townriver) _str += "도시 강  ";
+        if (!_townforest) _str += "도시 숲  ";
+        //  if (!_townhighland) _str += "도시 고원  ";
+        if (!_townmountain) _str += "도시 산  ";
+        if (!_townsea) _str += "도시 바다  ";
+        if (!_cityriver) _str += "성채 강  ";
+        if (!_cityforest) _str += "성채 숲  ";
+        //   if (!_cityhighland) _str += "성채 고원  ";
+        if (!_citymountain) _str += "성채 산  ";
 
-                Debug.Log(_index+"번 맵    "+ _str + "없음");
-                yield return null;
-                continue;
-            }
-      if (_data.Villages.Count != 3) { yield return null;continue; }
+        Debug.Log(_index + "번 맵    " + _str + "없음");
+        yield return null;
+        continue;
+      }
+      if (_data.Villages.Count != 3) { yield return null; continue; }
       if (_data.Towns.Count != 2) { yield return null; continue; }
-      if (_data.City==null) {  yield return null; continue; }
+      if (_data.City == null) { yield return null; continue; }
 
       Debug.Log($"{_index}번째 맵 성공\n");
-            GameManager.Instance.MyGameData.MyMapData = _data;
-            break;
-        }
+      GameManager.Instance.MyGameData.MyMapData = _data;
+      break;
     }
+  }
   /// <summary>
   /// range 범위만큼의 타일 개수(range 최소 0)
   /// </summary>
@@ -304,7 +305,7 @@ public class maptext : MonoBehaviour
         {
           if((_seadirs[0]==0&&_seadirs[1]==3)|| (_seadirs[0] == 3 && _seadirs[1] == 0))
           {
-            _beaches[i].Rotate = j;
+            _beaches[i].Rotation = j;
           }
 
           _seadirs[0] = RotateDir(_seadirs[0], -1);
@@ -318,7 +319,7 @@ public class maptext : MonoBehaviour
           if (MaxDirIndex() == _seadirs.Count - 1)
           {
             _beaches[i].BottomEnvirSprite = MyTiles.GetBeachTile(_seadirs.Count);
-            _beaches[i].Rotate = j;
+            _beaches[i].Rotation = j;
             break;
           }
           for (int k = 0; k < _seadirs.Count; k++)
@@ -450,7 +451,7 @@ public class maptext : MonoBehaviour
         {
           _NewMapData.Tile(_riverdatas[i].RiverCoors[j]).BottomEnvir = BottomEnvirType.RiverBeach;
           _NewMapData.Tile(_riverdatas[i].RiverCoors[j]).BottomEnvirSprite = MyTiles.GetRiverBeach(1, 3);
-          _NewMapData.Tile(_riverdatas[i].RiverCoors[j]).Rotate = RotateDir(i, 3);
+          _NewMapData.Tile(_riverdatas[i].RiverCoors[j]).Rotation = RotateDir(i, 3);
 
         }//발원지
         else if (j == _riverdatas[i].RiverCoors.Count - 1)
@@ -469,7 +470,7 @@ public class maptext : MonoBehaviour
             {
               _riverbeach.BottomEnvir = BottomEnvirType.RiverBeach;
               _riverbeach.BottomEnvirSprite = MyTiles.GetRiverBeach(_seadirs.Count, RotateDir(_lastdir, -k) - 1);
-              _riverbeach.Rotate = k + 1;
+              _riverbeach.Rotation = k + 1;
               break;
             }
             for (int l = 0; l < _seadirs.Count; l++)
@@ -496,7 +497,7 @@ public class maptext : MonoBehaviour
             if (_min == 0 && _max <= 3)
             {
               _rivertile.BottomEnvir = BottomEnvirType.River;
-              _rivertile.Rotate = k;
+              _rivertile.Rotation = k;
               _rivertile.BottomEnvirSprite = MyTiles.GetRiver(_max);
             }
 
@@ -1177,7 +1178,7 @@ public class maptext : MonoBehaviour
         Vector3Int _coordinate = new Vector3Int(j, i, 0);
 
         Vector3 _pos = Tilemap_bottom.CellToWorld(_coordinate);
-        int _rotate = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].Rotate;
+        int _rotate = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].Rotation;
 
         string _bottomname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).BottomEnvir}";
         Sprite _bottomspr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].BottomEnvirSprite);

@@ -54,6 +54,7 @@ public class UI_Expereince_info : UI_default
       ExpName.text = _name;
       ExpIllust.sprite = _illust;
       ExpEffect.text = _description + "<br><br>" + _effect;
+      LayoutRebuilder.ForceRebuildLayoutImmediate(ExpEffect.transform as RectTransform);
 
       if (exp.ExpType == ExpTypeEnum.Mad)
       {
@@ -81,6 +82,7 @@ public class UI_Expereince_info : UI_default
         ExpIllust.sprite = _illust;
         ExpEffect.text = _description + "<br><br>" + _effect;
         ExpTurn.text = exp.Duration.ToString();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(ExpEffect.transform as RectTransform);
 
       }//다른 경험 클릭하면 해당 경험 정보로 대체
     }

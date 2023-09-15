@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
     return GetTextData(_str);
   }
   /// <summary>
-  /// 이름(아이콘 없음),이름(아이콘 있음),아이콘,설명,간략설명,증가,크게 증가,감소,크게 감소
+  /// 이름(X),이름(O),아이콘,설명,간략설명,+(X),++(X),-(X),--(X),+(O),++(O),-(O),--(O) 
   /// </summary>
   /// <param name="_theme"></param>
   /// <param name="texttype"></param>
@@ -131,6 +131,18 @@ public class GameManager : MonoBehaviour
         break;
       case 8:
         _name += "DOWN_HIGH";
+        break;
+      case 9:
+        _name += "UP_NORMAL_ICON";
+        break;
+      case 10:
+        _name += "UP_HIGH_ICON";
+        break;
+      case 11:
+        _name += "DOWN_NORMAL_ICON";
+        break;
+      case 12:
+        _name += "DOWN_HIGH_ICON";
         break;
     }
     return GetTextData(_name);
@@ -422,7 +434,7 @@ public class GameManager : MonoBehaviour
                 break;
             }
           }
-          UIManager.Instance.WolfSidePanel.UpdateUI();
+          UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
         }
         break;
     }
@@ -467,7 +479,7 @@ public class GameManager : MonoBehaviour
                 break;
             }
           }
-          UIManager.Instance.WolfSidePanel.UpdateUI();
+          UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
         }
         break;
     }
@@ -539,10 +551,10 @@ public class GameManager : MonoBehaviour
     switch (_tendencytype)
     {
       case TendencyTypeEnum.Body:
-        MyGameData.Tendency_Body.AddCount(index.Equals(0) ? false : true);
+        MyGameData.Tendency_Body.AddCount(index.Equals(0) ? true : false);
         break;
       case TendencyTypeEnum.Head:
-        MyGameData.Tendency_Head.AddCount(index.Equals(0) ? false : true);
+        MyGameData.Tendency_Head.AddCount(index.Equals(0) ? true : false);
         break;
     }
   }
@@ -566,7 +578,6 @@ public class GameManager : MonoBehaviour
       CreateNewMap();
 
     }
-    if (Input.GetKeyDown(KeyCode.F1)) MyGameData.CurrentSanity = 3;
   }
   public void GameOver(GameOverTypeEnum gameovertype)
   {

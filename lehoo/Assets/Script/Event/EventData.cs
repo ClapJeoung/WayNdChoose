@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
+using static UnityEditor.Progress;
 
 public class EventHolder
 {
@@ -40,7 +41,7 @@ public class EventHolder
         _json.Selection_Info = "2@1,3";
         _json.Failure_Penalty = "1@1";
         _json.Failure_Penalty_info = "1@2";
-        _json.Reward_Target = "4@5";
+        _json.Reward_Target = "4@3";
         _json.Reward_Info = "0@0";
         defaultevent_outer = ReturnEventDataDefault<EventData>(_json);
       }
@@ -137,7 +138,7 @@ public class EventHolder
               Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
             }
             Data.SuccessDatas = new SuccessData[1];
-            Data.SuccessDatas[0] = new SuccessData(Data);
+            Data.SuccessDatas[0] = new SuccessData(Data, TendencyTypeEnum.None,0);
             Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
             switch (Data.SuccessDatas[0].Reward_Target)
             {
@@ -309,10 +310,10 @@ public class EventHolder
         Quest_Cult.Event_Cult_Hideout_1 = eventdata;
         break;
       case 13:
-        Quest_Cult.Events_Cult_2.Add(eventdata);
+     //   Quest_Cult.Events_Cult_2.Add(eventdata);
         break;
       case 14:
-        Quest_Cult.Event_Cult_Hideout_2 = eventdata;
+      //  Quest_Cult.Event_Cult_Hideout_2 = eventdata;
         break;
       case 15:
         Quest_Cult.Events_Cult_Final.Add(eventdata);
@@ -333,10 +334,10 @@ public class EventHolder
         Quest_Cult.Event_Wolf_Encounter_1= eventdata;
         break;
       case 21:
-        Quest_Cult.Events_Wolf_2.Add(eventdata);
+    //    Quest_Cult.Events_Wolf_2.Add(eventdata);
         break;
       case 22:
-        Quest_Cult.Event_Wolf_Encounter_2= eventdata;
+     //   Quest_Cult.Event_Wolf_Encounter_2= eventdata;
         break;
       case 23:
         Quest_Cult.Events_Wolf_Final.Add(eventdata);
@@ -355,6 +356,8 @@ public class EventHolder
   /// <param name="tendency"></param>
   public void RemoveEvent(EventDataDefulat eventdata,bool success,int tendency)
   {
+    if (GameManager.Instance.MyGameData.SuccessEvent_All.Contains(eventdata.ID) || GameManager.Instance.MyGameData.FailEvent_All.Contains(eventdata.ID)) return;
+
     if (eventdata.GetType() == typeof(QuestEventData_Wolf))
     {
       if (success) GameManager.Instance.MyGameData.SuccessEvent_All.Add(eventdata.ID);
@@ -430,7 +433,7 @@ public class EventHolder
     foreach (var _follow in AllFollowEvents)
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_follow.ID)) continue;
-      if (_follow.RightSeason == false) continue;
+      if (_follow.IsRightSeason == false) continue;
       if (_follow.AppearSpace!=EventAppearType.Outer) continue;
 
       switch (_follow.FollowType)
@@ -490,7 +493,7 @@ public class EventHolder
     foreach (var _event in AllNormalEvents)
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
-      if (_event.RightSeason == false) continue;
+      if (_event.IsRightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
 
       _allevents.Add(_event);
@@ -531,12 +534,12 @@ public class EventHolder
     }
     _allevents.Clear();
     Dictionary<List<EventDataDefulat>, int> _dic = new Dictionary<List<EventDataDefulat>, int>();
-    _dic.Add(_questevents, ConstValues.EventPer_Quest);
-    _dic.Add(_followevents, ConstValues.EventPer_Follow);
-    _dic.Add(_normalevents, ConstValues.EventPer_Normal);
+    if(_questevents.Count>0) _dic.Add(_questevents, ConstValues.EventPer_Quest);
+    if(_followevents.Count>0) _dic.Add(_followevents, ConstValues.EventPer_Follow);
+    if(_normalevents.Count>0) _dic.Add(_normalevents, ConstValues.EventPer_Normal);
     var _result = GetListByRatio(_dic);
 
-    if (_result.Count == 0)
+    if (_result == null || _result.Count == 0)
     {
       return DefaultEvent_Outer;
     }
@@ -570,7 +573,7 @@ public class EventHolder
     foreach (var _follow in AllFollowEvents)
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_follow.ID)) continue;
-      if (_follow.RightSeason == false) continue;
+      if (_follow.IsRightSeason == false) continue;
       if (_follow.RightSpace(settletype) == false) continue;
 
       switch (_follow.FollowType)
@@ -630,7 +633,7 @@ public class EventHolder
     foreach (var _event in AllNormalEvents)
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
-      if (_event.RightSeason == false) continue;
+      if (_event.IsRightSeason == false) continue;
       if (_event.RightSpace(settletype) == false) continue;
 
       _allevents.Add(_event);
@@ -695,16 +698,17 @@ public class EventHolder
     _allevents.Clear();
     Dictionary<List<EventDataDefulat>, int> _dic = new Dictionary<List<EventDataDefulat>, int>();
     _dic.Add(_questevents, ConstValues.EventPer_Quest);
-    _dic.Add(_followevents, ConstValues.EventPer_Follow);
-    _dic.Add(_normalevents, ConstValues.EventPer_Normal);
+    if (_questevents.Count > 0) _dic.Add(_questevents, ConstValues.EventPer_Quest);
+    if (_followevents.Count > 0) _dic.Add(_followevents, ConstValues.EventPer_Follow);
+    if (_normalevents.Count > 0) _dic.Add(_normalevents, ConstValues.EventPer_Normal);
     var _result = GetListByRatio(_dic);
 
-    if (_result.Count == 0)
+    if (_result == null|| _result.Count == 0)
     {
       return DefaultEvent_Settlement;
     }
     else
-    return _result[Random.Range(0,_result.Count)];
+      return _result[Random.Range(0,_result.Count)];
   }
   private List<T> GetListByRatio<T>(Dictionary<List<T>,int> listAndvalue)
   {
@@ -726,7 +730,9 @@ public class EventHolder
       _sum += _availablevalues[i];
       if (_max < _sum) return _availabelists[i];
     }
-    return _availabelists[_availabelists.Count];
+    if (_availabelists.Count > 0)
+      return _availabelists[_availabelists.Count];
+    else return null;
   }
 }
 public class TileInfoData
@@ -764,7 +770,7 @@ public class EventDataDefulat
   {
     get
     {
-      string _str = GameManager.Instance.GetTextData(ID + "_NAME");
+      string _str = GameManager.Instance.GetTextData(ID + "_Name");
       return WNCText.GetSeasonText(_str);
     }
   }
@@ -783,10 +789,10 @@ public class EventDataDefulat
       if (beginningdescriptions.Count == 0)
       {
         string _str = GameManager.Instance.GetTextData(ID + "_Descriptions");
-        List<string> beginningdescriptions = _str.Split('@').ToList();
-        for (int i = 0; i < beginningdescriptions.Count; i++)
+        List<string> _temp = _str.Split('@').ToList();
+        for (int i = 0; i < _temp.Count; i++)
         {
-          beginningdescriptions[i] = WNCText.GetSeasonText(beginningdescriptions[i]);
+          beginningdescriptions.Add(WNCText.GetSeasonText(_temp[i]));
         }
       }
       return beginningdescriptions;
@@ -801,7 +807,7 @@ public class EventDataDefulat
       return GameManager.Instance.MyGameData.Turn;
     }
   }
-  public bool RightSeason
+  public bool IsRightSeason
   {
     get
     {
@@ -871,11 +877,11 @@ public class SelectionData
   private string ID { get { return MyEvent.ID; } }
   public string Name
   {
-    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "Selecting_Names").Split('@')[Index]); }
+    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting_Names").Split('@')[Index]); }
   }
   public string SubDescription
   {
-    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "Selecting_Subdescriptions").Split('@')[Index]); }
+    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting_Subdescriptions").Split('@')[Index]); }
   }
 
   public SelectionTargetType ThisSelectionType = SelectionTargetType.Pay;
@@ -903,7 +909,7 @@ public class FailureData
   {
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
-  private string ID { get { return ID +(Tendencytype==TendencyTypeEnum.None?"":Index==0?"L":"R")+"Fail"; } }
+  private string ID { get { return MyEvent.ID+"_" +(Tendencytype==TendencyTypeEnum.None?"":Index==0?"L":"R")+"Fail"; } }
   private List<string> descriptions=new List<string>();
   public List<string> Descriptions
   {
@@ -911,10 +917,10 @@ public class FailureData
     {
       if (descriptions.Count == 0)
       {
-        descriptions = GameManager.Instance.GetTextData(ID + "_Description").Split('@').ToList();
-        for (int i = 0; i < descriptions.Count; i++)
+        List<string> _temp = GameManager.Instance.GetTextData(ID + "_Descriptions").Split('@').ToList();
+        for (int i = 0; i < _temp.Count; i++)
         {
-          descriptions[i] = WNCText.GetSeasonText(descriptions[i]);
+          descriptions.Add(WNCText.GetSeasonText(_temp[i]));
         }
       }
       return descriptions;
@@ -948,15 +954,11 @@ public class SuccessData
   /// 성향 없는 경우
   /// </summary>
   /// <param name="myevent"></param>
-  public SuccessData(EventDataDefulat myevent)
-  {
-    MyEvent = myevent; Index = 0; Tendencytype = TendencyTypeEnum.None;
-  }
   public SuccessData(EventDataDefulat myevent,TendencyTypeEnum tendencytype, int index)
   {
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
-  private string ID { get { return ID + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
+  private string ID { get { return MyEvent.ID + "_" + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
   private List<string> descriptions= new List<string>();
   public List<string> Descriptions
   {
@@ -964,10 +966,10 @@ public class SuccessData
     {
       if (descriptions.Count == 0)
       {
-        descriptions = GameManager.Instance.GetTextData(ID + "_Description").Split('@').ToList();
-        for (int i = 0; i < descriptions.Count; i++)
+        List<string> _temp = GameManager.Instance.GetTextData(ID + "_Descriptions").Split('@').ToList();
+        for (int i = 0; i < _temp.Count; i++)
         {
-          descriptions[i] = WNCText.GetSeasonText(descriptions[i]);
+          descriptions.Add(WNCText.GetSeasonText(_temp[i]));
         }
       }
       return descriptions;
@@ -1128,8 +1130,8 @@ public class QuestHolder_Cult:Quest
   public QuestEventData_Wolf Event_Cult_Hideout_0 = null;                          //QuestEventType 10
   public List<QuestEventData_Wolf> Events_Cult_1 = new List<QuestEventData_Wolf>();     //QuestEventType 11
   public QuestEventData_Wolf Event_Cult_Hideout_1 = null;                          //QuestEventType 12
-  public List<QuestEventData_Wolf> Events_Cult_2 = new List<QuestEventData_Wolf>();     //QuestEventType 13
-  public QuestEventData_Wolf Event_Cult_Hideout_2 = null;                          //QuestEventType 14
+ // public List<QuestEventData_Wolf> Events_Cult_2 = new List<QuestEventData_Wolf>();     //QuestEventType 13
+//  public QuestEventData_Wolf Event_Cult_Hideout_2 = null;                          //QuestEventType 14
   public List<QuestEventData_Wolf> Events_Cult_Final = new List<QuestEventData_Wolf>(); //QuestEventType 15
   public QuestEventData_Wolf Event_Cult_Hideout_Final = null;                      //QuestEventType 16
 
@@ -1137,8 +1139,8 @@ public class QuestHolder_Cult:Quest
   public QuestEventData_Wolf Event_Wolf_Encounter_0 = null;                        //QuestEventType 18
   public List<QuestEventData_Wolf> Events_Wolf_1 = new List<QuestEventData_Wolf>();     //QuestEventType 19
   public QuestEventData_Wolf Event_Wolf_Encounter_1 = null;                        //QuestEventType 20
-  public List<QuestEventData_Wolf> Events_Wolf_2 = new List<QuestEventData_Wolf>();     //QuestEventType 21
-  public QuestEventData_Wolf Event_Wolf_Encounter_2 = null;                        //QuestEventType 22
+ // public List<QuestEventData_Wolf> Events_Wolf_2 = new List<QuestEventData_Wolf>();     //QuestEventType 21
+ // public QuestEventData_Wolf Event_Wolf_Encounter_2 = null;                        //QuestEventType 22
   public List<QuestEventData_Wolf> Events_Wolf_Final = new List<QuestEventData_Wolf>(); //QuestEventType 23
   public QuestEventData_Wolf Event_Wolf_Encounter_Final = null;                    //QuestEventType 24
 
@@ -1151,21 +1153,19 @@ public class QuestHolder_Cult:Quest
     List<List<QuestEventData_Wolf>> _availablelists = new List<List<QuestEventData_Wolf>>();
 
     _availablelists.Add(Events_Public_Common);
-    if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 4) _availablelists.Add(Events_Public_Final);
+    if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 3) _availablelists.Add(Events_Public_Final);
 
     switch (GameManager.Instance.MyGameData.Quest_Cult_Type)
     {
       case 0:
         if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Cult_0);
         if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 1)_availablelists.Add(Events_Cult_1);
-        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 2)_availablelists.Add(Events_Cult_2);
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 3) _availablelists.Add(Events_Cult_Final);
+        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 2)_availablelists.Add(Events_Cult_Final);
         break;
       case 1:
         if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Wolf_0);
         if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 1) _availablelists.Add(Events_Wolf_1);
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 2) _availablelists.Add(Events_Wolf_2);
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 3) _availablelists.Add(Events_Wolf_Final);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 2) _availablelists.Add(Events_Wolf_Final);
         break;
     }
 

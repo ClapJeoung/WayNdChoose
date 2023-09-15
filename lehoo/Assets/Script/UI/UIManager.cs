@@ -37,7 +37,7 @@ public class UIManager : MonoBehaviour
   public UI_Mad MyMadPanel = null;
   public UI_FollowEnding MyFollowEnding = null;
   public UI_Gameover GameOverUI = null;
-  public SidePanel_Quest_Wolf WolfSidePanel = null;
+  public SidePanel_Quest_Wolf QuestSidePanel_Cult = null;
   [SerializeField] private RectTransform HpTextRect = null;
   [SerializeField] private RectTransform SanityTextRect = null;
   [SerializeField] private RectTransform GoldTextRect = null;
@@ -140,6 +140,7 @@ public class UIManager : MonoBehaviour
     //  else if(_value > 0){ StartCoroutine(genstatus(_value, HpTextRect.position));HPGenParticle.Play(); }
     }
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
+    Debug.Log("체력 수치 업데이트");
     lasthp = GameManager.Instance.MyGameData.HP;
   }
   [SerializeField] private TextMeshProUGUI SanityText_current = null;
@@ -155,6 +156,7 @@ public class UIManager : MonoBehaviour
     }
     SanityText_current.text = GameManager.Instance.MyGameData.CurrentSanity.ToString();
     SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
+    Debug.Log("정신력, 최대 정신력 수치 업데이트");
   lastsanity = GameManager.Instance.MyGameData.CurrentSanity;
   }
   [SerializeField] private TextMeshProUGUI GoldText = null;
@@ -168,12 +170,14 @@ public class UIManager : MonoBehaviour
    //   else if (_value > 0) { StartCoroutine(genstatus(_value, GoldTextRect.position)); GoldGenParticle.Play(); }
     }
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
-    lastgold= GameManager.Instance.MyGameData.Gold;
+    Debug.Log("골드 수치 업데이트");
+    lastgold = GameManager.Instance.MyGameData.Gold;
   }
   [SerializeField] private TextMeshProUGUI MovePointText = null;
   public void UpdateMovePointText()
   {
     MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
+    Debug.Log("이동력 수치 업데이트");
   }
   [Space(10)]
   [SerializeField] private ParticleSystem HPLossParticle = null;
@@ -979,7 +983,7 @@ public static class WNCText
   public static string PercentageColor(int percent)
   {
     string _html = ColorUtility.ToHtmlStringRGB(Color.Lerp(FailColor, SuccessColor, percent / 100.0f));
-    return $"<#{_html}>{percent}</color>";
+    return $"<#{_html}>{percent}%</color>";
   }
   public static string PositiveColor(string str)
   {
@@ -998,8 +1002,8 @@ public static class WNCText
     List<int> _startindex = new List<int>(), _endindex = new List<int>();
     for (int i = 0; i < str.Length; i++)
     {
-      if (str[i].Equals("[")) _startindex.Add(i);
-      else if (str[i].Equals("]")) _endindex.Add(i);
+      if (str[i].Equals('[')) _startindex.Add(i);
+      else if (str[i].Equals(']')) _endindex.Add(i);
     }
     if (_startindex.Count.Equals(0)) return str;
 
@@ -1010,14 +1014,14 @@ public static class WNCText
       int _length = _endindex[i] - _start;
       _strsegs.Add(str.Substring(_start, _length));
     }
-
+    string _newstr = str;
     int _currentseason = GameManager.Instance.MyGameData.Turn;
     for (int i = 0; i < _strsegs.Count; i++)
     {
-      str.Replace("[" + _strsegs[i] + "]", _strsegs[i].Split(",")[_currentseason]);
+      _newstr= _newstr.Replace("[" + _strsegs[i] + "]", _strsegs[i].Split(",")[_currentseason]);
     }
 
-    return str;
+    return _newstr;
   }
 
 }

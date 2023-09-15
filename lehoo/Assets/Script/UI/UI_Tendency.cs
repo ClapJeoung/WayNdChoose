@@ -47,6 +47,7 @@ public class UI_Tendency : UI_default
     Icon.sprite= _icon;
     Illust.sprite = _tendency.Illust;
     Description.text = _description + "<br><br>" + _effect;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform as RectTransform);
 
     if (CurrentTendencyType.Equals(TendencyTypeEnum.None))
     {

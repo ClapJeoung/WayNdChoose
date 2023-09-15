@@ -3,104 +3,87 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Diagnostics.Tracing;
 
 public class UI_Selection : MonoBehaviour
 {
   public CanvasGroup MyGroup = null;
+  public Vector2 LeftPos= Vector2.zero;
+  public Vector2 RightPos= Vector2.zero;
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [SerializeField] private RectTransform MyRect = null;
+  [SerializeField] private Image MySelectionImage = null;
   [SerializeField] private TextMeshProUGUI MyDescription = null;
-  [SerializeField] private GameObject PayOrElseObj = null;
-  [SerializeField] private Image PayOrElseIcon = null;
+  [SerializeField] private Image PayIcon = null;
   [SerializeField] private GameObject ThemeObj_A = null;
   [SerializeField] private Image ThemeIcon_A = null;
   [SerializeField] private GameObject ThemeObj_B = null;
   [SerializeField] private Image ThemeIcon_B = null;
+  [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
   public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
-  public int Index = 0;
+  public bool IsLeft = true;
+  public int Index
+  {
+    get { return IsLeft ? 0 : 1; }
+  }
   //현재 이 선택지가 가지는 설명문
   public SelectionData MySelectionData = null;
-  public Vector2 OriginPos= Vector2.zero;
-  private void Awake()
+  public void DeActive() => StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.6f,false));
+  public void Setup(SelectionData _data)
   {
-    OriginPos = GetComponent<RectTransform>().anchoredPosition;
-  }
-  public void DeActive() => StartCoroutine(unselected());
-
-  private IEnumerator unselected()
-  {
-    float _time = 0.0f, _targettime = UIManager.Instance.SmallPanelFadeTime;
-    float _startalpha = 1.0f, _endalpha = 0.0f;
-    float _currentalpha = _startalpha;
-    MyGroup.alpha = _currentalpha;
-    MyGroup.interactable = false; MyGroup.blocksRaycasts = false;
-    while (_time < _targettime)
+    MySelectionData = _data;
+    if (MyGroup.alpha == 0.0f)
     {
-      _currentalpha = Mathf.Lerp(_startalpha, _endalpha,Mathf.Pow(_time / _targettime,0.6f));
-      MyGroup.alpha = _currentalpha;
-      _time += Time.deltaTime;
-      yield return null;
+      MyGroup.alpha = 1.0f;
     }
-    MyGroup.alpha = _endalpha;
-    MyRect.anchoredPosition = OriginPos;
-  }
-  public void Active(SelectionData _data)
-  {
-    switch (_data.ThisSelectionType)
+    MyGroup.interactable = true;
+    MyGroup.blocksRaycasts = true;
+
+    switch (MySelectionData.ThisSelectionType)
     {
       case SelectionTargetType.Pay:
-        if (PayOrElseObj.activeInHierarchy.Equals(false)) PayOrElseObj.SetActive(true);
+        if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(false)) PayIcon.transform.parent.gameObject.SetActive(true);
         if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
         if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        switch (_data.SelectionPayTarget)
+        switch (MySelectionData.SelectionPayTarget)
         {
-          case StatusType.HP:PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;break;
-          case StatusType.Sanity:PayOrElseIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;break;
-          case StatusType.Gold:PayOrElseIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;break;
+          case StatusType.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;break;
+          case StatusType.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;break;
+          case StatusType.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;break;
         }
         break;
       case SelectionTargetType.Check_Single:
-        if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
+        if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
         if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
         if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[0]);
+        ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0]);
         break;
       case SelectionTargetType.Check_Multy:
-        if (PayOrElseObj.activeInHierarchy.Equals(true)) PayOrElseObj.SetActive(false);
+        if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
         if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
         if (ThemeObj_B.activeInHierarchy.Equals(false)) ThemeObj_B.SetActive(true);
         Sprite[] _sprs = new Sprite[2];
-        _sprs[0] = GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[0]);
-        _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(_data.SelectionCheckSkill[1]);
+        _sprs[0] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0]);
+        _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[1]);
         ThemeIcon_A.sprite = _sprs[0];ThemeIcon_B.sprite = _sprs[1];
         break;
     }
-    MySelectionData = _data;
-    MyDescription.text = _data.SubDescription;
-    StartCoroutine(fadein());
-  }
-  private IEnumerator fadein()
-  {
-    float _time = 0.0f, _targettime = UIManager.Instance.SmallPanelFadeTime;
-    float _startalpha = 0.0f, _endalpha = 1.0f;
-    float _currentalpha = _startalpha;
-    Vector2 _endpos = MyRect.anchoredPosition, _startpos = Vector2.zero;
-    Vector2 _currentpos = _startpos;
-    MyRect.anchoredPosition = _currentpos;
-    MyGroup.alpha = _currentalpha;
-    MyGroup.interactable = false; MyGroup.blocksRaycasts = false;
-    while (_time < _targettime)
+
+    MyTendencyType = MySelectionData.Tendencytype;
+    MyPreviewInteractive.MySelectionTendency = MyTendencyType;
+    Sprite _selectionimage = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
+    if (MyTendencyType == TendencyTypeEnum.None)
     {
-      _currentpos = Vector2.Lerp(_startpos, _endpos,UIManager.Instance.UIPanelOpenCurve.Evaluate(_time / _targettime));
-      MyRect.anchoredPosition = _currentpos;
-      _currentalpha = Mathf.Lerp(_startalpha, _endalpha,Mathf.Pow(_time / _targettime,2.0f)*1.3f);
-      MyGroup.alpha = _currentalpha;
-      _time += Time.deltaTime;
-      yield return null;
+      MyRect.anchoredPosition = Vector2.zero;
     }
-    MyRect.anchoredPosition = _endpos;
-    MyGroup.alpha = _endalpha;
-    MyGroup.interactable = true;MyGroup.blocksRaycasts = true;
+    else
+    {
+      MyRect.anchoredPosition = IsLeft ? LeftPos : RightPos;
+      MyPreviewInteractive.MySelectionTendencyDir = IsLeft;
+    }
+
+    MySelectionImage.sprite = _selectionimage;
+    MyDescription.text = _data.SubDescription;
   }
   public void Select()
   {
@@ -112,13 +95,15 @@ public class UI_Selection : MonoBehaviour
 
   public IEnumerator movetocenter()
   {
-    float _time = 0.0f, _targettime = 0.7f;
+    float _time = 0.0f, _targettime = 1.2f;
+    Vector2 _originpos = MyRect.anchoredPosition;
     while (_time < _targettime)
     {
-      MyRect.anchoredPosition = Vector2.Lerp(OriginPos, Vector2.zero, UIManager.Instance.UIPanelOpenCurve.Evaluate(_time / _targettime));
+      MyRect.anchoredPosition = Vector2.Lerp(_originpos, Vector2.zero, UIManager.Instance.UIPanelOpenCurve.Evaluate(_time / _targettime));
       _time += Time.deltaTime;
       yield return null;
     }
     MyRect.anchoredPosition = Vector2.zero;
+    yield return new WaitForSeconds(0.5f);
   }
 }

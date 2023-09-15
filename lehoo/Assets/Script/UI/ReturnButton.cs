@@ -21,7 +21,7 @@ public class ReturnButton : MonoBehaviour
   public Vector2 RightOutsidePos=Vector2.zero;
   public Vector2 RightInsidePos=Vector2.zero;
   public Vector2 CenterPos=Vector2.zero;
-  public float AppearTime = 0.4f;
+  public float AppearTime = 0.7f;
   public bool DrawGizmo = true;
   public CanvasGroup WarningPanelGroup = null;
   public TextMeshProUGUI WarningDescription = null;
@@ -32,27 +32,51 @@ public class ReturnButton : MonoBehaviour
   {
     if (UIManager.Instance.IsWorking) return;
 
-    if (Warned == false)
+    if (CurrentUI as UI_dialogue != null)
     {
-      if (CurrentUI as UI_dialogue != null)
+      UI_dialogue _dialogue = CurrentUI as UI_dialogue;
+      if (_dialogue.RemainReward == true&&Warned==false)
       {
-        UI_dialogue _dialogue = CurrentUI as UI_dialogue;
-        if (_dialogue.RemainReward == true)
-        {
-          WarningDescription.text = GameManager.Instance.GetTextData("NOREWARD");
-          SetWarningButton();
-        }
+        WarningDescription.text = GameManager.Instance.GetTextData("NOREWARD");
+        SetWarningButton();
+        return;
       }
-      else if (CurrentUI as UI_Settlement != null)
+      else
       {
-        if (GameManager.Instance.MyGameData.MovePoint == 0)
-        {
-          WarningDescription.text = GameManager.Instance.GetTextData("NOMOVEPOINT");
-          SetWarningButton();
-        }
+        UIManager.Instance.MyDialogue.CloseUI();
       }
     }
+    else if (CurrentUI as UI_Settlement != null)
+    {
+      if (GameManager.Instance.MyGameData.MovePoint == 0&&Warned==false)
+      {
+        WarningDescription.text = GameManager.Instance.GetTextData("NOMOVEPOINT");
+        SetWarningButton();
+        return;
+      }
+      else
+      {
+        UIManager.Instance.MySettleUI.CloseUI();
+      }
+    }
+
+    switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Cult:
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+        {
+          case 0:
+            if (UIManager.Instance.QuestUI_Cult.IsOpen) UIManager.Instance.QuestUI_Cult.CloseUI_Auto();
+            break;
+          case 1:
+            break;
+          case 2:
+            break;
+        }
+        break;
+    }
   }
+
   public void SetWarningButton()
   {
     Warned = true;
@@ -95,22 +119,29 @@ public class ReturnButton : MonoBehaviour
   /// <param name="curerntui"></param>
   public void Open(int dir,UI_default curerntui)
   {
+    Warned = false;
     Dir = dir;
     CurrentUI= curerntui;
     Vector2 _startpos = Dir == 0 ? LeftOutsidePos : RightOutsidePos;
     Vector2 _endpos = Dir == 0 ? LeftInsidePos : RightInsidePos;
     StartCoroutine(UIManager.Instance.moverect(MyRect, _startpos, _endpos, AppearTime, UIManager.Instance.UIPanelOpenCurve));
     MyText.text = IsMapButton == true ? GameManager.Instance.GetTextData("GOTOMAP") : GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+    if (MyGroup.alpha == 0.0f)
+    {
+      MyGroup.alpha = 1.0f;
+      MyGroup.interactable = true;
+      MyGroup.blocksRaycasts = true;
+    }
   }
   public virtual void Close()
   {
     switch (Dir)
     {
       case 0:
-        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, LeftInsidePos, LeftOutsidePos, 0.4f, UIManager.Instance.UIPanelCLoseCurve));
+        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, LeftInsidePos, LeftOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
         break;
       case 1:
-        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, RightInsidePos, RightOutsidePos, 0.4f, UIManager.Instance.UIPanelCLoseCurve));
+        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, RightInsidePos, RightOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
         break;
     }
   }
@@ -119,10 +150,10 @@ public class ReturnButton : MonoBehaviour
     switch (Dir)
     {
       case 0:
-        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, LeftOutsidePos, 0.4f, UIManager.Instance.UIPanelCLoseCurve));
+        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, LeftOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
         break;
       case 1:
-        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, RightOutsidePos, 0.4f, UIManager.Instance.UIPanelCLoseCurve));
+        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, RightOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
         break;
     }
   }

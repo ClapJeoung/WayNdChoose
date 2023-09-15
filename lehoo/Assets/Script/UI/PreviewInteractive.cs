@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
-Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint}
+Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -13,7 +13,6 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
     public TendencyTypeEnum MyTendency = TendencyTypeEnum.None;
   public TendencyTypeEnum MySelectionTendency= TendencyTypeEnum.None;
   public bool MySelectionTendencyDir = false;
-  public int MySelectionTendencyIndex = 0;
   public SkillType Myskill = SkillType.Conversation;
   public int RewardValue = 0;
   public int ExpIndex = 0;
@@ -51,10 +50,10 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[0];
             break;
           case TendencyTypeEnum.Head:
-             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyIndex];
+             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyDir==true?0:1];
             break;
           case TendencyTypeEnum.Body:
-            _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyIndex];
+            _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyDir == true ? 0 : 1];
             break;
         }
         switch (_selection.ThisSelectionType)
@@ -131,6 +130,9 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.MovePoint:
         UIManager.Instance.PreviewManager.OpenMovePointPreview();
+        break;
+      case PreviewPanelType.MoveCostGoldNogold:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NOGOLD_TEXT"));
         break;
     }
   }

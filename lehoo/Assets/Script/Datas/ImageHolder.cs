@@ -176,10 +176,10 @@ public class ImageHolder : ScriptableObject
     switch (tendencytype)
     {
       case TendencyTypeEnum.Body:
-        if (dir.Equals(false)) return Arrow_Active_rational;
+        if (dir.Equals(true)) return Arrow_Active_rational;
         else return Arrow_Active_physical;
       case TendencyTypeEnum.Head:
-        if (dir.Equals(false)) return Arrow_Active_mental;
+        if (dir.Equals(true)) return Arrow_Active_mental;
         else return Arrow_Active_material;
       default: return DefaultIcon;
     }
@@ -195,12 +195,30 @@ public class ImageHolder : ScriptableObject
     switch (tendencytype)
     {
       case TendencyTypeEnum.Body:
-        if (dir.Equals(false)) return SelectionBackground_rational;
+        if (dir.Equals(true)) return SelectionBackground_rational;
         else return SelectionBackground_physical;
       case TendencyTypeEnum.Head:
-        if (dir.Equals(false)) return SelectionBackground_mental;
+        if (dir.Equals(true)) return SelectionBackground_mental;
         else return SelectionBackground_material;
       default: return SelectionBackground_none;
+    }
+  }
+  public Sprite SelectionButtonBackground_none = null;
+  public Sprite SelectionButtonBackground_rational = null;
+  public Sprite SelectionButtonBackground_physical = null;
+  public Sprite SelectionButtonBackground_mental = null;
+  public Sprite SelectionButtonBackground_material = null;
+  public Sprite GetSelectionButtonBackground(TendencyTypeEnum tendencytype,bool dir)
+  {
+    switch (tendencytype)
+    {
+      case TendencyTypeEnum.Body:
+        if (dir.Equals(true)) return SelectionButtonBackground_rational;
+        else return SelectionButtonBackground_physical;
+      case TendencyTypeEnum.Head:
+        if (dir.Equals(true)) return SelectionButtonBackground_mental;
+        else return SelectionButtonBackground_material;
+      default: return SelectionButtonBackground_none;
     }
   }
   [Space(10)]
@@ -229,6 +247,7 @@ public class ImageHolder : ScriptableObject
     }
   }
   [Space(10)]
+  public Sprite UnknownTile = null;
   public Sprite RiverTile = null;
   public Sprite ForestTile=null,HighlandTile=null,MountainTile=null,SeaTile=null;
   public Sprite GetEnvirTile(EnvironmentType envir)
@@ -341,35 +360,44 @@ public class EventIllustHolder
   private Sprite WinterIllust = null;
   public EventIllustHolder(List<Sprite> illusts)
   {
-    for(int i=0;i<illusts.Count;i++)
+    if (illusts.Count == 0)
     {
-      if (illusts[i].name.Contains("spring")) SpringIllust = illusts[i];
-      else if (illusts[i].name.Contains("summer")) SummerIllust = illusts[i];
-      else if (illusts[i].name.Contains("winter")) AutumnIllust = illusts[i];
-      else if (illusts[i].name.Contains("autumn")) WinterIllust = illusts[i];
-      else IdleIllust = illusts[i];
+      IdleIllust = GameManager.Instance.ImageHolder.DefaultIllust;
+    }
+    else
+    {
+      for (int i = 0; i < illusts.Count; i++)
+      {
+        if (illusts[i].name.Contains("spring")) SpringIllust = illusts[i];
+        else if (illusts[i].name.Contains("summer")) SummerIllust = illusts[i];
+        else if (illusts[i].name.Contains("winter")) AutumnIllust = illusts[i];
+        else if (illusts[i].name.Contains("autumn")) WinterIllust = illusts[i];
+        else IdleIllust = illusts[i];
+      }
     }
   }
   public Sprite CurrentIllust
   {
     get
     {
+      Sprite _target = null;
       switch (GameManager.Instance.MyGameData.Turn)
       {
         case 0:
-          if (SpringIllust != null) return SpringIllust;
+          if (SpringIllust != null) _target= SpringIllust;
           break;
         case 1:
-          if (SummerIllust != null) return SummerIllust;
+          if (SummerIllust != null) _target = SummerIllust;
           break;
         case 2:
-          if (AutumnIllust != null) return AutumnIllust;
+          if (AutumnIllust != null) _target = AutumnIllust;
           break;
         case 4:
-          if (WinterIllust != null) return WinterIllust;
+          if (WinterIllust != null) _target = WinterIllust;
           break;
       }
-      return IdleIllust;
+      if (_target == null) _target = IdleIllust;
+      return _target;
     }
   }
 }

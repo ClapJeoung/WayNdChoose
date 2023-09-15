@@ -317,7 +317,8 @@ public class PreviewManager : MonoBehaviour
         _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
         break;
     }
-    string _description = WNCText.SetSize(20, "<b>" + _targettendency.Name + "</b>") + "<br><br>" + WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
+    string _description = WNCText.SetSize(20, "<b>" + _targettendency.Name + "</b>") + "<br><br>" + 
+      WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
       "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
     IconAndDescription_Icon.sprite = _tendencyicon;
@@ -350,8 +351,6 @@ public class PreviewManager : MonoBehaviour
     }
     SelectionNoneRewardIcon.sprite= _rewardsprite;
 
-    CurrentPreview = SelectionNonePanel.GetComponent<RectTransform>();
-
     switch (tendencytype)
     {
       case TendencyTypeEnum.None:
@@ -367,9 +366,7 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(SelectionNonePanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(SelectionNonePanel);
   }
   public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
   {
@@ -480,7 +477,6 @@ public class PreviewManager : MonoBehaviour
     PayIcon.sprite = _payicon;
     PayRequireValue.text = _payvaluetext;
 
-    CurrentPreview = SelectionPayPanel.GetComponent<RectTransform>();
 
     switch (tendencytype)//성향 존재하는거면 그거 활성화
     {
@@ -497,9 +493,7 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(SelectionPayPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(SelectionPayPanel);
   }
   public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
   {
@@ -530,18 +524,17 @@ public class PreviewManager : MonoBehaviour
     int _requirelevel = 0, _currentlevel = 0, _percentage = 0;
     string _requiretext = "", _currenttext = "", _skillinfo = "", _percentage_text = "", _percentage_int = "", _subdescription = "";
 
-    _subdescription=GameManager.Instance.GetTextData(_selection.SubDescription);
+    _subdescription= _selection.SubDescription;
     _percentage_text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
 
-    if (_selection.SelectionCheckSkill.Equals(SelectionTargetType.Check_Single))
+    if (_selection.ThisSelectionType.Equals(SelectionTargetType.Check_Single))
     {
       _requirelevel = GameManager.Instance.MyGameData.CheckSkillSingleValue;
 
       _skills[0] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[0]);
       _icons[0]=GameManager.Instance.ImageHolder.GetSkillIcon(_skills[0].MySkillType);
       _currentlevel = _skills[0].Level;
-      _skillinfo += string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(_skills[0].MySkillType, 1), _skills[0].Level);
-
+      _skillinfo = "";
 
       if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(true)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(false);
     }
@@ -562,7 +555,7 @@ public class PreviewManager : MonoBehaviour
 
     _requiretext = string.Format(GameManager.Instance.GetTextData("REQUIRELEVEL_TEXT"), _requirelevel);
     _percentage = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel);
-    _percentage_int = _percentage.ToString();
+    _percentage_int = WNCText.PercentageColor(_percentage);
     _currenttext = string.Format(GameManager.Instance.GetTextData("CURRENTLEVEL_TEXT") + "\n{1}", _currentlevel, _skillinfo);
 
     SelectionCheckIcons[0].sprite = _icons[0];
@@ -588,9 +581,7 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(SelectionCheckPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(SelectionCheckPanel);
   }
   public void OpenSelectionElsePreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
   {
@@ -619,9 +610,7 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    IEnumerator _cor = null;
-    _cor = fadepreview(SelectionElsePanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(SelectionElsePanel);
   }
   //보상 설명 : 체력,정신력,돈 설명?
   public void OpenRewardStatusPreview(StatusType status, int _value)
@@ -648,11 +637,7 @@ public class PreviewManager : MonoBehaviour
     RewardStatusModify.text= _modifydescription;
     RewardStatusClickText.text = GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
 
-    CurrentPreview = RewardStatusPanel.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(RewardStatusPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(RewardStatusPanel);
   }
   public void OpenRewardExpPreview(Experience _exp)
   {
@@ -669,11 +654,7 @@ public class PreviewManager : MonoBehaviour
     RewardExpClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
 
 
-    CurrentPreview = RewardExpPanel.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(RewardExpPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(RewardExpPanel);
   }
   public void OpenRewardSkillPreview(SkillType skilltype)
   {
@@ -684,11 +665,7 @@ public class PreviewManager : MonoBehaviour
     RewardSkillName.text = _name;
     RewardSkillClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
 
-    CurrentPreview =RewardSkillPanel.GetComponent<RectTransform>();
-
-    IEnumerator _cor = null;
-    _cor = fadepreview(RewardSkillPanel, true);
-    StartCoroutine(_cor);
+    OpenPreviewPanel(RewardSkillPanel);
   }
   public void OpenExpSelectionEmptyPreview(Experience _exp,bool islong)
   {

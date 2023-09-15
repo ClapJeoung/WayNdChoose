@@ -33,7 +33,7 @@ public class UI_map : UI_default
     Debug.Log("뭔가 이상한 레후~");
     return null;
   }
-  public float AppearTime = 0.8f;
+  public float AppearTime = 1.2f;
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private RectTransform HolderRect = null;
   [SerializeField] private RectTransform ScaleRect = null;
@@ -41,8 +41,9 @@ public class UI_map : UI_default
   [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
   [SerializeField] private float ZoomInTime = 1.2f;
 
+  [SerializeField] private CanvasGroup MoveInfoGroup = null;
   [SerializeField] private TextMeshProUGUI ProgressGuideText = null;
-  [SerializeField] private Image TilePreview_Buttom = null;
+  [SerializeField] private Image TilePreview_Bottom = null;
   [SerializeField] private Image TilePreview_Top = null;
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private GameObject SettlementInfoHolder = null;
@@ -51,6 +52,8 @@ public class UI_map : UI_default
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
+  [SerializeField] private PreviewInteractive GoldButtonPreview = null;
+  private float MoveButtonDisableAlpha = 0.2f;
   private StatusType selectedcosttype = StatusType.HP;
   public StatusType SelectedCostType
   {
@@ -61,39 +64,65 @@ public class UI_map : UI_default
       switch (selectedcosttype)
       {
         case StatusType.Sanity:
-          if (MovecostButtonGroup.interactable == false) MovecostButtonGroup.interactable = true;
           SanitybuttonGroup.alpha = 1.0f;
-          GoldbuttonGroup.alpha = 0.5f;
+          GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
+
+          MoveCostText.text = GameManager.Instance.MyGameData.MovePoint > 0 ?
+      string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
+      string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost));
+
+          if(MoveButton.gameObject.activeInHierarchy==false)MoveButton.gameObject.SetActive(true);
           break;
         case StatusType.Gold:
-          if (MovecostButtonGroup.interactable == false) MovecostButtonGroup.interactable = true;
-          SanitybuttonGroup.alpha = 0.5f;
+          SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
           GoldbuttonGroup.alpha = 1.0f;
+      
+          MoveCostText.text = GameManager.Instance.MyGameData.MovePoint > 0 ?
+      string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
+      string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor("-" + GoldCost));
+
+          if (MoveButton.gameObject.activeInHierarchy == false) MoveButton.gameObject.SetActive(true);
           break;
-        default:
+        default:                                    //시작 단계로 돌아가는것
+          ProgressGuideText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+
+          TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.UnknownTile;
+          TilePreview_Bottom.transform.rotation =Quaternion.Euler(Vector3.zero);
+          TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+          TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+
+          if (SettlementInfoHolder.activeInHierarchy == true)
+          {
+            SettlementInfoHolder.SetActive(false);
+            SettlementNameText.text = "";
+            DiscomfortText.text = "";
+          }
+
+          MovecostButtonGroup.alpha = 0.0f;
           MovecostButtonGroup.interactable = false;
-          SanitybuttonGroup.alpha = 0.5f;
-          GoldbuttonGroup.alpha = 0.5f;
+          MovecostButtonGroup.blocksRaycasts = false;
+          SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
+          GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
+
           MoveCostText.text = "";
-          MoveButton.interactable = false;
+
+          MoveButton.gameObject.SetActive(false);
+
+          SelectedTile = null;
           break;
       }
     }
   }
   [SerializeField] private TextMeshProUGUI MoveCostText = null;
+  [SerializeField] private TextMeshProUGUI MoveButtonText = null;
   [SerializeField] private Button MoveButton = null;
 
-  [SerializeField] private RectTransform SettleInfoRect = null;
-  [SerializeField] private CanvasGroup SettleInfoGroup = null;
-  [SerializeField] private TextMeshProUGUI SettleNameText = null;
-  [SerializeField] private TextMeshProUGUI DiscomfortCountText = null;
   public Transform SelectTileHolder = null;
 
   public Color NormalColor = Color.white;
   public Color DisableColor = Color.grey;
   private List<Settlement> ActiveSettles = new List<Settlement>();
   private List<TileData> ActiveTileData = new List<TileData>();
-  public int SelectProgress = 0;//0: 타일 선택(목표 선택)  1: 지불 방식 선택  2:타일 선택(확정,출발)
 
   /// <summary>
   /// 주위 2칸 타일 업데이트
@@ -156,18 +185,22 @@ public class UI_map : UI_default
   
   private IEnumerator openui()
   {
-    if(MoveCostTypeHolder.activeInHierarchy==true) MoveCostTypeHolder.SetActive(false);
-    MoveCostInfoHolder.SetActive(false);
-    MoveCostText.text = "";
-    HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
+    ResetEnableTiles();
+
+    MoveInfoGroup.interactable = true;
+    if (MoveButtonText.text == "")
+    {
+      MoveButtonText.text = GameManager.Instance.GetTextData("MOVE");
+      LayoutRebuilder.ForceRebuildLayoutImmediate(MoveButton.transform as RectTransform);
+    }
+    SelectedCostType = StatusType.HP;
+
     if (DefaultGroup.alpha == 1.0f) DefaultGroup.alpha = 0.0f;
     if (DefaultGroup.interactable == true) DefaultGroup.interactable = false;
     if (DefaultGroup.blocksRaycasts == true) DefaultGroup.blocksRaycasts = false;
 
     if (GetPanelRect("myrect").Rect.anchoredPosition == GetPanelRect("myrect").OutisdePos)
       GetPanelRect("myrect").Rect.anchoredPosition = GetPanelRect("myrect").InsidePos;
-
-    ClickInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP")+"<br>"+ (GameManager.Instance.MyGameData.MovePoint > 0 ? GameManager.Instance.GetTextData("ENOUGHMOVEPOINT") : GameManager.Instance.GetTextData("NOTENOUGHMOVEPOINT"));
 
     ScaleRect.localScale = IdleScale;
     ScaleRect.anchoredPosition = Vector2.zero;
@@ -187,151 +220,70 @@ public class UI_map : UI_default
   public int SanityCost = 0, GoldCost = 0;
   public void SelectTile(TileData selectedtiledata,Vector2 position)
   {
+    //동일한 좌표면 호출되지 않게 이미 거름
+
+    if (SelectedTile != null) SelectedTile.ButtonScript.CancleTile();
+    if(SelectedCostType!=StatusType.HP)SelectedCostType= StatusType.HP;
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
     int _length = GameManager.Instance.MyGameData.MyMapData.GetLength(_currenttile, selectedtiledata);
-    switch (SelectProgress)
+
+    SelectedTile = selectedtiledata;
+
+    ProgressGuideText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP");
+
+    TilePreview_Bottom.sprite = MapCreater.MyTiles.GetTile(SelectedTile.BottomEnvirSprite);
+    TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
+    TilePreview_Top.sprite = MapCreater.MyTiles.GetTile(SelectedTile.TopEnvirSprite);
+    TilePreview_Landmark.sprite = MapCreater.MyTiles.GetTile(SelectedTile.landmarkSprite);
+
+    if (SelectedTile.TileSettle != null)
     {
-      case 0: //0단계는 타일을 하나도 선택하지 않은 상태이므로 지불 방식 선택으로 넘어가기
-        SelectedTile = selectedtiledata;
-        ClickInfoText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP") + "<br>" + (GameManager.Instance.MyGameData.MovePoint > 0 ? GameManager.Instance.GetTextData("ENOUGHMOVEPOINT") : GameManager.Instance.GetTextData("NOTENOUGHMOVEPOINT"));
-
-        SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(_length);
-        GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(_length);
-
-        if (SelectedTile.TileSettle != null)
-        {
-          SettleInfoRect.position = position;
-          SettleInfoRect.anchoredPosition3D = new Vector3(SettleInfoRect.anchoredPosition.x, SettleInfoRect.anchoredPosition.y, 0.0f);
-          SettleInfoGroup.alpha = 1.0f;
-
-          SettleNameText.text = SelectedTile.TileSettle.Name;
-          DiscomfortCountText.text = WNCText.GetDiscomfortColor(SelectedTile.TileSettle.Discomfort);
-        }
-        else
-        {
-          SettleInfoGroup.alpha = 0.0f;
-        }
-
-        SelectProgress=1;  //0->1
-        if(MoveCostInfoHolder.activeInHierarchy==false) MoveCostInfoHolder.SetActive(true);
-        if(MoveCostTypeHolder.activeInHierarchy==false) MoveCostTypeHolder.SetActive(true);
-        MoveCostText.text = "";
-
-        break;
-      case 1:
-        if (SelectedTile == selectedtiledata)
-        {
-          SelectedTile.ButtonScript.CancleTile();
-          SelectedTile = null;
-          ClickInfoText.text = GameManager.Instance.GetTextData("CHOSSETILEAGAIN_MAP") + "<br>" + (GameManager.Instance.MyGameData.MovePoint > 0 ? GameManager.Instance.GetTextData("ENOUGHMOVEPOINT") : GameManager.Instance.GetTextData("NOTENOUGHMOVEPOINT"));
-          if (MoveCostTypeHolder.activeInHierarchy == true) MoveCostTypeHolder.SetActive(false);
-          MoveCostText.text = "";
-          if (SettleInfoGroup.alpha == 1.0f) SettleInfoGroup.alpha = 0.0f;
-          SelectProgress = 0;
-          return;
-        }//동일한 타일 선택했으면 이전 단계로 회귀(타일 선택)  0<-1
-        else //다른 타일 선택했으면 정보만 변경 (1단계)
-        {
-          SelectedTile = selectedtiledata;
-
-          SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(_length);
-          GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(_length);
-
-          if (SelectedTile.TileSettle != null)
-          {
-            SettleInfoRect.position = position;
-            SettleInfoRect.anchoredPosition3D = new Vector3(SettleInfoRect.anchoredPosition.x, SettleInfoRect.anchoredPosition.y, 0.0f);
-            SettleInfoGroup.alpha = 1.0f;
-
-            SettleNameText.text = SelectedTile.TileSettle.Name;
-            DiscomfortCountText.text = WNCText.GetDiscomfortColor(SelectedTile.TileSettle.Discomfort);
-          }
-          else
-          {
-            SettleInfoGroup.alpha = 0.0f;
-          }
-        }
-        break;
-      case 2:
-        if (SelectedTile == selectedtiledata)
-        {
-          MoveMap();
-        }//2단계에서 목표 타일 클릭하면 이동
-        else//2단계(정보표시,타일클릭하셈)에서 다른 타일 클릭하면 1단계로 회귀(지불 버튼 표시) 1<-2
-        {
-          SelectedTile = selectedtiledata;
-
-          SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(_length);
-          GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(_length);
-
-          if (SelectedTile.TileSettle != null)
-          {
-            SettleInfoRect.position = position;
-            SettleInfoRect.anchoredPosition3D = new Vector3(SettleInfoRect.anchoredPosition.x, SettleInfoRect.anchoredPosition.y, 0.0f);
-            SettleInfoGroup.alpha = 1.0f;
-
-            SettleNameText.text = SelectedTile.TileSettle.Name;
-            DiscomfortCountText.text = "<#5F04B4>" + SelectedTile.TileSettle.Discomfort.ToString() + "</color>";
-          }
-          else
-          {
-            SettleInfoGroup.alpha = 0.0f;
-          }
-
-          MoveCostInfoHolder.SetActive(false);
-          MoveCostTypeHolder.SetActive(true);
-          SelectProgress = 1;
-        }
-        break;
+      SettlementInfoHolder.SetActive(true);
+      SettlementNameText.text=SelectedTile.TileSettle.Name;
+      DiscomfortText.text = SelectedTile.TileSettle.Discomfort.ToString();
     }
-  }
-  public void CancleTile()
-  {
-    SelectedTile = null;
-    SettleInfoGroup.alpha = 0.0f;
+    else
+    {
+      if (SettlementInfoHolder.activeInHierarchy == true) SettlementInfoHolder.SetActive(false);
+    }
+    MovecostButtonGroup.alpha = 1.0f;
+    MovecostButtonGroup.interactable = true;
+    MovecostButtonGroup.blocksRaycasts = true;
+    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(_length);
+    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(_length);
+    SanitybuttonGroup.interactable = true;
+    if (GameManager.Instance.MyGameData.Gold >= GoldCost)
+    {
+      GoldbuttonGroup.interactable = true;
+      GoldButtonPreview.PanelType = PreviewPanelType.MoveCostGold;
+    }
+    else
+    {
+      GoldbuttonGroup.interactable = false;
+      GoldButtonPreview.PanelType = PreviewPanelType.MoveCostGoldNogold;
+    }
+
   }
 
   public void SelectCostType_Sanity()
   {
     SelectedCostType = StatusType.Sanity;
-
-    string _movecost = GameManager.Instance.MyGameData.MovePoint > 0 ?
-      string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetSanityColor("-" + SanityCost)) :
-      string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetSanityColor("-" + SanityCost));
-
-    MoveCostText.text = _movecost;
-
-    if (MoveCostInfoHolder.activeInHierarchy == false) MoveCostInfoHolder.SetActive(true);
-    MoveCostTypeHolder.SetActive(false);
-
-    SelectProgress=2;
   }
   public void SelectCostType_Gold()
   {
-    if (GameManager.Instance.MyGameData.Gold <= GoldCost) return;
     SelectedCostType = StatusType.Gold;
-
-    string _movecost = GameManager.Instance.MyGameData.MovePoint > 0 ?
-      string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
-      string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor("-" + GoldCost));
-
-    MoveCostText.text = _movecost;
-
-    if (MoveCostInfoHolder.activeInHierarchy == false) MoveCostInfoHolder.SetActive(true);
-    MoveCostTypeHolder.SetActive(false);
-
-    SelectProgress = 2;
   }
 
   public void MoveMap()
   {
-    SettleInfoGroup.alpha = 0.0f;
+    MoveInfoGroup.interactable = false;
     DefaultGroup.blocksRaycasts = true;
     UIManager.Instance.ResetEventPanels();
     UIManager.Instance.AddUIQueue(movemap());
   }//이동 버튼을 눌렀으니 해당 정착지, 해당 화살표를 제외한 다른 정착지 버튼 비활성화 및 다른 화살표 비활성화
   private IEnumerator movemap()
   {
+    GameManager.Instance.MyGameData.Turn++;
 
     Vector2 _playerrectpos = PlayerRect.anchoredPosition;                 //현재 위치(Rect)
     Vector2 _targettilepos = SelectedTile.Rect.anchoredPosition;            //종점 위치(Rect)
@@ -356,6 +308,8 @@ public class UI_map : UI_default
         GameManager.Instance.MyGameData.Gold -= GoldCost;
         break;
     }
+    if (GameManager.Instance.MyGameData.MovePoint > 0) GameManager.Instance.MyGameData.MovePoint--;
+
     float _time = 0.0f;
     while (_time < MoveTime)
     {
@@ -368,7 +322,6 @@ public class UI_map : UI_default
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
     GameManager.Instance.MyGameData.Coordinate = _endcoor;
-    ResetEnableTiles();
 
     switch (SelectedTile.Landmark)
     {
@@ -386,8 +339,6 @@ public class UI_map : UI_default
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;
     }
-
-    GameManager.Instance.MyGameData.Turn++;
 
     StartCoroutine(zoominview());
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, ZoomInTime + 0.6f, false));
@@ -425,11 +376,9 @@ public class UI_map : UI_default
     ScaleRect.localScale =IdleScale;
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
     GameManager.Instance.MyGameData.Coordinate = coordinate;
-    ResetEnableTiles();
   }
   public override void CloseUI()
   {
-    SelectProgress = 0;
     UIManager.Instance.AddUIQueue(closeui());
     IsOpen = false;
   }
@@ -441,7 +390,6 @@ public class UI_map : UI_default
   }
   public override void CloseForGameover()
   {
-    SelectProgress = 0;
     DefaultGroup.blocksRaycasts = false;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
   }

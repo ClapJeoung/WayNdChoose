@@ -8,7 +8,7 @@ using Google.Apis.Json;
 
 public class UI_Settlement : UI_default
 {
-  private float UIOpenMoveTime = 0.2f;
+  private float UIOpenMoveTime = 0.6f;
   private WaitForSeconds LittleWait = new WaitForSeconds(0.2f);
   private float UICloseMoveTime = 0.5f;
 
@@ -71,10 +71,13 @@ public class UI_Settlement : UI_default
     SettlementIcon.sprite = _settlementicon;
     SectorName.text = "";
     SectorSelectDescription.text = "";
+    SectorName.gameObject.SetActive(false);
+    SectorSelectDescription.gameObject.SetActive(false);
     RestButton_Gold.interactable = false;
     RestButtonText_Gold.text = GameManager.Instance.GetTextData("SELECTPLACE");
     RestButton_Sanity.interactable = false;
     RestButtonText_Sanity.text = GameManager.Instance.GetTextData("SELECTPLACE");
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SectorName.transform.parent.transform as RectTransform);
 
     string _rectname = "nameholder";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).OutisdePos, GetPanelRect(_rectname).InsidePos, UIOpenMoveTime, UIManager.Instance.UIPanelOpenCurve));
@@ -128,6 +131,9 @@ public class UI_Settlement : UI_default
 
     if(SelectedSector!=SectorType.NULL) GetSectorIconScript(SelectedSector).SetIdleColor();
     SelectedSector = (SectorType)index;
+
+    if(SectorName.gameObject.activeInHierarchy==false) SectorName.gameObject.SetActive(true);
+    if(SectorSelectDescription.gameObject.activeInHierarchy==false) SectorSelectDescription.gameObject.SetActive(true);
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
@@ -217,6 +223,8 @@ public class UI_Settlement : UI_default
         }
         break;
     }
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SectorName.transform.parent.transform as RectTransform);
   }
   public void StartRest_Sanity()
     {

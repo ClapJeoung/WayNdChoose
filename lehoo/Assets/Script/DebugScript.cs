@@ -143,7 +143,7 @@ public class DebugScript : MonoBehaviour
       GameManager.Instance.MyGameData.Quest_Cult_Phase = int.Parse(Cult_Phase.text);
       GameManager.Instance.MyGameData.Quest_Cult_Type = int.Parse(Cult_Type.text);
       GameManager.Instance.MyGameData.Quest_Cult_Progress = int.Parse(Cult_Progress.text);
-      UIManager.Instance.WolfSidePanel.UpdateUI();
+      UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
     }
 
   }

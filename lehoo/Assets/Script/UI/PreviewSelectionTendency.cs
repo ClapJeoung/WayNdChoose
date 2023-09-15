@@ -19,7 +19,7 @@ public class PreviewSelectionTendency : MonoBehaviour
   [SerializeField] private TextMeshProUGUI NoneProgressText = null;
   public void Setup(Tendency tendency,bool dir)
   {
-    if ((tendency.Level.Equals(-2) && dir.Equals(false)) || (tendency.Level.Equals(2) && dir.Equals(true)))
+    if ((tendency.Level.Equals(-2) && dir.Equals(true)) || (tendency.Level.Equals(2) && dir.Equals(false)))
     {
       Debug.Log("성향 진행 불가");
       ProgressGroup.alpha = 0.0f;
@@ -46,7 +46,7 @@ public class PreviewSelectionTendency : MonoBehaviour
       Sprite _currenticon = tendency.CurrentIcon;
       Sprite _nexticon = tendency.GetNextIcon(dir);
 
-      if (dir.Equals(false))
+      if (dir.Equals(true))
       {
         _leftsprite = _nexticon;
         _rightsprite = _currenticon;
@@ -59,10 +59,10 @@ public class PreviewSelectionTendency : MonoBehaviour
 
       int _arrowcount = 0;
       int _effectindex = 0;
-      switch (tendency.count)
+      switch (tendency.Level)
       {
         case -2:
-          if (dir.Equals(false))
+          if (dir.Equals(true))
           {
             //이 if문에서 실행되지 않는 조건
           }
@@ -73,9 +73,9 @@ public class PreviewSelectionTendency : MonoBehaviour
           }
           break;
         case -1:
-          if (dir.Equals(false))
+          if (dir.Equals(true))
           {
-            _arrowcount = ConstValues.Tendency1to2;
+            _arrowcount = ConstValues.TendencyProgress_1to2;
             _effectindex = tendency.count;
           }
           else
@@ -84,48 +84,20 @@ public class PreviewSelectionTendency : MonoBehaviour
             _effectindex = 0;
           }
           break;
-        case 0:
-          if (dir.Equals(false))
-          {
-            if (tendency.count <= 0)
-            {
-              _arrowcount = ConstValues.Tendency0to1;
-              _effectindex=tendency.count;
-            }
-            else
-            {
-              _arrowcount = ConstValues.TendencyRegress;
-              _effectindex = 0;
-            }
-          }
-          else
-          {
-            if (tendency.count >= 0)
-            {
-              _arrowcount = ConstValues.Tendency0to1;
-              _effectindex = tendency.count;
-            }
-            else
-            {
-              _arrowcount = ConstValues.TendencyRegress;
-              _effectindex = 0;
-            }
-          }
-          break;
         case 1:
-          if (dir.Equals(false))
+          if (dir.Equals(true))
           {
             _arrowcount = ConstValues.TendencyRegress;
             _effectindex = 0;
           }
           else
           {
-            _arrowcount = ConstValues.Tendency1to2;
+            _arrowcount = ConstValues.TendencyProgress_1to2;
             _effectindex = tendency.count;
           }
           break;
         case 2:
-          if (dir.Equals(false))
+          if (dir.Equals(true))
           {
             _arrowcount = ConstValues.TendencyRegress;
             _effectindex = 0;
@@ -149,14 +121,14 @@ public class PreviewSelectionTendency : MonoBehaviour
     int _currentindex = 0;
     for (int i = 0; i < Arrows.Length; i++)
     {
-      _currentindex = dir.Equals(false) ? Arrows.Length - 1 - i : i;
+      _currentindex = dir.Equals(true) ? Arrows.Length - 1 - i : i;
       if (i >= count)
       {
         Arrows[_currentindex].SetActive(false);
         continue;
       }
 
-      ArrowRects[_currentindex].localScale = new Vector3(dir.Equals(false) ? -1.0f : 1.0f, 1.0f, 1.0f);
+      ArrowRects[_currentindex].localScale = new Vector3(dir.Equals(true) ? -1.0f : 1.0f, 1.0f, 1.0f);
       if (Arrows[_currentindex].activeInHierarchy.Equals(false)) Arrows[_currentindex].SetActive(true);
 
       if (i < effectindex)

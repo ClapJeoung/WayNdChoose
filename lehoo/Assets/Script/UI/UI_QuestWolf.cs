@@ -69,7 +69,6 @@ public class UI_QuestWolf : UI_default
   public  void CloseUI_Prologue() => UIManager.Instance.AddUIQueue(closeui_prologue());
   private IEnumerator closeui_prologue()
   {
-    DefaultGroup.interactable = false;
     CurrentPrologueIndex = 0;
     IsOpen = false;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_start").Rect, GetPanelRect("illust_start").InsidePos, GetPanelRect("illust_start").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
@@ -163,6 +162,11 @@ public class UI_QuestWolf : UI_default
         _illust = QuestHolder.Prologue_8_Illust;
         _description = QuestHolder.Prologue_8_Description;
         _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
+        UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Residence, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Temple, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Marketplace, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Library, 0);
         break;
     }
 
@@ -281,18 +285,15 @@ public class UI_QuestWolf : UI_default
         _description = QuestHolder.Searching_1_Description;
         break;
     }
-    GameManager.Instance.MyGameData.Quest_Cult_Progress++;
 
     Searching_IllustImage.sprite = _illust;
     Searching_Description.text = _description;
     Searching_ButtonText.text = $"{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetSanityColor(ConstValues.Quest_Wolf_Searching_Sanityrewardvalue)}";
-    if (Searching_RewardButton_Group.alpha == 0.0f)
-    {
-      Searching_RewardButton_Group.alpha = 1.0f;
-      Searching_RewardButton_Group.interactable = true;
-      Searching_RewardButton_Group.blocksRaycasts = true;
-      Searching_RewardButton.interactable = true;
-    }
+  
+    Searching_RewardButton_Group.alpha = 1.0f;
+    Searching_RewardButton_Group.interactable = true;
+    Searching_RewardButton_Group.blocksRaycasts = true;
+    Searching_RewardButton.interactable = true;
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_searching").Rect, GetPanelRect("illust_searching").OutisdePos, GetPanelRect("illust_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_searching").Rect, GetPanelRect("description_searching").OutisdePos, GetPanelRect("description_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
@@ -301,21 +302,35 @@ public class UI_QuestWolf : UI_default
     {
       StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").OutisdePos, GetPanelRect("nextbutton_searching").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
       if (Searching_NextButton.interactable == false) Searching_NextButton.interactable = true;
-      Searching_NextButtonText.text = GameManager.Instance.GetTextData("Quest_Sidepanel_Searching_Finish");
+      Searching_NextButtonText.text = GameManager.Instance.GetTextData("Quest0_Sidepanel_Searching_Finish");
     }
     else
     {
       UIManager.Instance.SettleButton.Open(1, this);
     }
-    UIManager.Instance.WolfSidePanel.UpdateUI();
+    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+
+    GameManager.Instance.MyGameData.Quest_Cult_Progress++;
 
     yield return null;
   }
   public void SearchingSanityReward()
   {
+    if (UIManager.Instance.IsWorking) return;
     GameManager.Instance.MyGameData.CurrentSanity += ConstValues.Quest_Wolf_Searching_Sanityrewardvalue;
-    Searching_RewardButton.interactable = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_RewardButton_Group, 0.0f, 0.8f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_RewardButton_Group, 0.0f, 0.4f, false));
+  }
+  public void CloseUI_Searching()
+  {
+    IsOpen = false;
+
+    UIManager.Instance.AddUIQueue(closeui_searching());
+  }
+  private IEnumerator closeui_searching()
+  {
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_searching").Rect, GetPanelRect("illust_searching").InsidePos, GetPanelRect("illust_searching").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_searching").Rect, GetPanelRect("description_searching").InsidePos, GetPanelRect("description_searching").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelCLoseCurve));
+    yield return null;
   }
   #endregion
 
@@ -387,7 +402,7 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
   
-    UIManager.Instance.WolfSidePanel.UpdateUI();
+    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
   }
   public void SelectWolfLine()
   {
@@ -412,14 +427,28 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, UIManager.Instance.UIPanelOpenCurve));
 
-    UIManager.Instance.WolfSidePanel.UpdateUI();
+    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
   }
   public void WantedResult_GoSettlement()
   {
     if (UIManager.Instance.IsWorking) return;
+    IsOpen = false;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").InsidePos, GetPanelRect("wantedresult_illust").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelOpenCurve));
     UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").InsidePos, GetPanelRect("wantedresult_description").OutisdePos, UIMoveOutTime, UIManager.Instance.UIPanelOpenCurve));
     SettlementUI.OpenUI();
   }
   #endregion
+  public void CloseUI_Auto()
+  {
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    {
+      case 0:
+        if (CurrentPrologueIndex == 8) CloseUI_Prologue();
+        else
+        {
+          CloseUI_Searching();
+        }
+        break;
+    }
+  }
 }

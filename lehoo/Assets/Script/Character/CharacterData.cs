@@ -86,7 +86,7 @@ public static class ConstValues
   public const float MoneyCheck_min = 2.5f, MoneyCheck_max = 0.25f; //골드 지불 범위 벗어날 시 지불 실패 금액에 제곱비례
   public const int ShortTermStartTurn = 6;
   public const int LongTermStartTurn =  12;
-  public const int Tendency0to1 = 2, Tendency1to2 = 2, Tendency2to3 = 3;
+  public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
 
   public const int RestCost_Sanity = 5;
@@ -369,6 +369,7 @@ public class GameData    //게임 진행도 데이터
     {
       currentsanity = value;
       if (currentsanity > MaxSanity) currentsanity = MaxSanity;
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateSanityText();
 
       if (currentsanity <= 0)
       {
@@ -389,8 +390,6 @@ public class GameData    //게임 진행도 데이터
           }
           currentsanity = 0;
           MaxSanity -= ConstValues.MadnessDefaultSanityLose;
-
-          if(GameManager.Instance.MyGameData!=null) UIManager.Instance.UpdateSanityText();
 
           UIManager.Instance.GetMad(_madness);
         }
@@ -517,10 +516,10 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 2);
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 10);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 10);
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 11);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 11);
             _result = string.Format("{0} {1} {2} {3}",
               _conver,
               _intel,
@@ -528,29 +527,29 @@ public class GameData    //게임 진행도 데이터
               _wild);
             break;
           case -1:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 2);
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 9);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 9);
             _result = string.Format("{0} {1}",
               _conver,
               _intel);
             break;
           case 1:
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 9);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 9);
             _result = string.Format("{0} {1}",
               _force,
               _wild);
             break;
           case 2:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 2);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 2);
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 2);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 2);
+            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 11);
+            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 11);
+            _force = GameManager.Instance.GetTextData(SkillType.Force, 10);
+            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 10);
             _result = string.Format("{0} {1} {2} {3}",
-              _conver,
-              _intel,
               _force,
-              _wild);
+              _wild,
+              _conver,
+              _intel);
             break;
         }
         break;
@@ -762,11 +761,11 @@ public class GameData    //게임 진행도 데이터
     get { return GameManager.Instance.EventHolder.GetQuest(QuestType); }
   }
   /// <summary>
-  /// 0,(1,2,3),4
+  /// 0,(1,2),3
   /// </summary>
   public int Quest_Cult_Phase = 0;
   /// <summary>
-  /// 0:컬트 1:늑대
+  /// 0:컬트 1:의식
   /// </summary>
   public int Quest_Cult_Type = 0;
   public int Quest_Cult_Progress = 0;
@@ -1022,17 +1021,17 @@ public class Tendency
         _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1);
         break;
       case -1:
-        _spr=dir.Equals(false)?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-0);
-        break;
-      case 1:
-        _spr = dir.Equals(false) ? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 0) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
-        break;
-      case 2:
-        _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1);
+        _spr=dir.Equals(true)?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,1);
         break;
       case 0:
         Debug.Log("데샤아앗!!!!");
         _spr = GameManager.Instance.ImageHolder.DefaultIcon;
+        break;
+      case 1:
+        _spr = dir.Equals(true) ? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
+        break;
+      case 2:
+        _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1);
         break;
     }
     return _spr;
@@ -1074,8 +1073,8 @@ public class Tendency
   /// <param name="dir"></param>
   public void AddCount(bool dir)
   {
-    if (dir.Equals(true))
-    {//true면 양수 진행
+    if (dir.Equals(false))
+    {//False면 음수 진행
 
       if (count <= 0) count = 1;
       else count++;
@@ -1083,20 +1082,20 @@ public class Tendency
       int _abs=Mathf.Abs(count);
       switch (Level)
       {
-        case 2:count = 0;break;
-        case 1:
-          if (_abs.Equals(ConstValues.Tendency1to2)) Level = 2; //1레벨일때 count 개수를 충족하면 2레벨로
+        case -2:
+          if (_abs.Equals(ConstValues.TendencyRegress)) Level = -1;
           break;
         case -1:
           if (_abs.Equals(ConstValues.TendencyRegress)) Level = 1;
           break;
-        case -2:
-          if (_abs.Equals(ConstValues.TendencyRegress)) Level = -1;
+        case 1:
+          if (_abs.Equals(ConstValues.TendencyProgress_1to2)) Level = 2; //1레벨일때 count 개수를 충족하면 2레벨로
           break;
+        case 2: count = 0; break;
       }
     }
-    else if (dir.Equals(false))
-    {//false면 음수 진행
+    else if (dir.Equals(true))
+    {//True면 음수 진행
 
       if (count >= 0) count = -1;
       else count--;
@@ -1106,13 +1105,13 @@ public class Tendency
       {
         case -2:count = 0;break;
         case -1:
-          if (_abs.Equals(ConstValues.Tendency1to2)) Level = -2; //-1레벨일때 count 개수를 충족하면 -2레벨로
+          if (_abs.Equals(ConstValues.TendencyProgress_1to2)) Level = -2; //-1레벨일때 count 개수를 충족하면 -2레벨로
           break;
         case 1:
-          if (_abs.Equals(ConstValues.Tendency1to2)) Level = -1; //-1레벨일때 count 개수를 충족하면 -2레벨로
+          if (_abs.Equals(ConstValues.TendencyRegress)) Level = -1; //+1레벨일때 count 개수를 충족하면 -1레벨로
           break;
         case 2:
-          if (_abs.Equals(ConstValues.Tendency1to2)) Level = 1; //-1레벨일때 count 개수를 충족하면 -2레벨로
+          if (_abs.Equals(ConstValues.TendencyRegress)) Level = 1; //+2레벨일때 count 개수를 충족하면 1레벨로
           break;
       }
     }

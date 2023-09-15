@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 
 public class UI_dialogue : UI_default
 {
-  private float DialogueUIMoveTime = 0.5f;
+  private float DialogueUIMoveTime = 0.8f;
 
   [SerializeField] private CanvasGroup NameTextGroup = null;
   [SerializeField] private TextMeshProUGUI NameText = null;
@@ -28,13 +28,10 @@ public class UI_dialogue : UI_default
   [Space(10)]
   [SerializeField] private CanvasGroup SelectionGroup = null;
   [SerializeField] private CanvasGroup SelectionCenterImgGroup = null;
-  [SerializeField] private UI_Selection Selection_None = null;
-  [SerializeField] private UI_Selection Selection_Rational = null;
-  [SerializeField] private UI_Selection Selection_Physical = null;
-  [SerializeField] private UI_Selection Selection_Mental = null;
-  [SerializeField] private UI_Selection Selection_Material = null;
-  [SerializeField] private ParticleSystem SuccessParticle = null;
-  [SerializeField] private ParticleSystem FailParticle = null;
+  [SerializeField] private UI_Selection Selection_A = null;
+  [SerializeField] private UI_Selection Selection_B = null;
+//  [SerializeField] private ParticleSystem SuccessParticle = null;
+//  [SerializeField] private ParticleSystem FailParticle = null;
   [Space(10)]
   [SerializeField] private CanvasGroup RewardButtonGroup = null;
   [SerializeField] private Image RewardIcon = null;
@@ -58,42 +55,10 @@ public class UI_dialogue : UI_default
   private Vector2 DescriptionOpenPos { get { return GetPanelRect("Description").InsidePos; } }
   private Vector2 DescriptionClosePos { get { return GetPanelRect("Description").OutisdePos; } }
 
-  private UI_Selection GetUISelection(TendencyTypeEnum _tendencytype,int index)
-  {
-    switch (_tendencytype)
-    {
-      case TendencyTypeEnum.None:return Selection_None;
-      case TendencyTypeEnum.Body:
-        if (index == 0) return Selection_Rational;
-        else return Selection_Physical;
-      case TendencyTypeEnum.Head:
-        if(index==0) return Selection_Mental;
-        else return Selection_Material;
-      default:return null;
-    }
-  }
-  private UI_Selection GetOppositeSelection(TendencyTypeEnum _tendencytype,int index)
-  {
-    switch (_tendencytype)
-    {
-      case TendencyTypeEnum.None: return Selection_None;
-      case TendencyTypeEnum.Body:
-        if (index == 1) return Selection_Rational;
-        else return Selection_Physical;
-      case TendencyTypeEnum.Head:
-        if (index == 1) return Selection_Mental;
-        else return Selection_Material;
-      default: return null;
-    }
-  }
   private UI_Selection GetOppositeSelection(UI_Selection _selection)
   {
-    if (_selection.Equals(Selection_None)) return null;
-    if (_selection.Equals(Selection_Rational)) return Selection_Physical;
-    if (_selection.Equals(Selection_Physical)) return Selection_Rational;
-    if (_selection.Equals(Selection_Mental)) return Selection_Material;
-    if (_selection.Equals(Selection_Material)) return Selection_Mental;
-    return null;
+    if (_selection == Selection_A) return Selection_B;
+    return Selection_A;
   }
   public void OpenUI()
   {
@@ -109,7 +74,6 @@ public class UI_dialogue : UI_default
     CurrentEventDescriptions = CurrentEvent.BeginningDescriptions;
     CurrentEventPhaseMaxIndex=CurrentEventIllustHolderes.Count;
     IsBeginning = true;
-    ResetSelectionPos();
 
     UIManager.Instance.AddUIQueue(displaynextindex());
   }
@@ -127,13 +91,11 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator displaynextindex()
   {
-    CurrentEventPhaseIndex++;
-
     if (IsBeginning)
     {
-      if (CurrentEventPhaseIndex == CurrentEventPhaseMaxIndex)              //선택지 단계에 도달
+      if (CurrentEventPhaseIndex == CurrentEventPhaseMaxIndex-1)              //선택지 단계에 도달
       {
-        if (CurrentEventPhaseIndex == 1)     //UI 처음 열고 바로 선택지일때
+        if (CurrentEventPhaseIndex == 0)     //UI 처음 열고 바로 선택지일때
         {
           if (CurrentEvent.GetType() == typeof(EventData))
           {
@@ -155,12 +117,13 @@ public class UI_dialogue : UI_default
           if (NextButton.gameObject.activeInHierarchy == true) NextButton.gameObject.SetActive(false);
           if (SelectionGroup.gameObject.activeInHierarchy == false) SelectionGroup.gameObject.SetActive(true);
           if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
-          StartCoroutine(displayselection());
+          StartCoroutine(setupselections());
           //열기 전에 선택지 세팅
 
           IllustImageGroup.alpha = 1.0f;
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           NameText.text = CurrentEvent.Name;
+          LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform as RectTransform);
           NameTextGroup.alpha = 1.0f;
           StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
           yield return new WaitForSeconds(0.3f);
@@ -168,6 +131,7 @@ public class UI_dialogue : UI_default
 
           DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
           yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
         }
         else                                 //다음 버튼 눌러서 선택지에 도달할때
@@ -181,9 +145,10 @@ public class UI_dialogue : UI_default
           NextButton.gameObject.SetActive(false);
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
           SelectionGroup.gameObject.SetActive(true);
 
-          StartCoroutine(displayselection());
+          StartCoroutine(setupselections());
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
           yield return new WaitForSeconds(FadeWaitTime);
@@ -191,7 +156,7 @@ public class UI_dialogue : UI_default
       }
       else                                                                 //다음 내용으로 진행
       {
-        if (CurrentEventPhaseIndex == 1)     //UI 처음 열고 설명 페이즈일때
+        if (CurrentEventPhaseIndex == 0)     //UI 처음 열고 설명 페이즈일때
         {
           if (CurrentEvent.GetType() == typeof(EventData))
           {
@@ -218,6 +183,7 @@ public class UI_dialogue : UI_default
 
           IllustImageGroup.alpha = 1.0f;
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
+          LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform as RectTransform);
           NameText.text = CurrentEvent.Name;
           NameTextGroup.alpha = 1.0f;
           StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
@@ -226,7 +192,8 @@ public class UI_dialogue : UI_default
 
           DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
-         yield return  StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
+          yield return  StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
           NextButton.interactable = true;
         }
         else                                 //다음 버튼 눌러서 다음 내용 전개하기
@@ -239,6 +206,7 @@ public class UI_dialogue : UI_default
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
@@ -250,9 +218,9 @@ public class UI_dialogue : UI_default
     }
     else
     {
-      if (CurrentEventPhaseIndex == CurrentEventPhaseMaxIndex)             //보상 단계에 도달
+      if (CurrentEventPhaseIndex == CurrentEventPhaseMaxIndex-1)             //보상 단계에 도달
       {
-        if (CurrentEventPhaseIndex == 1)     //선택지 선택 후 바로 보상일때         (선택지 애니메이션은 완료)
+        if (CurrentEventPhaseIndex == 0)     //선택지 선택 후 바로 보상일때         (선택지 애니메이션은 완료)
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime, false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime, false));
@@ -260,39 +228,44 @@ public class UI_dialogue : UI_default
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
           SelectionGroup.gameObject.SetActive(false);
-          //성공이면 보상 Setactive(true)
+          if (CurrentSuccessData != null)
+          {
+            RewardButtonGroup.alpha = 0.0f;
+            if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
+          }
 
+          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup,1.0f,FadeInTime,false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
-          //성공이면 보상 오브젝트 활성화
-
-          MoveRectForButton(1);
-          if (GameManager.Instance.MyGameData.CurrentSettlement != null) UIManager.Instance.SettleButton.Open(0,this);
-          else UIManager.Instance.MapButton.Open(0, this);
         }
         else                                 //다음 버튼 눌러서 보상에 도달할때
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime, false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime, false));
           yield return new WaitForSeconds(FadeWaitTime);
 
+          if (CurrentSuccessData != null)
+          {
+            RewardButtonGroup.alpha = 0.0f;
+            if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
+          }
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
-          //성공이면 보상 Setactive(true)
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
-          //성공이면 보상 오브젝트 활성화
-
-          MoveRectForButton(1);
-          if (GameManager.Instance.MyGameData.CurrentSettlement != null) UIManager.Instance.SettleButton.Open(0, this);
-          else UIManager.Instance.MapButton.Open(0, this);
+          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.4f, false));
         }
+
+        OpenReturnButton();
       }
       else                                                                 //다음 내용으로 진행
       {
-        if (CurrentEventPhaseIndex == 1)     //선택지 선택 후 새로 설명으로 넘어갈때 (선택지 애니메이션은 완료)
+        if (CurrentEventPhaseIndex == 0)     //선택지 선택 후 새로 설명으로 넘어갈때 (선택지 애니메이션은 완료)
         {
           NextButton.interactable = false;
 
@@ -302,6 +275,7 @@ public class UI_dialogue : UI_default
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
           SelectionGroup.gameObject.SetActive(false);
           NextButtonGroup.gameObject.SetActive(true);
 
@@ -321,6 +295,7 @@ public class UI_dialogue : UI_default
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
@@ -330,8 +305,10 @@ public class UI_dialogue : UI_default
         }
       }
     }
+
+    CurrentEventPhaseIndex++;
   }
-  private IEnumerator displayselection()
+  private IEnumerator setupselections()
   {
     SelectionGroup.alpha = 0.0f;
 
@@ -346,49 +323,22 @@ public class UI_dialogue : UI_default
     switch (CurrentEvent.Selection_type)
     {
       case SelectionType.Single:
-        Selection_None.Active(CurrentEvent.SelectionDatas[0]);
+        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
+        if (Selection_B.gameObject.activeInHierarchy==true) Selection_B.gameObject.SetActive(false);
         break;
       case SelectionType.Body:
-        Selection_Rational.Active(CurrentEvent.SelectionDatas[0]);
-        Selection_Physical.Active(CurrentEvent.SelectionDatas[1]);
+        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
+        if (Selection_B.gameObject.activeInHierarchy==false) Selection_B.gameObject.SetActive(true);
+        Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
         break;
       case SelectionType.Head:
-        Selection_Mental.Active(CurrentEvent.SelectionDatas[0]);
-        Selection_Material.Active(CurrentEvent.SelectionDatas[1]);
+        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
+        if (Selection_B.gameObject.activeInHierarchy == false) Selection_B.gameObject.SetActive(true);
+        Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
         break;
     }
 
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup,1.0f,FadeInTime,false));
-  }
-  private void ResetSelectionPos()
-  {
-    SelectionGroup.alpha = 0.0f;
-    SelectionCenterImgGroup.alpha = 0.0f;
-
-    Selection_None.MyGroup.alpha = 0.0f;
-    Selection_None.MyGroup.interactable = false;
-    Selection_None.MyGroup.blocksRaycasts = false;
-    Selection_None.GetComponent<RectTransform>().anchoredPosition = Selection_None.OriginPos;
-
-    Selection_Rational.MyGroup.alpha = 0.0f;
-    Selection_Rational.MyGroup.interactable = false;
-    Selection_Rational.MyGroup.blocksRaycasts = false;
-    Selection_Rational.GetComponent<RectTransform>().anchoredPosition = Selection_Rational.OriginPos;
-
-    Selection_Physical.MyGroup.alpha = 0.0f;
-    Selection_Physical.MyGroup.interactable = false;
-    Selection_Physical.MyGroup.blocksRaycasts = false;
-    Selection_Physical.GetComponent<RectTransform>().anchoredPosition = Selection_Physical.OriginPos;
-
-    Selection_Mental.MyGroup.alpha = 0.0f;
-    Selection_Mental.MyGroup.interactable = false;
-    Selection_Mental.MyGroup.blocksRaycasts = false;
-    Selection_Mental.GetComponent<RectTransform>().anchoredPosition = Selection_Mental.OriginPos;
-
-    Selection_Material.MyGroup.alpha = 0.0f;
-    Selection_Material.MyGroup.interactable = false;
-    Selection_Material.MyGroup.blocksRaycasts = false;
-    Selection_Material.GetComponent<RectTransform>().anchoredPosition = Selection_Material.OriginPos;
   }
   private UI_Selection CurrentUISelection = null;
   /// <summary>
@@ -400,7 +350,7 @@ public class UI_dialogue : UI_default
     if (_selection.MyTendencyType != TendencyTypeEnum.None)
     {
       GetOppositeSelection(_selection).DeActive();
-      StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionCenterImgGroup, 0.0f, true, false));
+      StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionCenterImgGroup, 0.0f, 0.4f, false));
     }
     //다른거 사라지게 만들고
     UIManager.Instance.AddUIQueue(selectionanimation(_selection));
@@ -411,7 +361,7 @@ public class UI_dialogue : UI_default
     CurrentUISelection = _selection;
     if (!_selection.MyTendencyType.Equals(TendencyTypeEnum.None))
     {
-      yield return StartCoroutine(_selection.movetocenter());
+       yield return StartCoroutine(_selection.movetocenter());
     }//성향이 존재한다면 가운데로 이동시킴
 
     SelectionData _selectiondata = _selection.MySelectionData;
@@ -463,7 +413,7 @@ public class UI_dialogue : UI_default
           }//돈이 부족해 체크를 해야 하는 상황
         }
         break;
-      case SelectionTargetType.Check_Multy: //기술(단수) 선택지면 확률 검사
+      case SelectionTargetType.Check_Single: //기술(단수) 선택지면 확률 검사
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
         _successpercent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
@@ -478,7 +428,7 @@ public class UI_dialogue : UI_default
         }
         else _issuccess = false;
         break;
-      case SelectionTargetType.Check_Single: //기술(복수) 선택지면 확률 검사
+      case SelectionTargetType.Check_Multy: //기술(복수) 선택지면 확률 검사
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level +
           GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
@@ -509,6 +459,7 @@ public class UI_dialogue : UI_default
       GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
 
+    yield return null;
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
   //이 코루틴에서 SetSuccess 아니면 SetFail로 바로 넘어감
 
@@ -670,6 +621,7 @@ public class UI_dialogue : UI_default
   public void GetReward()
   {
     if (UIManager.Instance.IsWorking) return;
+
     if (CurrentSuccessData != null)
     {
       if (CurrentSuccessData.Reward_Target == RewardTarget.Experience)
@@ -759,7 +711,7 @@ public class UI_dialogue : UI_default
           _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
         }
 
-        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, false, false));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.3f, false));
 
         break;
     }

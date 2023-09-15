@@ -9,8 +9,9 @@ public class SettleButton : ReturnButton
   public override void Clicked()
   {
     base.Clicked();
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.25f, UIManager.Instance.UIPanelCLoseCurve));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, TopPos, 0.25f, UIManager.Instance.UIPanelCLoseCurve));
+  
+    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.6f, UIManager.Instance.UIPanelOpenCurve));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect, CenterPos, TopPos, 0.5f, UIManager.Instance.UIPanelOpenCurve));
     SettlementUI.OpenUI();
   }
 }

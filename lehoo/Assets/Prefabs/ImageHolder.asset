@@ -679,6 +679,11 @@ MonoBehaviour:
   SelectionBackground_physical: {fileID: 21300000, guid: da78041cf78703346b564ebf9da0ceb7, type: 3}
   SelectionBackground_mental: {fileID: 21300000, guid: 2a311d3dc1c77ea4288f7cae8c20b235, type: 3}
   SelectionBackground_material: {fileID: 21300000, guid: 109ae6cfc44dda34088959fa59c47d2b, type: 3}
+  SelectionButtonBackground_none: {fileID: 21300000, guid: b01425179b923b94a9e6dfe5ada210cb, type: 3}
+  SelectionButtonBackground_rational: {fileID: 21300000, guid: c99db092d9bd5ed498fdee03678156d5, type: 3}
+  SelectionButtonBackground_physical: {fileID: 21300000, guid: 8523939b806d9834cbdb26505f028747, type: 3}
+  SelectionButtonBackground_mental: {fileID: 21300000, guid: 7d84a3efd61e10e4e83941f32b960395, type: 3}
+  SelectionButtonBackground_material: {fileID: 21300000, guid: b77580e438b7f8f40a33339e224b28d0, type: 3}
   NullEnvirIllust:
   - {fileID: 21300000, guid: ebc258cf7623c4f45b6cb2bdab039564, type: 3}
   - {fileID: 21300000, guid: 27aabe31a6cf0f74b932df66a3fdb954, type: 3}
@@ -709,6 +714,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b964759620d342e4e9897d8686a26291, type: 3}
   - {fileID: 21300000, guid: c5a4653c0063eb44cad9e6a3c265caca, type: 3}
   - {fileID: 21300000, guid: f17ff66ffc7c085419f7109817133c94, type: 3}
+  UnknownTile: {fileID: 21300000, guid: 0aec4c86b64a1934fb9753d42109d046, type: 3}
   RiverTile: {fileID: 21300000, guid: 653f61813b5b16246a89f5c01b935084, type: 3}
   ForestTile: {fileID: 21300000, guid: e318e4d647fca0c429dcfc97ae08605f, type: 3}
   HighlandTile: {fileID: 21300000, guid: 5c9c053e5b9c19645bce9b8fb4d53ae7, type: 3}

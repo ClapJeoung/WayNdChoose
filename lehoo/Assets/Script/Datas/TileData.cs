@@ -14,7 +14,7 @@ public class TileData
   public Vector2Int Coordinate = Vector2Int.zero;
   public BottomEnvirType BottomEnvir = BottomEnvirType.NULL;
   public TopEnvirType TopEnvir = TopEnvirType.NULL;
-  public int Rotate = 0;
+  public int Rotation = 0;
   public LandmarkType Landmark = LandmarkType.Outer;
   public Settlement TileSettle = null;
   public TileSpriteType TopEnvirSprite = TileSpriteType.NULL;

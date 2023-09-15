@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
+
 public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하는 기능임
 {
   [SerializeField] private Image TouchBlock = null;
@@ -36,6 +38,7 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
     SkillLevel.text = GameManager.Instance.MyGameData.GetSkill(_skilltype).Level.ToString();
     SkillIllust.sprite= _illust;
     SkillDescription.text = _desscription;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SkillDescription.transform as RectTransform);
 
     if (CurrentThemeIndex.Equals(-1))
     {

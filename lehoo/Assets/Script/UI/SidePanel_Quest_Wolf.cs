@@ -44,10 +44,10 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
         break;
     }
   }
-  public void UpdateSearchingPanel()
+  private void UpdateSearchingPanel()
   {
-    Searching_description.text = string.Format(GameManager.Instance.GetTextData("Quest_Wolf_Sidepanel_Searching_description"), GameManager.Instance.MyGameData.Quest_Cult_Progress);
-    for(int i = 0; i < 3; i++)
+    Searching_description.text = string.Format(GameManager.Instance.GetTextData("Quest0_Sidepanel_Searching_description"), GameManager.Instance.MyGameData.Quest_Cult_Progress);
+    for(int i = 0; i < 2; i++)
     {
       Searching_Icons[i].color = GameManager.Instance.MyGameData.Quest_Cult_Progress > i ? ActiveColor : DeactiveColor;
     }
@@ -57,7 +57,7 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
     if (Ritual_Normal_Group.alpha == 1.0f) Ritual_Normal_Group.alpha = 0.0f;
   }
 
-  public void UpdateCultNormalPanel()
+  private void UpdateCultNormalPanel()
   {
     for(int i = 0; i < 3; i++)
     {
@@ -89,7 +89,7 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
     if (Sabbat_Normal_Group.alpha == 0.0f) Sabbat_Normal_Group.alpha = 1.0f;
     if (Ritual_Normal_Group.alpha == 1.0f) Ritual_Normal_Group.alpha = 0.0f;
   }
-  public void UpdateRitualNormalPanel()
+  private void UpdateRitualNormalPanel()
   {
 
 
