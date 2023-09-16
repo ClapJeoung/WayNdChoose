@@ -40,8 +40,10 @@ public class UI_Expereince_info : UI_default
     DefaultGroup.blocksRaycasts = true;
     BackButton.interactable = true;
     BackButton.blocksRaycasts = true;
-
     TouchBlock.enabled = true;
+
+    UIManager.Instance.CloseOtherStatusPanels(this);
+
     IsOpen = true;
 
     string _name = exp.Name;
@@ -70,7 +72,7 @@ public class UI_Expereince_info : UI_default
         ExpTurn.text = exp.Duration.ToString();
       }
 
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime, true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime));
     }//최초는 아무 경험이나 클릭하면 열기
     else
     {
@@ -94,11 +96,9 @@ public class UI_Expereince_info : UI_default
     BackButton.interactable = false;
     BackButton.blocksRaycasts = false;
     CurrentExp = null;
-    UIManager.Instance.CurrentTopUI = null;
-
     TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
-    StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
+    StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
   }
   public override void CloseForGameover()
   {
@@ -107,7 +107,7 @@ public class UI_Expereince_info : UI_default
     BackButton.blocksRaycasts = false;
     CurrentExp = null;
     TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
-    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
+    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
   }
 }

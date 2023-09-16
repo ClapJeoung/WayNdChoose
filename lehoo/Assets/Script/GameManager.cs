@@ -200,7 +200,7 @@ public class GameManager : MonoBehaviour
     switch (texttype)
     {
       case 0:_type = "NAME";break;
-      case 1: _type = "DESCRIPTIION"; break;
+      case 1: _type = "DESCRIPTION"; break;
       case 2: _type = "SUBDESCRIPTION"; break;
       case 3: _type = "ICON"; break;
     }
@@ -227,10 +227,10 @@ public class GameManager : MonoBehaviour
     _str += "_";
     switch (texttype)
     {
-      case 0: _str += "NAME";break;
+      case 0: _str += "NAME"; break;
       case 1: _str += "DESCRIPTION";break;
       case 2: _str += "ICON";break;
-      case 3: _str += "EFFECT_NAME";break;
+      case 3: _str += "EFFECT_DESCRIPTION"; break;
       case 4: _str += "EFFECT_DESCRIPTION";break;
     }
 
@@ -688,7 +688,12 @@ public class GameManager : MonoBehaviour
       case QuestType.Cult:
         if (MyGameData.Quest_Cult_Phase == 0)
         {
-          EventManager.Instance.SetQuestEvent_Wolf_Searching();
+          if (!MyGameData.SearchingSettlementNames.Contains(targetsettlement.OriginName))
+          {
+            EventManager.Instance.SetQuestEvent_Wolf_Searching();
+            MyGameData.SearchingSettlementNames.Add(targetsettlement.OriginName);
+          }
+          else UIManager.Instance.MySettleUI.OpenUI();
         }//Å½¹® ´Ü°è
         else if (MyGameData.Quest_Cult_Phase == 1)
         {

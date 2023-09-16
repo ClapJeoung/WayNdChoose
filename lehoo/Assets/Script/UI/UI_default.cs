@@ -68,11 +68,11 @@ public class UI_default : MonoBehaviour
     if (IsOpen) { CloseUI();IsOpen = false; return; }
     IsOpen = true;
 
-        UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, DefaultGroup, MyDir, _islarge, false));
+        UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, DefaultGroup, MyDir, _islarge));
   }
   public virtual void CloseUI()
   {
-    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(DefaultRect, DefaultGroup, MyDir, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(DefaultRect, DefaultGroup, MyDir));
     IsOpen = false;
   }
   public virtual void CloseUiQuick()

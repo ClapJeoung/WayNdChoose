@@ -40,7 +40,7 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject SelectionNonePanel = null;
   [SerializeField] private Image SelectionNoneBackground = null;
-  [SerializeField] private TextMeshProUGUI SelectionNoneText = null;
+  //[SerializeField] private TextMeshProUGUI SelectionNoneText = null;
   [SerializeField] private PreviewSelectionTendency SelectionNoneTendency = null;
   [SerializeField] private Image SelectionNoneRewardIcon = null;
   [Space(10)]
@@ -54,7 +54,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI PayNoGold_PercentText = null;
   [SerializeField] private TextMeshProUGUI PayNoGold_PercentValue = null;
   [SerializeField] private TextMeshProUGUI PayNoGold_Alternative = null;
-  [SerializeField] private TextMeshProUGUI PaySubDescription = null;
+ // [SerializeField] private TextMeshProUGUI PaySubDescription = null;
   [SerializeField] private Image PayRewardIcon = null;
   [SerializeField] private PreviewSelectionTendency SelectionPayTendendcy = null;
   [Space(10)]
@@ -66,13 +66,13 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_text = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_int = null;
   [SerializeField] private Image CheckRewardIcon = null;
-  [SerializeField] private TextMeshProUGUI SelectionCheckDescription = null;
+//  [SerializeField] private TextMeshProUGUI SelectionCheckDescription = null;
   [SerializeField] private PreviewSelectionTendency SelectionCheckTendendcy = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionElsePanel = null;
   [SerializeField] private Image SelectionElseBackground = null;
   [SerializeField] private Image SelectionElseIcon = null;
-  [SerializeField] private TextMeshProUGUI SelectionElseDescription = null;
+ // [SerializeField] private TextMeshProUGUI SelectionElseDescription = null;
   [SerializeField] private PreviewSelectionTendency SelectionElseTendency = null;
   [Space(10)]
   [SerializeField] private GameObject RewardStatusPanel = null;
@@ -330,7 +330,7 @@ public class PreviewManager : MonoBehaviour
   {
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
-    SelectionNoneText.text = _selection.SubDescription;
+  //  SelectionNoneText.text = _selection.SubDescription;
 
     Sprite _rewardsprite = null;
     switch (_selection.SelectionSuccesReward)
@@ -372,7 +372,7 @@ public class PreviewManager : MonoBehaviour
   {
     SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
-    PaySubDescription.text = _selection.SubDescription;
+    //PaySubDescription.text = _selection.SubDescription;
 
     Sprite _rewardsprite = null;
     switch (_selection.SelectionSuccesReward)
@@ -524,7 +524,7 @@ public class PreviewManager : MonoBehaviour
     int _requirelevel = 0, _currentlevel = 0, _percentage = 0;
     string _requiretext = "", _currenttext = "", _skillinfo = "", _percentage_text = "", _percentage_int = "", _subdescription = "";
 
-    _subdescription= _selection.SubDescription;
+  //  _subdescription= _selection.SubDescription;
     _percentage_text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
 
     if (_selection.ThisSelectionType.Equals(SelectionTargetType.Check_Single))
@@ -564,7 +564,7 @@ public class PreviewManager : MonoBehaviour
     SelectionCheckCurrentLevel.text= _currenttext;
     SelectionCheckPercent_text.text = _percentage_text;
     SelectionCheckPercent_int.text = _percentage_int;
-    SelectionCheckDescription.text = _subdescription;
+   // SelectionCheckDescription.text = _subdescription;
 
     switch (tendencytype)//성향 존재하는거면 그거 활성화
     {
@@ -591,7 +591,7 @@ public class PreviewManager : MonoBehaviour
     Sprite _icon = null;
 
     SelectionElseIcon.sprite = _icon;
-    SelectionElseDescription.text = _selection.SubDescription;
+  //  SelectionElseDescription.text = _selection.SubDescription;
 
     CurrentPreview=SelectionElsePanel.GetComponent<RectTransform>();
 
@@ -746,7 +746,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenDisComfortPanel()
   {
     IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.DisComfort;
-     IconAndDescription_Description.text = GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME");
+     IconAndDescription_Description.text = GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION");
 
     OpenPreviewPanel(IconAndDescription_Panel,DiscomfortPivot);
   }

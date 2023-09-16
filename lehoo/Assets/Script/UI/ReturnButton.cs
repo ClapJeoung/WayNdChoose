@@ -28,61 +28,22 @@ public class ReturnButton : MonoBehaviour
   public Button Warning_Yes = null, Warning_No = null, Warning_No_Background = null;
   public TextMeshProUGUI YesText = null, NoText = null;
   public bool Warned = false;
+  public bool IsOpen = false;
   public virtual void Clicked()
   {
     if (UIManager.Instance.IsWorking) return;
-
-    if (CurrentUI as UI_dialogue != null)
+    if (WarningPanelGroup.alpha == 1.0f)
     {
-      UI_dialogue _dialogue = CurrentUI as UI_dialogue;
-      if (_dialogue.RemainReward == true&&Warned==false)
-      {
-        WarningDescription.text = GameManager.Instance.GetTextData("NOREWARD");
-        SetWarningButton();
-        return;
-      }
-      else
-      {
-        UIManager.Instance.MyDialogue.CloseUI();
-      }
-    }
-    else if (CurrentUI as UI_Settlement != null)
-    {
-      if (GameManager.Instance.MyGameData.MovePoint == 0&&Warned==false)
-      {
-        WarningDescription.text = GameManager.Instance.GetTextData("NOMOVEPOINT");
-        SetWarningButton();
-        return;
-      }
-      else
-      {
-        UIManager.Instance.MySettleUI.CloseUI();
-      }
-    }
-
-    switch (GameManager.Instance.MyGameData.QuestType)
-    {
-      case QuestType.Cult:
-        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-        {
-          case 0:
-            if (UIManager.Instance.QuestUI_Cult.IsOpen) UIManager.Instance.QuestUI_Cult.CloseUI_Auto();
-            break;
-          case 1:
-            break;
-          case 2:
-            break;
-        }
-        break;
+      StartCoroutine(UIManager.Instance.ChangeAlpha(WarningPanelGroup, 0.0f, 0.4f));
     }
   }
 
   public void SetWarningButton()
   {
+    Debug.Log("레후");
+    LayoutRebuilder.ForceRebuildLayoutImmediate(WarningDescription.transform.parent.transform as RectTransform);
     Warned = true;
-    WarningPanelGroup.alpha = 1.0f;
-    WarningPanelGroup.interactable = true;
-    WarningPanelGroup.blocksRaycasts = true;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(WarningPanelGroup, 1.0f, 0.6f));
 
     Warning_Yes.onClick.RemoveAllListeners();
     Warning_Yes.onClick.AddListener(Clicked);
@@ -95,6 +56,7 @@ public class ReturnButton : MonoBehaviour
     }
     }
 
+  private Vector3 ParentPos = Vector3.zero;
   private void OnDrawGizmos()
   {
     if (MyRect == null||!DrawGizmo) return;
@@ -102,15 +64,15 @@ public class ReturnButton : MonoBehaviour
 
     Gizmos.color = Color.red;
 
-    Gizmos.DrawLine((Vector3)LeftInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
-    Gizmos.DrawLine((Vector3)LeftInsidePos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
-    Gizmos.DrawLine((Vector3)LeftInsidePos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
-    Gizmos.DrawLine((Vector3)LeftInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)LeftInsidePos+ ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)LeftInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)LeftInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)LeftInsidePos + ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)LeftInsidePos + ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
 
-    Gizmos.DrawLine((Vector3)RightInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
-    Gizmos.DrawLine((Vector3)RightInsidePos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
-    Gizmos.DrawLine((Vector3)RightInsidePos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
-    Gizmos.DrawLine((Vector3)RightInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)RightInsidePos + ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)RightInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)RightInsidePos + ParentPos + new Vector3(MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2));
+    Gizmos.DrawLine((Vector3)RightInsidePos + ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, -MyRect.sizeDelta.y / 2), (Vector3)RightInsidePos + ParentPos + new Vector3(-MyRect.sizeDelta.x / 2, MyRect.sizeDelta.y / 2));
   }
   /// <summary>
   /// 0:왼쪽 1:오른쪽
@@ -132,9 +94,11 @@ public class ReturnButton : MonoBehaviour
       MyGroup.interactable = true;
       MyGroup.blocksRaycasts = true;
     }
+    IsOpen = true;
   }
   public virtual void Close()
   {
+    IsOpen = false;
     switch (Dir)
     {
       case 0:

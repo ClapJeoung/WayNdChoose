@@ -298,52 +298,52 @@ public class EventHolder
         Quest_Cult.Events_Public_Final.Add(eventdata);
         break;
       case 9:
-        Quest_Cult.Events_Cult_0.Add(eventdata);
+        Quest_Cult.Events_Sabbat_0.Add(eventdata);
         break;
       case 10:
-        Quest_Cult.Event_Cult_Hideout_0 = eventdata;
+        Quest_Cult.Event_Sabbat_Hideout_0 = eventdata;
         break;
       case 11:
-        Quest_Cult.Events_Cult_1.Add(eventdata);
+        Quest_Cult.Events_Sabbat_1.Add(eventdata);
         break;
       case 12:
-        Quest_Cult.Event_Cult_Hideout_1 = eventdata;
+        Quest_Cult.Event_Sabbat_Hideout_1 = eventdata;
         break;
       case 13:
-     //   Quest_Cult.Events_Cult_2.Add(eventdata);
+     //   Quest_Cult.Events_Sabbat_2.Add(eventdata);
         break;
       case 14:
-      //  Quest_Cult.Event_Cult_Hideout_2 = eventdata;
+      //  Quest_Cult.Event_Sabbat_Hideout_2 = eventdata;
         break;
       case 15:
-        Quest_Cult.Events_Cult_Final.Add(eventdata);
+        Quest_Cult.Events_Sabbat_Final.Add(eventdata);
         break;
       case 16:
-        Quest_Cult.Event_Cult_Hideout_Final= eventdata;
+        Quest_Cult.Event_Sabbat_Hideout_Final= eventdata;
         break;
       case 17:
-        Quest_Cult.Events_Wolf_0.Add(eventdata);
+        Quest_Cult.Events_Ritual_0.Add(eventdata);
         break;
       case 18:
-        Quest_Cult.Event_Wolf_Encounter_0 = eventdata;
+        Quest_Cult.Event_Ritual_Encounter_0 = eventdata;
         break;
       case 19:
-        Quest_Cult.Events_Wolf_1.Add(eventdata);
+        Quest_Cult.Events_Ritual_1.Add(eventdata);
         break;
       case 20:
-        Quest_Cult.Event_Wolf_Encounter_1= eventdata;
+        Quest_Cult.Event_Ritual_Encounter_1= eventdata;
         break;
       case 21:
-    //    Quest_Cult.Events_Wolf_2.Add(eventdata);
+    //    Quest_Cult.Events_Ritual_2.Add(eventdata);
         break;
       case 22:
-     //   Quest_Cult.Event_Wolf_Encounter_2= eventdata;
+     //   Quest_Cult.Event_Ritual_Encounter_2= eventdata;
         break;
       case 23:
-        Quest_Cult.Events_Wolf_Final.Add(eventdata);
+        Quest_Cult.Events_Ritual_Final.Add(eventdata);
         break;
       case 24:
-        Quest_Cult.Event_Wolf_Encounter_Final= eventdata;
+        Quest_Cult.Event_Ritual_Encounter_Final= eventdata;
         break;
     }
   }
@@ -879,11 +879,11 @@ public class SelectionData
   {
     get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting_Names").Split('@')[Index]); }
   }
-  public string SubDescription
+/*  public string SubDescription
   {
     get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting_Subdescriptions").Split('@')[Index]); }
   }
-
+*/
   public SelectionTargetType ThisSelectionType = SelectionTargetType.Pay;
 
   public StatusType SelectionPayTarget = StatusType.HP;                       //Pay일때 사용
@@ -1126,23 +1126,23 @@ public class QuestHolder_Cult:Quest
   public List<QuestEventData_Wolf> Events_Public_Common = new List<QuestEventData_Wolf>(); //QuestEventType 7
   public List<QuestEventData_Wolf> Events_Public_Final = new List<QuestEventData_Wolf>();  //QuestEventType 8
 
-  public List<QuestEventData_Wolf> Events_Cult_0 = new List<QuestEventData_Wolf>();     //QuestEventType 9
-  public QuestEventData_Wolf Event_Cult_Hideout_0 = null;                          //QuestEventType 10
-  public List<QuestEventData_Wolf> Events_Cult_1 = new List<QuestEventData_Wolf>();     //QuestEventType 11
-  public QuestEventData_Wolf Event_Cult_Hideout_1 = null;                          //QuestEventType 12
- // public List<QuestEventData_Wolf> Events_Cult_2 = new List<QuestEventData_Wolf>();     //QuestEventType 13
-//  public QuestEventData_Wolf Event_Cult_Hideout_2 = null;                          //QuestEventType 14
-  public List<QuestEventData_Wolf> Events_Cult_Final = new List<QuestEventData_Wolf>(); //QuestEventType 15
-  public QuestEventData_Wolf Event_Cult_Hideout_Final = null;                      //QuestEventType 16
+  public List<QuestEventData_Wolf> Events_Sabbat_0 = new List<QuestEventData_Wolf>();     //QuestEventType 9
+  public QuestEventData_Wolf Event_Sabbat_Hideout_0 = null;                          //QuestEventType 10
+  public List<QuestEventData_Wolf> Events_Sabbat_1 = new List<QuestEventData_Wolf>();     //QuestEventType 11
+  public QuestEventData_Wolf Event_Sabbat_Hideout_1 = null;                          //QuestEventType 12
+ // public List<QuestEventData_Wolf> Events_Sabbat_2 = new List<QuestEventData_Wolf>();     //QuestEventType 13
+//  public QuestEventData_Wolf Event_Sabbat_Hideout_2 = null;                          //QuestEventType 14
+  public List<QuestEventData_Wolf> Events_Sabbat_Final = new List<QuestEventData_Wolf>(); //QuestEventType 15
+  public QuestEventData_Wolf Event_Sabbat_Hideout_Final = null;                      //QuestEventType 16
 
-  public List<QuestEventData_Wolf> Events_Wolf_0 = new List<QuestEventData_Wolf>();     //QuestEventType 17
-  public QuestEventData_Wolf Event_Wolf_Encounter_0 = null;                        //QuestEventType 18
-  public List<QuestEventData_Wolf> Events_Wolf_1 = new List<QuestEventData_Wolf>();     //QuestEventType 19
-  public QuestEventData_Wolf Event_Wolf_Encounter_1 = null;                        //QuestEventType 20
- // public List<QuestEventData_Wolf> Events_Wolf_2 = new List<QuestEventData_Wolf>();     //QuestEventType 21
- // public QuestEventData_Wolf Event_Wolf_Encounter_2 = null;                        //QuestEventType 22
-  public List<QuestEventData_Wolf> Events_Wolf_Final = new List<QuestEventData_Wolf>(); //QuestEventType 23
-  public QuestEventData_Wolf Event_Wolf_Encounter_Final = null;                    //QuestEventType 24
+  public List<QuestEventData_Wolf> Events_Ritual_0 = new List<QuestEventData_Wolf>();     //QuestEventType 17
+  public QuestEventData_Wolf Event_Ritual_Encounter_0 = null;                        //QuestEventType 18
+  public List<QuestEventData_Wolf> Events_Ritual_1 = new List<QuestEventData_Wolf>();     //QuestEventType 19
+  public QuestEventData_Wolf Event_Ritual_Encounter_1 = null;                        //QuestEventType 20
+ // public List<QuestEventData_Wolf> Events_Ritual_2 = new List<QuestEventData_Wolf>();     //QuestEventType 21
+ // public QuestEventData_Wolf Event_Ritual_Encounter_2 = null;                        //QuestEventType 22
+  public List<QuestEventData_Wolf> Events_Ritual_Final = new List<QuestEventData_Wolf>(); //QuestEventType 23
+  public QuestEventData_Wolf Event_Ritual_Encounter_Final = null;                    //QuestEventType 24
 
   /// <summary>
   /// Phase에 맞춰 사용 가능한 이벤트들을 반환(1,2,3,4)
@@ -1158,14 +1158,14 @@ public class QuestHolder_Cult:Quest
     switch (GameManager.Instance.MyGameData.Quest_Cult_Type)
     {
       case 0:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Cult_0);
-        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 1)_availablelists.Add(Events_Cult_1);
-        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 2)_availablelists.Add(Events_Cult_Final);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Sabbat_0);
+        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 1)_availablelists.Add(Events_Sabbat_1);
+        if(GameManager.Instance.MyGameData.Quest_Cult_Phase > 2)_availablelists.Add(Events_Sabbat_Final);
         break;
       case 1:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Wolf_0);
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 1) _availablelists.Add(Events_Wolf_1);
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 2) _availablelists.Add(Events_Wolf_Final);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0) _availablelists.Add(Events_Ritual_0);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 1) _availablelists.Add(Events_Ritual_1);
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 2) _availablelists.Add(Events_Ritual_Final);
         break;
     }
 

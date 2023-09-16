@@ -83,7 +83,7 @@ public class UI_Gameover : UI_default
     yield return new WaitForSeconds(3.0f);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description").Rect, GetPanelRect("description").OutisdePos, GetPanelRect("description").InsidePos,1.5f,UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(2.0f);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonGroup, 1.0f, 1.0f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonGroup, 1.0f, 1.0f));
   }
 
   public void GoToMain()

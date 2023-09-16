@@ -26,13 +26,15 @@ public class UI_Tendency : UI_default
   public void OpenUI(int _index)
   {
     TendencyTypeEnum _tendencytype = (TendencyTypeEnum)_index;
-    //이성, 육체, 정신, 물질
+    if (GameManager.Instance.MyGameData.GetTendencyLevel(_tendencytype) == 0) return;
     if (UIManager.Instance.IsWorking) return;
     if (IsOpen && CurrentTendencyType == _tendencytype) { CloseUI(); IsOpen = false; return; }
     //동일한 성향 다시 클릭하면 닫기
     DefaultGroup.alpha = 1.0f;
     DefaultGroup.interactable = true;
     DefaultGroup.blocksRaycasts = true;
+
+    UIManager.Instance.CloseOtherStatusPanels(this);
 
     IsOpen = true;
     TouchBlock.enabled = true;
@@ -51,7 +53,7 @@ public class UI_Tendency : UI_default
 
     if (CurrentTendencyType.Equals(TendencyTypeEnum.None))
     {
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime,true));
+      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime));
     }
     CurrentTendencyType = _tendencytype;
   }
@@ -59,18 +61,16 @@ public class UI_Tendency : UI_default
   {
     TouchBlock.enabled = false;
     IsOpen = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
-    StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime,false));
-    UIManager.Instance.CurrentTopUI = null;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
+    StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
         CurrentTendencyType = TendencyTypeEnum.None;
   }
   public override void CloseForGameover()
   {
     TouchBlock.enabled = false;
     IsOpen = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f, false));
-    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime, false));
-    UIManager.Instance.CurrentTopUI = null;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
+    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
     CurrentTendencyType = TendencyTypeEnum.None;
   }
 }

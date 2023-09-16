@@ -89,7 +89,7 @@ public class UI_map : UI_default
           TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.UnknownTile;
           TilePreview_Bottom.transform.rotation =Quaternion.Euler(Vector3.zero);
           TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-          TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+          TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
 
           if (SettlementInfoHolder.activeInHierarchy == true)
           {
@@ -254,12 +254,10 @@ public class UI_map : UI_default
     SanitybuttonGroup.interactable = true;
     if (GameManager.Instance.MyGameData.Gold >= GoldCost)
     {
-      GoldbuttonGroup.interactable = true;
       GoldButtonPreview.PanelType = PreviewPanelType.MoveCostGold;
     }
     else
     {
-      GoldbuttonGroup.interactable = false;
       GoldButtonPreview.PanelType = PreviewPanelType.MoveCostGoldNogold;
     }
 
@@ -271,6 +269,7 @@ public class UI_map : UI_default
   }
   public void SelectCostType_Gold()
   {
+    if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
     SelectedCostType = StatusType.Gold;
   }
 
@@ -341,7 +340,7 @@ public class UI_map : UI_default
     }
 
     StartCoroutine(zoominview());
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, ZoomInTime + 0.6f, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, ZoomInTime + 0.6f));
     yield return new WaitForSeconds(0.1f);
     GetPanelRect("myrect").Rect.anchoredPosition = GetPanelRect("myrect").OutisdePos;
     DefaultGroup.interactable = false;

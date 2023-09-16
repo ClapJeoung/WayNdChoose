@@ -16,6 +16,7 @@ public class UI_dialogue : UI_default
   private float FadeOutTime = 0.8f;
   private float FadeInTime = 1.2f;
   private float FadeWaitTime = 0.2f;
+  private float ButtonFadeinTime = 0.4f;
   [SerializeField] private Image EventIcon = null;
   private GameObject EventIconHolder { get { return EventIcon.transform.parent.gameObject; } }
   [Space(10)]
@@ -123,8 +124,8 @@ public class UI_dialogue : UI_default
           IllustImageGroup.alpha = 1.0f;
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           NameText.text = CurrentEvent.Name;
-          LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform as RectTransform);
           NameTextGroup.alpha = 1.0f;
+          LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform.parent.transform as RectTransform);
           StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
           yield return new WaitForSeconds(0.3f);
           //일러스트+이름 세팅해두고  이동
@@ -137,9 +138,9 @@ public class UI_dialogue : UI_default
         else                                 //다음 버튼 눌러서 선택지에 도달할때
         {
           NextButton.interactable = false;
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           NextButton.gameObject.SetActive(false);
@@ -149,8 +150,8 @@ public class UI_dialogue : UI_default
           SelectionGroup.gameObject.SetActive(true);
 
           StartCoroutine(setupselections());
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
           yield return new WaitForSeconds(FadeWaitTime);
         }
       }
@@ -186,6 +187,7 @@ public class UI_dialogue : UI_default
           LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform as RectTransform);
           NameText.text = CurrentEvent.Name;
           NameTextGroup.alpha = 1.0f;
+          LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform.parent.transform as RectTransform);
           StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
           yield return new WaitForSeconds(0.3f);
           //일러스트+이름 세팅해두고  이동
@@ -200,16 +202,16 @@ public class UI_dialogue : UI_default
         {
           NextButton.interactable = false;
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup,0.0f,FadeOutTime,false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup,0.0f,FadeOutTime,false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup,0.0f,FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup,0.0f,FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           NextButton.interactable = true;
@@ -222,43 +224,100 @@ public class UI_dialogue : UI_default
       {
         if (CurrentEventPhaseIndex == 0)     //선택지 선택 후 바로 보상일때         (선택지 애니메이션은 완료)
         {
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
-          DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
           SelectionGroup.gameObject.SetActive(false);
           if (CurrentSuccessData != null)
           {
             RewardButtonGroup.alpha = 0.0f;
             if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
+            StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
+            DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           }
-
-          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup,1.0f,FadeInTime,false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
+          else if (CurrentFailData != null)
+          {
+            switch (CurrentFailData.Panelty_target)
+            {
+              case PenaltyTarget.None:
+                DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+                break;
+              case PenaltyTarget.EXP:
+                DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+                break;
+              case PenaltyTarget.Status:
+                switch (CurrentFailData.Loss_target)
+                {
+                  case StatusType.HP:
+                    DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex]+
+                      $"<br><br>{GameManager.Instance.GetTextData(StatusType.HP,2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                    break;
+                  case StatusType.Sanity:
+                    DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
+        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                    break;
+                  case StatusType.Gold:
+                    DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
+        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Gold, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                    break;
+                }
+                break;
+            }
+          }
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
         }
         else                                 //다음 버튼 눌러서 보상에 도달할때
         {
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           if (CurrentSuccessData != null)
           {
             RewardButtonGroup.alpha = 0.0f;
             if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
+            StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
+            DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+          }
+          else if (CurrentFailData != null)
+          {
+            switch (CurrentFailData.Panelty_target)
+            {
+              case PenaltyTarget.None:
+                DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+                break;
+              case PenaltyTarget.EXP:
+                DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
+                break;
+              case PenaltyTarget.Status:
+                switch (CurrentFailData.Loss_target)
+                {
+                  case StatusType.HP:
+                    DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
+                      $"<br><br>{GameManager.Instance.GetTextData(StatusType.HP, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                    break;
+                  case StatusType.Sanity:
+                    DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
+        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                    break;
+                  case StatusType.Gold:
+                    DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
+        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Gold, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                    break;
+                }
+                break;
+            }
           }
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
-          DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.4f, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
         }
 
         OpenReturnButton();
@@ -269,8 +328,8 @@ public class UI_dialogue : UI_default
         {
           NextButton.interactable = false;
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
@@ -279,9 +338,9 @@ public class UI_dialogue : UI_default
           SelectionGroup.gameObject.SetActive(false);
           NextButtonGroup.gameObject.SetActive(true);
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,1.0f,FadeInTime,false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,1.0f, ButtonFadeinTime));
           yield return new WaitForSeconds(FadeWaitTime);
           NextButton.interactable = true;
         }
@@ -289,16 +348,16 @@ public class UI_dialogue : UI_default
         {
           NextButton.interactable = false;
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime, false));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           NextButton.interactable = true;
@@ -338,7 +397,7 @@ public class UI_dialogue : UI_default
         break;
     }
 
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup,1.0f,FadeInTime,false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup,1.0f,FadeInTime));
   }
   private UI_Selection CurrentUISelection = null;
   /// <summary>
@@ -350,7 +409,7 @@ public class UI_dialogue : UI_default
     if (_selection.MyTendencyType != TendencyTypeEnum.None)
     {
       GetOppositeSelection(_selection).DeActive();
-      StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionCenterImgGroup, 0.0f, 0.4f, false));
+      StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionCenterImgGroup, 0.0f, 0.4f));
     }
     //다른거 사라지게 만들고
     UIManager.Instance.AddUIQueue(selectionanimation(_selection));
@@ -561,7 +620,7 @@ public class UI_dialogue : UI_default
     EndingGroup.interactable = false;
     EndingGroup.blocksRaycasts = false;
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
     StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionRect.anchoredPosition, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
 
@@ -580,7 +639,7 @@ public class UI_dialogue : UI_default
     EndingGroup.interactable = false;
     EndingGroup.blocksRaycasts = false;
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
     StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
     yield return new WaitForSeconds(0.3f);
@@ -598,7 +657,7 @@ public class UI_dialogue : UI_default
 
   private IEnumerator openendingbuttons()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, 0.2f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, 0.2f));
     yield return null;
   }
   public void OpenEnding()
@@ -630,7 +689,7 @@ public class UI_dialogue : UI_default
         {
           GameManager.Instance.MyGameData.CurrentSanity += ConstValues.GoodExpAsSanity;
 
-          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
           RemainReward = false;
         }
         else
@@ -657,7 +716,7 @@ public class UI_dialogue : UI_default
             break;
         }
 
-        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
         RemainReward = false;
       }
     }
@@ -667,14 +726,14 @@ public class UI_dialogue : UI_default
       {
         GameManager.Instance.MyGameData.CurrentSanity -= ConstValues.BadExpAsSanity;
 
-        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f, false));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
         RemainReward = false;
       }
       else
       RewardExpUI.OpenUI_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
     }
   }
-
+  private int PenaltyValue = 0;
   public void SetPenalty(FailureData _fail)
   {
     switch (_fail.Panelty_target)
@@ -686,12 +745,23 @@ public class UI_dialogue : UI_default
         {
           case StatusType.HP:
             GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.FailHPValue_modified;
+            PenaltyValue = GameManager.Instance.MyGameData.FailHPValue_modified;
             break;
           case StatusType.Sanity:
             GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.FailSanityValue_modified;
+            PenaltyValue = GameManager.Instance.MyGameData.FailSanityValue_modified;
             break;
           case StatusType.Gold:
-            GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.FailGoldValue_modified;
+            if (GameManager.Instance.MyGameData.Gold >= GameManager.Instance.MyGameData.FailGoldValue_modified)
+            {
+              GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.FailGoldValue_modified;
+              PenaltyValue = GameManager.Instance.MyGameData.FailGoldValue_modified;
+            }
+            else
+            {
+              PenaltyValue = GameManager.Instance.MyGameData.Gold;
+              GameManager.Instance.MyGameData.Gold = 0;
+            }
             break;
         }
         break;
@@ -711,7 +781,7 @@ public class UI_dialogue : UI_default
           _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
         }
 
-        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.3f, false));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
 
         break;
     }

@@ -769,6 +769,7 @@ public class GameData    //게임 진행도 데이터
   /// </summary>
   public int Quest_Cult_Type = 0;
   public int Quest_Cult_Progress = 0;
+  public List<string> SearchingSettlementNames=new List<string>();
   public List<SectorType> Quest_Cult_Sabbat_BlockedSectors = new List<SectorType>();
   public Dictionary<SectorType,int> Quest_Cult_Sabbat_TokenedSectors=new Dictionary<SectorType,int>();
   #endregion

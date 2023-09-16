@@ -125,13 +125,13 @@ public class ImageHolder : ScriptableObject
   public Sprite QuestIcon_Wolf = null;
   public Sprite QuestIcon_Ritual_Idle = null;
   public Sprite QuestIcon_Ritual_Finish = null;
-    public List<Sprite> QuestIllust_Wolf = new List<Sprite>();          //늑대 관련 퀘스트 일러스트
+    public List<Sprite> QuestIllust_Cult = new List<Sprite>();          //컬트 관련 퀘스트 일러스트
     public Sprite GetQuestIllust(QuestType type,string id)
     {
         List<Sprite> _targetlist = new List<Sprite>();
         switch (type)
         {
-            case QuestType.Cult:_targetlist = QuestIllust_Wolf;break;
+            case QuestType.Cult:_targetlist = QuestIllust_Cult;break;
         }
         foreach(var _illust in _targetlist)
         {

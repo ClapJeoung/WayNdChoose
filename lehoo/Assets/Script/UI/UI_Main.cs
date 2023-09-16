@@ -157,7 +157,7 @@ public class UI_Main : UI_default
     BackToMainButton.interactable = false;
     QuestButtonGroup.interactable = false;
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 0.0f, 4.0f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 0.0f, 4.0f));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("startgame").Rect, GetPanelRect("startgame").InsidePos, GetPanelRect("startgame").OutisdePos, MainUIOpenTime, UIManager.Instance.UIPanelOpenCurve));
     yield return LittleWait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("questdescription").Rect, GetPanelRect("questdescription").InsidePos, GetPanelRect("questdescription").OutisdePos, MainUIOpenTime, UIManager.Instance.UIPanelOpenCurve));
@@ -171,7 +171,7 @@ public class UI_Main : UI_default
   }
   private IEnumerator openmain()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, 1.0f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, 1.0f));
     ShowImage = showimage();
     StartCoroutine(ShowImage);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").OutisdePos, GetPanelRect("mainillust").InsidePos, MainUIOpenTime, UIManager.Instance.UIPanelOpenCurve));
@@ -191,7 +191,7 @@ public class UI_Main : UI_default
   }
   private IEnumerator closemain()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, 1.0f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, 1.0f));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").InsidePos, GetPanelRect("loadgame").OutisdePos, MainUICloseTime, UIManager.Instance.UIPanelCLoseCurve));
     yield return LittleWait;
 

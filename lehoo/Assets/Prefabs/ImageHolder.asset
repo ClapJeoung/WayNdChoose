@@ -623,7 +623,7 @@ MonoBehaviour:
   QuestIcon_Wolf: {fileID: 21300000, guid: 99700f1c2d684784b8712bc8f4e6a592, type: 3}
   QuestIcon_Ritual_Idle: {fileID: 21300000, guid: f84b81a4c74f7ad41a7dc84f0b6b3ea1, type: 3}
   QuestIcon_Ritual_Finish: {fileID: 21300000, guid: 578de4cf5dda664498c09108536df112, type: 3}
-  QuestIllust_Wolf:
+  QuestIllust_Cult:
   - {fileID: 21300000, guid: 00da322885566d34c9c29e6e2468ceb6, type: 3}
   - {fileID: 21300000, guid: ad6c42c0e57f93742b21c7b2dd3a4b27, type: 3}
   - {fileID: 21300000, guid: e3f9c15f6013bd448bf90effd2680f80, type: 3}
@@ -644,8 +644,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f261c4685ea14de4aae0a17f7df581ab, type: 3}
   - {fileID: 21300000, guid: 25c78af2c900c2d4780d44692a9ebf02, type: 3}
   - {fileID: 21300000, guid: 45acf660c25d5c6429fae93d8844b903, type: 3}
-  - {fileID: 21300000, guid: c187b4097636eaf418201d85632d8ba5, type: 3}
   - {fileID: 21300000, guid: 9ff14f47a9a90dc46a97d00c3dd0e45e, type: 3}
+  - {fileID: 21300000, guid: c187b4097636eaf418201d85632d8ba5, type: 3}
   EmptyLongExpIcon: {fileID: 21300000, guid: c8859889966423244b72eb0209f9a7b0, type: 3}
   EmptyShortExpIcon: {fileID: 21300000, guid: 909c3af100c69bb48b88201269d8348a, type: 3}
   SpringIcon_active: {fileID: 21300000, guid: 7f4699aae6a48f548815bbfc1037ae17, type: 3}

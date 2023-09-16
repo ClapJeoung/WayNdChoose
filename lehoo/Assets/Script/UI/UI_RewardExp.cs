@@ -44,7 +44,7 @@ public class UI_RewardExp : UI_default
 
     SetupCurrentExps();
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f));
   }
   public void OpenUI_Penalty(Experience badexp)
   {
@@ -60,7 +60,7 @@ public class UI_RewardExp : UI_default
 
     SetupCurrentExps();
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f));
   }
   public void OpenUI_Madness(Experience madexp)
   {
@@ -76,7 +76,7 @@ public class UI_RewardExp : UI_default
 
     SetupCurrentExps();
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f));
   }
 
   public void SetupCurrentExps()
@@ -151,13 +151,13 @@ public class UI_RewardExp : UI_default
   public override void CloseUI()
   {
     IsOpen = false;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f, false));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f));
     ExpIllustIcon.SetActive(false);
   }
   public override void CloseForGameover()
   {
     IsOpen = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f, false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f));
     ExpIllustIcon.SetActive(false);
   }
 

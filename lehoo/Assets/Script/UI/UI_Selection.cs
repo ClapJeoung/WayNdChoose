@@ -13,7 +13,7 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [SerializeField] private RectTransform MyRect = null;
   [SerializeField] private Image MySelectionImage = null;
-  [SerializeField] private TextMeshProUGUI MyDescription = null;
+ // [SerializeField] private TextMeshProUGUI MyDescription = null;
   [SerializeField] private Image PayIcon = null;
   [SerializeField] private GameObject ThemeObj_A = null;
   [SerializeField] private Image ThemeIcon_A = null;
@@ -28,7 +28,7 @@ public class UI_Selection : MonoBehaviour
   }
   //현재 이 선택지가 가지는 설명문
   public SelectionData MySelectionData = null;
-  public void DeActive() => StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.6f,false));
+  public void DeActive() => StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.6f));
   public void Setup(SelectionData _data)
   {
     MySelectionData = _data;
@@ -83,11 +83,13 @@ public class UI_Selection : MonoBehaviour
     }
 
     MySelectionImage.sprite = _selectionimage;
-    MyDescription.text = _data.SubDescription;
+ //   MyDescription.text = _data.SubDescription;
   }
   public void Select()
   {
     if (UIManager.Instance.IsWorking) return;
+    MyGroup.interactable = false;
+    UIManager.Instance.PreviewManager.ClosePreview();
     MyUIDialogue.SelectSelection(this);
     if (MyTendencyType.Equals(TendencyTypeEnum.None)) return;
     GameManager.Instance.AddTendencyCount(MyTendencyType,Index);

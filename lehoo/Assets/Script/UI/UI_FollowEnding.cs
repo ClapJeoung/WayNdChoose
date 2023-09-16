@@ -41,7 +41,7 @@ public class UI_FollowEnding : MonoBehaviour
     yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, UIMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, UIMoveTime, UIManager.Instance.UIPanelOpenCurve));
     yield return Wait;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonGroup, 1.0f, 0.8f,false));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonGroup, 1.0f, 0.8f));
 
     yield return null;
   }
@@ -52,8 +52,8 @@ public class UI_FollowEnding : MonoBehaviour
   }
   private IEnumerator closeui()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, 0.4f, false));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup,0.0f,0.4f,false ));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, 0.4f));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup,0.0f,0.4f));
     IllustImage.sprite = GameManager.Instance.ImageHolder.Transparent;
     IllustRect.anchoredPosition = IllustClosePos;
     DescriptionRect.anchoredPosition = DescriptionClosePos;

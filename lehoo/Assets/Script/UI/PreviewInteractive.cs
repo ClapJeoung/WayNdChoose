@@ -111,10 +111,10 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           WNCText.GetSanityColor(ConstValues.MadnessRefuseSanityRestore)));
         break;
       case PreviewPanelType.MoveCostSanity:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), UIManager.Instance.MyMap.SanityCost));
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MyMap.SanityCost)));
         break;
       case PreviewPanelType.MoveCostGold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), UIManager.Instance.MyMap.GoldCost));
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), WNCText.GetGoldColor(UIManager.Instance.MyMap.GoldCost)));
         break;
       case PreviewPanelType.RestSanity:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_SANITY"));
@@ -123,10 +123,10 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"));
         break;
       case PreviewPanelType.CultPanel_Sabbat:
-        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle, GameManager.Instance.GetTextData("Quest_Wolf_Cult_Sidepanel_Preview"), new Vector2(1.1f, 0.5f)) ;
+        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle, GameManager.Instance.GetTextData("Quest0_Sabbat_Sidepanel_Preview"), new Vector2(1.1f, 0.5f)) ;
         break;
       case PreviewPanelType.CultPanel_Ritual:
-        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Ritual_Idle,GameManager.Instance.GetTextData("Quest_Wolf_Wolf_Sidepanel_Preview"), new Vector2(1.1f, 0.5f));
+        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Ritual_Idle,GameManager.Instance.GetTextData("Quest0_Ritual_Sidepanel_Preview"), new Vector2(1.1f, 0.5f));
         break;
       case PreviewPanelType.MovePoint:
         UIManager.Instance.PreviewManager.OpenMovePointPreview();

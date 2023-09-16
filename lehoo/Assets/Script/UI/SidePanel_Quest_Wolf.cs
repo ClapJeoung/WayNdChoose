@@ -14,13 +14,12 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
   [SerializeField] private TextMeshProUGUI Searching_description = null;
   [SerializeField] private Image[] Searching_Icons = new Image[3];
   [Space(10)]
-  [SerializeField] private CanvasGroup Sabbat_Normal_Group = null;
-  [SerializeField] private TextMeshProUGUI Sabbat_Normal_description = null;
-  [SerializeField] private RectTransform[] Sabbat_Nomral_Effects = new RectTransform[3];
-  [SerializeField] private Image[] Sabbat_Normal_Icons=new Image[3];
-  [SerializeField] private TextMeshProUGUI[] Sabbat_Normal_Progresses=new TextMeshProUGUI[3];
+  [SerializeField] private CanvasGroup Sabbat_Group = null;
+  [SerializeField] private TextMeshProUGUI Sabbat_description = null;
+  [SerializeField] private TextMeshProUGUI Sabbat_Progress = null;
+  [SerializeField] private Image[] Sabbat_Icons=new Image[3];
   [Space(10)]
-  [SerializeField] private CanvasGroup Ritual_Normal_Group = null;
+  [SerializeField] private CanvasGroup Ritual_Group = null;
 
   public void UpdateUI()
   {
@@ -46,15 +45,15 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
   }
   private void UpdateSearchingPanel()
   {
-    Searching_description.text = string.Format(GameManager.Instance.GetTextData("Quest0_Sidepanel_Searching_description"), GameManager.Instance.MyGameData.Quest_Cult_Progress);
+    Searching_description.text = string.Format(GameManager.Instance.GetTextData("Quest0_Sidepanel_Searching_description"), WNCText.GetSomethingColor(GameManager.Instance.MyGameData.Quest_Cult_Progress));
     for(int i = 0; i < 2; i++)
     {
       Searching_Icons[i].color = GameManager.Instance.MyGameData.Quest_Cult_Progress > i ? ActiveColor : DeactiveColor;
     }
 
-    if(Searching_Group.alpha==0.0f)Searching_Group.alpha=1.0f;
-    if (Sabbat_Normal_Group.alpha == 1.0f) Sabbat_Normal_Group.alpha = 0.0f;
-    if (Ritual_Normal_Group.alpha == 1.0f) Ritual_Normal_Group.alpha = 0.0f;
+    if (Searching_Group.alpha == 0.0f) { Searching_Group.alpha = 1.0f; Searching_Group.blocksRaycasts = true; }
+    if (Sabbat_Group.alpha == 1.0f) { Sabbat_Group.alpha = 0.0f; Sabbat_Group.blocksRaycasts = false; }
+    if (Ritual_Group.alpha == 1.0f) { Ritual_Group.alpha = 0.0f; Ritual_Group.blocksRaycasts = false; }
   }
 
   private void UpdateCultNormalPanel()
@@ -63,38 +62,31 @@ public class SidePanel_Quest_Wolf : MonoBehaviour
     {
       if (i < GameManager.Instance.MyGameData.Quest_Cult_Phase-1)
       {
-        Sabbat_Normal_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Finish;
-        Sabbat_Normal_Icons[i].color = ActiveColor;
-        Sabbat_Normal_Icons[i].fillAmount = 1.0f;
-        Sabbat_Normal_Progresses[i].text = "";
+        Sabbat_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Finish;
+        Sabbat_Icons[i].color = ActiveColor;
       }
       else if (i == GameManager.Instance.MyGameData.Quest_Cult_Phase - 1)
       {
-        Sabbat_Normal_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle;
-        Sabbat_Normal_Icons[i].color = ActiveColor;
-        Sabbat_Normal_Icons[i].fillAmount = GameManager.Instance.MyGameData.Quest_Cult_Progress / 100.0f;
-        Sabbat_Normal_Progresses[i].text = GameManager.Instance.MyGameData.Quest_Cult_Progress <=100? GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString():"100"+ "%";
+        Sabbat_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle;
+        Sabbat_Icons[i].color = ActiveColor;
       }
       else
       {
-        Sabbat_Normal_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle;
-        Sabbat_Normal_Icons[i].fillAmount = 1.0f;
-        Sabbat_Normal_Icons[i].color = DeactiveColor;
-        Sabbat_Normal_Progresses[i].text = "";
+        Sabbat_Icons[i].sprite = GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle;
+        Sabbat_Icons[i].color = DeactiveColor;
       }
     }
-    Sabbat_Normal_description.text = GameManager.Instance.MyGameData.Quest_Cult_Progress == 100 ? GameManager.Instance.GetTextData("Quest_Wolf_Cult_Sidepanel_Description_Active") : GameManager.Instance.GetTextData("Quest_Wolf_Cult_Sidepanel_Description_Idle");
+    Sabbat_description.text = GameManager.Instance.MyGameData.Quest_Cult_Progress == 100 ? GameManager.Instance.GetTextData("Quest0_Sabbat_Sidepanel_Description_Active") : GameManager.Instance.GetTextData("Quest0_Sabbat_Sidepanel_Description_Idle");
+    Sabbat_Progress.text = GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString();
 
-    if (Searching_Group.alpha == 1.0f) Searching_Group.alpha = 0.0f;
-    if (Sabbat_Normal_Group.alpha == 0.0f) Sabbat_Normal_Group.alpha = 1.0f;
-    if (Ritual_Normal_Group.alpha == 1.0f) Ritual_Normal_Group.alpha = 0.0f;
+    if (Searching_Group.alpha == 1.0f) { Searching_Group.alpha = 0.0f; Searching_Group.blocksRaycasts = false; }
+    if (Sabbat_Group.alpha == 0.0f) { Sabbat_Group.alpha = 1.0f; Sabbat_Group.blocksRaycasts = true; }
+    if (Ritual_Group.alpha == 1.0f) { Ritual_Group.alpha = 0.0f; Ritual_Group.blocksRaycasts = false; }
   }
   private void UpdateRitualNormalPanel()
   {
-
-
-    if (Searching_Group.alpha == 1.0f) Searching_Group.alpha = 0.0f;
-    if (Sabbat_Normal_Group.alpha == 1.0f) Sabbat_Normal_Group.alpha = 0.0f;
-    if (Ritual_Normal_Group.alpha == 0.0f) Ritual_Normal_Group.alpha = 1.0f;
+    if (Searching_Group.alpha == 1.0f) { Searching_Group.alpha = 0.0f; Searching_Group.blocksRaycasts = false; }
+    if (Sabbat_Group.alpha == 1.0f) { Sabbat_Group.alpha = 0.0f; Sabbat_Group.blocksRaycasts = false; }
+    if (Ritual_Group.alpha == 0.0f) { Ritual_Group.alpha = 1.0f; Ritual_Group.blocksRaycasts = true; }
   }
 }
