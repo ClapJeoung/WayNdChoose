@@ -38,8 +38,8 @@ public class UI_FollowEnding : MonoBehaviour
     DescriptionText_size.text = MyEndingData.Description;
     DescriptionText.text = MyEndingData.Description;
 
-    yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, UIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-    yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, UIMoveTime, UIManager.Instance.UIPanelOpenCurve));
+    yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, UIMoveTime, true));
+    yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, UIMoveTime, true));
     yield return Wait;
     StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonGroup, 1.0f, 0.8f));
 

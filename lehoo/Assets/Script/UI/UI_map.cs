@@ -13,7 +13,7 @@ public class UI_map : UI_default
   private TileData SelectedTile = null;
   public maptext MapCreater = null;
   [HideInInspector] public GameObject CityIcon = null;
-  [HideInInspector] public List<GameObject> TownIcons = new List<GameObject>();
+  [HideInInspector] public GameObject TownIcon = null;
   [HideInInspector] public List<GameObject> VillageIcons = new List<GameObject>();
   public GameObject GetSettleIcon(Settlement settlement)
   {
@@ -22,9 +22,7 @@ public class UI_map : UI_default
     {
       case SettlementType.City:return CityIcon;
       case SettlementType.Town:
-        foreach (GameObject town in TownIcons)
-          if (town.name.Contains(_originname)) return town;
-        return null;
+        return TownIcon;
       case SettlementType.Village:
         foreach(GameObject village in VillageIcons)
           if(village.name.Contains(_originname)) return village;
@@ -294,7 +292,7 @@ public class UI_map : UI_default
     switch (SelectedCostType)
     {
       case StatusType.Sanity:
-        if (GameManager.Instance.MyGameData.MaxSanity <= ConstValues.MadnessDefaultSanityLose)
+        if (GameManager.Instance.MyGameData.MaxSanity <= ConstValues.MadnessMaxSanityLoseValue)
         {
           GameManager.Instance.MyGameData.CurrentSanity -= (GameManager.Instance.MyGameData.CurrentSanity - 1);
         }
@@ -384,13 +382,13 @@ public class UI_map : UI_default
   private IEnumerator closeui()
   {
     DefaultGroup.blocksRaycasts = false;
-    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
+    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, 0.3f, false));
     DefaultGroup.interactable = false;
   }
   public override void CloseForGameover()
   {
     DefaultGroup.blocksRaycasts = false;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, 0.3f, UIManager.Instance.UIPanelCLoseCurve));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, 0.3f, false));
   }
 
 }

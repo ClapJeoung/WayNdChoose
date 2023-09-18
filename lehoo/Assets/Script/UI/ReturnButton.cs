@@ -86,7 +86,7 @@ public class ReturnButton : MonoBehaviour
     CurrentUI= curerntui;
     Vector2 _startpos = Dir == 0 ? LeftOutsidePos : RightOutsidePos;
     Vector2 _endpos = Dir == 0 ? LeftInsidePos : RightInsidePos;
-    StartCoroutine(UIManager.Instance.moverect(MyRect, _startpos, _endpos, AppearTime, UIManager.Instance.UIPanelOpenCurve));
+    StartCoroutine(UIManager.Instance.moverect(MyRect, _startpos, _endpos, AppearTime, true));
     MyText.text = IsMapButton == true ? GameManager.Instance.GetTextData("GOTOMAP") : GameManager.Instance.GetTextData("GOTOSETTLEMENT");
     if (MyGroup.alpha == 0.0f)
     {
@@ -102,10 +102,10 @@ public class ReturnButton : MonoBehaviour
     switch (Dir)
     {
       case 0:
-        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, LeftInsidePos, LeftOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
+        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, LeftInsidePos, LeftOutsidePos, 0.6f, false));
         break;
       case 1:
-        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, RightInsidePos, RightOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
+        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, RightInsidePos, RightOutsidePos, 0.6f, false));
         break;
     }
   }
@@ -114,10 +114,10 @@ public class ReturnButton : MonoBehaviour
     switch (Dir)
     {
       case 0:
-        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, LeftOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
+        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, LeftOutsidePos, 0.6f, false));
         break;
       case 1:
-        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, RightOutsidePos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
+        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, RightOutsidePos, 0.6f, false));
         break;
     }
   }

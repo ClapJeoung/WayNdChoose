@@ -313,25 +313,31 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//성채 이름에 해당하는 일러스트 가져오기
 
-    public List<EventIllustHolder> GetEventIllusts(string eventid,int length)
+    public List<EventIllustHolder> GetEventIllusts(string originid,string typeid,int length)
     {
-    string _name = eventid;
-    _name += "_Illust";
     List<Sprite> _illusts = new List<Sprite>();
     foreach (Sprite _spr in EventIllust)
     {
-      if (_spr.name.Contains(_name, System.StringComparison.InvariantCultureIgnoreCase) == true)
+      if (_spr.name.Contains(originid, System.StringComparison.InvariantCultureIgnoreCase) == true)
       {
+        if(_spr.name.Contains(typeid, System.StringComparison.InvariantCultureIgnoreCase)==true)
         _illusts.Add(_spr);
       }
     }
     List<EventIllustHolder> _holders= new List<EventIllustHolder>();
-    for(int i = 0; i < length; i++)
+    if (length > 1)
     {
-      List<Sprite> _listtemp=new List<Sprite>();
-      foreach(Sprite _spr in _illusts) if(_spr.name.Contains(i.ToString()))_listtemp.Add(_spr);
+      for (int i = 0; i < length; i++)
+      {
+        List<Sprite> _listtemp = new List<Sprite>();
+        foreach (Sprite _spr in _illusts) if (_spr.name.Contains(i.ToString())) _listtemp.Add(_spr);
 
-      _holders.Add(new EventIllustHolder(_listtemp));
+        _holders.Add(new EventIllustHolder(_listtemp));
+      }
+    }
+    else
+    {
+      _holders.Add(new EventIllustHolder(_illusts));
     }
 
     return _holders;
@@ -366,13 +372,14 @@ public class EventIllustHolder
     }
     else
     {
+      bool _noneseason = true;
       for (int i = 0; i < illusts.Count; i++)
       {
-        if (illusts[i].name.Contains("spring")) SpringIllust = illusts[i];
-        else if (illusts[i].name.Contains("summer")) SummerIllust = illusts[i];
-        else if (illusts[i].name.Contains("winter")) AutumnIllust = illusts[i];
-        else if (illusts[i].name.Contains("autumn")) WinterIllust = illusts[i];
-        else IdleIllust = illusts[i];
+        if (illusts[i].name.Contains("spring")) { SpringIllust = illusts[i]; _noneseason = false; }
+        if (illusts[i].name.Contains("summer")){ SummerIllust = illusts[i]; _noneseason = false; }
+        if (illusts[i].name.Contains("winter")){ AutumnIllust = illusts[i]; _noneseason = false; }
+          if (illusts[i].name.Contains("autumn")){ WinterIllust = illusts[i]; _noneseason = false; }
+            if(_noneseason==true) IdleIllust = illusts[i];
       }
     }
   }

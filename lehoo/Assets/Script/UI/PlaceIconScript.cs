@@ -18,24 +18,32 @@ public class PlaceIconScript : MonoBehaviour
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType))
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Type == 0)
         {
-          MyImage.color = BlockedColor;
-          if (Quest_Wolf_CultBlock.enabled == false) Quest_Wolf_CultBlock.enabled = true;
-          if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
+          if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType))
+          {
+            MyImage.color = BlockedColor;
+            if (Quest_Wolf_CultBlock.enabled == false) Quest_Wolf_CultBlock.enabled = true;
+            if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
+          }
+          else
+          {
+            MyImage.color = IdleColor;
+            if (Quest_Wolf_CultBlock.enabled == true) Quest_Wolf_CultBlock.enabled = false;
+            if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors[MyType] == 0)
+            {
+              if (Quest_Wolf_HideoutToken.enabled == false) Quest_Wolf_HideoutToken.enabled = true;
+            }
+            else
+            {
+              if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
+            }
+          }
         }
         else
         {
           MyImage.color = IdleColor;
-          if (Quest_Wolf_CultBlock.enabled == true) Quest_Wolf_CultBlock.enabled = false;
-          if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors[MyType] == 0)
-          {
-            if (Quest_Wolf_HideoutToken.enabled == false) Quest_Wolf_HideoutToken.enabled = true;
-          }
-          else
-          {
-            if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
-          }
+          if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
         }
         break;
     }

@@ -13,7 +13,7 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [SerializeField] private RectTransform MyRect = null;
   [SerializeField] private Image MySelectionImage = null;
- // [SerializeField] private TextMeshProUGUI MyDescription = null;
+  [SerializeField] private TextMeshProUGUI MyDescription = null;
   [SerializeField] private Image PayIcon = null;
   [SerializeField] private GameObject ThemeObj_A = null;
   [SerializeField] private Image ThemeIcon_A = null;
@@ -83,7 +83,7 @@ public class UI_Selection : MonoBehaviour
     }
 
     MySelectionImage.sprite = _selectionimage;
- //   MyDescription.text = _data.SubDescription;
+    MyDescription.text = _data.Name;
   }
   public void Select()
   {

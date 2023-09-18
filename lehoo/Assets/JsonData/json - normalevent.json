@@ -1,0 +1,50 @@
+{
+  "0": {
+    "ID": "Event_Illegaldoctor",
+    "PlaceInfo": "4@0@0",
+    "Season": "",
+    "Selection_Type": "2",
+    "Selection_Target": "1@0",
+    "Selection_Info": "1@3",
+    "Failure_Penalty": "0@1",
+    "Failure_Penalty_info": "0@1",
+    "Reward_Target": "4@3",
+    "Reward_Info": "4@0"
+  },
+  "1": {
+    "ID": "Event_ExoticGirl",
+    "PlaceInfo": "4@0@0",
+    "Season": "",
+    "Selection_Type": "2",
+    "Selection_Target": "2@0",
+    "Selection_Info": "0,2@2",
+    "Failure_Penalty": "1@0",
+    "Failure_Penalty_info": "2@0",
+    "Reward_Target": "0@0",
+    "Reward_Info": "Exp_ExoticRelic@Exp_ExoticRelic"
+  },
+  "2": {
+    "ID": "Event_ScareCrow",
+    "PlaceInfo": "0@0@0",
+    "Season": "",
+    "Selection_Type": "1",
+    "Selection_Target": "1@1",
+    "Selection_Info": "3@2",
+    "Failure_Penalty": "0@0",
+    "Failure_Penalty_info": "0@0",
+    "Reward_Target": "2@2",
+    "Reward_Info": ""
+  },
+  "3": {
+    "ID": "Event_CreepyHut",
+    "PlaceInfo": "0@0@0",
+    "Season": "",
+    "Selection_Type": "2",
+    "Selection_Target": "0@0",
+    "Selection_Info": "0@1",
+    "Failure_Penalty": "",
+    "Failure_Penalty_info": "",
+    "Reward_Target": "1@2",
+    "Reward_Info": "0@0"
+  }
+}

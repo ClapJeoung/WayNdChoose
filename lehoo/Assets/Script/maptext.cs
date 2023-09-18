@@ -61,7 +61,7 @@ public class maptext : MonoBehaviour
       if (_data == null) continue;
       bool _villageriver = false, _villageforest = false, _villagehighland = false, _villagemountain = false, _villagesea = false;
       bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
-      bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false;
+      bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false, _citysea = false;
 
       foreach (var _village in _data.Villages)
       {
@@ -71,47 +71,26 @@ public class maptext : MonoBehaviour
         if (_village.IsMountain) _villagemountain = true;
         if (_village.IsSea) _villagesea = true;
       }
-      foreach (var _town in _data.Towns)
-      {
+      var _town = _data.Town;
+      
         if (_town.IsRiver) _townriver = true;
         if (_town.IsForest) _townforest = true;
         if (_town.IsHighland) _townhighland = true;
         if (_town.IsMountain) _townmountain = true;
         if (_town.IsSea) _townsea = true;
-      }
+      
       var _city = _data.City;
       if (_city.IsRiver) _cityriver = true;
       if (_city.IsForest) _cityforest = true;
       if (_city.IsHighland) _cityhighland = true;
       if (_city.IsMountain) _citymountain = true;
+      if (_city.IsSea) _citysea = true;
 
-      if (!_villageriver || !_villageforest || !_villagemountain || !_villagesea ||
-               !_townriver || !_townforest || !_townmountain || !_townsea ||
-               !_cityriver || !_cityforest || !_citymountain)
-      {
-        string _str = "";
-        if (!_villageriver) _str += "마을 강  ";
-        if (!_villageforest) _str += "마을 숲  ";
-        //  if (!_villagehighland) _str += "마을 고원  ";
-        if (!_villagemountain) _str += "마을 산  ";
-        if (!_villagesea) _str += "마을 바다  ";
-        if (!_townriver) _str += "도시 강  ";
-        if (!_townforest) _str += "도시 숲  ";
-        //  if (!_townhighland) _str += "도시 고원  ";
-        if (!_townmountain) _str += "도시 산  ";
-        if (!_townsea) _str += "도시 바다  ";
-        if (!_cityriver) _str += "성채 강  ";
-        if (!_cityforest) _str += "성채 숲  ";
-        //   if (!_cityhighland) _str += "성채 고원  ";
-        if (!_citymountain) _str += "성채 산  ";
-
-        Debug.Log(_index + "번 맵    " + _str + "없음");
-        yield return null;
-        continue;
-      }
-      if (_data.Villages.Count != 3) { yield return null; continue; }
-      if (_data.Towns.Count != 2) { yield return null; continue; }
-      if (_data.City == null) { yield return null; continue; }
+      if (!_villageforest && !_townforest && !_cityforest) { Debug.Log(_index+"번 맵 숲 하나도 없음"); continue; }
+      if (!_villagesea && !_townsea && !_citysea) { Debug.Log(_index + "번 맵 바다 하나도 없음"); continue; }
+      if (!_villagemountain && !_townmountain && !_citymountain) { Debug.Log(_index + "번 맵 산 하나도 없음"); continue; }
+      if (!_villageriver && !_townriver && !_cityriver) { Debug.Log(_index + "번 맵 강 하나도 없음"); continue; }
+      if (_data.Villages.Count != 2|| _data.Town == null|| _data.Town == null) { yield return null; continue; }
 
       Debug.Log($"{_index}번째 맵 성공\n");
       GameManager.Instance.MyGameData.MyMapData = _data;
@@ -361,7 +340,7 @@ public class maptext : MonoBehaviour
         LoopCount++;
         if (LoopCount > 1000) { Debug.Log("강 생성 중 무한루프"); return null; }
 
-        if (_riverdata.RiverDirs.Count == 0) break;
+        if (_riverdata.RiverDirs.Count == 0) { i--; break; }
 
         int _finishdir = 10;                                            //(0~5)
         List<int> _targetdirs = MixRandom(new List<int> { -1, 0, 1 });  //-1,0,1이 무작위로
@@ -382,9 +361,21 @@ public class maptext : MonoBehaviour
           if (_curvecount == 3 && _targetdirs[k] == 1) continue;//과도한 커브 금지
           if (_failcoors.Contains(_nexttile.Coordinate)) continue;
           bool _overlaped = false;
-          for (int m = 0; m < i; m++)
+          for (int m = 0; m < i; m++) //이전 강 데이터들 중 이미 목표 타일을 가지고 있는 강은 없는지 확인
           {
-            if (_riverdatas[m].RiverCoors.Contains(_nexttile.Coordinate)) { _overlaped = true; break; }
+            try
+            {
+              if (_riverdatas[m].RiverCoors.Contains(_nexttile.Coordinate))
+              {
+                _overlaped = true;
+                break;
+              }
+            }
+            catch (System.Exception e)
+            {
+              Debug.Log(e);
+              throw;
+            }
           }
           if (_overlaped) continue;
           _enabledirs.Add(_targetdirs[k]);
@@ -862,7 +853,8 @@ public class maptext : MonoBehaviour
 
     Settlement City = new Settlement(SettlementType.City);
     List<TileData> _citytiles = new List<TileData>();
-    List<TileData> _citystartrange = _NewMapData.GetAroundTile(new Vector2Int(ConstValues.MapSize / 2 + ConstValues.MapSize % 2, ConstValues.MapSize / 2 + ConstValues.MapSize % 2), 1);
+    HexDir _cityhexdir = (HexDir)Random.Range(0, 6);
+    List<TileData> _citycreatetiles = _NewMapData.GetDirLines(_NewMapData.CenterTile, _cityhexdir);
     HexDir _citydir_1=HexDir.BottomRight, _citydir_2=HexDir.BottomLeft;
 
     while (_citytiles.Count != 3)
@@ -870,7 +862,7 @@ public class maptext : MonoBehaviour
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
 
-      Vector2Int _starcoor = _citystartrange[Random.Range(0, _citystartrange.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _starcoor = _citycreatetiles[Random.Range(3, _citycreatetiles.Count - 2)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
      
       TileData _starttile = _NewMapData.TileDatas[_starcoor.x, _starcoor.y];
       if (cityCheck(_starttile) == false) continue;
@@ -910,36 +902,21 @@ public class maptext : MonoBehaviour
     LoopCount = 0;
 
     List<TileData> _towntiles=new List<TileData>();
-    List<Settlement> Towns=new List<Settlement>();
-    Towns.Add(new Settlement(SettlementType.Town)); Towns.Add(new Settlement(SettlementType.Town));
-    List<HexDir> _towndirs=new List<HexDir>();
+    Settlement Town = new Settlement(SettlementType.Town);
+    HexDir _towndir = RotateDir(_cityhexdir, 3);
     List<HexDir> _villagedirs = new List<HexDir>() { (HexDir)0, (HexDir)1, (HexDir)2, (HexDir)3, (HexDir)4, (HexDir)5 };
-    switch (Random.Range(0, 3))
-    {
-      case 0:
-        _towndirs =new List<HexDir>{ (HexDir)0,(HexDir)3};
-        break;
-      case 1:
-        _towndirs = new List<HexDir> { (HexDir)1, (HexDir)4 };
-        break;
-      case 2:
-        _towndirs = new List<HexDir> { (HexDir)2, (HexDir)5 };
-        break;
-    }
-    foreach (HexDir _hexdir in _towndirs) _villagedirs.Remove(_hexdir);
-    _villagedirs.Remove(_villagedirs[Random.Range(0, _villagedirs.Count)]);
+    _villagedirs.Remove(_towndir); _villagedirs.Remove(_towndir);
     List<List<TileData>> _enablelines = new List<List<TileData>>();
-    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _towndirs[0]));
-    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _towndirs[1]));
+    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _towndir));
     List<TileData> _disabletiles=new List<TileData>();
 
-    while (_towntiles.Count != 2*2)
+    while (_towntiles.Count != 2)
     {
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("마을 생성 중 무한루프"); return null; }
-      int _index = _towntiles.Count / 2;
+      int _index = 0;
 
-      Vector2Int _selectcoor = _enablelines[_index][Random.Range(1, _enablelines.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _enablelines[_index][Random.Range(3, _enablelines.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
       TileData _firsttile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
       if(towncheck(_firsttile)==false)continue;
 
@@ -953,8 +930,8 @@ public class maptext : MonoBehaviour
       }
       if (_loopcount == 6) continue;
 
-      _NewMapData.TileDatas[_firsttile.Coordinate.x, _firsttile.Coordinate.y].TileSettle = Towns[_towntiles.Count / 2];
-      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].TileSettle = Towns[_towntiles.Count / 2];
+      _NewMapData.TileDatas[_firsttile.Coordinate.x, _firsttile.Coordinate.y].TileSettle = Town;
+      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].TileSettle = Town;
       _NewMapData.Tile(_firsttile.Coordinate).Landmark = LandmarkType.Town;
       _NewMapData.Tile(_secondtile.Coordinate).Landmark = LandmarkType.Town;
       _towntiles.Add(_firsttile);
@@ -975,7 +952,7 @@ public class maptext : MonoBehaviour
     }
     for(int i=0;i<_towntiles.Count; i++)
     {
-      Towns[i/2].Tiles.Add(_towntiles[i]);
+      Town.Tiles.Add(_towntiles[i]);
     }
     #endregion
     //      Debug.Log("도시 생성 완료");
@@ -983,16 +960,18 @@ public class maptext : MonoBehaviour
     #region 촌락
     LoopCount = 0;
 
-    List<Settlement> Villages = new List<Settlement> { new Settlement(SettlementType.Town), new Settlement(SettlementType.Town), new Settlement(SettlementType.Town) };
+    List<Settlement> Villages = new List<Settlement> {  new Settlement(SettlementType.Village), new Settlement(SettlementType.Village) };
     List<TileData> _villagetiles= new List<TileData>();
-    while (_villagetiles.Count < 3)
+    HexDir _firstvillagedir = _villagedirs[Random.Range(0, _villagedirs.Count)];
+    while (_villagetiles.Count !=2)
     {
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("촌락 생성 중 무한루프"); return null; }
 
-      List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedirs[_villagetiles.Count]);
+      HexDir _villagedir = _villagetiles.Count == 0 ? _firstvillagedir : RotateDir(_firstvillagedir, 3);
+      List <TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedir);
 
-      Vector2Int _selectcoor = _lines[Random.Range(1, _lines.Count-1)].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _lines[Random.Range(2, _lines.Count-1)].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
       TileData _villagetile = _NewMapData.Tile(_selectcoor);
 
       if (_villagetile.TopEnvir == TopEnvirType.Mountain) continue;
@@ -1025,19 +1004,18 @@ public class maptext : MonoBehaviour
 
     List<Settlement> _citylisttemp = new List<Settlement>() { City };
     SetSettle(ref _citylisttemp);
-    SetSettle(ref Towns);
+    List<Settlement> _townlisttemp = new List<Settlement>() { Town };
+    SetSettle(ref _townlisttemp);
     SetSettle(ref Villages);
 
     _NewMapData.City = _citylisttemp[0];
-    _NewMapData.Towns = Towns;
+    _NewMapData.Town = Town;
     _NewMapData.Villages=Villages;
 
     _NewMapData.AllSettles.Add(_citylisttemp[0]);
-    _NewMapData.AllSettles.Add(Towns[0]);
-    _NewMapData.AllSettles.Add(Towns[1]);
+    _NewMapData.AllSettles.Add(_townlisttemp[0]);
     _NewMapData.AllSettles.Add(Villages[0]);
     _NewMapData.AllSettles.Add(Villages[1]);
-    _NewMapData.AllSettles.Add(Villages[2]);
 
     #endregion
 
@@ -1047,14 +1025,15 @@ public class maptext : MonoBehaviour
       {
         List<TileData> _aroundtiles_1 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 1);
         List<TileData> _aroundtiles_2 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 2);
+        List<TileData> _aroundtiles_3 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 3);
 
         newsettles[i].IsRiver = CheckEnvir(_aroundtiles_1, BottomEnvirType.River) ||
           CheckEnvir(_aroundtiles_1, BottomEnvirType.Source) ||
           CheckEnvir(_aroundtiles_1, BottomEnvirType.RiverBeach);
-        newsettles[i].IsMountain = CheckEnvir(_aroundtiles_2, TopEnvirType.Mountain);
+        newsettles[i].IsMountain = CheckEnvir(_aroundtiles_3, TopEnvirType.Mountain);
         newsettles[i].IsSea = CheckEnvir(_aroundtiles_2, BottomEnvirType.Sea) || CheckEnvir(_aroundtiles_2, BottomEnvirType.Beach) || CheckEnvir(_aroundtiles_2, BottomEnvirType.RiverBeach);
-        newsettles[i].IsHighland = CheckEnvir(_aroundtiles_1, TopEnvirType.Highland);
-        newsettles[i].IsForest = CheckEnvir(_aroundtiles_1, TopEnvirType.Forest);
+    //    newsettles[i].IsHighland = CheckEnvir(_aroundtiles_1, TopEnvirType.Highland);
+        newsettles[i].IsForest = CheckEnvir(_aroundtiles_2, TopEnvirType.Forest);
 
 
         string[] _namearray;
@@ -1075,65 +1054,6 @@ public class maptext : MonoBehaviour
         newsettles[i].Index = _infoindex;
       }
     }
-
-    bool _villageriver = false, _villageforest = false, _villagehighland = false, _villagemountain = false, _villagesea = false;
-    bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
-    bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false;
-
-    foreach (var _village in _NewMapData.Villages)
-    {
-      if (_village.IsRiver) _villageriver = true;
-      if (_village.IsForest) _villageforest = true;
-      if (_village.IsHighland) _villagehighland = true;
-      if (_village.IsMountain) _villagemountain = true;
-      if (_village.IsSea) _villagesea = true;
-    }
-    foreach (var _town in _NewMapData.Towns)
-    {
-      if (_town.IsRiver) _townriver = true;
-      if (_town.IsForest) _townforest = true;
-      if (_town.IsHighland) _townhighland = true;
-      if (_town.IsMountain) _townmountain = true;
-      if (_town.IsSea) _townsea = true;
-    }
-    var _city = _NewMapData.City;
-    if (_city.IsRiver) _cityriver = true;
-    if (_city.IsForest) _cityforest = true;
-    if (_city.IsHighland) _cityhighland = true;
-    if (_city.IsMountain) _citymountain = true;
-
-    if (!_villageriver || !_villageforest || !_villagemountain || !_villagesea ||
-             !_townriver || !_townforest || !_townmountain || !_townsea ||
-             !_cityriver || !_cityforest || !_citymountain)
-    {
-      _str = "";
-      if (!_villageriver) _str += "마을 강  ";
-      if (!_villageforest) _str += "마을 숲  ";
-      //  if (!_villagehighland) _str += "마을 고원  ";
-      if (!_villagemountain) _str += "마을 산  ";
-      if (!_villagesea) _str += "마을 바다  ";
-      if (!_townriver) _str += "도시 강  ";
-      if (!_townforest) _str += "도시 숲  ";
-      //  if (!_townhighland) _str += "도시 고원  ";
-      if (!_townmountain) _str += "도시 산  ";
-      if (!_townsea) _str += "도시 바다  ";
-      if (!_cityriver) _str += "성채 강  ";
-      if (!_cityforest) _str += "성채 숲  ";
-      //   if (!_cityhighland) _str += "성채 고원  ";
-      if (!_citymountain) _str += "성채 산  ";
-
-      Debug.Log("번 맵    " + _str + "없음");
-    }
-
-    /* Debug.Log($"성채\n" +
-       $"{_NewMapData.Castles.Tiles[0].Coordinate} {_NewMapData.Castles.Tiles[1].Coordinate} {_NewMapData.Castles.Tiles[2].Coordinate}\n\n" +
-       $"도시\n" +
-       $"{_NewMapData.Cities[0].Tiles[0].Coordinate} {_NewMapData.Cities[0].Tiles[1].Coordinate}\n" +
-       $"{_NewMapData.Cities[1].Tiles[0].Coordinate} {_NewMapData.Cities[1].Tiles[1].Coordinate}\n\n" +
-       $"마을\n" +
-       $"{_NewMapData.Towns[0].Tiles[0].Coordinate}\n" +
-       $"{_NewMapData.Towns[1].Tiles[0].Coordinate}\n" +
-       $"{_NewMapData.Towns[0].Tiles[0].Coordinate}");*/
 
     return _NewMapData;
 
@@ -1167,8 +1087,17 @@ public class maptext : MonoBehaviour
     if (_temp == 6) Debug.Log($"{origindir} {modify} 테챠아아앗");
     return _temp;
   }
+  HexDir RotateDir(HexDir origindir, int modify)
+  {
+    int _temp = (int)origindir + modify;
+    if (_temp < 0) _temp += 6;
+    else if (_temp > 5) _temp -= 6;
+    if (_temp == 6) Debug.Log($"{origindir} {modify} 테챠아아앗");
+    return (HexDir)_temp;
+  }
   public void MakeTilemap()
   {
+
     Vector3 _cellsize = new Vector3(190 * 0.7f, 190 * 0.7f); Debug.Log("맵을 만든 레후~");
     //타일로 구현화
     for (int i = 0; i < ConstValues.MapSize; i++)
@@ -1203,7 +1132,10 @@ public class maptext : MonoBehaviour
         _bottomoutline.enabled = false;
         _bottomtile.AddComponent(typeof(TileButtonScript));
         _bottomimage.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
-        _button.interactable = false;
+        _button.interactable = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
+        var _buttoncolor = _button.colors;
+        _buttoncolor.disabledColor = Color.white;
+        _button.colors = _buttoncolor;
 
         string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
         Sprite _topespr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].TopEnvirSprite);
@@ -1269,9 +1201,7 @@ public class maptext : MonoBehaviour
 
     _settlementrectlist.Clear();
     _settlementpos = Vector2.zero;
-    for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Towns.Count; i++)
-    {
-      Settlement _town = GameManager.Instance.MyGameData.MyMapData.Towns[i];
+      Settlement _town = GameManager.Instance.MyGameData.MyMapData.Town;
       for(int j = 0; j < _town.Tiles.Count; j++)
       {
         _settlementrectlist.Add(_town.Tiles[j]);
@@ -1289,8 +1219,7 @@ public class maptext : MonoBehaviour
       {
         _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_townholder.transform);
       }
-      MapUIScript.TownIcons.Add(_townholder);
-    }
+      MapUIScript.TownIcon=(_townholder);
 
     _settlementrectlist.Clear();
     _settlementpos = Vector2.zero;

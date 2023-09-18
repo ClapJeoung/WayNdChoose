@@ -13,9 +13,9 @@ public class UI_dialogue : UI_default
   [SerializeField] private TextMeshProUGUI NameText = null;
   [SerializeField] private CanvasGroup IllustImageGroup = null;
   [SerializeField] private Image IllustImage = null;
-  private float FadeOutTime = 0.8f;
-  private float FadeInTime = 1.2f;
-  private float FadeWaitTime = 0.2f;
+  private float FadeOutTime = 0.7f;
+  private float FadeInTime = 0.9f;
+  private float FadeWaitTime = 0.3f;
   private float ButtonFadeinTime = 0.4f;
   [SerializeField] private Image EventIcon = null;
   private GameObject EventIconHolder { get { return EventIcon.transform.parent.gameObject; } }
@@ -126,23 +126,22 @@ public class UI_dialogue : UI_default
           NameText.text = CurrentEvent.Name;
           NameTextGroup.alpha = 1.0f;
           LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform.parent.transform as RectTransform);
-          StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-          yield return new WaitForSeconds(0.3f);
+          yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, true));
+          yield return new WaitForSeconds(FadeWaitTime);
           //일러스트+이름 세팅해두고  이동
 
           DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
-          yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
+          yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, true));
         }
         else                                 //다음 버튼 눌러서 선택지에 도달할때
         {
           NextButton.interactable = false;
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
-
           NextButton.gameObject.SetActive(false);
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
@@ -151,8 +150,7 @@ public class UI_dialogue : UI_default
 
           StartCoroutine(setupselections());
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
-          yield return new WaitForSeconds(FadeWaitTime);
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
         }
       }
       else                                                                 //다음 내용으로 진행
@@ -188,14 +186,14 @@ public class UI_dialogue : UI_default
           NameText.text = CurrentEvent.Name;
           NameTextGroup.alpha = 1.0f;
           LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform.parent.transform as RectTransform);
-          StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
-          yield return new WaitForSeconds(0.3f);
+          yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, true));
+          yield return new WaitForSeconds(FadeWaitTime);
           //일러스트+이름 세팅해두고  이동
 
           DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
-          yield return  StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, UIManager.Instance.UIPanelOpenCurve));
+          yield return  StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, true));
           NextButton.interactable = true;
         }
         else                                 //다음 버튼 눌러서 다음 내용 전개하기
@@ -203,7 +201,7 @@ public class UI_dialogue : UI_default
           NextButton.interactable = false;
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup,0.0f,FadeOutTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup,0.0f,FadeOutTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup,0.0f,FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
@@ -211,7 +209,7 @@ public class UI_dialogue : UI_default
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           NextButton.interactable = true;
@@ -225,7 +223,7 @@ public class UI_dialogue : UI_default
         if (CurrentEventPhaseIndex == 0)     //선택지 선택 후 바로 보상일때         (선택지 애니메이션은 완료)
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
@@ -268,13 +266,13 @@ public class UI_dialogue : UI_default
             }
           }
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
         }
         else                                 //다음 버튼 눌러서 보상에 도달할때
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,0.0f,FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           if (CurrentSuccessData != null)
@@ -329,7 +327,7 @@ public class UI_dialogue : UI_default
           NextButton.interactable = false;
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
@@ -340,7 +338,7 @@ public class UI_dialogue : UI_default
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
           StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,1.0f, ButtonFadeinTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup,1.0f, ButtonFadeinTime));
           yield return new WaitForSeconds(FadeWaitTime);
           NextButton.interactable = true;
         }
@@ -349,7 +347,7 @@ public class UI_dialogue : UI_default
           NextButton.interactable = false;
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 0.0f, FadeOutTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
@@ -357,7 +355,7 @@ public class UI_dialogue : UI_default
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(IllustImageGroup, 1.0f, FadeInTime));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
           yield return new WaitForSeconds(FadeWaitTime);
 
           NextButton.interactable = true;
@@ -374,6 +372,7 @@ public class UI_dialogue : UI_default
     if (NextButton.gameObject.activeInHierarchy == true) NextButton.gameObject.SetActive(false);
     if (SelectionGroup.gameObject.activeInHierarchy == false) SelectionGroup.gameObject.SetActive(true);
     if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+
 
     if (CurrentEvent.Selection_type == SelectionType.Body || CurrentEvent.Selection_type == SelectionType.Head)
       SelectionCenterImgGroup.alpha = 1.0f;
@@ -622,9 +621,9 @@ public class UI_dialogue : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
-    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionRect.anchoredPosition, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionRect.anchoredPosition, DescriptionClosePos, DialogueUIMoveTime, false));
 
-    StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustRect.anchoredPosition, IllustClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+    StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustRect.anchoredPosition, IllustClosePos, DialogueUIMoveTime, false));
   }
   public override void CloseUI()
   {
@@ -641,11 +640,11 @@ public class UI_dialogue : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
-    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, false));
     yield return new WaitForSeconds(0.3f);
     DescriptionTextGroup.alpha = 0.0f;
 
-    yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustOpenPos, IllustClosePos, DialogueUIMoveTime, UIManager.Instance.UIPanelCLoseCurve));
+    yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustOpenPos, IllustClosePos, DialogueUIMoveTime, false));
     IllustImageGroup.alpha = 0.0f;
     NameText.text = "";
   }
@@ -734,6 +733,11 @@ public class UI_dialogue : UI_default
     }
   }
   private int PenaltyValue = 0;
+  public void ExpAcquired()
+  {
+    RemainReward = false;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
+  }
   public void SetPenalty(FailureData _fail)
   {
     switch (_fail.Panelty_target)

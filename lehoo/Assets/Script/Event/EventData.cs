@@ -41,8 +41,8 @@ public class EventHolder
         _json.Selection_Info = "2@1,3";
         _json.Failure_Penalty = "1@1";
         _json.Failure_Penalty_info = "1@2";
-        _json.Reward_Target = "4@3";
-        _json.Reward_Info = "0@0";
+        _json.Reward_Target = "0@3";
+        _json.Reward_Info = "Exp_Test@0";
         defaultevent_outer = ReturnEventDataDefault<EventData>(_json);
       }
       return defaultevent_outer;
@@ -301,13 +301,13 @@ public class EventHolder
         Quest_Cult.Events_Sabbat_0.Add(eventdata);
         break;
       case 10:
-        Quest_Cult.Event_Sabbat_Hideout_0 = eventdata;
+    //    Quest_Cult.Event_Sabbat_Hideout_0 = eventdata;
         break;
       case 11:
         Quest_Cult.Events_Sabbat_1.Add(eventdata);
         break;
       case 12:
-        Quest_Cult.Event_Sabbat_Hideout_1 = eventdata;
+     //   Quest_Cult.Event_Sabbat_Hideout_1 = eventdata;
         break;
       case 13:
      //   Quest_Cult.Events_Sabbat_2.Add(eventdata);
@@ -492,7 +492,7 @@ public class EventHolder
     }
     foreach (var _event in AllNormalEvents)
     {
-      if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
+      if (!GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
       if (_event.IsRightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
 
@@ -778,7 +778,7 @@ public class EventDataDefulat
   {
     get
     {
-     return  GameManager.Instance.ImageHolder.GetEventIllusts(ID+"_Beginning",BeginningLength );
+     return  GameManager.Instance.ImageHolder.GetEventIllusts(ID,"_Beginning",BeginningLength );
     }
   }
   private List<string> beginningdescriptions=new List<string>();
@@ -909,7 +909,8 @@ public class FailureData
   {
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
-  private string ID { get { return MyEvent.ID+"_" +(Tendencytype==TendencyTypeEnum.None?"":Index==0?"L":"R")+"Fail"; } }
+  private string OriginID { get { return MyEvent.ID; } }
+  private string TypeID { get { return "_" + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Fail"; } }
   private List<string> descriptions=new List<string>();
   public List<string> Descriptions
   {
@@ -917,7 +918,7 @@ public class FailureData
     {
       if (descriptions.Count == 0)
       {
-        List<string> _temp = GameManager.Instance.GetTextData(ID + "_Descriptions").Split('@').ToList();
+        List<string> _temp = GameManager.Instance.GetTextData(OriginID+TypeID+"_Descriptions").Split('@').ToList();
         for (int i = 0; i < _temp.Count; i++)
         {
           descriptions.Add(WNCText.GetSeasonText(_temp[i]));
@@ -930,7 +931,7 @@ public class FailureData
   {
     get
     {
-      return GameManager.Instance.ImageHolder.GetEventIllusts(ID, Descriptions.Count);
+      return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID, TypeID, Descriptions.Count);
     }
   }
   public PenaltyTarget Panelty_target;
@@ -958,7 +959,8 @@ public class SuccessData
   {
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
-  private string ID { get { return MyEvent.ID + "_" + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
+  private string OriginID { get { return MyEvent.ID; } }
+  private string TypeID { get { return "_" + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
   private List<string> descriptions= new List<string>();
   public List<string> Descriptions
   {
@@ -966,7 +968,7 @@ public class SuccessData
     {
       if (descriptions.Count == 0)
       {
-        List<string> _temp = GameManager.Instance.GetTextData(ID + "_Descriptions").Split('@').ToList();
+        List<string> _temp = GameManager.Instance.GetTextData(OriginID+TypeID + "_Descriptions").Split('@').ToList();
         for (int i = 0; i < _temp.Count; i++)
         {
           descriptions.Add(WNCText.GetSeasonText(_temp[i]));
@@ -979,7 +981,7 @@ public class SuccessData
   {
     get
     {
-      return GameManager.Instance.ImageHolder.GetEventIllusts(ID, Descriptions.Count);
+      return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID,TypeID, Descriptions.Count);
     }
   }
   public RewardTarget Reward_Target;
@@ -1123,13 +1125,74 @@ public class QuestHolder_Cult:Quest
   public string Wanted_Ritual_Description { get { return GameManager.Instance.GetTextData("Quest0_WantedResult_Ritual_Description"); } }
   #endregion
 
+  #region 집회 해산
+  public Sprite Sabbat_0_Illust_Idle { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Sabbat_0_Idle"); } }
+  public Sprite Sabbat_0_Illust_Tendency { get { string _tendency = "";
+      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+      {
+        case -2:_tendency = "m2";break;
+        case -1: _tendency = "m1"; break;
+        case 1: _tendency = "p1"; break;
+        case 2: _tendency = "p2"; break;
+      }
+      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Sabbat_0_Tendency_" + _tendency);
+    } }
+  public string Sabbat_0_Description_Idle { get { return GameManager.Instance.GetTextData("Quest0_Sabbat_0_Idle"); } }
+  public string Sabbat_0_Description_Tendency
+  {
+    get
+    {
+      string _tendency = "";
+      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+      {
+        case -2: _tendency = "m2"; break;
+        case -1: _tendency = "m1"; break;
+        case 1: _tendency = "p1"; break;
+        case 2: _tendency = "p2"; break;
+      }
+      return GameManager.Instance.GetTextData("Quest0_Sabbat_0_Tendency_" + _tendency);
+    }
+  }
+  public Sprite Sabbat_1_Illust_Idle { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest1_Sabbat_1_Idle"); } }
+  public Sprite Sabbat_1_Illust_Tendency
+  {
+    get
+    {
+      string _tendency = "";
+      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+      {
+        case -2: _tendency = "m2"; break;
+        case -1: _tendency = "m1"; break;
+        case 1: _tendency = "p1"; break;
+        case 2: _tendency = "p2"; break;
+      }
+      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest1_Sabbat_1_Tendency_" + _tendency);
+    }
+  }
+  public string Sabbat_1_Description_Idle { get { return GameManager.Instance.GetTextData("Quest1_Sabbat_1_Idle"); } }
+  public string Sabbat_1_Description_Tendency
+  {
+    get
+    {
+      string _tendency = "";
+      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+      {
+        case -2: _tendency = "m2"; break;
+        case -1: _tendency = "m1"; break;
+        case 1: _tendency = "p1"; break;
+        case 2: _tendency = "p2"; break;
+      }
+      return GameManager.Instance.GetTextData("Quest1_Sabbat_1_Tendency_" + _tendency);
+    }
+  }
+  #endregion
   public List<QuestEventData_Wolf> Events_Public_Common = new List<QuestEventData_Wolf>(); //QuestEventType 7
   public List<QuestEventData_Wolf> Events_Public_Final = new List<QuestEventData_Wolf>();  //QuestEventType 8
 
   public List<QuestEventData_Wolf> Events_Sabbat_0 = new List<QuestEventData_Wolf>();     //QuestEventType 9
-  public QuestEventData_Wolf Event_Sabbat_Hideout_0 = null;                          //QuestEventType 10
+ // public QuestEventData_Wolf Event_Sabbat_Hideout_0 = null;                          //QuestEventType 10
   public List<QuestEventData_Wolf> Events_Sabbat_1 = new List<QuestEventData_Wolf>();     //QuestEventType 11
-  public QuestEventData_Wolf Event_Sabbat_Hideout_1 = null;                          //QuestEventType 12
+  //public QuestEventData_Wolf Event_Sabbat_Hideout_1 = null;                          //QuestEventType 12
  // public List<QuestEventData_Wolf> Events_Sabbat_2 = new List<QuestEventData_Wolf>();     //QuestEventType 13
 //  public QuestEventData_Wolf Event_Sabbat_Hideout_2 = null;                          //QuestEventType 14
   public List<QuestEventData_Wolf> Events_Sabbat_Final = new List<QuestEventData_Wolf>(); //QuestEventType 15

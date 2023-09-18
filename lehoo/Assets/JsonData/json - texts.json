@@ -121,7 +121,7 @@
   },
   "24": {
     "ID": "MOVEPOINT_DESCRIPTION",
-    "TEXT": "지도를 이동할 때마다 <#BEF781>이동력</color>1과 <#BE81F7>정신력</color>을 소모합니다.\n<br><#BEF781>이동력</color>이 부족한 상태에서 이동할 때마다<br><sprite=18><#BE81F7>정신력</color>을 추가로 소모합니다.",
+    "TEXT": "지도를 이동할 때마다 <#BEF781>이동력</color>1과 <#BE81F7>정신력</color>을 소모합니다.\n<br><#BEF781>이동력</color>이 부족한 상태에서는 이동이 더 힘들어집니다.",
     "ETC": ""
   },
   "25": {
@@ -129,85 +129,90 @@
     "TEXT": "이동력 간략 설명",
     "ETC": ""
   },
-  "27": {
+  "26": {
     "ID": "CHOOSETILE_MAP",
     "TEXT": "이동할 <#F5DA81>타일</color>을 선택",
     "ETC": ""
   },
-  "28": {
+  "27": {
     "ID": "CHOOSECOSTTYPE_MAP",
     "TEXT": "이동할 <#F5DA81>수단</color>을 선택",
     "ETC": ""
   },
-  "29": {
+  "28": {
     "ID": "MAPCOSTTYPE_SANITY",
     "TEXT": "<#D0D45B>골드</color>를 <#FF4000>사용하지 않고</color>이동합니다.<br>대신 <#BE81F7>정신력</color>을 {0} 소모합니다.",
     "ETC": ""
   },
-  "30": {
+  "29": {
     "ID": "MAPCOSTTYPE_GOLD",
     "TEXT": "<#D0D45B>골드</color>를 {0} 사용해 편안히 이동합니다.",
     "ETC": ""
   },
-  "31": {
+  "30": {
     "ID": "CHOSSETILEAGAIN_MAP",
     "TEXT": "선택한 타일을 한번 더 클릭해 이동",
     "ETC": ""
   },
-  "32": {
+  "31": {
     "ID": "ENOUGHMOVEPOINT",
     "TEXT": "<#BEF781>이동력</color>이 충분합니다!",
     "ETC": ""
   },
-  "33": {
+  "32": {
     "ID": "NOTENOUGHMOVEPOINT",
     "TEXT": "<#BEF781>이동력</color>이 고갈됐습니다!",
     "ETC": ""
   },
-  "34": {
+  "33": {
     "ID": "MOVECOST_ENOUGH",
     "TEXT": "<sprite=100>{0}   {1} {2}",
     "ETC": "0: 이동력 감소 값\n1: 감소 대상 아이콘\n2: 감소 대상 값"
   },
-  "35": {
+  "34": {
     "ID": "MOVECOST_NOTENOUGH",
     "TEXT": "{0} {1}",
     "ETC": "0: 감소 대상 아이콘\n1:감소 대상"
   },
-  "36": {
+  "35": {
     "ID": "DISCOMFORT_NAME_NOICON",
     "TEXT": "<sprite=53><#5F04B4>불쾌</color>로 인한 <#BE81F7>정신력</color>소모 <#A9F5A9>{0}%</color>완화",
     "ETC": ""
   },
-  "37": {
+  "36": {
     "ID": "DISCOMFORT_NAME_ICON",
     "TEXT": "<sprite=53><#5F04B4>불쾌</color>",
     "ETC": ""
   },
-  "38": {
+  "37": {
     "ID": "DISCOMFORT_ICON",
     "TEXT": "<sprite=53>",
     "ETC": ""
   },
-  "39": {
+  "38": {
     "ID": "DISCOMFORT_DESECRIPTION",
-    "TEXT": "불쾌 작동 방식 설명",
+    "TEXT": "정착지에서 계속 시간을 보낼 때마다 <#5F04B4>불쾌</color>가 증가합니다.<br><#5F04B4>불쾌</color>가 높을수록 휴식의 비용이 증가합니다.",
     "ETC": ""
   },
-  "40": {
+  "39": {
     "ID": "DISCOMFORTUP",
     "TEXT": "방문 시 이 정착지의 <sprite=54><#5F04B4>불쾌</color>지수가 <#BE81F7>{0}</color>증가합니다.",
     "ETC": ""
   },
-  "41": {
+  "40": {
     "ID": "CURRENTDISCOMFORT",
     "TEXT": "이 정착지의 <sprite=53><#5F04B4>불쾌</color>지수는 <#BE81F7>{0}</color>",
     "ETC": ""
   },
-  "42": {
+  "41": {
     "ID": "Restbutton_Sanity",
     "TEXT": "가난히 휴식하기 <sprite=11>{0}<br><sprite=100>{1} <sprite=53>{2}",
     "ETC": "0: 감소 자원 아이콘\r\n1: 감소 자원 값\r\n2: 이동력 증가 값\r\n3: 불쾌 증가 값"
+  },
+  "42": {
+    "ID": "Restbutton_Gold",
+    "TEXT": "부유히 휴식하기<sprite=22>{0}<br><sprite=100>{1} <sprite=53>{2}",
+    "ETC": ""
   },
   "43": {
     "ID": "REST_SANITY",
@@ -236,7 +241,7 @@
   },
   "48": {
     "ID": "NOMOVEPOINT",
-    "TEXT": "<#BEF781>이동력</color>을 회복하지 않았습니다!<br><#BEF781>이동력</color>이 없으면 <#BE81F7>정신력</color>을 추가로 소모합니다.<br>계속 이동하겠습니까?",
+    "TEXT": "<#BEF781>이동력</color>을 회복하지 않았습니다!<br><#BEF781>이동력</color>이 없으면 이동이 더욱 힘들어집니다.<br>계속 이동하겠습니까?",
     "ETC": ""
   },
   "49": {
@@ -550,7 +555,7 @@
     "ETC": ""
   },
   "111": {
-    "ID": "MADNESS_NAME_NOICON",
+    "ID": "시험",
     "TEXT": "<#DF0174>광기</color>",
     "ETC": ""
   },
@@ -581,7 +586,7 @@
   },
   "117": {
     "ID": "ACCEPTMADNESS_DESCRIPTOIN",
-    "TEXT": "<#F5DA81>경험</color>슬롯 하나에 영구적으로 강력한 <#DF0174>광기 경험</color>을 저장합니다.<br><#BE81F7>정신력</color>을 전부 회복하지만 <#8A1BD4>최대 정신력</color>이 추가로 {0} 감소합니다.<br><b><#8A1BD4>최대 정신력</color>이 <#BE81F7>0</color>이 되면 패배합니다.</b>",
+    "TEXT": "영구적으로 유지되는 <#DF0174>광기 경험</color>을 얻습니다.<br><#BE81F7>정신력</color>을 전부 회복하지만 <#8A1BD4>최대 정신력</color>이 {0} 감소합니다.<br>이후 <#BE81F7>정신력</color>을 최대로 회복합니다.",
     "ETC": ""
   },
   "118": {
@@ -661,7 +666,7 @@
   },
   "133": {
     "ID": "CONVERSATION_SUBDESCRIPTION",
-    "TEXT": "대화 기술 간략설명",
+    "TEXT": "주로 이성적이고 비폭력적인 해결 방법에 필요합니다.",
     "ETC": ""
   },
   "134": {
@@ -726,7 +731,7 @@
   },
   "146": {
     "ID": "FORCE_SUBDESCRIPTION",
-    "TEXT": "무력 기술 간략설명",
+    "TEXT": "주로 폭력적이거나 강압적인 해결 방법에 필요합니다.",
     "ETC": ""
   },
   "147": {
@@ -791,7 +796,7 @@
   },
   "159": {
     "ID": "WILD_SUBDESCRIPTION",
-    "TEXT": "자연 기술 간략설명",
+    "TEXT": "주로 창의적 혹은 본능적인 해결 방법에 필요합니다.",
     "ETC": ""
   },
   "160": {
@@ -856,7 +861,7 @@
   },
   "172": {
     "ID": "INTELLIGENCE_SUBDESCRIPTION",
-    "TEXT": "지성 기술 간략설명",
+    "TEXT": "주로 전문적 혹은 과학적 해결 방법에 필요합니다.",
     "ETC": ""
   },
   "173": {
@@ -906,7 +911,7 @@
   },
   "182": {
     "ID": "TENDENCY_BODY_M2_DESCRIPTION",
-    "TEXT": "당신은 주로 머리를 사용해 사건을 해결합니다. 덕분에 빠른 두뇌회전을 가지게 되었으나 몸을 쓰는 일은 둔해졌군요.",
+    "TEXT": "당신은 주로 머리를 사용해 사건을 해결합니다.<br>덕분에 빠른 두뇌회전을 가지게 되었으나 몸을 쓰는 일은 둔해졌군요.",
     "ETC": ""
   },
   "183": {
@@ -926,7 +931,7 @@
   },
   "186": {
     "ID": "TENDENCY_BODY_M1_DESCRIPTION",
-    "TEXT": "당신은 머리에 의존하는 경향이 있습니다. 덕분에 유연한 사고를 가지게 되었군요.",
+    "TEXT": "당신은 머리에 의존하는 경향이 있습니다.<br>덕분에 유연한 사고를 가지게 되었군요.",
     "ETC": ""
   },
   "187": {
@@ -946,7 +951,7 @@
   },
   "190": {
     "ID": "TENDENCY_BODY_P1_DESCRIPTION",
-    "TEXT": "당신은 육체에 의존하는 경향이 있습니다. 덕분에 반사신경 좋은 몸을 가지게 되었군요.",
+    "TEXT": "당신은 육체에 의존하는 경향이 있습니다.<br>덕분에 반사신경이 좋은 몸을 가지게 되었군요.",
     "ETC": ""
   },
   "191": {
@@ -966,7 +971,7 @@
   },
   "194": {
     "ID": "TENDENCY_BODY_P2_DESCRIPTION",
-    "TEXT": "당신은 주로 육체에 의존에 상황을 해결합니다. 덕분에 튼튼하고 민첩한 육체를 가졌으나 유연한 일 처리는 힘들겠군요.",
+    "TEXT": "당신은 주로 육체에 의존에 상황을 해결합니다.<br>덕분에 튼튼하고 민첩한 육체를 가졌으나 유연한 일 처리는 힘들겠군요.",
     "ETC": ""
   },
   "195": {
@@ -1155,7 +1160,7 @@
     "ETC": ""
   },
   "232": {
-    "ID": "휴식 시 다음 확률 성공률이 <#81F781>{0}%</color>증가합니다.",
+    "ID": "PLACE_LIBRARY_NAME",
     "TEXT": "도서관",
     "ETC": ""
   },
@@ -1171,7 +1176,7 @@
   },
   "235": {
     "ID": "PLACE_LIBRARY_EFFECT_DESCRIPTION",
-    "TEXT": "휴식 시 이후 확률을 사용하는 선택지를 성공할 확률이 <#81F781>{1}%</color>증가합니다.<br>성공할 때 까지 지속됩니다.",
+    "TEXT": "휴식 시 이후 확률을 사용하는 선택지를 성공할 확률이 <#81F781>{0}%</color>증가합니다.<br>성공할 때 까지 지속됩니다.",
     "ETC": ""
   },
   "236": {
@@ -1296,7 +1301,7 @@
   },
   "260": {
     "ID": "SAVETHEEXP_NAME",
-    "TEXT": "<#F5DA81>경험</color>저장 혹은 교체",
+    "TEXT": "<#F5DA81>경험</color> 저장 혹은 교체",
     "ETC": ""
   },
   "261": {
@@ -1306,12 +1311,12 @@
   },
   "262": {
     "ID": "LONGTERMSAVE_NAME",
-    "TEXT": "<b><#F5DA81>장기 경험</color>슬롯에 저장하기</b>",
+    "TEXT": "<b><#F5DA81>장기 경험</color> 슬롯에 저장하기</b>",
     "ETC": ""
   },
   "263": {
     "ID": "LONGTERMSHIFT_NAME",
-    "TEXT": "<b><#F5DA81>장기 경험</color>슬롯에 교체하기</b>",
+    "TEXT": "<b><#F5DA81>장기 경험</color> 슬롯에 교체하기</b>",
     "ETC": ""
   },
   "264": {
@@ -1321,17 +1326,17 @@
   },
   "265": {
     "ID": "SHORTTERMSAVE_NAME",
-    "TEXT": "<b><#F5DA81>단기 경험</color>슬롯에 저장하기</b>",
+    "TEXT": "<b><#F5DA81>단기 경험</color> 슬롯에 저장하기</b>",
     "ETC": ""
   },
   "266": {
     "ID": "SHORTTERMSHIFT_NAME",
-    "TEXT": "<b><#F5DA81>단기 경험</color>슬롯에 교하기</b>",
+    "TEXT": "<b><#F5DA81>단기 경험</color> 슬롯에 교체하기</b>",
     "ETC": ""
   },
   "267": {
     "ID": "SHORTTERMSAVE_DESCRIPTION",
-    "TEXT": "<b><#F5DA81>단기 경험</color>슬롯</b>은 <#BE589F>{0}</color>동안 유지되고 편집에 제약이 없습니다.",
+    "TEXT": "<b><#F5DA81>단기 경험</color> 슬롯</b>은 <#BE589F>{0}</color>턴 동안 유지되고 편집에 제약이 없습니다.",
     "ETC": ""
   },
   "268": {
@@ -1621,92 +1626,92 @@
   },
   "325": {
     "ID": "TOTHEWORLD",
-    "TEXT": "출바알~",
+    "TEXT": "나아가기",
     "ETC": ""
   },
   "326": {
     "ID": "Quest0_Name_Text",
-    "TEXT": "늑대괴물(임시)",
+    "TEXT": "사교도들의 의식",
     "ETC": ""
   },
   "327": {
     "ID": "Quest0_PreDescription_Text",
-    "TEXT": "늑대괴물(임시) 미리보기 설명(임시)",
+    "TEXT": "사악한 사교도들을 저지하고 당신의 복수를 완료하세요.",
     "ETC": ""
   },
   "328": {
     "ID": "Quest0_Prologue_0_Description",
-    "TEXT": "프롤로그 첫 이벤트 설명",
+    "TEXT": "고요합니다.<br>당신의 시야는 파랗게 빛나는 밤하늘로 가득찼습니다.",
     "ETC": ""
   },
   "329": {
     "ID": "Quest0_Prologue_1_Description",
-    "TEXT": "프롤로그 정신/육체 선택지 설명",
+    "TEXT": "풍경이 변화하기 시작합니다.<br>당신 앞에는 천체를 더 깊숙히 볼 수 있는 망원경과 하늘을 잔뜩 메울 양의 폭죽이 있습니다.<br>당신의 마음이 끌려갑니다...",
     "ETC": ""
   },
   "330": {
     "ID": "Quest0_Prologue_1_Selection_0",
-    "TEXT": "정신 선택지 버튼<br><br><sprite=34>대화 +1<br><sprite=88><#F5DA81>정신 성향</color>으로 시작",
+    "TEXT": "망원경<br><br><sprite=34>대화 +1<br><sprite=88><#F5DA81>정신 성향</color>으로 시작",
     "ETC": ""
   },
   "331": {
     "ID": "Quest0_Prologue_1_Selection_1",
-    "TEXT": "육체 선택지 버튼<br><br><sprite=39>무력 +1<br><sprite=90><#F5DA81>육체 성향</color>으로 시작",
+    "TEXT": "폭죽<br><br><sprite=39>무력 +1<br><sprite=90><#F5DA81>육체 성향</color>으로 시작",
     "ETC": ""
   },
   "332": {
     "ID": "Quest0_Prologue_2_0_Description",
-    "TEXT": "정신 선택 후 설명",
+    "TEXT": "당신은 맑은 망원경을 선택했습니다.<br>유리를 통해 소용돌이치는 밤하늘이 보입니다.",
     "ETC": ""
   },
   "333": {
     "ID": "Quest0_Prologue_2_1_Description",
-    "TEXT": "육체 선택 후 설명",
+    "TEXT": "당신은 폭죽 더미를 선택했습니다.<br>방금 전까지만 해도 새파랬던 하늘이 형형색색의 폭발로 메워집니다.",
     "ETC": ""
   },
   "334": {
     "ID": "Quest0_Prologue_3_Description",
-    "TEXT": "프롤로그 감정/물질 선택지 설명",
+    "TEXT": "또다시 시야가 변화합니다.<br>지평선 너머로 샛노랗고 둥근 형체가 서서히 떠오릅니다. 저것은 무엇일까요?",
     "ETC": ""
   },
   "335": {
     "ID": "Quest0_Prologue_3_Selection_0",
-    "TEXT": "감정 선택지 버튼<br><br><sprite=44>자연 +1<br><sprite=93><#F5DA81>감정 성향</color>으로 시작",
+    "TEXT": "보름달<br><br><sprite=44>자연 +1<br><sprite=93><#F5DA81>감정 성향</color>으로 시작",
     "ETC": ""
   },
   "336": {
     "ID": "Quest0_Prologue_3_Selection_1",
-    "TEXT": "물질 선택 후 넘어가기 버튼<br><br><sprite=49>지성 +1<br><sprite=95><#F5DA81>물질 성향</color>으로 시작",
+    "TEXT": "금화<br><br><sprite=49>지성 +1<br><sprite=95><#F5DA81>물질 성향</color>으로 시작",
     "ETC": ""
   },
   "337": {
     "ID": "Quest0_Prologue_4_0_Description",
-    "TEXT": "감정 선택 후 설명",
+    "TEXT": "저것은 보름달입니다.<br>거대하고 가득 찬 달은 서서히 밤하늘 위로 올라가 태양만큼 밝게 빛나기 시작했습니다.",
     "ETC": ""
   },
   "338": {
     "ID": "Quest0_Prologue_4_1_Description",
-    "TEXT": "물질 선택 후 설명",
+    "TEXT": "저것은 금화입니다.<br>형체가 지평선을 넘어서자마자 수평선 너머로 금화 한 무더기가 쏟아져 내려옵니다.",
     "ETC": ""
   },
   "339": {
     "ID": "Quest0_Prologue_5_Description",
-    "TEXT": "아아- 낮선 하늘이다",
+    "TEXT": "당신은 꿈에서 깼습니다.<br>꿈에서 깨자마자 당신을 반기는 것은 매일 보던 익숙한 천장이 아닌 낯선 하늘이었습니다.",
     "ETC": ""
   },
   "340": {
     "ID": "Quest0_Prologue_6_Description",
-    "TEXT": "내 집이!!!!!!!!!!!!!",
+    "TEXT": "당신의 집이 박살났습니다.<br>집 뿐만 아니라 온갖 살림까지 전부 사라져 있었습니다.<br>천애고아로 태어나 험난한 세상을 묵묵히 살아가 겨우 장만한 당신의 안식처가 사라졌습니다. 대체 무슨 일이 있었기에?",
     "ETC": ""
   },
   "341": {
     "ID": "Quest0_Prologue_7_Description",
-    "TEXT": "늑대? 컬트? 바부바부쟝은 잘 몰루겠우...",
+    "TEXT": "마을로 내려가 사람들에게 물어보니, 지난 밤 당신의 집 근처에서 사교도들이 기괴한 의식을 행했다는 이야기가 들려옵니다.<br>이들이 의도했든 의도치 않았든 당신의 집을 파괴하는데 지대한 공헌을 한 것은 틀림없습니다.",
     "ETC": ""
   },
   "342": {
     "ID": "Quest0_Prologue_8_Description",
-    "TEXT": "우리들의 모험은 지금부터 시작이다",
+    "TEXT": "당신은 이 사교도들에 대해 그닥 아는 바가 없지만 이것 하나는 분명합니다.<br>당신은 그들을 찾을 것입니다.<br>그들을 찾고 불법 주택 철거에 정당한 값을 치르게 할 것입니다.<br>우선 그들에 대한 정보를 모아야 합니다.",
     "ETC": ""
   },
   "343": {
@@ -1721,37 +1726,37 @@
   },
   "345": {
     "ID": "Quest0_Searching_0_Description",
-    "TEXT": "광신자들의 은밀한 집회에 쑥덕이는 마을 주민들",
+    "TEXT": "첫 정착지에 들어가는 순간부터 수상쩍은 사교도 무리를 발견했습니다.<br>당신은 사교도의 비밀 집회에 관한 이야기를 훔쳐들었으나 단편적인 내용밖에 알아듣지 못했습니다.<br>이 집회를 해산시킬 수 있다면 자연히 무리는 와해될 것입니다.<br>사교도의 집회를 알아내려면 그들로부터 더 많은 정보를 알아내야 합니다.",
     "ETC": ""
   },
   "346": {
     "ID": "Quest0_Searching_1_Description",
-    "TEXT": "도망치던 수상한 행인으로부터 주운 늑대 지배 의식 지도",
+    "TEXT": "한 사교도가 누군가로부터 도망치던 도중 양피지 한 장을 떨어트리고 갔습니다.<br>놀랍게도 이 문서는 사교도들의 고대 의식장의 위치가 담긴 암호 지도였습니다!<br>이 장소들을 파괴하면 더 이상 사악한 의식을 펼칠수 없을것입니다.<br>암호 지도를 해독하려면 더 많은 정보가 필요합니다.",
     "ETC": ""
   },
   "347": {
     "ID": "Quest0_Wanted_Description",
-    "TEXT": "컬트랑 늑대를 발견했습니다 이후 대강 설명<br>최소 두 줄은 있어야겠지<br><br><size=40><b>둘 중 하나 선택</b></size>",
+    "TEXT": "사교도를 무너트리기 위한 두 가지 방법이 있습니다.<br>그들의 정기 집회를 막거나 고대 의식 장소를 파괴해야 합니다.<br><br><size=40><b>당신은 혼자이기에 두 길 중 하나를 선택해야 합니다.</b></size>",
     "ETC": ""
   },
   "348": {
     "ID": "Quest0_Wanted_Sabbat",
-    "TEXT": "<size=40>광신도 해산시키기</size><br><br><i>정착지 위주의 진행",
+    "TEXT": "<size=40>집회 막기</size><br><br><i>정착지 위주의 진행",
     "ETC": ""
   },
   "349": {
     "ID": "Quest0_Wanted_Ritual",
-    "TEXT": "<size=40>의식 방해하기</size><br><br><i>지도 탐험 위주의 진행",
+    "TEXT": "<size=40>의식 중지하기</size><br><br><i>지도 탐험 위주의 진행",
     "ETC": ""
   },
   "350": {
     "ID": "Quest0_WantedResult_Sabbat_Description",
-    "TEXT": "당신은 아주아주 끔찍한 뭐시기를 추적하기로 했습니다.<br>잔인하고 끔찍한 컬트를 찾아 여러 정착지를 둘러보세요",
+    "TEXT": "당신은 사교도들의 사악한 집회를 막아 그들을 무너트리기로 했습니다.<br>정착지를 둘러다녀 정보를 모으세요.",
     "ETC": ""
   },
   "351": {
     "ID": "Quest0_WantedResult_Ritual_Description",
-    "TEXT": "당신은 사악한 의식장을 무너트리기로 했습니다.<br>숨겨진 의식 장소를 찾아 야외를 탐험하세요",
+    "TEXT": "당신은 사교도들의 고대 의식 장소를 파괴해 그들을 무너트리기로 했습니다.<br>야외를 돌아다녀 정보를 모으세요.",
     "ETC": ""
   },
   "352": {
@@ -1761,12 +1766,12 @@
   },
   "353": {
     "ID": "Quest0_Sabbat_Sidepanel_Description_Active",
-    "TEXT": "다음 정착지에서 <sprite=98><#A4A4A4아지트</color>를 찾을 수 있습니다!",
+    "TEXT": "다음 정착지에서 <sprite=98><#A4A4A4>아지트</color>를 찾을 수 있습니다!",
     "ETC": ""
   },
   "354": {
     "ID": "Quest0_Sabbat_Sidepanel_Preview",
-    "TEXT": "광신도들의 정보를 모아 그들의 <sprite=98><#A4A4A4아지트</color>를 들춰내야 합니다.<br>다양한 <#F5DA81>구역</color>을 방문하거나 이벤트를 완료해 <#F5DA81>진척도</color>를 올리세요!",
+    "TEXT": "광신도들의 정보를 모아 그들의 <sprite=98><#A4A4A4>아지트</color>를 들춰내야 합니다.<br>다양한 <#F5DA81>구역</color>을 방문하거나 이벤트를 완료해 <#F5DA81>진척도</color>를 올리세요!",
     "ETC": ""
   },
   "355": {
@@ -1786,92 +1791,282 @@
   },
   "358": {
     "ID": "Quest0_Sabbat_Blocked",
-    "TEXT": "이 구역엔 당신을 기다리는 광신도들이 가득합니다.<br>이 곳에서 시간을 보내는 것은 그닥 좋은 생각이 아닌 듯 합니다.",
+    "TEXT": "이 구역엔 당신을 노리는 광신도들이 가득합니다.<br>이 곳에서 시간을 보내는 것은 그닥 좋은 생각이 아닌 듯 합니다.",
     "ETC": ""
   },
   "359": {
+    "ID": "Quest0_Sabbat_0_Idle",
+    "TEXT": "오랜 시간에 걸친 탐문 끝에 당신은 사교도의 집회 장소를 알아냈습니다.<br>내일이 되면 사교도들이 이 건물에 모여 사악하기 그지없는 계획들을 짜낼 예정입니다.<br>당신의 복수가 한 발짝 나아가기 시작합니다...",
+    "ETC": ""
+  },
+  "360": {
+    "ID": "Quest0_Sabbat_0_Tendency_m2",
+    "TEXT": "당신은 완벽한 생각을 떠올려내 밤 사이 문에 <b><i>'내일 오세요'</i></b> 표시판을 달았습니다.<br>내일 집회를 위해 모여든 사교도들은 다음 날 다시 같은 장소를 방문할 것이고, 그 다음날, 또 다음날, 영원히 이 곳을 방황할 것입니다.<br>이 잔인하도록 정교한 논리 함정에서 그 누구도 빠져나갈수 없습니다.",
+    "ETC": ""
+  },
+  "361": {
+    "ID": "Quest0_Sabbat_0_Tendency_m1",
+    "TEXT": "당신은 놀라운 생각을 떠올려내 밤 사이 문에 <b><i>'폐업'</i></b> 표시판을 달았습니다.<br>내일이면 집회를 위해 모인 사교도들이 실망에 가득 차 돌아갈 것입니다.<br>이 사악한 기만은 사교도 무리의 결속력에 치명적인 타격을 가할 것이 분명합니다.",
+    "ETC": ""
+  },
+  "362": {
+    "ID": "Quest0_Sabbat_0_Tendency_p1",
+    "TEXT": "당신은 밤 사이 건물의 문을 부쉈습니다.<br>상식적인 사람이라면 건물에 들어가기 전 반드시 <b>노크</b>를 할 것입니다.<br>문이 부숴졌다면 <b>노크를 할 수 없으니</b> 내일 아무도 이 건물에 들어가지 못할 것입니다!",
+    "ETC": ""
+  },
+  "363": {
+    "ID": "Quest0_Sabbat_0_Tendency_p2",
+    "TEXT": "당신의 머릿속에 놀라운 생각이 떠올랐습니다.<br>건물이 없다면 집회를 하지 못할 것입니다!<br><b><i>당신은 건물을 부쉈습니다.</i></b>",
+    "ETC": ""
+  },
+  "364": {
+    "ID": "Quest0_Sabbat_1_Idle",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "365": {
+    "ID": "Quest0_Sabbat_1_Tendency_m2",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "366": {
+    "ID": "Quest0_Sabbat_1_Tendency_m1",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "367": {
+    "ID": "Quest0_Sabbat_1_Tendency_p1",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "368": {
+    "ID": "Quest0_Sabbat_1_Tendency_p2",
+    "TEXT": "",
+    "ETC": ""
+  },
+  "369": {
     "ID": "Event_NoMoreEventOuter_Name",
     "TEXT": "테스트 야외 이벤트 이름 [봄,여름,가을,겨울]",
     "ETC": ""
   },
-  "360": {
+  "370": {
     "ID": "Event_NoMoreEventOuter_Descriptions",
     "TEXT": "테스트 야외 이벤트 설명 [봄,여름,가을,겨울]@테스트 야외 이벤트 설명 두번째[봄봄,여름여름,가을가을,겨울겨울]<br>여기서 선택지가 나올 것으로 예상됨",
     "ETC": ""
   },
-  "361": {
+  "371": {
     "ID": "Event_NoMoreEventOuter_Selecting_Names",
     "TEXT": "야외테스트설명1[,여름,가을,]@야외테스트2설명",
     "ETC": ""
   },
-  "362": {
+  "372": {
     "ID": "Event_NoMoreEventOuter_Selecting_Subdescriptions",
     "TEXT": "야외테스트세부설명1@야외테스트2설명[ 봄, 여름, 가을,]",
     "ETC": ""
   },
-  "363": {
+  "373": {
     "ID": "Event_NoMoreEventOuter_LFail_Descriptions",
     "TEXT": "야외이벤트왼쪽실패첫번째설명@마지막설명",
     "ETC": ""
   },
-  "364": {
+  "374": {
     "ID": "Event_NoMoreEventOuter_RFail_Descriptions",
     "TEXT": "야외이벤트오른쪽실패첫번째설명@마지막설명",
     "ETC": ""
   },
-  "365": {
+  "375": {
     "ID": "Event_NoMoreEventOuter_LSuccess_Descriptions",
     "TEXT": "야외이벤트왼쪽성공첫번째설명@마지막설명",
     "ETC": ""
   },
-  "366": {
+  "376": {
     "ID": "Event_NoMoreEventOuter_RSuccess_Descriptions",
     "TEXT": "야외이벤트오른쪽성공첫번째설명@마지막설명",
     "ETC": ""
   },
-  "367": {
+  "377": {
     "ID": "Event_NoMoreEventSettlement_Name",
     "TEXT": "테스트 정착지 이벤트 이름 [봄,여름,가을,겨울]",
     "ETC": ""
   },
-  "368": {
+  "378": {
     "ID": "Event_NoMoreEventSettlement_Descriptions",
     "TEXT": "테스트 정착지 이벤트 설명 [봄,여름,가을,겨울]@테스트 정착지 이벤트 설명 두번째[봄봄,여름여름,가을가을,겨울겨울]<br>여기서 선택지가 나올 것으로 예상됨",
     "ETC": ""
   },
-  "369": {
+  "379": {
     "ID": "Event_NoMoreEventSettlement_Selecting_Names",
     "TEXT": "정착지테스트설명1[,여름,가을,]@정착지테스트2설명",
     "ETC": ""
   },
-  "370": {
+  "380": {
     "ID": "Event_NoMoreEventSettlement_Selecting_Subdescriptions",
     "TEXT": "정착지테스트세부설명1@정착지테스트2설명[ 봄, 여름, 가을,]",
     "ETC": ""
   },
-  "371": {
+  "381": {
     "ID": "Event_NoMoreEventSettlement_LFail_Descriptions",
     "TEXT": "정착지이벤트왼쪽실패첫번째설명@마지막설명",
     "ETC": ""
   },
-  "372": {
+  "382": {
     "ID": "Event_NoMoreEventSettlement_RFail_Descriptions",
     "TEXT": "정착지이벤트오른쪽실패첫번째설명@마지막설명",
     "ETC": ""
   },
-  "373": {
+  "383": {
     "ID": "Event_NoMoreEventSettlement_LSuccess_Descriptions",
     "TEXT": "정착지이벤트왼쪽성공첫번째설명@마지막설명",
     "ETC": ""
   },
-  "374": {
+  "384": {
     "ID": "Event_NoMoreEventSettlement_RSuccess_Descriptions",
     "TEXT": "정착지이벤트오른쪽성공첫번째설명@마지막설명",
     "ETC": ""
   },
-  "123456": {
-    "ID": "Restbutton_Gold",
-    "TEXT": "부유히 휴식하기<sprite=22>{0}<br><sprite=100>{1} <sprite=53>{2}",
+  "385": {
+    "ID": "Event_ScareCrow_Name",
+    "TEXT": "허수아비 꾸미기",
+    "ETC": ""
+  },
+  "386": {
+    "ID": "Event_ScareCrow_Descriptions",
+    "TEXT": "[화창한 봄날,무더운 여름날,선선한 가을날,쌀쌀한 겨울날] 길을 걸어가던 중 밭에 세워진 허수아비를 발견했습니다. 빈약한 얼굴부터 시작해 앙상한 몸체까지, 그닥 훌륭한 허수아비처럼 보이지는 않습니다. 당신이 약간의 예술적 손길을 더해줄 수 있을 듯 합니다.",
+    "ETC": ""
+  },
+  "387": {
+    "ID": "Event_ScareCrow_Selecting_Names",
+    "TEXT": "얼굴 고치기@몸체 고치기",
+    "ETC": ""
+  },
+  "388": {
+    "ID": "Event_ScareCrow_LFail_Descriptions",
+    "TEXT": "당신의 어설픈 손눌림은 허수아비의 외모에 긍정적인 영향을 미치지 못했습니다. 허수아비는 얼마 지나지 않아 얼굴부터 무너져 내려 [봄 들판의,여름 들판의,가을 들판의,겨울 들판의] 평범한 건초더미로 돌아가 버렸습니다.",
+    "ETC": ""
+  },
+  "389": {
+    "ID": "Event_ScareCrow_RFail_Descriptions",
+    "TEXT": "당신의 어설픈 손눌림은 허수아비의 형태에 긍정적인 영향을 미치지 못했습니다. 허수아비는 얼마 지나지 않아 얼굴부터 무너져 내려 [봄 들판의,여름 들판의,가을 들판의,겨울 들판의] 평범한 건초더미로 돌아가 버렸습니다.",
+    "ETC": ""
+  },
+  "390": {
+    "ID": "Event_ScareCrow_LSuccess_Descriptions",
+    "TEXT": "당신은 기본적인 미술 양식을 떠올려내 허수아비의 얼굴을 매우 평범하고 기초적인 얼굴 형태로 빚어냈습니다. 이 정도는 되어야 허수아비라고 부를 수 있겠군요.",
+    "ETC": ""
+  },
+  "391": {
+    "ID": "Event_ScareCrow_RSuccess_Descriptions",
+    "TEXT": "당신은 기본적인 미술 양식을 떠올려내 허수아비의 몸체를 매우 평범하고 기초적인 인체 구조로 재조립했습니다. 이 정도는 되어야 허수아비라고 부를 수 있겠군요.",
+    "ETC": ""
+  },
+  "392": {
+    "ID": "Event_ExoticGirl_Name",
+    "TEXT": "이국적인 소녀",
+    "ETC": ""
+  },
+  "393": {
+    "ID": "Event_ExoticGirl_Descriptions",
+    "TEXT": "정착지에 들어가려던 중 이국적인 의상의 소녀가 주위를 기웃거리는 것을 발견했습니다. 수상하게 서성거리고 있다는 것을 제외하면 수상할 것이 하나도 없는 이국의 소녀는 당신을 눈치채고 도움을 요청합니다.<br>소녀는 정착지에 들어가려 하지만 남들의 눈에 띄고 싶어하지 않습니다. 이유 없이 도와줄 이유가 없음에 불고하고, 당신은 소녀를 돕고 싶다는 강력한 충동이 듭니다...",
+    "ETC": ""
+  },
+  "394": {
+    "ID": "Event_ExoticGirl_Selecting_Names",
+    "TEXT": "경비의 관심을 끌기@경비를 매수하기",
+    "ETC": ""
+  },
+  "395": {
+    "ID": "Event_ExoticGirl_LFail_Descriptions",
+    "TEXT": "어설픈 말솜씨로 경비의 관심을 끌은 결과 당신은 매우 수상쩍은 요주의 인물이 되어버렸습니다. 다행히 소량의 벌금으로 상황을 모면했지만 당신이 도우려 했 소녀가 어떻게 됐는지 알 수는 없군요.",
+    "ETC": ""
+  },
+  "396": {
+    "ID": "Event_ExoticGirl_LSuccess_Descriptions",
+    "TEXT": "당신은 능숙한 말솜씨로 경비의 관심을 끌어 수상한 소녀가 무사히 정착지 안으로 들어가게 도와줬습니다. 당신은 몽롱한 정신 속 사라져가는 소녀의 모습만을 볼 수 있었습니다. 지평선 너머로 형체가 사라지고 나서야 당신의 정신이 맑아지기 시작합니다.<br><br>당신의 손에 정체를 알수 없는 장신구가 쥐여져 있었습니다.",
+    "ETC": ""
+  },
+  "397": {
+    "ID": "Event_ExoticGirl_RSuccess_Descriptions",
+    "TEXT": "당신은 경비에게 약간의 팁을 제공해 소녀가 무사히 정착지 안으로 들어갈 수 있도록 도와줬습니다. 당신은 몽롱한 정신 속 사라져가는 소녀의 모습만을 볼 수 있었습니다. 지평선 너머로 형체가 사라지고 나서야 당신의 정신이 맑아지기 시작합니다.<br><br>당신의 손에 정체를 알수 없는 장신구가 쥐여져 있었습니다.",
+    "ETC": ""
+  },
+  "398": {
+    "ID": "Exp_ExoticRelic_Name",
+    "TEXT": "이국의 장신구",
+    "ETC": ""
+  },
+  "399": {
+    "ID": "Exp_ExoticRelic_Description",
+    "TEXT": "형형색색의 돌조각과 약간의 향신료 냄새가 납니다. 눈으로 알아채기 힘들 속도로 서서히 작아지는 중입니다.",
+    "ETC": ""
+  },
+  "400": {
+    "ID": "Event_Illegaldoctor_Name",
+    "TEXT": "실험적 수술법",
+    "ETC": ""
+  },
+  "401": {
+    "ID": "Event_Illegaldoctor_Descriptions",
+    "TEXT": "당신은 한 분기 동안 뒷골목 치료사의 간단한 의료 보조 업무를 하게 됐습니다. 첫 환자를 받은 날, 치료사는 피를 흘리며 실려온 환자를 살펴보지도 않고 체액을 뽑아내려 합니다.<br>당신은 피를 뽑아내 몸의 균형을 맞추는 치료법에 대해 들어본 적은 있지만 확실하게 적어도 이런 상황에서 사용할 방법이 아니라는 것은 알고 있습니다.",
+    "ETC": ""
+  },
+  "402": {
+    "ID": "Event_Illegaldoctor_Selecting_Names",
+    "TEXT": "치료사를 저지하기@방관하기",
+    "ETC": ""
+  },
+  "403": {
+    "ID": "Event_Illegaldoctor_LFail_Descriptions",
+    "TEXT": "당신은 채혈의 기능과 그에 따른 위험을 근거로 치료사를 멈추려 시도했습니다.@그러나 당신의 비전문적인 지식은 풍부한 경험을 가진 치료사를 설득시키는데 충분하지 않았습니다. 치료사의 심기를 건드린 당신은 곧바로 쫓겨났고 보수는 커녕 땡전 한푼도 받지 못했습니다.",
+    "ETC": ""
+  },
+  "404": {
+    "ID": "Event_Illegaldoctor_LSuccess_Descriptions",
+    "TEXT": "당신은 채혈의 기능과 그에 따른 많은 부작용, 이에 따른 다양한 부정적 예시를 들어 치료사를 설득했습니다.@치료사는 당신의 논리적인 지적을 수긍해 무분별한 채혈을 멈추기로 했습니다. 그는 올바른 충고에 고마워하며 남은 한 분기 동안 여러 의학적 지식을 알려주었습니다.",
+    "ETC": ""
+  },
+  "405": {
+    "ID": "Event_Illegaldoctor_RSuccess_Descriptions",
+    "TEXT": "치료사의 처방은 결코 당신이 참견할 영역이 아니었습니다. 당신은 남은 한 분기 동안 묵묵히 주어진 일에만 몰두했습니다. 많은 사람들이 치료사에게 들려왔고 결코  적지 않은 사람들이 살아 돌아가지 못했습니다. 당신이 좀 더 좋은 결과를 만들 수 있었을지는 알 수 없습니다.",
+    "ETC": ""
+  },
+  "406": {
+    "ID": "Event_CreepyHut_Name",
+    "TEXT": "오싹한 오두막",
+    "ETC": ""
+  },
+  "407": {
+    "ID": "Event_CreepyHut_Descriptions",
+    "TEXT": "화창한 낮, 갑작스럽게 하늘이 어둑해지고 장대같은 비가 쏟아지기 시작합니다. 당신은 곧바로 비를 피할 곳을 찾아봅니다.<br>다행히 몸이 너무 차가워지기 전 비를 피할 버려진 오두막을 발견했습니다.@오두막에 들어선 순간 당신의 젖은 몸에 오싹한 한기가 느껴집니다. 물기로부터 오는 냉기가 아닌 정체를 알수 없는 무언가 당신의 등을 타고 올라갑니다.",
+    "ETC": ""
+  },
+  "408": {
+    "ID": "Event_CreepyHut_Selecting_Names",
+    "TEXT": "오두막을 나가기@오두막에서 휴식하기",
+    "ETC": ""
+  },
+  "409": {
+    "ID": "Event_CreepyHut_LSuccess_Descriptions",
+    "TEXT": "당신은 소름끼치는 오두막에서 나가 소나기가 쏟아지는 바깥으로 향했습니다. 무거운 빗방울이 어깨를 두들기고 차가운 진창이 발걸음을 옭매어도 당신은 오두막으로부터 조금이라도 더 빨리 멀어지기 위해 몸을 이끌고 걸어갔습니다.",
+    "ETC": ""
+  },
+  "410": {
+    "ID": "Event_CreepyHut_RSuccess_Descriptions",
+    "TEXT": "오두막 밖에서 들려오는 빗소리가 점점 더 커져갑니다. 이런 날씨에서 이동을 강행하는 것은 합리적이지 못했기에 당신은 잠자리를 펴기 시작했습니다. 밤새 무슨 일이 있었던 것인지는 결코 알 방법이 없지만 당신은 기대했던 것보다 훨씬 더 끔찍한 밤을 보냈습니다.",
+    "ETC": ""
+  },
+  "411": {
+    "ID": "Exp_Test_Name",
+    "TEXT": "테스트용 경험 이름",
+    "ETC": ""
+  },
+  "412": {
+    "ID": "Exp_Test_Description",
+    "TEXT": "테스트용 경험 내용",
+    "ETC": ""
+  },
+  "413": {
+    "ID": "Exp_Test_Subdescription",
+    "TEXT": "테스트용 경험 내용 미리보기 나오는거",
     "ETC": ""
   }
 }

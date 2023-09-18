@@ -6,8 +6,6 @@ using TMPro;
 
 public class UI_RewardExp : UI_default
 {
-  [SerializeField] private CanvasGroup MyGroup = null;
-
   [SerializeField] private GameObject LongExpName_Obj = null;
   [SerializeField] private TextMeshProUGUI LongExpName_Text = null;
   [SerializeField] private Image LongExpCap = null;
@@ -36,7 +34,7 @@ public class UI_RewardExp : UI_default
     IsOpen = true;
 
     ExpIllustIcon.GetComponent<Image>().sprite = rewardexp.Illust;
-    ExpIllustIcon.SetActive(true);
+    ExpIllustIcon.gameObject.SetActive(true);
     if (ExpQuitButton.activeInHierarchy == false) ExpQuitButton.SetActive(true);
 
     ExpDescription.text = GameManager.Instance.GetTextData("SAVETHEEXP_NAME");
@@ -44,15 +42,15 @@ public class UI_RewardExp : UI_default
 
     SetupCurrentExps();
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
   }
   public void OpenUI_Penalty(Experience badexp)
   {
     if (IsOpen) return;
     IsOpen = true;
 
-    ExpIllustIcon.GetComponent<Image>().sprite = badexp.Illust;
-    ExpIllustIcon.SetActive(true);
+   // ExpIllustIcon.GetComponent<Image>().sprite = badexp.Illust;
+  //  ExpIllustIcon.SetActive(true);
     if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
     ExpDescription.text = GameManager.Instance.GetTextData("SAVEBADEXP_NAME");
 
@@ -60,7 +58,7 @@ public class UI_RewardExp : UI_default
 
     SetupCurrentExps();
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
   }
   public void OpenUI_Madness(Experience madexp)
   {
@@ -68,7 +66,7 @@ public class UI_RewardExp : UI_default
     IsOpen = true;
 
     ExpIllustIcon.GetComponent<Image>().sprite = madexp.Illust;
-    ExpIllustIcon.SetActive(true);
+    ExpIllustIcon.gameObject.SetActive(true);
     if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
 
     ExpDescription.text = GameManager.Instance.GetTextData("SAVEMADNESS");
@@ -76,7 +74,7 @@ public class UI_RewardExp : UI_default
 
     SetupCurrentExps();
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 1.0f, 0.6f));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
   }
 
   public void SetupCurrentExps()
@@ -151,14 +149,14 @@ public class UI_RewardExp : UI_default
   public override void CloseUI()
   {
     IsOpen = false;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f));
-    ExpIllustIcon.SetActive(false);
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.4f));
+    ExpIllustIcon.gameObject.SetActive(false);
   }
   public override void CloseForGameover()
   {
     IsOpen = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, 0.4f));
-    ExpIllustIcon.SetActive(false);
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.4f));
+    ExpIllustIcon.gameObject.SetActive(false);
   }
 
   public void GetExp_Long()
@@ -171,7 +169,10 @@ public class UI_RewardExp : UI_default
     {
       case ExpTypeEnum.Normal:
         if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Long(CurrentExp); CloseUI();
-          UIManager.Instance.MyDialogue.RemainReward = false;
+          if(UIManager.Instance.MyDialogue.IsOpen&& UIManager.Instance.MyDialogue.RemainReward == true)
+          {
+            UIManager.Instance.MyDialogue.ExpAcquired();
+          }
         }
         else return;
         break;
@@ -200,7 +201,10 @@ public class UI_RewardExp : UI_default
     {
       case ExpTypeEnum.Normal:
         if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Short(CurrentExp, index); CloseUI();
-          UIManager.Instance.MyDialogue.RemainReward = false;
+          if (UIManager.Instance.MyDialogue.IsOpen && UIManager.Instance.MyDialogue.RemainReward == true)
+          {
+            UIManager.Instance.MyDialogue.ExpAcquired();
+          }
         }
         else return;
         break;

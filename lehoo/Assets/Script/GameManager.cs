@@ -48,9 +48,13 @@ public class GameManager : MonoBehaviour
   #region #데이터 관련#
   public string GetTextData(string _id)
   {
-    // Debug.Log($"{_id} ID를 가진 텍스트 데이터 {(TextDic.ContainsKey(_id)?"있음":"없음")}");
-    if (!TextDic.ContainsKey(_id)) { Debug.Log($"{_id} 없음?"); return NullText; }
-    return TextDic[_id];
+    foreach(var _data in TextDic)
+    {
+      if (string.Compare(_id, _data.Key, true) == 0) return _data.Value;
+    }
+    
+    Debug.Log($"{_id} 없음"); 
+    return NullText;
   }
   /// <summary>
   /// texttype : 이름/설명
@@ -300,8 +304,7 @@ public class GameManager : MonoBehaviour
     {
       string _texttemp = _data.Value.TEXT;
       if (_texttemp.Contains("\\n")) _texttemp = _texttemp.Replace("\\n", "\n");
-      if (TextDic.ContainsKey(_data.Key)) { Debug.Log($"{_data.Key} 겹침! 확인 필요!"); continue; }
-      if (TextDic.ContainsValue(_data.Value.TEXT)) { Debug.Log($"{_data.Value.TEXT} 겹침! 확인 필요!"); continue; }
+      if (TextDic.ContainsKey(_data.Key)||TextDic.ContainsValue(_data.Value.TEXT)) { Debug.Log($"{_data.Key} / {_data.Value.ID} 겹침! 확인 필요!"); continue; }
       TextDic.Add(_data.Value.ID, _data.Value.TEXT);
     }
 
@@ -488,10 +491,11 @@ public class GameManager : MonoBehaviour
   {
     if (exp.ExpType == ExpTypeEnum.Mad)
     {
-      MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
+      MyGameData.MaxSanity -= ConstValues.MadnessMaxSanityLoseValue;
       MyGameData.CurrentSanity = MyGameData.MaxSanity;
       UIManager.Instance.MyMadPanel.CloseUI();
     }
+    exp.Duration = ConstValues.LongTermStartTurn;
     MyGameData.LongTermEXP = exp;
     UIManager.Instance.UpdateExpLongTermIcon();
   }
@@ -499,10 +503,11 @@ public class GameManager : MonoBehaviour
   {
     if (exp.ExpType == ExpTypeEnum.Mad)
     {
-      MyGameData.MaxSanity -= ConstValues.SanityLoseByMadnessExp;
+      MyGameData.MaxSanity -= ConstValues.MadnessMaxSanityLoseValue;
       MyGameData.CurrentSanity = MyGameData.MaxSanity;
       UIManager.Instance.MyMadPanel.CloseUI();
     }
+    exp.Duration = ConstValues.ShortTermStartTurn;
     MyGameData.ShortTermEXP[index] = exp;
     UIManager.Instance.UpdateExpShortTermIcon();
   }
@@ -600,7 +605,7 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.UpdateAllUI();
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
-    UIManager.Instance.UpdateMap_SetPlayerPos(MyGameData.Coordinate);
+
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult: UIManager.Instance.QuestUI_Cult.OpenUI_Prologue((QuestHolder_Cult)MyGameData.CurrentQuestData); break;
@@ -664,19 +669,19 @@ public class GameManager : MonoBehaviour
 
   private IEnumerator createnewmap()
   {
+
     maptext _map = FindObjectOfType<maptext>().GetComponent<maptext>();
 
     _map.MakePerfectMap();
 
     yield return new WaitUntil(()=>MyGameData.MyMapData != null);
 
-    Settlement _startsettle = MyGameData.MyMapData.AllSettles[Random.Range(0, MyGameData.MyMapData.AllSettles.Count)];
+    List<TileData> _randomstartlands = MyGameData.MyMapData.GetEnvirTiles(new List<BottomEnvirType> { BottomEnvirType.Land }, new List<TopEnvirType> { TopEnvirType.Mountain }, 1);
 
-    MyGameData.CurrentSettlement = _startsettle;
-    MyGameData.Coordinate = _startsettle.Position;
+    MyGameData.Coordinate = _randomstartlands[Random.Range(0, _randomstartlands.Count)].Coordinate;
 
     _map.MakeTilemap();
-    UIManager.Instance.UpdateMap_SetPlayerPos(_startsettle.Tiles[Random.Range(0,_startsettle.Tiles.Count)].Coordinate);
+    UIManager.Instance.UpdateMap_SetPlayerPos();
     yield return null;
   }
   public void EnterSettlement(Settlement targetsettlement)
@@ -686,29 +691,40 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (MyGameData.Quest_Cult_Phase == 0)
+        switch (MyGameData.Quest_Cult_Phase)
         {
-          if (!MyGameData.SearchingSettlementNames.Contains(targetsettlement.OriginName))
-          {
-            EventManager.Instance.SetQuestEvent_Wolf_Searching();
-            MyGameData.SearchingSettlementNames.Add(targetsettlement.OriginName);
-          }
-          else UIManager.Instance.MySettleUI.OpenUI();
-        }//탐문 단계
-        else if (MyGameData.Quest_Cult_Phase == 1)
-        {
-          switch (MyGameData.Quest_Cult_Type)
-          {
-            case 0:
-              break;
+          case 0:
+            if (!MyGameData.SearchingSettlementNames.Contains(targetsettlement.OriginName))
+            {
+              UIManager.Instance.QuestUI_Cult.OpenUI_Searching();
+              MyGameData.SearchingSettlementNames.Add(targetsettlement.OriginName);
+              return;
+            }
+            break;
+          case 1: case 2:
 
-            case 1:
-              break;
-          }
+            switch (MyGameData.Quest_Cult_Type)
+            {
+              case 0:
+                if (MyGameData.Quest_Cult_Progress >= 100)
+                {
+                  UIManager.Instance.QuestUI_Cult.OpenUI_Sabbat();
+                  return;
+                }
+                break;
+              case 1:
+                break;
+            }
+
+            break;
+          case 3:
+
+            break;
         }
         break;
     }
 
+    UIManager.Instance.MySettleUI.OpenUI();
   }
 }
 public class TextData

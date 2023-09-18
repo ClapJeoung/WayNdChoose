@@ -14,12 +14,12 @@ public static class ConstValues
 
   public const int GoodExpAsSanity = 15;
   public const int BadExpAsSanity = 20;
-  public const int MadnessDefaultSanityLose = 15;
-  public const int MaddnesRefuseHPCost = 30;
-  public const int MadnessRefuseSanityRestore = 40;
+  public const int MadnessMaxSanityLoseValue = 30;
+  public const float MaddnesRefuseHPCostRatio = 80.0f;
+  public const int MadnessRefuseHPLoseCost = 35;
 
-  public const int RestMovePoint_Village = 1, RestMovePoint_Town = 2, RestMovePoint_City = 3;
-  public const int RestDiscomfort_Village=1, RestDiscomfort_Town = 2, RestDiscomfort_City = 3;
+  public const int RestMovePoint_Village = 1, RestMovePoint_Town = 1, RestMovePoint_City = 1;
+  public const int RestDiscomfort_Village=1, RestDiscomfort_Town = 1, RestDiscomfort_City = 1;
   public const float LackOfMovePointValue = 1.5f;
   public const int MoveCost_Sanity_1_min = 8, MoveCost_Sanity_1_max = 15, MoveCost_Sanity_2_min = 10, MoveCost_Sanity_2_max = 20;
   public const int MoveCost_Gold_1_min = 5, MoveCost_Gold_1_max = 12, MoveCost_Gold_2_min = 8, MoveCost_Gold_2_max = 15;
@@ -92,8 +92,6 @@ public static class ConstValues
   public const int RestCost_Sanity = 5;
   public const int RestCost_Gold = 10;
   public const float RestDiscomfortExpansion = 1.5f;
-
-  public const int SanityLoseByMadnessExp = 20;
 
     public const int SectorEffectMaxTurn = 3;
     public const int SectorEffect_residence = 1;
@@ -208,7 +206,7 @@ public class GameData    //게임 진행도 데이터
             {
               for(int i = 0; i < Quest_Cult_Sabbat_TokenedSectors.Count; i++)
               {
-                if (Quest_Cult_Sabbat_TokenedSectors[(SectorType)i] > 0) Quest_Cult_Sabbat_TokenedSectors[(SectorType)i]--;
+                if (Quest_Cult_Sabbat_TokenedSectors[(SectorType)i+1] > 0) Quest_Cult_Sabbat_TokenedSectors[(SectorType)i+1]--;
               }
             }
             
@@ -373,7 +371,7 @@ public class GameData    //게임 진행도 데이터
 
       if (currentsanity <= 0)
       {
-        if (MaxSanity > ConstValues.MadnessDefaultSanityLose)
+        if (MaxSanity > ConstValues.MadnessMaxSanityLoseValue)
         {
           List<string> _madnesskeys = GameManager.Instance.MadExpDic.Keys.ToList();
           Experience _madness = null;
@@ -389,7 +387,7 @@ public class GameData    //게임 진행도 데이터
             }
           }
           currentsanity = 0;
-          MaxSanity -= ConstValues.MadnessDefaultSanityLose;
+          MaxSanity -= ConstValues.MadnessMaxSanityLoseValue;
 
           UIManager.Instance.GetMad(_madness);
         }
@@ -400,6 +398,7 @@ public class GameData    //게임 진행도 데이터
       }
     }
   }
+  public int MadnessRefuseSanityGenValue { get { return (int)(MaxSanity * ConstValues.MadnessMaxSanityLoseValue); } }
   public int MaxSanity = 100;
   private int movepoint = 0;
   public int MovePoint
@@ -1048,7 +1047,7 @@ public class Tendency
   {
     get
     {
-      return GameManager.Instance.GetTextData(Type, level, 1);
+      return GameManager.Instance.GetTextData(Type, level, 3);
     }
   }
   public string Description
@@ -1154,7 +1153,6 @@ public class GameJsonData
   public Vector3Int[] City_Pos;
   public int[] Village_InfoIndex, Town_InfoIndex;
   public int City_InfoIndex;
-  public const int VillageCount = 3, TownCount = 2, CityCount = 1;
   public bool[] Isriver_Village, Isforest_Village, Ismine_Village, Ismountain_Village, Issea_Village;
   public bool[] Isriver_Town, Isforest_Town, Ismine_Town, Ismountain_Town, Issea_Town;
   public bool Isriver_City, Isforest_City, Ismine_City, Ismountain_City, Issea_City;

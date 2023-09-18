@@ -32,7 +32,7 @@ public class UI_Mad : UI_default
     NoButtonText.text = GameManager.Instance.GetTextData("REFUSEMADNESS");
 
     StartCoroutine(changealpha(true));
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, MoveTime / 2.0f, UIManager.Instance.UIPanelOpenCurve));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, MoveTime / 2.0f, true));
 
   }
   public override void CloseForGameover()
@@ -40,20 +40,20 @@ public class UI_Mad : UI_default
     IsOpen = false;
     StartCoroutine(changealpha(false));
     DefaultGroup.interactable = false;
-    UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, DownPos, MoveTime / 2.0f, UIManager.Instance.UIPanelCLoseCurve);
+    UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, DownPos, MoveTime / 2.0f, false);
   }
 public override void CloseUI()
   {
     IsOpen = false;
     StartCoroutine(changealpha(false));
     DefaultGroup.interactable = false;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, DownPos, MoveTime / 2.0f, UIManager.Instance.UIPanelCLoseCurve));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, DownPos, MoveTime / 2.0f, false));
   }
   private IEnumerator changealpha(bool open)
   {
     float _time = 0.0f;
-    float _startalpha = open ? 0.0f : 1.0f;
-    float _endalpha = open ? 1.0f : 0.0f;
+    float _startalpha = open ? 0.0f : 0.8f;
+    float _endalpha = open ? 0.8f : 0.0f;
     while(_time< MoveTime)
     {
       BlockGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, _time / MoveTime);
@@ -72,8 +72,8 @@ public override void CloseUI()
   {
     if (UIManager.Instance.IsWorking) return;
 
-    GameManager.Instance.MyGameData.HP -= ConstValues.MaddnesRefuseHPCost;
-    GameManager.Instance.MyGameData.CurrentSanity = ConstValues.MadnessRefuseSanityRestore;
+    GameManager.Instance.MyGameData.HP -= ConstValues.MadnessRefuseHPLoseCost;
+    GameManager.Instance.MyGameData.CurrentSanity = GameManager.Instance.MyGameData.MadnessRefuseSanityGenValue;
 
     CloseUI();
   }

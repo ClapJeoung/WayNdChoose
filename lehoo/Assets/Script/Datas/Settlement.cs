@@ -170,7 +170,7 @@ public class Settlement
       }
     } }
 
-  public bool IsForest = false;//ÁÖº¯ 1Ä­¿¡ ½£ ¿©ºÎ
+  public bool IsForest = false;//ÁÖº¯ 2Ä­¿¡ ½£ ¿©ºÎ
   public bool IsRiver=false;//ÁÖº¯ 2Ä­¿¡ °­ ¿©ºÎ
   public bool IsHighland = false;  //ÁÖº¯ 1Ä­¿¡ ¾ð´ö ¿©ºÎ
   public bool IsMountain = false;//ÁÖº¯ 2Ä­¿¡ »ê ¿©ºÎ
@@ -598,7 +598,7 @@ public class MapData
 
   public TileData[,] TileDatas;
   public List<Settlement> Villages = new List<Settlement>();
-  public List<Settlement> Towns = new List<Settlement>();
+  public Settlement Town = null;
   public Settlement City = null;
   public List<Settlement> AllSettles = new List<Settlement>();
 

@@ -11,10 +11,10 @@ public enum ExpTypeEnum{ Normal,Bad,Mad}
 public class Experience
 {
   public string ID = "";
-  public string Name { get { return GameManager.Instance.GetTextData(ID+"_NAME"); } }
+  public string Name { get { return GameManager.Instance.GetTextData(ID+"_Name"); } }
   public ExpTypeEnum ExpType = ExpTypeEnum.Normal; 
-  public string Description { get { return GameManager.Instance.GetTextData(ID + "_DESCRIPTION"); } }
-  public string SubDescription { get { return GameManager.Instance.GetTextData(ID + "_SUBDESCRIPTION"); } }
+  public string Description { get { return GameManager.Instance.GetTextData(ID + "_Description"); } }
+  public string SubDescription { get { return GameManager.Instance.GetTextData(ID + "_Subdescription"); } }
     public List<EffectType> Effects=new List<EffectType>();
   private int _duration = 0;
   public int Duration
@@ -106,8 +106,7 @@ public class ExperienceJsonData
     _exp.ID = ID;
     _exp.ExpType = (ExpTypeEnum)GoodOrBad;
     string[] _temp = Type.Split("@");
-    EffectType[] _type = new EffectType[_temp.Length];
-    for (int i = 0; i < _temp.Length; i++) _type[i] = (EffectType)int.Parse(_temp[i]);
+    for (int i = 0; i < _temp.Length; i++) _exp.Effects.Add((EffectType)int.Parse(_temp[i]));
 
     return _exp;
   }

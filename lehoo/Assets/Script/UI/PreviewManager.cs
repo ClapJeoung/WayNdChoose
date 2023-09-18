@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using OpenCvSharp.Tracking;
 using JetBrains.Annotations;
+using OpenCvSharp;
 
 public class PreviewManager : MonoBehaviour
 {
@@ -134,22 +135,22 @@ public class PreviewManager : MonoBehaviour
     AllCanvasGroup.Add(ExpSelectExistPanel.GetComponent<CanvasGroup>());
   }
   private RectTransform CurrentPreview = null;
-  private void OpenPreviewPanel(GameObject panel,Vector2 pivot)
+  private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
   {
     CurrentPreview = panel.GetComponent<RectTransform>();
     CurrentPreview.pivot = pivot;
     IEnumerator _cor = null;
-    _cor = fadepreview(panel, true);
+    _cor = fadepreview(panel, true, rect);
     StartCoroutine(_cor);
   }
-  private void OpenPreviewPanel(GameObject panel)
+  private void OpenPreviewPanel(GameObject panel,RectTransform rect)
   {
     CurrentPreview = panel.GetComponent<RectTransform>();
     IEnumerator _cor = null;
-    _cor = fadepreview(panel, true);
+    _cor = fadepreview(panel, true,rect);
     StartCoroutine(_cor);
   }
-  public void OpenTurnPreview()
+  public void OpenTurnPreview(RectTransform rect)
   {
       int _currentturn = GameManager.Instance.MyGameData.Turn;
       Sprite _turnsprite = null;
@@ -180,9 +181,9 @@ public class PreviewManager : MonoBehaviour
     IconAndDescription_Icon.sprite = _turnsprite;
     IconAndDescription_Description.text = _name + "<br><br>" + WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(_description));
 
-    OpenPreviewPanel(IconAndDescription_Panel,TurnPivot);
+    OpenPreviewPanel(IconAndDescription_Panel,TurnPivot,rect);
   }//턴 미리보기 패널 세팅 후 열기
-  public void OpenHPPreview()
+  public void OpenHPPreview(RectTransform rect)
   {
     StatusType _currenttype = StatusType.HP;
 
@@ -202,14 +203,14 @@ public class PreviewManager : MonoBehaviour
       if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
       else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
-    _description+="<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
+  //  _description+="<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
 
     IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.HPIcon;
     IconAndDescription_Description.text = _description;
-    OpenPreviewPanel(IconAndDescription_Panel,HPPivot);
+    OpenPreviewPanel(IconAndDescription_Panel,HPPivot,rect);
   }//체력 설명, 증감량 표기 후 열기
-  public void OpenSanityPreview()
+  public void OpenSanityPreview(RectTransform rect)
   {
     StatusType _currenttype = StatusType.Sanity;
 
@@ -229,14 +230,14 @@ public class PreviewManager : MonoBehaviour
       if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
       else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
-    _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
+ //   _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
 
     IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.SanityIcon;
     IconAndDescription_Description.text = _description;
-    OpenPreviewPanel(IconAndDescription_Panel,SanityPivot);
+    OpenPreviewPanel(IconAndDescription_Panel,SanityPivot,rect);
   }//정신력 설명,증감량 표기 후 열기
-  public void OpenGoldPreview()
+  public void OpenGoldPreview( RectTransform rect)
   {
     StatusType _currenttype = StatusType.Gold;
 
@@ -256,14 +257,14 @@ public class PreviewManager : MonoBehaviour
       if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
       else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
-    _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
+  //  _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
 
     IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.GoldIcon;
     IconAndDescription_Description.text = _description;
-    OpenPreviewPanel(IconAndDescription_Panel,GoldPivot);
+    OpenPreviewPanel(IconAndDescription_Panel,GoldPivot,rect);
   }//골드 설명,증감량 표기 후 열기
-  public void OpenMovePointPreview()
+  public void OpenMovePointPreview( RectTransform rect)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
     string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION") + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData("MOVEPOINT_SUBDESCRIPTION")));
@@ -271,7 +272,7 @@ public class PreviewManager : MonoBehaviour
     IconAndDescription_Icon.sprite = _icon;
     IconAndDescription_Description.text = _description;
 
-    OpenPreviewPanel(IconAndDescription_Panel,MovePointPivot);
+    OpenPreviewPanel(IconAndDescription_Panel,MovePointPivot,rect);
   }
   public void OpenMapPreview()
   {
@@ -280,7 +281,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenQuestPreview()
   {
   }//현재 퀘스트 이름, 일러스트, 다음 내용                             수정요망
-  public void OpenSkillPreview(SkillType _skilltype)
+  public void OpenSkillPreview(SkillType _skilltype,RectTransform rect)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype);
     string _description = GameManager.Instance.GetTextData(_skilltype,0)+"<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4)));
@@ -291,18 +292,20 @@ public class PreviewManager : MonoBehaviour
     SkillDescription.text = _description;
     SkillIcon.sprite = _icon;
 
-    OpenPreviewPanel(SkillPreview);
+    OpenPreviewPanel(SkillPreview,rect);
   }
-  public void OpenExpPreview(Experience _exp)
+  public void OpenExpPreview(Experience _exp, RectTransform rect)
   {
     ExpName.text =_exp.Name;
     ExpDuration.text = $"{_exp.Duration}";
     string _description = WNCText.SetSize(EffectFontSize, _exp.ShortEffectString) + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_exp.SubDescription));
     ExpDescription.text = _description;
 
-    OpenPreviewPanel(ExpPreview);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(ExpName.transform.parent.transform as RectTransform);
+
+    OpenPreviewPanel(ExpPreview,rect);
   }
-  public void OpenTendencyPreview(TendencyTypeEnum _type)
+  public void OpenTendencyPreview(TendencyTypeEnum _type, RectTransform rect)
   {
     Sprite _tendencyicon = null;
     Tendency _targettendency = null;
@@ -324,9 +327,9 @@ public class PreviewManager : MonoBehaviour
     IconAndDescription_Icon.sprite = _tendencyicon;
     IconAndDescription_Description.text = _description;
 
-    OpenPreviewPanel(IconAndDescription_Panel, TendencyPivot);
+    OpenPreviewPanel(IconAndDescription_Panel, TendencyPivot,rect);
   }
-  public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir)
+  public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform rect)
   {
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
@@ -366,9 +369,9 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    OpenPreviewPanel(SelectionNonePanel);
+    OpenPreviewPanel(SelectionNonePanel,rect);
   }
-  public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
+  public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
     SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
@@ -493,9 +496,9 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    OpenPreviewPanel(SelectionPayPanel);
+    OpenPreviewPanel(SelectionPayPanel,rect);
   }
-  public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
+  public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
     SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
@@ -581,9 +584,9 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    OpenPreviewPanel(SelectionCheckPanel);
+    OpenPreviewPanel(SelectionCheckPanel,rect);
   }
-  public void OpenSelectionElsePreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir)
+  public void OpenSelectionElsePreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
     //안쓰는 상태
     SelectionElseBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
@@ -610,10 +613,10 @@ public class PreviewManager : MonoBehaviour
         break;
     }
 
-    OpenPreviewPanel(SelectionElsePanel);
+    OpenPreviewPanel(SelectionElsePanel,rect);
   }
   //보상 설명 : 체력,정신력,돈 설명?
-  public void OpenRewardStatusPreview(StatusType status, int _value)
+  public void OpenRewardStatusPreview(StatusType status, int _value, RectTransform rect)
   {
     Sprite _icon = null;
     int  _modify = 0;
@@ -637,9 +640,9 @@ public class PreviewManager : MonoBehaviour
     RewardStatusModify.text= _modifydescription;
     RewardStatusClickText.text = GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
 
-    OpenPreviewPanel(RewardStatusPanel);
+    OpenPreviewPanel(RewardStatusPanel,rect);
   }
-  public void OpenRewardExpPreview(Experience _exp)
+  public void OpenRewardExpPreview(Experience _exp, RectTransform rect)
   {
     string _name = "";
     Sprite _illust = null;
@@ -654,9 +657,9 @@ public class PreviewManager : MonoBehaviour
     RewardExpClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
 
 
-    OpenPreviewPanel(RewardExpPanel);
+    OpenPreviewPanel(RewardExpPanel,rect);
   }
-  public void OpenRewardSkillPreview(SkillType skilltype)
+  public void OpenRewardSkillPreview(SkillType skilltype, RectTransform rect)
   {
     string _name = $"{GameManager.Instance.GetTextData(skilltype,0)} +1";
     Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(skilltype);
@@ -665,21 +668,20 @@ public class PreviewManager : MonoBehaviour
     RewardSkillName.text = _name;
     RewardSkillClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
 
-    OpenPreviewPanel(RewardSkillPanel);
+    OpenPreviewPanel(RewardSkillPanel,rect);
   }
-  public void OpenExpSelectionEmptyPreview(Experience _exp,bool islong)
+  public void OpenExpSelectionEmptyPreview(Experience _exp,bool islong, RectTransform rect)
   {
-    string _name, _turn, _description;
+    string _turn, _description;
 
-    _name = _exp.Name;
     _turn=islong?ConstValues.LongTermStartTurn.ToString():ConstValues.ShortTermStartTurn.ToString();
     if (islong)
     {
-      _description =GameManager.Instance.GetTextData("LONGTERMSAVE_NAME")+ string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
+      _description =GameManager.Instance.GetTextData("LONGTERMSAVE_NAME")+"<br><br>"+ string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
     }
     else
     {
-      _description = GameManager.Instance.GetTextData("SHORTTERMSAVE_NAME") + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
+      _description = GameManager.Instance.GetTextData("SHORTTERMSAVE_NAME") + "<br><br>" + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
@@ -687,9 +689,9 @@ public class PreviewManager : MonoBehaviour
     ExpSelectClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(false)) ExpSelectClickText.gameObject.SetActive(true);
 
-    OpenPreviewPanel(ExpSelectEmptyPanel);
+    OpenPreviewPanel(ExpSelectEmptyPanel,rect);
   }
-  public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong)
+  public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong, RectTransform rect)
   {
     int _turn = islong ? ConstValues.LongTermStartTurn : ConstValues.ShortTermStartTurn;
     string _description = "";
@@ -715,40 +717,40 @@ public class PreviewManager : MonoBehaviour
     ExpSelectClickText.text = GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(false)) ExpSelectClickText.gameObject.SetActive(true);
 
-    OpenPreviewPanel(ExpSelectExistPanel);
+    OpenPreviewPanel(ExpSelectExistPanel,rect);
   }
-  public void OpenJustDescriptionPreview(string text)
+  public void OpenJustDescriptionPreview(string text, RectTransform rect)
   {
     JustDescriptionText.text = text;
 
-    OpenPreviewPanel(JustDescription_Panel);
+    OpenPreviewPanel(JustDescription_Panel,rect);
   }
-  public void OpenJustDescriptionPreview(string text,Vector2 pivot)
+  public void OpenJustDescriptionPreview(string text,Vector2 pivot, RectTransform rect)
   {
     JustDescriptionText.text = text;
 
-    OpenPreviewPanel(JustDescription_Panel,pivot);
+    OpenPreviewPanel(JustDescription_Panel,pivot,rect);
   }
-  public void OpenIconAndDescriptionPanel(Sprite icon,string text)
+  public void OpenIconAndDescriptionPanel(Sprite icon,string text, RectTransform rect)
   {
     IconAndDescription_Icon.sprite = icon;
     IconAndDescription_Description.text = text;
 
-    OpenPreviewPanel(IconAndDescription_Panel);
+    OpenPreviewPanel(IconAndDescription_Panel,rect);
   }
-  public void OpenIconAndDescriptionPanel(Sprite icon, string text,Vector2 pivot)
+  public void OpenIconAndDescriptionPanel(Sprite icon, string text,Vector2 pivot, RectTransform rect)
   {
     IconAndDescription_Icon.sprite = icon;
     IconAndDescription_Description.text = text;
 
-    OpenPreviewPanel(IconAndDescription_Panel,pivot);
+    OpenPreviewPanel(IconAndDescription_Panel,pivot,rect);
   }
-  public void OpenDisComfortPanel()
+  public void OpenDisComfortPanel(RectTransform rect)
   {
     IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.DisComfort;
      IconAndDescription_Description.text = GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION");
 
-    OpenPreviewPanel(IconAndDescription_Panel,DiscomfortPivot);
+    OpenPreviewPanel(IconAndDescription_Panel,DiscomfortPivot,rect);
   }
   public void OpenEnvirPanel(EnvironmentType envir)
   {
@@ -758,7 +760,6 @@ public class PreviewManager : MonoBehaviour
 
     CurrentPreview = EnvirPanel.GetComponent<RectTransform>();
     IEnumerator _cor = null;
-    _cor = fadepreview(EnvirPanel, true);
     StartCoroutine(_cor);
   }
   private Vector2 Newpos = Vector2.zero;
@@ -779,12 +780,12 @@ public class PreviewManager : MonoBehaviour
     CurrentPreview = null; 
   }
 
-  private IEnumerator fadepreview(GameObject _targetobj, bool _isopen)
+  private IEnumerator fadepreview(GameObject _targetobj, bool _isopen, RectTransform targetrect)
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(_targetobj.transform as RectTransform);
 
-    RectTransformUtility.ScreenPointToLocalPointInRectangle(WholeRect, Input.mousePosition, MainCamera, out Newpos);
-    CurrentPreview.localPosition = Newpos;
+    CurrentPreview.position = targetrect.position;
+    CurrentPreview.anchoredPosition3D = new Vector3(CurrentPreview.anchoredPosition3D.x, CurrentPreview.anchoredPosition3D.y, 0.0f);
 
     CanvasGroup _mygroup = _targetobj.GetComponent<CanvasGroup>();
     if (_isopen) yield return new WaitForSeconds(0.1f);

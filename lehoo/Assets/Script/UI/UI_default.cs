@@ -30,7 +30,7 @@ public class UI_default : MonoBehaviour
           (defaultrect,
           Vector2.zero, 
           Vector2.right * (dir == 0 ? ReturnButton_ToLeft : ReturnButton_ToRight), ReturnButton_movetime, 
-          UIManager.Instance.UIPanelOpenCurve));
+          true));
 
   private RectTransform defaultrect = null;
   public RectTransform DefaultRect

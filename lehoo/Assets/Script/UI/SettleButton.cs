@@ -54,8 +54,8 @@ public class SettleButton : ReturnButton
         break;
     }
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.6f, UIManager.Instance.UIPanelOpenCurve));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect, CenterPos, TopPos, 0.5f, UIManager.Instance.UIPanelOpenCurve));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.6f, true));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect, CenterPos, TopPos, 0.5f, true));
     SettlementUI.OpenUI();
   }
 }

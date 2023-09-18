@@ -81,7 +81,7 @@ public class UI_Gameover : UI_default
     yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust").Rect, GetPanelRect("illust").OutisdePos, GetPanelRect("illust").InsidePos, IllustOpenTime, IllustOpenCurve));
 
     yield return new WaitForSeconds(3.0f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description").Rect, GetPanelRect("description").OutisdePos, GetPanelRect("description").InsidePos,1.5f,UIManager.Instance.UIPanelOpenCurve));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description").Rect, GetPanelRect("description").OutisdePos, GetPanelRect("description").InsidePos,1.5f,true));
     yield return new WaitForSeconds(2.0f);
     StartCoroutine(UIManager.Instance.ChangeAlpha(ButtonGroup, 1.0f, 1.0f));
   }
@@ -96,8 +96,8 @@ public class UI_Gameover : UI_default
   }
   private IEnumerator closeui()
   {
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust").Rect, GetPanelRect("illust").InsidePos, GetPanelRect("illust").OutisdePos, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
-   yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description").Rect, GetPanelRect("description").InsidePos, GetPanelRect("description").OutisdePos, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust").Rect, GetPanelRect("illust").InsidePos, GetPanelRect("illust").OutisdePos, CloseTime, false));
+   yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description").Rect, GetPanelRect("description").InsidePos, GetPanelRect("description").OutisdePos, CloseTime, false));
 
     UIManager.Instance.MainUI.SetupMain();
   }

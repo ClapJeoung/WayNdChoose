@@ -53,7 +53,7 @@ public class MapButton : ReturnButton
         break;
     }
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.4f,UIManager.Instance.UIPanelCLoseCurve));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.4f,false));
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.MyMap.AppearTime));
 
     UIManager.Instance.MyMap.OpenUI();

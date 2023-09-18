@@ -24,24 +24,24 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
     Experience _exp = null;
     switch (PanelType)
     {
-      case PreviewPanelType.Turn:UIManager.Instance.PreviewManager.OpenTurnPreview();break;
-        case PreviewPanelType.HP:UIManager.Instance.PreviewManager.OpenHPPreview();break;
-      case PreviewPanelType.Sanity:UIManager.Instance.PreviewManager.OpenSanityPreview();break;
-        case PreviewPanelType.Gold:UIManager.Instance.PreviewManager.OpenGoldPreview();break;
+      case PreviewPanelType.Turn:UIManager.Instance.PreviewManager.OpenTurnPreview(transform as RectTransform);break;
+        case PreviewPanelType.HP:UIManager.Instance.PreviewManager.OpenHPPreview(transform as RectTransform);break;
+      case PreviewPanelType.Sanity:UIManager.Instance.PreviewManager.OpenSanityPreview(transform as RectTransform);break;
+        case PreviewPanelType.Gold:UIManager.Instance.PreviewManager.OpenGoldPreview(transform as RectTransform);break;
       case PreviewPanelType.Map:UIManager.Instance.PreviewManager.OpenMapPreview();break;
       case PreviewPanelType.Quest:UIManager.Instance.PreviewManager.OpenQuestPreview();break;
-      case PreviewPanelType.Skill:UIManager.Instance.PreviewManager.OpenSkillPreview(Myskill);break;
+      case PreviewPanelType.Skill:UIManager.Instance.PreviewManager.OpenSkillPreview(Myskill, transform as RectTransform);break;
       case PreviewPanelType.EXP_long:
          _exp = GameManager.Instance.MyGameData.LongTermEXP;
-        if(_exp!=null)UIManager.Instance.PreviewManager.OpenExpPreview(_exp);
+        if(_exp!=null)UIManager.Instance.PreviewManager.OpenExpPreview(_exp, transform as RectTransform);
         break;
         case PreviewPanelType.EXP_short:
          _exp = GameManager.Instance.MyGameData.ShortTermEXP[ExpIndex];
-        if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp);
+        if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, transform as RectTransform);
         break;
       case PreviewPanelType.Tendency:
         if (GameManager.Instance.MyGameData.GetTendencyLevel(MyTendency) == 0) return;
-        UIManager.Instance.PreviewManager.OpenTendencyPreview(MyTendency);break;
+        UIManager.Instance.PreviewManager.OpenTendencyPreview(MyTendency, transform as RectTransform);break;
       case PreviewPanelType.Selection:
         SelectionData _selection = null;
         switch (MySelectionTendency)
@@ -58,81 +58,81 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         switch (_selection.ThisSelectionType)
         {
-          case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection, MySelectionTendency, MySelectionTendencyDir); break;
+          case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
           case SelectionTargetType.Check_Single:case SelectionTargetType.Check_Multy:
-            UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection, MySelectionTendency, MySelectionTendencyDir); break;
-          default: UIManager.Instance.PreviewManager.OpenSelectionElsePreview(_selection, MySelectionTendency, MySelectionTendencyDir); break;
+            UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
+          default: UIManager.Instance.PreviewManager.OpenSelectionElsePreview(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
         }
         break;
       case PreviewPanelType.RewardHP:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.HP, GameManager.Instance.MyGameData.RewardHPValue_modified); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.HP, GameManager.Instance.MyGameData.RewardHPValue_modified, transform as RectTransform); break;
       case PreviewPanelType.RewardSanity:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.Sanity, GameManager.Instance.MyGameData.RewardSanityValue_modified); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.Sanity, GameManager.Instance.MyGameData.RewardSanityValue_modified, transform as RectTransform); break;
       case PreviewPanelType.RewardGold:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.Gold, GameManager.Instance.MyGameData.RewardGoldValue_modified); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.Gold, GameManager.Instance.MyGameData.RewardGoldValue_modified, transform as RectTransform); break;
       case PreviewPanelType.RewardSkill:
-        UIManager.Instance.PreviewManager.OpenRewardSkillPreview(Myskill);  break;
+        UIManager.Instance.PreviewManager.OpenRewardSkillPreview(Myskill, transform as RectTransform);  break;
       case PreviewPanelType.RewardExp:
-        UIManager.Instance.PreviewManager.OpenRewardExpPreview(MyEXP); break;
+        UIManager.Instance.PreviewManager.OpenRewardExpPreview(MyEXP, transform as RectTransform); break;
       case PreviewPanelType.RewardExpSelect_long:
         _exp = GameManager.Instance.MyGameData.LongTermEXP;
-        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,true);
+        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,true, transform as RectTransform);
         else
         {
-          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP, true);
-          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"));
-          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"));
+          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP, true, transform as RectTransform);
+          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"), transform as RectTransform);
+          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"), transform as RectTransform);
         }
         break;
       case PreviewPanelType.RewardExpSelect_short:
         _exp = GameManager.Instance.MyGameData.ShortTermEXP[ExpIndex];
-        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,false);
+        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,false, transform as RectTransform);
         else
         {
-          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP,false);
-          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"));
-          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"));
+          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP,false, transform as RectTransform);
+          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"), transform as RectTransform);
+          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"), transform as RectTransform);
         }
         break;
       case PreviewPanelType.Discomfort:
-        UIManager.Instance.PreviewManager.OpenDisComfortPanel();
+        UIManager.Instance.PreviewManager.OpenDisComfortPanel( transform as RectTransform);
         break;
       case PreviewPanelType.Environment:
         UIManager.Instance.PreviewManager.OpenEnvirPanel(MyEnvironmentType);
         break;
       case PreviewPanelType.MadnessAccept:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview
-          ( string.Format(GameManager.Instance.GetTextData("ACCEPTMADNESS_DESCRIPTOIN"), WNCText.GetSanityColor(ConstValues.SanityLoseByMadnessExp)));
+          ( string.Format(GameManager.Instance.GetTextData("ACCEPTMADNESS_DESCRIPTOIN"), WNCText.GetSanityColor(ConstValues.MadnessMaxSanityLoseValue)), transform as RectTransform);
         break;
       case PreviewPanelType.MadnessRefuse:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
           string.Format(GameManager.Instance.GetTextData("REFUSEMADNESS_DESCRIPTION"),
-          WNCText.GetHPColor(ConstValues.MaddnesRefuseHPCost),
-          WNCText.GetSanityColor(ConstValues.MadnessRefuseSanityRestore)));
+          WNCText.GetHPColor(ConstValues.MadnessRefuseHPLoseCost),
+          WNCText.GetSanityColor(GameManager.Instance.MyGameData.MadnessRefuseSanityGenValue)), transform as RectTransform);
         break;
       case PreviewPanelType.MoveCostSanity:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MyMap.SanityCost)));
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MyMap.SanityCost)), transform as RectTransform);
         break;
       case PreviewPanelType.MoveCostGold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), WNCText.GetGoldColor(UIManager.Instance.MyMap.GoldCost)));
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), WNCText.GetGoldColor(UIManager.Instance.MyMap.GoldCost)), transform as RectTransform);
         break;
       case PreviewPanelType.RestSanity:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_SANITY"));
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_SANITY"), transform as RectTransform);
         break;
       case PreviewPanelType.RestGold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"));
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"), transform as RectTransform);
         break;
       case PreviewPanelType.CultPanel_Sabbat:
-        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle, GameManager.Instance.GetTextData("Quest0_Sabbat_Sidepanel_Preview"), new Vector2(1.1f, 0.5f)) ;
+        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle, GameManager.Instance.GetTextData("Quest0_Sabbat_Sidepanel_Preview"), new Vector2(1.1f, 0.5f), transform as RectTransform) ;
         break;
       case PreviewPanelType.CultPanel_Ritual:
-        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Ritual_Idle,GameManager.Instance.GetTextData("Quest0_Ritual_Sidepanel_Preview"), new Vector2(1.1f, 0.5f));
+        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Ritual_Idle,GameManager.Instance.GetTextData("Quest0_Ritual_Sidepanel_Preview"), new Vector2(1.1f, 0.5f), transform as RectTransform);
         break;
       case PreviewPanelType.MovePoint:
-        UIManager.Instance.PreviewManager.OpenMovePointPreview();
+        UIManager.Instance.PreviewManager.OpenMovePointPreview(transform as RectTransform);
         break;
       case PreviewPanelType.MoveCostGoldNogold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NOGOLD_TEXT"));
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NOGOLD_TEXT"), transform as RectTransform);
         break;
     }
   }

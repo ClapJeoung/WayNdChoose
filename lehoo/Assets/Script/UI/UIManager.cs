@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public enum UIMoveDir { Horizontal, Vertical }
 public enum UIFadeMoveDir { Left, Right, Up, Down }
@@ -51,7 +52,6 @@ public class UIManager : MonoBehaviour
   public float TextFadeInTime = 0.7f;
   public float TextFadeOutTime = 0.4f;
   public float FadeWaitTime = 1.0f;
-  public float MoveInAlpha = 0.1f;
   public float PreviewFadeTime = 0.2f;
   public int IllustSoftness_start = 800, IllustSoftness_end = 50;
     public float FadeMoveDegree = 40.0f;
@@ -65,6 +65,7 @@ public class UIManager : MonoBehaviour
   private float EnvirBackgroundIdleAlpha = 0.7f;
   public MapButton MapButton = null;
   public SettleButton SettleButton = null;
+  [SerializeField] private AnimationCurve FadeAnimationCurve = null;
   public void GameOver(GameOverTypeEnum gameovertype)
   {
     StopAllCoroutines();
@@ -210,33 +211,7 @@ public class UIManager : MonoBehaviour
     Destroy(_prefab);
   }
   [Space(5)]
-  [SerializeField] private CanvasGroup ConverEffect = null;
-  [SerializeField] private CanvasGroup ForceEffect = null;
-  [SerializeField] private CanvasGroup WildEffect = null;
-  [SerializeField] private CanvasGroup IntelEffect = null;
   private int ConverLevel = -1, ForceLevel = -1, WildLevel = -1, IntelLevel = -1;
-  public void UpdateSkillIcon(SkillType theme)
-  {
-    switch (theme)
-    {
-      case SkillType.Conversation:
-        ConverEffect.alpha = 1.0f;
-        StartCoroutine(ChangeAlpha(ConverEffect,0.0f,0.15f));
-        break;
-      case SkillType.Force:
-        ForceEffect.alpha = 1.0f;
-        StartCoroutine(ChangeAlpha(ForceEffect, 0.0f, 0.15f));
-        break;
-      case SkillType.Wild:
-        WildEffect.alpha = 1.0f;
-        StartCoroutine(ChangeAlpha(WildEffect, 0.0f, 0.15f));
-        break;
-      case SkillType.Intelligence:
-        IntelEffect.alpha = 1.0f;
-        StartCoroutine(ChangeAlpha(IntelEffect, 0.0f, 0.15f));
-        break;
-    }
-  }
 
   [Space(5)]
   [SerializeField] private RectTransform TendencyBodyRect = null;
@@ -436,7 +411,7 @@ public class UIManager : MonoBehaviour
   {
     if (_rect.gameObject.activeSelf == false) _rect.gameObject.SetActive(true);
     Vector2 _size = _rect.sizeDelta;
-    _group.alpha = MoveInAlpha;
+    _group.alpha = 0.0f;
     Vector2 _startpos = new Vector2(_size.x * (_dir == UIMoveDir.Horizontal ? LargePanelMoveDegree : 0), _size.y * (_dir == UIMoveDir.Vertical ? LargePanelMoveDegree : 0));
     _rect.anchoredPosition = _startpos;
     Vector2 _endpos = Vector2.zero;
@@ -446,7 +421,7 @@ public class UIManager : MonoBehaviour
     {
       _rect.anchoredPosition = Vector2.Lerp(_startpos,_endpos, UIPanelOpenCurve.Evaluate(_time/_targetime));
 
-      _group.alpha = Mathf.Lerp(MoveInAlpha, 1.0f, Mathf.Pow(_time / _targetime, 0.5f));
+      _group.alpha = Mathf.Lerp(0.0f, 1.0f, Mathf.Pow(_time / _targetime, 0.5f));
       _time += Time.deltaTime;
       yield return null;
     }
@@ -576,7 +551,7 @@ public class UIManager : MonoBehaviour
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(_img.transform as RectTransform);
 
-    float _startalpha = _targetalpha==1.0f ? MoveInAlpha : 1.0f;
+    float _startalpha = _targetalpha==1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha==1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     Color _color = Color.white; 
@@ -585,7 +560,7 @@ public class UIManager : MonoBehaviour
     _img.color = _color;
     while (_time < IllustFadeTime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / IllustFadeTime, 0.3f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time / IllustFadeTime));
       _color.a = _alpha;
       _img.color = _color;
       _time += Time.deltaTime;
@@ -599,7 +574,7 @@ public class UIManager : MonoBehaviour
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(_img.transform as RectTransform);
 
-    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     Color _color = Color.white;
@@ -608,7 +583,7 @@ public class UIManager : MonoBehaviour
     _img.color = _color;
     while (_time < targettime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / targettime, 0.3f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time / targettime));
       _color.a = _alpha;
       _img.color = _color;
       _time += Time.deltaTime;
@@ -622,7 +597,7 @@ public class UIManager : MonoBehaviour
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);
 
-    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     float _targettime = targettime;
@@ -632,7 +607,7 @@ public class UIManager : MonoBehaviour
     _group.blocksRaycasts = false;
     while (_time < _targettime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time/_targettime));
       _group.alpha = _alpha;
       _time += Time.deltaTime;
       yield return null;
@@ -649,7 +624,7 @@ public class UIManager : MonoBehaviour
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);
 
-    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     float _targettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
@@ -659,7 +634,7 @@ public class UIManager : MonoBehaviour
     _group.blocksRaycasts = false;
     while (_time < _targettime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time / _targettime));
       _group.alpha = _alpha;
       _time += Time.deltaTime;
       yield return null;
@@ -691,7 +666,7 @@ public class UIManager : MonoBehaviour
     Vector2 _currentpos = _startpos;
     //movedir 설정했으면 해당 방향대로 목표, 종료 위치 설정
 
-    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     float _targettime = _islarge ? LargePanelFadeTime : SmallPanelFadeTime;
@@ -705,7 +680,7 @@ public class UIManager : MonoBehaviour
     {
       _currentpos = Vector2.Lerp(_startpos, _endpos, _curve.Evaluate(_time / _targettime));
       _rect.anchoredPosition3D = _currentpos;
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.7f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time / _targettime));
       _group.alpha = _alpha;
       _time += Time.deltaTime;
       yield return null;
@@ -723,7 +698,7 @@ public class UIManager : MonoBehaviour
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(_tmp.transform as RectTransform);
 
-    float _startalpha = _targetalpha == 1.0f ? MoveInAlpha : 1.0f;
+    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
     float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
     float _time = 0.0f;
     Color _color = Color.white;
@@ -733,7 +708,7 @@ public class UIManager : MonoBehaviour
     float _targettime = targettime;
     while (_time < _targettime)
     {
-      _alpha = Mathf.Lerp(_startalpha, _endalpha, Mathf.Pow(_time / _targettime, 0.3f));
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time / _targettime));
       _color.a = _alpha;
       _tmp.faceColor = _color;
 
@@ -747,14 +722,14 @@ public class UIManager : MonoBehaviour
   public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MyMap.SetPlayerPos(coordinate);
   public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
   public void CreateMap() => MyMap.MapCreater.MakeTilemap();
-    public void OpenDialogue()
-    {
-        //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
+  public void OpenDialogue()
+  {
+    //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
 
-        //정착지에서 이벤트 선택하는 경우도 이미 EventSugest에서 닫기 메소드를 실행한 상태
+    //정착지에서 이벤트 선택하는 경우도 이미 EventSugest에서 닫기 메소드를 실행한 상태
 
-        MyDialogue.OpenUI();
-    }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
+    MyDialogue.OpenUI();
+  }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void ResetEventPanels()
   {
     if(MyDialogue.IsOpen) MyDialogue.CloseUI();
@@ -772,15 +747,15 @@ public class UIManager : MonoBehaviour
   [SerializeField] private List<PanelRectEditor> TitlePanels=new List<PanelRectEditor>();
   [SerializeField] private float SceneAnimationTitleMoveTime = 0.3f;
   [SerializeField] private float SceneAnimationObjMoveTime = 0.1f;
-  [SerializeField] private float TitleWaitTime = 0.2f;
-  [SerializeField] private float ObjWaitTime = 0.08f;
+  [SerializeField] private float TitleWaitTime = 0.4f;
+  [SerializeField] private float ObjWaitTime = 0.2f;
   [SerializeField] private AnimationCurve SceneAnimationCurve = null;
   public IEnumerator opengamescene()
   {
     var _titlewait = new WaitForSeconds(TitleWaitTime);
     var _objwait = new WaitForSeconds(ObjWaitTime);
-
-    for(int i = 0; i < 4; i++)
+    PlayAudio(IntroOpenAudio);
+    for (int i = 0; i < 4; i++)
     {
       StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].OutisdePos, TitlePanels[i].InsidePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
       yield return _titlewait;
@@ -791,14 +766,31 @@ public class UIManager : MonoBehaviour
       yield return _objwait;
     }
   }
-  public IEnumerator moverect(RectTransform rect, Vector2 startpos, Vector2 endpos, float targettime, AnimationCurve targetcurve)
+  public IEnumerator moverect(RectTransform rect, Vector2 startpos, Vector2 endpos, float targettime, bool isopen)
+  {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(rect.transform as RectTransform);
+
+    AnimationCurve _targetcurve = isopen ? UIPanelOpenCurve : UIPanelCLoseCurve;
+    AudioClip _clip = isopen ? PanelOpenAudio : PanelCloseAudio;
+    PlayAudio(_clip);
+
+    float _time = 0.0f, _targettime = targettime;
+    while (_time < _targettime)
+    {
+      rect.anchoredPosition = Vector2.Lerp(startpos, endpos, _targetcurve.Evaluate(_time / _targettime));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    rect.anchoredPosition = endpos;
+  }
+  public IEnumerator moverect(RectTransform rect, Vector2 startpos, Vector2 endpos, float targettime, AnimationCurve curve)
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(rect.transform as RectTransform);
 
     float _time = 0.0f, _targettime = targettime;
     while (_time < _targettime)
     {
-      rect.anchoredPosition = Vector2.Lerp(startpos, endpos, targetcurve.Evaluate(_time / _targettime));
+      rect.anchoredPosition = Vector2.Lerp(startpos, endpos, curve.Evaluate(_time / _targettime));
       _time += Time.deltaTime;
       yield return null;
     }
@@ -821,7 +813,31 @@ public class UIManager : MonoBehaviour
     }
   }
   #endregion
-
+  [Space(10)]
+  [SerializeField] private AudioClip IntroOpenAudio = null;
+  [SerializeField] private AudioClip PanelOpenAudio = null;
+  [SerializeField] private AudioClip PanelCloseAudio = null;
+  private List<AudioSource> audiosources = new List<AudioSource>();
+  private List<AudioSource> AudioSources
+  {
+    get
+    {
+      if (audiosources.Count == 0)
+      {
+        audiosources=GetComponents<AudioSource>().ToList();
+      }
+      return audiosources;
+    }
+  }
+  public void PlayAudio(AudioClip clip)
+  {
+    for(int i=0;i< AudioSources.Count; i++)
+    {
+      if (AudioSources[i].isPlaying) continue;
+      AudioSources[i].clip = clip;
+      AudioSources[i].Play();
+    }
+  }
 }
 public static class WNCText
 {
