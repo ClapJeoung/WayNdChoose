@@ -9,7 +9,7 @@ using OpenCvSharp;
 
 public class PreviewManager : MonoBehaviour
 {
-  [SerializeField] private RectTransform WholeRect = null;
+//  [SerializeField] private RectTransform WholeRect = null;
   [SerializeField] private Camera MainCamera = null;
   [Space(10)]
   [SerializeField] private GameObject IconAndDescription_Panel = null;
@@ -525,7 +525,7 @@ public class PreviewManager : MonoBehaviour
     Sprite[] _icons = new Sprite[2];
     Skill[] _skills= new Skill[2];
     int _requirelevel = 0, _currentlevel = 0, _percentage = 0;
-    string _requiretext = "", _currenttext = "", _skillinfo = "", _percentage_text = "", _percentage_int = "", _subdescription = "";
+    string _requiretext = "", _currenttext = "", _skillinfo = "", _percentage_text = "", _percentage_int = "";//, _subdescription = "";
 
   //  _subdescription= _selection.SubDescription;
     _percentage_text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");

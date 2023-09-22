@@ -134,6 +134,7 @@ public class Settlement
       return GameManager.Instance.GetTextData(OriginName);
     }
   }
+  /*
   public void Setup()
   {
     switch (SettlementType)
@@ -169,7 +170,7 @@ public class Settlement
         default:return GameManager.Instance.ImageHolder.DefaultIllust;
       }
     } }
-
+  */
   public bool IsForest = false;//ÁÖº¯ 2Ä­¿¡ ½£ ¿©ºÎ
   public bool IsRiver=false;//ÁÖº¯ 2Ä­¿¡ °­ ¿©ºÎ
   public bool IsHighland = false;  //ÁÖº¯ 1Ä­¿¡ ¾ð´ö ¿©ºÎ
@@ -249,6 +250,43 @@ public class Settlement
 }
 public class MapData
 {
+  public void CreateRitualCoordinate()
+  {
+    List<TileData> _ritualtiles=new List<TileData>();
+    HexDir _dir = HexDir.BottomLeft;
+    int _range = 1;
+    for(int i = 0; i<3; i++)
+    {
+      _dir = (HexDir)(i * 2);
+
+      TileData _targetcenter = GetDirLines(CenterTile, _dir)[Random.Range(3, ConstValues.LandRadius - 2)];
+
+      List<TileData> _availablelist= new List<TileData>();
+      foreach(var _tile in GetAroundTile(_targetcenter, _range))
+      {
+        if (_tile.Interactable == false) continue;
+        if (_tile.TileSettle != null) continue;
+
+        _availablelist.Add(_tile);
+      }
+      if (_availablelist.Count == 0)
+      {
+        _range++;
+        i--;
+        continue;
+      }
+      else
+      {
+        _ritualtiles.Add(_availablelist[Random.Range(0,_availablelist.Count)]);
+        _range = 1;
+      }
+    }
+    for(int i = 0; i < _ritualtiles.Count; i++)
+    {
+      _ritualtiles[i].Landmark = LandmarkType.Ritual;
+      _ritualtiles[i].ButtonScript.LandmarkImage.sprite = UIManager.Instance.MyMap.MapCreater.MyTiles.GetTile(_ritualtiles[i].landmarkSprite);
+    }
+  }
   public int GetLength(TileData a,TileData b)
   {
     if (a.Coordinate == b.Coordinate) return 0;

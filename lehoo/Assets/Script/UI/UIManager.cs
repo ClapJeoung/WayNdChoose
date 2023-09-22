@@ -270,7 +270,6 @@ public class UIManager : MonoBehaviour
     iconrect.anchoredPosition = _targetpos_icon;
   }
   [SerializeField] private Image LongTermCover = null;
-  [SerializeField] private Image LongTermMadness = null;
   [SerializeField] private TextMeshProUGUI LongTermTurn = null;
   public void UpdateExpLongTermIcon()
   {
@@ -283,23 +282,10 @@ public class UIManager : MonoBehaviour
     {
       if (LongTermCover.enabled == true) LongTermCover.enabled = false;
 
-      if (GameManager.Instance.MyGameData.LongTermEXP.ExpType == ExpTypeEnum.Mad)
-      {
-        if (LongTermMadness.enabled == false)
-        {
-          LongTermMadness.enabled = true;
-          LongTermTurn.text = "";
-        }
-      }
-      else
-      {
-        if (LongTermMadness.enabled == true) LongTermMadness.enabled = false;
-        LongTermTurn.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
-      }
+      LongTermTurn.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
     }
   }
   [SerializeField] private Image[] ShortTermCover = new Image[2];
-  [SerializeField] private Image[] ShortTermMadness=new Image[2];
   [SerializeField] private TextMeshProUGUI[] ShortTermTurn=new TextMeshProUGUI[2];
   public void UpdateExpShortTermIcon()
   {
@@ -313,19 +299,7 @@ public class UIManager : MonoBehaviour
       {
         if(ShortTermCover[i].enabled==true) ShortTermCover[i].enabled = false;
 
-        if (GameManager.Instance.MyGameData.ShortTermEXP[i].ExpType == ExpTypeEnum.Mad)
-        {
-          if (ShortTermMadness[i].enabled == false)
-          {
-            ShortTermMadness[i].enabled = true;
-            ShortTermTurn[i].text = "";
-          }
-        }
-        else
-        {
-          if (ShortTermMadness[i].enabled == true) ShortTermMadness[i].enabled = false;
-          ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
-        }
+        ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
       }
     }
   }
@@ -726,8 +700,6 @@ public class UIManager : MonoBehaviour
   {
     //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
 
-    //정착지에서 이벤트 선택하는 경우도 이미 EventSugest에서 닫기 메소드를 실행한 상태
-
     MyDialogue.OpenUI();
   }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void ResetEventPanels()
@@ -736,7 +708,7 @@ public class UIManager : MonoBehaviour
     if(MySettleUI.IsOpen) MySettleUI.CloseUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MySettleUI.CloseUI();
-  public void GetMad(Experience mad) => MyMadPanel.OpenUI(mad);
+  public void GetMad() => MyMadPanel.OpenUI();
   public void OpenEnding(FollowEndingData endingdata)
   {
     MyDialogue.CloseUI();
@@ -838,6 +810,7 @@ public class UIManager : MonoBehaviour
       AudioSources[i].Play();
     }
   }
+
 }
 public static class WNCText
 {

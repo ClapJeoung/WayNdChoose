@@ -2,11 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+
+  public const int MadnessEffect_Conversation = 20;
+  public const int MadnessEffect_Force = 35;
+  public const int MadnessEffect_Wild = 25;
+  public const int MadnessEffect_Intelligence = 40;
+
   public const int Quest_Wolf_TokenDuration = 7;
   public const int Quest_Cult_Sabbat_Progress_TokenSector = 20, Quest_Cult_Sabbat_Progress_NoTokenSector = 10,
    Quest_Cult_Ritual_Progress_EventClear = 15, Quest_Cult_Ritual_Progress_EventFail = 5;
@@ -14,9 +21,9 @@ public static class ConstValues
 
   public const int GoodExpAsSanity = 15;
   public const int BadExpAsSanity = 20;
-  public const int MadnessMaxSanityLoseValue = 30;
-  public const float MaddnesRefuseHPCostRatio = 80.0f;
-  public const int MadnessRefuseHPLoseCost = 35;
+  public const int MadnessMaxSanityLoseValue = 20;
+  public const int MadnessRefuseHPLoseCost = 30;
+  public const int MadnessSkillLevelValue = 5;
 
   public const int RestMovePoint_Village = 1, RestMovePoint_Town = 1, RestMovePoint_City = 1;
   public const int RestDiscomfort_Village=1, RestDiscomfort_Town = 1, RestDiscomfort_City = 1;
@@ -35,7 +42,7 @@ public static class ConstValues
   public const float Ratio_highland = 0.2f;
   public const float Ratio_forest = 0.4f;
   public const int Count_mountain = 3;
-  public const int LandSize = 10;
+  public const int LandRadius = 6;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
 
   public const int ForestRange = 1, RiverRange = 2, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
@@ -190,11 +197,23 @@ public class GameData    //게임 진행도 데이터
       else
       {
         if (value > MaxTurn)
-        { turn = 0; Year++; if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateYearText(); }
+        { 
+          turn = 0; Year++; 
+          if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateYearText();
+          if (Madness_Conversation == true)
+          {
+            switch (QuestType)
+            {
+              case QuestType.Cult:
+                Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
+                break;
+            }
+          }
+        }
         else turn = value;
 
-        if (LongTermEXP != null) LongTermEXP.Duration--;
-        for (int i=0;i<ShortTermEXP.Length;i++)if(ShortTermEXP[i] != null) ShortTermEXP[i].Duration--;
+        if (LongTermEXP != null) LongTermEXP.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
+        for (int i=0;i<ShortTermEXP.Length;i++)if(ShortTermEXP[i] != null) ShortTermEXP[i].Duration-= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
 
         UIManager.Instance.UpdateExpLongTermIcon();
         UIManager.Instance.UpdateExpShortTermIcon();
@@ -371,30 +390,7 @@ public class GameData    //게임 진행도 데이터
 
       if (currentsanity <= 0)
       {
-        if (MaxSanity > ConstValues.MadnessMaxSanityLoseValue)
-        {
-          List<string> _madnesskeys = GameManager.Instance.MadExpDic.Keys.ToList();
-          Experience _madness = null;
-          while (_madness == null)
-          {
-            _madness = GameManager.Instance.MadExpDic[_madnesskeys[UnityEngine.Random.Range(0, _madnesskeys.Count)]];
-            if ((LongTermEXP != null && LongTermEXP == _madness) ||
-              (ShortTermEXP[0] != null && ShortTermEXP[0] == _madness) ||
-              (ShortTermEXP[1] != null && ShortTermEXP[1] == _madness))
-            {
-              _madness = null;
-              continue;
-            }
-          }
-          currentsanity = 0;
-          MaxSanity -= ConstValues.MadnessMaxSanityLoseValue;
-
-          UIManager.Instance.GetMad(_madness);
-        }
-        else
-        {
-          GameManager.Instance.GameOver(GameOverTypeEnum.Sanity);
-        }
+        UIManager.Instance.GetMad();
       }
     }
   }
@@ -410,6 +406,11 @@ public class GameData    //게임 진행도 데이터
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateMovePointText();
     }
   }
+
+  public bool Madness_Conversation = false;
+  public bool Madness_Force = false;
+  public bool Madness_Wild = false;
+  public bool Madness_Intelligence = false;
   #endregion
 
   #region #기술#
@@ -767,10 +768,20 @@ public class GameData    //게임 진행도 데이터
   /// 0:컬트 1:의식
   /// </summary>
   public int Quest_Cult_Type = 0;
-  public int Quest_Cult_Progress = 0;
+  private int quest_cult_progress = 0;
+  public int Quest_Cult_Progress
+  {
+    get { return quest_cult_progress; }
+    set 
+    {
+      quest_cult_progress = value > 100 ? 100 : value;
+      UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+    }
+  }
   public List<string> SearchingSettlementNames=new List<string>();
   public List<SectorType> Quest_Cult_Sabbat_BlockedSectors = new List<SectorType>();
   public Dictionary<SectorType,int> Quest_Cult_Sabbat_TokenedSectors=new Dictionary<SectorType,int>();
+  public TileData Quest_Cult_Ritual_ProgressTile = null;
   #endregion
 
   #region #각종 보정치 가져오기#
@@ -950,7 +961,7 @@ public class Skill
   {
     get
     {
-      return LevelByDefault + LevelByExp + LevelByTendency+ LevelByPlace;
+      return LevelByDefault + LevelByExp + LevelByTendency+ LevelByMadness;
     }
   }
   public int LevelByExp
@@ -960,6 +971,27 @@ public class Skill
       return GameManager.Instance.MyGameData.GetEffectModifyCount_Exp(MySkillType);
     }
   }//경험 레벨
+  public int LevelByMadness
+  {
+    get
+    {
+      switch (MySkillType)
+      {
+        case SkillType.Conversation:if (GameManager.Instance.MyGameData.Madness_Conversation == true) return ConstValues.MadnessSkillLevelValue;
+          break;
+        case SkillType.Force:
+          if (GameManager.Instance.MyGameData.Madness_Force == true) return ConstValues.MadnessSkillLevelValue;
+          break;
+        case SkillType.Wild:
+          if (GameManager.Instance.MyGameData.Madness_Wild == true) return ConstValues.MadnessSkillLevelValue;
+          break;
+        case SkillType.Intelligence:
+          if (GameManager.Instance.MyGameData.Madness_Intelligence == true) return ConstValues.MadnessSkillLevelValue;
+          break;
+      }
+      return 0;
+    }
+  }
   public int LevelByTendency
   {
     get
@@ -981,18 +1013,6 @@ public class Skill
       return 0;
     }
   }//성향 레벨
-  private int LevelByPlace
-  {
-    get
-    {
-      return 0;
-
-     /* if (GameManager.Instance.MyGameData.PlaceEffects.ContainsKey(SectorType.Library) && GameManager.Instance.MyGameData.LibraryEffectTarget == MySkillType)
-        return ConstValues.PlaceEffect_Library;
-      return 0;
-     */
-    }
-  }
 }
 public enum TendencyTypeEnum {None, Body,Head}
 public class Tendency

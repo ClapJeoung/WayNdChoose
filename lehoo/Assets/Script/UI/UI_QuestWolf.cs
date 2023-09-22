@@ -313,7 +313,6 @@ public class UI_QuestWolf : UI_default
     }
 
     GameManager.Instance.MyGameData.Quest_Cult_Progress++;
-    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
 
     yield return null;
   }
@@ -404,8 +403,6 @@ public class UI_QuestWolf : UI_default
     WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, true));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, true));
-  
-    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
   }
   public void SelectRitualType()
   {
@@ -431,7 +428,7 @@ public class UI_QuestWolf : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, true));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, true));
 
-    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+    GameManager.Instance.MyGameData.MyMapData.CreateRitualCoordinate();
   }
   public void WantedResult_GoSettlement()
   {
@@ -528,7 +525,6 @@ public class UI_QuestWolf : UI_default
 
     GameManager.Instance.MyGameData.Quest_Cult_Phase++;
     GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
-    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatIllustGroup, 1.0f, FadeInTime));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatDescriptionGroup, 1.0f, FadeInTime));

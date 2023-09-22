@@ -12,7 +12,6 @@ public class UI_RewardExp : UI_default
   [SerializeField] private Image LongExpIllust = null;
   [SerializeField] private GameObject LongExpTurn_Obj = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn_Text = null;
-  [SerializeField] private Image LongExp_Mad = null;
   [SerializeField] private PreviewInteractive LongExpPreview = null;
 
   [SerializeField] private GameObject[] ShortExpName_Obj = new GameObject[2];
@@ -21,7 +20,6 @@ public class UI_RewardExp : UI_default
   [SerializeField] private Image[] ShortExpIllust = new Image[2];
   [SerializeField] private GameObject[] ShortExpTurn_Obj = new GameObject[2];
   [SerializeField] private TextMeshProUGUI[] ShortExpTurn_Text = new TextMeshProUGUI[2];
-  [SerializeField] private Image[] ShortExp_Mad = new Image[2];
   [SerializeField] private PreviewInteractive[] ShortExpPreview = new PreviewInteractive[2];
 
   [SerializeField] private GameObject ExpQuitButton = null;
@@ -60,22 +58,6 @@ public class UI_RewardExp : UI_default
 
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
   }
-  public void OpenUI_Madness(Experience madexp)
-  {
-    if (IsOpen) return;
-    IsOpen = true;
-
-    ExpIllustIcon.GetComponent<Image>().sprite = madexp.Illust;
-    ExpIllustIcon.gameObject.SetActive(true);
-    if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
-
-    ExpDescription.text = GameManager.Instance.GetTextData("SAVEMADNESS");
-    CurrentExp = madexp;
-
-    SetupCurrentExps();
-
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
-  }
 
   public void SetupCurrentExps()
   {
@@ -87,19 +69,8 @@ public class UI_RewardExp : UI_default
       LongExpIllust.sprite = GameManager.Instance.MyGameData.LongTermEXP.Illust;
       if (LongExpTurn_Obj.activeInHierarchy == false) LongExpTurn_Obj.SetActive(true);
 
-      if (GameManager.Instance.MyGameData.LongTermEXP.ExpType == ExpTypeEnum.Mad)
-      {
-        if (LongExp_Mad.enabled == false)
-        {
-          LongExp_Mad.enabled = true;
-          LongExpTurn_Text.text = "";
-        }
-      }
-      else
-      {
-        if (LongExp_Mad.enabled == true) LongExp_Mad.enabled = true;
-        LongExpTurn_Text.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
-      }
+      LongExpTurn_Text.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
+
       LongExpPreview.MyEXP = GameManager.Instance.MyGameData.LongTermEXP;
     }
     else
@@ -121,20 +92,7 @@ public class UI_RewardExp : UI_default
         ShortExpIllust[i].sprite = _shortexp.Illust;
         if (ShortExpTurn_Obj[i].activeInHierarchy == false) ShortExpTurn_Obj[i].SetActive(true);
 
-        if (_shortexp.ExpType == ExpTypeEnum.Mad)
-        {
-          if (ShortExp_Mad[i].enabled == false)
-          {
-            ShortExp_Mad[i].enabled = true;
-            ShortExpTurn_Text[i].text = "";
-          }
-        }
-        else
-        {
-          if (ShortExp_Mad[i].enabled == true) ShortExp_Mad[i].enabled = false;
-          ShortExpTurn_Text[i].text = _shortexp.Duration.ToString();
-        }
-
+        ShortExpTurn_Text[i].text = _shortexp.Duration.ToString();
         ShortExpPreview[i].MyEXP = _shortexp;
       }
       else
@@ -182,12 +140,6 @@ public class UI_RewardExp : UI_default
         }
         else return;
         break;
-      case ExpTypeEnum.Mad:
-        if (_selectexp == null || _selectexp.ExpType != ExpTypeEnum.Mad) {GameManager.Instance.AddExp_Long(CurrentExp); CloseUI();
-          UIManager.Instance.MyMadPanel.CloseUI();
-        }
-        else return;
-        break;
     }
 
   }
@@ -211,12 +163,6 @@ public class UI_RewardExp : UI_default
       case ExpTypeEnum.Bad:
         if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Short(CurrentExp, index); CloseUI();
           UIManager.Instance.MyDialogue.CurrentReturnButton.interactable = true;
-        }
-        else return;
-        break;
-      case ExpTypeEnum.Mad:
-        if (_selectexp == null || _selectexp.ExpType != ExpTypeEnum.Mad) {GameManager.Instance.AddExp_Short(CurrentExp, index); CloseUI();
-          UIManager.Instance.MyMadPanel.CloseUI();
         }
         else return;
         break;

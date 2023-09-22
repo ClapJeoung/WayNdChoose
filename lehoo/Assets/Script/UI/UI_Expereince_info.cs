@@ -12,7 +12,6 @@ public class UI_Expereince_info : UI_default
   [SerializeField] private Image ExpIllust = null;
   [SerializeField] private TextMeshProUGUI ExpEffect = null;
   [SerializeField] private TextMeshProUGUI ExpTurn = null;
-  [SerializeField] private Image MadnessIcon = null;
   [SerializeField] private CanvasGroup BackButton = null; 
   public void OpenLongExpUI()
   {
@@ -60,19 +59,7 @@ public class UI_Expereince_info : UI_default
       LayoutRebuilder.ForceRebuildLayoutImmediate(ExpName.transform.parent.transform as RectTransform);
       LayoutRebuilder.ForceRebuildLayoutImmediate(ExpEffect.transform as RectTransform);
 
-      if (exp.ExpType == ExpTypeEnum.Mad)
-      {
-        if (MadnessIcon.enabled == false)
-        {
-          MadnessIcon.enabled = true;
-          ExpTurn.text = "";
-        }
-      }
-      else
-      {
-        if (MadnessIcon.enabled == true) MadnessIcon.enabled = false;
-        ExpTurn.text = exp.Duration.ToString();
-      }
+      ExpTurn.text = exp.Duration.ToString();
 
       UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime));
     }//최초는 아무 경험이나 클릭하면 열기

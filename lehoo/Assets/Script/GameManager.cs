@@ -4,6 +4,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
 using System.Text;
+using Unity.VisualScripting;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
@@ -25,7 +26,6 @@ public class GameManager : MonoBehaviour
   [SerializeField] private TextAsset TextData = null;
   public EventHolder EventHolder = new EventHolder();                               //이벤트 저장할 홀더
   public Dictionary<string, Experience> ExpDic = new Dictionary<string, Experience>();  //경험 딕셔너리
-  public Dictionary<string, Experience> MadExpDic = new Dictionary<string, Experience>();
   public Dictionary<string,string> TextDic=new Dictionary<string, string>();
   public const string NullText = "no text exist";
   private GoldFailData goldfaildata = null;
@@ -342,7 +342,6 @@ public class GameManager : MonoBehaviour
       {
         Experience _exp = _data.Value.ReturnEXPClass();
         ExpDic.Add(_data.Value.ID, _exp);
-        if (_exp.ExpType.Equals(ExpTypeEnum.Mad)) MadExpDic.Add(_data.Value.ID, _exp);
       }
       //경험 Json -> EXPDic
     }
@@ -364,20 +363,29 @@ public class GameManager : MonoBehaviour
     {
       MyGameData.Gold -= MyGameData.SettleRestCost_Gold;
     }
-    switch (MyGameData.CurrentSettlement.SettlementType)
+
+    if (MyGameData.Madness_Force == true && Random.Range(0, 100) < ConstValues.MadnessEffect_Force)
     {
-      case SettlementType.Village:
-        MyGameData.MovePoint += ConstValues.RestMovePoint_Village;
-        break;
-      case SettlementType.Town:
-        MyGameData.MovePoint += ConstValues.RestMovePoint_Town;
-        break;
-      case SettlementType.City:
-        MyGameData.MovePoint += ConstValues.RestMovePoint_City;
-        break;
+      //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
     }
+    else
+    {
+      switch (MyGameData.CurrentSettlement.SettlementType)
+      {
+        case SettlementType.Village:
+          MyGameData.MovePoint += ConstValues.RestMovePoint_Village;
+          break;
+        case SettlementType.Town:
+          MyGameData.MovePoint += ConstValues.RestMovePoint_Town;
+          break;
+        case SettlementType.City:
+          MyGameData.MovePoint += ConstValues.RestMovePoint_City;
+          break;
+      }
+      MyGameData.ApplySectorEffect(sectortype);
+    }
+
     MyGameData.AddDiscomfort(MyGameData.CurrentSettlement);
-    MyGameData.ApplySectorEffect(sectortype);
 
     EventManager.Instance.SetSettlementEvent(sectortype);
 
@@ -437,7 +445,6 @@ public class GameManager : MonoBehaviour
                 break;
             }
           }
-          UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
         }
         break;
     }
@@ -482,31 +489,18 @@ public class GameManager : MonoBehaviour
                 break;
             }
           }
-          UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
         }
         break;
     }
   }
   public void AddExp_Long(Experience exp)
   {
-    if (exp.ExpType == ExpTypeEnum.Mad)
-    {
-      MyGameData.MaxSanity -= ConstValues.MadnessMaxSanityLoseValue;
-      MyGameData.CurrentSanity = MyGameData.MaxSanity;
-      UIManager.Instance.MyMadPanel.CloseUI();
-    }
     exp.Duration = ConstValues.LongTermStartTurn;
     MyGameData.LongTermEXP = exp;
     UIManager.Instance.UpdateExpLongTermIcon();
   }
   public void AddExp_Short(Experience exp,int index)
   {
-    if (exp.ExpType == ExpTypeEnum.Mad)
-    {
-      MyGameData.MaxSanity -= ConstValues.MadnessMaxSanityLoseValue;
-      MyGameData.CurrentSanity = MyGameData.MaxSanity;
-      UIManager.Instance.MyMadPanel.CloseUI();
-    }
     exp.Duration = ConstValues.ShortTermStartTurn;
     MyGameData.ShortTermEXP[index] = exp;
     UIManager.Instance.UpdateExpShortTermIcon();
@@ -575,6 +569,8 @@ public class GameManager : MonoBehaviour
     else Destroy(gameObject);
 
   }
+
+
   private void Update()
   {
     if (Input.GetKeyDown(KeyCode.Backspace))

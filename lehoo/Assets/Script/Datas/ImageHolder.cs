@@ -25,16 +25,27 @@ public class ImageHolder : ScriptableObject
   public Sprite MovePointIcon_Lack = null;
   public Sprite VillageIcon_black = null;
   public Sprite VillageIcon_white = null;
-  public List<Sprite> VillageIllust=new List<Sprite>();                 //마을 일러스트
+ // public List<Sprite> VillageIllust=new List<Sprite>();                 //마을 일러스트
   public Sprite TownIcon_black = null;
   public Sprite TownIcon_white = null;
-  public List<Sprite> TownIllust=new List<Sprite>();                 //도시 일러스트
+ // public List<Sprite> TownIllust=new List<Sprite>();                 //도시 일러스트
   public Sprite CityIcon_black = null;
   public Sprite CityIcon_white = null;
-  public List<Sprite> CityIllust=new List<Sprite>();               //성채 일러스트
+  //public List<Sprite> CityIllust=new List<Sprite>();               //성채 일러스트
   [Space(10)]
   public Sprite SkillIllust_Conversation = null;
   public Sprite SkillIllust_Force = null, SkillIllust_Wild = null, SkillIllust_Intelligence = null;
+  [Space(10)]
+  public List<Sprite> MadnessIluusts = new List<Sprite>();
+  /// <summary>
+  /// 대화 무력 자연 학식 체력
+  /// </summary>
+  /// <param name="index"></param>
+  /// <returns></returns>
+  public Sprite GetMadnessIllust(int index)
+  {
+    return MadnessIluusts[index];
+  }
   [Space(10)]
   public Sprite[] TendencyIcon_Body = new Sprite[5];
   public Sprite[] TendencyIllust_Body=new Sprite[5];
@@ -273,7 +284,7 @@ public class ImageHolder : ScriptableObject
     }
   }
 
-    public Sprite GetVillageSprite(string _name)
+  /*  public Sprite GetVillageSprite(string _name)
   {
     Sprite _targetsprite = DefaultIllust;
     foreach (Sprite _spr in VillageIllust)
@@ -311,7 +322,7 @@ public class ImageHolder : ScriptableObject
       }
     }
     return _targetsprite;
-  }//성채 이름에 해당하는 일러스트 가져오기
+  }//성채 이름에 해당하는 일러스트 가져오기 */
 
     public List<EventIllustHolder> GetEventIllusts(string originid,string typeid,int length)
     {

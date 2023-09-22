@@ -74,10 +74,12 @@ public class UI_Selection : MonoBehaviour
     Sprite _selectionimage = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
     if (MyTendencyType == TendencyTypeEnum.None)
     {
+      MyRect.pivot = new Vector2(0.5f, 0.5f);
       MyRect.anchoredPosition = Vector2.zero;
     }
     else
     {
+      MyRect.pivot = IsLeft ? new Vector2(1.0f, 0.5f) : new Vector2(0.0f, 0.5f);
       MyRect.anchoredPosition = IsLeft ? LeftPos : RightPos;
       MyPreviewInteractive.MySelectionTendencyDir = IsLeft;
     }

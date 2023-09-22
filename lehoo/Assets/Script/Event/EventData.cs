@@ -1013,10 +1013,10 @@ public class FollowEndingData
 public class QuestEventData_Wolf : EventDataDefulat
 {
   public QuestType Type;
-  public QuestEnum_Wolf EventType;
+  public QuestEnum_Cult EventType;
 }
 public enum QuestType { Cult}
-public enum QuestEnum_Wolf { None,Prologue,Starting, Public, Sabbat,Ritual}
+public enum QuestEnum_Cult { None,Prologue,Starting, Public, Sabbat,Ritual}
 public class Quest
 {
   public string OriginID="";

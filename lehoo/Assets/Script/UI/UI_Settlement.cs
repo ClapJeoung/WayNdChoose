@@ -28,9 +28,8 @@ public class UI_Settlement : UI_default
   [SerializeField] private TextMeshProUGUI SectorSelectDescription = null;
   [SerializeField] private GameObject RestbuttonHolder = null;
   [SerializeField] private Button RestButton_Sanity = null;
-  [SerializeField] private TextMeshProUGUI RestButtonText_Sanity = null;
   [SerializeField] private Button RestButton_Gold = null;
-  [SerializeField] private TextMeshProUGUI RestButtonText_Gold = null;
+  [SerializeField] private TextMeshProUGUI RestDescription = null;
   private Settlement CurrentSettlement = null;
   private SectorType SelectedSector = SectorType.NULL;
   public void OpenUI()
@@ -48,6 +47,7 @@ public class UI_Settlement : UI_default
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
     SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+    RestDescription.text = "";
 
     Sprite _settlementicon = null;
     int _placecount = 0;
@@ -144,8 +144,6 @@ public class UI_Settlement : UI_default
         {
           SectorName.text = "";
           SectorSelectDescription.text = GameManager.Instance.GetTextData("Quest0_Sabbat_Blocked");
-          RestButtonText_Gold.text = GameManager.Instance.GetTextData("REST");
-          RestButtonText_Sanity.text= GameManager.Instance.GetTextData("REST");
           RestButton_Gold.interactable = false;
           RestButton_Sanity.interactable = false;
         }
@@ -189,37 +187,10 @@ public class UI_Settlement : UI_default
           if (_cultprogress != "") SectorSelectDescription.text = _effect + "<br>" + _cultprogress;
           else SectorSelectDescription.text = _effect;
 
-          int _movepointvalue = 0;
-          int _discomfortvalue = 0;
-          switch (CurrentSettlement.SettlementType)
-          {
-            case SettlementType.Village:
-              _movepointvalue = ConstValues.RestMovePoint_Village;
-              _discomfortvalue = ConstValues.RestDiscomfort_Village;
-              break;
-            case SettlementType.Town:
-              _movepointvalue = ConstValues.RestMovePoint_Town;
-              _discomfortvalue = ConstValues.RestDiscomfort_Town;
-              break;
-            case SettlementType.City:
-              _movepointvalue = ConstValues.RestMovePoint_City;
-              _discomfortvalue = ConstValues.RestDiscomfort_City;
-              break;
-          }
-          if (SelectedSector == SectorType.Residence) _movepointvalue++;
 
-          RestButtonText_Sanity.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),
-            WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.SettleRestCost_Sanity),
-            WNCText.GetMovepointColor("+" + _movepointvalue),
-            WNCText.GetDiscomfortColor("+" + _discomfortvalue));
           RestButton_Sanity.interactable = true;
 
           int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
-
-          RestButtonText_Gold.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"),
-            WNCText.GetGoldColor("-" + _goldpayvalue),
-            WNCText.GetMovepointColor("+" + _movepointvalue),
-            WNCText.GetDiscomfortColor("+" + _discomfortvalue));
 
           if (GameManager.Instance.MyGameData.Gold >= _goldpayvalue) RestButton_Gold.interactable = true;
           else RestButton_Gold.interactable = false;
@@ -230,6 +201,66 @@ public class UI_Settlement : UI_default
     if (RestbuttonHolder.activeInHierarchy == false) RestbuttonHolder.SetActive(true);
     LayoutRebuilder.ForceRebuildLayoutImmediate(RestbuttonHolder.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(SectorName.transform.parent.transform as RectTransform);
+  }
+  public void OnPointerRestType(StatusType type)
+  {
+    if (UIManager.Instance.IsWorking) return;
+
+    int _movepointvalue = 0;
+    int _discomfortvalue = 0;
+    switch (CurrentSettlement.SettlementType)
+    {
+      case SettlementType.Village:
+        _movepointvalue = ConstValues.RestMovePoint_Village;
+        _discomfortvalue = ConstValues.RestDiscomfort_Village;
+        break;
+      case SettlementType.Town:
+        _movepointvalue = ConstValues.RestMovePoint_Town;
+        _discomfortvalue = ConstValues.RestDiscomfort_Town;
+        break;
+      case SettlementType.City:
+        _movepointvalue = ConstValues.RestMovePoint_City;
+        _discomfortvalue = ConstValues.RestDiscomfort_City;
+        break;
+    }
+    if (SelectedSector == SectorType.Residence) _movepointvalue++;
+
+    switch (type)
+    {
+      case StatusType.Sanity:
+
+        RestDescription.text= string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),
+      WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.SettleRestCost_Sanity),
+      WNCText.GetMovepointColor("+" + _movepointvalue),
+      WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+        break;
+      case StatusType.Gold:
+        int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
+        if (GameManager.Instance.MyGameData.Gold < _goldpayvalue) return;
+
+        RestDescription.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"),
+  WNCText.GetGoldColor("-" + _goldpayvalue),
+  WNCText.GetMovepointColor("+" + _movepointvalue),
+  WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+        break;
+
+    }
+  }
+  public void OnExitRestType(StatusType type)
+  {
+    if (UIManager.Instance.IsWorking) return;
+
+    switch (type)
+    {
+      case StatusType.Sanity:
+        RestDescription.text = "";
+        break;
+      case StatusType.Gold:
+        int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
+        if (GameManager.Instance.MyGameData.Gold < _goldpayvalue) return;
+        RestDescription.text = "";
+        break;
+    }
   }
   public void StartRest_Sanity()
     {

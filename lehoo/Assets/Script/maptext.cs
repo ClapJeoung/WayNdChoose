@@ -59,15 +59,15 @@ public class maptext : MonoBehaviour
       _index++;
       MapData _data = MakeMap();
       if (_data == null) continue;
-      bool _villageriver = false, _villageforest = false, _villagehighland = false, _villagemountain = false, _villagesea = false;
-      bool _townriver = false, _townforest = false, _townhighland = false, _townmountain = false, _townsea = false;
-      bool _cityriver = false, _cityforest = false, _cityhighland = false, _citymountain = false, _citysea = false;
+      bool _villageriver = false, _villageforest = false, _villagemountain = false, _villagesea = false;
+      bool _townriver = false, _townforest = false,  _townmountain = false, _townsea = false;
+      bool _cityriver = false, _cityforest = false, _citymountain = false, _citysea = false;
 
       foreach (var _village in _data.Villages)
       {
         if (_village.IsRiver) _villageriver = true;
         if (_village.IsForest) _villageforest = true;
-        if (_village.IsHighland) _villagehighland = true;
+    //    if (_village.IsHighland) _villagehighland = true;
         if (_village.IsMountain) _villagemountain = true;
         if (_village.IsSea) _villagesea = true;
       }
@@ -75,14 +75,14 @@ public class maptext : MonoBehaviour
       
         if (_town.IsRiver) _townriver = true;
         if (_town.IsForest) _townforest = true;
-        if (_town.IsHighland) _townhighland = true;
+       // if (_town.IsHighland) _townhighland = true;
         if (_town.IsMountain) _townmountain = true;
         if (_town.IsSea) _townsea = true;
       
       var _city = _data.City;
       if (_city.IsRiver) _cityriver = true;
       if (_city.IsForest) _cityforest = true;
-      if (_city.IsHighland) _cityhighland = true;
+    //  if (_city.IsHighland) _cityhighland = true;
       if (_city.IsMountain) _citymountain = true;
       if (_city.IsSea) _citysea = true;
 
@@ -118,7 +118,7 @@ public class maptext : MonoBehaviour
 
     #region 땅 만들기
     //지도의 중심
-    List<Vector2Int> _firstlandcoors = _NewMapData.GetAroundCoor(new List<Vector2Int> { _NewMapData.CenterTile.Coordinate }, ConstValues.LandSize / 2 + ConstValues.LandSize % 2);
+    List<Vector2Int> _firstlandcoors = _NewMapData.GetAroundCoor(new List<Vector2Int> { _NewMapData.CenterTile.Coordinate }, ConstValues.LandRadius);
     foreach (var _landcoor in _firstlandcoors)
     {
       _NewMapData.Tile(_landcoor).BottomEnvir = BottomEnvirType.Land;
@@ -788,7 +788,7 @@ public class maptext : MonoBehaviour
     #region 숲
     LoopCount = 0;
 
-    int _forestmaxcount = Mathf.CeilToInt((float)ConstValues.LandSize * (float)ConstValues.LandSize * ConstValues.Ratio_forest);    //숲 최대 개수
+    int _forestmaxcount = Mathf.CeilToInt(ConstValues.LandRadius * ConstValues.LandRadius*4.0f * ConstValues.Ratio_forest);    //숲 최대 개수
     int _forestcountaver = _forestmaxcount / 4; //숲 더미 평균 최대개수
     List<Vector2Int> _forests = new List<Vector2Int>();         //편성 완료된 숲 좌표들 보관할 리스트
 
@@ -1266,12 +1266,6 @@ public class maptext : MonoBehaviour
         }
         return startpos + _modify;
     }
-    /// <summary>
-    /// check 목록에서 pos랑 주위 1칸과 겹치는게 있으면 false
-    /// </summary>
-    /// <param name="check"></param>
-    /// <param name="pos"></param>
-    /// <returns></returns>
 }
 public class RiverData
 {

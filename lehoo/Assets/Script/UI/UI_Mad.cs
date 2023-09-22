@@ -6,75 +6,150 @@ using TMPro;
 
 public class UI_Mad : UI_default
 {
-  [SerializeField] private float MoveTime = 2.5f;
-  [SerializeField] private Vector2 DownPos = new Vector2(0.0f, -920.0f);
-  [SerializeField] private CanvasGroup BlockGroup = null;
-  [SerializeField] private Image Illust = null;
-  [SerializeField] private TextMeshProUGUI Description = null;
-  [SerializeField] private Button YesButton = null;
-  [SerializeField] private TextMeshProUGUI YesButtonText = null;
-  [SerializeField] private Button NoButton = null;
-  [SerializeField] private TextMeshProUGUI NoButtonText = null;
+  [SerializeField] private float FadeinTime = 2.0f;
+  [SerializeField] private float FadeoutTime = 1.5f;
 
-  private Experience CurrentExp = null;
-  public void OpenUI(Experience madexp)
+  [SerializeField] private CanvasGroup SelectingGroup = null;
+  [SerializeField] private TextMeshProUGUI SelectingName = null;
+  [SerializeField] private TextMeshProUGUI SelectingDescription = null;
+  [SerializeField] private Button Select_Conversation = null, Select_Force = null, Select_Wild = null, Select_Intelligence = null;
+
+  [SerializeField] private CanvasGroup SelectedGroup = null;
+  [SerializeField] private TextMeshProUGUI SelectedName = null;
+  [SerializeField] private Image SelectedIllust = null;
+  [SerializeField] private TextMeshProUGUI SelectedDescription = null;
+
+  public void OpenUI()
   {
     IsOpen = true;
 
-    CurrentExp = madexp;
-    DefaultGroup.interactable = true;
-    BlockGroup.blocksRaycasts = true;
+    SelectingGroup.gameObject.SetActive(true);
+    SelectingGroup.alpha = 0.0f;
+    SelectedGroup.gameObject.SetActive(false);
+    SelectingGroup.alpha = 0.0f;
 
-    Illust.sprite = madexp.Illust;
-    Description.text = GameManager.Instance.GetTextData(madexp.ID+ "_GENERATEDESCRIPTION") + "<br><br>" + GameManager.Instance.GetTextData("YOULOSEMAXIMUNSANITY");
-   
-    YesButtonText.text = (GameManager.Instance.GetTextData("ACCEPTMADNESS"));
-    NoButtonText.text = GameManager.Instance.GetTextData("REFUSEMADNESS");
+    SelectingName.text = GameManager.Instance.GetTextData("EnterMadness_Description");
+    SelectingDescription.text = GameManager.Instance.GetTextData("ChooseMadness");
+    if (GameManager.Instance.MyGameData.Madness_Conversation == true||
+      (GameManager.Instance.MyGameData.QuestType==QuestType.Cult&&GameManager.Instance.MyGameData.Quest_Cult_Phase==0))Select_Conversation.interactable = false;
+    if(GameManager.Instance.MyGameData.Madness_Force == true) Select_Force.interactable = false;
+    if(GameManager.Instance.MyGameData.Madness_Wild == true) Select_Wild.interactable = false;
+    if(GameManager.Instance.MyGameData.Madness_Intelligence == true) Select_Intelligence.interactable = false;
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectingGroup.transform as RectTransform);
 
     StartCoroutine(changealpha(true));
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, MoveTime / 2.0f, true));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(SelectingGroup, 1.0f, FadeinTime));
+  }
+  /// <summary>
+  /// 대화,무력,자연,지성,체력
+  /// </summary>
+  /// <param name="index"></param>
+  public void OnEnterMadness(int index)
+  {
+    switch(index)
+    {
+      case 0:
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName")+
+          string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
+          GameManager.Instance.GetTextData(SkillType.Conversation,1),
+          "+"+ConstValues.MadnessSkillLevelValue.ToString(),
+          WNCText.GetMaxSanityColor("-"+ConstValues.MadnessMaxSanityLoseValue));
+        break;
+      case 1:
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Force_SelectingName") +
+          string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
+          GameManager.Instance.GetTextData(SkillType.Force, 1),
+          "+" + ConstValues.MadnessSkillLevelValue.ToString(),
+          WNCText.GetMaxSanityColor("-" + ConstValues.MadnessMaxSanityLoseValue));
+        break;
+      case 2:
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Wild_SelectingName") +
+         string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
+         GameManager.Instance.GetTextData(SkillType.Wild, 1),
+         "+" + ConstValues.MadnessSkillLevelValue.ToString(),
+         WNCText.GetMaxSanityColor("-" + ConstValues.MadnessMaxSanityLoseValue));
+        break;
+      case 3:
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName") +
+         string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
+         GameManager.Instance.GetTextData(SkillType.Intelligence, 1),
+         "+" + ConstValues.MadnessSkillLevelValue.ToString(),
+         WNCText.GetMaxSanityColor("-" + ConstValues.MadnessMaxSanityLoseValue));
+        break;
+      case 4:
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_HP_SelectingName") + string.Format(GameManager.Instance.GetTextData("Madness_HP_Effect"), WNCText.GetHPColor("-" + ConstValues.MadnessRefuseHPLoseCost));
+        break;
+    }
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectingDescription.transform.parent.transform as RectTransform);
+  }
+  public void SelectMadness(int index)
+  {
+    if (UIManager.Instance.IsWorking) return;
 
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(SelectingGroup, 0.0f, 1.2f));
+    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(SelectedGroup, 1.0f, 0.8f));
+    Sprite _illust =GameManager.Instance.ImageHolder.GetMadnessIllust(index);
+    string _target = "";
+    string _name = "";
+    string _description = "";
+    switch (index)
+    {
+      case 0:
+        _target = "Conversation";
+        break;
+      case 1:
+        _target = "Force";
+        break;
+      case 2:
+        _target = "Wild";
+        break;
+      case 3:
+        _target = "Intelligence";
+        break;
+      case 4:
+        _target = "HP";
+        break;
+    }
+    _name = GameManager.Instance.GetTextData("Madness_" + _target + "_SelectedName");
+    _description = GameManager.Instance.GetTextData("Madness_" + _target + "_Description");
+    SelectedName.text= _name;
+    SelectedIllust.sprite = _illust;
+    SelectedDescription.text = _description;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectedGroup.transform as RectTransform);
   }
   public override void CloseForGameover()
   {
     IsOpen = false;
-    StartCoroutine(changealpha(false));
-    DefaultGroup.interactable = false;
-    UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, DownPos, MoveTime / 2.0f, false);
+    UIManager.Instance.AddUIQueue(changealpha(false));
   }
 public override void CloseUI()
   {
     IsOpen = false;
-    StartCoroutine(changealpha(false));
-    DefaultGroup.interactable = false;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, DownPos, MoveTime / 2.0f, false));
+    UIManager.Instance.AddUIQueue((changealpha(false)));
   }
   private IEnumerator changealpha(bool open)
   {
-    float _time = 0.0f;
+    if (open)
+    {
+      DefaultGroup.interactable = true;
+      DefaultGroup.blocksRaycasts = true;
+    }
+    float _time = 0.0f, _targettime = open ? FadeinTime : FadeoutTime;
     float _startalpha = open ? 0.0f : 0.8f;
     float _endalpha = open ? 0.8f : 0.0f;
-    while(_time< MoveTime)
+    while(_time< _targettime)
     {
-      BlockGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, _time / MoveTime);
+      DefaultGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, _time / _targettime);
       _time += Time.deltaTime;
       yield return null;
     }
-    BlockGroup.alpha = _endalpha;
-  }
+    DefaultGroup.alpha = _endalpha;
+    if (!open)
+    {
+      DefaultGroup.interactable = true;
+      DefaultGroup.blocksRaycasts = true;
 
-  public void AccepMadness()
-  {
-    if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.ExpRewardUI.OpenUI_Madness(CurrentExp);
-  }
-  public void RefuseMadness()
-  {
-    if (UIManager.Instance.IsWorking) return;
-
-    GameManager.Instance.MyGameData.HP -= ConstValues.MadnessRefuseHPLoseCost;
-    GameManager.Instance.MyGameData.CurrentSanity = GameManager.Instance.MyGameData.MadnessRefuseSanityGenValue;
-
-    CloseUI();
+    }
   }
 }

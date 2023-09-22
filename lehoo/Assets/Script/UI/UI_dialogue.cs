@@ -9,7 +9,6 @@ public class UI_dialogue : UI_default
 {
   private float DialogueUIMoveTime = 0.8f;
 
-  [SerializeField] private CanvasGroup NameTextGroup = null;
   [SerializeField] private TextMeshProUGUI NameText = null;
   [SerializeField] private CanvasGroup IllustImageGroup = null;
   [SerializeField] private Image IllustImage = null;
@@ -52,9 +51,12 @@ public class UI_dialogue : UI_default
   private RectTransform IllustRect { get {return GetPanelRect("illust").Rect; } }
   private Vector2 IllustOpenPos { get { return GetPanelRect("illust").InsidePos; } }
   private Vector2 IllustClosePos { get { return GetPanelRect("illust").OutisdePos; } }
-  private RectTransform DescriptionRect { get { return GetPanelRect("Description").Rect; } }
-  private Vector2 DescriptionOpenPos { get { return GetPanelRect("Description").InsidePos; } }
-  private Vector2 DescriptionClosePos { get { return GetPanelRect("Description").OutisdePos; } }
+  private RectTransform DescriptionRect { get { return GetPanelRect("description").Rect; } }
+  private Vector2 DescriptionOpenPos { get { return GetPanelRect("description").InsidePos; } }
+  private Vector2 DescriptionClosePos { get { return GetPanelRect("description").OutisdePos; } }
+  private RectTransform NameRect { get { return GetPanelRect("name").Rect; } }
+  private Vector2 NameOpenpos { get { return GetPanelRect("name").InsidePos; } }
+  private Vector2 NameClosePos { get { return GetPanelRect("name").OutisdePos; } }
 
   private UI_Selection GetOppositeSelection(UI_Selection _selection)
   {
@@ -124,15 +126,17 @@ public class UI_dialogue : UI_default
           IllustImageGroup.alpha = 1.0f;
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           NameText.text = CurrentEvent.Name;
-          NameTextGroup.alpha = 1.0f;
-          LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform.parent.transform as RectTransform);
-          yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, true));
-          yield return new WaitForSeconds(FadeWaitTime);
-          //일러스트+이름 세팅해두고  이동
-
           DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform as RectTransform);
+          LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform.parent.transform as RectTransform);
+
+          StartCoroutine(UIManager.Instance.moverect(NameRect, NameOpenpos, NameClosePos, DialogueUIMoveTime, true));
+          yield return new WaitForSeconds(FadeWaitTime);
+          StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, true));
+          yield return new WaitForSeconds(FadeWaitTime);
+          //일러스트+이름 세팅해두고  이동
+
           yield return StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionClosePos, DescriptionOpenPos, DialogueUIMoveTime, true));
         }
         else                                 //다음 버튼 눌러서 선택지에 도달할때
@@ -184,9 +188,10 @@ public class UI_dialogue : UI_default
           IllustImage.sprite = CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust;
           LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform as RectTransform);
           NameText.text = CurrentEvent.Name;
-          NameTextGroup.alpha = 1.0f;
           LayoutRebuilder.ForceRebuildLayoutImmediate(NameText.transform.parent.transform as RectTransform);
-          yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, true));
+          StartCoroutine(UIManager.Instance.moverect(NameRect, NameOpenpos, NameClosePos, DialogueUIMoveTime, true));
+          yield return new WaitForSeconds(FadeWaitTime);
+          StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustClosePos, IllustOpenPos, DialogueUIMoveTime, true));
           yield return new WaitForSeconds(FadeWaitTime);
           //일러스트+이름 세팅해두고  이동
 
@@ -621,6 +626,8 @@ public class UI_dialogue : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
+    StartCoroutine(UIManager.Instance.moverect(NameRect, NameRect.anchoredPosition, NameClosePos, DialogueUIMoveTime, false));
+
     StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionRect.anchoredPosition, DescriptionClosePos, DialogueUIMoveTime, false));
 
     StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustRect.anchoredPosition, IllustClosePos, DialogueUIMoveTime, false));
@@ -640,13 +647,9 @@ public class UI_dialogue : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
+    StartCoroutine(UIManager.Instance.moverect(NameRect, NameRect.anchoredPosition, NameClosePos, DialogueUIMoveTime, false));
     StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, false));
-    yield return new WaitForSeconds(0.3f);
-    DescriptionTextGroup.alpha = 0.0f;
-
     yield return StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustOpenPos, IllustClosePos, DialogueUIMoveTime, false));
-    IllustImageGroup.alpha = 0.0f;
-    NameText.text = "";
   }
 
   #region 엔딩?
