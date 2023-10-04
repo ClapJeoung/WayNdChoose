@@ -15,15 +15,15 @@ public static class ConstValues
   public const int MadnessEffect_Intelligence = 40;
 
   public const int Quest_Wolf_TokenDuration = 7;
-  public const int Quest_Cult_Sabbat_Progress_TokenSector = 20, Quest_Cult_Sabbat_Progress_NoTokenSector = 10,
-   Quest_Cult_Ritual_Progress_EventClear = 15, Quest_Cult_Ritual_Progress_EventFail = 5;
+  public const int Quest_Cult_Progress_TokenSector = 10, Quest_Cult_Progress_NoTokenSector = 5,
+   Quest_Cult_Progress_EventClear = 10, Quest_Cult_Progress_EventFail = 5;
   public const int Quest_Wolf_Searching_Sanityrewardvalue = 15;
 
   public const int GoodExpAsSanity = 15;
   public const int BadExpAsSanity = 20;
   public const int MadnessMaxSanityLoseValue = 20;
   public const int MadnessRefuseHPLoseCost = 30;
-  public const int MadnessSkillLevelValue = 5;
+//  public const int MadnessSkillLevelValue = 5;
 
   public const int RestMovePoint_Village = 1, RestMovePoint_Town = 1, RestMovePoint_City = 1;
   public const int RestDiscomfort_Village=1, RestDiscomfort_Town = 1, RestDiscomfort_City = 1;
@@ -221,7 +221,7 @@ public class GameData    //게임 진행도 데이터
         switch (QuestType)
         {
           case QuestType.Cult:
-            if (Quest_Cult_Phase > 0 && Quest_Cult_Type == 0)
+            if (Quest_Cult_Phase > 0 )
             {
               for(int i = 0; i < Quest_Cult_Sabbat_TokenedSectors.Count; i++)
               {
@@ -378,24 +378,24 @@ public class GameData    //게임 진행도 데이터
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText();
     }
   }
-  private int currentsanity = 0;
-  public int CurrentSanity
+  private int sanity = 0;
+  public int Sanity
   {
-    get { return currentsanity; }
+    get { return sanity; }
     set
     {
-      currentsanity = value;
-      if (currentsanity > MaxSanity) currentsanity = MaxSanity;
+      sanity = value;
+
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateSanityText();
 
-      if (currentsanity <= 0)
+      if (sanity <= 0)
       {
         UIManager.Instance.GetMad();
       }
     }
   }
-  public int MadnessRefuseSanityGenValue { get { return (int)(MaxSanity * ConstValues.MadnessMaxSanityLoseValue); } }
-  public int MaxSanity = 100;
+ // public int MadnessRefuseSanityGenValue { get { return (int)(MaxSanity * ConstValues.MadnessMaxSanityLoseValue); } }
+ // public int MaxSanity = 100;
   private int movepoint = 0;
   public int MovePoint
   {
@@ -761,13 +761,9 @@ public class GameData    //게임 진행도 데이터
     get { return GameManager.Instance.EventHolder.GetQuest(QuestType); }
   }
   /// <summary>
-  /// 0,(1,2),3
+  /// 0,1,2
   /// </summary>
   public int Quest_Cult_Phase = 0;
-  /// <summary>
-  /// 0:컬트 1:의식
-  /// </summary>
-  public int Quest_Cult_Type = 0;
   private int quest_cult_progress = 0;
   public int Quest_Cult_Progress
   {
@@ -926,9 +922,9 @@ public class GameData    //게임 진행도 데이터
   {
     turn = 0;
     hp = 100;
-    MaxSanity = 100;
+ //   MaxSanity = 100;
     movepoint = 2;
-    currentsanity = MaxSanity;
+    sanity = 100;
     gold = ConstValues.StartGold ;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
@@ -961,7 +957,7 @@ public class Skill
   {
     get
     {
-      return LevelByDefault + LevelByExp + LevelByTendency+ LevelByMadness;
+      return LevelByDefault + LevelByExp + LevelByTendency;
     }
   }
   public int LevelByExp
@@ -971,7 +967,7 @@ public class Skill
       return GameManager.Instance.MyGameData.GetEffectModifyCount_Exp(MySkillType);
     }
   }//경험 레벨
-  public int LevelByMadness
+/*  public int LevelByMadness
   {
     get
     {
@@ -992,6 +988,7 @@ public class Skill
       return 0;
     }
   }
+*/
   public int LevelByTendency
   {
     get

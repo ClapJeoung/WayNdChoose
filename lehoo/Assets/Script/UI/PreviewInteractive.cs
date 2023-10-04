@@ -107,8 +107,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.MadnessRefuse:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
           string.Format(GameManager.Instance.GetTextData("REFUSEMADNESS_DESCRIPTION"),
-          WNCText.GetHPColor(ConstValues.MadnessRefuseHPLoseCost),
-          WNCText.GetSanityColor(GameManager.Instance.MyGameData.MadnessRefuseSanityGenValue)), transform as RectTransform);
+          WNCText.GetHPColor(ConstValues.MadnessRefuseHPLoseCost)), transform as RectTransform);
         break;
       case PreviewPanelType.MoveCostSanity:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MyMap.SanityCost)), transform as RectTransform);

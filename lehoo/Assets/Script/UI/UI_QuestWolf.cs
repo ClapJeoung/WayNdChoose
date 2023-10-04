@@ -319,7 +319,7 @@ public class UI_QuestWolf : UI_default
   public void SearchingSanityReward()
   {
     if (UIManager.Instance.IsWorking) return;
-    GameManager.Instance.MyGameData.CurrentSanity += ConstValues.Quest_Wolf_Searching_Sanityrewardvalue;
+    GameManager.Instance.MyGameData.Sanity += ConstValues.Quest_Wolf_Searching_Sanityrewardvalue;
     StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_RewardButton_Group, 0.0f, 0.4f));
   }
   public void CloseUI_Searching()
@@ -336,6 +336,7 @@ public class UI_QuestWolf : UI_default
   }
   #endregion
 
+  /*
   #region º±≈√
   [Space(5)]
   [SerializeField] private TextMeshProUGUI Wanted_Description = null;
@@ -539,6 +540,7 @@ public class UI_QuestWolf : UI_default
     yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_description").Rect, GetPanelRect("hideout_description").InsidePos, GetPanelRect("hideout_description").OutisdePos, UIMoveOutTime, false));
   }
   #endregion
+  */
   public void CloseUI_Auto()
   {
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
@@ -551,15 +553,6 @@ public class UI_QuestWolf : UI_default
         }
         break;
       case 1:
-      case 2:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Type == 0)
-        {
-          CloseUI_Sabbat();
-        }
-        else
-        {
-
-        }
         break;
     }
   }

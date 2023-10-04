@@ -113,7 +113,7 @@ public class UI_map : UI_default
     foreach(TileData _tile in _removetiles)ActiveTileData.Remove(_tile);
     foreach(Settlement _settle in _removesettles)ActiveSettles.Remove(_settle);
 
-    if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult && GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Type == 1)
+    if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult && GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Progress>=50)
     {
       if (GameManager.Instance.MyGameData.Quest_Cult_Ritual_ProgressTile != null)
       {
@@ -317,14 +317,7 @@ public class UI_map : UI_default
     switch (SelectedCostType)
     {
       case StatusType.Sanity:
-        if (GameManager.Instance.MyGameData.MaxSanity <= ConstValues.MadnessMaxSanityLoseValue)
-        {
-          GameManager.Instance.MyGameData.CurrentSanity -= (GameManager.Instance.MyGameData.CurrentSanity - 1);
-        }
-        else
-        {
-          GameManager.Instance.MyGameData.CurrentSanity -= SanityCost;
-        }
+        GameManager.Instance.MyGameData.Sanity -= SanityCost;
         break;
       case StatusType.Gold:
         GameManager.Instance.MyGameData.Gold -= GoldCost;

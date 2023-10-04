@@ -173,15 +173,15 @@ public class UI_Settlement : UI_default
               break;
           }
           string _cultprogress = "";
-          if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Type == 0)
+          if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Progress >= 50)
           {
             if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors[SelectedSector] == 0)
             {
-              _cultprogress = string.Format(GameManager.Instance.GetTextData("Quest0_Sabbat_TokenedPlaceDescription"), ConstValues.Quest_Cult_Sabbat_Progress_TokenSector);
+              _cultprogress = string.Format(GameManager.Instance.GetTextData("Quest0_Sabbat_TokenedPlaceDescription"), ConstValues.Quest_Cult_Progress_TokenSector);
             }
             else
             {
-              _cultprogress = string.Format(GameManager.Instance.GetTextData("Quest0_Sabbat_NoTokenedPlaceDescription"), ConstValues.Quest_Cult_Sabbat_Progress_NoTokenSector);
+              _cultprogress = string.Format(GameManager.Instance.GetTextData("Quest0_Sabbat_NoTokenedPlaceDescription"), ConstValues.Quest_Cult_Progress_NoTokenSector);
             }
           }
           if (_cultprogress != "") SectorSelectDescription.text = _effect + "<br>" + _cultprogress;

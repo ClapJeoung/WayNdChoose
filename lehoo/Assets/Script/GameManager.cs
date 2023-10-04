@@ -357,7 +357,7 @@ public class GameManager : MonoBehaviour
   {
     if (issanity)
     {
-      MyGameData.CurrentSanity -= MyGameData.SettleRestCost_Sanity;
+      MyGameData.Sanity -= MyGameData.SettleRestCost_Sanity;
     }
     else
     {
@@ -394,12 +394,12 @@ public class GameManager : MonoBehaviour
       case QuestType.Cult:
         if (MyGameData.Quest_Cult_Sabbat_TokenedSectors[sectortype] == 0)
         {
-          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Sabbat_Progress_TokenSector;
+          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_TokenSector;
           MyGameData.Quest_Cult_Sabbat_TokenedSectors[sectortype] = ConstValues.Quest_Wolf_TokenDuration;
         }
         else
         {
-          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Sabbat_Progress_NoTokenSector;
+          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_NoTokenSector;
         }
         break;
     }
@@ -436,14 +436,7 @@ public class GameManager : MonoBehaviour
         {
           if (MyGameData.Quest_Cult_Phase > 0)
           {
-            switch (MyGameData.Quest_Cult_Type)
-            {
-              case 0:
-                MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Ritual_Progress_EventClear;
-                break;
-              case 1:
-                break;
-            }
+            MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_EventClear;
           }
         }
         break;
@@ -480,14 +473,7 @@ public class GameManager : MonoBehaviour
         {
           if (MyGameData.Quest_Cult_Phase > 0)
           {
-            switch (MyGameData.Quest_Cult_Type)
-            {
-              case 0:
-                MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Ritual_Progress_EventFail;
-                break;
-              case 1:
-                break;
-            }
+            MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_EventFail;
           }
         }
         break;
@@ -517,7 +503,7 @@ public class GameManager : MonoBehaviour
     _exp.Duration = ConstValues.LongTermStartTurn;
     Experience _target = MyGameData.LongTermEXP;
     MyGameData.LongTermEXP= _exp;
-    MyGameData.CurrentSanity -= ConstValues.LongTermChangeCost;
+    MyGameData.Sanity -= ConstValues.LongTermChangeCost;
     UIManager.Instance.UpdateExpLongTermIcon();
   }
   public void SetOuterEvent(EventDataDefulat _event)
@@ -697,24 +683,9 @@ public class GameManager : MonoBehaviour
               return;
             }
             break;
-          case 1: case 2:
-
-            switch (MyGameData.Quest_Cult_Type)
-            {
-              case 0:
-                if (MyGameData.Quest_Cult_Progress >= 100)
-                {
-                  UIManager.Instance.QuestUI_Cult.OpenUI_Sabbat();
-                  return;
-                }
-                break;
-              case 1:
-                break;
-            }
-
+          case 1: 
             break;
-          case 3:
-
+          case 2:
             break;
         }
         break;

@@ -139,20 +139,20 @@ public class UIManager : MonoBehaviour
     lasthp = GameManager.Instance.MyGameData.HP;
   }
   [SerializeField] private TextMeshProUGUI SanityText_current = null;
-  [SerializeField] private TextMeshProUGUI SanityText_max = null;
+ // [SerializeField] private TextMeshProUGUI SanityText_max = null;
   private int lastsanity = -1;
   public void UpdateSanityText()
   {
     if (!lastsanity.Equals(-1))
     {
-      int _changedvalue = GameManager.Instance.MyGameData.CurrentSanity - lastsanity;
+      int _changedvalue = GameManager.Instance.MyGameData.Sanity - lastsanity;
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
     }
-    SanityText_current.text = GameManager.Instance.MyGameData.CurrentSanity.ToString();
-    SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
+    SanityText_current.text = GameManager.Instance.MyGameData.Sanity.ToString();
+   // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
     Debug.Log("정신력, 최대 정신력 수치 업데이트");
-  lastsanity = GameManager.Instance.MyGameData.CurrentSanity;
+  lastsanity = GameManager.Instance.MyGameData.Sanity;
   }
   [SerializeField] private TextMeshProUGUI GoldText = null;
   private int lastgold = -1;

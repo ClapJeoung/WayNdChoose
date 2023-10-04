@@ -50,32 +50,16 @@ public class UI_Mad : UI_default
     switch(index)
     {
       case 0:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName")+
-          string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
-          GameManager.Instance.GetTextData(SkillType.Conversation,1),
-          "+"+ConstValues.MadnessSkillLevelValue.ToString(),
-          WNCText.GetMaxSanityColor("-"+ConstValues.MadnessMaxSanityLoseValue));
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName");
         break;
       case 1:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Force_SelectingName") +
-          string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
-          GameManager.Instance.GetTextData(SkillType.Force, 1),
-          "+" + ConstValues.MadnessSkillLevelValue.ToString(),
-          WNCText.GetMaxSanityColor("-" + ConstValues.MadnessMaxSanityLoseValue));
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Force_SelectingName");
         break;
       case 2:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Wild_SelectingName") +
-         string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
-         GameManager.Instance.GetTextData(SkillType.Wild, 1),
-         "+" + ConstValues.MadnessSkillLevelValue.ToString(),
-         WNCText.GetMaxSanityColor("-" + ConstValues.MadnessMaxSanityLoseValue));
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Wild_SelectingName");
         break;
       case 3:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName") +
-         string.Format(GameManager.Instance.GetTextData("Madness_Skill_SelectingEffect"),
-         GameManager.Instance.GetTextData(SkillType.Intelligence, 1),
-         "+" + ConstValues.MadnessSkillLevelValue.ToString(),
-         WNCText.GetMaxSanityColor("-" + ConstValues.MadnessMaxSanityLoseValue));
+        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName");
         break;
       case 4:
         SelectingDescription.text = GameManager.Instance.GetTextData("Madness_HP_SelectingName") + string.Format(GameManager.Instance.GetTextData("Madness_HP_Effect"), WNCText.GetHPColor("-" + ConstValues.MadnessRefuseHPLoseCost));

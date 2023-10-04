@@ -18,7 +18,7 @@ public class PlaceIconScript : MonoBehaviour
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Type == 0)
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Progress >= 0)
         {
           if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType))
           {

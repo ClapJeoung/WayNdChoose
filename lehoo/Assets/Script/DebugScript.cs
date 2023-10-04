@@ -10,7 +10,7 @@ public class DebugScript : MonoBehaviour
   public TMP_InputField Turn = null;
   public TMP_InputField HP = null;
   public TMP_InputField Sanity = null;
-  public TMP_InputField MaxSanity = null;
+ // public TMP_InputField MaxSanity = null;
   public TMP_InputField Gold = null;
   public TMP_InputField Movepoint = null;
   [Space(10)]
@@ -30,7 +30,7 @@ public class DebugScript : MonoBehaviour
   public TMP_InputField EXP_Short_1_Turn = null;
   [Space(10)]
   public TMP_InputField Cult_Phase = null;
-  public TMP_InputField Cult_Type = null;
+ // public TMP_InputField Cult_Type = null;
   public TMP_InputField Cult_Progress = null;
   [Space(10)]
   public TMP_InputField NextEventId = null;
@@ -40,8 +40,8 @@ public class DebugScript : MonoBehaviour
     Year.text=GameManager.Instance.MyGameData.Year.ToString();
     Turn.text=GameManager.Instance.MyGameData.Turn.ToString();
     HP.text=GameManager.Instance.MyGameData.HP.ToString();
-    Sanity.text=GameManager.Instance.MyGameData.CurrentSanity.ToString();
-    MaxSanity.text=GameManager.Instance.MyGameData.MaxSanity.ToString();
+    Sanity.text=GameManager.Instance.MyGameData.Sanity.ToString();
+  //  MaxSanity.text=GameManager.Instance.MyGameData.MaxSanity.ToString();
     Gold.text=GameManager.Instance.MyGameData.Gold.ToString();
     Movepoint.text=GameManager.Instance.MyGameData.MovePoint.ToString();
 
@@ -63,7 +63,7 @@ public class DebugScript : MonoBehaviour
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
       Cult_Phase.text = GameManager.Instance.MyGameData.Quest_Cult_Phase.ToString();
-      Cult_Type.text = GameManager.Instance.MyGameData.Quest_Cult_Type.ToString();
+  //    Cult_Type.text = GameManager.Instance.MyGameData.Quest_Cult_Type.ToString();
       Cult_Progress.text = GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString();
     }
   }
@@ -74,8 +74,8 @@ public class DebugScript : MonoBehaviour
     GameManager.Instance.MyGameData.Year = int.Parse(Year.text);
     GameManager.Instance.MyGameData.Turn= int.Parse(Turn.text);
     GameManager.Instance.MyGameData.HP= int.Parse(HP.text);
-    GameManager.Instance.MyGameData.CurrentSanity=int.Parse(Sanity.text);
-    GameManager.Instance.MyGameData.MaxSanity= int.Parse(MaxSanity.text);
+    GameManager.Instance.MyGameData.Sanity=int.Parse(Sanity.text);
+ //   GameManager.Instance.MyGameData.MaxSanity= int.Parse(MaxSanity.text);
     GameManager.Instance.MyGameData.Gold= int.Parse(Gold.text);
     GameManager.Instance.MyGameData.MovePoint = int.Parse(Movepoint.text);
 
@@ -141,7 +141,7 @@ public class DebugScript : MonoBehaviour
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
       GameManager.Instance.MyGameData.Quest_Cult_Phase = int.Parse(Cult_Phase.text);
-      GameManager.Instance.MyGameData.Quest_Cult_Type = int.Parse(Cult_Type.text);
+  //    GameManager.Instance.MyGameData.Quest_Cult_Type = int.Parse(Cult_Type.text);
       GameManager.Instance.MyGameData.Quest_Cult_Progress = int.Parse(Cult_Progress.text);
     }
 

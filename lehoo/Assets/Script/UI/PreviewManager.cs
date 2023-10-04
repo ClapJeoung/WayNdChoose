@@ -47,8 +47,8 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject SelectionPayPanel = null;
   [SerializeField] private Image SelectionPayBackground = null;
-  [SerializeField] private Image PayIcon = null;
-  [SerializeField] private TextMeshProUGUI PayInfo = null;
+//  [SerializeField] private Image PayIcon = null;
+ // [SerializeField] private TextMeshProUGUI PayInfo = null;
   [SerializeField] private TextMeshProUGUI PayRequireValue = null;
   [SerializeField] private GameObject PayNoGoldHolder = null;
   [SerializeField] private TextMeshProUGUI PayNoGold_Text = null;
@@ -61,9 +61,9 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject SelectionCheckPanel = null;
   [SerializeField] private Image SelectionCheckBackground = null;
-  [SerializeField] private Image[] SelectionCheckIcons = null;
-  [SerializeField] private TextMeshProUGUI SelectionCheckRequireLevel = null;
-  [SerializeField] private TextMeshProUGUI SelectionCheckCurrentLevel = null;
+ // [SerializeField] private Image[] SelectionCheckIcons = null;
+  [SerializeField] private TextMeshProUGUI SelectionCheckInfo = null;
+ // [SerializeField] private TextMeshProUGUI SelectionCheckCurrentLevel = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_text = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_int = null;
   [SerializeField] private Image CheckRewardIcon = null;
@@ -94,8 +94,9 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI RewardSkillClickText = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectEmptyPanel = null;
-  [SerializeField] private TextMeshProUGUI ExpSelectEmptyTurn = null;
   [SerializeField] private TextMeshProUGUI ExpSelectEmptyDescription = null;
+  [SerializeField] private TextMeshProUGUI ExpSelectEmptyTurn = null;
+  [SerializeField] private TextMeshProUGUI ExpSelectEmptyEffect = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectExistPanel = null;
   [SerializeField] private TextMeshProUGUI ExpSelectOriginTurn = null;
@@ -220,7 +221,7 @@ public class PreviewManager : MonoBehaviour
     _genvalue = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
     _payvalue = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
 
-    _description = string.Format(GameManager.Instance.GetTextData(_currenttype, 3),GameManager.Instance.MyGameData.MaxSanity);
+    _description = string.Format(GameManager.Instance.GetTextData(_currenttype, 3));
     if (_genvalue > 0)
     {
       _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
@@ -409,7 +410,7 @@ public class PreviewManager : MonoBehaviour
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusType.HP,0), WNCText.GetHPColor(_modifiedvalue.ToString()));
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusType.HP,1), WNCText.GetHPColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
@@ -424,16 +425,16 @@ public class PreviewManager : MonoBehaviour
         _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Sanity, 0), WNCText.GetSanityColor(_modifiedvalue.ToString()));
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Sanity, 1), WNCText.GetSanityColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
           _statusinfo = $"{GameManager.Instance.GetTextData(_status, 15)} {WNCText.NegativeColor("+" + _modify.ToString())}%";
-          PayInfo.text = _statusinfo;
+      //    PayInfo.text = _statusinfo;
         }//보정치가 0 이상이라면 부정적인것
         else
         {
-          PayInfo.text = "";
+       //   PayInfo.text = "";
         }//보정치가 없다면 빈 내용으로
 
         if (PayNoGoldHolder.activeInHierarchy.Equals(true)) PayNoGoldHolder.SetActive(false);
@@ -468,7 +469,7 @@ public class PreviewManager : MonoBehaviour
         }//지불 골드 값이 보유 값에 비해 높을 때
         else
         {
-          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Gold, 0), WNCText.GetGoldColor(_modifiedvalue));
+          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Gold, 1), WNCText.GetGoldColor(_modifiedvalue));
 
           if(PayNoGoldHolder.activeInHierarchy.Equals(true))PayNoGoldHolder.SetActive(false);
           if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
@@ -477,7 +478,7 @@ public class PreviewManager : MonoBehaviour
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
     }
 
-    PayIcon.sprite = _payicon;
+  //  PayIcon.sprite = _payicon;
     PayRequireValue.text = _payvaluetext;
 
 
@@ -522,10 +523,10 @@ public class PreviewManager : MonoBehaviour
     CheckRewardIcon.sprite = _rewardsprite;
 
 
-    Sprite[] _icons = new Sprite[2];
+  //  Sprite[] _icons = new Sprite[2];
     Skill[] _skills= new Skill[2];
     int _requirelevel = 0, _currentlevel = 0, _percentage = 0;
-    string _requiretext = "", _currenttext = "", _skillinfo = "", _percentage_text = "", _percentage_int = "";//, _subdescription = "";
+    string _requiretext = "",  _percentage_text = "", _percentage_int = "";//, _subdescription = "";
 
   //  _subdescription= _selection.SubDescription;
     _percentage_text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
@@ -535,11 +536,11 @@ public class PreviewManager : MonoBehaviour
       _requirelevel = GameManager.Instance.MyGameData.CheckSkillSingleValue;
 
       _skills[0] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[0]);
-      _icons[0]=GameManager.Instance.ImageHolder.GetSkillIcon(_skills[0].MySkillType);
+   //   _icons[0]=GameManager.Instance.ImageHolder.GetSkillIcon(_skills[0].MySkillType);
       _currentlevel = _skills[0].Level;
-      _skillinfo = "";
+      _requiretext = string.Format(GameManager.Instance.GetTextData("LevelCheck_Text"),GameManager.Instance.GetTextData(_skills[0].MySkillType,2), _requirelevel);
 
-      if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(true)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(false);
+    //  if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(true)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(false);
     }
     else
     {
@@ -548,23 +549,22 @@ public class PreviewManager : MonoBehaviour
       for(int i = 0; i < 2; i++)
       {
         _skills[i] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[i]);
-        _icons[i] = GameManager.Instance.ImageHolder.GetSkillIcon(_skills[i].MySkillType);
+     //   _icons[i] = GameManager.Instance.ImageHolder.GetSkillIcon(_skills[i].MySkillType);
         _currentlevel += _skills[i].Level;
-        if (_skillinfo != "") _skillinfo += " ";
-        _skillinfo += string.Format("{0}<b>{1}</b>", GameManager.Instance.GetTextData(_skills[i].MySkillType, 1), _skills[i].Level);
       }
-      if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
+      _requiretext = string.Format(GameManager.Instance.GetTextData("LevelCheck_Text"), 
+        GameManager.Instance.GetTextData(_skills[0].MySkillType, 2)+"+"+ GameManager.Instance.GetTextData(_skills[1].MySkillType, 2),
+        _requirelevel);
+
+     // if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
     }
 
-    _requiretext = string.Format(GameManager.Instance.GetTextData("REQUIRELEVEL_TEXT"), _requirelevel);
     _percentage = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel);
     _percentage_int = WNCText.PercentageColor(_percentage);
-    _currenttext = string.Format(GameManager.Instance.GetTextData("CURRENTLEVEL_TEXT") + "\n{1}", _currentlevel, _skillinfo);
 
-    SelectionCheckIcons[0].sprite = _icons[0];
-    SelectionCheckIcons[1].sprite=_icons[1];
-    SelectionCheckRequireLevel.text = _requiretext;
-    SelectionCheckCurrentLevel.text= _currenttext;
+  //  SelectionCheckIcons[0].sprite = _icons[0];
+  //  SelectionCheckIcons[1].sprite=_icons[1];
+    SelectionCheckInfo.text = _requiretext;
     SelectionCheckPercent_text.text = _percentage_text;
     SelectionCheckPercent_int.text = _percentage_int;
    // SelectionCheckDescription.text = _subdescription;
@@ -685,6 +685,7 @@ public class PreviewManager : MonoBehaviour
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
+    ExpSelectEmptyEffect.text = _exp.ShortEffectString;
     ExpSelectEmptyDescription.text = _description;
     ExpSelectClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(false)) ExpSelectClickText.gameObject.SetActive(true);

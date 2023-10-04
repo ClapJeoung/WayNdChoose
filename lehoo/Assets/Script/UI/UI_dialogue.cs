@@ -111,8 +111,7 @@ public class UI_dialogue : UI_default
           else if (CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
           {
             if (EventIconHolder.activeInHierarchy == false) EventIconHolder.SetActive(true);
-            if (GameManager.Instance.MyGameData.Quest_Cult_Type == 0) EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
-            else EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
+             EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
           }
 
           SelectionGroup.alpha = 0.0f;
@@ -172,8 +171,7 @@ public class UI_dialogue : UI_default
           else if (CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
           {
             if (EventIconHolder.activeInHierarchy == false) EventIconHolder.SetActive(true);
-            if (GameManager.Instance.MyGameData.Quest_Cult_Type == 0) EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
-            else EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
+            EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
           }
 
           NextButtonGroup.alpha = 1.0f;
@@ -444,7 +442,7 @@ public class UI_dialogue : UI_default
         else if (_selectiondata.SelectionPayTarget.Equals(StatusType.Sanity))
         {
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
-          GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.PaySanityValue_modified;
+          GameManager.Instance.MyGameData.Sanity -= GameManager.Instance.MyGameData.PaySanityValue_modified;
         }
         else        //돈 지불일 경우 돈 적을 때 실행하는 뭔가 있어야 함
         {
@@ -467,7 +465,7 @@ public class UI_dialogue : UI_default
               //장소 효과의 도움을 받아 성공한 것이라면 장소 효과 만료
               _issuccess = true;
               GameManager.Instance.MyGameData.Gold = 0;
-              GameManager.Instance.MyGameData.CurrentSanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
+              GameManager.Instance.MyGameData.Sanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
             }//돈이 부족해 성공한 경우
             else
             {
@@ -689,7 +687,7 @@ public class UI_dialogue : UI_default
       {
         if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
         {
-          GameManager.Instance.MyGameData.CurrentSanity += ConstValues.GoodExpAsSanity;
+          GameManager.Instance.MyGameData.Sanity += ConstValues.GoodExpAsSanity;
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
           RemainReward = false;
@@ -708,7 +706,7 @@ public class UI_dialogue : UI_default
             GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
             break;
           case RewardTarget.Sanity:
-            GameManager.Instance.MyGameData.CurrentSanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
+            GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
             break;
           case RewardTarget.Gold:
             GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
@@ -726,7 +724,7 @@ public class UI_dialogue : UI_default
     {
       if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
       {
-        GameManager.Instance.MyGameData.CurrentSanity -= ConstValues.BadExpAsSanity;
+        GameManager.Instance.MyGameData.Sanity -= ConstValues.BadExpAsSanity;
 
         StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
         RemainReward = false;
@@ -755,7 +753,7 @@ public class UI_dialogue : UI_default
             PenaltyValue = GameManager.Instance.MyGameData.FailHPValue_modified;
             break;
           case StatusType.Sanity:
-            GameManager.Instance.MyGameData.CurrentSanity -= GameManager.Instance.MyGameData.FailSanityValue_modified;
+            GameManager.Instance.MyGameData.Sanity -= GameManager.Instance.MyGameData.FailSanityValue_modified;
             PenaltyValue = GameManager.Instance.MyGameData.FailSanityValue_modified;
             break;
           case StatusType.Gold:
