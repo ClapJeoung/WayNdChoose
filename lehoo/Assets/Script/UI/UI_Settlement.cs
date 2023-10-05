@@ -140,7 +140,7 @@ public class UI_Settlement : UI_default
     {
       case QuestType.Cult:
         GetSectorIconScript(SelectedSector).SetSelectColor();
-        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(SelectedSector))
+        if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(SelectedSector))
         {
           SectorName.text = "";
           SectorSelectDescription.text = GameManager.Instance.GetTextData("Quest0_Sabbat_Blocked");
@@ -172,25 +172,28 @@ public class UI_Settlement : UI_default
           //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
               break;
           }
-          string _cultprogress = "";
-          if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Progress >= 50)
+          string _tokeneddescription = "";
+          if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
           {
-            if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors[SelectedSector] == 0)
+            if (GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors[SelectedSector] == 0)
             {
-              _cultprogress = string.Format(GameManager.Instance.GetTextData("Quest0_Sabbat_TokenedPlaceDescription"), ConstValues.Quest_Cult_Progress_TokenSector);
+              _tokeneddescription = GameManager.Instance.GetTextData("Quest0_Sector_Tokened");
             }
             else
             {
-              _cultprogress = string.Format(GameManager.Instance.GetTextData("Quest0_Sabbat_NoTokenedPlaceDescription"), ConstValues.Quest_Cult_Progress_NoTokenSector);
+              _tokeneddescription = GameManager.Instance.GetTextData("Quest0_Sector_UnTokened");
             }
           }
-          if (_cultprogress != "") SectorSelectDescription.text = _effect + "<br>" + _cultprogress;
+
+          if (_tokeneddescription != "") SectorSelectDescription.text = _effect + "<br>" + _tokeneddescription;
           else SectorSelectDescription.text = _effect;
 
 
           RestButton_Sanity.interactable = true;
 
-          int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
+          int _goldpayvalue =SelectedSector!=SectorType.Marketplace? 
+            GameManager.Instance.MyGameData.SettleRestCost_Gold:
+            GameManager.Instance.MyGameData.SettleRestCost_Gold*ConstValues.SectorEffect_marketSector/100;
 
           if (GameManager.Instance.MyGameData.Gold >= _goldpayvalue) RestButton_Gold.interactable = true;
           else RestButton_Gold.interactable = false;
@@ -225,29 +228,47 @@ public class UI_Settlement : UI_default
     }
     if (SelectedSector == SectorType.Residence) _movepointvalue++;
 
+    string _cultprogress = "";
+    if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
+    {
+      _cultprogress = "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_RestProgress_Idle"), ConstValues.Quest_Cult_Progress_Sector_Idle);
+      if (GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors[SelectedSector] == 0)
+      {
+        _cultprogress += " " + string.Format(GameManager.Instance.GetTextData("Quest0_RestProgress_Sabbat"), ConstValues.Quest_Cult_Progress_Sector_Tokened);
+      }
+    }
+
     switch (type)
     {
       case StatusType.Sanity:
 
         RestDescription.text= string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),
-      WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.SettleRestCost_Sanity),
+      WNCText.GetSanityColor("-" + (SelectedSector != SectorType.Marketplace ?
+          GameManager.Instance.MyGameData.SettleRestCost_Sanity :
+          GameManager.Instance.MyGameData.SettleRestCost_Sanity * ConstValues.SectorEffect_marketSector / 100)),
       WNCText.GetMovepointColor("+" + _movepointvalue),
-      WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+      WNCText.GetDiscomfortColor("+" + _discomfortvalue))
+          + _cultprogress;
         break;
       case StatusType.Gold:
-        int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
+        int _goldpayvalue = SelectedSector != SectorType.Marketplace ?
+          GameManager.Instance.MyGameData.SettleRestCost_Gold :
+          GameManager.Instance.MyGameData.SettleRestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
         if (GameManager.Instance.MyGameData.Gold < _goldpayvalue) return;
 
         RestDescription.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"),
   WNCText.GetGoldColor("-" + _goldpayvalue),
   WNCText.GetMovepointColor("+" + _movepointvalue),
-  WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+  WNCText.GetDiscomfortColor("+" + _discomfortvalue))
+                    +_cultprogress;
         break;
 
     }
   }
   public void OnExitRestType(StatusType type)
   {
+    return;
+
     if (UIManager.Instance.IsWorking) return;
 
     switch (type)

@@ -7,7 +7,7 @@ public enum BottomEnvirType
  NULL, Land,River,Sea,Source, Beach,RiverBeach
 }
 public enum TopEnvirType {NULL, Forest,Mountain,Highland }
-public enum LandmarkType { Outer,Village,Town,City,RitualProgress,Ritual}
+public enum LandmarkType { Outer,Village,Town,City,Ritual}
 public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
 public class TileData
 {
@@ -29,7 +29,7 @@ public class TileData
           case LandmarkType.Town:return TileSpriteType.Town;
           case LandmarkType.City:return TileSpriteType.City;
           case LandmarkType.Ritual:return TileSpriteType.Ritual;
-        case LandmarkType.RitualProgress:return TileSpriteType.RitualProgress;
+ //       case LandmarkType.RitualProgress:return TileSpriteType.RitualProgress;
       }
       return TileSpriteType.NULL;
     }

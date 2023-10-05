@@ -357,11 +357,15 @@ public class GameManager : MonoBehaviour
   {
     if (issanity)
     {
-      MyGameData.Sanity -= MyGameData.SettleRestCost_Sanity;
+      MyGameData.Sanity -= sectortype!=SectorType.Marketplace?
+        ConstValues.RestCost_Sanity:
+        ConstValues.RestCost_Sanity*ConstValues.SectorEffect_marketSector/100;
     }
     else
     {
-      MyGameData.Gold -= MyGameData.SettleRestCost_Gold;
+      MyGameData.Gold -= sectortype != SectorType.Marketplace ?
+        ConstValues.RestCost_Gold :
+        ConstValues.RestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
     }
 
     if (MyGameData.Madness_Force == true && Random.Range(0, 100) < ConstValues.MadnessEffect_Force)
@@ -392,14 +396,14 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (MyGameData.Quest_Cult_Sabbat_TokenedSectors[sectortype] == 0)
+        if (MyGameData.Quest_Cult_TokenedSectors[sectortype] == 0)
         {
-          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_TokenSector;
-          MyGameData.Quest_Cult_Sabbat_TokenedSectors[sectortype] = ConstValues.Quest_Wolf_TokenDuration;
+          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sector_Tokened;
+          MyGameData.Quest_Cult_TokenedSectors[sectortype] = ConstValues.Quest_Cult_TokenDuration;
         }
         else
         {
-          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_NoTokenSector;
+          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sector_Idle;
         }
         break;
     }
@@ -484,12 +488,14 @@ public class GameManager : MonoBehaviour
     exp.Duration = ConstValues.LongTermStartTurn;
     MyGameData.LongTermEXP = exp;
     UIManager.Instance.UpdateExpLongTermIcon();
+    UIManager.Instance.UpdateSkillLevel();
   }
   public void AddExp_Short(Experience exp,int index)
   {
     exp.Duration = ConstValues.ShortTermStartTurn;
     MyGameData.ShortTermEXP[index] = exp;
     UIManager.Instance.UpdateExpShortTermIcon();
+    UIManager.Instance.UpdateSkillLevel();
   }
   public void ShiftShortExp(Experience _exp, int _index)
   {
@@ -497,6 +503,7 @@ public class GameManager : MonoBehaviour
     Experience _target = MyGameData.ShortTermEXP[_index];
     MyGameData.ShortTermEXP[_index] = _exp;
     UIManager.Instance.UpdateExpShortTermIcon();
+    UIManager.Instance.UpdateSkillLevel();
   }
   public void ShiftLongExp(Experience _exp)
   {
@@ -505,6 +512,7 @@ public class GameManager : MonoBehaviour
     MyGameData.LongTermEXP= _exp;
     MyGameData.Sanity -= ConstValues.LongTermChangeCost;
     UIManager.Instance.UpdateExpLongTermIcon();
+    UIManager.Instance.UpdateSkillLevel();
   }
   public void SetOuterEvent(EventDataDefulat _event)
   {

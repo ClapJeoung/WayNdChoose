@@ -14,8 +14,9 @@ public static class ConstValues
   public const int MadnessEffect_Wild = 25;
   public const int MadnessEffect_Intelligence = 40;
 
-  public const int Quest_Wolf_TokenDuration = 7;
-  public const int Quest_Cult_Progress_TokenSector = 10, Quest_Cult_Progress_NoTokenSector = 5,
+  public const int Quest_Cult_TokenDuration = 7;
+  public const int Quest_Cult_Progress_Sector_Idle = 4, Quest_Cult_Progress_Sector_Tokened = 8,
+    Quest_Cult_Progress_Outer_Idle=3,Quest_Cult_Progress_Outer_Ritual=7,
    Quest_Cult_Progress_EventClear = 10, Quest_Cult_Progress_EventFail = 5;
   public const int Quest_Wolf_Searching_Sanityrewardvalue = 15;
 
@@ -26,7 +27,7 @@ public static class ConstValues
 //  public const int MadnessSkillLevelValue = 5;
 
   public const int RestMovePoint_Village = 1, RestMovePoint_Town = 1, RestMovePoint_City = 1;
-  public const int RestDiscomfort_Village=1, RestDiscomfort_Town = 1, RestDiscomfort_City = 1;
+  public const int RestDiscomfort_Village=2, RestDiscomfort_Town = 2, RestDiscomfort_City = 2;
   public const float LackOfMovePointValue = 1.5f;
   public const int MoveCost_Sanity_1_min = 8, MoveCost_Sanity_1_max = 15, MoveCost_Sanity_2_min = 10, MoveCost_Sanity_2_max = 20;
   public const int MoveCost_Gold_1_min = 5, MoveCost_Gold_1_max = 12, MoveCost_Gold_2_min = 8, MoveCost_Gold_2_max = 15;
@@ -48,7 +49,6 @@ public static class ConstValues
   public const int ForestRange = 1, RiverRange = 2, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
   public const int TownSectorCount = 1, CitySectorCount = 2, CastleSectorCount = 3;
-  public const int TownDiscomfortDeg = 1,CityDiscomfortDeg=2,CastleDiscomfortDeg=3;
 
   public const int StartGold = 50;
   public const float  HPGen_Exp = 0.08f,  HPLoss_Exp = 0.01f;
@@ -102,7 +102,7 @@ public static class ConstValues
 
     public const int SectorEffectMaxTurn = 3;
     public const int SectorEffect_residence = 1;
-    public const int SectorEffect_marketSector = 20;
+    public const int SectorEffect_marketSector = 70;
     public const int SectorEffect_temple = 1;
   public const int SectorEffect_Library = 15;
     public const int SectorEffect_theater = 3;
@@ -157,8 +157,7 @@ public class GameData    //게임 진행도 데이터
         break;//사원- 모든 불쾌 1 감소
 
       case SectorType.Marketplace:
-        Gold += ConstValues.SectorEffect_marketSector;
-        break;//시장- 일시불 골드 획득
+        break;//시장- 휴식 비용 감소
 
       case SectorType.Library:
         if (GameManager.Instance.MyGameData.LibraryEffect == false) GameManager.Instance.MyGameData.LibraryEffect = true;
@@ -223,9 +222,9 @@ public class GameData    //게임 진행도 데이터
           case QuestType.Cult:
             if (Quest_Cult_Phase > 0 )
             {
-              for(int i = 0; i < Quest_Cult_Sabbat_TokenedSectors.Count; i++)
+              for(int i = 0; i < Quest_Cult_TokenedSectors.Count; i++)
               {
-                if (Quest_Cult_Sabbat_TokenedSectors[(SectorType)i+1] > 0) Quest_Cult_Sabbat_TokenedSectors[(SectorType)i+1]--;
+                if (Quest_Cult_TokenedSectors[(SectorType)i+1] > 0) Quest_Cult_TokenedSectors[(SectorType)i+1]--;
               }
             }
             
@@ -627,90 +626,6 @@ public class GameData    //게임 진행도 데이터
       return true;
     }
   }
-  public void MixExp()
-  {
-    bool _longenable = LongTermEXP != null;
-    List<int> _shortindex=new List<int>();
-    for (int i = 0; i < ShortTermEXP.Length; i++) if (ShortTermEXP[i] != null) { _shortindex.Add(i); }
-
-    Experience _temp = null;
-    int _index = 0;
-    if (_longenable.Equals(true))
-    {
-      switch (_shortindex.Count)
-      {
-        case 0:
-          ShortTermEXP[0] = LongTermEXP.Copy();
-          if(ShortTermEXP[0].Duration>ConstValues.ShortTermStartTurn)
-            ShortTermEXP[0].Duration = ConstValues.ShortTermStartTurn;
-          LongTermEXP = null;
-
-          UIManager.Instance.UpdateExpLongTermIcon();
-          UIManager.Instance.UpdateExpShortTermIcon();
-          break;//장기 -> 단기
-
-        case 1:
-          _index = _shortindex[0];
-          _temp=LongTermEXP.Copy();
-          LongTermEXP=ShortTermEXP[_index].Copy();      //단기 -> 장기
-          ShortTermEXP[_index] = _temp; //장기 -> 단기
-          if (ShortTermEXP[_index].Duration > ConstValues.ShortTermStartTurn)
-          { ShortTermEXP[_index].Duration = ConstValues.ShortTermStartTurn;}
-
-          UIManager.Instance.UpdateExpLongTermIcon();
-          UIManager.Instance.UpdateExpShortTermIcon();
-          break;//장기 <-> 단기
-
-        case 2:
-          if (UnityEngine.Random.Range(0, 100) < 75)
-          {
-            _temp = ShortTermEXP[0].Copy();
-            ShortTermEXP[0] = ShortTermEXP[1].Copy();
-            ShortTermEXP[1] = _temp;
-            UIManager.Instance.UpdateExpShortTermIcon();
-          }
-          else
-          {
-            _index = UnityEngine.Random.Range(0, 2);//0번 단기 혹은 1번 단기 중 무작위로
-            _temp = LongTermEXP.Copy();
-            LongTermEXP = ShortTermEXP[_index].Copy();
-            ShortTermEXP[_index] = _temp;
-            if (ShortTermEXP[_shortindex[_index]].Duration > ConstValues.ShortTermStartTurn)
-            { ShortTermEXP[_shortindex[_index]].Duration = ConstValues.ShortTermStartTurn; }
-
-            UIManager.Instance.UpdateExpLongTermIcon();
-            UIManager.Instance.UpdateExpShortTermIcon();
-          }
-          break;//(75%)단기 <-> 단기    (25%)장기 <-> 단기
-      }
-    }
-    else
-    {
-      switch (_shortindex.Count)
-      {
-        case 0:
-          //가진 경험이 하나도 없는 상태임
-          break;
-
-        case 1:
-          _index = _shortindex[0];
-          LongTermEXP = ShortTermEXP[_index].Copy();
-          ShortTermEXP[_index] = null;
-
-          UIManager.Instance.UpdateExpLongTermIcon();
-          UIManager.Instance.UpdateExpShortTermIcon();
-          break;//단기 -> 장기
-        
-        case 2:
-          _temp = ShortTermEXP[0].Copy();
-          ShortTermEXP[0] = ShortTermEXP[1].Copy();
-          ShortTermEXP[1] = _temp;
-
-          UIManager.Instance.UpdateExpShortTermIcon();
-          break;//단기 <-> 단기
-      }
-    }
-  }
   public void DeleteExp(Experience _exp)
   {
     if (ShortTermEXP.Contains(_exp))
@@ -724,7 +639,7 @@ public class GameData    //게임 진행도 데이터
       LongTermEXP = null;
       UIManager.Instance.UpdateExpLongTermIcon();
     }
-
+    UIManager.Instance.UpdateSkillLevel();
   }
   #endregion
 
@@ -775,9 +690,9 @@ public class GameData    //게임 진행도 데이터
     }
   }
   public List<string> SearchingSettlementNames=new List<string>();
-  public List<SectorType> Quest_Cult_Sabbat_BlockedSectors = new List<SectorType>();
-  public Dictionary<SectorType,int> Quest_Cult_Sabbat_TokenedSectors=new Dictionary<SectorType,int>();
-  public TileData Quest_Cult_Ritual_ProgressTile = null;
+  public List<SectorType> Quest_Cult_BlockedSectors = new List<SectorType>();
+  public Dictionary<SectorType,int> Quest_Cult_TokenedSectors=new Dictionary<SectorType,int>();
+  public TileData Quest_Cult_RitualTile = null;
   #endregion
 
   #region #각종 보정치 가져오기#
@@ -952,7 +867,11 @@ public class Skill
     MySkillType= type;
   }
   public SkillType MySkillType;
-  public int LevelByDefault = 0;//성장 레벨
+  private int levelbydefault = 0;
+  public int LevelByDefault
+  {
+    get { return levelbydefault; } set {  levelbydefault = value; UIManager.Instance.UpdateSkillLevel(); }
+  }
   public int Level
   {
     get
@@ -1140,7 +1059,11 @@ public class Tendency
     set {
       level = value;
       count = 0;
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateTendencyIcon();
+      if (GameManager.Instance.MyGameData != null)
+      {
+        UIManager.Instance.UpdateTendencyIcon();
+        UIManager.Instance.UpdateSkillLevel();
+      }
     }
   }
   public Tendency(TendencyTypeEnum type) { Type = type; }

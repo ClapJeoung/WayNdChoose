@@ -211,7 +211,17 @@ public class UIManager : MonoBehaviour
     Destroy(_prefab);
   }
   [Space(5)]
-  private int ConverLevel = -1, ForceLevel = -1, WildLevel = -1, IntelLevel = -1;
+  [SerializeField] private TextMeshProUGUI ConversationLevel = null;
+  [SerializeField] private TextMeshProUGUI ForceLevel = null;
+  [SerializeField] private TextMeshProUGUI WildLevel = null;
+  [SerializeField] private TextMeshProUGUI IntelligenceLevel = null;
+  public void UpdateSkillLevel()
+  {
+    ConversationLevel.text = GameManager.Instance.MyGameData.Skill_Conversation.Level.ToString();
+    ForceLevel.text=GameManager.Instance.MyGameData.Skill_Force.Level.ToString();
+    WildLevel.text=GameManager.Instance.MyGameData.Skill_Wild.Level.ToString();
+    IntelligenceLevel.text=GameManager.Instance.MyGameData.Skill_Intelligence.Level.ToString();
+  }
 
   [Space(5)]
   [SerializeField] private RectTransform TendencyBodyRect = null;
@@ -271,22 +281,25 @@ public class UIManager : MonoBehaviour
   }
   [SerializeField] private Image LongTermCover = null;
   [SerializeField] private TextMeshProUGUI LongTermTurn = null;
+  [SerializeField] private TextMeshProUGUI LongTermEffect = null;
   public void UpdateExpLongTermIcon()
   {
     if (GameManager.Instance.MyGameData.LongTermEXP == null)
     {
       if(LongTermCover.enabled==false) LongTermCover.enabled = true;
-      LongTermTurn.text = "";
+      LongTermEffect.text = "";
     }
     else
     {
       if (LongTermCover.enabled == true) LongTermCover.enabled = false;
 
       LongTermTurn.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
+      LongTermEffect.text = GameManager.Instance.MyGameData.LongTermEXP.ShortEffectString;
     }
   }
   [SerializeField] private Image[] ShortTermCover = new Image[2];
   [SerializeField] private TextMeshProUGUI[] ShortTermTurn=new TextMeshProUGUI[2];
+  [SerializeField] private TextMeshProUGUI[] ShortTermEffect = new TextMeshProUGUI[2];
   public void UpdateExpShortTermIcon()
   {
     for (int i = 0; i < ShortTermCover.Length; i++)
@@ -294,12 +307,14 @@ public class UIManager : MonoBehaviour
       if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null)
       {
         ShortTermTurn[i].enabled = true;
+        ShortTermEffect[i].text = "";
       }
       else
       {
         if(ShortTermCover[i].enabled==true) ShortTermCover[i].enabled = false;
 
         ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
+        ShortTermEffect[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].ShortEffectString;
       }
     }
   }
@@ -314,6 +329,7 @@ public class UIManager : MonoBehaviour
     UpdateExpLongTermIcon();
     UpdateExpShortTermIcon();
     UpdateTendencyIcon();
+    UpdateSkillLevel();
   }
   private void Update()
   {
@@ -816,11 +832,11 @@ public static class WNCText
 {
   public static string GetSomethingColor(string str)
   {
-    return $"<#F5DA81>{str}</color>";
+    return $"<#CFAC7A>{str}</color>";
   }
   public static string GetSomethingColor(int str)
   {
-    return $"<#F5DA81>{str}</color>";
+    return $"<#CFAC7A>{str}</color>";
   }
   public static string SetSize(int size,string str)
   {

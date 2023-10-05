@@ -33,11 +33,13 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.Skill:UIManager.Instance.PreviewManager.OpenSkillPreview(Myskill, transform as RectTransform);break;
       case PreviewPanelType.EXP_long:
          _exp = GameManager.Instance.MyGameData.LongTermEXP;
-        if(_exp!=null)UIManager.Instance.PreviewManager.OpenExpPreview(_exp, transform as RectTransform);
+        if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, transform as RectTransform);
+        else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"), new Vector2(1.0f, 0.5f), transform as RectTransform);
         break;
         case PreviewPanelType.EXP_short:
          _exp = GameManager.Instance.MyGameData.ShortTermEXP[ExpIndex];
         if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, transform as RectTransform);
+        else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"),new Vector2(1.0f,0.5f), transform as RectTransform);
         break;
       case PreviewPanelType.Tendency:
         if (GameManager.Instance.MyGameData.GetTendencyLevel(MyTendency) == 0) return;

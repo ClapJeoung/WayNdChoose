@@ -7,9 +7,9 @@ public class PlaceIconScript : MonoBehaviour
 {
   public SectorType MyType = SectorType.Residence;
   public Image MyImage = null;
-  public Image Quest_Wolf_CultBlock_Effect = null;    //이건 일단 보류...
-  public Image Quest_Wolf_CultBlock = null;
-  public Image Quest_Wolf_HideoutToken = null;
+//  public Image Quest_Wolf_CultBlock_Effect = null;    //이건 일단 보류...
+  public Image BlockedImage = null;
+  public Image UnTokenedImage = null;
   public Color IdleColor= Color.white;
   public Color SelectedColor= Color.white;
   public Color BlockedColor= Color.white;
@@ -18,32 +18,32 @@ public class PlaceIconScript : MonoBehaviour
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 && GameManager.Instance.MyGameData.Quest_Cult_Progress >= 0)
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 )
         {
-          if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType))
+          if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(MyType))
           {
             MyImage.color = BlockedColor;
-            if (Quest_Wolf_CultBlock.enabled == false) Quest_Wolf_CultBlock.enabled = true;
-            if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
+            if (BlockedImage.enabled == false) BlockedImage.enabled = true;
+            if (UnTokenedImage.enabled == true) UnTokenedImage.enabled = false;
           }
           else
           {
             MyImage.color = IdleColor;
-            if (Quest_Wolf_CultBlock.enabled == true) Quest_Wolf_CultBlock.enabled = false;
-            if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors[MyType] == 0)
+            if (BlockedImage.enabled == true) BlockedImage.enabled = false;
+            if (GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors[MyType] == 0)
             {
-              if (Quest_Wolf_HideoutToken.enabled == false) Quest_Wolf_HideoutToken.enabled = true;
+              if (UnTokenedImage.enabled == true) UnTokenedImage.enabled = false;
             }
             else
             {
-              if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
+              if (UnTokenedImage.enabled == false) UnTokenedImage.enabled = true;
             }
           }
         }
         else
         {
           MyImage.color = IdleColor;
-          if (Quest_Wolf_HideoutToken.enabled == true) Quest_Wolf_HideoutToken.enabled = false;
+          if (UnTokenedImage.enabled == true) UnTokenedImage.enabled = false;
         }
         break;
     }
@@ -53,7 +53,7 @@ public class PlaceIconScript : MonoBehaviour
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
+        if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
         else MyImage.color = SelectedColor;
         break;
     }
@@ -63,7 +63,7 @@ public class PlaceIconScript : MonoBehaviour
   switch (GameManager.Instance.MyGameData.QuestType)
   {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
+        if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
         else MyImage.color = IdleColor;
         break;
     }

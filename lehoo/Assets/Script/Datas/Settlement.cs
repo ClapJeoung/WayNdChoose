@@ -97,8 +97,8 @@ public class Settlement
         break;
     }
 
-    GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Clear();
-    for (int i = 0; i < _count; i++) GameManager.Instance.MyGameData.Quest_Cult_Sabbat_BlockedSectors.Add(_randomplaces[i]);
+    GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Clear();
+    for (int i = 0; i < _count; i++) GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Add(_randomplaces[i]);
   }
   public SettlementType SettlementType;
   public int Index=-1;

@@ -164,10 +164,10 @@ public class UI_QuestWolf : UI_default
         _description = QuestHolder.Prologue_8_Description;
         _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
-        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Residence, 0);
-        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Temple, 0);
-        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Marketplace, 0);
-        GameManager.Instance.MyGameData.Quest_Cult_Sabbat_TokenedSectors.Add(SectorType.Library, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Residence, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Temple, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Marketplace, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Library, 0);
         break;
     }
 
@@ -258,9 +258,10 @@ public class UI_QuestWolf : UI_default
   [Space(5)]
   [SerializeField] private Image Searching_IllustImage = null;
   [SerializeField] private TextMeshProUGUI Searching_Description = null;
-  [SerializeField] private CanvasGroup Searching_RewardButton_Group = null;
-  [SerializeField] private Button Searching_RewardButton = null;
-  [SerializeField] private TextMeshProUGUI Searching_ButtonText = null;
+  //  [SerializeField] private CanvasGroup Searching_RewardButton_Group = null;
+  //  [SerializeField] private Button Searching_RewardButton = null;
+  //  [SerializeField] private TextMeshProUGUI Searching_ButtonText = null;
+  [SerializeField] private CanvasGroup Searching_NextButtonGroup = null;
   [SerializeField] private Button Searching_NextButton = null;
   [SerializeField] private TextMeshProUGUI Searching_NextButtonText = null;
   public void OpenUI_Searching()
@@ -289,12 +290,12 @@ public class UI_QuestWolf : UI_default
 
     Searching_IllustImage.sprite = _illust;
     Searching_Description.text = _description;
-    Searching_ButtonText.text = $"{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetSanityColor(ConstValues.Quest_Wolf_Searching_Sanityrewardvalue)}";
+  //  Searching_ButtonText.text = $"{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetSanityColor(ConstValues.Quest_Wolf_Searching_Sanityrewardvalue)}";
   
-    Searching_RewardButton_Group.alpha = 1.0f;
-    Searching_RewardButton_Group.interactable = true;
-    Searching_RewardButton_Group.blocksRaycasts = true;
-    Searching_RewardButton.interactable = true;
+  //  Searching_RewardButton_Group.alpha = 1.0f;
+  //  Searching_RewardButton_Group.interactable = true;
+ //   Searching_RewardButton_Group.blocksRaycasts = true;
+  //  Searching_RewardButton.interactable = true;
 
     LayoutRebuilder.ForceRebuildLayoutImmediate(Searching_Description.transform.parent.transform as RectTransform);
 
@@ -304,23 +305,54 @@ public class UI_QuestWolf : UI_default
     if (GameManager.Instance.MyGameData.Quest_Cult_Progress == 1)
     {
       StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").OutisdePos, GetPanelRect("nextbutton_searching").InsidePos, UIMoveInTime, true));
-      Searching_NextButton.interactable = true;
-      Searching_NextButtonText.text = GameManager.Instance.GetTextData("Quest0_Sidepanel_Searching_Finish");
+      Searching_NextButtonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+      Searching_NextButton.onClick.RemoveAllListeners();
+      Searching_NextButton.onClick.AddListener(Searching_NextToSettlement);
     }
     else
     {
       UIManager.Instance.SettleButton.Open(1, this);
+      Searching_NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
+      Searching_NextButton.onClick.RemoveAllListeners();
+      Searching_NextButton.onClick.AddListener(Searching_NextToProgress);
     }
 
     GameManager.Instance.MyGameData.Quest_Cult_Progress++;
 
     yield return null;
   }
-  public void SearchingSanityReward()
+  public void Searching_NextToSettlement()
   {
     if (UIManager.Instance.IsWorking) return;
-    GameManager.Instance.MyGameData.Sanity += ConstValues.Quest_Wolf_Searching_Sanityrewardvalue;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_RewardButton_Group, 0.0f, 0.4f));
+
+    CloseUI_Searching();
+    UIManager.Instance.MySettleUI.OpenUI();
+  }
+  public void Searching_NextToProgress()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    UIManager.Instance.AddUIQueue(changetoprogress());
+  }
+  private IEnumerator changetoprogress()
+  {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_NextButtonGroup, 0.0f, FadeOutTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_IllustImage, 0.0f, FadeOutTime));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_Description, 0.0f, FadeOutTime));
+    yield return new WaitForSeconds(0.1f);
+
+    Searching_IllustImage.sprite = QuestHolder.SearchingToProgress_Illust;
+    Searching_Description.text = QuestHolder.SearchingToProgress_Description;
+    Searching_NextButtonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+    Searching_NextButton.onClick.RemoveAllListeners();
+    Searching_NextButton.onClick.AddListener(Searching_NextToSettlement);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Searching_Description.transform.parent.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Searching_NextButtonGroup.transform as RectTransform);
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_NextButtonGroup, 1.0f, FadeInTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_IllustImage, 1.0f, FadeInTime));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_Description, 1.0f, FadeInTime));
+    GameManager.Instance.MyGameData.Quest_Cult_Phase = 1;
+    GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
   }
   public void CloseUI_Searching()
   {
@@ -336,211 +368,27 @@ public class UI_QuestWolf : UI_default
   }
   #endregion
 
-  /*
-  #region 선택
-  [Space(5)]
-  [SerializeField] private TextMeshProUGUI Wanted_Description = null;
-  [SerializeField] private CanvasGroup Wanted_Sabbat_Group = null;
-  [SerializeField] private TextMeshProUGUI Wanted_Sabbat_Description = null;
-  [SerializeField] private CanvasGroup Wanted_Ritual_Group = null;
-  [SerializeField] private TextMeshProUGUI Wanted_Ritual_Description = null;
-  [Space(10)]
-  [SerializeField] private Image WantedResult_Icon = null;
-  [SerializeField] private Image WantedResult_Illust = null;
-  [SerializeField] private TextMeshProUGUI WantedResult_Description = null;
-  [SerializeField] private TextMeshProUGUI WantedResult_SettlebuttonText = null;
-
-  public void NextToChoose()
+  [SerializeField] private CanvasGroup ProgressWarningGroup = null;
+  [SerializeField] private Image ProgressWarningImage = null;
+  [SerializeField] private TextMeshProUGUI ProgressWarningText = null;
+  public void OpenUI_ProgressWarning()
   {
-    if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(nexttowanted());
+    StartCoroutine(openui_progresswarning());
   }
-  private IEnumerator nexttowanted()
+  private IEnumerator openui_progresswarning()
   {
-    Wanted_Description.text = QuestHolder.Wanted_Description;
-
-    Wanted_Sabbat_Group.alpha = 1.0f;
-    Wanted_Sabbat_Group.interactable = true;
-    Wanted_Sabbat_Group.blocksRaycasts = true;
-    Wanted_Sabbat_Description.text = QuestHolder.Wanted_Description_Sabbat;
-
-    Wanted_Ritual_Group.alpha = 1.0f;
-    Wanted_Ritual_Group.interactable = true;
-    Wanted_Ritual_Group.blocksRaycasts = true;
-    Wanted_Ritual_Description.text = QuestHolder.Wanted_Description_Ritual;
-    WaitForSeconds _wait = new WaitForSeconds(0.3f);
-
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").InsidePos, GetPanelRect("nextbutton_searching").OutisdePos, UIMoveOutTime, false));
-    yield return _wait;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_searching").Rect, GetPanelRect("illust_searching").InsidePos, GetPanelRect("illust_searching").OutisdePos, UIMoveOutTime, false));
-    yield return _wait;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_searching").Rect, GetPanelRect("description_searching").InsidePos, GetPanelRect("description_searching").OutisdePos, UIMoveOutTime, false));
-    yield return new WaitForSeconds(1.0f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").OutisdePos, GetPanelRect("wanted_description").InsidePos, UIMoveInTime, true));
-    yield return _wait;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_sabbat").Rect, GetPanelRect("wanted_sabbat").OutisdePos, GetPanelRect("wanted_sabbat").InsidePos, UIMoveInTime, true));
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_ritual").Rect, GetPanelRect("wanted_ritual").OutisdePos, GetPanelRect("wanted_ritual").InsidePos, UIMoveInTime, true));
-  }
-  public void SelectSabbatType()
-  {
-    if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(selectsabbat());
-  }
-  private IEnumerator selectsabbat()
-  {
-    GameManager.Instance.MyGameData.Quest_Cult_Phase = 1;
-    GameManager.Instance.MyGameData.Quest_Cult_Type = 0;
-    GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").InsidePos, GetPanelRect("wanted_description").OutisdePos, UIMoveOutTime, true));
-    yield return new WaitForSeconds(0.3f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_ritual").Rect, GetPanelRect("wanted_ritual").InsidePos, GetPanelRect("wanted_ritual").OutisdePos, UIMoveOutTime, false));
-    yield return new WaitForSeconds(0.3f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_sabbat").Rect, GetPanelRect("wanted_sabbat").InsidePos, GetPanelRect("wanted_sabbat").OutisdePos, UIMoveOutTime, false));
-    yield return new WaitForSeconds(1.0f);
-
-    WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
-    WantedResult_Illust.sprite = QuestHolder.Wanted_Sabbat_Illust;
-    WantedResult_Description.text = QuestHolder.Wanted_Sabbat_Description;
-    WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, true));
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, true));
-  }
-  public void SelectRitualType()
-  {
-    if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(selectritual());
-  }
-  private IEnumerator selectritual()
-  {
-    GameManager.Instance.MyGameData.Quest_Cult_Phase = 1;
-    GameManager.Instance.MyGameData.Quest_Cult_Type = 1;
-    GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").InsidePos, GetPanelRect("wanted_description").OutisdePos, UIMoveOutTime, true));
-    yield return new WaitForSeconds(0.3f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_sabbat").Rect, GetPanelRect("wanted_sabbat").InsidePos, GetPanelRect("wanted_sabbat").OutisdePos, UIMoveOutTime, false));
-    yield return new WaitForSeconds(0.3f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_ritual").Rect, GetPanelRect("wanted_ritual").InsidePos, GetPanelRect("wanted_ritual").OutisdePos, UIMoveOutTime, false));
-    yield return new WaitForSeconds(1.0f);
-
-    WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
-    WantedResult_Illust.sprite = QuestHolder.Wanted_Ritual_Illust;
-    WantedResult_Description.text = QuestHolder.Wanted_Ritual_Description;
-    WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, true));
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, true));
-
-    GameManager.Instance.MyGameData.MyMapData.CreateRitualCoordinate();
-  }
-  public void WantedResult_GoSettlement()
-  {
-    if (UIManager.Instance.IsWorking) return;
-    IsOpen = false;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").InsidePos, GetPanelRect("wantedresult_illust").OutisdePos, UIMoveOutTime, true));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").InsidePos, GetPanelRect("wantedresult_description").OutisdePos, UIMoveOutTime, true));
-    SettlementUI.OpenUI();
-  }
-  #endregion
-  #region 집회
-  [SerializeField] private CanvasGroup SabbatIllustGroup = null;
-  [SerializeField] private Image SabbatIllustImage = null;
-  [SerializeField] private TextMeshProUGUI SabbatDescriptionText = null;
-  [SerializeField] private CanvasGroup SabbatDescriptionGroup = null;
-  [SerializeField] private TextMeshProUGUI SabbatButtonText = null;
-  private bool IsSabbatDone = false;
-  public void OpenUI_Sabbat()
-  {
-    if (DefaultRect.anchoredPosition != Vector2.zero) DefaultRect.anchoredPosition = Vector2.zero;
-    IsOpen = true;
-    IsSabbatDone = false;
-
-    UIManager.Instance.AddUIQueue(openui_sabbat());
-  }
-  private IEnumerator openui_sabbat()
-  {
-    Sprite _illust = null;
-    string _description = null;
-    string _tendencyicon = null;
-    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-    {
-      case 1:
-        _illust = QuestHolder.Sabbat_0_Illust_Idle;
-        _description = QuestHolder.Sabbat_0_Description_Idle;
-        _tendencyicon = GameManager.Instance.MyGameData.Tendency_Body.Icon;
-        break;
-      case 2:
-        _illust = QuestHolder.Sabbat_1_Illust_Idle;
-        _description = QuestHolder.Sabbat_1_Description_Idle;
-        _tendencyicon = GameManager.Instance.MyGameData.Tendency_Head.Icon;
-        break;
-    }
-    SabbatIllustImage.sprite= _illust;
-    SabbatDescriptionText.text= _description;
-    SabbatButtonText.text = _tendencyicon + "<br>" + GameManager.Instance.GetTextData("NEXT_TEXT");
-    SabbatIllustGroup.alpha = 1.0f;
-    SabbatDescriptionGroup.alpha = 1.0f;
-    LayoutRebuilder.ForceRebuildLayoutImmediate(SabbatButtonText.transform.parent.transform as RectTransform);
-    LayoutRebuilder.ForceRebuildLayoutImmediate(SabbatDescriptionText.transform.parent.transform as RectTransform);
-
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_illust").Rect, GetPanelRect("hideout_illust").OutisdePos, GetPanelRect("hideout_illust").InsidePos,UIMoveInTime,true));
-   yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_description").Rect, GetPanelRect("hideout_description").OutisdePos, GetPanelRect("hideout_description").InsidePos, UIMoveInTime, true));
+    ProgressWarningImage.sprite = QuestHolder.SearchingWarning_Illust;
+    ProgressWarningText.text = QuestHolder.SearchingWarning_Description;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(ProgressWarningText.transform.parent.transform as RectTransform);
+    StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressWarningGroup, 1.0f, 0.8f));
 
     yield return null;
   }
-  public void Sabbat_Next()
+  public void CloseUI_ProgressWarning()
   {
-    if (UIManager.Instance.IsWorking) return;
-
-    if (IsSabbatDone == false)
-    {
-      IsSabbatDone = true;
-      UIManager.Instance.AddUIQueue(destroysabbat());
-    }
-    else
-    {
-      CloseUI_Auto();
-      UIManager.Instance.MySettleUI.OpenUI();
-    }
+    StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressWarningGroup, 0.0f, 0.5f));
   }
-  private IEnumerator destroysabbat()
-  {
-    Sprite _illust = null;
-    string _description = null;
-    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-    {
-      case 1:
-        _illust = QuestHolder.Sabbat_0_Illust_Tendency;
-        _description = QuestHolder.Sabbat_0_Description_Tendency;
-        break;
-      case 2:
-        _illust = QuestHolder.Sabbat_1_Illust_Tendency;
-        _description = QuestHolder.Sabbat_1_Description_Tendency;
-        break;
-    }
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatIllustGroup, 0.0f, FadeOutTime));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatDescriptionGroup, 0.0f, FadeOutTime));
-    SabbatIllustImage.sprite = _illust;
-    SabbatDescriptionText.text = _description;
-    SabbatButtonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
-    yield return new WaitForSeconds(0.2f);
-
-    GameManager.Instance.MyGameData.Quest_Cult_Phase++;
-    GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatIllustGroup, 1.0f, FadeInTime));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatDescriptionGroup, 1.0f, FadeInTime));
-  }
-  public void CloseUI_Sabbat()
-  {
-    UIManager.Instance.AddUIQueue(closeui_sabbat());
-  }
-  private IEnumerator closeui_sabbat()
-  {
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_illust").Rect, GetPanelRect("hideout_illust").InsidePos, GetPanelRect("hideout_illust").OutisdePos, UIMoveOutTime, false));
-    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_description").Rect, GetPanelRect("hideout_description").InsidePos, GetPanelRect("hideout_description").OutisdePos, UIMoveOutTime, false));
-  }
-  #endregion
-  */
   public void CloseUI_Auto()
   {
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
@@ -556,4 +404,219 @@ public class UI_QuestWolf : UI_default
         break;
     }
   }
+
+
+
+  /* public void SearchingSanityReward()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    GameManager.Instance.MyGameData.Sanity += ConstValues.Quest_Wolf_Searching_Sanityrewardvalue;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Searching_RewardButton_Group, 0.0f, 0.4f));
+  }
+ */
+  /*
+   #region 선택
+   [Space(5)]
+   [SerializeField] private TextMeshProUGUI Wanted_Description = null;
+   [SerializeField] private CanvasGroup Wanted_Sabbat_Group = null;
+   [SerializeField] private TextMeshProUGUI Wanted_Sabbat_Description = null;
+   [SerializeField] private CanvasGroup Wanted_Ritual_Group = null;
+   [SerializeField] private TextMeshProUGUI Wanted_Ritual_Description = null;
+   [Space(10)]
+   [SerializeField] private Image WantedResult_Icon = null;
+   [SerializeField] private Image WantedResult_Illust = null;
+   [SerializeField] private TextMeshProUGUI WantedResult_Description = null;
+   [SerializeField] private TextMeshProUGUI WantedResult_SettlebuttonText = null;
+
+   public void NextToChoose()
+   {
+     if (UIManager.Instance.IsWorking) return;
+     UIManager.Instance.AddUIQueue(nexttowanted());
+   }
+   private IEnumerator nexttowanted()
+   {
+     Wanted_Description.text = QuestHolder.Wanted_Description;
+
+     Wanted_Sabbat_Group.alpha = 1.0f;
+     Wanted_Sabbat_Group.interactable = true;
+     Wanted_Sabbat_Group.blocksRaycasts = true;
+     Wanted_Sabbat_Description.text = QuestHolder.Wanted_Description_Sabbat;
+
+     Wanted_Ritual_Group.alpha = 1.0f;
+     Wanted_Ritual_Group.interactable = true;
+     Wanted_Ritual_Group.blocksRaycasts = true;
+     Wanted_Ritual_Description.text = QuestHolder.Wanted_Description_Ritual;
+     WaitForSeconds _wait = new WaitForSeconds(0.3f);
+
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("nextbutton_searching").Rect, GetPanelRect("nextbutton_searching").InsidePos, GetPanelRect("nextbutton_searching").OutisdePos, UIMoveOutTime, false));
+     yield return _wait;
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_searching").Rect, GetPanelRect("illust_searching").InsidePos, GetPanelRect("illust_searching").OutisdePos, UIMoveOutTime, false));
+     yield return _wait;
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_searching").Rect, GetPanelRect("description_searching").InsidePos, GetPanelRect("description_searching").OutisdePos, UIMoveOutTime, false));
+     yield return new WaitForSeconds(1.0f);
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").OutisdePos, GetPanelRect("wanted_description").InsidePos, UIMoveInTime, true));
+     yield return _wait;
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_sabbat").Rect, GetPanelRect("wanted_sabbat").OutisdePos, GetPanelRect("wanted_sabbat").InsidePos, UIMoveInTime, true));
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_ritual").Rect, GetPanelRect("wanted_ritual").OutisdePos, GetPanelRect("wanted_ritual").InsidePos, UIMoveInTime, true));
+   }
+   public void SelectSabbatType()
+   {
+     if (UIManager.Instance.IsWorking) return;
+     UIManager.Instance.AddUIQueue(selectsabbat());
+   }
+   private IEnumerator selectsabbat()
+   {
+     GameManager.Instance.MyGameData.Quest_Cult_Phase = 1;
+     GameManager.Instance.MyGameData.Quest_Cult_Type = 0;
+     GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").InsidePos, GetPanelRect("wanted_description").OutisdePos, UIMoveOutTime, true));
+     yield return new WaitForSeconds(0.3f);
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_ritual").Rect, GetPanelRect("wanted_ritual").InsidePos, GetPanelRect("wanted_ritual").OutisdePos, UIMoveOutTime, false));
+     yield return new WaitForSeconds(0.3f);
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_sabbat").Rect, GetPanelRect("wanted_sabbat").InsidePos, GetPanelRect("wanted_sabbat").OutisdePos, UIMoveOutTime, false));
+     yield return new WaitForSeconds(1.0f);
+
+     WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
+     WantedResult_Illust.sprite = QuestHolder.Wanted_Sabbat_Illust;
+     WantedResult_Description.text = QuestHolder.Wanted_Sabbat_Description;
+     WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, true));
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, true));
+   }
+   public void SelectRitualType()
+   {
+     if (UIManager.Instance.IsWorking) return;
+     UIManager.Instance.AddUIQueue(selectritual());
+   }
+   private IEnumerator selectritual()
+   {
+     GameManager.Instance.MyGameData.Quest_Cult_Phase = 1;
+     GameManager.Instance.MyGameData.Quest_Cult_Type = 1;
+     GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_description").Rect, GetPanelRect("wanted_description").InsidePos, GetPanelRect("wanted_description").OutisdePos, UIMoveOutTime, true));
+     yield return new WaitForSeconds(0.3f);
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_sabbat").Rect, GetPanelRect("wanted_sabbat").InsidePos, GetPanelRect("wanted_sabbat").OutisdePos, UIMoveOutTime, false));
+     yield return new WaitForSeconds(0.3f);
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wanted_ritual").Rect, GetPanelRect("wanted_ritual").InsidePos, GetPanelRect("wanted_ritual").OutisdePos, UIMoveOutTime, false));
+     yield return new WaitForSeconds(1.0f);
+
+     WantedResult_Icon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Wolf;
+     WantedResult_Illust.sprite = QuestHolder.Wanted_Ritual_Illust;
+     WantedResult_Description.text = QuestHolder.Wanted_Ritual_Description;
+     WantedResult_SettlebuttonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").OutisdePos, GetPanelRect("wantedresult_illust").InsidePos, UIMoveInTime, true));
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").OutisdePos, GetPanelRect("wantedresult_description").InsidePos, UIMoveInTime, true));
+
+     GameManager.Instance.MyGameData.MyMapData.CreateRitualCoordinate();
+   }
+   public void WantedResult_GoSettlement()
+   {
+     if (UIManager.Instance.IsWorking) return;
+     IsOpen = false;
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("wantedresult_illust").Rect, GetPanelRect("wantedresult_illust").InsidePos, GetPanelRect("wantedresult_illust").OutisdePos, UIMoveOutTime, true));
+     UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(GetPanelRect("wantedresult_description").Rect, GetPanelRect("wantedresult_description").InsidePos, GetPanelRect("wantedresult_description").OutisdePos, UIMoveOutTime, true));
+     SettlementUI.OpenUI();
+   }
+   #endregion
+   #region 집회
+   [SerializeField] private CanvasGroup SabbatIllustGroup = null;
+   [SerializeField] private Image SabbatIllustImage = null;
+   [SerializeField] private TextMeshProUGUI SabbatDescriptionText = null;
+   [SerializeField] private CanvasGroup SabbatDescriptionGroup = null;
+   [SerializeField] private TextMeshProUGUI SabbatButtonText = null;
+   private bool IsSabbatDone = false;
+   public void OpenUI_Sabbat()
+   {
+     if (DefaultRect.anchoredPosition != Vector2.zero) DefaultRect.anchoredPosition = Vector2.zero;
+     IsOpen = true;
+     IsSabbatDone = false;
+
+     UIManager.Instance.AddUIQueue(openui_sabbat());
+   }
+   private IEnumerator openui_sabbat()
+   {
+     Sprite _illust = null;
+     string _description = null;
+     string _tendencyicon = null;
+     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+     {
+       case 1:
+         _illust = QuestHolder.Sabbat_0_Illust_Idle;
+         _description = QuestHolder.Sabbat_0_Description_Idle;
+         _tendencyicon = GameManager.Instance.MyGameData.Tendency_Body.Icon;
+         break;
+       case 2:
+         _illust = QuestHolder.Sabbat_1_Illust_Idle;
+         _description = QuestHolder.Sabbat_1_Description_Idle;
+         _tendencyicon = GameManager.Instance.MyGameData.Tendency_Head.Icon;
+         break;
+     }
+     SabbatIllustImage.sprite= _illust;
+     SabbatDescriptionText.text= _description;
+     SabbatButtonText.text = _tendencyicon + "<br>" + GameManager.Instance.GetTextData("NEXT_TEXT");
+     SabbatIllustGroup.alpha = 1.0f;
+     SabbatDescriptionGroup.alpha = 1.0f;
+     LayoutRebuilder.ForceRebuildLayoutImmediate(SabbatButtonText.transform.parent.transform as RectTransform);
+     LayoutRebuilder.ForceRebuildLayoutImmediate(SabbatDescriptionText.transform.parent.transform as RectTransform);
+
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_illust").Rect, GetPanelRect("hideout_illust").OutisdePos, GetPanelRect("hideout_illust").InsidePos,UIMoveInTime,true));
+    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_description").Rect, GetPanelRect("hideout_description").OutisdePos, GetPanelRect("hideout_description").InsidePos, UIMoveInTime, true));
+
+     yield return null;
+   }
+   public void Sabbat_Next()
+   {
+     if (UIManager.Instance.IsWorking) return;
+
+     if (IsSabbatDone == false)
+     {
+       IsSabbatDone = true;
+       UIManager.Instance.AddUIQueue(destroysabbat());
+     }
+     else
+     {
+       CloseUI_Auto();
+       UIManager.Instance.MySettleUI.OpenUI();
+     }
+   }
+   private IEnumerator destroysabbat()
+   {
+     Sprite _illust = null;
+     string _description = null;
+     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+     {
+       case 1:
+         _illust = QuestHolder.Sabbat_0_Illust_Tendency;
+         _description = QuestHolder.Sabbat_0_Description_Tendency;
+         break;
+       case 2:
+         _illust = QuestHolder.Sabbat_1_Illust_Tendency;
+         _description = QuestHolder.Sabbat_1_Description_Tendency;
+         break;
+     }
+
+     StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatIllustGroup, 0.0f, FadeOutTime));
+     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatDescriptionGroup, 0.0f, FadeOutTime));
+     SabbatIllustImage.sprite = _illust;
+     SabbatDescriptionText.text = _description;
+     SabbatButtonText.text = GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+     yield return new WaitForSeconds(0.2f);
+
+     GameManager.Instance.MyGameData.Quest_Cult_Phase++;
+     GameManager.Instance.MyGameData.Quest_Cult_Progress = 0;
+
+     StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatIllustGroup, 1.0f, FadeInTime));
+     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatDescriptionGroup, 1.0f, FadeInTime));
+   }
+   public void CloseUI_Sabbat()
+   {
+     UIManager.Instance.AddUIQueue(closeui_sabbat());
+   }
+   private IEnumerator closeui_sabbat()
+   {
+     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_illust").Rect, GetPanelRect("hideout_illust").InsidePos, GetPanelRect("hideout_illust").OutisdePos, UIMoveOutTime, false));
+     yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("hideout_description").Rect, GetPanelRect("hideout_description").InsidePos, GetPanelRect("hideout_description").OutisdePos, UIMoveOutTime, false));
+   }
+   #endregion
+   */
 }

@@ -1042,10 +1042,30 @@ public class QuestHolder_Cult:Quest
   {
     get { return GameManager.Instance.GetTextData(OriginID + "_Searching_1_Description"); }
   }
-  #endregion
+  public Sprite SearchingToProgress_Illust
+  {
+    get
+    {
+      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_SearchingToProgress");
+    }
+  }
+  public string SearchingToProgress_Description
+  {
+    get { return GameManager.Instance.GetTextData(OriginID + "_SearchingToProgress_Description"); }
+  }
 
-  #region 선택
-  public string Wanted_Description { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Description"); } }
+#endregion
+  public Sprite SearchingWarning_Illust
+  {
+    get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_SearchingWarning"); }
+  }
+  public string SearchingWarning_Description
+  {
+    get { return GameManager.Instance.GetTextData(OriginID + "_SearchingWarning_Description"); }
+  }
+
+#region 선택
+public string Wanted_Description { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Description"); } }
   public string Wanted_Description_Sabbat { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Sabbat"); } }
   public string Wanted_Description_Ritual { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Ritual"); } }
 
