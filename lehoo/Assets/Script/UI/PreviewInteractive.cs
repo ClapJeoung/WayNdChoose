@@ -13,11 +13,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
     public TendencyTypeEnum MyTendency = TendencyTypeEnum.None;
   public TendencyTypeEnum MySelectionTendency= TendencyTypeEnum.None;
   public bool MySelectionTendencyDir = false;
-  public SkillType Myskill = SkillType.Conversation;
+  public SkillTypeEnum Myskill = SkillTypeEnum.Conversation;
   public int RewardValue = 0;
   public int ExpIndex = 0;
   public Experience MyEXP = null;
-  public SectorType MyPlaceType = SectorType.NULL;
+  public SectorTypeEnum MyPlaceType = SectorTypeEnum.NULL;
   public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -60,6 +60,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         switch (_selection.ThisSelectionType)
         {
+          case SelectionTargetType.None: UIManager.Instance.PreviewManager.OpenSelectionNonePreview(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform);break;
           case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
           case SelectionTargetType.Check_Single:case SelectionTargetType.Check_Multy:
             UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
@@ -67,11 +68,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         break;
       case PreviewPanelType.RewardHP:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.HP, GameManager.Instance.MyGameData.RewardHPValue_modified, transform as RectTransform); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.HP, GameManager.Instance.MyGameData.RewardHPValue_modified, transform as RectTransform); break;
       case PreviewPanelType.RewardSanity:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.Sanity, GameManager.Instance.MyGameData.RewardSanityValue_modified, transform as RectTransform); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue_modified, transform as RectTransform); break;
       case PreviewPanelType.RewardGold:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusType.Gold, GameManager.Instance.MyGameData.RewardGoldValue_modified, transform as RectTransform); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue_modified, transform as RectTransform); break;
       case PreviewPanelType.RewardSkill:
         UIManager.Instance.PreviewManager.OpenRewardSkillPreview(Myskill, transform as RectTransform);  break;
       case PreviewPanelType.RewardExp:
@@ -122,12 +123,6 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.RestGold:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"), transform as RectTransform);
-        break;
-      case PreviewPanelType.CultPanel_Sabbat:
-        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Hideout_Idle, GameManager.Instance.GetTextData("Quest0_Sabbat_Sidepanel_Preview"), new Vector2(1.1f, 0.5f), transform as RectTransform) ;
-        break;
-      case PreviewPanelType.CultPanel_Ritual:
-        UIManager.Instance.PreviewManager.OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.QuestIcon_Ritual_Idle,GameManager.Instance.GetTextData("Quest0_Ritual_Sidepanel_Preview"), new Vector2(1.1f, 0.5f), transform as RectTransform);
         break;
       case PreviewPanelType.MovePoint:
         UIManager.Instance.PreviewManager.OpenMovePointPreview(transform as RectTransform);

@@ -50,6 +50,7 @@ public class UI_Tendency : UI_default
     Illust.sprite = _tendency.Illust;
     Description.text = _description + "<br><br>" + _effect;
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("myrect").Rect);
 
     if (CurrentTendencyType.Equals(TendencyTypeEnum.None))
     {

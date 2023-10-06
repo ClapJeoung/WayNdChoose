@@ -252,17 +252,17 @@ public class UI_dialogue : UI_default
               case PenaltyTarget.Status:
                 switch (CurrentFailData.Loss_target)
                 {
-                  case StatusType.HP:
+                  case StatusTypeEnum.HP:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex]+
-                      $"<br><br>{GameManager.Instance.GetTextData(StatusType.HP,2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                      $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP,2)} {WNCText.GetHPColor(-PenaltyValue)}";
                     break;
-                  case StatusType.Sanity:
+                  case StatusTypeEnum.Sanity:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
-        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+        $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
                     break;
-                  case StatusType.Gold:
+                  case StatusTypeEnum.Gold:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
-        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Gold, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+        $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
                     break;
                 }
                 break;
@@ -298,17 +298,17 @@ public class UI_dialogue : UI_default
               case PenaltyTarget.Status:
                 switch (CurrentFailData.Loss_target)
                 {
-                  case StatusType.HP:
+                  case StatusTypeEnum.HP:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
-                      $"<br><br>{GameManager.Instance.GetTextData(StatusType.HP, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                      $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
                     break;
-                  case StatusType.Sanity:
+                  case StatusTypeEnum.Sanity:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
-        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Sanity, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+        $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
                     break;
-                  case StatusType.Gold:
+                  case StatusTypeEnum.Gold:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
-        $"<br><br>{GameManager.Instance.GetTextData(StatusType.Gold, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+        $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
                     break;
                 }
                 break;
@@ -377,22 +377,22 @@ public class UI_dialogue : UI_default
     if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
 
 
-    if (CurrentEvent.Selection_type == SelectionType.Body || CurrentEvent.Selection_type == SelectionType.Head)
+    if (CurrentEvent.Selection_type == SelectionTypeEnum.Body || CurrentEvent.Selection_type == SelectionTypeEnum.Head)
       SelectionCenterImgGroup.alpha = 1.0f;
     //양자택일 형태 선택지일 경우 가운데 구분 이미지 활성화
 
     switch (CurrentEvent.Selection_type)
     {
-      case SelectionType.Single:
+      case SelectionTypeEnum.Single:
         Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
         if (Selection_B.gameObject.activeInHierarchy==true) Selection_B.gameObject.SetActive(false);
         break;
-      case SelectionType.Body:
+      case SelectionTypeEnum.Body:
         Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
         if (Selection_B.gameObject.activeInHierarchy==false) Selection_B.gameObject.SetActive(true);
         Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
         break;
-      case SelectionType.Head:
+      case SelectionTypeEnum.Head:
         Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
         if (Selection_B.gameObject.activeInHierarchy == false) Selection_B.gameObject.SetActive(true);
         Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
@@ -433,13 +433,16 @@ public class UI_dialogue : UI_default
                                                //도서관 방문 시 확률 증가 값
     switch (_selectiondata.ThisSelectionType)
     {
+      case SelectionTargetType.None:
+        _issuccess = true;
+        break;
       case SelectionTargetType.Pay:
-        if (_selectiondata.SelectionPayTarget.Equals(StatusType.HP))
+        if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.HP))
         {
           _issuccess = true;
           GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.PayHPValue_modified;
         }
-        else if (_selectiondata.SelectionPayTarget.Equals(StatusType.Sanity))
+        else if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.Sanity))
         {
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
           GameManager.Instance.MyGameData.Sanity -= GameManager.Instance.MyGameData.PaySanityValue_modified;
@@ -510,13 +513,13 @@ public class UI_dialogue : UI_default
     if (_issuccess) //성공하면 성공
     {
       Debug.Log("성공함");
-      SetSuccess(CurrentEvent.SuccessDatas[_selection.Index]);
+      SetSuccess(CurrentEvent.SelectionDatas[_selection.Index].SuccessData);
       GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
     else            //실패하면 실패
     {
       Debug.Log("실패함");
-      SetFail(CurrentEvent.FailureDatas[_selection.Index]);
+      SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailureData);
       GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
 
@@ -533,31 +536,36 @@ public class UI_dialogue : UI_default
     Sprite _icon = null;
     string _name = "";
     string _description = "";
-    switch (_success.Reward_Target)
+    switch (_success.Reward_Type)
     {
-      case RewardTarget.HP:
-        _icon = GameManager.Instance.ImageHolder.HPIcon;
-        _name=GameManager.Instance.GetTextData(StatusType.HP,0);
-        _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue_modified)}";
+      case RewardTypeEnum.Status:
+        switch (_success.Reward_StatusType)
+        {
+          case StatusTypeEnum.HP:
+            _icon = GameManager.Instance.ImageHolder.HPIcon;
+            _name = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 0);
+            _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue_modified)}";
+            break;
+          case StatusTypeEnum.Sanity:
+            _icon = GameManager.Instance.ImageHolder.SanityIcon;
+            _name = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 0);
+            _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue_modified)}";
+            break;
+          case StatusTypeEnum.Gold:
+            _icon = GameManager.Instance.ImageHolder.GoldIcon;
+            _name = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 0);
+            _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue_modified)}";
+            break;
+        }
         break;
-      case RewardTarget.Sanity:
-        _icon = GameManager.Instance.ImageHolder.SanityIcon;
-        _name = GameManager.Instance.GetTextData(StatusType.Sanity, 0);
-        _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue_modified)}";
-        break;
-      case RewardTarget.Gold:
-        _icon = GameManager.Instance.ImageHolder.GoldIcon;
-        _name = GameManager.Instance.GetTextData(StatusType.Gold, 0);
-        _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue_modified)}";
-        break;
-      case RewardTarget.Experience:
+      case RewardTypeEnum.Experience:
         _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
         _name = GameManager.Instance.GetTextData("EXP_NAME");
         _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
 
         break;
-      case RewardTarget.Skill:
-        _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType);
+      case RewardTypeEnum.Skill:
+        _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType,false);
         _name = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType,0)} +1";
         break;
     }
@@ -683,7 +691,7 @@ public class UI_dialogue : UI_default
 
     if (CurrentSuccessData != null)
     {
-      if (CurrentSuccessData.Reward_Target == RewardTarget.Experience)
+      if (CurrentSuccessData.Reward_Type == RewardTypeEnum.Experience)
       {
         if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
         {
@@ -700,18 +708,23 @@ public class UI_dialogue : UI_default
       }
       else
       {
-        switch (CurrentSuccessData.Reward_Target)
+        switch (CurrentSuccessData.Reward_Type)
         {
-          case RewardTarget.HP:
-            GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
+          case RewardTypeEnum.Status:
+            switch (CurrentSuccessData.Reward_StatusType)
+            {
+              case StatusTypeEnum.HP:
+                GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue_modified;
+                break;
+              case StatusTypeEnum.Sanity:
+                GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
+                break;
+              case StatusTypeEnum.Gold:
+                GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
+                break;
+            }
             break;
-          case RewardTarget.Sanity:
-            GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.RewardSanityValue_modified;
-            break;
-          case RewardTarget.Gold:
-            GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue_modified;
-            break;
-          case RewardTarget.Skill:
+          case RewardTypeEnum.Skill:
             GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
             break;
         }
@@ -748,15 +761,15 @@ public class UI_dialogue : UI_default
       case PenaltyTarget.Status:
         switch (_fail.Loss_target)
         {
-          case StatusType.HP:
+          case StatusTypeEnum.HP:
             GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.FailHPValue_modified;
             PenaltyValue = GameManager.Instance.MyGameData.FailHPValue_modified;
             break;
-          case StatusType.Sanity:
+          case StatusTypeEnum.Sanity:
             GameManager.Instance.MyGameData.Sanity -= GameManager.Instance.MyGameData.FailSanityValue_modified;
             PenaltyValue = GameManager.Instance.MyGameData.FailSanityValue_modified;
             break;
-          case StatusType.Gold:
+          case StatusTypeEnum.Gold:
             if (GameManager.Instance.MyGameData.Gold >= GameManager.Instance.MyGameData.FailGoldValue_modified)
             {
               GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.FailGoldValue_modified;

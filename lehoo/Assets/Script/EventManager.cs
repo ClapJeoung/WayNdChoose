@@ -28,7 +28,7 @@ public class EventManager : MonoBehaviour
   /// 정착지에서 장소를 선택해 이벤트 실행
   /// </summary>
   /// <param name="place"></param>
-  public void SetSettlementEvent(SectorType place)
+  public void SetSettlementEvent(SectorTypeEnum place)
   {
     if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != ""&&GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID!= "WRONG ID!")
     {

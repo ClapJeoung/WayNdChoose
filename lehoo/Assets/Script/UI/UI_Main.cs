@@ -81,13 +81,13 @@ public class UI_Main : UI_default
   private WaitForSeconds Wait = new WaitForSeconds(0.2f);
   private void Start()
   {
-    if (NewGameText.text == "") NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
-    if (LoadGameText.text == "") LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
-    if (OptionText.text == "") OptionText.text = GameManager.Instance.GetTextData("OPTION");
-    if (QuitText.text == "") QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
-    if (StartNewGameText.text == "") StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
-    if (BackToMainText.text == "") BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
-    if (Quest_0_Text.text == "") Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Cult.QuestName;
+    NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
+    LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
+    OptionText.text = GameManager.Instance.GetTextData("OPTION");
+    QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
+    StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
+    BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
+   Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Cult.QuestName;
     ShowImage = showimage();
     SetupMain();
   }
@@ -172,7 +172,7 @@ public class UI_Main : UI_default
   }
   private IEnumerator openmain()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, 3.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, MainUIOpenTime));
 
     ShowImage = showimage();
     StartCoroutine(ShowImage);
@@ -193,7 +193,7 @@ public class UI_Main : UI_default
   }
   private IEnumerator closemain()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").InsidePos, GetPanelRect("loadgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
 

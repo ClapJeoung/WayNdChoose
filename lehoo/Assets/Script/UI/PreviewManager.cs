@@ -13,6 +13,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Camera MainCamera = null;
   [Space(10)]
   [SerializeField] private GameObject IconAndDescription_Panel = null;
+  [SerializeField] private Image IconAndDescription_IconBackground = null;
   [SerializeField] private Image IconAndDescription_Icon = null;
   [SerializeField] private TextMeshProUGUI IconAndDescription_Description = null;
   [Space(10)]
@@ -24,7 +25,7 @@ public class PreviewManager : MonoBehaviour
   private Vector2 HPPivot= new Vector2(0.5f, 1.1f);
   private Vector2 SanityPivot= new Vector2(0.5f, 1.1f);
   private Vector2 GoldPivot= new Vector2(0.5f, 1.1f);
-  private Vector2 MovePointPivot= new Vector2(0.5f, 1.1f);
+  private Vector2 MovePointPivot= new Vector2(1.1f, 1.1f);
   private Vector2 MapPivot= new Vector2(0.5f, 1.1f);
   private Vector2 TendencyPivot = new Vector2(1.1f, -0.1f);
   private Vector2 DiscomfortPivot = new Vector2(0.5f, 1.1f);
@@ -179,14 +180,12 @@ public class PreviewManager : MonoBehaviour
         break;
 
     }
-    IconAndDescription_Icon.sprite = _turnsprite;
-    IconAndDescription_Description.text = _name + "<br><br>" + WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(_description));
 
-    OpenPreviewPanel(IconAndDescription_Panel,TurnPivot,rect);
+    OpenIconAndDescriptionPanel(_turnsprite, _name + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_description)), TurnPivot,false, rect);
   }//턴 미리보기 패널 세팅 후 열기
   public void OpenHPPreview(RectTransform rect)
   {
-    StatusType _currenttype = StatusType.HP;
+    StatusTypeEnum _currenttype = StatusTypeEnum.HP;
 
     string _description = "";
     int _genvalue = 0, _payvalue = 0;
@@ -204,16 +203,13 @@ public class PreviewManager : MonoBehaviour
       if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
       else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
-  //  _description+="<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
+    //  _description+="<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
-
-    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.HPIcon;
-    IconAndDescription_Description.text = _description;
-    OpenPreviewPanel(IconAndDescription_Panel,HPPivot,rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.HPIcon, _description, HPPivot,true,rect);
   }//체력 설명, 증감량 표기 후 열기
   public void OpenSanityPreview(RectTransform rect)
   {
-    StatusType _currenttype = StatusType.Sanity;
+    StatusTypeEnum _currenttype = StatusTypeEnum.Sanity;
 
     string _description = "";
     int _genvalue = 0, _payvalue = 0;
@@ -231,16 +227,14 @@ public class PreviewManager : MonoBehaviour
       if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
       else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
- //   _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
+    //   _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
 
-    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.SanityIcon;
-    IconAndDescription_Description.text = _description;
-    OpenPreviewPanel(IconAndDescription_Panel,SanityPivot,rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.SanityIcon, _description, SanityPivot,true, rect);
   }//정신력 설명,증감량 표기 후 열기
   public void OpenGoldPreview( RectTransform rect)
   {
-    StatusType _currenttype = StatusType.Gold;
+    StatusTypeEnum _currenttype = StatusTypeEnum.Gold;
 
     string _description = "";
     int _genvalue = 0, _payvalue = 0;
@@ -258,22 +252,17 @@ public class PreviewManager : MonoBehaviour
       if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
       else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
     }
-  //  _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
+    //  _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
-
-    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.GoldIcon;
-    IconAndDescription_Description.text = _description;
-    OpenPreviewPanel(IconAndDescription_Panel,GoldPivot,rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.GoldIcon, _description, GoldPivot,true, rect);
   }//골드 설명,증감량 표기 후 열기
   public void OpenMovePointPreview( RectTransform rect)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
     string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION") + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData("MOVEPOINT_SUBDESCRIPTION")));
 
-    IconAndDescription_Icon.sprite = _icon;
-    IconAndDescription_Description.text = _description;
 
-    OpenPreviewPanel(IconAndDescription_Panel,MovePointPivot,rect);
+    OpenIconAndDescriptionPanel(_icon, _description, MovePointPivot, true, rect);
   }
   public void OpenMapPreview()
   {
@@ -282,9 +271,9 @@ public class PreviewManager : MonoBehaviour
   public void OpenQuestPreview()
   {
   }//현재 퀘스트 이름, 일러스트, 다음 내용                             수정요망
-  public void OpenSkillPreview(SkillType _skilltype,RectTransform rect)
+  public void OpenSkillPreview(SkillTypeEnum _skilltype,RectTransform rect)
   {
-    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype);
+    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype,true);
     string _description = GameManager.Instance.GetTextData(_skilltype,0)+"<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4)));
 
     int _level = GameManager.Instance.MyGameData.GetSkill(_skilltype).Level ;
@@ -325,10 +314,7 @@ public class PreviewManager : MonoBehaviour
       WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
       "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
-    IconAndDescription_Icon.sprite = _tendencyicon;
-    IconAndDescription_Description.text = _description;
-
-    OpenPreviewPanel(IconAndDescription_Panel, TendencyPivot,rect);
+    OpenIconAndDescriptionPanel(_tendencyicon, _description, TendencyPivot,false, rect);
   }
   public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform rect)
   {
@@ -337,20 +323,19 @@ public class PreviewManager : MonoBehaviour
   //  SelectionNoneText.text = _selection.SubDescription;
 
     Sprite _rewardsprite = null;
-    switch (_selection.SelectionSuccesReward)
+    switch (_selection.SuccessData.Reward_Type)
     {
-      case RewardTarget.HP:_rewardsprite = GameManager.Instance.ImageHolder.HPIcon;break;
-      case RewardTarget.Sanity:_rewardsprite = GameManager.Instance.ImageHolder.SanityIcon;break;
-      case RewardTarget.Gold:_rewardsprite = GameManager.Instance.ImageHolder.GoldIcon;break;
-      case RewardTarget.Experience:_rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;break;
-      case RewardTarget.Skill:
-        switch (_selection.SelectionRewardSkillType)
+      case RewardTypeEnum.Status:
+        switch (_selection.SuccessData.Reward_StatusType)
         {
-          case SkillType.Conversation:_rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Conversation;break;
-          case SkillType.Force: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Force; break;
-          case SkillType.Wild: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Wild; break;
-          case SkillType.Intelligence: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Intelligence; break;
+          case StatusTypeEnum.HP: _rewardsprite = GameManager.Instance.ImageHolder.HPIcon; break;
+          case StatusTypeEnum.Sanity: _rewardsprite = GameManager.Instance.ImageHolder.SanityIcon; break;
+          case StatusTypeEnum.Gold: _rewardsprite = GameManager.Instance.ImageHolder.GoldIcon; break;
         }
+        break;
+      case RewardTypeEnum.Experience:_rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;break;
+      case RewardTypeEnum.Skill:
+        _rewardsprite = GameManager.Instance.ImageHolder.GetSkillIcon(_selection.SuccessData.Reward_SkillType, false);
         break;
     }
     SelectionNoneRewardIcon.sprite= _rewardsprite;
@@ -379,20 +364,19 @@ public class PreviewManager : MonoBehaviour
     //PaySubDescription.text = _selection.SubDescription;
 
     Sprite _rewardsprite = null;
-    switch (_selection.SelectionSuccesReward)
+    switch (_selection.SuccessData.Reward_Type)
     {
-      case RewardTarget.HP: _rewardsprite = GameManager.Instance.ImageHolder.HPIcon; break;
-      case RewardTarget.Sanity: _rewardsprite = GameManager.Instance.ImageHolder.SanityIcon; break;
-      case RewardTarget.Gold: _rewardsprite = GameManager.Instance.ImageHolder.GoldIcon; break;
-      case RewardTarget.Experience: _rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon; break;
-      case RewardTarget.Skill:
-        switch (_selection.SelectionRewardSkillType)
+      case RewardTypeEnum.Status:
+        switch (_selection.SuccessData.Reward_StatusType)
         {
-          case SkillType.Conversation: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Conversation; break;
-          case SkillType.Force: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Force; break;
-          case SkillType.Wild: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Wild; break;
-          case SkillType.Intelligence: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Intelligence; break;
+          case StatusTypeEnum.HP: _rewardsprite = GameManager.Instance.ImageHolder.HPIcon; break;
+          case StatusTypeEnum.Sanity: _rewardsprite = GameManager.Instance.ImageHolder.SanityIcon; break;
+          case StatusTypeEnum.Gold: _rewardsprite = GameManager.Instance.ImageHolder.GoldIcon; break;
         }
+        break;
+      case RewardTypeEnum.Experience: _rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon; break;
+      case RewardTypeEnum.Skill:
+        _rewardsprite = GameManager.Instance.ImageHolder.GetSkillIcon(_selection.SuccessData.Reward_SkillType, false);
         break;
     }
     PayRewardIcon.sprite = _rewardsprite;
@@ -402,15 +386,15 @@ public class PreviewManager : MonoBehaviour
     int _modify = 0;
     string _payvaluetext="", _statusinfo = "";
     int _percent = -1;
-    StatusType _status = StatusType.HP;
+    StatusTypeEnum _status = StatusTypeEnum.HP;
     switch (_selection.SelectionPayTarget)
     {
-      case StatusType.HP:
-        _status = StatusType.HP;
+      case StatusTypeEnum.HP:
+        _status = StatusTypeEnum.HP;
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusType.HP,1), WNCText.GetHPColor(_modifiedvalue.ToString()));
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusTypeEnum.HP,1), WNCText.GetHPColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
@@ -420,12 +404,12 @@ public class PreviewManager : MonoBehaviour
         if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
         break;//체력이라면 지불 기본값, 보정치, 최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
 
-      case StatusType.Sanity:
-        _status = StatusType.Sanity;
+      case StatusTypeEnum.Sanity:
+        _status = StatusTypeEnum.Sanity;
         _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue_modified;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Sanity, 1), WNCText.GetSanityColor(_modifiedvalue.ToString()));
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor(_modifiedvalue.ToString()));
         if (_modify.Equals(0)) _statusinfo = "";
         else if (_modify > 0)
         {
@@ -440,8 +424,8 @@ public class PreviewManager : MonoBehaviour
         if (PayNoGoldHolder.activeInHierarchy.Equals(true)) PayNoGoldHolder.SetActive(false);
         if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
-      case StatusType.Gold:
-        _status = StatusType.Gold;
+      case StatusTypeEnum.Gold:
+        _status = StatusTypeEnum.Gold;
         _payicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
         _modify = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayGoldValue_modified;
@@ -460,8 +444,8 @@ public class PreviewManager : MonoBehaviour
           PayNoGold_PercentText.text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
           PayNoGold_PercentValue.text = WNCText.PercentageColor(_percent);
           PayNoGold_Alternative.text = string.Format(GameManager.Instance.GetTextData("NOGOLD_PERCENTAGE_TEXT"),
-            GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold),
-            GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetSanityColor(_sanitypayvalue.ToString()));
+            GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold),
+            GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetSanityColor(_sanitypayvalue.ToString()));
 
           if (PayNoGoldHolder.activeInHierarchy.Equals(false)) PayNoGoldHolder.SetActive(true);
           if (PayRequireValue.gameObject.activeInHierarchy.Equals(true)) PayRequireValue.gameObject.SetActive(false);
@@ -469,7 +453,7 @@ public class PreviewManager : MonoBehaviour
         }//지불 골드 값이 보유 값에 비해 높을 때
         else
         {
-          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusType.Gold, 1), WNCText.GetGoldColor(_modifiedvalue));
+          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 1), WNCText.GetGoldColor(_modifiedvalue));
 
           if(PayNoGoldHolder.activeInHierarchy.Equals(true))PayNoGoldHolder.SetActive(false);
           if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
@@ -504,20 +488,19 @@ public class PreviewManager : MonoBehaviour
     SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
     Sprite _rewardsprite = null;
-    switch (_selection.SelectionSuccesReward)
+    switch (_selection.SuccessData.Reward_Type)
     {
-      case RewardTarget.HP: _rewardsprite = GameManager.Instance.ImageHolder.HPIcon; break;
-      case RewardTarget.Sanity: _rewardsprite = GameManager.Instance.ImageHolder.SanityIcon; break;
-      case RewardTarget.Gold: _rewardsprite = GameManager.Instance.ImageHolder.GoldIcon; break;
-      case RewardTarget.Experience: _rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon; break;
-      case RewardTarget.Skill:
-        switch (_selection.SelectionRewardSkillType)
+      case RewardTypeEnum.Status:
+        switch (_selection.SuccessData.Reward_StatusType)
         {
-          case SkillType.Conversation: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Conversation; break;
-          case SkillType.Force: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Force; break;
-          case SkillType.Wild: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Wild; break;
-          case SkillType.Intelligence: _rewardsprite = GameManager.Instance.ImageHolder.ThemeIcon_Intelligence; break;
+          case StatusTypeEnum.HP: _rewardsprite = GameManager.Instance.ImageHolder.HPIcon; break;
+          case StatusTypeEnum.Sanity: _rewardsprite = GameManager.Instance.ImageHolder.SanityIcon; break;
+          case StatusTypeEnum.Gold: _rewardsprite = GameManager.Instance.ImageHolder.GoldIcon; break;
         }
+        break;
+      case RewardTypeEnum.Experience: _rewardsprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon; break;
+      case RewardTypeEnum.Skill:
+        _rewardsprite = GameManager.Instance.ImageHolder.GetSkillIcon(_selection.SuccessData.Reward_SkillType, false);
         break;
     }
     CheckRewardIcon.sprite = _rewardsprite;
@@ -616,7 +599,7 @@ public class PreviewManager : MonoBehaviour
     OpenPreviewPanel(SelectionElsePanel,rect);
   }
   //보상 설명 : 체력,정신력,돈 설명?
-  public void OpenRewardStatusPreview(StatusType status, int _value, RectTransform rect)
+  public void OpenRewardStatusPreview(StatusTypeEnum status, int _value, RectTransform rect)
   {
     Sprite _icon = null;
     int  _modify = 0;
@@ -659,10 +642,10 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(RewardExpPanel,rect);
   }
-  public void OpenRewardSkillPreview(SkillType skilltype, RectTransform rect)
+  public void OpenRewardSkillPreview(SkillTypeEnum skilltype, RectTransform rect)
   {
     string _name = $"{GameManager.Instance.GetTextData(skilltype,0)} +1";
-    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(skilltype);
+    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(skilltype,false);
 
     RewardSkillIcon.sprite = _icon;
     RewardSkillName.text = _name;
@@ -732,26 +715,25 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(JustDescription_Panel,pivot,rect);
   }
-  public void OpenIconAndDescriptionPanel(Sprite icon,string text, RectTransform rect)
+  public void OpenIconAndDescriptionPanel(Sprite icon,string text,bool isstatus, RectTransform rect)
   {
     IconAndDescription_Icon.sprite = icon;
+    IconAndDescription_IconBackground.sprite = isstatus ? GameManager.Instance.ImageHolder.IconBackground_status : GameManager.Instance.ImageHolder.IconBackground_normal;
     IconAndDescription_Description.text = text;
 
     OpenPreviewPanel(IconAndDescription_Panel,rect);
   }
-  public void OpenIconAndDescriptionPanel(Sprite icon, string text,Vector2 pivot, RectTransform rect)
+  public void OpenIconAndDescriptionPanel(Sprite icon, string text,Vector2 pivot, bool isstatus, RectTransform rect)
   {
     IconAndDescription_Icon.sprite = icon;
+    IconAndDescription_IconBackground.sprite = isstatus ? GameManager.Instance.ImageHolder.IconBackground_status : GameManager.Instance.ImageHolder.IconBackground_normal;
     IconAndDescription_Description.text = text;
 
     OpenPreviewPanel(IconAndDescription_Panel,pivot,rect);
   }
   public void OpenDisComfortPanel(RectTransform rect)
   {
-    IconAndDescription_Icon.sprite = GameManager.Instance.ImageHolder.DisComfort;
-     IconAndDescription_Description.text = GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION");
-
-    OpenPreviewPanel(IconAndDescription_Panel,DiscomfortPivot,rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.DisComfort, GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION"), DiscomfortPivot, false, rect);
   }
   public void OpenEnvirPanel(EnvironmentType envir)
   {

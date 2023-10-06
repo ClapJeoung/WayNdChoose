@@ -78,6 +78,7 @@ public class UI_Expereince_info : UI_default
 
       }//다른 경험 클릭하면 해당 경험 정보로 대체
     }
+    LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("myrect").Rect);
 
   }
   public override void CloseUI()

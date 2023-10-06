@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 시작 성공(일반) 실패(일반) 성공,실패(성향 좌측) 성공,실패(성향 우측)
@@ -35,6 +36,31 @@ public class ImageHolder : ScriptableObject
   [Space(10)]
   public Sprite SkillIllust_Conversation = null;
   public Sprite SkillIllust_Force = null, SkillIllust_Wild = null, SkillIllust_Intelligence = null;
+  [Space(5)]
+  public Sprite SkillIcon_Conversation_b = null;
+  public Sprite SkillIcon_Force_b = null;
+  public Sprite SkillIcon_Wild_b = null;
+  public Sprite SkillIcon_Intelligence_b = null;
+  public Sprite SkillIcon_Conversation_w = null;
+  public Sprite SkillIcon_Force_w = null;
+  public Sprite SkillIcon_Wild_w = null;
+  public Sprite SkillIcon_Intelligence_w = null;
+  /// <summary>
+  /// 0흑 1백
+  /// </summary>
+  /// <param name="_type"></param>
+  /// <param name="color"></param>
+  /// <returns></returns>
+  public Sprite GetSkillIcon(SkillTypeEnum _type,bool isblack)
+  {
+    switch (_type)
+    {
+      case SkillTypeEnum.Conversation: return isblack ? SkillIcon_Conversation_b : SkillIcon_Conversation_w;
+      case SkillTypeEnum.Force: return isblack ? SkillIcon_Force_b : SkillIcon_Force_w;
+      case SkillTypeEnum.Wild: return isblack ? SkillIcon_Wild_b : SkillIcon_Wild_w;
+      default: return isblack ? SkillIcon_Intelligence_b : SkillIcon_Intelligence_w;
+    }
+  }
   [Space(10)]
   public List<Sprite> MadnessIluusts = new List<Sprite>();
   /// <summary>
@@ -51,10 +77,10 @@ public class ImageHolder : ScriptableObject
   public Sprite[] TendencyIllust_Body=new Sprite[5];
   public Sprite[] TendencyIcon_Head=new Sprite[5];
   public Sprite[] TendencyIllust_Head = new Sprite[5];
-  public Sprite StatusIcon(StatusType status)
+  public Sprite StatusIcon(StatusTypeEnum status)
   {
-    if (status == StatusType.HP) return HPIcon;
-    else if (status == StatusType.Sanity) return SanityIcon;
+    if (status == StatusTypeEnum.HP) return HPIcon;
+    else if (status == StatusTypeEnum.Sanity) return SanityIcon;
     else return GoldIcon;
   }
   public Sprite GetTendencyIcon(TendencyTypeEnum type,int level)
@@ -68,21 +94,6 @@ public class ImageHolder : ScriptableObject
     else return TendencyIllust_Head[level + 2];
   }
   [Space(10)]
-  public Sprite ThemeIcon_Conversation = null;
-  public Sprite ThemeIcon_Force = null;
-  public Sprite ThemeIcon_Wild = null;
-  public Sprite ThemeIcon_Intelligence = null;
-  public Sprite GetSkillIcon(SkillType _type)
-  {
-    switch (_type)
-    {
-      case SkillType.Conversation: return ThemeIcon_Conversation;
-      case SkillType.Force: return ThemeIcon_Force;
-      case SkillType.Wild: return ThemeIcon_Wild;
-      default: return ThemeIcon_Intelligence;
-    }
-  }
-  [Space(10)]
  // public Sprite TendencySelectionIcon = null;
  // public Sprite ExpSelectionIcon = null;
  // public Sprite SkillSelectionIcon = null;
@@ -92,14 +103,14 @@ public class ImageHolder : ScriptableObject
   public Sprite LibraryIcon = null;
 //  public Sprite TheaterIcon = null;
 //  public Sprite AcademyIcon = null;
-  public Sprite GetPlaceIcon(SectorType placetype)
+  public Sprite GetPlaceIcon(SectorTypeEnum placetype)
   {
     switch (placetype)
     {
-      case SectorType.Residence:return ResidenceIcon;
-      case SectorType.Temple: return TempleIcon;
-      case SectorType.Marketplace:return MarketPlaceIcon;
-      case SectorType.Library:return LibraryIcon;
+      case SectorTypeEnum.Residence:return ResidenceIcon;
+      case SectorTypeEnum.Temple: return TempleIcon;
+      case SectorTypeEnum.Marketplace:return MarketPlaceIcon;
+      case SectorTypeEnum.Library:return LibraryIcon;
   //    case SectorType.Theater:return TheaterIcon;
     //  default:return AcademyIcon;
     }
@@ -214,23 +225,68 @@ public class ImageHolder : ScriptableObject
       default: return SelectionBackground_none;
     }
   }
-  public Sprite SelectionButtonBackground_none = null;
-  public Sprite SelectionButtonBackground_rational = null;
-  public Sprite SelectionButtonBackground_physical = null;
-  public Sprite SelectionButtonBackground_mental = null;
-  public Sprite SelectionButtonBackground_material = null;
-  public Sprite GetSelectionButtonBackground(TendencyTypeEnum tendencytype,bool dir)
+  public Sprite SelectionButtonImage_None_Idle = null;
+  public Sprite SelectionButtonImage_None_Enter = null;
+  public Sprite SelectionButtonImage_None_Clicked = null;
+  public Sprite SelectionButtonImage_BodyM_Idle = null;
+  public Sprite SelectionButtonImage_BodyM_Enter = null;
+  public Sprite SelectionButtonImage_BodyM_Clicked = null;
+  public Sprite SelectionButtonImage_BodyP_Idle = null;
+  public Sprite SelectionButtonImage_BodyP_Enter = null;
+  public Sprite SelectionButtonImage_BodyP_Clicked = null;
+  public Sprite SelectionButtonImage_HeadM_Idle = null;
+  public Sprite SelectionButtonImage_HeadM_Enter = null;
+  public Sprite SelectionButtonImage_HeadM_Clicked = null;
+  public Sprite SelectionButtonImage_HeadP_Idle = null;
+  public Sprite SelectionButtonImage_HeadP_Enter = null;
+  public Sprite SelectionButtonImage_HeadP_Clicked = null;
+  public SpriteState GetSelectionButtonBackground(TendencyTypeEnum tendencytype,bool dir)
   {
+    SpriteState _state = new SpriteState();
     switch (tendencytype)
     {
       case TendencyTypeEnum.Body:
-        if (dir.Equals(true)) return SelectionButtonBackground_rational;
-        else return SelectionButtonBackground_physical;
+        if (dir.Equals(true))
+        {
+          _state.highlightedSprite = SelectionButtonImage_BodyM_Enter;
+          _state.pressedSprite = SelectionButtonImage_BodyM_Clicked;
+          _state.selectedSprite = SelectionButtonImage_BodyM_Idle;
+          _state.disabledSprite = SelectionButtonImage_BodyM_Idle;
+        }
+        else
+        {
+          _state.highlightedSprite = SelectionButtonImage_BodyP_Enter;
+          _state.pressedSprite = SelectionButtonImage_BodyP_Clicked;
+          _state.selectedSprite = SelectionButtonImage_BodyP_Idle;
+          _state.disabledSprite = SelectionButtonImage_BodyP_Idle;
+        }
+        break;
       case TendencyTypeEnum.Head:
-        if (dir.Equals(true)) return SelectionButtonBackground_mental;
-        else return SelectionButtonBackground_material;
-      default: return SelectionButtonBackground_none;
+        if (dir.Equals(true))
+        {
+          _state.highlightedSprite = SelectionButtonImage_HeadM_Enter;
+          _state.pressedSprite = SelectionButtonImage_HeadM_Clicked;
+          _state.selectedSprite = SelectionButtonImage_HeadM_Idle;
+          _state.disabledSprite = SelectionButtonImage_HeadM_Idle;
+        }
+        else
+        {
+          _state.highlightedSprite = SelectionButtonImage_HeadP_Enter;
+          _state.pressedSprite = SelectionButtonImage_HeadP_Clicked;
+          _state.selectedSprite = SelectionButtonImage_HeadP_Idle;
+          _state.disabledSprite = SelectionButtonImage_HeadP_Idle;
+        }
+        break;
+      default:
+        {
+          _state.highlightedSprite = SelectionButtonImage_None_Enter;
+          _state.pressedSprite = SelectionButtonImage_None_Clicked;
+          _state.selectedSprite = SelectionButtonImage_None_Idle;
+          _state.disabledSprite = SelectionButtonImage_None_Idle;
+        }
+        break;
     }
+    return _state;
   }
   [Space(10)]
   public Sprite[] NullEnvirIllust=new Sprite[0];
@@ -273,13 +329,13 @@ public class ImageHolder : ScriptableObject
       default: return DefaultIcon;
     }
   }
-  public Sprite GetSkillIllust(SkillType _type)
+  public Sprite GetSkillIllust(SkillTypeEnum _type)
   {
     switch (_type)
     {
-      case SkillType.Conversation: return SkillIllust_Conversation;
-      case SkillType.Force: return SkillIllust_Force;
-      case SkillType.Wild: return SkillIllust_Wild;
+      case SkillTypeEnum.Conversation: return SkillIllust_Conversation;
+      case SkillTypeEnum.Force: return SkillIllust_Force;
+      case SkillTypeEnum.Wild: return SkillIllust_Wild;
       default: return SkillIllust_Intelligence;
     }
   }
@@ -366,7 +422,9 @@ public class ImageHolder : ScriptableObject
     }
     return _targetsprite;
   }//ID로 경험 일러스트 가져오기
-
+  [Space(10)]
+  public Sprite IconBackground_normal = null;
+  public Sprite IconBackground_status = null;
 }
 public class EventIllustHolder
 {

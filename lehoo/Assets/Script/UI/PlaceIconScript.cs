@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlaceIconScript : MonoBehaviour
 {
-  public SectorType MyType = SectorType.Residence;
+  public SectorTypeEnum MyType = SectorTypeEnum.Residence;
   public Image MyImage = null;
 //  public Image Quest_Wolf_CultBlock_Effect = null;    //이건 일단 보류...
   public Image BlockedImage = null;

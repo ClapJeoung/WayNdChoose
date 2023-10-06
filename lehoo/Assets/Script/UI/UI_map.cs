@@ -52,7 +52,7 @@ public class UI_map : UI_default
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
   private float MoveButtonDisableAlpha = 0.2f;
-  public StatusType SelectedCostType = StatusType.HP;
+  public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private TextMeshProUGUI MoveDescriptionText = null;
 
   public Transform SelectTileHolder = null;
@@ -165,13 +165,14 @@ public class UI_map : UI_default
     ResetEnableTiles();
 
     MoveInfoGroup.interactable = true;
+    MoveProgressInfoText.text = "";
     MoveDescriptionText.text = "";
     if (SettlementInfoHolder.activeInHierarchy == true) SettlementInfoHolder.SetActive(false);
     MovecostButtonGroup.alpha = 0.0f;
     MovecostButtonGroup.interactable = false;
     MovecostButtonGroup.blocksRaycasts = false;
 
-    SelectedCostType = StatusType.HP;
+    SelectedCostType = StatusTypeEnum.HP;
 
     if (DefaultGroup.alpha == 1.0f) DefaultGroup.alpha = 0.0f;
     if (DefaultGroup.interactable == true) DefaultGroup.interactable = false;
@@ -255,36 +256,36 @@ public class UI_map : UI_default
     SanitybuttonGroup.interactable = true;
   }
 
-  public void EnterPointerStatus(StatusType type)
+  public void EnterPointerStatus(StatusTypeEnum type)
   {
     switch (type)
     {
-      case StatusType.Sanity:
-        SelectedCostType = StatusType.Sanity;
+      case StatusTypeEnum.Sanity:
+        SelectedCostType = StatusTypeEnum.Sanity;
         SanitybuttonGroup.alpha = 1.0f;
         GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
 
         MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY")+"<br>"+ (GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusType.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)));
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)));
         break;
-      case StatusType.Gold:
-        if (GameManager.Instance.MyGameData.Gold >= GoldCost) return;
+      case StatusTypeEnum.Gold:
+        if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
-        SelectedCostType = StatusType.Gold;
+        SelectedCostType = StatusTypeEnum.Gold;
         SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
         GoldbuttonGroup.alpha = 1.0f;
 
         MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD")+"<br>"+(GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusType.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)));
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)));
         break;
     }
     LayoutRebuilder.ForceRebuildLayoutImmediate(MoveDescriptionText.transform.parent.transform as RectTransform);
   }
-  public void ExitPointerStatus(StatusType type)
+  public void ExitPointerStatus(StatusTypeEnum type)
   {
-    if (type==StatusType.Gold&& GameManager.Instance.MyGameData.Gold < GoldCost) return;
+    if (type==StatusTypeEnum.Gold&& GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
     SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
     GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
@@ -341,10 +342,10 @@ public class UI_map : UI_default
 
     switch (SelectedCostType)
     {
-      case StatusType.Sanity:
+      case StatusTypeEnum.Sanity:
         GameManager.Instance.MyGameData.Sanity -= SanityCost;
         break;
-      case StatusType.Gold:
+      case StatusTypeEnum.Gold:
         GameManager.Instance.MyGameData.Gold -= GoldCost;
         break;
     }

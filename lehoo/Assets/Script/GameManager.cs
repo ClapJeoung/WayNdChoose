@@ -5,28 +5,141 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Text;
 using Unity.VisualScripting;
+using UnityEngine.Networking;
+using static System.Net.WebRequestMethods;
+using System.Linq;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
+  [ContextMenu("이벤트 데이터 업데이트")]
+  void EventDataUpdate()
+  {
+    StartCoroutine(eventdataupdate());
+  }
+  private IEnumerator eventdataupdate()
+  {
+    UnityWebRequest _sheet_event = UnityWebRequest.Get(SeetURL_Event);
+    yield return _sheet_event.SendWebRequest();
+
+    EventJsonDataList.Clear();
+    string[] _eventrow = _sheet_event.downloadHandler.text.Split('\n');
+    for (int i = 1; i < _eventrow.Length; i++)
+    {
+      string[] _data = _eventrow[i].Split('\t');
+      EventJsonData _json = new EventJsonData();
+      _json.ID = _data[1];
+
+      _json.EventInfo = _data[0];
+      _json.PlaceInfo = _data[2];
+      _json.Season= _data[3];
+
+      _json.Selection_Type= _data[4];
+      _json.Selection_Target= _data[5];
+      _json.Selection_Info= _data[6];
+
+      _json.Failure_Penalty= _data[7];
+      _json.Failure_Penalty_info= _data[8];
+
+      _json.Reward_Target= _data[9];
+      _json.Reward_Info= _data[10];
+
+      _json.EndingID = _data[11];
+      EventJsonDataList.Add(_json);
+    }
+    print("이벤트 데이터 업데이트 완료");
+  }
+  [ContextMenu("경험 데이터 업데이트")]
+  void ExpDataUpdate()
+  {
+    StartCoroutine(expdataupdate());
+  }
+  private IEnumerator expdataupdate()
+  {
+    UnityWebRequest _sheet_exp = UnityWebRequest.Get(SeetURL_Exp);
+    yield return _sheet_exp.SendWebRequest();
+    ExpJsonDataList.Clear();
+    string[] _exprow = _sheet_exp.downloadHandler.text.Split('\n');
+    for (int i = 1; i < _exprow.Length; i++)
+    {
+      string[] _data = _exprow[i].Split('\t');
+      ExperienceJsonData _json = new ExperienceJsonData();
+
+      _json.ID = _data[0];
+      _json.GoodOrBad = int.Parse(_data[1]);
+      _json.Type = _data[2];
+
+      ExpJsonDataList.Add(_json);
+    }
+    print("경험 데이터 업데이트 완료");
+  }
+  [ContextMenu("텍스트 데이터 업데이트")]
+  void TextDataUpdate()
+  {
+    StartCoroutine(textdataupdate());
+  }
+  private IEnumerator textdataupdate()
+  {
+    int _previewcount=TextDatas.Count;
+
+    UnityWebRequest _sheet_text = UnityWebRequest.Get(SeetURL_Text);
+    yield return _sheet_text.SendWebRequest();
+    string[] _textrow = _sheet_text.downloadHandler.text.Split('\n');
+    TextDatas.Clear();
+
+    for (int i = 1; i < _textrow.Length; i++)
+    {
+      string[] _data = _textrow[i].Split("\t");
+      Textdata _textdata = new Textdata();
+      _textdata.ID = _data[0];
+      _textdata.kor = _data[1];
+      TextDatas.Add(_textdata);
+    }
+    print($"텍스트 딕셔너리 업데이트 완료\n{_previewcount}개 -> {TextDatas.Count}개");
+  }
+
   private static GameManager instance;
   public static GameManager Instance { get { return instance; } }
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
+
   [HideInInspector] public GameJsonData GameJsonData = null;
   [HideInInspector] public const string GameDataName = "WNCGameData.json";
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
 
   public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
 
-  [SerializeField] private TextAsset NormalEventData = null;  //이벤트 Json
-  [SerializeField] private TextAsset FollowEventData = null;  //연계 이벤트 Json
-  [SerializeField] private TextAsset QuestEventData = null;   //퀘스트 이벤트 Json
-  [SerializeField] private TextAsset EXPData = null;    //경험 Json
-  [SerializeField] private TextAsset TextData = null;
+  private const string SeetURL_Event = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=0";
+  private const string SeetURL_Exp = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=634251844";
+  private const string SeetURL_Text = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=1628546529";
+  public List<EventJsonData> EventJsonDataList= new List<EventJsonData>();
+  public List<ExperienceJsonData> ExpJsonDataList= new List<ExperienceJsonData>();
+  private IEnumerator loadspreadsheetdatas()
+  {
+
+    if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Quest0", QuestType.Cult);
+
+    foreach (var _data in EventJsonDataList)
+    {
+      string _eventinfo = _data.EventInfo.Split('@')[0];
+      if (_eventinfo == null || _eventinfo == "0"||_eventinfo=="") EventHolder.ConvertData_Normal(_data);
+      else if (_eventinfo == "1") EventHolder.ConvertData_Follow(_data);
+      else EventHolder.ConvertData_Quest(_data);
+    }
+
+    foreach (var _data in ExpJsonDataList)
+    {
+      Experience _exp = _data.ReturnEXPClass();
+      ExpDic.Add(_data.ID, _exp);
+    }
+
+    yield return null;
+  }
+
+
   public EventHolder EventHolder = new EventHolder();                               //이벤트 저장할 홀더
   public Dictionary<string, Experience> ExpDic = new Dictionary<string, Experience>();  //경험 딕셔너리
-  public Dictionary<string,string> TextDic=new Dictionary<string, string>();
+  public List<Textdata> TextDatas = new List<Textdata>();
   public const string NullText = "no text exist";
   private GoldFailData goldfaildata = null;
   public GoldFailData GoldFailData
@@ -38,7 +151,7 @@ public class GameManager : MonoBehaviour
         goldfaildata = new GoldFailData();
         goldfaildata.Description = GetTextData("GOLDFAIL_TEXT");
         goldfaildata.Panelty_target = PenaltyTarget.Status;
-        goldfaildata.Loss_target = StatusType.Sanity;
+        goldfaildata.Loss_target = StatusTypeEnum.Sanity;
         goldfaildata.Illust = ImageHolder.NoGoldIllust;
 
       }
@@ -48,9 +161,9 @@ public class GameManager : MonoBehaviour
   #region #데이터 관련#
   public string GetTextData(string _id)
   {
-    foreach(var _data in TextDic)
+    foreach(var _data in TextDatas)
     {
-      if (string.Compare(_id, _data.Key, true) == 0) return _data.Value;
+      if (string.Compare(_id, _data.ID, true) == 0) return _data.Text;
     }
     
     Debug.Log($"{_id} 없음"); 
@@ -96,15 +209,15 @@ public class GameManager : MonoBehaviour
   /// <param name="_theme"></param>
   /// <param name="texttype"></param>
   /// <returns></returns>
-  public string GetTextData(SkillType skilltype,int texttype)
+  public string GetTextData(SkillTypeEnum skilltype,int texttype)
   {
     string _name = "";
     switch (skilltype)
     {
-      case SkillType.Conversation: _name = "CONVERSATION"; break;
-      case SkillType.Force: _name = "FORCE"; break;
-      case SkillType.Wild: _name = "WILD"; break;
-      case SkillType.Intelligence: _name = "INTELLIGENCE"; break;
+      case SkillTypeEnum.Conversation: _name = "CONVERSATION"; break;
+      case SkillTypeEnum.Force: _name = "FORCE"; break;
+      case SkillTypeEnum.Wild: _name = "WILD"; break;
+      case SkillTypeEnum.Intelligence: _name = "INTELLIGENCE"; break;
     }
     _name += "_";
     switch (texttype)
@@ -151,15 +264,15 @@ public class GameManager : MonoBehaviour
     }
     return GetTextData(_name);
   }
-  public string GetTextData(SkillType skilltype, bool isup,bool isstrong,bool isicon)
+  public string GetTextData(SkillTypeEnum skilltype, bool isup,bool isstrong,bool isicon)
   {
     string _name = "";
     switch (skilltype)
     {
-      case SkillType.Conversation: _name = "CONVERSATION"; break;
-      case SkillType.Force: _name = "FORCE"; break;
-      case SkillType.Wild: _name = "WILD"; break;
-      case SkillType.Intelligence: _name = "INTELLIGENCE"; break;
+      case SkillTypeEnum.Conversation: _name = "CONVERSATION"; break;
+      case SkillTypeEnum.Force: _name = "FORCE"; break;
+      case SkillTypeEnum.Wild: _name = "WILD"; break;
+      case SkillTypeEnum.Intelligence: _name = "INTELLIGENCE"; break;
     }
     _name += isup ? "_UP" : "_DOWN";
     _name += isstrong ? "_HIGH" : "_NORMAL";
@@ -170,16 +283,16 @@ public class GameManager : MonoBehaviour
   {
     switch (_effect)
     {
-      case EffectType.Conversation: return GetTextData(SkillType.Conversation,true,false,isicon);
-      case EffectType.Force: return GetTextData(SkillType.Force , true, false, isicon);
-      case EffectType.Wild: return GetTextData(SkillType.Wild, true, false, isicon);
-      case EffectType.Intelligence: return GetTextData(SkillType.Intelligence, true, false, isicon);
-      case EffectType.HPLoss: return GetTextData(StatusType.HP,false,isicon?2:1);
-      case EffectType.HPGen: return GetTextData(StatusType.HP, true, isicon?2:1);
-      case EffectType.SanityLoss: return GetTextData(StatusType.Sanity, false, isicon?2:1);
-      case EffectType.SanityGen: return GetTextData(StatusType.Sanity, true, isicon?2:1);
-      case EffectType.GoldLoss: return GetTextData(StatusType.Gold, false, isicon?2:1);
-      case EffectType.GoldGen: return GetTextData(StatusType.Gold, true, isicon?2:1);
+      case EffectType.Conversation: return GetTextData(SkillTypeEnum.Conversation,true,false,isicon);
+      case EffectType.Force: return GetTextData(SkillTypeEnum.Force , true, false, isicon);
+      case EffectType.Wild: return GetTextData(SkillTypeEnum.Wild, true, false, isicon);
+      case EffectType.Intelligence: return GetTextData(SkillTypeEnum.Intelligence, true, false, isicon);
+      case EffectType.HPLoss: return GetTextData(StatusTypeEnum.HP,false,isicon?2:1);
+      case EffectType.HPGen: return GetTextData(StatusTypeEnum.HP, true, isicon?2:1);
+      case EffectType.SanityLoss: return GetTextData(StatusTypeEnum.Sanity, false, isicon?2:1);
+      case EffectType.SanityGen: return GetTextData(StatusTypeEnum.Sanity, true, isicon?2:1);
+      case EffectType.GoldLoss: return GetTextData(StatusTypeEnum.Gold, false, isicon?2:1);
+      case EffectType.GoldGen: return GetTextData(StatusTypeEnum.Gold, true, isicon?2:1);
       default: return NullText;
     }
   }
@@ -216,17 +329,17 @@ public class GameManager : MonoBehaviour
   /// <param name="_place"></param>
   /// <param name="texttype"></param>
   /// <returns></returns>
-  public string GetTextData(SectorType sector,int texttype)
+  public string GetTextData(SectorTypeEnum sector,int texttype)
   {
     string _str = "PLACE_";
     switch (sector)
     {
-      case SectorType.Residence: _str += "RESIDENCE";break;
-      case SectorType.Temple: _str += "TEMPLE"; break;
-      case SectorType.Marketplace: _str += "MARKETPLACE"; break;
-      case SectorType.Library: _str += "LIBRARY"; break;
-      case SectorType.Theater: _str += "THEATER"; break;
-      case SectorType.Academy: _str += "ACADEMY"; break;
+      case SectorTypeEnum.Residence: _str += "RESIDENCE";break;
+      case SectorTypeEnum.Temple: _str += "TEMPLE"; break;
+      case SectorTypeEnum.Marketplace: _str += "MARKETPLACE"; break;
+      case SectorTypeEnum.Library: _str += "LIBRARY"; break;
+      case SectorTypeEnum.Theater: _str += "THEATER"; break;
+      case SectorTypeEnum.Academy: _str += "ACADEMY"; break;
     }
     _str += "_";
     switch (texttype)
@@ -245,14 +358,14 @@ public class GameManager : MonoBehaviour
   /// </summary>
   /// <param name="type"></param>
   /// <returns></returns>
-  public string GetTextData(StatusType type,int texttype)
+  public string GetTextData(StatusTypeEnum type,int texttype)
   {
     string _str = "";
     switch (type)
     {
-      case StatusType.HP: _str = "HP";break;
-      case StatusType.Sanity:_str = "SANITY";break;
-      case StatusType.Gold: _str = "GOLD";break;
+      case StatusTypeEnum.HP: _str = "HP";break;
+      case StatusTypeEnum.Sanity:_str = "SANITY";break;
+      case StatusTypeEnum.Gold: _str = "GOLD";break;
     }
     _str += "_";
     switch (texttype)
@@ -284,7 +397,7 @@ public class GameManager : MonoBehaviour
   /// <param name="isincrease"></param>
   /// <param name="icontype"></param>
   /// <returns></returns>
-  public string GetTextData(StatusType type,bool isincrease,int icontype)
+  public string GetTextData(StatusTypeEnum type,bool isincrease,int icontype)
   {
     int _typecode = isincrease ? 11 : 14;
     _typecode += icontype;
@@ -292,60 +405,14 @@ public class GameManager : MonoBehaviour
   }
     public void LoadData()
   {
-    if (File.Exists(Application.persistentDataPath+"/"+GameDataName ))
+    if (System.IO.File.Exists(Application.persistentDataPath+"/"+GameDataName ))
     {
-      GameJsonData = JsonUtility.FromJson<GameJsonData>(File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
+      GameJsonData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
       MyGameData = GameJsonData.GetGameData();
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
-    Dictionary<string, TextData> _textdatas = JsonConvert.DeserializeObject<Dictionary<string, TextData>>(TextData.text);
-    foreach (var _data in _textdatas)
-    {
-      string _texttemp = _data.Value.TEXT;
-      if (_texttemp.Contains("\\n")) _texttemp = _texttemp.Replace("\\n", "\n");
-      if (TextDic.ContainsKey(_data.Key)||TextDic.ContainsValue(_data.Value.TEXT)) { Debug.Log($"{_data.Key} / {_data.Value.ID} 겹침! 확인 필요!"); continue; }
-      TextDic.Add(_data.Value.ID, _data.Value.TEXT);
-    }
-
-    if (NormalEventData != null)
-    {
-      Dictionary<string, EventJsonData> _eventjson = new Dictionary<string, EventJsonData>();
-      _eventjson = JsonConvert.DeserializeObject<Dictionary<string, EventJsonData>>(NormalEventData.text);
-      foreach (var _data in _eventjson) EventHolder.ConvertData_Normal(_data.Value);
-      //이벤트 Json -> EventHolder
-    }
-
-    if (FollowEventData != null)
-    {
-      Dictionary<string, FollowEventJsonData> _followeventjson = new Dictionary<string, FollowEventJsonData>();
-      _followeventjson = JsonConvert.DeserializeObject<Dictionary<string, FollowEventJsonData>>(FollowEventData.text);
-      foreach (var _data in _followeventjson) EventHolder.ConvertData_Follow(_data.Value);
-      //연계 이벤트 Json -> EventHolder
-    }
-
-    if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Quest0", QuestType.Cult);
-    if (QuestEventData != null)
-    {
-      Dictionary<string, QuestEventDataJson> _questeventjson = new Dictionary<string, QuestEventDataJson>();
-      _questeventjson = JsonConvert.DeserializeObject<Dictionary<string, QuestEventDataJson>>(QuestEventData.text);
-      foreach (var _data in _questeventjson) EventHolder.ConvertData_Quest(_data.Value);
-      //퀘스트 Json -> EventHolder
-    }
-
-
-    if (EXPData != null)
-    {
-      Dictionary<string, ExperienceJsonData> _expjson = new Dictionary<string, ExperienceJsonData>();
-      _expjson = JsonConvert.DeserializeObject<Dictionary<string, ExperienceJsonData>>(EXPData.text);
-      foreach (var _data in _expjson)
-      {
-        Experience _exp = _data.Value.ReturnEXPClass();
-        ExpDic.Add(_data.Value.ID, _exp);
-      }
-      //경험 Json -> EXPDic
-    }
-
+    UIManager.Instance.AddUIQueue((loadspreadsheetdatas()));
   }//각종 Json 가져와서 변환
   public void SaveData()
   {
@@ -353,17 +420,17 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   #endregion
 
-  public void RestInSector(SectorType sectortype,bool issanity)
+  public void RestInSector(SectorTypeEnum sectortype,bool issanity)
   {
     if (issanity)
     {
-      MyGameData.Sanity -= sectortype!=SectorType.Marketplace?
+      MyGameData.Sanity -= sectortype!=SectorTypeEnum.Marketplace?
         ConstValues.RestCost_Sanity:
         ConstValues.RestCost_Sanity*ConstValues.SectorEffect_marketSector/100;
     }
     else
     {
-      MyGameData.Gold -= sectortype != SectorType.Marketplace ?
+      MyGameData.Gold -= sectortype != SectorTypeEnum.Marketplace ?
         ConstValues.RestCost_Gold :
         ConstValues.RestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
     }
@@ -557,13 +624,17 @@ public class GameManager : MonoBehaviour
     {
       instance = this;
       DontDestroyOnLoad(gameObject);
+      if(PlayerPrefs.GetInt("LanguageIndex", -1) == -1)
+      {
+        SystemLanguage _lang = Application.systemLanguage;
+        PlayerPrefs.SetInt("LanguageIndex", (int)_lang);
+      }
       LoadData();
       //  DebugAllEvents();
     }
     else Destroy(gameObject);
 
   }
-
 
   private void Update()
   {
@@ -701,8 +772,107 @@ public class GameManager : MonoBehaviour
 
     UIManager.Instance.MySettleUI.OpenUI();
   }
+  [System.Serializable]
+  public class Textdata
+  {
+    public string ID = "";
+    public string kor = "";
+      public string Text
+    {
+      get
+      {
+        int _languagecode = PlayerPrefs.GetInt("LanguageINdex");
+        switch ((SystemLanguage)_languagecode)
+        {
+          case SystemLanguage.Afrikaans:
+            break;
+          case SystemLanguage.Arabic:
+            break;
+          case SystemLanguage.Basque:
+            break;
+          case SystemLanguage.Belarusian:
+            break;
+          case SystemLanguage.Bulgarian:
+            break;
+          case SystemLanguage.Catalan:
+            break;
+          case SystemLanguage.Chinese:
+            break;
+          case SystemLanguage.Czech:
+            break;
+          case SystemLanguage.Danish:
+            break;
+          case SystemLanguage.Dutch:
+            break;
+          case SystemLanguage.English:
+            break;
+          case SystemLanguage.Estonian:
+            break;
+          case SystemLanguage.Faroese:
+            break;
+          case SystemLanguage.Finnish:
+            break;
+          case SystemLanguage.French:
+            break;
+          case SystemLanguage.German:
+            break;
+          case SystemLanguage.Greek:
+            break;
+          case SystemLanguage.Hebrew:
+            break;
+          case SystemLanguage.Hungarian:
+            break;
+          case SystemLanguage.Icelandic:
+            break;
+          case SystemLanguage.Indonesian:
+            break;
+          case SystemLanguage.Italian:
+            break;
+          case SystemLanguage.Japanese:
+            break;
+          case SystemLanguage.Korean:
+            return kor;
+          case SystemLanguage.Latvian:
+            break;
+          case SystemLanguage.Lithuanian:
+            break;
+          case SystemLanguage.Norwegian:
+            break;
+          case SystemLanguage.Polish:
+            break;
+          case SystemLanguage.Portuguese:
+            break;
+          case SystemLanguage.Romanian:
+            break;
+          case SystemLanguage.Russian:
+            break;
+          case SystemLanguage.SerboCroatian:
+            break;
+          case SystemLanguage.Slovak:
+            break;
+          case SystemLanguage.Slovenian:
+            break;
+          case SystemLanguage.Spanish:
+            break;
+          case SystemLanguage.Swedish:
+            break;
+          case SystemLanguage.Thai:
+            break;
+          case SystemLanguage.Turkish:
+            break;
+          case SystemLanguage.Ukrainian:
+            break;
+          case SystemLanguage.Vietnamese:
+            break;
+          case SystemLanguage.ChineseSimplified:
+            break;
+          case SystemLanguage.ChineseTraditional:
+            break;
+          case SystemLanguage.Unknown:
+            break;
+        }
+        return kor;
+      }
+    }
 }
-public class TextData
-{
- public string ID = "", TEXT = "", ETC = "";
 }

@@ -164,10 +164,10 @@ public class UI_QuestWolf : UI_default
         _description = QuestHolder.Prologue_8_Description;
         _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
-        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Residence, 0);
-        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Temple, 0);
-        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Marketplace, 0);
-        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorType.Library, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorTypeEnum.Residence, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorTypeEnum.Temple, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorTypeEnum.Marketplace, 0);
+        GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors.Add(SectorTypeEnum.Library, 0);
         break;
     }
 

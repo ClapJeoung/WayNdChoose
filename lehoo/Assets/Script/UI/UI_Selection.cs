@@ -12,7 +12,8 @@ public class UI_Selection : MonoBehaviour
   public Vector2 RightPos= Vector2.zero;
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [SerializeField] private RectTransform MyRect = null;
-  [SerializeField] private Image MySelectionImage = null;
+  // [SerializeField] private Image MySelectionImage = null;
+  [SerializeField] private Button MyButton = null;
   [SerializeField] private TextMeshProUGUI MyDescription = null;
   [SerializeField] private Image PayIcon = null;
   [SerializeField] private GameObject ThemeObj_A = null;
@@ -41,37 +42,42 @@ public class UI_Selection : MonoBehaviour
 
     switch (MySelectionData.ThisSelectionType)
     {
+      case SelectionTargetType.None:
+        if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
+        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
+        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        break;
       case SelectionTargetType.Pay:
         if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(false)) PayIcon.transform.parent.gameObject.SetActive(true);
         if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
         if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
         switch (MySelectionData.SelectionPayTarget)
         {
-          case StatusType.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;break;
-          case StatusType.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;break;
-          case StatusType.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;break;
+          case StatusTypeEnum.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;break;
+          case StatusTypeEnum.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;break;
+          case StatusTypeEnum.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;break;
         }
         break;
       case SelectionTargetType.Check_Single:
         if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
         if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
         if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
-        ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0]);
+        ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0],false);
         break;
       case SelectionTargetType.Check_Multy:
         if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
         if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
         if (ThemeObj_B.activeInHierarchy.Equals(false)) ThemeObj_B.SetActive(true);
         Sprite[] _sprs = new Sprite[2];
-        _sprs[0] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0]);
-        _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[1]);
+        _sprs[0] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0], false);
+        _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[1], false);
         ThemeIcon_A.sprite = _sprs[0];ThemeIcon_B.sprite = _sprs[1];
         break;
     }
 
     MyTendencyType = MySelectionData.Tendencytype;
     MyPreviewInteractive.MySelectionTendency = MyTendencyType;
-    Sprite _selectionimage = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
+  //  Sprite _selectionimage = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
     if (MyTendencyType == TendencyTypeEnum.None)
     {
       MyRect.pivot = new Vector2(0.5f, 0.5f);
@@ -84,8 +90,10 @@ public class UI_Selection : MonoBehaviour
       MyPreviewInteractive.MySelectionTendencyDir = IsLeft;
     }
 
-    MySelectionImage.sprite = _selectionimage;
+    MyButton.transition = Selectable.Transition.SpriteSwap;
+    MyButton.spriteState = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
     MyDescription.text = _data.Name;
+
   }
   public void Select()
   {

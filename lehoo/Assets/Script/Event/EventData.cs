@@ -92,15 +92,15 @@ public class EventHolder
 
     string[] _placeinfos = _data.PlaceInfo.Split('@');
     Data.AppearSpace = (EventAppearType)int.Parse(_placeinfos[0]);
-    Data.Sector = (SectorType)int.Parse(_placeinfos[1]);
+    Data.Sector = (SectorTypeEnum)int.Parse(_placeinfos[1]);
     Data.EnvironmentType = (EnvironmentType)int.Parse(_placeinfos[2]);
 
     if (_data.Selection_Type != "")
     {
-      Data.Selection_type = (SelectionType)int.Parse(_data.Selection_Type);
+      Data.Selection_type = (SelectionTypeEnum)int.Parse(_data.Selection_Type);
       switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
       {
-        case SelectionType.Single://단일 선택지
+        case SelectionTypeEnum.Single://단일 선택지
           Data.SelectionDatas = new SelectionData[1];
           Data.SelectionDatas[0] = new SelectionData(Data);
 
@@ -110,61 +110,53 @@ public class EventHolder
             switch (Data.SelectionDatas[0].ThisSelectionType)
             {
               case SelectionTargetType.Pay: //지불
-                Data.SelectionDatas[0].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info);
+                Data.SelectionDatas[0].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info);
                 break;
               case SelectionTargetType.Check_Single: //기술(단일)
-                Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info));
+                Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info));
                 break;
               case SelectionTargetType.Check_Multy: //기술(복수)
                 string[] _temp = _data.Selection_Info.Split(',');
-                for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[i]));
+                for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[i]));
                 break;
             }
             if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
               Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
             {
-              Data.FailureDatas = new FailureData[1];
-              Data.FailureDatas[0] = new FailureData(Data);
-              Data.FailureDatas[0].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-              switch (Data.FailureDatas[0].Panelty_target)
+              Data.SelectionDatas[0].FailureData = new FailureData(Data);
+              Data.SelectionDatas[0].FailureData.Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+              switch (Data.SelectionDatas[0].FailureData.Panelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[0].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info); break;
-                case PenaltyTarget.EXP: Data.FailureDatas[0].ExpID = _data.Failure_Penalty_info; break;
+                case PenaltyTarget.Status: Data.SelectionDatas[0].FailureData.Loss_target = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
+                case PenaltyTarget.EXP: Data.SelectionDatas[0].FailureData.ExpID = _data.Failure_Penalty_info; break;
               }
             }
-            else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusType.Gold))
+            else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
             {
-              Data.FailureDatas = new FailureData[1]; Data.FailureDatas[0] = GameManager.Instance.GoldFailData;
+             Data.SelectionDatas[0].FailureData = GameManager.Instance.GoldFailData;
             }
-            Data.SuccessDatas = new SuccessData[1];
-            Data.SuccessDatas[0] = new SuccessData(Data, TendencyTypeEnum.None,0);
-            Data.SuccessDatas[0].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target);
-            switch (Data.SuccessDatas[0].Reward_Target)
+            Data.SelectionDatas[0].SuccessData = new SuccessData(Data, TendencyTypeEnum.None,0);
+            Data.SelectionDatas[0].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target);
+            switch (Data.SelectionDatas[0].SuccessData.Reward_Type)
             {
-              case RewardTarget.Experience: Data.SuccessDatas[0].Reward_EXPID = _data.Reward_Info; break;
-              case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-              case RewardTarget.Skill: Data.SuccessDatas[0].Reward_SkillType = (SkillType)int.Parse(_data.Reward_Info); break;
+              case RewardTypeEnum.Experience: Data.SelectionDatas[0].SuccessData.Reward_EXPID = _data.Reward_Info; break;
+              case RewardTypeEnum.Status:Data.SelectionDatas[0].SuccessData.Reward_StatusType=(StatusTypeEnum)int.Parse(_data.Reward_Info); break;
+              case RewardTypeEnum.Skill: Data.SelectionDatas[0].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info); break;
             }
-
-            Data.SelectionDatas[0].SelectionSuccesReward=Data.SuccessDatas[0].Reward_Target;
-            if (Data.SuccessDatas[0].Reward_Target == RewardTarget.Skill)
-              Data.SelectionDatas[0].SelectionRewardSkillType = Data.SuccessDatas[0].Reward_SkillType;
           }
 
           break;
-        case SelectionType.Body://이성육체
+        case SelectionTypeEnum.Body://이성육체
           maketendencydata(TendencyTypeEnum.Body);
           break;
-        case SelectionType.Head://정신물질
+        case SelectionTypeEnum.Head://정신물질
           maketendencydata(TendencyTypeEnum.Head);
           break;
       }
       void maketendencydata(TendencyTypeEnum tendencytype)
       {
         Data.SelectionDatas = new SelectionData[2];
-        Data.FailureDatas = new FailureData[2];
-        Data.SuccessDatas = new SuccessData[2];
 
         if (_data.Selection_Target != "")
         {
@@ -176,45 +168,42 @@ public class EventHolder
             switch (Data.SelectionDatas[i].ThisSelectionType)
             {
               case SelectionTargetType.Pay: //지불
-                Data.SelectionDatas[i].SelectionPayTarget = (StatusType)int.Parse(_data.Selection_Info.Split('@')[i]);
+                Data.SelectionDatas[i].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]);
                 break;
               case SelectionTargetType.Check_Single: //기술(단일)
-                Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_data.Selection_Info.Split('@')[i]));
+                Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]));
                 break;
               case SelectionTargetType.Check_Multy: //기술(복수)
                 string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
-                for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillType)int.Parse(_temp[j]));
+                for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[j]));
                 break;
             }
 
             if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
               Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
             {
-              Data.FailureDatas[i] = new FailureData(Data,tendencytype, i);
-              Data.FailureDatas[i].Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
-              switch (Data.FailureDatas[i].Panelty_target)
+              Data.SelectionDatas[i].FailureData = new FailureData(Data,tendencytype, i);
+              Data.SelectionDatas[i].FailureData.Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
+              switch (Data.SelectionDatas[i].FailureData.Panelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.FailureDatas[i].Loss_target = (StatusType)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
-                case PenaltyTarget.EXP: Data.FailureDatas[i].ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
+                case PenaltyTarget.Status: Data.SelectionDatas[i].FailureData.Loss_target = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
+                case PenaltyTarget.EXP: Data.SelectionDatas[i].FailureData.ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
               }
             }
-            else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusType.Gold))
+            else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
             {
-              Data.FailureDatas[i] = GameManager.Instance.GoldFailData;
+              Data.SelectionDatas[i].FailureData = GameManager.Instance.GoldFailData;
             }
-            Data.SuccessDatas[i] = new SuccessData(Data,tendencytype, i);
-            Data.SuccessDatas[i].Reward_Target = (RewardTarget)int.Parse(_data.Reward_Target.Split('@')[i]);
-            switch (Data.SuccessDatas[i].Reward_Target)
+            Data.SelectionDatas[i].SuccessData = new SuccessData(Data,tendencytype, i);
+            Data.SelectionDatas[i].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target.Split('@')[i]);
+            switch (Data.SelectionDatas[i].SuccessData.Reward_Type)
             {
-              case RewardTarget.Experience: Data.SuccessDatas[i].Reward_EXPID = _data.Reward_Info.Split('@')[i]; break;
-              case RewardTarget.HP: case RewardTarget.Sanity: case RewardTarget.Gold: break;
-              case RewardTarget.Skill: Data.SuccessDatas[i].Reward_SkillType = (SkillType)int.Parse(_data.Reward_Info.Split('@')[i]); break;
+              case RewardTypeEnum.Experience: Data.SelectionDatas[i].SuccessData.Reward_EXPID = _data.Reward_Info.Split('@')[i]; break;
+              case RewardTypeEnum.Status: Data.SelectionDatas[i].SuccessData.Reward_StatusType = (StatusTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
+              case RewardTypeEnum.Skill: Data.SelectionDatas[i].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
             }
 
-            Data.SelectionDatas[i].SelectionSuccesReward=(Data.SuccessDatas[i].Reward_Target);
-            if (Data.SuccessDatas[i].Reward_Target == RewardTarget.Skill)
-              Data.SelectionDatas[i].SelectionRewardSkillType = Data.SuccessDatas[i].Reward_SkillType;
           }
         }
 
@@ -229,21 +218,29 @@ public class EventHolder
       AllNormalEvents.Add(Data);
   }
 
-  public void ConvertData_Follow(FollowEventJsonData _data)
+  public void ConvertData_Follow(EventJsonData _data)
   {
     FollowEventData Data = ReturnEventDataDefault<FollowEventData>(_data);
 
-    Data.FollowType = (FollowType)int.Parse(_data.FollowType); //선행 대상 이벤트,경험,특성,테마,기술
-    Data.FollowTarget = _data.FollowTarget;         //선행 대상- 이벤트,경험,특성이면 Id   테마면 0,1,2,3  기술이면 0~9
-    if (Data.FollowType == FollowType.Event)
-    {
-      Data.FollowTargetSuccess = int.Parse(_data.FollowTargetSuccess) == 0 ? true : false;//선행 대상이 이벤트일 경우 성공 혹은 실패
-      Data.FollowTendency = int.Parse(_data.FollowTendency);                              //선행 대상이 이벤트일 경우 선택지 형식
-    }
-    else if (Data.FollowType.Equals(FollowType.Skill))
-      Data.FollowTargetLevel = int.Parse(_data.FollowTargetSuccess);
+    int _temp = 0;
+    string[] _followdatas = _data.EventInfo.Split('@');
+    FollowTypeEnum _followtype = int.TryParse(_followdatas[1], out _temp) == true ? FollowTypeEnum.Skill : FollowTypeEnum.Event;
+    string _followtarget = _followdatas[1];
 
-    if (_data.EndingName != "")
+    Data.FollowType = _followtype; //선행 대상 이벤트/기술
+    Data.FollowTarget = _followtarget;         //선행 대상- 이벤트 Id   기술 0,1,2,3
+
+    switch (Data.FollowType)
+    {
+      case FollowTypeEnum.Event:
+        Data.FollowTendency = int.Parse(_followdatas[2]);
+        Data.FollowTargetSuccess = int.Parse(_followdatas[3]);
+        break;
+      case FollowTypeEnum.Skill:
+        Data.FollowTargetLevel = int.Parse(_followdatas[2]);
+        break;
+    }
+    if (_data.EndingID != "")
     {
       FollowEndingData _endingdata = new FollowEndingData();
       _endingdata.ID = $"ending_{_data.ID.Split("_")[1]}";
@@ -254,9 +251,9 @@ public class EventHolder
     }
     AllFollowEvents.Add(Data);
   }
-  public void ConvertData_Quest(QuestEventDataJson _data)
+  public void ConvertData_Quest(EventJsonData _data)
   {
-    switch ((QuestType) int.Parse(_data.QuestType))
+    switch ((QuestType)int.Parse(_data.EventInfo.Split('@')[1]))
     {
       case QuestType.Cult:
         ConvertData_Quest_cult(_data);
@@ -264,11 +261,11 @@ public class EventHolder
     }
     
   }//퀘스트 디자인 기획 끝나고 추가해야함
-  public void ConvertData_Quest_cult(QuestEventDataJson jsondata)
+  public void ConvertData_Quest_cult(EventJsonData jsondata)
   {
     QuestEventData_Wolf eventdata = ReturnEventDataDefault<QuestEventData_Wolf>(jsondata);
     eventdata.Type = QuestType.Cult;
-    switch (int.Parse(jsondata.QuestEventType))
+    switch (int.Parse(jsondata.EventInfo.Split('@')[2]))
     {
       case 0:
         Quest_Cult.Events_Cult_Less.Add(eventdata);
@@ -369,52 +366,84 @@ public class EventHolder
 
       switch (_follow.FollowType)
       {
-        case FollowType.Event:  //이벤트 연계일 경우 
-          List<string> _checktarget = new List<string>();
-          if (_follow.FollowTargetSuccess == true)
+        case FollowTypeEnum.Event:  //이벤트 연계일 경우 
+          List<List<string>> _checktarget = new List<List<string>>();
+          switch (_follow.FollowTargetSuccess)
           {
-            switch (_follow.FollowTendency)
-            {
-              case 0: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_None; break;
-              case 1: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Rational; break;
-              case 2: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Physical; break;
-              case 3: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Mental; break;
-              case 4: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Material; break;
-              case 5: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_All; break;
-            }
+            case 0:
+              switch (_follow.FollowTendency)
+              {
+                case 0: 
+                  _checktarget.Add (GameManager.Instance.MyGameData.SuccessEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                  break;
+                case 1: 
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material); break;
+                case 2: 
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+              }
+              break;
+            case 2:
+              switch (_follow.FollowTendency)
+              {
+                case 0:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                  break;
+                case 1:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                case 2:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
+              }
+              break;
+            case 3:
+              switch (_follow.FollowTendency)
+              {
+                case 0:
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                  break;
+                case 1:
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                case 2:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); 
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+              }
+              break;
           }
-          else
-          {
-            switch (_follow.FollowTendency)
-            {
-              case 0: _checktarget = GameManager.Instance.MyGameData.FailEvent_None; break;
-              case 1: _checktarget = GameManager.Instance.MyGameData.FailEvent_Rational; break;
-              case 2: _checktarget = GameManager.Instance.MyGameData.FailEvent_Physical; break;
-              case 3: _checktarget = GameManager.Instance.MyGameData.FailEvent_Mental; break;
-              case 4: _checktarget = GameManager.Instance.MyGameData.FailEvent_Material; break;
-              case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
-            }
-          }
-          if (_checktarget.Contains(_follow.FollowTarget)) _allevents.Add(_follow);
+          foreach (var _list in _checktarget)
+            if(_list.Contains(_follow.ID))
+            _allevents.Add(_follow);
           break;
-        case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
+    /*    case FollowTypeEnum.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
           if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _allevents.Add(_follow);
           foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-            if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);
+            if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);*/
           break;
-        case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+        case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
           int _targetlevel = 0;
-          SkillType _type = SkillType.Conversation; ;
+          SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
           switch (_follow.FollowTarget)
           {
             case "0"://대화 테마
-              _type = SkillType.Conversation; break;
+              _type = SkillTypeEnum.Conversation; break;
             case "1"://무력 테마
-              _type = SkillType.Force; break;
+              _type = SkillTypeEnum.Force; break;
             case "2"://생존 테마
-              _type = SkillType.Wild; break;
+              _type = SkillTypeEnum.Wild; break;
             case "3"://학식 테마
-              _type = SkillType.Intelligence; break;
+              _type = SkillTypeEnum.Intelligence; break;
           }
           _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
           if (_follow.FollowTargetLevel <= _targetlevel) _allevents.Add(_follow);
@@ -487,7 +516,7 @@ public class EventHolder
   /// <param name="placelevel"></param>
   /// <param name="envir"></param>
   /// <returns></returns>
-  public EventDataDefulat ReturnPlaceEvent(SettlementType settletype, SectorType sectortype, List<EnvironmentType> envirs)
+  public EventDataDefulat ReturnPlaceEvent(SettlementType settletype, SectorTypeEnum sectortype, List<EnvironmentType> envirs)
   {
     List<EventDataDefulat> _allevents= new List<EventDataDefulat>();
 
@@ -509,52 +538,79 @@ public class EventHolder
 
       switch (_follow.FollowType)
       {
-        case FollowType.Event:  //이벤트 연계일 경우 
-          List<string> _checktarget = new List<string>();
-          if (_follow.FollowTargetSuccess == true)
+        case FollowTypeEnum.Event:  //이벤트 연계일 경우 
+          List<List<string>> _checktarget = new List<List<string>>();
+          switch (_follow.FollowTargetSuccess)
           {
-            switch (_follow.FollowTendency)
-            {
-              case 0: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_None; break;
-              case 1: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Rational; break;
-              case 2: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Physical; break;
-              case 3: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Mental; break;
-              case 4: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_Material; break;
-              case 5: _checktarget = GameManager.Instance.MyGameData.SuccessEvent_All; break;
-            }
+            case 0:
+              switch (_follow.FollowTendency)
+              {
+                case 0:
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                  break;
+                case 1:
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material); break;
+                case 2:
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+              }
+              break;
+            case 2:
+              switch (_follow.FollowTendency)
+              {
+                case 0:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                  break;
+                case 1:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                case 2:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
+              }
+              break;
+            case 3:
+              switch (_follow.FollowTendency)
+              {
+                case 0:
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                  break;
+                case 1:
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                case 2:
+                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All);
+                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+              }
+              break;
           }
-          else
-          {
-            switch (_follow.FollowTendency)
-            {
-              case 0: _checktarget = GameManager.Instance.MyGameData.FailEvent_None; break;
-              case 1: _checktarget = GameManager.Instance.MyGameData.FailEvent_Rational; break;
-              case 2: _checktarget = GameManager.Instance.MyGameData.FailEvent_Physical; break;
-              case 3: _checktarget = GameManager.Instance.MyGameData.FailEvent_Mental; break;
-              case 4: _checktarget = GameManager.Instance.MyGameData.FailEvent_Material; break;
-              case 5: _checktarget = GameManager.Instance.MyGameData.FailEvent_All; break;
-            }
-          }
-          if (_checktarget.Contains(_follow.FollowTarget)) _allevents.Add(_follow);
+          foreach (var _list in _checktarget)
+            if (_list.Contains(_follow.ID))
+              _allevents.Add(_follow);
           break;
-        case FollowType.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-          if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _allevents.Add(_follow);
-          foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-            if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);
-          break;
-        case FollowType.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+        case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
           int _targetlevel = 0;
-          SkillType _type = SkillType.Conversation; ;
+          SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
           switch (_follow.FollowTarget)
           {
             case "0"://대화 테마
-              _type = SkillType.Conversation; break;
+              _type = SkillTypeEnum.Conversation; break;
             case "1"://무력 테마
-              _type = SkillType.Force; break;
+              _type = SkillTypeEnum.Force; break;
             case "2"://생존 테마
-              _type = SkillType.Wild; break;
+              _type = SkillTypeEnum.Wild; break;
             case "3"://학식 테마
-              _type = SkillType.Intelligence; break;
+              _type = SkillTypeEnum.Intelligence; break;
           }
           _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
           if (_follow.FollowTargetLevel <= _targetlevel) _allevents.Add(_follow);
@@ -674,14 +730,14 @@ public class TileInfoData
   
 }
 #region 이벤트 정보에 쓰는 배열들
-public enum FollowType { Event,EXP,Skill}
+public enum FollowTypeEnum { Event,Skill}
 public enum SettlementType {Village,Town,City,Outer}
 public enum EventAppearType { Outer, Village, Town, City, Settlement}
-public enum SectorType {NULL, Residence, Temple,Marketplace, Library,Theater,Academy}
+public enum SectorTypeEnum {NULL, Residence, Temple,Marketplace, Library,Theater,Academy}
 public enum EnvironmentType { NULL, River,Forest,Mountain,Sea,Beach,Land,RiverBeach, Highland }
-public enum SelectionType { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
+public enum SelectionTypeEnum { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum PenaltyTarget { None,Status,EXP }
-public enum RewardTarget { Experience,HP,Sanity,Gold,Skill,None}
+public enum RewardTypeEnum {None, Status,Skill, Experience }
 public enum EventSequence { Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
 #endregion  
 public class EventDataDefulat
@@ -773,15 +829,11 @@ public class EventDataDefulat
         return false;
     }
 
-  public SectorType Sector = SectorType.NULL;
+  public SectorTypeEnum Sector = SectorTypeEnum.NULL;
   public EnvironmentType EnvironmentType = EnvironmentType.NULL;
 
-  public SelectionType Selection_type;
+  public SelectionTypeEnum Selection_type;
   public SelectionData[] SelectionDatas;
-
-  public FailureData[] FailureDatas;
-
-  public SuccessData[] SuccessDatas;
 }
 public class SelectionData
 {
@@ -808,7 +860,7 @@ public class SelectionData
   private string ID { get { return MyEvent.ID; } }
   public string Name
   {
-    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting_Names").Split('@')[Index]); }
+    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting").Split('@')[Index]); }
   }
 /*  public string SubDescription
   {
@@ -817,10 +869,12 @@ public class SelectionData
 */
   public SelectionTargetType ThisSelectionType = SelectionTargetType.Pay;
 
-  public StatusType SelectionPayTarget = StatusType.HP;                       //Pay일때 사용
-  public List<SkillType> SelectionCheckSkill = new List<SkillType>();         //Check_Single,Check_Multy일때 사용
-  public RewardTarget SelectionSuccesReward= RewardTarget.None;
-  public SkillType SelectionRewardSkillType = SkillType.Conversation;
+  public StatusTypeEnum SelectionPayTarget = StatusTypeEnum.HP;                       //Pay일때 사용
+  public List<SkillTypeEnum> SelectionCheckSkill = new List<SkillTypeEnum>();         //Check_Single,Check_Multy일때 사용
+
+
+  public SuccessData SuccessData = null;
+  public FailureData FailureData = null;
 }    
 
 public class FailureData
@@ -866,7 +920,7 @@ public class FailureData
     }
   }
   public PenaltyTarget Panelty_target;
-  public StatusType Loss_target= StatusType.HP;
+  public StatusTypeEnum Loss_target= StatusTypeEnum.HP;
   public string ExpID;
 }
 public class GoldFailData : FailureData
@@ -875,8 +929,8 @@ public class GoldFailData : FailureData
   public string Description = "";
   public Sprite Illust = null;
 }
-public enum SelectionTargetType { Pay, Check_Single,Check_Multy}//선택지 개별 내용
-public enum StatusType { HP,Sanity,Gold}
+public enum SelectionTargetType { None,Pay, Check_Single,Check_Multy}//선택지 개별 내용
+public enum StatusTypeEnum { HP,Sanity,Gold}
 public class SuccessData
 {
   public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;
@@ -915,9 +969,10 @@ public class SuccessData
       return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID,TypeID, Descriptions.Count);
     }
   }
-  public RewardTarget Reward_Target;
+  public RewardTypeEnum Reward_Type;
 
-  public SkillType Reward_SkillType;
+  public StatusTypeEnum Reward_StatusType;
+  public SkillTypeEnum Reward_SkillType;
   public string Reward_EXPID;
 }
 
@@ -926,11 +981,17 @@ public class EventData:EventDataDefulat
 }//기본 이벤트
 public class FollowEventData:EventDataDefulat
 {
-  public FollowType FollowType = 0;
+  public FollowTypeEnum FollowType = 0;
   public string FollowTarget = "";
   public int FollowTargetLevel = 0;
-  public bool FollowTargetSuccess = false;
-  public int FollowTendency = 0;          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
+  /// <summary>
+  /// 0:성공 1:실패 2:노상관
+  /// </summary>
+  public int FollowTargetSuccess = 0;
+  /// <summary>
+  /// 0:왼쪽 1:오른쪽 2:노상관
+  /// </summary>
+  public int FollowTendency = 0; 
 
   public FollowEndingData EndingData = null;
 }//연계 이벤트
@@ -1177,37 +1238,33 @@ public string Wanted_Description { get { return GameManager.Instance.GetTextData
     return _availableevents;
   }
 }//                                         퀘스트 디자인 후 수정
+[System.Serializable]
 public class EventJsonData
 {
   public string ID = "";              //ID
+
+  public string EventInfo = "";
+  //0(혹은 공백) : 일반 이벤트                               0
+  //1:연계 이벤트                                           1@(A)@(B)@(C)
+  //A:이벤트ID                               기술인덱스
+  //B:이벤트 성향(0:왼쪽,1:오른쪽,2:노상관)    기술 레벨n
+  //C:이벤트 결과(0:성공,1:실패,  2:노상관)
+
+  //2:퀘스트                                                2@(퀘스트번호)@(0/1)
   public string PlaceInfo = "";          //0,1,2,3
   public string Season ;              //전역,봄,여름,가을,겨울
 
-  public string Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 3.성향 4.경험 5.기술
-  public string Selection_Target;           //0.무조건 1.지불 2.테마 3.기술
-  public string Selection_Info;             //0:정보 없음  1:체력,정신력,돈
-                                            //2:대화,무력,생존,정신
-                                            //3: 0.설득 1.협박  2.기만  3.논리 4.격투 5.활술 6.인체 7.생존 8.생물 9.잡학
+  public string Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 
+  public string Selection_Target;           //0.지불 1.기술(1) 2.기술(2)
+  public string Selection_Info;             //0:체,정,골   1:기술1개  2:기술@기술
 
-  public string Failure_Penalty;            //없음,손실,경험
-  public string Failure_Penalty_info;       //(체력,정신력,돈),경험 ID
+  public string Failure_Penalty;            //없음, 손실
+  public string Failure_Penalty_info;       //0:X   1:체력,정신력,돈
 
-  public string Reward_Target;              //경험,체력,정신력,돈,기술-테마,기술-개별,특성
-  public string Reward_Info;                //경험 :ID  체력,정신력,돈:X  테마:대화,무력,생존,학식  개별기술:위 참조  특성:ID
+  public string Reward_Target;              //0:경험 1:체력 2:정신력 3:돈  4:기술               5:X
+  public string Reward_Info;                //  ID                         대화,무력,생존,학식
+
+  public string EndingID = "";
 }
-public class FollowEventJsonData:EventJsonData
-{
 
-  public string FollowType = "";              //이벤트,경험,특성,테마,기술
-  public string FollowTarget = "";            //해당 ID 혹은 0,1,2,3 혹은 0~9
-  public string FollowTargetSuccess = "";            //(이벤트) 성공/실패
-  public string FollowTendency = "";          //이벤트일 경우 기타,이성,육체,정신,물질 선택지 여부
-
-  public string EndingName = "";            //엔딩이 있을 경우(""가 아닌 경우) 엔딩 이름
-}
-public class QuestEventDataJson:EventJsonData
-{
-  public string QuestType = "";
-  public string QuestEventType = "";
-}
 

@@ -16,7 +16,7 @@ public class UI_Settlement : UI_default
   [SerializeField] private TextMeshProUGUI SettlementNameText = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
   [SerializeField] private List<PlaceIconScript> SectorIcons=new List<PlaceIconScript>();
-  private PlaceIconScript GetSectorIconScript(SectorType sectortype)
+  private PlaceIconScript GetSectorIconScript(SectorTypeEnum sectortype)
   {
     for(int i=0;i< SectorIcons.Count;i++)
     {
@@ -31,7 +31,7 @@ public class UI_Settlement : UI_default
   [SerializeField] private Button RestButton_Gold = null;
   [SerializeField] private TextMeshProUGUI RestDescription = null;
   private Settlement CurrentSettlement = null;
-  private SectorType SelectedSector = SectorType.NULL;
+  private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
   public void OpenUI()
   {
     IsOpen = true;
@@ -43,7 +43,7 @@ public class UI_Settlement : UI_default
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
 
     if(RestbuttonHolder.activeInHierarchy==true) RestbuttonHolder.SetActive(false);
-    SelectedSector = SectorType.NULL;
+    SelectedSector = SectorTypeEnum.NULL;
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
     SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
@@ -128,10 +128,10 @@ public class UI_Settlement : UI_default
   }
   public void SelectPlace(int index)  //Sectortype은 0이 NULL임
   {
-    if (SelectedSector == (SectorType)index) return;
+    if (SelectedSector == (SectorTypeEnum)index) return;
 
-    if(SelectedSector!=SectorType.NULL) GetSectorIconScript(SelectedSector).SetIdleColor();
-    SelectedSector = (SectorType)index;
+    if(SelectedSector!=SectorTypeEnum.NULL) GetSectorIconScript(SelectedSector).SetIdleColor();
+    SelectedSector = (SectorTypeEnum)index;
 
     if(SectorName.gameObject.activeInHierarchy==false) SectorName.gameObject.SetActive(true);
     if(SectorSelectDescription.gameObject.activeInHierarchy==false) SectorSelectDescription.gameObject.SetActive(true);
@@ -153,22 +153,22 @@ public class UI_Settlement : UI_default
           string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
           switch (SelectedSector)
           {
-            case SectorType.Residence:
+            case SectorTypeEnum.Residence:
               _effect = string.Format(_effect, ConstValues.SectorEffect_residence);
               break;
-            case SectorType.Temple:
+            case SectorTypeEnum.Temple:
               _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
               break;
-            case SectorType.Marketplace:
+            case SectorTypeEnum.Marketplace:
               _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
               break;
-            case SectorType.Library:
+            case SectorTypeEnum.Library:
               _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
               break;
-            case SectorType.Theater:
+            case SectorTypeEnum.Theater:
               //서비스 종료다...!
               break;
-            case SectorType.Academy:
+            case SectorTypeEnum.Academy:
           //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
               break;
           }
@@ -191,7 +191,7 @@ public class UI_Settlement : UI_default
 
           RestButton_Sanity.interactable = true;
 
-          int _goldpayvalue =SelectedSector!=SectorType.Marketplace? 
+          int _goldpayvalue =SelectedSector!=SectorTypeEnum.Marketplace? 
             GameManager.Instance.MyGameData.SettleRestCost_Gold:
             GameManager.Instance.MyGameData.SettleRestCost_Gold*ConstValues.SectorEffect_marketSector/100;
 
@@ -205,7 +205,7 @@ public class UI_Settlement : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(RestbuttonHolder.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(SectorName.transform.parent.transform as RectTransform);
   }
-  public void OnPointerRestType(StatusType type)
+  public void OnPointerRestType(StatusTypeEnum type)
   {
     if (UIManager.Instance.IsWorking) return;
 
@@ -226,7 +226,7 @@ public class UI_Settlement : UI_default
         _discomfortvalue = ConstValues.RestDiscomfort_City;
         break;
     }
-    if (SelectedSector == SectorType.Residence) _movepointvalue++;
+    if (SelectedSector == SectorTypeEnum.Residence) _movepointvalue++;
 
     string _cultprogress = "";
     if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
@@ -240,18 +240,18 @@ public class UI_Settlement : UI_default
 
     switch (type)
     {
-      case StatusType.Sanity:
+      case StatusTypeEnum.Sanity:
 
         RestDescription.text= string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),
-      WNCText.GetSanityColor("-" + (SelectedSector != SectorType.Marketplace ?
+      WNCText.GetSanityColor("-" + (SelectedSector != SectorTypeEnum.Marketplace ?
           GameManager.Instance.MyGameData.SettleRestCost_Sanity :
           GameManager.Instance.MyGameData.SettleRestCost_Sanity * ConstValues.SectorEffect_marketSector / 100)),
       WNCText.GetMovepointColor("+" + _movepointvalue),
       WNCText.GetDiscomfortColor("+" + _discomfortvalue))
           + _cultprogress;
         break;
-      case StatusType.Gold:
-        int _goldpayvalue = SelectedSector != SectorType.Marketplace ?
+      case StatusTypeEnum.Gold:
+        int _goldpayvalue = SelectedSector != SectorTypeEnum.Marketplace ?
           GameManager.Instance.MyGameData.SettleRestCost_Gold :
           GameManager.Instance.MyGameData.SettleRestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
         if (GameManager.Instance.MyGameData.Gold < _goldpayvalue) return;
@@ -265,7 +265,7 @@ public class UI_Settlement : UI_default
 
     }
   }
-  public void OnExitRestType(StatusType type)
+  public void OnExitRestType(StatusTypeEnum type)
   {
     return;
 
@@ -273,10 +273,10 @@ public class UI_Settlement : UI_default
 
     switch (type)
     {
-      case StatusType.Sanity:
+      case StatusTypeEnum.Sanity:
         RestDescription.text = "";
         break;
-      case StatusType.Gold:
+      case StatusTypeEnum.Gold:
         int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
         if (GameManager.Instance.MyGameData.Gold < _goldpayvalue) return;
         RestDescription.text = "";

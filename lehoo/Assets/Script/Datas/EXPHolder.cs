@@ -41,30 +41,30 @@ public class Experience
         switch (_data)
         {
           case EffectType.Conversation:
-            _temp = $"{GameManager.Instance.GetTextData(SkillType.Conversation, 1)} + 1";
+            _temp = $"{GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1)} + 1";
             break;
           case EffectType.Force:
-            _temp = $"{GameManager.Instance.GetTextData(SkillType.Force, 1)} + 1";
+            _temp = $"{GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1)} + 1";
             break;
           case EffectType.Wild:
-            _temp = $"{GameManager.Instance.GetTextData(SkillType.Wild, 1)} + 1";
+            _temp = $"{GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1)} + 1";
             break;
           case EffectType.Intelligence:
-            _temp = $"{GameManager.Instance.GetTextData(SkillType.Intelligence,1)} + 1";
+            _temp = $"{GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence,1)} + 1";
             break;
 
           case EffectType.HPLoss:
-            _temp = GameManager.Instance.GetTextData(StatusType.HP, 15); break;
+            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 15); break;
           case EffectType.SanityLoss:
-            _temp = GameManager.Instance.GetTextData(StatusType.Sanity, 15); break;
+            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 15); break;
           case EffectType.GoldLoss:
-            _temp = GameManager.Instance.GetTextData(StatusType.Gold, 15); break;
+            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 15); break;
           case EffectType.HPGen:
-            _temp = GameManager.Instance.GetTextData(StatusType.HP, 12); break;
+            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12); break;
           case EffectType.SanityGen:
-            _temp = GameManager.Instance.GetTextData(StatusType.Sanity, 12); break;
+            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12); break;
           case EffectType.GoldGen:
-            _temp = GameManager.Instance.GetTextData(StatusType.Gold, 12); break;
+            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12); break;
         }
         _str += _temp;
       }
@@ -95,6 +95,7 @@ public class Experience
     return _exp;
   }
 }
+[System.Serializable]
 public class ExperienceJsonData
 {
   public string ID = "";

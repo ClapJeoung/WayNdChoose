@@ -144,27 +144,27 @@ public class GameData    //게임 진행도 데이터
   }
 
   public bool LibraryEffect = false;
-  public void ApplySectorEffect(SectorType placetype)
+  public void ApplySectorEffect(SectorTypeEnum placetype)
   {
     switch (placetype)
     {
-      case SectorType.Residence:
+      case SectorTypeEnum.Residence:
         MovePoint++;
         break;//거주지 - 휴식 시 추가 이동력 회복
 
-      case SectorType.Temple:
+      case SectorTypeEnum.Temple:
         DownAllDiscomfort();
         break;//사원- 모든 불쾌 1 감소
 
-      case SectorType.Marketplace:
+      case SectorTypeEnum.Marketplace:
         break;//시장- 휴식 비용 감소
 
-      case SectorType.Library:
+      case SectorTypeEnum.Library:
         if (GameManager.Instance.MyGameData.LibraryEffect == false) GameManager.Instance.MyGameData.LibraryEffect = true;
 
         break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
 
-      case SectorType.Theater:
+      case SectorTypeEnum.Theater:
 
         LongTermEXP.Duration = LongTermEXP.Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP.Duration + 2;
         for (int i = 0; i < ShortTermEXP.Length; i++)
@@ -173,7 +173,7 @@ public class GameData    //게임 진행도 데이터
 
         break;//극장- 모든 경험 2턴 증가(삭제됨)
 
-      case SectorType.Academy:
+      case SectorTypeEnum.Academy:
         break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
     }
   }
@@ -224,7 +224,7 @@ public class GameData    //게임 진행도 데이터
             {
               for(int i = 0; i < Quest_Cult_TokenedSectors.Count; i++)
               {
-                if (Quest_Cult_TokenedSectors[(SectorType)i+1] > 0) Quest_Cult_TokenedSectors[(SectorType)i+1]--;
+                if (Quest_Cult_TokenedSectors[(SectorTypeEnum)i+1] > 0) Quest_Cult_TokenedSectors[(SectorTypeEnum)i+1]--;
               }
             }
             
@@ -413,17 +413,17 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #기술#
-  public Skill Skill_Conversation=new Skill(SkillType.Conversation), 
-    Skill_Force = new Skill(SkillType.Force), 
-    Skill_Wild = new Skill(SkillType.Wild), 
-    Skill_Intelligence = new Skill(SkillType.Intelligence);
-  public Skill GetSkill(SkillType type)
+  public Skill Skill_Conversation=new Skill(SkillTypeEnum.Conversation), 
+    Skill_Force = new Skill(SkillTypeEnum.Force), 
+    Skill_Wild = new Skill(SkillTypeEnum.Wild), 
+    Skill_Intelligence = new Skill(SkillTypeEnum.Intelligence);
+  public Skill GetSkill(SkillTypeEnum type)
   {
     switch (type)
     {
-      case SkillType.Conversation:return Skill_Conversation;
-        case SkillType.Force:return Skill_Force;
-        case SkillType.Wild:return Skill_Wild;
+      case SkillTypeEnum.Conversation:return Skill_Conversation;
+        case SkillTypeEnum.Force:return Skill_Force;
+        case SkillTypeEnum.Wild:return Skill_Wild;
       default:return Skill_Intelligence;
     }
   }
@@ -443,10 +443,10 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation,1);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 1);
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 1);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 1);
+            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation,1);
+            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
+            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
+            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
             _result = string.Format("{0}, {1}\n{2}, {3}",
               string.Format(_uptext,_conver,ConstValues.ConversationByTendency_m2),
               string.Format(_uptext,_intel,ConstValues.IntelligenceByTendency_m2),
@@ -454,24 +454,24 @@ public class GameData    //게임 진행도 데이터
               string.Format(_downtext,_wild,ConstValues.WildByTendency_m2));
             break;
           case -1:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 1);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 1);
+            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
+            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
             _result = string.Format("{0}, {1}",
               string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m1),
               string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m1));
             break;
           case 1:
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 1);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 1);
+            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
+            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
             _result = string.Format("{0}, {1}",
               string.Format(_uptext, _force, ConstValues.ForceByTendency_p1),
               string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
             break;
           case 2:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation,1);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence,1);
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 1);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 1);
+            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation,1);
+            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence,1);
+            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
+            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
             _result = string.Format("{0}, {1}\n{2}, {3}",
               string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
               string.Format(_uptext, _wild, ConstValues.WildByTendency_p2),
@@ -484,19 +484,19 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 12) + "," +
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12) + "," +
               String.Format(GameManager.Instance.GetTextData("DISCOMFORTUP_TEXT"), ConstValues.DiscomfortByTendency_m2 * 100) + "\n" +
-              GameManager.Instance.GetTextData(StatusType.Gold, 15);
+              GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 15);
             break;
           case -1:
-            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 12);
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12);
             break;
           case 1:
-            _result = GameManager.Instance.GetTextData(StatusType.Gold, 12);
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12);
             break;
           case 2:
-            _result = GameManager.Instance.GetTextData(StatusType.Gold, 12) + ", " + GameManager.Instance.GetTextData(StatusType.HP, 12) + "\n" +
-              GameManager.Instance.GetTextData(StatusType.Sanity, 15);
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12) + ", " + GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12) + "\n" +
+              GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 15);
             break;
         }
         break;
@@ -515,10 +515,10 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 10);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 10);
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 11);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 11);
+            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 10);
+            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 10);
+            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 11);
+            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 11);
             _result = string.Format("{0} {1} {2} {3}",
               _conver,
               _intel,
@@ -526,24 +526,24 @@ public class GameData    //게임 진행도 데이터
               _wild);
             break;
           case -1:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 9);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 9);
+            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 9);
+            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 9);
             _result = string.Format("{0} {1}",
               _conver,
               _intel);
             break;
           case 1:
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 9);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 9);
+            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 9);
+            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 9);
             _result = string.Format("{0} {1}",
               _force,
               _wild);
             break;
           case 2:
-            _conver = GameManager.Instance.GetTextData(SkillType.Conversation, 11);
-            _intel = GameManager.Instance.GetTextData(SkillType.Intelligence, 11);
-            _force = GameManager.Instance.GetTextData(SkillType.Force, 10);
-            _wild = GameManager.Instance.GetTextData(SkillType.Wild, 10);
+            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 11);
+            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 11);
+            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 10);
+            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 10);
             _result = string.Format("{0} {1} {2} {3}",
               _force,
               _wild,
@@ -556,19 +556,19 @@ public class GameData    //게임 진행도 데이터
         switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
         {
           case -2:
-            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 13) +" " +
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 13) +" " +
               String.Format(GameManager.Instance.GetTextData("DISCOMFORTUP_ICON"), ConstValues.DiscomfortByTendency_m2 * 100) + " " +
-              GameManager.Instance.GetTextData(StatusType.Gold, 16);
+              GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 16);
             break;
           case -1:
-            _result = GameManager.Instance.GetTextData(StatusType.Sanity, 13);
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 13);
             break;
           case 1:
-            _result = GameManager.Instance.GetTextData(StatusType.Gold, 13);
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 13);
             break;
           case 2:
-            _result = GameManager.Instance.GetTextData(StatusType.Gold, 13) + " " + GameManager.Instance.GetTextData(StatusType.HP, 12) + " " +
-              GameManager.Instance.GetTextData(StatusType.Sanity, 16);
+            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 13) + " " + GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12) + " " +
+              GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 16);
             break;
         }
         break;
@@ -690,8 +690,8 @@ public class GameData    //게임 진행도 데이터
     }
   }
   public List<string> SearchingSettlementNames=new List<string>();
-  public List<SectorType> Quest_Cult_BlockedSectors = new List<SectorType>();
-  public Dictionary<SectorType,int> Quest_Cult_TokenedSectors=new Dictionary<SectorType,int>();
+  public List<SectorTypeEnum> Quest_Cult_BlockedSectors = new List<SectorTypeEnum>();
+  public Dictionary<SectorTypeEnum,int> Quest_Cult_TokenedSectors=new Dictionary<SectorTypeEnum,int>();
   public TileData Quest_Cult_RitualTile = null;
   #endregion
 
@@ -706,16 +706,16 @@ public class GameData    //게임 진행도 데이터
 
     return _count;
   }//현재 경험들 중에서 해당 효과 가진 경험 개수 반환
-  public int GetEffectModifyCount_Exp(SkillType _skill)
+  public int GetEffectModifyCount_Exp(SkillTypeEnum _skill)
   {
     int _count = 0;     //반환 값
     EffectType _targeteffect = EffectType.Conversation;
     switch (_skill)
     {
-      case SkillType.Conversation: _targeteffect = EffectType.Conversation; break;
-      case SkillType.Force: _targeteffect = EffectType.Force; break;
-      case SkillType.Wild: _targeteffect = EffectType.Wild; break;
-      case SkillType.Intelligence: _targeteffect = EffectType.Intelligence; break;
+      case SkillTypeEnum.Conversation: _targeteffect = EffectType.Conversation; break;
+      case SkillTypeEnum.Force: _targeteffect = EffectType.Force; break;
+      case SkillTypeEnum.Wild: _targeteffect = EffectType.Wild; break;
+      case SkillTypeEnum.Intelligence: _targeteffect = EffectType.Intelligence; break;
       default: Debug.Log("뎃?"); break;
     }
       if (LongTermEXP != null && LongTermEXP.Effects.Contains(_targeteffect)) _count++;
@@ -843,10 +843,10 @@ public class GameData    //게임 진행도 데이터
     gold = ConstValues.StartGold ;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
-    Skill_Conversation = new Skill(SkillType.Conversation);
-    Skill_Force = new Skill(SkillType.Force);
-    Skill_Wild= new Skill(SkillType.Wild);
-    Skill_Intelligence=new Skill(SkillType.Intelligence);
+    Skill_Conversation = new Skill(SkillTypeEnum.Conversation);
+    Skill_Force = new Skill(SkillTypeEnum.Force);
+    Skill_Wild= new Skill(SkillTypeEnum.Wild);
+    Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence);
   }
   /// <summary>
   /// 이전 정착지 제시 리스트, 이전 이벤트 지우기
@@ -859,14 +859,14 @@ public class GameData    //게임 진행도 데이터
   public string DEBUG_NEXTEVENTID = "";
 
 }
-public enum SkillType { Conversation, Force, Wild, Intelligence }
+public enum SkillTypeEnum { Conversation, Force, Wild, Intelligence }
 public class Skill
 {
-  public Skill(SkillType type)
+  public Skill(SkillTypeEnum type)
   {
     MySkillType= type;
   }
-  public SkillType MySkillType;
+  public SkillTypeEnum MySkillType;
   private int levelbydefault = 0;
   public int LevelByDefault
   {
@@ -914,7 +914,7 @@ public class Skill
     {
       int _tendencylevel = GameManager.Instance.MyGameData.Tendency_Body.Level;
 
-      if (MySkillType== SkillType.Conversation || MySkillType == SkillType.Intelligence)
+      if (MySkillType== SkillTypeEnum.Conversation || MySkillType == SkillTypeEnum.Intelligence)
       {
         if (_tendencylevel.Equals(-2)) return ConstValues.ConversationByTendency_m2;
         else if (_tendencylevel.Equals(-1)) return ConstValues.ConversationByTendency_m1;

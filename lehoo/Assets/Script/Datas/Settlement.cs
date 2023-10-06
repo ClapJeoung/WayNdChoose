@@ -11,24 +11,24 @@ public class Settlement
   {
     SettlementType = settletype;
   }
-  private List<SectorType> settlementplaces=new List<SectorType>();
-  public List<SectorType> Settlementplaces
+  private List<SectorTypeEnum> settlementplaces=new List<SectorTypeEnum>();
+  public List<SectorTypeEnum> Settlementplaces
   {
     get
     {
       if (settlementplaces.Count == 0)
       {
-        settlementplaces = new List<SectorType>() { SectorType.Residence, SectorType.Temple};
+        settlementplaces = new List<SectorTypeEnum>() { SectorTypeEnum.Residence, SectorTypeEnum.Temple};
         switch (SettlementType)
         {
           case SettlementType.Village:
             break;
           case SettlementType.Town:
-            settlementplaces.Add(SectorType.Marketplace);
+            settlementplaces.Add(SectorTypeEnum.Marketplace);
             break;
           case SettlementType.City:
-            settlementplaces.Add(SectorType.Marketplace);
-            settlementplaces.Add(SectorType.Library);
+            settlementplaces.Add(SectorTypeEnum.Marketplace);
+            settlementplaces.Add(SectorTypeEnum.Library);
             break;
         }
       }
@@ -39,7 +39,7 @@ public class Settlement
   {
     int _count = 0;
     float _progress = GameManager.Instance.MyGameData.Quest_Cult_Progress/100.0f;
-    List<SectorType> _randomplaces = new List<SectorType>();
+    List<SectorTypeEnum> _randomplaces = new List<SectorTypeEnum>();
     foreach (var place in Settlementplaces) _randomplaces.Add(place);
     _randomplaces.Sort((a, b) => Random.Range(0, 2) == 0 ? 0:1);
     switch (SettlementType)
@@ -287,25 +287,23 @@ public class MapData
       _ritualtiles[i].ButtonScript.LandmarkImage.sprite = UIManager.Instance.MyMap.MapCreater.MyTiles.GetTile(_ritualtiles[i].landmarkSprite);
     }
   }
-  public int GetLength(TileData a,TileData b)
+  /// <summary>
+  /// 어짜피 주위 2개만 선택 가능하니까 계산 없이 하드코딩으로
+  /// </summary>
+  /// <param name="start"></param>
+  /// <param name="end"></param>
+  /// <returns></returns>
+  public int GetLength(TileData start, TileData end)
   {
-    if (a.Coordinate == b.Coordinate) return 0;
-    int _count = 0;
-    List<TileData> _list = new List<TileData>();
-    while (true)
-    {
-      _count++;
-      _list = GetAroundTile(a, _count);
-      if (_list.Contains(b)) break;
+    if (start.Coordinate == end.Coordinate) return 0;
 
-      if (_count > 10)
-      {
-        Debug.Log("개소리인테챠아앗!!!!!!!!");
-        return 0;
-      }
-    }
+    Vector2Int _distnace= end.Coordinate - start.Coordinate;
+    _distnace=new Vector2Int(Mathf.Abs(_distnace.x),Mathf.Abs(_distnace.y));
 
-    return _count;
+    if (_distnace.x == 0) return Mathf.Abs(_distnace.y);
+    else if (_distnace.y == 0) return Mathf.Abs(_distnace.x);
+    else return 2;
+
   }
   public int GetLength(Vector2 a, Vector2 b)
   {

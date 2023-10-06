@@ -25,7 +25,20 @@ MonoBehaviour:
   SkillIllust_Force: {fileID: 21300000, guid: 903ee6b4757198440a9d6b2890df78ce, type: 3}
   SkillIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
   SkillIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
-  MadnessIluusts: []
+  SkillIcon_Conversation_b: {fileID: 21300000, guid: 5953298e872babc449ad69c31219b06d, type: 3}
+  SkillIcon_Force_b: {fileID: 21300000, guid: 146e0d6cd03064945ad1385fcb241d65, type: 3}
+  SkillIcon_Wild_b: {fileID: 21300000, guid: ada1f95262e66f4408a56950f4ab3dbe, type: 3}
+  SkillIcon_Intelligence_b: {fileID: 21300000, guid: 219bf74a6363eea4386f1faac82fb4bc, type: 3}
+  SkillIcon_Conversation_w: {fileID: 21300000, guid: 5e8c997a1b7b5474092af4cae2dfd4e0, type: 3}
+  SkillIcon_Force_w: {fileID: 21300000, guid: a6c6025bb56840c4aa49efb919f654db, type: 3}
+  SkillIcon_Wild_w: {fileID: 21300000, guid: a68439f4dc29cc248817106ccf7c64c5, type: 3}
+  SkillIcon_Intelligence_w: {fileID: 21300000, guid: 6803d618801df4249a1cd12feaa3da23, type: 3}
+  MadnessIluusts:
+  - {fileID: 21300000, guid: 8c9b3c060a1f11846aaa3419b4d4bc02, type: 3}
+  - {fileID: 21300000, guid: 617d55d57dc936a47964a2b8ce22c1c6, type: 3}
+  - {fileID: 21300000, guid: af60c7b1cb2ebcf418ed0e0fbf7d8b62, type: 3}
+  - {fileID: 21300000, guid: f104e0ef90e4bcd46837ecc8c4c5c12c, type: 3}
+  - {fileID: 21300000, guid: f9cb334ba137ff645a081d2da16a4db5, type: 3}
   TendencyIcon_Body:
   - {fileID: 21300000, guid: 90f890b6ce10f18439b9468b01da9346, type: 3}
   - {fileID: 21300000, guid: 36d3dd0062294bf49acf7c8f48eafafe, type: 3}
@@ -50,10 +63,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 21300000, guid: 0a237dd7d05de494fb63b016e12edfd1, type: 3}
   - {fileID: 21300000, guid: f82c568f46dd15f4b8f6e719fc378c52, type: 3}
-  ThemeIcon_Conversation: {fileID: 21300000, guid: 5953298e872babc449ad69c31219b06d, type: 3}
-  ThemeIcon_Force: {fileID: 21300000, guid: 146e0d6cd03064945ad1385fcb241d65, type: 3}
-  ThemeIcon_Wild: {fileID: 21300000, guid: ada1f95262e66f4408a56950f4ab3dbe, type: 3}
-  ThemeIcon_Intelligence: {fileID: 21300000, guid: 219bf74a6363eea4386f1faac82fb4bc, type: 3}
   ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
   MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
   TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
@@ -200,11 +209,21 @@ MonoBehaviour:
   SelectionBackground_physical: {fileID: 21300000, guid: da78041cf78703346b564ebf9da0ceb7, type: 3}
   SelectionBackground_mental: {fileID: 21300000, guid: 2a311d3dc1c77ea4288f7cae8c20b235, type: 3}
   SelectionBackground_material: {fileID: 21300000, guid: 109ae6cfc44dda34088959fa59c47d2b, type: 3}
-  SelectionButtonBackground_none: {fileID: 21300000, guid: b01425179b923b94a9e6dfe5ada210cb, type: 3}
-  SelectionButtonBackground_rational: {fileID: 21300000, guid: c99db092d9bd5ed498fdee03678156d5, type: 3}
-  SelectionButtonBackground_physical: {fileID: 21300000, guid: 8523939b806d9834cbdb26505f028747, type: 3}
-  SelectionButtonBackground_mental: {fileID: 21300000, guid: 7d84a3efd61e10e4e83941f32b960395, type: 3}
-  SelectionButtonBackground_material: {fileID: 21300000, guid: b77580e438b7f8f40a33339e224b28d0, type: 3}
+  SelectionButtonImage_None_Idle: {fileID: 21300000, guid: b406846c62811a64b9cfc5dfd1d358fe, type: 3}
+  SelectionButtonImage_None_Enter: {fileID: 21300000, guid: 919a195a279f4a34992b86f03edcfb9d, type: 3}
+  SelectionButtonImage_None_Clicked: {fileID: 21300000, guid: 2fe064a1f12f5114fa7e726a12bdbec0, type: 3}
+  SelectionButtonImage_BodyM_Idle: {fileID: 21300000, guid: 601a1e06cc722d240822844ceaf54e1d, type: 3}
+  SelectionButtonImage_BodyM_Enter: {fileID: 21300000, guid: c0b67f0aaa360a84f92e8b8b403fcfe6, type: 3}
+  SelectionButtonImage_BodyM_Clicked: {fileID: 21300000, guid: 9f3ea8ec5d4fed64c8980565820c2e47, type: 3}
+  SelectionButtonImage_BodyP_Idle: {fileID: 21300000, guid: a4198940b032800498bfd935068005c7, type: 3}
+  SelectionButtonImage_BodyP_Enter: {fileID: 21300000, guid: 9390b34d094ca7e41b53ba967fddd7ce, type: 3}
+  SelectionButtonImage_BodyP_Clicked: {fileID: 21300000, guid: d983f66c1d08f60409add97333129d15, type: 3}
+  SelectionButtonImage_HeadM_Idle: {fileID: 21300000, guid: 21abf47366bc5d548b140a77b82b1421, type: 3}
+  SelectionButtonImage_HeadM_Enter: {fileID: 21300000, guid: 2e5152176e0acc743974100e898cd005, type: 3}
+  SelectionButtonImage_HeadM_Clicked: {fileID: 21300000, guid: 5b1e35498c2300f42946b7f87e74fdc5, type: 3}
+  SelectionButtonImage_HeadP_Idle: {fileID: 21300000, guid: 5c7f7778198146e4ea46bc67a9e0c680, type: 3}
+  SelectionButtonImage_HeadP_Enter: {fileID: 21300000, guid: f3290ac18445171478f85d84667392cc, type: 3}
+  SelectionButtonImage_HeadP_Clicked: {fileID: 21300000, guid: 69a8e9fdddce6d94ab0a0e50bd611998, type: 3}
   NullEnvirIllust:
   - {fileID: 21300000, guid: ebc258cf7623c4f45b6cb2bdab039564, type: 3}
   - {fileID: 21300000, guid: 27aabe31a6cf0f74b932df66a3fdb954, type: 3}
@@ -241,3 +260,5 @@ MonoBehaviour:
   HighlandTile: {fileID: 21300000, guid: 5c9c053e5b9c19645bce9b8fb4d53ae7, type: 3}
   MountainTile: {fileID: 21300000, guid: 0339cf2f871f22e45b0685349f48febf, type: 3}
   SeaTile: {fileID: 21300000, guid: ee55fe9d99cd3714b9e06048f1e06c5f, type: 3}
+  IconBackground_normal: {fileID: 21300000, guid: 9716a1c0b95964a4a80c1177f2d3e910, type: 3}
+  IconBackground_status: {fileID: 21300000, guid: 082461aaf9a52ab47bf54e43c3e184e9, type: 3}

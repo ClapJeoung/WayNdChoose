@@ -30,8 +30,8 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
 
     IsOpen = true;
     TouchBlock.enabled = true;
-    SkillType _skilltype = (SkillType)_index;
-    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype);
+    SkillTypeEnum _skilltype = (SkillTypeEnum)_index;
+    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype,false);
     Sprite _illust = GameManager.Instance.ImageHolder.GetSkillIllust(_skilltype);
     string _name = GameManager.Instance.GetTextData(_skilltype, 0), _desscription = GameManager.Instance.GetTextData(_skilltype, 3);
 

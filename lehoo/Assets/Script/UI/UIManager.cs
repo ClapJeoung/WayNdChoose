@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
   public UI_Mad MyMadPanel = null;
   public UI_FollowEnding MyFollowEnding = null;
   public UI_Gameover GameOverUI = null;
-  public SidePanel_Quest_Wolf QuestSidePanel_Cult = null;
+  public SidePanel_Quest_Cult QuestSidePanel_Cult = null;
   public UI_map MyMap = null;
   public UI_Tendency MyTendencyPanelUI = null;
   public UI_skill_info MySkillUIPanelUI = null;
