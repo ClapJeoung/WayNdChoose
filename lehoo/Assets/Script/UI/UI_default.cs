@@ -51,7 +51,6 @@ public class UI_default : MonoBehaviour
     }
   }
   public bool IsOpen = false;
-  public UIMoveDir MyDir = UIMoveDir.Horizontal;
     public List<PanelRectEditor> PanelRects = new List<PanelRectEditor>();
   public List<PanelGroup> PanelGroups = new List<PanelGroup>();
   public PanelRectEditor GetPanelRect(string name)
@@ -63,22 +62,7 @@ public class UI_default : MonoBehaviour
         Debug.Log($"{name} 이름 뭔가 잘못 쓴듯");
         return null;
     }
-    public virtual void OpenUI(bool _islarge)
-  {
-    if (IsOpen) { CloseUI();IsOpen = false; return; }
-    IsOpen = true;
-
-        UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(DefaultRect, DefaultGroup, MyDir, _islarge));
-  }
   public virtual void CloseUI()
   {
-    UIManager.Instance.AddUIQueue(UIManager.Instance.CloseUI(DefaultRect, DefaultGroup, MyDir));
-    IsOpen = false;
-  }
-  public virtual void CloseUiQuick()
-  {
-    DefaultGroup.alpha = 0.0f;
-    DefaultGroup.interactable = false;
-    DefaultGroup.blocksRaycasts = false;
   }
 }

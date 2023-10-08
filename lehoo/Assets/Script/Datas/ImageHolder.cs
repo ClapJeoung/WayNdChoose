@@ -147,15 +147,17 @@ public class ImageHolder : ScriptableObject
   public Sprite QuestIcon_Wolf = null;
   public Sprite QuestIcon_Ritual_Idle = null;
   public Sprite QuestIcon_Ritual_Finish = null;
-    public List<Sprite> QuestIllust_Cult = new List<Sprite>();          //컬트 관련 퀘스트 일러스트
-    public Sprite GetQuestIllust(QuestType type,string id)
+  public Sprite Quest_Cult_MainIllust = null;
+    public List<Sprite> Cult_Prologue = new List<Sprite>();          //컬트-프롤로그
+  public List<Sprite> Cult_30= new List<Sprite>();
+  public List<Sprite> Cult_60=new List<Sprite>();
+  public List<Sprite> Cult_100=new List<Sprite>();
+  public List<Sprite> Cult_Settlement=new List<Sprite>();
+  public List<Sprite> Cult_Sabbat=new List<Sprite>();
+  public List<Sprite> Cult_Ritual=new List<Sprite>();
+    public Sprite GetCultIllust(List<Sprite> targetlist, string id)
     {
-        List<Sprite> _targetlist = new List<Sprite>();
-        switch (type)
-        {
-            case QuestType.Cult:_targetlist = QuestIllust_Cult;break;
-        }
-        foreach(var _illust in _targetlist)
+        foreach(var _illust in targetlist)
         {
             if (string.Compare(id, _illust.name, true).Equals(0)) return _illust;
         }
@@ -188,6 +190,8 @@ public class ImageHolder : ScriptableObject
   public Sprite DisComfort = null;
   public Sprite MadnessIdle = null;
   public Sprite MadnessActive = null;
+  [Space(10)]
+  public Sprite Arrow_Empty = null;
   public Sprite Arrow_DeActive = null;
   public Sprite Arrow_Active_rational = null;
   public Sprite Arrow_Active_physical = null;

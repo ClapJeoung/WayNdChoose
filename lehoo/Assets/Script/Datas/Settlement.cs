@@ -11,94 +11,29 @@ public class Settlement
   {
     SettlementType = settletype;
   }
-  private List<SectorTypeEnum> settlementplaces=new List<SectorTypeEnum>();
-  public List<SectorTypeEnum> Settlementplaces
+  private List<SectorTypeEnum> sectors=new List<SectorTypeEnum>();
+  public List<SectorTypeEnum> Sectors
   {
     get
     {
-      if (settlementplaces.Count == 0)
+      if (sectors.Count == 0)
       {
-        settlementplaces = new List<SectorTypeEnum>() { SectorTypeEnum.Residence, SectorTypeEnum.Temple};
+        sectors = new List<SectorTypeEnum>() { SectorTypeEnum.Residence, SectorTypeEnum.Temple};
         switch (SettlementType)
         {
           case SettlementType.Village:
             break;
           case SettlementType.Town:
-            settlementplaces.Add(SectorTypeEnum.Marketplace);
+            sectors.Add(SectorTypeEnum.Marketplace);
             break;
           case SettlementType.City:
-            settlementplaces.Add(SectorTypeEnum.Marketplace);
-            settlementplaces.Add(SectorTypeEnum.Library);
+            sectors.Add(SectorTypeEnum.Marketplace);
+            sectors.Add(SectorTypeEnum.Library);
             break;
         }
       }
-      return settlementplaces;
+      return sectors;
     }
-  }
-  public void SetBlockedPlaces()
-  {
-    int _count = 0;
-    float _progress = GameManager.Instance.MyGameData.Quest_Cult_Progress/100.0f;
-    List<SectorTypeEnum> _randomplaces = new List<SectorTypeEnum>();
-    foreach (var place in Settlementplaces) _randomplaces.Add(place);
-    _randomplaces.Sort((a, b) => Random.Range(0, 2) == 0 ? 0:1);
-    switch (SettlementType)
-    {
-      case SettlementType.Village:
-        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-        {
-          case 1:
-            if (Random.Range(0, 100) < Mathf.Lerp(0, 100,  _progress)) _count = 0;
-            else _count = 1;
-            break;
-          case 2:
-            if (Random.Range(0, 100) < Mathf.Lerp(0, 100, Mathf.Pow(_progress, 0.5f))) _count = 0;
-            else _count = 1;
-            break;
-          case 3:
-            _count = 1;
-            break;
-        }
-
-        break;
-      case SettlementType.Town:
-        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-        {
-          case 1:
-            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, _progress)) _count = 0;
-            else _count = 1;
-            break;
-          case 2:
-            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, _progress)) _count = 1;
-            else _count = 2;
-            break;
-          case 3:
-            _count = 1;
-            break;
-        }
-
-        break;
-      case SettlementType.City:
-        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-        {
-          case 1:
-            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, Mathf.Pow(_progress, 0.4f))) _count = 1;
-            else _count = 2;
-            break;
-          case 2:
-            if (Random.Range(0, 100) > Mathf.Lerp(0, 100, _progress)) _count = 2;
-            else _count = 3;
-            break;
-          case 3:
-            _count = 3;
-            break;
-        }
-
-        break;
-    }
-
-    GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Clear();
-    for (int i = 0; i < _count; i++) GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Add(_randomplaces[i]);
   }
   public SettlementType SettlementType;
   public int Index=-1;
@@ -118,13 +53,13 @@ public class Settlement
     }
   }
   public int Discomfort = 0;
-  public void AddDiscomfort()
+  public void AddDiscomfort(int addvalue)
   {
     switch (SettlementType)
     {
-      case SettlementType.Village:Discomfort += ConstValues.RestDiscomfort_Village;return;
-      case SettlementType.Town:Discomfort += ConstValues.RestDiscomfort_Town; return;
-      default: Discomfort += ConstValues.RestDiscomfort_City; return;
+      case SettlementType.Village:Discomfort += ConstValues.RestDiscomfort_Village+addvalue;return;
+      case SettlementType.Town:Discomfort += ConstValues.RestDiscomfort_Town + addvalue; return;
+      default: Discomfort += ConstValues.RestDiscomfort_City + addvalue; return;
     }
   }
   private string name;

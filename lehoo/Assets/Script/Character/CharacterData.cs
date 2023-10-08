@@ -9,16 +9,15 @@ using UnityEngine.UIElements;
 public static class ConstValues
 {
 
-  public const int MadnessEffect_Conversation = 20;
+  public const int MadnessEffect_Conversation = 15;
   public const int MadnessEffect_Force = 35;
   public const int MadnessEffect_Wild = 25;
   public const int MadnessEffect_Intelligence = 40;
 
-  public const int Quest_Cult_TokenDuration = 7;
-  public const int Quest_Cult_Progress_Sector_Idle = 4, Quest_Cult_Progress_Sector_Tokened = 8,
-    Quest_Cult_Progress_Outer_Idle=3,Quest_Cult_Progress_Outer_Ritual=7,
-   Quest_Cult_Progress_EventClear = 10, Quest_Cult_Progress_EventFail = 5;
-  public const int Quest_Wolf_Searching_Sanityrewardvalue = 15;
+  public const int Quest_Cult_Progress_Settlement=10, Quest_Cult_Progress_Sector_Sabbat = 5,Quest_Cult_Progress_Outer_Ritual = 5;
+  public const int Qeust_Cult_EventProgress_Clear_Less60 = 4, Quest_Cult_EventProgress_Clear_Over60 = 3;
+  public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 2;
+  public const int Quest_Cult_SabbatDiscomfort = 2;
 
   public const int GoodExpAsSanity = 15;
   public const int BadExpAsSanity = 20;
@@ -35,7 +34,7 @@ public static class ConstValues
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
                    EventPer_Sector = 2, EventPer_NoSector = 1,
-                   EventPer_Quest = 2, EventPer_Follow = 3, EventPer_Normal = 1;
+                   EventPer_Quest = 1, EventPer_Follow = 3, EventPer_Normal = 1;
 
   public const int MapSize = 21;
 
@@ -126,11 +125,11 @@ public class GameData    //게임 진행도 데이터
   public MapData MyMapData = null;
   public Vector2 Coordinate = Vector2.zero;
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
-  public void AddDiscomfort(Settlement settlement)
+  public void AddDiscomfort(Settlement settlement,int addvalue)
   {
     for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
     {
-      if (settlement == GameManager.Instance.MyGameData.MyMapData.AllSettles[i]) settlement.AddDiscomfort();
+      if (settlement == GameManager.Instance.MyGameData.MyMapData.AllSettles[i]) settlement.AddDiscomfort(addvalue);
       else
       {
         GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
@@ -220,28 +219,14 @@ public class GameData    //게임 진행도 데이터
         switch (QuestType)
         {
           case QuestType.Cult:
-            if (Quest_Cult_Phase > 0 )
+            UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+            if (Quest_Cult_Phase == 2)
             {
-              for(int i = 0; i < Quest_Cult_TokenedSectors.Count; i++)
-              {
-                if (Quest_Cult_TokenedSectors[(SectorTypeEnum)i+1] > 0) Quest_Cult_TokenedSectors[(SectorTypeEnum)i+1]--;
-              }
+              if (Cult_SabbatSector_CoolDown > 0) Cult_SabbatSector_CoolDown--;
+              if (Cult_RitualTile_CoolDown > 0) Cult_RitualTile_CoolDown--;
             }
-            
             break;
         }
-
-        /*
-                List<SectorType> _deleteplace = new List<SectorType>();
-                List<SectorType> _downplace = new List<SectorType>();
-                foreach(var _data in PlaceEffects)
-                {
-                    if (_data.Value.Equals(1)) _deleteplace.Add(_data.Key);
-                    else _downplace.Add(_data.Key);
-                }
-                foreach (var _place in _deleteplace) PlaceEffects.Remove(_place);
-                foreach (var _place in _downplace) PlaceEffects[_place]--;
-        */
       }
 
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateTurnIcon();
@@ -676,9 +661,18 @@ public class GameData    //게임 진행도 데이터
     get { return GameManager.Instance.EventHolder.GetQuest(QuestType); }
   }
   /// <summary>
-  /// 0,1,2
+  /// 0(0~30),1(30~60),2(60~100)
   /// </summary>
-  public int Quest_Cult_Phase = 0;
+  public int Quest_Cult_Phase
+  {
+    get
+    {
+      if (Quest_Cult_Progress < 30) return 0;
+      else if (Quest_Cult_Progress < 60) return 1;
+      else if (Quest_Cult_Progress < 100) return 2;
+      return 3;
+    }
+  }
   private int quest_cult_progress = 0;
   public int Quest_Cult_Progress
   {
@@ -689,10 +683,14 @@ public class GameData    //게임 진행도 데이터
       UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
     }
   }
-  public List<string> SearchingSettlementNames=new List<string>();
-  public List<SectorTypeEnum> Quest_Cult_BlockedSectors = new List<SectorTypeEnum>();
-  public Dictionary<SectorTypeEnum,int> Quest_Cult_TokenedSectors=new Dictionary<SectorTypeEnum,int>();
-  public TileData Quest_Cult_RitualTile = null;
+  public List<string> Cult_SettlementNames=new List<string>();
+  public SectorTypeEnum Cult_SabbatSector = SectorTypeEnum.NULL;
+  public int Cult_SabbatSector_CoolDown = 0;
+  public TileData Cult_RitualTile = null;
+  public int Cult_RitualTile_CoolDown = 0;
+  public List<int> Cult_Progress_SettlementEventIndex = new List<int>();
+  public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
+  public List<int> Cult_Progress_RitualEventIndex = new List<int>();
   #endregion
 
   #region #각종 보정치 가져오기#
@@ -1000,7 +998,7 @@ public class Tendency
       return GameManager.Instance.GetTextData(Type, level,2);
     }
   }
-  public int count = 0;
+  public int Progress = 0;
   public int MaxTendencyLevel { get { return ConstValues.MaxTendencyLevel; } }
   /// <summary>
   /// false: 마이너스     true: 플러스
@@ -1012,10 +1010,10 @@ public class Tendency
     if (dir.Equals(false))
     {//False면 음수 진행
 
-      if (count <= 0) count = 1;
-      else count++;
+      if (Progress <= 0) Progress = 1;
+      else Progress++;
 
-      int _abs=Mathf.Abs(count);
+      int _abs=Mathf.Abs(Progress);
       switch (Level)
       {
         case -2:
@@ -1027,19 +1025,19 @@ public class Tendency
         case 1:
           if (_abs.Equals(ConstValues.TendencyProgress_1to2)) Level = 2; //1레벨일때 count 개수를 충족하면 2레벨로
           break;
-        case 2: count = 0; break;
+        case 2: Progress = 0; break;
       }
     }
     else if (dir.Equals(true))
     {//True면 음수 진행
 
-      if (count >= 0) count = -1;
-      else count--;
+      if (Progress >= 0) Progress = -1;
+      else Progress--;
 
-      int _abs = Mathf.Abs(count);
+      int _abs = Mathf.Abs(Progress);
       switch (Level)
       {
-        case -2:count = 0;break;
+        case -2:Progress = 0;break;
         case -1:
           if (_abs.Equals(ConstValues.TendencyProgress_1to2)) Level = -2; //-1레벨일때 count 개수를 충족하면 -2레벨로
           break;
@@ -1058,7 +1056,7 @@ public class Tendency
     get { return level; }
     set {
       level = value;
-      count = 0;
+      Progress = 0;
       if (GameManager.Instance.MyGameData != null)
       {
         UIManager.Instance.UpdateTendencyIcon();

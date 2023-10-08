@@ -72,9 +72,9 @@ public class UI_Settlement : UI_default
 
     SettlementIcon.sprite = _settlementicon;
     SectorName.gameObject.SetActive(false);
-    SectorName.text = "";
+    SectorName.text = GameManager.Instance.GetTextData("SELECTPLACE");
     if (SectorSelectDescription.gameObject.activeInHierarchy == false) SectorSelectDescription.gameObject.SetActive(true);
-    SectorSelectDescription.text = GameManager.Instance.GetTextData("SELECTPLACE");
+    SectorSelectDescription.text = "";
     RestButton_Gold.interactable = false;
     RestButton_Sanity.interactable = false;
     LayoutRebuilder.ForceRebuildLayoutImmediate(SectorName.transform.parent.transform as RectTransform);
@@ -140,64 +140,51 @@ public class UI_Settlement : UI_default
     {
       case QuestType.Cult:
         GetSectorIconScript(SelectedSector).SetSelectColor();
-        if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(SelectedSector))
+
+        SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
+        string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
+        switch (SelectedSector)
         {
-          SectorName.text = "";
-          SectorSelectDescription.text = GameManager.Instance.GetTextData("Quest0_Sabbat_Blocked");
-          RestButton_Gold.interactable = false;
-          RestButton_Sanity.interactable = false;
+          case SectorTypeEnum.Residence:
+            _effect = string.Format(_effect, ConstValues.SectorEffect_residence);
+            break;
+          case SectorTypeEnum.Temple:
+            _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
+            break;
+          case SectorTypeEnum.Marketplace:
+            _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
+            break;
+          case SectorTypeEnum.Library:
+            _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
+            break;
+          case SectorTypeEnum.Theater:
+            //서비스 종료다...!
+            break;
+          case SectorTypeEnum.Academy:
+            //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
+            break;
         }
-        else
+        string _cultprogress = "";
+        string _sabbatdescription = "";
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
         {
-          SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
-          string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-          switch (SelectedSector)
-          {
-            case SectorTypeEnum.Residence:
-              _effect = string.Format(_effect, ConstValues.SectorEffect_residence);
-              break;
-            case SectorTypeEnum.Temple:
-              _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
-              break;
-            case SectorTypeEnum.Marketplace:
-              _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
-              break;
-            case SectorTypeEnum.Library:
-              _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
-              break;
-            case SectorTypeEnum.Theater:
-              //서비스 종료다...!
-              break;
-            case SectorTypeEnum.Academy:
-          //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
-              break;
-          }
-          string _tokeneddescription = "";
-          if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
-          {
-            if (GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors[SelectedSector] == 0)
-            {
-              _tokeneddescription = GameManager.Instance.GetTextData("Quest0_Sector_Tokened");
-            }
-            else
-            {
-              _tokeneddescription = GameManager.Instance.GetTextData("Quest0_Sector_UnTokened");
-            }
-          }
+          if(GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector&&
+            GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown==0)
+            _sabbatdescription = "<br><br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat_Effect"),
+  WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort));
+          _cultprogress = "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat"), ConstValues.Quest_Cult_Progress_Sector_Sabbat);
 
-          if (_tokeneddescription != "") SectorSelectDescription.text = _effect + "<br>" + _tokeneddescription;
-          else SectorSelectDescription.text = _effect;
-
-
-          RestButton_Sanity.interactable = true;
-
-          int _goldpayvalue =SelectedSector!=SectorTypeEnum.Marketplace? 
-            GameManager.Instance.MyGameData.SettleRestCost_Gold:
-            GameManager.Instance.MyGameData.SettleRestCost_Gold*ConstValues.SectorEffect_marketSector/100;
-
-          if (GameManager.Instance.MyGameData.Gold >= _goldpayvalue) RestButton_Gold.interactable = true;
-          else RestButton_Gold.interactable = false;
         }
+        SectorSelectDescription.text = _effect+_sabbatdescription+ _cultprogress;
+
+        RestButton_Sanity.interactable = true;
+
+        int _goldpayvalue = SelectedSector != SectorTypeEnum.Marketplace ?
+          GameManager.Instance.MyGameData.SettleRestCost_Gold :
+          GameManager.Instance.MyGameData.SettleRestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
+
+        if (GameManager.Instance.MyGameData.Gold >= _goldpayvalue) RestButton_Gold.interactable = true;
+        else RestButton_Gold.interactable = false;
         break;
     }
 
@@ -227,16 +214,13 @@ public class UI_Settlement : UI_default
         break;
     }
     if (SelectedSector == SectorTypeEnum.Residence) _movepointvalue++;
-
-    string _cultprogress = "";
     if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
     {
-      _cultprogress = "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_RestProgress_Idle"), ConstValues.Quest_Cult_Progress_Sector_Idle);
-      if (GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors[SelectedSector] == 0)
-      {
-        _cultprogress += " " + string.Format(GameManager.Instance.GetTextData("Quest0_RestProgress_Sabbat"), ConstValues.Quest_Cult_Progress_Sector_Tokened);
-      }
+      if (GameManager.Instance.MyGameData.Cult_SabbatSector == SelectedSector &&
+        GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown == 0)
+        _discomfortvalue += ConstValues.Quest_Cult_SabbatDiscomfort;
     }
+
 
     switch (type)
     {
@@ -247,8 +231,7 @@ public class UI_Settlement : UI_default
           GameManager.Instance.MyGameData.SettleRestCost_Sanity :
           GameManager.Instance.MyGameData.SettleRestCost_Sanity * ConstValues.SectorEffect_marketSector / 100)),
       WNCText.GetMovepointColor("+" + _movepointvalue),
-      WNCText.GetDiscomfortColor("+" + _discomfortvalue))
-          + _cultprogress;
+      WNCText.GetDiscomfortColor("+" + _discomfortvalue));
         break;
       case StatusTypeEnum.Gold:
         int _goldpayvalue = SelectedSector != SectorTypeEnum.Marketplace ?
@@ -259,8 +242,7 @@ public class UI_Settlement : UI_default
         RestDescription.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"),
   WNCText.GetGoldColor("-" + _goldpayvalue),
   WNCText.GetMovepointColor("+" + _movepointvalue),
-  WNCText.GetDiscomfortColor("+" + _discomfortvalue))
-                    +_cultprogress;
+  WNCText.GetDiscomfortColor("+" + _discomfortvalue));
         break;
 
     }
@@ -268,20 +250,6 @@ public class UI_Settlement : UI_default
   public void OnExitRestType(StatusTypeEnum type)
   {
     return;
-
-    if (UIManager.Instance.IsWorking) return;
-
-    switch (type)
-    {
-      case StatusTypeEnum.Sanity:
-        RestDescription.text = "";
-        break;
-      case StatusTypeEnum.Gold:
-        int _goldpayvalue = GameManager.Instance.MyGameData.SettleRestCost_Gold;
-        if (GameManager.Instance.MyGameData.Gold < _goldpayvalue) return;
-        RestDescription.text = "";
-        break;
-    }
   }
   public void StartRest_Sanity()
     {

@@ -19,8 +19,8 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject JustDescription_Panel = null;
   [SerializeField] private TextMeshProUGUI JustDescriptionText = null;
-  private int EffectFontSize = 25;
-  private int SubdescriptionSize = 17;
+  private int EffectFontSize = 20;
+  private int SubdescriptionSize = 16;
   private Vector2 TurnPivot = new Vector2(0.5f, 1.1f);
   private Vector2 HPPivot= new Vector2(0.5f, 1.1f);
   private Vector2 SanityPivot= new Vector2(0.5f, 1.1f);
@@ -33,12 +33,27 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private GameObject SkillPreview = null;
   [SerializeField] private Image SkillIcon = null;
   [SerializeField] private TextMeshProUGUI SkillLevel = null;
-  [SerializeField] private TextMeshProUGUI SkillDescription = null;
+  [SerializeField] private TextMeshProUGUI SkillName = null;
+  [SerializeField] private GameObject SkillMadnessHolder = null;
+  [SerializeField] private TextMeshProUGUI SkillMadnessInfo = null;
+  [SerializeField] private TextMeshProUGUI SkillSubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpPreview = null;
   [SerializeField] private TextMeshProUGUI ExpName = null;
   [SerializeField] private TextMeshProUGUI ExpDuration = null;
+  [SerializeField] private Image ExpIllust = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
+  [Space(10)]
+  [SerializeField] private GameObject TendencyPreview = null;
+  [SerializeField] private Image TendencyIcon_Current = null;
+  [SerializeField] private GameObject TendencyProgress_Left = null;
+  [SerializeField] private Image TendencyIcon_Left = null;
+  [SerializeField] private Image[] TendencyArrows_Left = null;
+  [SerializeField] private GameObject TendencyProgress_Right = null;
+  [SerializeField] private Image TendencyIcon_Right = null;
+  [SerializeField] private Image[] TendencyArrows_Right = null;
+  [SerializeField] private TextMeshProUGUI TendencyName = null;
+  [SerializeField] private TextMeshProUGUI TendencyDescription = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionNonePanel = null;
   [SerializeField] private Image SelectionNoneBackground = null;
@@ -106,41 +121,14 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelectNewEffect = null;
   [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
-  [Space(10)]
-  [SerializeField] private GameObject PlacePanel = null;
-  [SerializeField] private Image PlaceIcon = null;
-  [SerializeField] private Image PlaceThemeIcon = null;
-  [SerializeField] private TextMeshProUGUI PlaceTurn = null;
-  [SerializeField] private TextMeshProUGUI PlaceName = null;
-  [SerializeField] private TextMeshProUGUI PlaceDescription = null;
-  [SerializeField] private TextMeshProUGUI PlaceSubDescription = null;
-  [Space(10)]
-  [SerializeField] private GameObject EnvirPanel = null;
-  [SerializeField] private Image EnvirIcon = null;
-  [SerializeField] private TextMeshProUGUI EnvirName = null;
-  [SerializeField] private TextMeshProUGUI EnvirDescription = null;
-  private List<CanvasGroup> AllCanvasGroup = new List<CanvasGroup>();
-  private void Awake()
-  {
-    AllCanvasGroup.Add(IconAndDescription_Panel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(JustDescription_Panel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(SkillPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(ExpPreview.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(SelectionNonePanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(SelectionPayPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(SelectionCheckPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(SelectionElsePanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(RewardStatusPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(RewardExpPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(RewardSkillPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(ExpSelectEmptyPanel.GetComponent<CanvasGroup>());
-    AllCanvasGroup.Add(ExpSelectExistPanel.GetComponent<CanvasGroup>());
-  }
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
   {
     CurrentPreview = panel.GetComponent<RectTransform>();
     CurrentPreview.pivot = pivot;
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(panel.transform as RectTransform);
+
     IEnumerator _cor = null;
     _cor = fadepreview(panel, true, rect);
     StartCoroutine(_cor);
@@ -148,6 +136,9 @@ public class PreviewManager : MonoBehaviour
   private void OpenPreviewPanel(GameObject panel,RectTransform rect)
   {
     CurrentPreview = panel.GetComponent<RectTransform>();
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(panel.transform as RectTransform);
+    
     IEnumerator _cor = null;
     _cor = fadepreview(panel, true,rect);
     StartCoroutine(_cor);
@@ -274,47 +265,248 @@ public class PreviewManager : MonoBehaviour
   public void OpenSkillPreview(SkillTypeEnum _skilltype,RectTransform rect)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype,true);
-    string _description = GameManager.Instance.GetTextData(_skilltype,0)+"<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4)));
 
     int _level = GameManager.Instance.MyGameData.GetSkill(_skilltype).Level ;
-    SkillLevel.text = _level.ToString();
-
-    SkillDescription.text = _description;
+    string _leveltext = WNCText.UIIdleColor(_level);
+    SkillName.text = GameManager.Instance.GetTextData(_skilltype, 0);
     SkillIcon.sprite = _icon;
 
+    switch (_skilltype)
+    {
+      case SkillTypeEnum.Conversation:
+        if (GameManager.Instance.MyGameData.Madness_Conversation == true)
+        {
+          if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
+
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Info"), ConstValues.MadnessEffect_Conversation);
+          _leveltext = WNCText.GetMadnessSkillColor(_level);
+        }
+        else
+        {
+          if (SkillMadnessHolder.activeInHierarchy == true) SkillMadnessHolder.SetActive(false);
+        }
+        break;
+      case SkillTypeEnum.Force:
+        if (GameManager.Instance.MyGameData.Madness_Force == true)
+        {
+          if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
+
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Force_Info"), ConstValues.MadnessEffect_Force);
+          _leveltext = WNCText.GetMadnessSkillColor(_level);
+        }
+        else
+        {
+          if (SkillMadnessHolder.activeInHierarchy == true) SkillMadnessHolder.SetActive(false);
+        }
+        break;
+      case SkillTypeEnum.Wild:
+        if (GameManager.Instance.MyGameData.Madness_Wild == true)
+        {
+          if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
+
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Wild_Info"), ConstValues.MadnessEffect_Wild);
+          _leveltext = WNCText.GetMadnessSkillColor(_level);
+        }
+        else
+        {
+          if (SkillMadnessHolder.activeInHierarchy == true) SkillMadnessHolder.SetActive(false);
+        }
+        break;
+      case SkillTypeEnum.Intelligence:
+        if (GameManager.Instance.MyGameData.Madness_Intelligence == true)
+        {
+          if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
+
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Info"), ConstValues.MadnessEffect_Intelligence);
+          _leveltext = WNCText.GetMadnessSkillColor(_level);
+        }
+        else
+        {
+          if (SkillMadnessHolder.activeInHierarchy == true) SkillMadnessHolder.SetActive(false);
+        }
+        break;
+    }
+    SkillLevel.text = _leveltext;
+    SkillSubdescription.text = WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4));
     OpenPreviewPanel(SkillPreview,rect);
   }
   public void OpenExpPreview(Experience _exp, RectTransform rect)
   {
     ExpName.text =_exp.Name;
     ExpDuration.text = $"{_exp.Duration}";
+    ExpIllust.sprite = _exp.Illust;
     string _description = WNCText.SetSize(EffectFontSize, _exp.ShortEffectString) + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_exp.SubDescription));
     ExpDescription.text = _description;
-
-    LayoutRebuilder.ForceRebuildLayoutImmediate(ExpName.transform.parent.transform as RectTransform);
 
     OpenPreviewPanel(ExpPreview,rect);
   }
   public void OpenTendencyPreview(TendencyTypeEnum _type, RectTransform rect)
   {
-    Sprite _tendencyicon = null;
     Tendency _targettendency = null;
-    switch (_type)
+    Sprite _arrowsprite_left = null, _arrowsprite_right = null;
+ switch (_type)
     {
       case TendencyTypeEnum.Head:
-        _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type,GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _targettendency = GameManager.Instance.MyGameData.Tendency_Head;
+        _arrowsprite_left = GameManager.Instance.ImageHolder.Arrow_Active_mental;
+        _arrowsprite_right = GameManager.Instance.ImageHolder.Arrow_Active_material;
         break;
       case TendencyTypeEnum.Body:
-        _tendencyicon = GameManager.Instance.ImageHolder.GetTendencyIcon(_type, GameManager.Instance.MyGameData.GetTendencyLevel(_type));
         _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
+        _arrowsprite_left = GameManager.Instance.ImageHolder.Arrow_Active_rational;
+        _arrowsprite_right = GameManager.Instance.ImageHolder.Arrow_Active_physical;
         break;
     }
-    string _description = WNCText.SetSize(20, "<b>" + _targettendency.Name + "</b>") + "<br><br>" + 
-      WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
+    Sprite _icon = _targettendency.CurrentIcon;
+    Sprite _icon_left=_targettendency.GetNextIcon(false), _icon_right=_targettendency.GetNextIcon(true);
+    int _progress = Mathf.Abs(_targettendency.Progress) - 1;
+    switch (_targettendency.Level)
+    {
+      case -2:
+        if(TendencyProgress_Left.activeInHierarchy==true) TendencyProgress_Left.SetActive(false);
+
+        for(int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        {
+          if (i <= _progress)
+          {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+              TendencyArrows_Right[i].sprite = _arrowsprite_right;
+            }
+          else 
+            {
+              if (i < ConstValues.TendencyRegress)
+              {
+                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+                TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+              }
+              else
+              {
+                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+              }
+            }
+          }
+        break;
+      case -1:
+        if (TendencyProgress_Left.activeInHierarchy == false) TendencyProgress_Left.SetActive(true);
+        if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
+        for (int i =0; i < ConstValues.TendencyProgress_1to2; i++)
+        {
+          if (i <= _progress)
+          {
+            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+            TendencyArrows_Left[i].sprite = _arrowsprite_left;
+          }
+          else
+          {
+            if (i < ConstValues.TendencyProgress_1to2)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+            }
+            else
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            }
+          }
+        }
+        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        {
+          if (i <= _progress)
+          {
+            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+            TendencyArrows_Right[i].sprite = _arrowsprite_right;
+          }
+          else
+          {
+            if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+            }
+            else
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+            }
+          }
+        }
+        break;
+      case 1:
+        if (TendencyProgress_Left.activeInHierarchy == false) TendencyProgress_Left.SetActive(true);
+        if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
+        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        {
+          if (i <= _progress)
+          {
+            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+            TendencyArrows_Left[i].sprite = _arrowsprite_left;
+          }
+          else
+          {
+            if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+            }
+            else
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            }
+          }
+        }
+        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        {
+          if (i <= _progress)
+          {
+            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+            TendencyArrows_Right[i].sprite = _arrowsprite_right;
+          }
+          else
+          {
+            if (i < ConstValues.TendencyProgress_1to2)
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+            }
+            else
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+            }
+          }
+        }
+        break;
+      case 2:
+        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        {
+          if (i <= _progress)
+          {
+            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+            TendencyArrows_Left[i].sprite = _arrowsprite_left;
+          }
+          else
+          {
+            if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+            }
+            else
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            }
+          }
+        }
+
+        if (TendencyProgress_Right.activeInHierarchy == true) TendencyProgress_Right.SetActive(false);
+        break;
+    }
+
+    TendencyIcon_Current.sprite = _icon;
+
+    string _name = _targettendency.Name;
+    string _description = WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
       "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
-    OpenIconAndDescriptionPanel(_tendencyicon, _description, TendencyPivot,false, rect);
+    OpenPreviewPanel(TendencyPreview, TendencyPreview.transform as RectTransform);
   }
   public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform rect)
   {
@@ -710,7 +902,7 @@ public class PreviewManager : MonoBehaviour
     OpenPreviewPanel(JustDescription_Panel,rect);
   }
   public void OpenJustDescriptionPreview(string text,Vector2 pivot, RectTransform rect)
-  {
+  { 
     JustDescriptionText.text = text;
 
     OpenPreviewPanel(JustDescription_Panel,pivot,rect);
@@ -737,13 +929,6 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenEnvirPanel(EnvironmentType envir)
   {
-    EnvirIcon.sprite = GameManager.Instance.ImageHolder.GetEnvirTile(envir);
-    EnvirName.text = GameManager.Instance.GetTextData(envir, 0);
-    EnvirDescription.text = GameManager.Instance.GetTextData(envir,1);
-
-    CurrentPreview = EnvirPanel.GetComponent<RectTransform>();
-    IEnumerator _cor = null;
-    StartCoroutine(_cor);
   }
   private Vector2 Newpos = Vector2.zero;
   public void Update()
@@ -765,8 +950,6 @@ public class PreviewManager : MonoBehaviour
 
   private IEnumerator fadepreview(GameObject _targetobj, bool _isopen, RectTransform targetrect)
   {
-    LayoutRebuilder.ForceRebuildLayoutImmediate(_targetobj.transform as RectTransform);
-
     CurrentPreview.position = targetrect.position;
     CurrentPreview.anchoredPosition3D = new Vector3(CurrentPreview.anchoredPosition3D.x, CurrentPreview.anchoredPosition3D.y, 0.0f);
 

@@ -7,9 +7,7 @@ public class PlaceIconScript : MonoBehaviour
 {
   public SectorTypeEnum MyType = SectorTypeEnum.Residence;
   public Image MyImage = null;
-//  public Image Quest_Wolf_CultBlock_Effect = null;    //이건 일단 보류...
-  public Image BlockedImage = null;
-  public Image UnTokenedImage = null;
+  public Image SabbatImage = null;
   public Color IdleColor= Color.white;
   public Color SelectedColor= Color.white;
   public Color BlockedColor= Color.white;
@@ -20,30 +18,22 @@ public class PlaceIconScript : MonoBehaviour
       case QuestType.Cult:
         if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 )
         {
-          if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(MyType))
+          if (GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown==0&&
+            GameManager.Instance.MyGameData.Cult_SabbatSector==MyType)
           {
             MyImage.color = BlockedColor;
-            if (BlockedImage.enabled == false) BlockedImage.enabled = true;
-            if (UnTokenedImage.enabled == true) UnTokenedImage.enabled = false;
+            if (SabbatImage.enabled == false) SabbatImage.enabled = true;
           }
           else
           {
             MyImage.color = IdleColor;
-            if (BlockedImage.enabled == true) BlockedImage.enabled = false;
-            if (GameManager.Instance.MyGameData.Quest_Cult_TokenedSectors[MyType] == 0)
-            {
-              if (UnTokenedImage.enabled == true) UnTokenedImage.enabled = false;
-            }
-            else
-            {
-              if (UnTokenedImage.enabled == false) UnTokenedImage.enabled = true;
-            }
+            if (SabbatImage.enabled == true) SabbatImage.enabled = false;
           }
         }
         else
         {
           MyImage.color = IdleColor;
-          if (UnTokenedImage.enabled == true) UnTokenedImage.enabled = false;
+          if (SabbatImage.enabled == true) SabbatImage.enabled = false;
         }
         break;
     }
@@ -53,9 +43,7 @@ public class PlaceIconScript : MonoBehaviour
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
-        else MyImage.color = SelectedColor;
-        break;
+        MyImage.color = SelectedColor; break;
     }
   }
     public void SetIdleColor()
@@ -63,9 +51,8 @@ public class PlaceIconScript : MonoBehaviour
   switch (GameManager.Instance.MyGameData.QuestType)
   {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_BlockedSectors.Contains(MyType)) { MyImage.color = BlockedColor; }
-        else MyImage.color = IdleColor;
-        break;
+        MyImage.color = IdleColor;
+          break;
     }
   }
 }

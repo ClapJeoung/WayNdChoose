@@ -16,8 +16,8 @@ public class UI_dialogue : UI_default
   private float FadeInTime = 0.9f;
   private float FadeWaitTime = 0.3f;
   private float ButtonFadeinTime = 0.4f;
-  [SerializeField] private Image EventIcon = null;
-  private GameObject EventIconHolder { get { return EventIcon.transform.parent.gameObject; } }
+ // [SerializeField] private Image EventIcon = null;
+ // private GameObject EventIconHolder { get { return EventIcon.transform.parent.gameObject; } }
   [Space(10)]
   [SerializeField] private TextMeshProUGUI DescriptionText = null;
   [SerializeField] private CanvasGroup DescriptionTextGroup = null;
@@ -100,19 +100,6 @@ public class UI_dialogue : UI_default
       {
         if (CurrentEventPhaseIndex == 0)     //UI 처음 열고 바로 선택지일때
         {
-          if (CurrentEvent.GetType() == typeof(EventData))
-          {
-            if (EventIconHolder.activeInHierarchy == true) EventIconHolder.SetActive(false);
-          }
-          else if (CurrentEvent.GetType() == typeof(FollowEventData))
-          {
-            if (EventIconHolder.activeInHierarchy == true) EventIconHolder.SetActive(false);
-          }
-          else if (CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
-          {
-            if (EventIconHolder.activeInHierarchy == false) EventIconHolder.SetActive(true);
-             EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
-          }
 
           SelectionGroup.alpha = 0.0f;
           NextButtonGroup.alpha = 0.0f;
@@ -160,20 +147,6 @@ public class UI_dialogue : UI_default
       {
         if (CurrentEventPhaseIndex == 0)     //UI 처음 열고 설명 페이즈일때
         {
-          if (CurrentEvent.GetType() == typeof(EventData))
-          {
-            if (EventIconHolder.activeInHierarchy == true) EventIconHolder.SetActive(false);
-          }
-          else if (CurrentEvent.GetType() == typeof(FollowEventData))
-          {
-            if (EventIconHolder.activeInHierarchy == true) EventIconHolder.SetActive(false);
-          }
-          else if (CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
-          {
-            if (EventIconHolder.activeInHierarchy == false) EventIconHolder.SetActive(true);
-            EventIcon.sprite = GameManager.Instance.ImageHolder.QuestIcon_Cult;
-          }
-
           NextButtonGroup.alpha = 1.0f;
           NextButtonGroup.interactable = true;
           NextButtonGroup.blocksRaycasts = true;

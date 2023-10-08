@@ -16,7 +16,8 @@ public class PreviewSelectionTendency : MonoBehaviour
   [Space(10)]
   [SerializeField] private CanvasGroup NoneProgressGroup = null;
   [SerializeField] private Image NoneProgressIcon = null;
-  [SerializeField] private TextMeshProUGUI NoneProgressText = null;
+  [Space(10)]
+  [SerializeField] private TextMeshProUGUI ProgressText = null;
   public void Setup(Tendency tendency,bool dir)
   {
     if ((tendency.Level.Equals(-2) && dir.Equals(true)) || (tendency.Level.Equals(2) && dir.Equals(false)))
@@ -37,28 +38,29 @@ public class PreviewSelectionTendency : MonoBehaviour
           break;
       }
       NoneProgressIcon.sprite = _limiticon;
-      NoneProgressText.text = _limittext;
+      ProgressText.text = _limittext;
     }
     else {
       ProgressGroup.alpha = 1.0f;
       NoneProgressGroup.alpha = 0.0f;
-      Sprite _leftsprite = null, _rightsprite = null;
+      Sprite _lefticon = null, _righticon = null;
       Sprite _currenticon = tendency.CurrentIcon;
       Sprite _nexticon = tendency.GetNextIcon(dir);
 
       if (dir.Equals(true))
       {
-        _leftsprite = _nexticon;
-        _rightsprite = _currenticon;
+        _lefticon = _nexticon;
+        _righticon = _currenticon;
       }
       else
       {
-        _leftsprite = _currenticon;
-        _rightsprite= _nexticon;
+        _lefticon = _currenticon;
+        _righticon= _nexticon;
       }
-
       int _arrowcount = 0;
       int _effectindex = 0;
+      string _selectionname = "";
+      int _requireprogress =0;
       switch (tendency.Level)
       {
         case -2:
@@ -70,18 +72,39 @@ public class PreviewSelectionTendency : MonoBehaviour
           {
             _arrowcount = ConstValues.TendencyRegress;
             _effectindex = 0;
+
+            _selectionname = tendency.Type == TendencyTypeEnum.Body ?
+              GameManager.Instance.GetTextData("Selection_Physical") :
+              GameManager.Instance.GetTextData("Selection_Material");
+            _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
+
+            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           break;
         case -1:
           if (dir.Equals(true))
           {
             _arrowcount = ConstValues.TendencyProgress_1to2;
-            _effectindex = tendency.count;
+            _effectindex = tendency.Progress;
+
+            _selectionname = tendency.Type == TendencyTypeEnum.Body ?
+     GameManager.Instance.GetTextData("Selection_Rational") :
+     GameManager.Instance.GetTextData("Selection_Mental");
+            _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
+
+            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Progress"), _selectionname, _requireprogress);
           }
           else
           {
             _arrowcount = ConstValues.TendencyRegress;
             _effectindex = 0;
+
+            _selectionname = tendency.Type == TendencyTypeEnum.Body ?
+         GameManager.Instance.GetTextData("Selection_Physical") :
+         GameManager.Instance.GetTextData("Selection_Material");
+            _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
+
+            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           break;
         case 1:
@@ -89,11 +112,25 @@ public class PreviewSelectionTendency : MonoBehaviour
           {
             _arrowcount = ConstValues.TendencyRegress;
             _effectindex = 0;
+
+            _selectionname = tendency.Type == TendencyTypeEnum.Body ?
+GameManager.Instance.GetTextData("Selection_Rational") :
+GameManager.Instance.GetTextData("Selection_Mental");
+            _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
+
+            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           else
           {
             _arrowcount = ConstValues.TendencyProgress_1to2;
-            _effectindex = tendency.count;
+            _effectindex = tendency.Progress;
+
+            _selectionname = tendency.Type == TendencyTypeEnum.Body ?
+     GameManager.Instance.GetTextData("Selection_Physical") :
+     GameManager.Instance.GetTextData("Selection_Material");
+            _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
+
+            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Progress"), _selectionname, _requireprogress);
           }
           break;
         case 2:
@@ -101,6 +138,13 @@ public class PreviewSelectionTendency : MonoBehaviour
           {
             _arrowcount = ConstValues.TendencyRegress;
             _effectindex = 0;
+
+            _selectionname = tendency.Type == TendencyTypeEnum.Body ?
+GameManager.Instance.GetTextData("Selection_Rational") :
+GameManager.Instance.GetTextData("Selection_Mental");
+            _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
+
+            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           else
           {
@@ -109,10 +153,11 @@ public class PreviewSelectionTendency : MonoBehaviour
           break;
       }
 
-      SetArrow(tendency.Type, dir, _arrowcount, _effectindex);
+      SetArrow(tendency.Type, dir, _arrowcount,Mathf.Abs(_effectindex));
 
-      LeftIcon.sprite = _leftsprite;
-      RightIcon.sprite = _rightsprite;
+      LeftIcon.sprite = _lefticon;
+      RightIcon.sprite = _righticon;
+
     }
   }
   public void SetArrow(TendencyTypeEnum tendency, bool dir,int count,int effectindex)

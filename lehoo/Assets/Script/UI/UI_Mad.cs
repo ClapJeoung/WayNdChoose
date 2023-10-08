@@ -47,24 +47,28 @@ public class UI_Mad : UI_default
   /// <param name="index"></param>
   public void OnEnterMadness(int index)
   {
+    string _str = "";
     switch(index)
     {
       case 0:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName");
         break;
       case 1:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Force_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Force_SelectingName");
         break;
       case 2:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Wild_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Wild_SelectingName");
         break;
       case 3:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName");
         break;
       case 4:
-        SelectingDescription.text = GameManager.Instance.GetTextData("Madness_HP_SelectingName") + string.Format(GameManager.Instance.GetTextData("Madness_HP_Effect"), WNCText.GetHPColor("-" + ConstValues.MadnessRefuseHPLoseCost));
+        _str = GameManager.Instance.GetTextData("Madness_HP_SelectingName") + string.Format(GameManager.Instance.GetTextData("Madness_HP_Effect"), WNCText.GetHPColor("-" + ConstValues.MadnessRefuseHPLoseCost));
         break;
     }
+
+    _str += "<br>" + WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData("ClickToChoose"));
+    SelectingDescription.text = _str;
     LayoutRebuilder.ForceRebuildLayoutImmediate(SelectingDescription.transform.parent.transform as RectTransform);
   }
   public void SelectMadness(int index)

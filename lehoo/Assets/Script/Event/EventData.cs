@@ -5,6 +5,8 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using static UnityEditor.Progress;
+using System;
+using Unity.Mathematics;
 
 public class EventHolder
 {
@@ -92,8 +94,8 @@ public class EventHolder
 
     string[] _placeinfos = _data.PlaceInfo.Split('@');
     Data.AppearSpace = (EventAppearType)int.Parse(_placeinfos[0]);
-    Data.Sector = (SectorTypeEnum)int.Parse(_placeinfos[1]);
-    Data.EnvironmentType = (EnvironmentType)int.Parse(_placeinfos[2]);
+    Data.EnvironmentType = (EnvironmentType)int.Parse(_placeinfos[1]);
+    if(Data.AppearSpace!=EventAppearType.Outer)  Data.Sector = (SectorTypeEnum)int.Parse(_placeinfos[2]);
 
     if (_data.Selection_Type != "")
     {
@@ -268,10 +270,13 @@ public class EventHolder
     switch (int.Parse(jsondata.EventInfo.Split('@')[2]))
     {
       case 0:
-        Quest_Cult.Events_Cult_Less.Add(eventdata);
+        Quest_Cult.Events_Cult_0to30.Add(eventdata);
         break;
       case 1:
-        Quest_Cult.Events_Cult_Over.Add(eventdata);
+        Quest_Cult.Events_Cult_30to60.Add(eventdata);
+        break;
+      case 2:
+        Quest_Cult.Events_Cult_60to100.Add(eventdata);
         break;
     }
   }
@@ -469,7 +474,7 @@ public class EventHolder
     _allevents.Clear();
     if (_envirevents.Count > 0 && _noenvirevents.Count > 0)
     {
-      if (Random.Range(0, ConstValues.EventPer_Envir + ConstValues.EventPer_NoEnvir) < ConstValues.EventPer_Envir)
+      if (UnityEngine.Random.Range(0, ConstValues.EventPer_Envir + ConstValues.EventPer_NoEnvir) < ConstValues.EventPer_Envir)
         foreach (var _event in _envirevents) _allevents.Add(_event);
       else
         foreach (var _event in _noenvirevents) _allevents.Add(_event);
@@ -505,7 +510,7 @@ public class EventHolder
     }
     else
     {
-      return _result[Random.Range(0, _result.Count)];
+      return _result[UnityEngine.Random.Range(0, _result.Count)];
     }
   }
   /// <summary>
@@ -636,7 +641,7 @@ public class EventHolder
     _allevents.Clear();
     if (_envirevents.Count > 0 && _noenvirevents.Count > 0)
     {
-      if(Random.Range(0,ConstValues.EventPer_Envir+ConstValues.EventPer_NoEnvir)<ConstValues.EventPer_Envir)
+      if(UnityEngine.Random.Range(0,ConstValues.EventPer_Envir+ConstValues.EventPer_NoEnvir)<ConstValues.EventPer_Envir)
         foreach (var _event in _envirevents) _allevents.Add(_event);
       else
         foreach (var _event in _noenvirevents) _allevents.Add(_event);
@@ -659,7 +664,7 @@ public class EventHolder
     }
     if (_sectorevents.Count > 0 && _notsectorevents.Count > 0)
     {
-      if (Random.Range(0, ConstValues.EventPer_Sector + ConstValues.EventPer_NoSector) < ConstValues.EventPer_Sector)
+      if (UnityEngine.Random.Range(0, ConstValues.EventPer_Sector + ConstValues.EventPer_NoSector) < ConstValues.EventPer_Sector)
         foreach (var _event in _sectorevents) _allevents.Add(_event);
       else
         foreach (var _event in _notsectorevents) _allevents.Add(_event);
@@ -695,7 +700,7 @@ public class EventHolder
       return DefaultEvent_Settlement;
     }
     else
-      return _result[Random.Range(0,_result.Count)];
+      return _result[UnityEngine.Random.Range(0,_result.Count)];
   }
   private List<T> GetListByRatio<T>(Dictionary<List<T>,int> listAndvalue)
   {
@@ -710,7 +715,7 @@ public class EventHolder
       _availablevalues.Add(dic.Value);
       _max += dic.Value;
     }
-    _max = Random.Range(0, _max);
+    _max = UnityEngine.Random.Range(0, _max);
     int _sum = 0;
     for(int i = 0; i < _availabelists.Count; i++)
     {
@@ -1014,7 +1019,7 @@ public class Quest
   public string OriginID="";
   public string QuestName { get { return GameManager.Instance.GetTextData(OriginID + "_Name_Text"); } }
   public string QuestDescription { get { return GameManager.Instance.GetTextData(OriginID + "_PreDescription_Text"); } }
-    public Sprite QuestIllust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(Type, OriginID + "_MainIllust"); } }
+    public Sprite QuestIllust { get { return GameManager.Instance.ImageHolder.Quest_Cult_MainIllust; } }
   public QuestType Type = QuestType.Cult;
   public Quest(string id,QuestType type)
   {
@@ -1029,207 +1034,58 @@ public class QuestHolder_Cult:Quest
     OriginID = id;
     Type = type;
   }
-  public int Progress = 0;
-
-  public TileData[] RitualPlaces = new TileData[3];
-
   #region 프롤로그 관련
-  public Sprite Prologue_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_0_Illust"); } }
+  public Sprite Prologue_0_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_0_Illust"); } }
   public string Prologue_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_0_Description"); } }
 
-  public Sprite Prologue_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_1_Illust"); } }
+  public Sprite Prologue_1_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_1_Illust"); } }
   public string Prologue_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Description"); } }
   public string Prologue_1_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Selection_0"); } }
   public string Prologue_1_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Selection_1"); } }
  
-  public Sprite Prologue_2_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_2_0_Illust"); } }
+  public Sprite Prologue_2_0_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_2_0_Illust"); } }
   public string Prologue_2_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_2_0_Description"); } }
 
-  public Sprite Prologue_2_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_2_1_Illust"); } }
+  public Sprite Prologue_2_1_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_2_1_Illust"); } }
   public string Prologue_2_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_2_1_Description"); } }
  
-  public Sprite Prologue_3_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_3_Illust"); } }
+  public Sprite Prologue_3_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_3_Illust"); } }
   public string Prologue_3_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Description"); } }
   public string Prologue_3_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Selection_0"); } }
   public string Prologue_3_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Selection_1"); } }
 
-  public Sprite Prologue_4_0_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_4_0_Illust"); } }
+  public Sprite Prologue_4_0_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_4_0_Illust"); } }
   public string Prologue_4_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_4_0_Description"); } }
-  public Sprite Prologue_4_1_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_4_1_Illust"); } }
+  public Sprite Prologue_4_1_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_4_1_Illust"); } }
   public string Prologue_4_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_4_1_Description"); } }
 
-  public Sprite Prologue_5_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_5_Illust"); } }
+  public Sprite Prologue_5_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_5_Illust"); } }
   public string Prologue_5_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_5_Description"); } }
-  public Sprite Prologue_6_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_6_Illust"); } }
+  public Sprite Prologue_6_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_6_Illust"); } }
   public string Prologue_6_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_6_Description"); } }
-  public Sprite Prologue_7_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_7_Illust"); } }
+  public Sprite Prologue_7_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_7_Illust"); } }
   public string Prologue_7_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_7_Description"); } }
-  public Sprite Prologue_8_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Prologue_8_Illust"); } }
+  public Sprite Prologue_8_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_8_Illust"); } }
   public string Prologue_8_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_8_Description"); } }
   #endregion
 
-  #region 탐문
-  public Sprite Searching_0_Illust
-  {
-    get {
-      string _seasontext = "";
-      switch (GameManager.Instance.MyGameData.Turn)
-      {
-        case 0:_seasontext = "_spring";break;
-        case 1:_seasontext = "_summer";break;
-        case 2: _seasontext = "_autumn"; break;
-        case 3: _seasontext = "_winter"; break;
-      }
-      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Searching_0_Illust"+ _seasontext); }
-  }
-  public string Searching_0_Description
-  {
-    get { return GameManager.Instance.GetTextData(OriginID + "_Searching_0_Description"); }
-  }
-  public Sprite Searching_1_Illust
-  {
-    get {
-      string _seasontext = "";
-      switch (GameManager.Instance.MyGameData.Turn)
-      {
-        case 0: _seasontext = "_spring"; break;
-        case 1: _seasontext = "_summer"; break;
-        case 2: _seasontext = "_autumn"; break;
-        case 3: _seasontext = "_winter"; break;
-      }
-          return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_Searching_1_Illust"+_seasontext); }
-  }
-  public string Searching_1_Description
-  {
-    get { return GameManager.Instance.GetTextData(OriginID + "_Searching_1_Description"); }
-  }
-  public Sprite SearchingToProgress_Illust
-  {
-    get
-    {
-      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_SearchingToProgress");
-    }
-  }
-  public string SearchingToProgress_Description
-  {
-    get { return GameManager.Instance.GetTextData(OriginID + "_SearchingToProgress_Description"); }
-  }
-
-#endregion
-  public Sprite SearchingWarning_Illust
-  {
-    get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, OriginID + "_SearchingWarning"); }
-  }
-  public string SearchingWarning_Description
-  {
-    get { return GameManager.Instance.GetTextData(OriginID + "_SearchingWarning_Description"); }
-  }
-
-#region 선택
-public string Wanted_Description { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Description"); } }
-  public string Wanted_Description_Sabbat { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Sabbat"); } }
-  public string Wanted_Description_Ritual { get { return GameManager.Instance.GetTextData("Quest0_Wanted_Ritual"); } }
-
-  public Sprite Wanted_Sabbat_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Wanted_Sabbat_Illust"); } }
-  public string Wanted_Sabbat_Description { get { return GameManager.Instance.GetTextData("Quest0_WantedResult_Sabbat_Description"); } }
-
-  public Sprite Wanted_Ritual_Illust { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Wanted_Ritual_Illust"); } }
-  public string Wanted_Ritual_Description { get { return GameManager.Instance.GetTextData("Quest0_WantedResult_Ritual_Description"); } }
-  #endregion
-
-  #region 집회 해산
-  public Sprite Sabbat_0_Illust_Idle { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Sabbat_0_Idle"); } }
-  public Sprite Sabbat_0_Illust_Tendency { get { string _tendency = "";
-      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-      {
-        case -2:_tendency = "m2";break;
-        case -1: _tendency = "m1"; break;
-        case 1: _tendency = "p1"; break;
-        case 2: _tendency = "p2"; break;
-      }
-      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest0_Sabbat_0_Tendency_" + _tendency);
-    } }
-  public string Sabbat_0_Description_Idle { get { return GameManager.Instance.GetTextData("Quest0_Sabbat_0_Idle"); } }
-  public string Sabbat_0_Description_Tendency
-  {
-    get
-    {
-      string _tendency = "";
-      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-      {
-        case -2: _tendency = "m2"; break;
-        case -1: _tendency = "m1"; break;
-        case 1: _tendency = "p1"; break;
-        case 2: _tendency = "p2"; break;
-      }
-      return GameManager.Instance.GetTextData("Quest0_Sabbat_0_Tendency_" + _tendency);
-    }
-  }
-  public Sprite Sabbat_1_Illust_Idle { get { return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest1_Sabbat_1_Idle"); } }
-  public Sprite Sabbat_1_Illust_Tendency
-  {
-    get
-    {
-      string _tendency = "";
-      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-      {
-        case -2: _tendency = "m2"; break;
-        case -1: _tendency = "m1"; break;
-        case 1: _tendency = "p1"; break;
-        case 2: _tendency = "p2"; break;
-      }
-      return GameManager.Instance.ImageHolder.GetQuestIllust(QuestType.Cult, "Quest1_Sabbat_1_Tendency_" + _tendency);
-    }
-  }
-  public string Sabbat_1_Description_Idle { get { return GameManager.Instance.GetTextData("Quest1_Sabbat_1_Idle"); } }
-  public string Sabbat_1_Description_Tendency
-  {
-    get
-    {
-      string _tendency = "";
-      switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-      {
-        case -2: _tendency = "m2"; break;
-        case -1: _tendency = "m1"; break;
-        case 1: _tendency = "p1"; break;
-        case 2: _tendency = "p2"; break;
-      }
-      return GameManager.Instance.GetTextData("Quest1_Sabbat_1_Tendency_" + _tendency);
-    }
-  }
-  #endregion
-  public List<QuestEventData_Wolf> Events_Cult_Less = new List<QuestEventData_Wolf>(); //QuestEventType 7
-  public List<QuestEventData_Wolf> Events_Cult_Over = new List<QuestEventData_Wolf>();  //QuestEventType 8
-
-//  public List<QuestEventData_Wolf> Events_Sabbat_0 = new List<QuestEventData_Wolf>();     //QuestEventType 9
- // public QuestEventData_Wolf Event_Sabbat_Hideout_0 = null;                          //QuestEventType 10
- // public List<QuestEventData_Wolf> Events_Sabbat_1 = new List<QuestEventData_Wolf>();     //QuestEventType 11
-  //public QuestEventData_Wolf Event_Sabbat_Hideout_1 = null;                          //QuestEventType 12
- // public List<QuestEventData_Wolf> Events_Sabbat_2 = new List<QuestEventData_Wolf>();     //QuestEventType 13
-//  public QuestEventData_Wolf Event_Sabbat_Hideout_2 = null;                          //QuestEventType 14
- // public List<QuestEventData_Wolf> Events_Sabbat_Final = new List<QuestEventData_Wolf>(); //QuestEventType 15
- // public QuestEventData_Wolf Event_Sabbat_Hideout_Final = null;                      //QuestEventType 16
-
-//  public List<QuestEventData_Wolf> Events_Ritual_0 = new List<QuestEventData_Wolf>();     //QuestEventType 17
-//  public QuestEventData_Wolf Event_Ritual_Encounter_0 = null;                        //QuestEventType 18
-//  public List<QuestEventData_Wolf> Events_Ritual_1 = new List<QuestEventData_Wolf>();     //QuestEventType 19
-//  public QuestEventData_Wolf Event_Ritual_Encounter_1 = null;                        //QuestEventType 20
- // public List<QuestEventData_Wolf> Events_Ritual_2 = new List<QuestEventData_Wolf>();     //QuestEventType 21
- // public QuestEventData_Wolf Event_Ritual_Encounter_2 = null;                        //QuestEventType 22
- // public List<QuestEventData_Wolf> Events_Ritual_Final = new List<QuestEventData_Wolf>(); //QuestEventType 23
-//  public QuestEventData_Wolf Event_Ritual_Encounter_Final = null;                    //QuestEventType 24
+  public List<QuestEventData_Wolf> Events_Cult_0to30 = new List<QuestEventData_Wolf>(); 
+  public List<QuestEventData_Wolf> Events_Cult_30to60 = new List<QuestEventData_Wolf>();
+  public List<QuestEventData_Wolf> Events_Cult_60to100 = new List<QuestEventData_Wolf>();
 
   /// <summary>
-  /// Phase에 맞춰 사용 가능한 이벤트들을 반환(1,2,3,4)
+  /// Phase에 맞춰 사용 가능한 이벤트들을 반환(0,1,2)
   /// </summary>
   /// <returns></returns>
   public List<EventDataDefulat> GetAvailableEvents()
   {
     List<List<QuestEventData_Wolf>> _availablelists = new List<List<QuestEventData_Wolf>>();
 
-    _availablelists.Add(Events_Cult_Less);
-    if (GameManager.Instance.MyGameData.Quest_Cult_Progress > 50)
-      _availablelists.Add(Events_Cult_Over);
+    _availablelists.Add(Events_Cult_0to30);
+    if (GameManager.Instance.MyGameData.Quest_Cult_Phase>0)
+      _availablelists.Add(Events_Cult_30to60);
+    if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 1)
+      _availablelists.Add(Events_Cult_60to100);
 
     List<EventDataDefulat> _availableevents=new List<EventDataDefulat>();
     foreach(var list in _availablelists)
@@ -1237,7 +1093,85 @@ public string Wanted_Description { get { return GameManager.Instance.GetTextData
 
     return _availableevents;
   }
-}//                                         퀘스트 디자인 후 수정
+
+  public Tuple<Sprite,string,string> GetSettlementData
+  {
+    get
+    {
+      int _count = GameManager.Instance.ImageHolder.Cult_Settlement.Count / 4;
+      int _index=UnityEngine.Random.Range(0,_count);
+      if (GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Count < _count)
+      while(!GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
+
+      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Settlement[_index * 4 + GameManager.Instance.MyGameData.Turn];
+      string _filename = _illust.name.Split('_')[0];
+      return new Tuple<Sprite, string, string>(
+        _illust,
+        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename+"_description")),
+        GameManager.Instance.GetTextData(_filename+"_selecting"));
+    }
+  }
+  public Tuple<Sprite, string, string> GetSabbatData
+  {
+    get
+    {
+      int _count = GameManager.Instance.ImageHolder.Cult_Sabbat.Count / 4;
+      int _index = UnityEngine.Random.Range(0, _count);
+      if (GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Count < _count)
+        while (!GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
+
+      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Sabbat[_index * 4 + GameManager.Instance.MyGameData.Turn];
+      string _filename = _illust.name.Split('_')[0];
+      return new Tuple<Sprite, string, string>(
+        _illust,
+        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")),
+        GameManager.Instance.GetTextData(_filename + "_selecting"));
+    }
+  }
+  public Tuple<Sprite, string, string> GetRitualData
+  {
+    get
+    {
+      int _count = GameManager.Instance.ImageHolder.Cult_Ritual.Count / 4;
+      int _index = UnityEngine.Random.Range(0, _count);
+      if (GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Count < _count)
+        while (!GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
+
+      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Ritual[_index * 4 + GameManager.Instance.MyGameData.Turn];
+      string _filename = _illust.name.Split('_')[0];
+      return new Tuple<Sprite, string, string>(
+        _illust,
+        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")),
+        GameManager.Instance.GetTextData(_filename + "_selecting"));
+    }
+  }
+  public Tuple<Sprite,string> GetPhaseUpgradeData
+  {
+    get
+    {
+      List<Sprite> _list = new List<Sprite>();
+      string _description = "";
+      switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+      {
+        case 1:
+          _list = GameManager.Instance.ImageHolder.Cult_30;
+          _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_30");
+          break;
+        case 2:
+          _list = GameManager.Instance.ImageHolder.Cult_60;
+          _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_60");
+          break;
+        case 3:
+          _list = GameManager.Instance.ImageHolder.Cult_100;
+          _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_100");
+          break;
+      }
+
+      return new Tuple<Sprite, string>(_list[UnityEngine.Random.Range(0, _list.Count)], _description);
+    }
+  }
+
+}
 [System.Serializable]
 public class EventJsonData
 {

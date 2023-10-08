@@ -199,7 +199,8 @@ MonoBehaviour:
   DisComfort: {fileID: 21300000, guid: b2a0bb0e9a8d0664a91e3295a415268a, type: 3}
   MadnessIdle: {fileID: 21300000, guid: 533227ba82acdd649bf6c2137697490f, type: 3}
   MadnessActive: {fileID: 21300000, guid: 886081899e6a4894482d7746622dca02, type: 3}
-  Arrow_DeActive: {fileID: 21300000, guid: d59a3a542981d164b88cb7b5cd59dccf, type: 3}
+  Arrow_Empty: {fileID: 0}
+  Arrow_DeActive: {fileID: 21300000, guid: f092d2f2ada0ff54894dc11780cf7678, type: 3}
   Arrow_Active_rational: {fileID: 21300000, guid: ba98f2d0708544047b52f9e68a044281, type: 3}
   Arrow_Active_physical: {fileID: 21300000, guid: e269443b03526ed4c93ebd6fdaf850ff, type: 3}
   Arrow_Active_mental: {fileID: 21300000, guid: 6c779bf83d2052145a54db3541faad02, type: 3}

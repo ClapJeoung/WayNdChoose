@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
 
   private static GameManager instance;
   public static GameManager Instance { get { return instance; } }
+  public AudioManager AudioManager = null;
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
 
@@ -456,21 +457,19 @@ public class GameManager : MonoBehaviour
       MyGameData.ApplySectorEffect(sectortype);
     }
 
-    MyGameData.AddDiscomfort(MyGameData.CurrentSettlement);
-
     EventManager.Instance.SetSettlementEvent(sectortype);
 
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (MyGameData.Quest_Cult_TokenedSectors[sectortype] == 0)
+        if (MyGameData.Quest_Cult_Phase > 0)
         {
-          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sector_Tokened;
-          MyGameData.Quest_Cult_TokenedSectors[sectortype] = ConstValues.Quest_Cult_TokenDuration;
-        }
-        else
-        {
-          MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sector_Idle;
+          if (MyGameData.Cult_SabbatSector == sectortype&&MyGameData.Cult_SabbatSector_CoolDown==0)
+          {
+            MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sector_Sabbat;
+            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement,ConstValues.Quest_Cult_SabbatDiscomfort);
+
+          }
         }
         break;
     }
@@ -503,13 +502,8 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (MyGameData.CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
-        {
-          if (MyGameData.Quest_Cult_Phase > 0)
-          {
-            MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_EventClear;
-          }
-        }
+        MyGameData.Quest_Cult_Progress += MyGameData.Quest_Cult_Phase < 2 ?
+          ConstValues.Qeust_Cult_EventProgress_Clear_Less60 : ConstValues.Quest_Cult_EventProgress_Clear_Over60;
         break;
     }
   }
@@ -540,13 +534,9 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (MyGameData.CurrentEvent.GetType() == typeof(QuestEventData_Wolf))
-        {
-          if (MyGameData.Quest_Cult_Phase > 0)
-          {
-            MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_EventFail;
-          }
-        }
+        MyGameData.Quest_Cult_Progress +=MyGameData.Quest_Cult_Phase<2?
+          ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventProgress_Fail_Over60;
+
         break;
     }
   }
@@ -755,16 +745,15 @@ public class GameManager : MonoBehaviour
         switch (MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            if (!MyGameData.SearchingSettlementNames.Contains(targetsettlement.OriginName))
+            if (!MyGameData.Cult_SettlementNames.Contains(targetsettlement.OriginName))
             {
-              UIManager.Instance.QuestUI_Cult.OpenUI_Searching();
-              MyGameData.SearchingSettlementNames.Add(targetsettlement.OriginName);
+              UIManager.Instance.QuestUI_Cult.OpenProgressEvent(false);
+              MyGameData.Cult_SettlementNames.Add(targetsettlement.OriginName);
               return;
             }
             break;
-          case 1: 
-            break;
-          case 2:
+          case 1:  case 2:
+            MyGameData.Cult_SabbatSector = targetsettlement.Sectors[Random.Range(0, targetsettlement.Sectors.Count)];
             break;
         }
         break;

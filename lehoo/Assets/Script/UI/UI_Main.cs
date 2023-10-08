@@ -137,11 +137,6 @@ public class UI_Main : UI_default
     QuestDescription.text = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestDescription;
     QuestIllust.sprite = GameManager.Instance.EventHolder.GetQuest(SelectedQuest).QuestIllust;
     StartNewGameButton.interactable = true;
-
-    return;
-      if (_quest != SelectedQuest)
-      {
-    }
   }
   private QuestType SelectedQuest = QuestType.Cult;
   public void StartNewGame()//버튼으로 새 게임 시작 버튼 누르는거

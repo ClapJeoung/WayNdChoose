@@ -168,6 +168,7 @@ public class UIManager : MonoBehaviour
     Debug.Log("골드 수치 업데이트");
     lastgold = GameManager.Instance.MyGameData.Gold;
   }
+  [SerializeField] private Image MovePoint_Icon = null;
   [SerializeField] private TextMeshProUGUI MovePointText = null;
   private int lastmovepoint = -1;
   public void UpdateMovePointText()
@@ -178,6 +179,7 @@ public class UIManager : MonoBehaviour
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
     }
+    MovePoint_Icon.sprite = GameManager.Instance.MyGameData.MovePoint != 0 ? GameManager.Instance.ImageHolder.MovePointIcon_Lack : GameManager.Instance.ImageHolder.MovePointIcon_Enable;
     MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
     Debug.Log("이동력 수치 업데이트");
     lastmovepoint = GameManager.Instance.MyGameData.MovePoint;
@@ -217,10 +219,18 @@ public class UIManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI IntelligenceLevel = null;
   public void UpdateSkillLevel()
   {
-    ConversationLevel.text = GameManager.Instance.MyGameData.Skill_Conversation.Level.ToString();
-    ForceLevel.text=GameManager.Instance.MyGameData.Skill_Force.Level.ToString();
-    WildLevel.text=GameManager.Instance.MyGameData.Skill_Wild.Level.ToString();
-    IntelligenceLevel.text=GameManager.Instance.MyGameData.Skill_Intelligence.Level.ToString();
+    ConversationLevel.text = GameManager.Instance.MyGameData.Madness_Conversation ?
+      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Conversation.Level) :
+      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Conversation.Level);
+    ForceLevel.text = GameManager.Instance.MyGameData.Madness_Force ?
+      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Force.Level) :
+      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Force.Level);
+    WildLevel.text = GameManager.Instance.MyGameData.Madness_Wild ?
+      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Wild.Level) :
+      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Wild.Level);
+    IntelligenceLevel.text = GameManager.Instance.MyGameData.Madness_Intelligence ?
+     WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level) :
+     WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level);
   }
 
   [Space(5)]
@@ -742,7 +752,6 @@ public class UIManager : MonoBehaviour
   {
     var _titlewait = new WaitForSeconds(TitleWaitTime);
     var _objwait = new WaitForSeconds(ObjWaitTime);
-    PlayAudio(IntroOpenAudio);
     for (int i = 0; i < 4; i++)
     {
       StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].OutisdePos, TitlePanels[i].InsidePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
@@ -759,8 +768,6 @@ public class UIManager : MonoBehaviour
     LayoutRebuilder.ForceRebuildLayoutImmediate(rect.transform as RectTransform);
 
     AnimationCurve _targetcurve = isopen ? UIPanelOpenCurve : UIPanelCLoseCurve;
-    AudioClip _clip = isopen ? PanelOpenAudio : PanelCloseAudio;
-    PlayAudio(_clip);
 
     float _time = 0.0f, _targettime = targettime;
     while (_time < _targettime)
@@ -801,35 +808,22 @@ public class UIManager : MonoBehaviour
     }
   }
   #endregion
-  [Space(10)]
-  [SerializeField] private AudioClip IntroOpenAudio = null;
-  [SerializeField] private AudioClip PanelOpenAudio = null;
-  [SerializeField] private AudioClip PanelCloseAudio = null;
-  private List<AudioSource> audiosources = new List<AudioSource>();
-  private List<AudioSource> AudioSources
-  {
-    get
-    {
-      if (audiosources.Count == 0)
-      {
-        audiosources=GetComponents<AudioSource>().ToList();
-      }
-      return audiosources;
-    }
-  }
-  public void PlayAudio(AudioClip clip)
-  {
-    for(int i=0;i< AudioSources.Count; i++)
-    {
-      if (AudioSources[i].isPlaying) continue;
-      AudioSources[i].clip = clip;
-      AudioSources[i].Play();
-    }
-  }
 
 }
 public static class WNCText
 {
+  public static string UIIdleColor(int value)
+  {
+    return $"<#D4D4D4>{value}</color>";
+  }
+  public static string UIIdleColor(string str)
+  {
+    return $"<#D4D4D4>{str}</color>";
+  }
+  public static string GetMadnessSkillColor(int value)
+  {
+    return $"<#A959B0>{value}</color>";
+  }
   public static string GetSomethingColor(string str)
   {
     return $"<#CFAC7A>{str}</color>";

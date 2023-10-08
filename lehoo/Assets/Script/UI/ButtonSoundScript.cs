@@ -10,11 +10,11 @@ public class ButtonSoundScript :MonoBehaviour, IPointerEnterHandler,IPointerClic
   public void OnPointerEnter(PointerEventData eventData)
   {
     if (EnterSound == null) return;
-    UIManager.Instance.PlayAudio(EnterSound);
+  //  UIManager.Instance.PlayAudio(EnterSound);
   }
   public void OnPointerClick(PointerEventData eventData)
   {
     if(ClickSound == null) return;
-    UIManager.Instance.PlayAudio(ClickSound);
+  //  UIManager.Instance.PlayAudio(ClickSound);
   }
 }
