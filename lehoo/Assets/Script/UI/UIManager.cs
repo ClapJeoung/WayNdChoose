@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public enum UIMoveDir { Horizontal, Vertical }
 public enum UIFadeMoveDir { Left, Right, Up, Down }
@@ -11,7 +12,6 @@ public enum UIFadeMoveDir { Left, Right, Up, Down }
 //퇴장 시 왼쪽, 오른쪽, 위쪽, 아래쪽으로 이동
 public class UIManager : MonoBehaviour
 {
-   public List<UI_default> AllUIDefault=new List<UI_default>();
     private static UIManager instance;
   public static UIManager Instance
   {
@@ -23,13 +23,25 @@ public class UIManager : MonoBehaviour
     {
       instance = this;
     }
-    else Destroy(gameObject);
+    StartCoroutine(ChangeAlpha(CurtainGroup, 0.0f, 0.6f));
+  }
+  public void ResetGame()
+  {
+    IsWorking = true;
+    StartCoroutine(resetgame());
+  }
+  private IEnumerator resetgame()
+  {
+    yield return StartCoroutine(ChangeAlpha(CurtainGroup, 0.0f, 1.2f));
+    UnityEngine.SceneManagement.SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
   public AnimationCurve UIPanelOpenCurve = null;
   public AnimationCurve UIPanelCLoseCurve = null;
   public AnimationCurve CharacterMoveCurve = null;
   [Space(10)]
   public Transform MyCanvas = null;
+  public CanvasGroup CenterGroup = null;
+  public CanvasGroup CurtainGroup = null;
   public UI_Main MainUI = null;
   public UI_dialogue MyDialogue = null;
   public UI_RewardExp ExpRewardUI = null;
@@ -43,6 +55,7 @@ public class UIManager : MonoBehaviour
   public UI_Tendency MyTendencyPanelUI = null;
   public UI_skill_info MySkillUIPanelUI = null;
   public UI_Expereince_info MyExpPanelUI = null;
+  public UI_Ending EndingUI = null;
   public bool IsWorking = false;
   public float LargePanelMoveTime = 0.3f;
   public float LargePanelMoveDegree = 0.08f;
@@ -66,16 +79,6 @@ public class UIManager : MonoBehaviour
   public MapButton MapButton = null;
   public SettleButton SettleButton = null;
   [SerializeField] private AnimationCurve FadeAnimationCurve = null;
-  public void GameOver(GameOverTypeEnum gameovertype)
-  {
-    StopAllCoroutines();
-    for(int i = 0; i < AllUIDefault.Count; i++)
-    {
-      if (AllUIDefault[i].IsOpen) AllUIDefault[i].CloseForGameover();
-    }
-    StartCoroutine(closegamescene());
-    GameOverUI.OpenUI(gameovertype);
-  }
   public void UpdateBackground(EnvironmentType envir)
   {
     Sprite _newbackground = GameManager.Instance.ImageHolder.GetEnvirBackground(envir);
@@ -808,7 +811,29 @@ public class UIManager : MonoBehaviour
     }
   }
   #endregion
+  #region 게임-엔딩 전환
 
+  private IEnumerator openending()
+  {
+    StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
+
+    var _titlewait = new WaitForSeconds(TitleWaitTime);
+    var _objwait = new WaitForSeconds(ObjWaitTime);
+
+    for (int i = TitlePanels.Count - 1; i > 3; i++)
+    {
+      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationObjMoveTime, SceneAnimationCurve));
+      yield return _objwait;
+    }
+    for (int i = 3; i > -1; i++)
+    {
+      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
+      yield return _titlewait;
+    }
+
+    EndingUI.OpenUI()
+  }
+  #endregion
 }
 public static class WNCText
 {

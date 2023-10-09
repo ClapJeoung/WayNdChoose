@@ -51,19 +51,28 @@ public class UI_Mad : UI_default
     switch(index)
     {
       case 0:
-        _str = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName")
+          +GameManager.Instance.GetTextData("Madness_Conversation_Effect")
+          +string.Format( GameManager.Instance.GetTextData("Madness_Result"),ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 1:
-        _str = GameManager.Instance.GetTextData("Madness_Force_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Force_SelectingName")
+                 + GameManager.Instance.GetTextData("Madness_Force_Effect")
+   + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 2:
-        _str = GameManager.Instance.GetTextData("Madness_Wild_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Wild_SelectingName")
+                    + GameManager.Instance.GetTextData("Madness_Wild_Effect")
+  + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 3:
-        _str = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName");
+        _str = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName")
+                        + GameManager.Instance.GetTextData("Madness_Intelligence_Effect")
+ + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 4:
-        _str = GameManager.Instance.GetTextData("Madness_HP_SelectingName") + string.Format(GameManager.Instance.GetTextData("Madness_HP_Effect"), WNCText.GetHPColor("-" + ConstValues.MadnessRefuseHPLoseCost));
+        _str = GameManager.Instance.GetTextData("Madness_HP_SelectingName") + string.Format(GameManager.Instance.GetTextData("Madness_HP_Effect"), WNCText.GetHPColor("-" + ConstValues.MadnessHPCost_HP))
+     +string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_HP, ConstValues.MadnessSanityGen);
         break;
     }
 
@@ -100,7 +109,7 @@ public class UI_Mad : UI_default
         break;
     }
     _name = GameManager.Instance.GetTextData("Madness_" + _target + "_SelectedName");
-    _description = GameManager.Instance.GetTextData("Madness_" + _target + "_Description");
+    _description = GameManager.Instance.GetTextData("Madness_" + _target + "_Info");
     SelectedName.text= _name;
     SelectedIllust.sprite = _illust;
     SelectedDescription.text = _description;

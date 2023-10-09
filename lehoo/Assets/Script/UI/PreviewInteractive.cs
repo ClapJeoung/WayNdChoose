@@ -5,7 +5,8 @@ using UnityEngine.EventSystems;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
-Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold}
+Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
+CultSidePanel}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -129,6 +130,29 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.MoveCostGoldNogold:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NOGOLD_TEXT"), transform as RectTransform);
+        break;
+      case PreviewPanelType.CultSidePanel:
+        string _cultinfo = "";
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+        {
+          case 0:
+            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase0"), ConstValues.Quest_Cult_Progress_Settlement);
+            break;
+          case 1:
+            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase1"),
+              ConstValues.Quest_Cult_Progress_Sabbat,
+              ConstValues.Quest_Cult_Progress_Ritual,
+              ConstValues.Quest_Cult_SabbatDiscomfort,
+              ConstValues.Quest_Cult_RitualMovepoint);
+            break;
+          case 2:
+            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase1"),
+              ConstValues.Quest_Cult_CoolDown,
+              ConstValues.Quest_Cult_SabbatNegPer,
+              ConstValues.Quest_Cult_RitualNegPer);
+            break;
+        }
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,new Vector2(1.1f,1.1f),transform as RectTransform);
         break;
     }
   }

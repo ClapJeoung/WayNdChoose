@@ -155,6 +155,13 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> Cult_Settlement=new List<Sprite>();
   public List<Sprite> Cult_Sabbat=new List<Sprite>();
   public List<Sprite> Cult_Ritual=new List<Sprite>();
+  public List<Sprite> CultEnding_Idle=new List<Sprite>();
+  public List<Sprite> CultEnding_Rational=new List<Sprite>();
+  public List<Sprite> CultEnding_Physical=new List<Sprite>();
+  public List<Sprite> CultEnding_R_Mental=new List<Sprite>();
+  public List<Sprite> CultEnding_R_Mateiral=new List<Sprite>();
+  public List<Sprite> CultEnding_P_Mental= new List<Sprite>();
+  public List<Sprite> CultEnding_P_Material=new List<Sprite>();
     public Sprite GetCultIllust(List<Sprite> targetlist, string id)
     {
         foreach(var _illust in targetlist)

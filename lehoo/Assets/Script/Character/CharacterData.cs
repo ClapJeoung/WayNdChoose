@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public static class ConstValues
 {
@@ -14,27 +11,28 @@ public static class ConstValues
   public const int MadnessEffect_Wild = 25;
   public const int MadnessEffect_Intelligence = 40;
 
-  public const int Quest_Cult_Progress_Settlement=10, Quest_Cult_Progress_Sector_Sabbat = 5,Quest_Cult_Progress_Outer_Ritual = 5;
+  public const int Quest_Cult_Progress_Settlement=10, Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
   public const int Qeust_Cult_EventProgress_Clear_Less60 = 4, Quest_Cult_EventProgress_Clear_Over60 = 3;
   public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 2;
-  public const int Quest_Cult_SabbatDiscomfort = 2;
+  public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
+  public const int Quest_Cult_SabbatNegPer = 40, Quest_Cult_RitualNegPer = 35;
+  public const int Quest_Cult_CoolDown = 4;
 
   public const int GoodExpAsSanity = 15;
   public const int BadExpAsSanity = 20;
-  public const int MadnessMaxSanityLoseValue = 20;
-  public const int MadnessRefuseHPLoseCost = 30;
-//  public const int MadnessSkillLevelValue = 5;
+  public const int MadnessHPCost_Skill = 25;
+  public const int MadnessHPCost_HP = 30;
+  public const int MadnessSanityGen = 50;
 
   public const int RestMovePoint_Village = 1, RestMovePoint_Town = 1, RestMovePoint_City = 1;
   public const int RestDiscomfort_Village=2, RestDiscomfort_Town = 2, RestDiscomfort_City = 2;
   public const float LackOfMovePointValue = 1.5f;
   public const int MoveCost_Sanity_1_min = 8, MoveCost_Sanity_1_max = 15, MoveCost_Sanity_2_min = 10, MoveCost_Sanity_2_max = 20;
   public const int MoveCost_Gold_1_min = 5, MoveCost_Gold_1_max = 12, MoveCost_Gold_2_min = 8, MoveCost_Gold_2_max = 15;
-  public const int ActiveSectorCount_Town = 1, ActiveSectorCount_City = 2, ActiveSectorCount_Castle = 3;
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
                    EventPer_Sector = 2, EventPer_NoSector = 1,
-                   EventPer_Quest = 1, EventPer_Follow = 3, EventPer_Normal = 1;
+                   EventPer_Quest = 3, EventPer_Follow = 5, EventPer_Normal = 3;
 
   public const int MapSize = 21;
 
@@ -386,7 +384,7 @@ public class GameData    //게임 진행도 데이터
     get { return movepoint; }
     set
     {
-      movepoint = value;
+      movepoint = value>0?value:0;
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateMovePointText();
     }
   }
@@ -673,13 +671,15 @@ public class GameData    //게임 진행도 데이터
       return 3;
     }
   }
-  private int quest_cult_progress = 0;
+  private int quest_cult_progress =-1;
   public int Quest_Cult_Progress
   {
     get { return quest_cult_progress; }
     set 
     {
+      int _lastprogress = quest_cult_progress;
       quest_cult_progress = value > 100 ? 100 : value;
+
       UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
     }
   }
@@ -691,6 +691,51 @@ public class GameData    //게임 진행도 데이터
   public List<int> Cult_Progress_SettlementEventIndex = new List<int>();
   public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
   public List<int> Cult_Progress_RitualEventIndex = new List<int>();
+  /// <summary>
+  /// 0:아님 1:맞음 2:패널티만
+  /// </summary>
+  /// <param name="sector"></param>
+  /// <returns></returns>
+  public int Cult_IsSabbat(SectorTypeEnum sector)
+  {
+    switch (Quest_Cult_Phase)
+    {
+      case 0:return 0;
+      case 1: if (Cult_SabbatSector == sector) return 1;
+        else return 0;
+      case 2:
+        if (Cult_SabbatSector == sector && Cult_SabbatSector_CoolDown == 0) return 1;
+        else
+        {
+          if (UnityEngine.Random.Range(0, 100) > ConstValues.Quest_Cult_SabbatNegPer) return 2;
+          else return 0;
+        }
+    }
+    return 0;
+  }
+  /// <summary>
+  /// 0:아님 1:맞음 2:패널티만
+  /// </summary>
+  /// <param name="sector"></param>
+  /// <returns></returns>
+  public int Cult_IsRitual(TileData tile)
+  {
+    switch (Quest_Cult_Phase)
+    {
+      case 0: return 0;
+      case 1:
+        if (tile.Landmark == LandmarkType.Ritual) return 1;
+        else return 0;
+      case 2:
+        if (tile.Landmark == LandmarkType.Ritual && Cult_RitualTile_CoolDown == 0) return 1;
+        else
+        {
+          if (UnityEngine.Random.Range(0, 100) > ConstValues.Quest_Cult_RitualNegPer) return 2;
+          else return 0;
+        }
+    }
+    return 0;
+  }
   #endregion
 
   #region #각종 보정치 가져오기#

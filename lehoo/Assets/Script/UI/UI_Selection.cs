@@ -16,10 +16,9 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private Button MyButton = null;
   [SerializeField] private TextMeshProUGUI MyDescription = null;
   [SerializeField] private Image PayIcon = null;
-  [SerializeField] private GameObject ThemeObj_A = null;
   [SerializeField] private Image ThemeIcon_A = null;
-  [SerializeField] private GameObject ThemeObj_B = null;
   [SerializeField] private Image ThemeIcon_B = null;
+  [SerializeField] private TextMeshProUGUI InfoText = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
   public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
   public bool IsLeft = true;
@@ -29,6 +28,12 @@ public class UI_Selection : MonoBehaviour
   }
   //현재 이 선택지가 가지는 설명문
   public SelectionData MySelectionData = null;
+
+  public UI_Selection(Image payIcon)
+  {
+    PayIcon = payIcon;
+  }
+
   public void DeActive() => StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.6f));
   public void Setup(SelectionData _data)
   {
@@ -43,35 +48,44 @@ public class UI_Selection : MonoBehaviour
     switch (MySelectionData.ThisSelectionType)
     {
       case SelectionTargetType.None:
-        if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
-        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
-        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        if (PayIcon.gameObject.activeInHierarchy.Equals(true)) PayIcon.gameObject.SetActive(false);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(true)) ThemeIcon_A.gameObject.SetActive(false);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(true)) ThemeIcon_A.gameObject.SetActive(false);
+        InfoText.text = "";
         break;
       case SelectionTargetType.Pay:
-        if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(false)) PayIcon.transform.parent.gameObject.SetActive(true);
-        if (ThemeObj_A.activeInHierarchy.Equals(true)) ThemeObj_A.SetActive(false);
-        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        if (PayIcon.gameObject.activeInHierarchy.Equals(false)) PayIcon.gameObject.SetActive(true);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(true)) ThemeIcon_A.gameObject.SetActive(false);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(true)) ThemeIcon_A.gameObject.SetActive(false);
         switch (MySelectionData.SelectionPayTarget)
         {
-          case StatusTypeEnum.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;break;
-          case StatusTypeEnum.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;break;
-          case StatusTypeEnum.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;break;
+          case StatusTypeEnum.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;
+            InfoText.text = WNCText.GetHPColor(GameManager.Instance.MyGameData.PayHPValue_modified);
+            break;
+          case StatusTypeEnum.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
+            InfoText.text = WNCText.GetSanityColor(GameManager.Instance.MyGameData.PaySanityValue_modified);
+            break;
+          case StatusTypeEnum.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;
+            InfoText.text = WNCText.GetGoldColor(GameManager.Instance.MyGameData.PayGoldValue_modified);
+            break;
         }
         break;
       case SelectionTargetType.Check_Single:
-        if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
-        if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
-        if (ThemeObj_B.activeInHierarchy.Equals(true)) ThemeObj_B.SetActive(false);
+        if (PayIcon.gameObject.activeInHierarchy.Equals(true)) PayIcon.gameObject.SetActive(false);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(false)) ThemeIcon_A.gameObject.SetActive(true);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(true)) ThemeIcon_A.gameObject.SetActive(false);
         ThemeIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0],false);
+        InfoText.text = WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillSingleValue);
         break;
       case SelectionTargetType.Check_Multy:
         if (PayIcon.transform.parent.gameObject.activeInHierarchy.Equals(true)) PayIcon.transform.parent.gameObject.SetActive(false);
-        if (ThemeObj_A.activeInHierarchy.Equals(false)) ThemeObj_A.SetActive(true);
-        if (ThemeObj_B.activeInHierarchy.Equals(false)) ThemeObj_B.SetActive(true);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(false)) ThemeIcon_A.gameObject.SetActive(true);
+        if (ThemeIcon_A.gameObject.activeInHierarchy.Equals(false)) ThemeIcon_A.gameObject.SetActive(true);
         Sprite[] _sprs = new Sprite[2];
         _sprs[0] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0], false);
         _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[1], false);
         ThemeIcon_A.sprite = _sprs[0];ThemeIcon_B.sprite = _sprs[1];
+        InfoText.text = WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillMultyValue);
         break;
     }
 

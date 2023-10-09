@@ -421,7 +421,7 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   #endregion
 
-  public void RestInSector(SectorTypeEnum sectortype,bool issanity)
+  public void RestInSector(SectorTypeEnum sectortype,bool issanity,int questinfoindex)
   {
     if (issanity)
     {
@@ -462,14 +462,19 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (MyGameData.Quest_Cult_Phase > 0)
+        switch (questinfoindex)
         {
-          if (MyGameData.Cult_SabbatSector == sectortype&&MyGameData.Cult_SabbatSector_CoolDown==0)
-          {
-            MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sector_Sabbat;
-            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement,ConstValues.Quest_Cult_SabbatDiscomfort);
-
-          }
+          case 0:
+            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement, 0);
+            break;
+          case 1:
+            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement, ConstValues.Quest_Cult_SabbatDiscomfort);
+            UIManager.Instance.QuestUI_Cult.AddProgress(3);
+            if (MyGameData.Quest_Cult_Phase == 2) MyGameData.Cult_SabbatSector_CoolDown = ConstValues.Quest_Cult_CoolDown;
+            break;
+          case 2:
+            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement, ConstValues.Quest_Cult_SabbatDiscomfort);
+            break;
         }
         break;
     }
@@ -502,8 +507,7 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        MyGameData.Quest_Cult_Progress += MyGameData.Quest_Cult_Phase < 2 ?
-          ConstValues.Qeust_Cult_EventProgress_Clear_Less60 : ConstValues.Quest_Cult_EventProgress_Clear_Over60;
+        UIManager.Instance.QuestUI_Cult.AddProgress(0);
         break;
     }
   }
@@ -534,8 +538,7 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        MyGameData.Quest_Cult_Progress +=MyGameData.Quest_Cult_Phase<2?
-          ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventProgress_Fail_Over60;
+        UIManager.Instance.QuestUI_Cult.AddProgress(1);
 
         break;
     }
@@ -622,7 +625,6 @@ public class GameManager : MonoBehaviour
       LoadData();
       //  DebugAllEvents();
     }
-    else Destroy(gameObject);
 
   }
 
@@ -747,13 +749,19 @@ public class GameManager : MonoBehaviour
           case 0:
             if (!MyGameData.Cult_SettlementNames.Contains(targetsettlement.OriginName))
             {
-              UIManager.Instance.QuestUI_Cult.OpenProgressEvent(false);
+              UIManager.Instance.QuestUI_Cult.AddProgress(2);
               MyGameData.Cult_SettlementNames.Add(targetsettlement.OriginName);
               return;
             }
             break;
-          case 1:  case 2:
+          case 1:
             MyGameData.Cult_SabbatSector = targetsettlement.Sectors[Random.Range(0, targetsettlement.Sectors.Count)];
+            break;
+          case 2:
+            if (MyGameData.Cult_SabbatSector_CoolDown == 0)
+              MyGameData.Cult_SabbatSector = targetsettlement.Sectors[Random.Range(0, targetsettlement.Sectors.Count)];
+            else MyGameData.Cult_SabbatSector = SectorTypeEnum.NULL;
+
             break;
         }
         break;

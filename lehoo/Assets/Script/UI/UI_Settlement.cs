@@ -43,6 +43,7 @@ public class UI_Settlement : UI_default
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
 
     if(RestbuttonHolder.activeInHierarchy==true) RestbuttonHolder.SetActive(false);
+    QuestSectorInfo = 0;
     SelectedSector = SectorTypeEnum.NULL;
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
     SettlementNameText.text = CurrentSettlement.Name;
@@ -111,7 +112,7 @@ public class UI_Settlement : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).InsidePos, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
     yield return LittleWait;
     _rectname = "placepanel";
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).InsidePos, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
+   yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).InsidePos, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
   }
   public override void CloseForGameover()
   {
@@ -126,6 +127,7 @@ public class UI_Settlement : UI_default
     _rectname = "placepanel";
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
   }
+  [HideInInspector] public int QuestSectorInfo = 0;
   public void SelectPlace(int index)  //SectortypeÀº 0ÀÌ NULLÀÓ
   {
     if (SelectedSector == (SectorTypeEnum)index) return;
@@ -164,18 +166,21 @@ public class UI_Settlement : UI_default
             //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
             break;
         }
-        string _cultprogress = "";
+        QuestSectorInfo=GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
         string _sabbatdescription = "";
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
+        switch (QuestSectorInfo)
         {
-          if(GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector&&
-            GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown==0)
+          case 0:
+            SectorSelectDescription.text = _effect;
+            break;
+          case 1:
             _sabbatdescription = "<br><br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat_Effect"),
-  WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort));
-          _cultprogress = "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat"), ConstValues.Quest_Cult_Progress_Sector_Sabbat);
-
+WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort)) + "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat"), ConstValues.Quest_Cult_Progress_Sabbat);
+            SectorSelectDescription.text = _effect + _sabbatdescription;
+            break;
+          case 2:
+            break;
         }
-        SectorSelectDescription.text = _effect+_sabbatdescription+ _cultprogress;
 
         RestButton_Sanity.interactable = true;
 
@@ -214,11 +219,13 @@ public class UI_Settlement : UI_default
         break;
     }
     if (SelectedSector == SectorTypeEnum.Residence) _movepointvalue++;
-    if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
+
+    switch (GameManager.Instance.MyGameData.QuestType)
     {
-      if (GameManager.Instance.MyGameData.Cult_SabbatSector == SelectedSector &&
-        GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown == 0)
-        _discomfortvalue += ConstValues.Quest_Cult_SabbatDiscomfort;
+      case QuestType.Cult:
+        if(QuestSectorInfo==1)
+          _discomfortvalue += ConstValues.Quest_Cult_SabbatDiscomfort;
+        break;
     }
 
 
@@ -255,12 +262,12 @@ public class UI_Settlement : UI_default
     {
     if (UIManager.Instance.IsWorking) return;
     CloseUI();
-    GameManager.Instance.RestInSector(SelectedSector, true);
+    GameManager.Instance.RestInSector(SelectedSector, true, QuestSectorInfo);
   }
   public void StartRest_Gold()
   {
     if (UIManager.Instance.IsWorking) return;
     CloseUI();
-    GameManager.Instance.RestInSector(SelectedSector, false);
+    GameManager.Instance.RestInSector(SelectedSector, false, QuestSectorInfo);
   }
 }

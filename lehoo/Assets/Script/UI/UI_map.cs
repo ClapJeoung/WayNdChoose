@@ -54,6 +54,7 @@ public class UI_map : UI_default
   private float MoveButtonDisableAlpha = 0.2f;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private TextMeshProUGUI MoveDescriptionText = null;
+  private bool IsRitual = false;
 
   public Transform SelectTileHolder = null;
 
@@ -114,45 +115,52 @@ public class UI_map : UI_default
     foreach(TileData _tile in _removetiles)ActiveTileData.Remove(_tile);
     foreach(Settlement _settle in _removesettles)ActiveSettles.Remove(_settle);
 
-    if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
+    switch (GameManager.Instance.MyGameData.QuestType)
     {
-      if(GameManager.Instance.MyGameData.Quest_Cult_Phase>0||
-        (GameManager.Instance.MyGameData.Quest_Cult_Phase>1&&GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown==0))
+      case QuestType.Cult:
+        SetRitualTile();
+        break;
+    }
+    void SetRitualTile()
+    {
       if (GameManager.Instance.MyGameData.Cult_RitualTile != null)
       {
         GameManager.Instance.MyGameData.Cult_RitualTile.Landmark = LandmarkType.Outer;
         GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.sprite = GameManager.Instance.ImageHolder.Transparent;
         GameManager.Instance.MyGameData.Cult_RitualTile = null;
       }
+      if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 0) return;
+      if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2 && GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown > 0) return;
 
       List<TileData> _potentialtiles = new List<TileData>();
       List<TileData> _aroundtiles = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 1);
-      foreach(var _tile in ActiveTileData)
+      foreach (var _tile in ActiveTileData)
       {
         if (_tile.Interactable == false) continue;
-        if(_tile.Landmark!=LandmarkType.Outer) continue;
+        if (_tile.Landmark != LandmarkType.Outer) continue;
         if (_aroundtiles.Contains(_tile)) continue;
         if (_tile.Coordinate == GameManager.Instance.MyGameData.Coordinate) continue;
         _potentialtiles.Add(_tile);
       }
-      List<TileData> _resulttiles= new List<TileData>();
+      List<TileData> _resulttiles = new List<TileData>();
       int _maxcount = 100;
       for (int i = 0; i < _potentialtiles.Count; i++)
       {
         List<TileData> _targetaround = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_potentialtiles[i], 2);
-        List<Settlement> _settlementlist= new List<Settlement>();
-        foreach(var _tile in  _targetaround)
+        List<Settlement> _settlementlist = new List<Settlement>();
+        foreach (var _tile in _targetaround)
         {
-          if(_tile.TileSettle!=null&&!_settlementlist.Contains(_tile.TileSettle)) _settlementlist.Add(_tile.TileSettle);
+          if (_tile.TileSettle != null && !_settlementlist.Contains(_tile.TileSettle)) _settlementlist.Add(_tile.TileSettle);
         }
         if (_settlementlist.Count == _maxcount) { _resulttiles.Add(_potentialtiles[i]); }
-        else if (_settlementlist.Count < _maxcount) { _resulttiles.Clear();_maxcount = _settlementlist.Count; _resulttiles.Add(_resulttiles[i]); }
+        else if (_settlementlist.Count < _maxcount) { _resulttiles.Clear(); _maxcount = _settlementlist.Count; _resulttiles.Add(_resulttiles[i]); }
       }
 
-      GameManager.Instance.MyGameData.Cult_RitualTile = _resulttiles[Random.Range(0,_resulttiles.Count)];
+      GameManager.Instance.MyGameData.Cult_RitualTile = _resulttiles[Random.Range(0, _resulttiles.Count)];
       GameManager.Instance.MyGameData.Cult_RitualTile.Landmark = LandmarkType.Ritual;
       GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
         UIManager.Instance.MyMap.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
+
     }
   }
   
@@ -166,6 +174,7 @@ public class UI_map : UI_default
   {
     ResetEnableTiles();
 
+    IsRitual = false;
     MoveInfoGroup.interactable = true;
     MoveProgressInfoText.text = "";
     MoveDescriptionText.text = "";
@@ -199,6 +208,7 @@ public class UI_map : UI_default
     DefaultGroup.blocksRaycasts = true;
   }
   public int SanityCost = 0, GoldCost = 0;
+  [HideInInspector] public int QuestInfo = 0;
   public void SelectTile(TileData selectedtiledata,Vector2 position)
   {
     //동일한 좌표면 호출되지 않게 이미 거름
@@ -229,25 +239,29 @@ public class UI_map : UI_default
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+        string _progresstext = "";
+        QuestInfo = GameManager.Instance.MyGameData.Cult_IsRitual(SelectedTile);
+        switch (QuestInfo)
         {
           case 0:
+            _progresstext = "";
             break;
           case 1:
-            string _progresstext = "";
             if (SelectedTile.TileSettle == null)
             {
-              _progresstext = "";
               if (SelectedTile.Landmark == LandmarkType.Ritual)
               {
-                _progresstext+=string.Format(GameManager.Instance.GetTextData("Quest_Progress_Ritual"), ConstValues.Quest_Cult_Progress_Outer_Ritual)+
-                  "<br>"+
-                  GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect");
+                _progresstext += string.Format(GameManager.Instance.GetTextData("Quest_Progress_Ritual"), ConstValues.Quest_Cult_Progress_Ritual) +
+                  "<br>" +
+                  string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"),ConstValues.Quest_Cult_RitualMovepoint);
               }
             }
-            MoveProgressInfoText.text = _progresstext;
+            break;
+          case 2:
+            _progresstext = "";
             break;
         }
+        MoveProgressInfoText.text = _progresstext;
         break;
     }
 
@@ -259,6 +273,7 @@ public class UI_map : UI_default
     SanitybuttonGroup.interactable = true;
   }
 
+  private int MovePointCost = 0;
   public void EnterPointerStatus(StatusTypeEnum type)
   {
     switch (type)
@@ -267,9 +282,26 @@ public class UI_map : UI_default
         SelectedCostType = StatusTypeEnum.Sanity;
         SanitybuttonGroup.alpha = 1.0f;
         GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
+        switch (GameManager.Instance.MyGameData.QuestType)
+        {
+          case QuestType.Cult:
+            switch (QuestInfo)
+            {
+              case 0:
+                MovePointCost = -1;
+                break;
+              case 1:
+                MovePointCost = -1 - ConstValues.Quest_Cult_RitualMovepoint;
+                break;
+              case 2:
+                MovePointCost = -1;
+                break;
+            }
+            break;
+        }
 
         MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY")+"<br>"+ (GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
     string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)));
         break;
       case StatusTypeEnum.Gold:
@@ -280,7 +312,7 @@ public class UI_map : UI_default
         GoldbuttonGroup.alpha = 1.0f;
 
         MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD")+"<br>"+(GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), "<#FFBF00>-1</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
     string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)));
         break;
     }
@@ -352,11 +384,8 @@ public class UI_map : UI_default
         GameManager.Instance.MyGameData.Gold -= GoldCost;
         break;
     }
-    if (GameManager.Instance.MyGameData.MovePoint > 0)
-    {
-      if(SelectedTile.Landmark==LandmarkType.Ritual)GameManager.Instance.MyGameData.MovePoint = 0;
-      else GameManager.Instance.MyGameData.MovePoint--;
-    }
+
+    GameManager.Instance.MyGameData.MovePoint -= MovePointCost;
 
     float _time = 0.0f;
     while (_time < MoveTime)
@@ -375,7 +404,7 @@ public class UI_map : UI_default
     {
       case LandmarkType.Outer:
         if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult && GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
-          GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Outer_Ritual;
+          GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
         yield return new WaitForSeconds(1.0f);
@@ -388,17 +417,20 @@ public class UI_map : UI_default
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;
       case LandmarkType.Ritual:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Outer_Ritual;
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
         yield return new WaitForSeconds(1.0f);
         EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
+
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2) GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown = ConstValues.Quest_Cult_CoolDown;
         break;
     }
 
     StartCoroutine(zoominview());
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, ZoomInTime + 0.6f));
     yield return new WaitForSeconds(0.1f);
+    if (IsRitual) UIManager.Instance.QuestUI_Cult.AddProgress(4);
     IsOpen = false;
     GetPanelRect("myrect").Rect.anchoredPosition = GetPanelRect("myrect").OutisdePos;
     DefaultGroup.interactable = false;

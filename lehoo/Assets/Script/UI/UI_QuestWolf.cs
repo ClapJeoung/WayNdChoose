@@ -260,66 +260,91 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private TextMeshProUGUI ProgressEventDescription = null;
   [SerializeField] private TextMeshProUGUI ProgressQuitButtonText = null;
   private bool IsProgressWorking=false;
-  public void OpenProgressEvent(bool issabbat)
+  /// <summary>
+  /// 0:성공 1:실패 2:정착지 3:집회 4:의식
+  /// </summary>
+  /// <param name="progresstype"></param>
+  public void AddProgress(int progresstype)
   {
+    int _eventtype = 0;
+    //0:없음 1:페이즈 증가 2:정착지 3:집회 4:의식
+
+    int _lastphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+    int _currentphase = 0;
+    switch (progresstype)
+    {
+      case 0:
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.Quest_Cult_Phase < 2 ?
+              ConstValues.Qeust_Cult_EventProgress_Clear_Less60 : ConstValues.Quest_Cult_EventProgress_Clear_Over60;
+
+        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+        if (_lastphase < _currentphase) _eventtype = 1;
+        break;
+      case 1:
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.Quest_Cult_Phase < 2 ?
+ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventProgress_Fail_Over60;
+
+        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+        if (_lastphase < _currentphase) _eventtype = 1;
+        break;
+      case 2:
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Settlement;
+        _eventtype = 2;
+
+        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+        if (_lastphase < _currentphase) _eventtype = 1;
+        break;
+      case 3:
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sabbat;
+        _eventtype = 3;
+      
+        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+        if (_lastphase < _currentphase) _eventtype = 1;
+        break;
+      case 4:
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
+        _eventtype = 4;
+       
+        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+        if (_lastphase < _currentphase) _eventtype = 1;
+        break;
+      default:
+        Debug.Log("아니이게머임???");
+        return;
+    }
+
+    if (_eventtype == 0) return;
+
     Sprite _illust = null;
     string _description = "";
     string _buttontext = "";
-    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    switch (_eventtype)
     {
-      case 0:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Settlement;
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
-        {
-          var _tuple = QuestHolder.GetPhaseUpgradeData;
-          _illust = _tuple.Item1;
-          _description=_tuple.Item2;
-          _buttontext = GameManager.Instance.GetTextData("NEXT_TEXT");
-        }
-        else
-        {
-          var _tuple = QuestHolder.GetSettlementData;
-          _illust = _tuple.Item1;
-          _description=_tuple.Item2;
-          _buttontext=_tuple.Item3;
-        }
-        break;
       case 1:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += issabbat ? ConstValues.Quest_Cult_Progress_Sector_Sabbat : ConstValues.Quest_Cult_Progress_Outer_Ritual;
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 1)
-        {
-          var _tuple = QuestHolder.GetPhaseUpgradeData;
-          _illust = _tuple.Item1;
-          _description = _tuple.Item2;
-          _buttontext = GameManager.Instance.GetTextData("NEXT_TEXT");
-        }
-        else
-        {
-          var _tuple = issabbat ? QuestHolder.GetSabbatData : QuestHolder.GetRitualData;
-          _illust = _tuple.Item1;
-          _description = _tuple.Item2;
-          _buttontext = _tuple.Item3;
-        }
+        var _tuple = QuestHolder.GetPhaseUpgradeData;
+        _illust = _tuple.Item1;
+        _description = _tuple.Item2;
+        _buttontext = GameManager.Instance.GetTextData("NEXT_TEXT");
         break;
       case 2:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += issabbat ? ConstValues.Quest_Cult_Progress_Sector_Sabbat : ConstValues.Quest_Cult_Progress_Outer_Ritual;
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 2)
-        {
-          var _tuple = QuestHolder.GetPhaseUpgradeData;
-          _illust = _tuple.Item1;
-          _description = _tuple.Item2;
-          _buttontext = GameManager.Instance.GetTextData("NEXT_TEXT");
-        }
-        else
-        {
-          var _tuple = issabbat ? QuestHolder.GetSabbatData : QuestHolder.GetRitualData;
-          _illust = _tuple.Item1;
-          _description = _tuple.Item2;
-          _buttontext = _tuple.Item3;
-        }
+        var _tuple_0 = QuestHolder.GetSettlementData;
+        _illust = _tuple_0.Item1;
+        _description = _tuple_0.Item2;
+        _buttontext = _tuple_0.Item3;
+        break;
+      case 3:
+        var _tuple_1 = QuestHolder.GetSabbatData;
+        _illust = _tuple_1.Item1;
+        _description = _tuple_1.Item2;
+        _buttontext = _tuple_1.Item3;
+        break;
+      case 4:
+        var _tuple_2 = QuestHolder.GetRitualData;
+        _illust = _tuple_2.Item1;
+        _description = _tuple_2.Item2;
+        _buttontext = _tuple_2.Item3;
         break;
     }
-
     ProgressEventIllust.sprite = _illust;
     ProgressEventDescription.text = _description;
     ProgressQuitButtonText.text = _buttontext;
@@ -332,7 +357,7 @@ public class UI_QuestWolf : UI_default
     IsProgressWorking = true;
     ProgressBackgroundGroup.blocksRaycasts = true;
     ProgressBackgroundGroup.interactable = true;
-     yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder, ProgressHolder_TopPos, Vector2.zero, 1.0f, UIManager.Instance.UIPanelOpenCurve));
+     yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder, ProgressHolder_TopPos, Vector2.zero, 0.6f, UIManager.Instance.UIPanelOpenCurve));
     IsProgressWorking = false;
   }
   public void CloseProgress()
@@ -345,7 +370,7 @@ public class UI_QuestWolf : UI_default
     IsProgressWorking = true;
     ProgressBackgroundGroup.blocksRaycasts = false;
     ProgressBackgroundGroup.interactable = false;
-    yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder,Vector2.zero,ProgressHolder_DownPos, 1.0f, UIManager.Instance.UIPanelCLoseCurve));
+    yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder,Vector2.zero,ProgressHolder_DownPos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
     IsProgressWorking = false;
   }
 
