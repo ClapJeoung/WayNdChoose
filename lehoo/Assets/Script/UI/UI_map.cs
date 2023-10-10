@@ -268,8 +268,12 @@ public class UI_map : UI_default
     MovecostButtonGroup.alpha = 1.0f;
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
-    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(_length);
-    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(_length);
+    SanityCost =GameManager.Instance.MyGameData.MovePoint>MovePointCost?
+      GameManager.Instance.MyGameData.MoveSanityCost:
+      Mathf.FloorToInt(GameManager.Instance.MyGameData.MoveSanityCost*GameManager.Instance.MyGameData.MovePointAmplified);
+    GoldCost = GameManager.Instance.MyGameData.MovePoint > MovePointCost ?
+      GameManager.Instance.MyGameData.MoveGoldCost :
+      Mathf.FloorToInt(GameManager.Instance.MyGameData.MoveGoldCost * GameManager.Instance.MyGameData.MovePointAmplified);
     SanitybuttonGroup.interactable = true;
   }
 
@@ -288,20 +292,20 @@ public class UI_map : UI_default
             switch (QuestInfo)
             {
               case 0:
-                MovePointCost = -1;
+                MovePointCost = 1;
                 break;
               case 1:
-                MovePointCost = -1 - ConstValues.Quest_Cult_RitualMovepoint;
+                MovePointCost = 1 + ConstValues.Quest_Cult_RitualMovepoint;
                 break;
               case 2:
-                MovePointCost = -1;
+                MovePointCost = 1;
                 break;
             }
             break;
         }
 
         MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY")+"<br>"+ (GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>-{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
     string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)));
         break;
       case StatusTypeEnum.Gold:
@@ -312,7 +316,7 @@ public class UI_map : UI_default
         GoldbuttonGroup.alpha = 1.0f;
 
         MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD")+"<br>"+(GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
+    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>-{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
     string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)));
         break;
     }
@@ -476,11 +480,6 @@ public class UI_map : UI_default
     DefaultGroup.blocksRaycasts = false;
     yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, 0.3f, false));
     DefaultGroup.interactable = false;
-  }
-  public override void CloseForGameover()
-  {
-    DefaultGroup.blocksRaycasts = false;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, 0.3f, false));
   }
 
 }

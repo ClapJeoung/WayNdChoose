@@ -15,7 +15,7 @@ public class UI_Expereince_info : UI_default
   [SerializeField] private CanvasGroup BackButton = null; 
   public void OpenLongExpUI()
   {
-    Experience _exp = GameManager.Instance.MyGameData.LongTermEXP;
+    Experience _exp = GameManager.Instance.MyGameData.LongExp;
     if (UIManager.Instance.IsWorking || _exp == null) return;
     if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
 
@@ -23,12 +23,14 @@ public class UI_Expereince_info : UI_default
   }
   public void OpenShortExpUI(int _index)
   {
+    /*
     Experience _exp = GameManager.Instance.MyGameData.ShortTermEXP[_index];
     //나중에 인수도 받아야함
     if (UIManager.Instance.IsWorking || _exp == null) return;
     if (IsOpen && CurrentExp.Equals(_exp)) { CloseUI(); IsOpen = false; return; }
     
     Setup(_exp);
+    */
   }
   public void Setup(Experience exp)
   {
@@ -90,15 +92,5 @@ public class UI_Expereince_info : UI_default
     TouchBlock.enabled = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
     StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
-  }
-  public override void CloseForGameover()
-  {
-    IsOpen = false;
-    BackButton.interactable = false;
-    BackButton.blocksRaycasts = false;
-    CurrentExp = null;
-    TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
-    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
   }
 }

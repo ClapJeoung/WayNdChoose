@@ -292,43 +292,53 @@ public class UIManager : MonoBehaviour
     titlerect.anchoredPosition = _targetpos_title;
     iconrect.anchoredPosition = _targetpos_icon;
   }
-  [SerializeField] private Image LongTermCover = null;
-  [SerializeField] private TextMeshProUGUI LongTermTurn = null;
-  [SerializeField] private TextMeshProUGUI LongTermEffect = null;
-  public void UpdateExpLongTermIcon()
+  [SerializeField] private Image LongExpCover = null;
+  [SerializeField] private TextMeshProUGUI LongExpTurn = null;
+  [SerializeField] private TextMeshProUGUI LongExpEffect = null;
+  [SerializeField] private Image ShortExpCover_A = null;
+  [SerializeField] private TextMeshProUGUI ShortExpTurn_A= null;
+  [SerializeField] private TextMeshProUGUI ShortExpEffect_A = null;
+  [SerializeField] private Image ShortExpCover_B = null;
+  [SerializeField] private TextMeshProUGUI ShortExpTurn_B = null;
+  [SerializeField] private TextMeshProUGUI ShortExpEffect_B = null;
+  public void UpdateExpPael()
   {
-    if (GameManager.Instance.MyGameData.LongTermEXP == null)
+    if (GameManager.Instance.MyGameData.LongExp == null)
     {
-      if(LongTermCover.enabled==false) LongTermCover.enabled = true;
-      LongTermEffect.text = "";
+      if (LongExpCover.enabled == false) LongExpCover.enabled = true;
+      LongExpEffect.text = "";
     }
     else
     {
-      if (LongTermCover.enabled == true) LongTermCover.enabled = false;
+      if (LongExpCover.enabled == true) LongExpCover.enabled = false;
 
-      LongTermTurn.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
-      LongTermEffect.text = GameManager.Instance.MyGameData.LongTermEXP.ShortEffectString;
+      LongExpTurn.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
+      LongExpEffect.text = GameManager.Instance.MyGameData.LongExp.ShortEffectString;
     }
-  }
-  [SerializeField] private Image[] ShortTermCover = new Image[2];
-  [SerializeField] private TextMeshProUGUI[] ShortTermTurn=new TextMeshProUGUI[2];
-  [SerializeField] private TextMeshProUGUI[] ShortTermEffect = new TextMeshProUGUI[2];
-  public void UpdateExpShortTermIcon()
-  {
-    for (int i = 0; i < ShortTermCover.Length; i++)
-    {
-      if (GameManager.Instance.MyGameData.ShortTermEXP[i] == null)
-      {
-        ShortTermTurn[i].enabled = true;
-        ShortTermEffect[i].text = "";
-      }
-      else
-      {
-        if(ShortTermCover[i].enabled==true) ShortTermCover[i].enabled = false;
 
-        ShortTermTurn[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].Duration.ToString();
-        ShortTermEffect[i].text = GameManager.Instance.MyGameData.ShortTermEXP[i].ShortEffectString;
-      }
+    if (GameManager.Instance.MyGameData.ShortExp_A == null)
+    {
+      ShortExpTurn_A.enabled = true;
+      ShortExpEffect_A.text = "";
+    }
+    else
+    {
+      if (ShortExpCover_A.enabled == true) ShortExpCover_A.enabled = false;
+
+      ShortExpTurn_A.text = GameManager.Instance.MyGameData.ShortExp_A.Duration.ToString();
+      ShortExpEffect_A.text = GameManager.Instance.MyGameData.ShortExp_A.ShortEffectString;
+    }
+    if (GameManager.Instance.MyGameData.ShortExp_B == null)
+    {
+      ShortExpTurn_B.enabled = true;
+      ShortExpEffect_B.text = "";
+    }
+    else
+    {
+      if (ShortExpCover_B.enabled == true) ShortExpCover_B.enabled = false;
+
+      ShortExpTurn_B.text = GameManager.Instance.MyGameData.ShortExp_B.Duration.ToString();
+      ShortExpEffect_B.text = GameManager.Instance.MyGameData.ShortExp_B.ShortEffectString;
     }
   }
   public void UpdateAllUI()
@@ -339,8 +349,7 @@ public class UIManager : MonoBehaviour
     UpdateSanityText();
     UpdateGoldText();
     UpdateMovePointText();
-    UpdateExpLongTermIcon();
-    UpdateExpShortTermIcon();
+    UpdateExpPael();
     UpdateTendencyIcon();
     UpdateSkillLevel();
   }
@@ -867,11 +876,11 @@ public static class WNCText
   }
   public static string GetDiscomfortColor(string str)
   {
-    return $"<#5F04B4>{str}</color>";
+    return $"<#8258FA>{str}</color>";
   }
   public static string GetDiscomfortColor(int value)
   {
-    return $"<#5F04B4>{value}</color>";
+    return $"<#8258FA>{value}</color>";
   }
   public static string GetMovepointColor(string str)
   {

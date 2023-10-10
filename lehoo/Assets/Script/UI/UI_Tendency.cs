@@ -43,7 +43,7 @@ public class UI_Tendency : UI_default
     string _tendencyname = _tendency.Name;
     Sprite _icon = _tendency.CurrentIcon;
     string _description = _tendency.Description;
-    string _effect = GameManager.Instance.MyGameData.GetTendencyEffectString_long(_tendencytype);
+    string _effect = _tendency.GetTendencyEffectString;
 
     Name.text= _tendencyname;
     Icon.sprite= _icon;
@@ -65,13 +65,5 @@ public class UI_Tendency : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
     StartCoroutine( UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
         CurrentTendencyType = TendencyTypeEnum.None;
-  }
-  public override void CloseForGameover()
-  {
-    TouchBlock.enabled = false;
-    IsOpen = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
-    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
-    CurrentTendencyType = TendencyTypeEnum.None;
   }
 }

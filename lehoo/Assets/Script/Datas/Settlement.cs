@@ -53,15 +53,6 @@ public class Settlement
     }
   }
   public int Discomfort = 0;
-  public void AddDiscomfort(int addvalue)
-  {
-    switch (SettlementType)
-    {
-      case SettlementType.Village:Discomfort += ConstValues.RestDiscomfort_Village+addvalue;return;
-      case SettlementType.Town:Discomfort += ConstValues.RestDiscomfort_Town + addvalue; return;
-      default: Discomfort += ConstValues.RestDiscomfort_City + addvalue; return;
-    }
-  }
   private string name;
   public string Name { 
     get

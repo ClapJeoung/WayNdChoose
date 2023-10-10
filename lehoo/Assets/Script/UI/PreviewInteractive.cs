@@ -33,12 +33,12 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.Quest:UIManager.Instance.PreviewManager.OpenQuestPreview();break;
       case PreviewPanelType.Skill:UIManager.Instance.PreviewManager.OpenSkillPreview(Myskill, transform as RectTransform);break;
       case PreviewPanelType.EXP_long:
-         _exp = GameManager.Instance.MyGameData.LongTermEXP;
+         _exp = GameManager.Instance.MyGameData.LongExp;
         if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, transform as RectTransform);
         else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"), new Vector2(1.0f, 0.5f), transform as RectTransform);
         break;
         case PreviewPanelType.EXP_short:
-         _exp = GameManager.Instance.MyGameData.ShortTermEXP[ExpIndex];
+         _exp = ExpIndex==0? GameManager.Instance.MyGameData.ShortExp_A: GameManager.Instance.MyGameData.ShortExp_B;
         if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, transform as RectTransform);
         else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"),new Vector2(1.0f,0.5f), transform as RectTransform);
         break;
@@ -79,7 +79,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.RewardExp:
         UIManager.Instance.PreviewManager.OpenRewardExpPreview(MyEXP, transform as RectTransform); break;
       case PreviewPanelType.RewardExpSelect_long:
-        _exp = GameManager.Instance.MyGameData.LongTermEXP;
+        _exp = GameManager.Instance.MyGameData.LongExp;
         if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,true, transform as RectTransform);
         else
         {
@@ -89,7 +89,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         break;
       case PreviewPanelType.RewardExpSelect_short:
-        _exp = GameManager.Instance.MyGameData.ShortTermEXP[ExpIndex];
+        _exp = ExpIndex == 0 ? GameManager.Instance.MyGameData.ShortExp_A : GameManager.Instance.MyGameData.ShortExp_B;
         if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,false, transform as RectTransform);
         else
         {
@@ -105,13 +105,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenEnvirPanel(MyEnvironmentType);
         break;
       case PreviewPanelType.MadnessAccept:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview
-          ( string.Format(GameManager.Instance.GetTextData("ACCEPTMADNESS_DESCRIPTOIN"), WNCText.GetSanityColor(ConstValues.MadnessMaxSanityLoseValue)), transform as RectTransform);
         break;
       case PreviewPanelType.MadnessRefuse:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
-          string.Format(GameManager.Instance.GetTextData("REFUSEMADNESS_DESCRIPTION"),
-          WNCText.GetHPColor(ConstValues.MadnessRefuseHPLoseCost)), transform as RectTransform);
         break;
       case PreviewPanelType.MoveCostSanity:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MyMap.SanityCost)), transform as RectTransform);

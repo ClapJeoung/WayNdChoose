@@ -114,20 +114,14 @@ public class UI_Settlement : UI_default
     _rectname = "placepanel";
    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).InsidePos, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
   }
-  public override void CloseForGameover()
-  {
-    IsOpen = false;
-
-    UIManager.Instance.MapButton.CloseForGameover();
-
-    string _rectname = "description";
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
-    _rectname = "nameholder";
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
-    _rectname = "placepanel";
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect(_rectname).Rect, GetPanelRect(_rectname).Rect.anchoredPosition, GetPanelRect(_rectname).OutisdePos, UICloseMoveTime, false));
-  }
-  [HideInInspector] public int QuestSectorInfo = 0;
+  /// <summary>
+  /// 0:일반 1:집회 2:페널티만
+  /// </summary>
+  public int QuestSectorInfo = 0;
+  public int GoldCost = 0;
+  public int SanityCost = 0;
+  public int DiscomfortValue = 0;
+  public int MovePointValue = 0;
   public void SelectPlace(int index)  //Sectortype은 0이 NULL임
   {
     if (SelectedSector == (SectorTypeEnum)index) return;
@@ -143,30 +137,61 @@ public class UI_Settlement : UI_default
       case QuestType.Cult:
         GetSectorIconScript(SelectedSector).SetSelectColor();
 
+        QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
+
         SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
         string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
+        int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
+          ConstValues.Rest_Discomfort :
+          ConstValues.Tendency_Head_p1;
         switch (SelectedSector)
         {
           case SectorTypeEnum.Residence:
-            _effect = string.Format(_effect, ConstValues.SectorEffect_residence);
+            _effect = string.Format(_effect, 
+              WNCText.GetMovepointColor(ConstValues.SectorEffect_residence_movepoint),
+              WNCText.GetDiscomfortColor(ConstValues.SectorEffect_residence_discomfort));
+
+            GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+            SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+            DiscomfortValue = ConstValues.Rest_Discomfort+ConstValues.SectorEffect_residence_discomfort;
+            MovePointValue = _discomfort_default + ConstValues.SectorEffect_residence_movepoint;
             break;
           case SectorTypeEnum.Temple:
             _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
+
+            GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+            SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+            DiscomfortValue = ConstValues.Rest_Discomfort;
+            MovePointValue = _discomfort_default;
             break;
           case SectorTypeEnum.Marketplace:
             _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
+
+            GoldCost = GameManager.Instance.MyGameData.RestCost_Gold * (ConstValues.SectorEffect_marketSector / 100);
+            SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity * (ConstValues.SectorEffect_marketSector / 100);
+            DiscomfortValue = _discomfort_default;
+            MovePointValue = ConstValues.Rest_MovePoint;
             break;
           case SectorTypeEnum.Library:
             _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
+
+            GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+            SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+            DiscomfortValue = _discomfort_default;
+            MovePointValue = ConstValues.Rest_MovePoint;
             break;
           case SectorTypeEnum.Theater:
             //서비스 종료다...!
             break;
           case SectorTypeEnum.Academy:
+            GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+            SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+            DiscomfortValue = ConstValues.Rest_Discomfort;
+            MovePointValue=ConstValues.Rest_MovePoint;
             //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
             break;
         }
-        QuestSectorInfo=GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
+
         string _sabbatdescription = "";
         switch (QuestSectorInfo)
         {
@@ -174,6 +199,7 @@ public class UI_Settlement : UI_default
             SectorSelectDescription.text = _effect;
             break;
           case 1:
+            DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
             _sabbatdescription = "<br><br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat_Effect"),
 WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort)) + "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat"), ConstValues.Quest_Cult_Progress_Sabbat);
             SectorSelectDescription.text = _effect + _sabbatdescription;
@@ -183,13 +209,7 @@ WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort)) + "<br>" + 
         }
 
         RestButton_Sanity.interactable = true;
-
-        int _goldpayvalue = SelectedSector != SectorTypeEnum.Marketplace ?
-          GameManager.Instance.MyGameData.SettleRestCost_Gold :
-          GameManager.Instance.MyGameData.SettleRestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
-
-        if (GameManager.Instance.MyGameData.Gold >= _goldpayvalue) RestButton_Gold.interactable = true;
-        else RestButton_Gold.interactable = false;
+        RestButton_Gold.interactable = GameManager.Instance.MyGameData.Gold >= GoldCost?true:false;
         break;
     }
 
@@ -201,55 +221,21 @@ WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort)) + "<br>" + 
   {
     if (UIManager.Instance.IsWorking) return;
 
-    int _movepointvalue = 0;
-    int _discomfortvalue = 0;
-    switch (CurrentSettlement.SettlementType)
-    {
-      case SettlementType.Village:
-        _movepointvalue = ConstValues.RestMovePoint_Village;
-        _discomfortvalue = ConstValues.RestDiscomfort_Village;
-        break;
-      case SettlementType.Town:
-        _movepointvalue = ConstValues.RestMovePoint_Town;
-        _discomfortvalue = ConstValues.RestDiscomfort_Town;
-        break;
-      case SettlementType.City:
-        _movepointvalue = ConstValues.RestMovePoint_City;
-        _discomfortvalue = ConstValues.RestDiscomfort_City;
-        break;
-    }
-    if (SelectedSector == SectorTypeEnum.Residence) _movepointvalue++;
-
-    switch (GameManager.Instance.MyGameData.QuestType)
-    {
-      case QuestType.Cult:
-        if(QuestSectorInfo==1)
-          _discomfortvalue += ConstValues.Quest_Cult_SabbatDiscomfort;
-        break;
-    }
-
-
     switch (type)
     {
       case StatusTypeEnum.Sanity:
 
         RestDescription.text= string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),
-      WNCText.GetSanityColor("-" + (SelectedSector != SectorTypeEnum.Marketplace ?
-          GameManager.Instance.MyGameData.SettleRestCost_Sanity :
-          GameManager.Instance.MyGameData.SettleRestCost_Sanity * ConstValues.SectorEffect_marketSector / 100)),
-      WNCText.GetMovepointColor("+" + _movepointvalue),
-      WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+      WNCText.GetSanityColor("-"+ SanityCost),
+      WNCText.GetMovepointColor("+" + MovePointValue),
+      WNCText.GetDiscomfortColor("+" + DiscomfortValue));
         break;
       case StatusTypeEnum.Gold:
-        int _goldpayvalue = SelectedSector != SectorTypeEnum.Marketplace ?
-          GameManager.Instance.MyGameData.SettleRestCost_Gold :
-          GameManager.Instance.MyGameData.SettleRestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
-        if (GameManager.Instance.MyGameData.Gold < _goldpayvalue) return;
 
         RestDescription.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"),
-  WNCText.GetGoldColor("-" + _goldpayvalue),
-  WNCText.GetMovepointColor("+" + _movepointvalue),
-  WNCText.GetDiscomfortColor("+" + _discomfortvalue));
+  WNCText.GetGoldColor("-" + GoldCost),
+  WNCText.GetMovepointColor("+" + MovePointValue),
+  WNCText.GetDiscomfortColor("+" + DiscomfortValue));
         break;
 
     }
@@ -262,12 +248,12 @@ WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort)) + "<br>" + 
     {
     if (UIManager.Instance.IsWorking) return;
     CloseUI();
-    GameManager.Instance.RestInSector(SelectedSector, true, QuestSectorInfo);
+    GameManager.Instance.RestInSector(SelectedSector, StatusTypeEnum.Sanity,SanityCost,DiscomfortValue,MovePointValue, QuestSectorInfo);
   }
   public void StartRest_Gold()
   {
     if (UIManager.Instance.IsWorking) return;
     CloseUI();
-    GameManager.Instance.RestInSector(SelectedSector, false, QuestSectorInfo);
+    GameManager.Instance.RestInSector(SelectedSector, StatusTypeEnum.Gold,GoldCost, DiscomfortValue, MovePointValue, QuestSectorInfo);
   }
 }

@@ -421,19 +421,16 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   #endregion
 
-  public void RestInSector(SectorTypeEnum sectortype,bool issanity,int questinfoindex)
+  public void RestInSector(SectorTypeEnum sectortype,StatusTypeEnum statustype ,int payvalue ,int discomfort,int movepoint, int questinfoindex)
   {
-    if (issanity)
+    MyGameData.FirstRest = false;
+    if (statustype==StatusTypeEnum.Sanity)
     {
-      MyGameData.Sanity -= sectortype!=SectorTypeEnum.Marketplace?
-        ConstValues.RestCost_Sanity:
-        ConstValues.RestCost_Sanity*ConstValues.SectorEffect_marketSector/100;
+      MyGameData.Sanity -= payvalue;
     }
     else
     {
-      MyGameData.Gold -= sectortype != SectorTypeEnum.Marketplace ?
-        ConstValues.RestCost_Gold :
-        ConstValues.RestCost_Gold * ConstValues.SectorEffect_marketSector / 100;
+      MyGameData.Gold -= payvalue;
     }
 
     if (MyGameData.Madness_Force == true && Random.Range(0, 100) < ConstValues.MadnessEffect_Force)
@@ -442,18 +439,7 @@ public class GameManager : MonoBehaviour
     }
     else
     {
-      switch (MyGameData.CurrentSettlement.SettlementType)
-      {
-        case SettlementType.Village:
-          MyGameData.MovePoint += ConstValues.RestMovePoint_Village;
-          break;
-        case SettlementType.Town:
-          MyGameData.MovePoint += ConstValues.RestMovePoint_Town;
-          break;
-        case SettlementType.City:
-          MyGameData.MovePoint += ConstValues.RestMovePoint_City;
-          break;
-      }
+      MyGameData.MovePoint += movepoint;
       MyGameData.ApplySectorEffect(sectortype);
     }
 
@@ -465,15 +451,16 @@ public class GameManager : MonoBehaviour
         switch (questinfoindex)
         {
           case 0:
-            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement, 0);
+            MyGameData.CurrentSettlement.Discomfort += discomfort;
             break;
           case 1:
-            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement, ConstValues.Quest_Cult_SabbatDiscomfort);
+            MyGameData.CurrentSettlement.Discomfort += discomfort;
             UIManager.Instance.QuestUI_Cult.AddProgress(3);
+
             if (MyGameData.Quest_Cult_Phase == 2) MyGameData.Cult_SabbatSector_CoolDown = ConstValues.Quest_Cult_CoolDown;
             break;
           case 2:
-            MyGameData.AddDiscomfort(MyGameData.CurrentSettlement, ConstValues.Quest_Cult_SabbatDiscomfort);
+            MyGameData.CurrentSettlement.Discomfort += discomfort+ConstValues.Quest_Cult_SabbatDiscomfort;
             break;
         }
         break;
@@ -499,10 +486,8 @@ public class GameManager : MonoBehaviour
     EventHolder.RemoveEvent(MyGameData.CurrentEvent,true,_tendencyindex);
 
     MyGameData.CurrentEventSequence = EventSequence.Clear;
-    if (MyGameData.CurrentSettlement != null)
-    {
-      MyGameData.Turn++;
-    }
+    MyGameData.Turn++;
+    if (MyGameData.CurrentSettlement != null) MyGameData.DownAllDiscomfort(1);
 
     switch (MyGameData.QuestType)
     {
@@ -529,12 +514,11 @@ public class GameManager : MonoBehaviour
         break;
     }
     EventHolder.RemoveEvent(MyGameData.CurrentEvent, false, _tendencyindex);
+    if (MyGameData.CurrentSettlement != null) MyGameData.DownAllDiscomfort(1);
 
     MyGameData.CurrentEventSequence = EventSequence.Clear;
-    if (MyGameData.CurrentSettlement != null)
-    {
-      MyGameData.Turn++;
-    }
+    MyGameData.Turn++;
+
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
@@ -546,32 +530,23 @@ public class GameManager : MonoBehaviour
   public void AddExp_Long(Experience exp)
   {
     exp.Duration = ConstValues.LongTermStartTurn;
-    MyGameData.LongTermEXP = exp;
-    UIManager.Instance.UpdateExpLongTermIcon();
+    MyGameData.LongExp = exp;
+
+    UIManager.Instance.UpdateExpPael();
     UIManager.Instance.UpdateSkillLevel();
   }
-  public void AddExp_Short(Experience exp,int index)
+  /// <summary>
+  /// 0:A 1:B
+  /// </summary>
+  /// <param name="exp"></param>
+  /// <param name="index"></param>
+  public void AddExp_Short(Experience exp,bool index)
   {
     exp.Duration = ConstValues.ShortTermStartTurn;
-    MyGameData.ShortTermEXP[index] = exp;
-    UIManager.Instance.UpdateExpShortTermIcon();
-    UIManager.Instance.UpdateSkillLevel();
-  }
-  public void ShiftShortExp(Experience _exp, int _index)
-  {
-    _exp.Duration = ConstValues.ShortTermStartTurn;
-    Experience _target = MyGameData.ShortTermEXP[_index];
-    MyGameData.ShortTermEXP[_index] = _exp;
-    UIManager.Instance.UpdateExpShortTermIcon();
-    UIManager.Instance.UpdateSkillLevel();
-  }
-  public void ShiftLongExp(Experience _exp)
-  {
-    _exp.Duration = ConstValues.LongTermStartTurn;
-    Experience _target = MyGameData.LongTermEXP;
-    MyGameData.LongTermEXP= _exp;
-    MyGameData.Sanity -= ConstValues.LongTermChangeCost;
-    UIManager.Instance.UpdateExpLongTermIcon();
+    if(index==true)MyGameData.ShortExp_A=exp;
+    else MyGameData.ShortExp_B=exp;
+
+    UIManager.Instance.UpdateExpPael();
     UIManager.Instance.UpdateSkillLevel();
   }
   public void SetOuterEvent(EventDataDefulat _event)
@@ -637,9 +612,11 @@ public class GameManager : MonoBehaviour
 
     }
   }
-  public void GameOver(GameOverTypeEnum gameovertype)
+  public void GameOver()
   {
-    UIManager.Instance.GameOver(gameovertype);
+    int _index = Random.Range(0, ImageHolder.GameoverIllusts.Count);
+
+    UIManager.Instance.EndingUI.OpenUI_Dead(ImageHolder.GameoverIllusts[_index],GetTextData("GameOver_"+_index.ToString()));
   }
   public void StartNewGame(QuestType newquest)
   {
@@ -740,6 +717,7 @@ public class GameManager : MonoBehaviour
   public void EnterSettlement(Settlement targetsettlement)
   {
     MyGameData.CurrentSettlement=targetsettlement;
+    MyGameData.FirstRest = true;
 
     switch (MyGameData.QuestType)
     {

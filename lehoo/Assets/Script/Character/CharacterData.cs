@@ -24,11 +24,12 @@ public static class ConstValues
   public const int MadnessHPCost_HP = 30;
   public const int MadnessSanityGen = 50;
 
-  public const int RestMovePoint_Village = 1, RestMovePoint_Town = 1, RestMovePoint_City = 1;
-  public const int RestDiscomfort_Village=2, RestDiscomfort_Town = 2, RestDiscomfort_City = 2;
-  public const float LackOfMovePointValue = 1.5f;
-  public const int MoveCost_Sanity_1_min = 8, MoveCost_Sanity_1_max = 15, MoveCost_Sanity_2_min = 10, MoveCost_Sanity_2_max = 20;
-  public const int MoveCost_Gold_1_min = 5, MoveCost_Gold_1_max = 12, MoveCost_Gold_2_min = 8, MoveCost_Gold_2_max = 15;
+  public const int Rest_MovePoint = 1;
+  public const int Rest_Discomfort = 3;
+  public const int MoveRest_Sanity_min = 10, MoveRest_Sanity_max = 20;
+  public const int MoveRest_Gold_min = 7, MoveRest_Gold_max = 15;
+  public const float MoveRest_Value_Deafult = 0.75f, MoveRest_Value_Ratio = 0.15f;
+  public const float LackMPAmplifiedValue_Idle = 3.0f;
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
                    EventPer_Sector = 2, EventPer_NoSector = 1,
@@ -52,56 +53,55 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.15f,  GoldLoss_Exp = 0.15f;
   public const float SanityGen_Exp = 0.1f, SanityLoss_Exp = 0.08f;
 
-  public const float SanityGenByTendency_m1 = 0.15f, DiscomfortByTendency_m2 = 0.5f, SanityGenByTendency_m2 = 0.3f, SanityLossByTendency_p2 = 0.2f;
-  public const float GoldGenByTendency_p1 = 0.3f, GoldGenByTendency_p2 = 0.45f, GoldLossByTendency_m2 = 0.2f, HPGenByTendency_p2 = 0.3f;
-  //정신적 2: 정신력 회복 증가, 불쾌 효과 감소, 골드 감소
-  //정신적 1: 정신력 회복 증가
-  //물질적 1: 골드 증가
-  //물질적 2: 골드 증가, 체력 증가, 정신력 감소
+  public const float Tendency_Head_m2 = 1.5f;
+  public const int Tendency_Head_m1 = 1;
+  public const int Tendency_Head_p1 = 0;
+  public const int Tendency_Head_p2 = 2;
+  //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
+  //정신적 1: 정착지 출발할때마다 공짜 이동력 1
+  //물질적 1: 정착지 출발할때마다 현재 정착지 불쾌 -2
+  //물질적 2: 매년 봄 모든 정착지에 불쾌 -2
 
   public const int ConversationByTendency_m2 = 3, ConversationByTendency_m1 = 1, ConversationByTendency_p2 = -1,
     IntelligenceByTendency_m2 = 3, IntelligenceByTendency_m1 = 1, IntelligenceByTendency_p2 = -1,
     ForceByTendency_m2 = -1, ForceByTendency_p1 = 1, ForceByTendency_p2 = 3,
     WildByTendency_m2 = -1, WildByTendency_p1 = 1, WildByTendency_p2 = 3;
-  //이성적 2: 화술+3 학식+3 격투-1 생존-1
-  //이성적 1: 화술+1 학식+1
+  //논리적 2: 화술+3 학식+3 격투-1 생존-1
+  //논리적 1: 화술+1 학식+1
   //육체적 1: 격투+1 생존+1
   //육체적 2: 격투+3 생존+3 화술-1 학식-1
 
   //성향 진행도 따라 긍정,부정 값
-  public const float minsuccesper_max = 60;
+  public const float minsuccesper_max = 75;
   public const float minsuccesper_min = 15;
-  //스킬 체크, 지불 체크 최대~최소
-  public const int MaxYear = 10;
-  //보정치 최대 년도
-  public const int PayHP_min = 10, PayHP_max = 20;        //체력 지불 최소~최대   (1년~10년)
-  public const int PaySanity_min = 15, PaySanity_max = 30;//정신력 지불 최소~최대 (1년~10년)
-  public const int PayGold_min = 20, PayGold_max = 30;  //돈 지불 최소~최대     (1년~10년)
-  public const int CheckSkill_single_min = 1, CheckSkill_single_max = 8;  //기술(단일) 체크 최소~최대 (1년~10년)
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 14;   //기술(복수) 체크 최소~최대 (1년~10년)
-  public const int FailHP_min = 5, FailHP_max = 10;         //실패 체력 최소~최대 (1년~10년)
-  public const int FailSanity_min = 10, FailSanity_max = 20;//실패 정신력 최소~최대(1년~10년)
-  public const int FailGold_min = 15, FailGold_max = 30;    //실패 골드 최소~최대 (1년~10년)
-  public const int RewardHP_min = 15, RewardHP_max = 20;    //성공 체력 최소~최대 (무작위)
-  public const int RewardSanity_min = 20, RewardSanity_max = 25;//성공 정신력 최소~최대(무작위)
-  public const int RewardGold_min=20, RewardGold_max=30;    //성공 골드 최소~최대(무작위)
-  public const int SubRewardSanity_min=5, SubRewardSanity_max=10;//부가 보너스 정신력 최소~최대(무작위)
-  public const int SubRewardGold_min=10, SubRewardGold_max=20;  //부가 보너스 골드 최소~최대(무작위)
   public const float MoneyCheck_min = 2.5f, MoneyCheck_max = 0.25f; //골드 지불 범위 벗어날 시 지불 실패 금액에 제곱비례
+  //스킬 체크, 지불 체크 최대~최소
+  public const int MaxYear = 8;
+  //보정치 최대 년도
+  public const int CheckSkill_single_min = 1, CheckSkill_single_max = 8;
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 14;
+
+  public const int PayHP_min = 4, PayHP_max = 10;      
+  public const int PaySanity_min = 8, PaySanity_max = 20;
+  public const int PayGold_min = 6, PayGold_max = 15; 
+  public const int FailHP_min = 6, FailHP_max = 10;   
+  public const int FailSanity_min = 12, FailSanity_max = 20;
+  public const int FailGold_min = 9, FailGold_max = 15;  
+  public const int RewardHP_min = 0, RewardHP_max = 0;  
+  public const int RewardSanity_min = 10, RewardSanity_max = 25;
+  public const int RewardGold_min=7, RewardGold_max=18; 
+
   public const int ShortTermStartTurn = 6;
   public const int LongTermStartTurn =  12;
+
   public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
 
-  public const int RestCost_Sanity = 5;
-  public const int RestCost_Gold = 10;
-  public const float RestDiscomfortExpansion = 1.5f;
-
     public const int SectorEffectMaxTurn = 3;
-    public const int SectorEffect_residence = 1;
-    public const int SectorEffect_marketSector = 70;
-    public const int SectorEffect_temple = 1;
-  public const int SectorEffect_Library = 15;
+  public const int SectorEffect_residence_movepoint = 1, SectorEffect_residence_discomfort = 2;
+    public const int SectorEffect_marketSector = 40;
+    public const int SectorEffect_temple = 2;
+  public const int SectorEffect_Library = 2;
     public const int SectorEffect_theater = 3;
     public const int SectorEffect_acardemy = 10;
   public const int SectorDuration = 5;
@@ -122,51 +122,44 @@ public class GameData    //게임 진행도 데이터
   #region #지도,정착지 관련#
   public MapData MyMapData = null;
   public Vector2 Coordinate = Vector2.zero;
-  public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보
-  public void AddDiscomfort(Settlement settlement,int addvalue)
+  public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보]
+  public bool FirstRest = false;
+  public void DownAllDiscomfort(int value)
   {
     for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
-    {
-      if (settlement == GameManager.Instance.MyGameData.MyMapData.AllSettles[i]) settlement.AddDiscomfort(addvalue);
-      else
-      {
-        GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
-      }
-    }
-  }
-  public void DownAllDiscomfort()
-  {
-    for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
-      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort.Equals(0) ? 0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - 1;
+      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort< value ?
+        0 :  GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - value;
   }
 
-  public bool LibraryEffect = false;
   public void ApplySectorEffect(SectorTypeEnum placetype)
   {
     switch (placetype)
     {
       case SectorTypeEnum.Residence:
-        MovePoint++;
         break;//거주지 - 휴식 시 추가 이동력 회복
 
       case SectorTypeEnum.Temple:
-        DownAllDiscomfort();
+        DownAllDiscomfort(ConstValues.SectorEffect_temple);
         break;//사원- 모든 불쾌 1 감소
 
       case SectorTypeEnum.Marketplace:
         break;//시장- 휴식 비용 감소
 
       case SectorTypeEnum.Library:
-        if (GameManager.Instance.MyGameData.LibraryEffect == false) GameManager.Instance.MyGameData.LibraryEffect = true;
+        int _addvalue = ConstValues.SectorEffect_Library;
 
+        if(LongExp!=null)
+        LongExp.Duration = LongExp.Duration + _addvalue > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongExp.Duration + _addvalue;
+
+        if (ShortExp_A != null) ShortExp_A .Duration =
+                ShortExp_A .Duration + _addvalue > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortExp_A .Duration + _addvalue;
+        if (ShortExp_B != null) ShortExp_B.Duration =
+                ShortExp_B.Duration + _addvalue > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortExp_B.Duration + _addvalue;
+        UIManager.Instance.UpdateExpPael();
         break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
 
       case SectorTypeEnum.Theater:
 
-        LongTermEXP.Duration = LongTermEXP.Duration + 2 > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongTermEXP.Duration + 2;
-        for (int i = 0; i < ShortTermEXP.Length; i++)
-          if (ShortTermEXP[i] != null) ShortTermEXP[i].Duration =
-                  ShortTermEXP[i].Duration + 2 > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortTermEXP[i].Duration + 2;
 
         break;//극장- 모든 경험 2턴 증가(삭제됨)
 
@@ -196,6 +189,7 @@ public class GameData    //게임 진행도 데이터
         { 
           turn = 0; Year++; 
           if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateYearText();
+
           if (Madness_Conversation == true)
           {
             switch (QuestType)
@@ -205,14 +199,15 @@ public class GameData    //게임 진행도 데이터
                 break;
             }
           }
+          if (GameManager.Instance.MyGameData.Tendency_Head.Level == 2) DownAllDiscomfort(ConstValues.Tendency_Head_p2);
         }
         else turn = value;
 
-        if (LongTermEXP != null) LongTermEXP.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
-        for (int i=0;i<ShortTermEXP.Length;i++)if(ShortTermEXP[i] != null) ShortTermEXP[i].Duration-= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
+        if (LongExp != null) LongExp.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
+        if (ShortExp_A != null) ShortExp_A.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
+        if (ShortExp_B != null) ShortExp_B.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
 
-        UIManager.Instance.UpdateExpLongTermIcon();
-        UIManager.Instance.UpdateExpShortTermIcon();
+        UIManager.Instance.UpdateExpPael();
 
         switch (QuestType)
         {
@@ -259,82 +254,71 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #값 프로퍼티#
-  public int PayHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear); } }
-    public int PaySanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear); } }
-    public int PayGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear); } }
     public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, Year / ConstValues.MaxYear); } }
   public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, Year / ConstValues.MaxYear); } }
-  public int FailHPValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear); } }
-    public int FailSanityValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear); } }
-    public int FailGoldValue_origin { get { return (int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear); } }
-    public int RewardHPValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardHP_min, ConstValues.RewardHP_max); } }
-    public int RewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max); } }
-    public int RewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max); } }
-    public int SubRewardSanityValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardSanity_min, ConstValues.SubRewardSanity_max); } }
-    public int SubRewardGoldValue_origin { get { return UnityEngine.Random.Range(ConstValues.SubRewardGold_min, ConstValues.SubRewardGold_max); } }
-    public int SettleRestCost_Sanity
-    { get { return (int)(ConstValues.RestCost_Sanity * Mathf.Pow(ConstValues.RestDiscomfortExpansion, CurrentSettlement.Discomfort)); } }
-  public int SettleRestCost_Gold
-  { get { return (int)(ConstValues.RestCost_Gold * Mathf.Pow(ConstValues.RestDiscomfortExpansion, CurrentSettlement.Discomfort)*GetGoldPayModify(true)); } }
-  public int PayHPValue_modified
-    { get { return (int)(PayHPValue_origin * GetHPLossModify(true)); } }
-    public int PaySanityValue_modified
-    { get { return (int)(PaySanityValue_origin * GetSanityLossModify(true)); } }
-    public int PayGoldValue_modified
-    { get { return (int)(PayGoldValue_origin * GetGoldPayModify(true)); } }
-    public int FailHPValue_modified
-    { get { return (int)(FailHPValue_origin * GetHPLossModify(true)); } }
-    public int FailSanityValue_modified
-    { get { return (int)(FailSanityValue_origin * GetSanityLossModify(true)); } }
-    public int FailGoldValue_modified
-    { get { return (int)(FailGoldValue_origin * GetGoldPayModify(true)); } }
-    public int RewardHPValue_modified
-    { get { return (int)(RewardHPValue_origin * GetHPGenModify(true)); } }
-    public int RewardSanityValue_modified
-    { get { return (int)(RewardSanityValue_origin * GetSanityGenModify(true)); } }
-    public int RewardGoldValue_modified
-    { get { return (int)(RewardGoldValue_origin * GetGoldGenModify(true)); } }
-    public int SubRewardSanityValue_modified
-    { get { return (int)(SubRewardSanityValue_origin * GetSanityGenModify(true)); } }
-    public int SubRewardGoldValue_modified
-    { get { return (int)(SubRewardGoldValue_origin * GetGoldGenModify(true)); } }
-  public int GetMoveSanityCost(int length)
-  {
-    int _value = 0;
-    switch (length)
+    public int RestCost_Sanity
+    { 
+    get
     {
-      case 1:
-        _value =(int) Mathf.Lerp(ConstValues.MoveCost_Sanity_1_min, ConstValues.MoveCost_Sanity_1_max, Year / ConstValues.MaxYear);
-        break;
-      case 2:
-        _value = (int)Mathf.Lerp(ConstValues.MoveCost_Sanity_2_min, ConstValues.MoveCost_Sanity_2_max, Year / ConstValues.MaxYear);
-        break;
-      default:
-        Debug.Log($"{length}  어케 이 거리가 나옴???");
-        return 0;
-    }
-    if (MovePoint == 0) _value =(int)(_value * ConstValues.LackOfMovePointValue);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Turn / ConstValues.SectorEffectMaxTurn);
+      float _value = ConstValues.MoveRest_Value_Deafult + ConstValues.MoveRest_Value_Ratio * CurrentSettlement.Discomfort;
 
-    return (int)(_value*GetSanityLossModify(true));
+      return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true));
+    }
   }
-  public int GetMoveGoldCost(int length)
+  public int RestCost_Gold
   {
-    int _value = 0;
-    switch (length)
+    get
     {
-      case 1:
-        _value = (int)Mathf.Lerp(ConstValues.MoveCost_Gold_1_min, ConstValues.MoveCost_Gold_1_max, Year / ConstValues.MaxYear);
-        break;
-      case 2:
-        _value = (int)Mathf.Lerp(ConstValues.MoveCost_Gold_2_min, ConstValues.MoveCost_Gold_2_max, Year / ConstValues.MaxYear);
-        break;
-      default:
-        Debug.Log($"{length}  어케 이 거리가 나옴???");
-        return 0;
-    }
-    if (MovePoint == 0) _value = (int)(_value * ConstValues.LackOfMovePointValue);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Turn / ConstValues.SectorEffectMaxTurn);
+      float _value = ConstValues.MoveRest_Value_Deafult + ConstValues.MoveRest_Value_Ratio * CurrentSettlement.Discomfort;
 
-    return (int)(_value*GetGoldPayModify(true));
+      return Mathf.FloorToInt(_default * _value * GetGoldLossModify(true));
+    }
+  }
+  public int PayHPValue_modified
+    { get { return (int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
+    public int PaySanityValue_modified
+    { get { return (int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
+    public int PayGoldValue_modified
+    { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear) * GetGoldLossModify(true)); } }
+    public int FailHPValue_modified
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
+    public int FailSanityValue_modified
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
+    public int FailGoldValue_modified
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear) * GetGoldLossModify(true)); } }
+    public int RewardHPValue_modified
+    { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardHP_min, ConstValues.RewardHP_max) * GetHPGenModify(true)); } }
+    public int RewardSanityValue_modified
+    { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max) * GetSanityGenModify(true)); } }
+    public int RewardGoldValue_modified
+    { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max) * GetGoldGenModify(true)); } }
+  public int MoveSanityCost
+  {
+    get
+    {
+      int _value = (int)Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Year / ConstValues.MaxYear);
+
+      return (int)(_value * GetSanityLossModify(true));
+    }
+  }
+  public int MoveGoldCost
+  {
+    get
+    {
+      int _value = (int)Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Year / ConstValues.MaxYear);
+
+      return (int)(_value * GetGoldLossModify(true));
+    }
+  }
+  public float MovePointAmplified
+  {
+    get
+    {
+      if (Tendency_Head.Level == -2) return ConstValues.Tendency_Head_m2;
+      return ConstValues.LackMPAmplifiedValue_Idle;
+    }
   }
   #endregion
 
@@ -348,7 +332,7 @@ public class GameData    //게임 진행도 데이터
       //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
       hp = value;
       if (hp > 100) hp = 100;
-      if (hp < 0) { hp = 0; GameManager.Instance.GameOver(GameOverTypeEnum.HP); }
+      if (hp < 0) { hp = 0; GameManager.Instance.GameOver(); }
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateHPText();
     }
   }
@@ -414,150 +398,6 @@ public class GameData    //게임 진행도 데이터
   #region #성향#
   public Tendency Tendency_Body = new Tendency(TendencyTypeEnum.Body);//(-)이성-육체(+)
   public Tendency Tendency_Head = new Tendency(TendencyTypeEnum.Head);//(-)정신-물질(+)
-  public string GetTendencyEffectString_long(TendencyTypeEnum _type)
-  {
-    string _conver, _force, _wild, _intel = null;
-    string _result = "";
-    switch (_type)
-    {
-      case TendencyTypeEnum.Body:
-        string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
-        string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
-        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-        {
-          case -2:
-            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation,1);
-            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
-            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
-            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
-            _result = string.Format("{0}, {1}\n{2}, {3}",
-              string.Format(_uptext,_conver,ConstValues.ConversationByTendency_m2),
-              string.Format(_uptext,_intel,ConstValues.IntelligenceByTendency_m2),
-              string.Format(_downtext,_force,ConstValues.ForceByTendency_m2),
-              string.Format(_downtext,_wild,ConstValues.WildByTendency_m2));
-            break;
-          case -1:
-            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
-            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
-            _result = string.Format("{0}, {1}",
-              string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m1),
-              string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m1));
-            break;
-          case 1:
-            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
-            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
-            _result = string.Format("{0}, {1}",
-              string.Format(_uptext, _force, ConstValues.ForceByTendency_p1),
-              string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
-            break;
-          case 2:
-            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation,1);
-            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence,1);
-            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
-            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
-            _result = string.Format("{0}, {1}\n{2}, {3}",
-              string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
-              string.Format(_uptext, _wild, ConstValues.WildByTendency_p2),
-              string.Format(_downtext, _conver, ConstValues.ConversationByTendency_p2),
-              string.Format(_downtext, _intel, ConstValues.IntelligenceByTendency_p2));
-            break;
-        }
-        break;
-      case TendencyTypeEnum.Head:
-        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-        {
-          case -2:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12) + "," +
-              String.Format(GameManager.Instance.GetTextData("DISCOMFORTUP_TEXT"), ConstValues.DiscomfortByTendency_m2 * 100) + "\n" +
-              GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 15);
-            break;
-          case -1:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12);
-            break;
-          case 1:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12);
-            break;
-          case 2:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12) + ", " + GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12) + "\n" +
-              GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 15);
-            break;
-        }
-        break;
-    }
-    return _result;
-  }
-  public string GetTendencyEffectString_short(TendencyTypeEnum _type)
-  {
-    string _conver, _force, _wild, _intel = null;
-    string _result = "";
-    switch (_type)
-    {
-      case TendencyTypeEnum.Body:
-        string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
-        string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
-        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-        {
-          case -2:
-            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 10);
-            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 10);
-            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 11);
-            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 11);
-            _result = string.Format("{0} {1} {2} {3}",
-              _conver,
-              _intel,
-              _force,
-              _wild);
-            break;
-          case -1:
-            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 9);
-            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 9);
-            _result = string.Format("{0} {1}",
-              _conver,
-              _intel);
-            break;
-          case 1:
-            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 9);
-            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 9);
-            _result = string.Format("{0} {1}",
-              _force,
-              _wild);
-            break;
-          case 2:
-            _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 11);
-            _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 11);
-            _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 10);
-            _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 10);
-            _result = string.Format("{0} {1} {2} {3}",
-              _force,
-              _wild,
-              _conver,
-              _intel);
-            break;
-        }
-        break;
-      case TendencyTypeEnum.Head:
-        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
-        {
-          case -2:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 13) +" " +
-              String.Format(GameManager.Instance.GetTextData("DISCOMFORTUP_ICON"), ConstValues.DiscomfortByTendency_m2 * 100) + " " +
-              GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 16);
-            break;
-          case -1:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 13);
-            break;
-          case 1:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 13);
-            break;
-          case 2:
-            _result = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 13) + " " + GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12) + " " +
-              GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 16);
-            break;
-        }
-        break;
-    }
-    return _result;
-  }
   public int GetTendencyLevel(TendencyTypeEnum _type)
   {
     switch (_type)
@@ -592,36 +432,29 @@ public class GameData    //게임 진행도 데이터
   }
   #endregion
   #region #경험#
-  public Experience LongTermEXP = null;
-  //장기 기억 슬롯 0,1
-  public Experience[] ShortTermEXP = new Experience[2];
-  //단기 기억 슬롯 0,1,2,3
+  public Experience LongExp = null;
+  public Experience ShortExp_A = null;
+  public Experience ShortExp_B = null;
   public bool AvailableExpSlot
   {
     get
     {
-      if (LongTermEXP != null && LongTermEXP.ExpType != ExpTypeEnum.Normal) return false;
+      if (LongExp != null && LongExp.ExpType != ExpTypeEnum.Normal) return false;
 
-      if (ShortTermEXP[0] != null && ShortTermEXP[0].ExpType != ExpTypeEnum.Normal) return false;
+      if (ShortExp_A != null && ShortExp_A.ExpType != ExpTypeEnum.Normal) return false;
 
-      if (ShortTermEXP[1] != null && ShortTermEXP[1].ExpType != ExpTypeEnum.Normal) return false;
+      if (ShortExp_B != null && ShortExp_B.ExpType != ExpTypeEnum.Normal) return false;
 
       return true;
     }
   }
   public void DeleteExp(Experience _exp)
   {
-    if (ShortTermEXP.Contains(_exp))
-    {
-      for (int i = 0; i < ShortTermEXP.Length; i++)
-        if (ShortTermEXP[i] == _exp) ShortTermEXP[i] = null;
-      UIManager.Instance.UpdateExpShortTermIcon();
-    }
-    else if (LongTermEXP== _exp)
-    {
-      LongTermEXP = null;
-      UIManager.Instance.UpdateExpLongTermIcon();
-    }
+    if (LongExp == _exp) LongExp = null;
+    else if(ShortExp_A==null)ShortExp_A = null;
+    else if(ShortExp_B==null)ShortExp_B = null;
+
+    UIManager.Instance.UpdateExpPael();
     UIManager.Instance.UpdateSkillLevel();
   }
   #endregion
@@ -742,10 +575,10 @@ public class GameData    //게임 진행도 데이터
   public int GetEffectModifyCount_Exp(EffectType _modify)
   {
     int _count = 0;
-      if (LongTermEXP != null && LongTermEXP.Effects.Contains(_modify)) _count++;
+    if (LongExp != null && LongExp.Effects.Contains(_modify)) _count++;
 
-    foreach (var _exp in ShortTermEXP)
-      if (_exp != null && _exp.Effects.Contains(_modify)) _count++;
+    if (ShortExp_A != null && ShortExp_A.Effects.Contains(_modify)) _count++;
+    if (ShortExp_B != null && ShortExp_B.Effects.Contains(_modify)) _count++;
 
     return _count;
   }//현재 경험들 중에서 해당 효과 가진 경험 개수 반환
@@ -761,10 +594,10 @@ public class GameData    //게임 진행도 데이터
       case SkillTypeEnum.Intelligence: _targeteffect = EffectType.Intelligence; break;
       default: Debug.Log("뎃?"); break;
     }
-      if (LongTermEXP != null && LongTermEXP.Effects.Contains(_targeteffect)) _count++;
+      if (LongExp != null && LongExp.Effects.Contains(_targeteffect)) _count++;
 
-    foreach (var _exp in ShortTermEXP)
-      if (_exp != null && _exp.Effects.Contains(_targeteffect)) _count++;
+    if (ShortExp_A != null && ShortExp_A.Effects.Contains(_targeteffect)) _count++;
+    if (ShortExp_B != null && ShortExp_B.Effects.Contains(_targeteffect)) _count++;
 
     return _count;
 
@@ -782,8 +615,6 @@ public class GameData    //게임 진행도 데이터
 
     for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.HPGen_Exp;
     
-    if (Tendency_Head.Level.Equals(2)) _plusamount += (100.0f - _plusamount) * ConstValues.HPGenByTendency_p2;
-
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) /100.0f;
   }// 체력 회복 변화량(경험,성향)
@@ -816,9 +647,6 @@ public class GameData    //게임 진행도 데이터
 
     for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityGen_Exp;
 
-    if(Tendency_Head.Level.Equals(-1)) _plusamount += (100.0f - _plusamount) * ConstValues.SanityGenByTendency_m1;
-    else if (Tendency_Head.Level.Equals(-2)) _plusamount += (100.0f - _plusamount) * ConstValues.SanityGenByTendency_m2;
-
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) / 100.0f;
   }// 정신력 회복 변화량(특성,경험,성향)
@@ -835,8 +663,6 @@ public class GameData    //게임 진행도 데이터
 
     for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityLoss_Exp;
 
-    if(Tendency_Head.Equals(2)) _plusamount += (100.0f - _plusamount) * ConstValues.SanityLossByTendency_p2;
-
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) / 100.0f;
   }// 정신력 소모 변환량(특성,경험,성향)
@@ -852,9 +678,6 @@ public class GameData    //게임 진행도 데이터
 
     for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.GoldGen_Exp;
 
-    if(Tendency_Head.Level.Equals(1)) _plusamount += (100.0f - _plusamount) * ConstValues.GoldGenByTendency_p1;
-    else if (Tendency_Head.Level.Equals(2)) _plusamount += (100.0f - _plusamount) * ConstValues.GoldGenByTendency_p2;
-
     if (!_formultiply) return _plusamount;
     else return (100.0f+ _plusamount) / 100.0f;
   }// 돈 습득 변환량(특성,경험,성향)
@@ -863,14 +686,12 @@ public class GameData    //게임 진행도 데이터
   /// </summary>
   /// <param name="_formultiply"></param>
   /// <returns></returns>
-  public float GetGoldPayModify(bool _formultiply)
+  public float GetGoldLossModify(bool _formultiply)
   {
     float _minusamount = 0;
     int _count = GetEffectModifyCount_Exp(EffectType.GoldLoss);
 
     for (int i = 0; i < _count; i++) _minusamount += (100.0f- _minusamount) * ConstValues.GoldLoss_Exp;
-
-    if(Tendency_Head.Level.Equals(-2)) _minusamount += (100.0f - _minusamount) * ConstValues.GoldLossByTendency_m2;
 
     if (!_formultiply) return _minusamount;
     else return (100.0f+ _minusamount) / 100.0f;
@@ -1014,6 +835,82 @@ public class Tendency
         break;
     }
     return _spr;
+  }
+  public string GetTendencyEffectString
+  {
+    get
+    {
+      string _conver, _force, _wild, _intel = null;
+      string _result = "";
+      switch (Type)
+      {
+        case TendencyTypeEnum.Body:
+          string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
+          string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
+          switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+          {
+            case -2:
+              _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
+              _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
+              _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
+              _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
+              _result = string.Format("{0}, {1}\n{2}, {3}",
+                string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m2),
+                string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m2),
+                string.Format(_downtext, _force, ConstValues.ForceByTendency_m2),
+                string.Format(_downtext, _wild, ConstValues.WildByTendency_m2));
+              break;
+            case -1:
+              _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
+              _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
+              _result = string.Format("{0}, {1}",
+                string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m1),
+                string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m1));
+              break;
+            case 1:
+              _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
+              _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
+              _result = string.Format("{0}, {1}",
+                string.Format(_uptext, _force, ConstValues.ForceByTendency_p1),
+                string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
+              break;
+            case 2:
+              _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
+              _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
+              _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
+              _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
+              _result = string.Format("{0}, {1}\n{2}, {3}",
+                string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
+                string.Format(_uptext, _wild, ConstValues.WildByTendency_p2),
+                string.Format(_downtext, _conver, ConstValues.ConversationByTendency_p2),
+                string.Format(_downtext, _intel, ConstValues.IntelligenceByTendency_p2));
+              break;
+          }
+          break;
+        case TendencyTypeEnum.Head:
+          switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+          {
+            case -2:
+              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
+                ConstValues.LackMPAmplifiedValue_Idle, ConstValues.Tendency_Head_m2);
+              break;
+            case -1:
+              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
+              WNCText.GetMovepointColor(ConstValues.Tendency_Head_m1));
+              break;
+            case 1:
+              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
+               WNCText.GetDiscomfortColor(ConstValues.Tendency_Head_p1));
+              break;
+            case 2:
+              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
+               WNCText.GetDiscomfortColor(ConstValues.Tendency_Head_p2));
+              break;
+          }
+          break;
+      }
+      return _result;
+    }
   }
   public string Name
   {

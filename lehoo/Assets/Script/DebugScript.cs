@@ -53,12 +53,12 @@ public class DebugScript : MonoBehaviour
     Tendency_Body.text = GameManager.Instance.MyGameData.Tendency_Body.Level.ToString();
     Tendency_Head.text=GameManager.Instance.MyGameData.Tendency_Head.Level.ToString();
 
-    EXP_Long_ID.text = GameManager.Instance.MyGameData.LongTermEXP != null ? GameManager.Instance.MyGameData.LongTermEXP.ID : "";
-    EXP_Long_Turn.text = GameManager.Instance.MyGameData.LongTermEXP != null ? GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString() : "";
-    EXP_Short_0_ID.text = GameManager.Instance.MyGameData.ShortTermEXP[0] != null ? GameManager.Instance.MyGameData.ShortTermEXP[0].ID : "";
-    EXP_Short_0_Turn.text = GameManager.Instance.MyGameData.ShortTermEXP[0] != null ? GameManager.Instance.MyGameData.ShortTermEXP[0].Duration.ToString() : "";
-    EXP_Short_1_ID.text = GameManager.Instance.MyGameData.ShortTermEXP[1] != null ? GameManager.Instance.MyGameData.ShortTermEXP[1].ID : "";
-    EXP_Short_1_Turn.text = GameManager.Instance.MyGameData.ShortTermEXP[1] != null ? GameManager.Instance.MyGameData.ShortTermEXP[1].Duration.ToString() : "";
+    EXP_Long_ID.text = GameManager.Instance.MyGameData.LongExp != null ? GameManager.Instance.MyGameData.LongExp.ID : "";
+    EXP_Long_Turn.text = GameManager.Instance.MyGameData.LongExp != null ? GameManager.Instance.MyGameData.LongExp.Duration.ToString() : "";
+    EXP_Short_0_ID.text = GameManager.Instance.MyGameData.ShortExp_A != null ? GameManager.Instance.MyGameData.ShortExp_A.ID : "";
+    EXP_Short_0_Turn.text = GameManager.Instance.MyGameData.ShortExp_A != null ? GameManager.Instance.MyGameData.ShortExp_A.Duration.ToString() : "";
+    EXP_Short_1_ID.text = GameManager.Instance.MyGameData.ShortExp_B != null ? GameManager.Instance.MyGameData.ShortExp_B.ID : "";
+    EXP_Short_1_Turn.text = GameManager.Instance.MyGameData.ShortExp_B != null ? GameManager.Instance.MyGameData.ShortExp_B.Duration.ToString() : "";
 
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
@@ -87,54 +87,53 @@ public class DebugScript : MonoBehaviour
 
     if (EXP_Long_ID.text == "")
     {
-      GameManager.Instance.MyGameData.LongTermEXP = null;
+      GameManager.Instance.MyGameData.LongExp = null;
     }
     else if (GameManager.Instance.ExpDic.ContainsKey(EXP_Long_ID.text))
     {
-      if (GameManager.Instance.MyGameData.LongTermEXP.ID == EXP_Long_ID.text)
+      if (GameManager.Instance.MyGameData.LongExp.ID == EXP_Long_ID.text)
       {
-        GameManager.Instance.MyGameData.LongTermEXP.Duration = int.Parse(EXP_Long_Turn.text);
+        GameManager.Instance.MyGameData.LongExp.Duration = int.Parse(EXP_Long_Turn.text);
       }
       else
       {
-        GameManager.Instance.MyGameData.LongTermEXP = GameManager.Instance.ExpDic[EXP_Long_ID.text];
-        GameManager.Instance.MyGameData.LongTermEXP.Duration = EXP_Long_Turn.text != "" ? int.Parse(EXP_Long_Turn.text) : ConstValues.LongTermStartTurn;
+        GameManager.Instance.MyGameData.LongExp = GameManager.Instance.ExpDic[EXP_Long_ID.text];
+        GameManager.Instance.MyGameData.LongExp.Duration = EXP_Long_Turn.text != "" ? int.Parse(EXP_Long_Turn.text) : ConstValues.LongTermStartTurn;
       }
     }
-    UIManager.Instance.UpdateExpLongTermIcon();
     if (EXP_Short_0_ID.text == "")
     {
-      GameManager.Instance.MyGameData.ShortTermEXP[0] = null;
+      GameManager.Instance.MyGameData.ShortExp_A = null;
     }
     else if (GameManager.Instance.ExpDic.ContainsKey(EXP_Short_0_ID.text))
     {
-      if (GameManager.Instance.MyGameData.ShortTermEXP[0].ID == EXP_Short_0_ID.text)
+      if (GameManager.Instance.MyGameData.ShortExp_A.ID == EXP_Short_0_ID.text)
       {
-        GameManager.Instance.MyGameData.ShortTermEXP[0].Duration = int.Parse(EXP_Short_0_Turn.text);
+        GameManager.Instance.MyGameData.ShortExp_A.Duration = int.Parse(EXP_Short_0_Turn.text);
       }
       else
       {
-        GameManager.Instance.MyGameData.ShortTermEXP[0] = GameManager.Instance.ExpDic[EXP_Short_0_ID.text];
-        GameManager.Instance.MyGameData.ShortTermEXP[0].Duration = EXP_Short_0_Turn.text != "" ? int.Parse(EXP_Short_0_Turn.text) : ConstValues.ShortTermStartTurn;
+        GameManager.Instance.MyGameData.ShortExp_A = GameManager.Instance.ExpDic[EXP_Short_0_ID.text];
+        GameManager.Instance.MyGameData.ShortExp_A.Duration = EXP_Short_0_Turn.text != "" ? int.Parse(EXP_Short_0_Turn.text) : ConstValues.ShortTermStartTurn;
       }
     }
     if (EXP_Short_1_ID.text == "")
     {
-      GameManager.Instance.MyGameData.ShortTermEXP[1] = null;
+      GameManager.Instance.MyGameData.ShortExp_B = null;
     }
     else if (GameManager.Instance.ExpDic.ContainsKey(EXP_Short_1_ID.text))
     {
-      if (GameManager.Instance.MyGameData.ShortTermEXP[1].ID == EXP_Short_1_ID.text)
+      if (GameManager.Instance.MyGameData.ShortExp_B.ID == EXP_Short_1_ID.text)
       {
-        GameManager.Instance.MyGameData.ShortTermEXP[1].Duration = int.Parse(EXP_Short_1_Turn.text);
+        GameManager.Instance.MyGameData.ShortExp_B.Duration = int.Parse(EXP_Short_1_Turn.text);
       }
       else
       {
-        GameManager.Instance.MyGameData.ShortTermEXP[1] = GameManager.Instance.ExpDic[EXP_Short_1_ID.text];
-        GameManager.Instance.MyGameData.ShortTermEXP[1].Duration = EXP_Short_1_Turn.text != "" ? int.Parse(EXP_Short_1_Turn.text) : ConstValues.ShortTermStartTurn;
+        GameManager.Instance.MyGameData.ShortExp_B = GameManager.Instance.ExpDic[EXP_Short_1_ID.text];
+        GameManager.Instance.MyGameData.ShortExp_B.Duration = EXP_Short_1_Turn.text != "" ? int.Parse(EXP_Short_1_Turn.text) : ConstValues.ShortTermStartTurn;
       }
     }
-    UIManager.Instance.UpdateExpShortTermIcon();
+    UIManager.Instance.UpdateExpPael();
 
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {

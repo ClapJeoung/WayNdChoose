@@ -61,17 +61,17 @@ public class UI_RewardExp : UI_default
 
   public void SetupCurrentExps()
   {
-    if (GameManager.Instance.MyGameData.LongTermEXP != null)
+    if (GameManager.Instance.MyGameData.LongExp != null)
     {
       if (LongExpName_Obj.activeInHierarchy == false) LongExpName_Obj.SetActive(true);
-      LongExpName_Text.text = GameManager.Instance.MyGameData.LongTermEXP.Name;
+      LongExpName_Text.text = GameManager.Instance.MyGameData.LongExp.Name;
       if (LongExpCap.enabled == true) LongExpCap.enabled = false;
-      LongExpIllust.sprite = GameManager.Instance.MyGameData.LongTermEXP.Illust;
+      LongExpIllust.sprite = GameManager.Instance.MyGameData.LongExp.Illust;
       if (LongExpTurn_Obj.activeInHierarchy == false) LongExpTurn_Obj.SetActive(true);
 
-      LongExpTurn_Text.text = GameManager.Instance.MyGameData.LongTermEXP.Duration.ToString();
+      LongExpTurn_Text.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
 
-      LongExpPreview.MyEXP = GameManager.Instance.MyGameData.LongTermEXP;
+      LongExpPreview.MyEXP = GameManager.Instance.MyGameData.LongExp;
     }
     else
     {
@@ -82,7 +82,7 @@ public class UI_RewardExp : UI_default
 
     for (int i = 0; i < 2; i++)
     {
-      Experience _shortexp = GameManager.Instance.MyGameData.ShortTermEXP[i];
+      Experience _shortexp = GameManager.Instance.MyGameData.ShortExp_A;
 
       if (_shortexp != null)
       {
@@ -110,29 +110,25 @@ public class UI_RewardExp : UI_default
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.4f));
     ExpIllustIcon.gameObject.SetActive(false);
   }
-  public override void CloseForGameover()
-  {
-    IsOpen = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.4f));
-    ExpIllustIcon.gameObject.SetActive(false);
-  }
 
   public void GetExp_Long()
   {
     if (UIManager.Instance.IsWorking) return;
 
-    Experience _selectexp = GameManager.Instance.MyGameData.LongTermEXP;
+    Experience _selectexp = GameManager.Instance.MyGameData.LongExp;
 
     switch (CurrentExp.ExpType)
     {
       case ExpTypeEnum.Normal:
-        if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Long(CurrentExp); CloseUI();
-          if(UIManager.Instance.MyDialogue.IsOpen&& UIManager.Instance.MyDialogue.RemainReward == true)
-          {
-            UIManager.Instance.MyDialogue.ExpAcquired();
-          }
+        GameManager.Instance.MyGameData.Sanity -= ConstValues.LongTermChangeCost;
+
+        GameManager.Instance.AddExp_Long(CurrentExp);
+        if (UIManager.Instance.MyDialogue.IsOpen && UIManager.Instance.MyDialogue.RemainReward == true)
+        {
+          UIManager.Instance.MyDialogue.ExpAcquired();
         }
-        else return;
+        CloseUI();
+
         break;
       case ExpTypeEnum.Bad:
         if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Long(CurrentExp); CloseUI();
@@ -143,22 +139,23 @@ public class UI_RewardExp : UI_default
     }
 
   }
-  public void GetExp_Short(int index)
+  public void GetExp_Short(bool index)
   {
     if (UIManager.Instance.IsWorking) return;
 
-    Experience _selectexp = GameManager.Instance.MyGameData.ShortTermEXP[index];
+    Experience _selectexp =index==true? GameManager.Instance.MyGameData.ShortExp_A:GameManager.Instance.MyGameData.ShortExp_B;
 
     switch (CurrentExp.ExpType)
     {
       case ExpTypeEnum.Normal:
-        if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Short(CurrentExp, index); CloseUI();
-          if (UIManager.Instance.MyDialogue.IsOpen && UIManager.Instance.MyDialogue.RemainReward == true)
-          {
-            UIManager.Instance.MyDialogue.ExpAcquired();
-          }
+
+        GameManager.Instance.AddExp_Short(CurrentExp, index);
+        if (UIManager.Instance.MyDialogue.IsOpen && UIManager.Instance.MyDialogue.RemainReward == true)
+        {
+          UIManager.Instance.MyDialogue.ExpAcquired();
         }
-        else return;
+        CloseUI();
+
         break;
       case ExpTypeEnum.Bad:
         if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Short(CurrentExp, index); CloseUI();

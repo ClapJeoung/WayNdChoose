@@ -402,7 +402,6 @@ public class UI_dialogue : UI_default
     int _currentvalue = 0, _checkvalue = 0;    //기술 체크에만 사용
     int _successpercent = 0;                   //성공 확률(골드 혹은 기술 체크) 
     bool _issuccess = false;  
-    int _pluspercent = GameManager.Instance.MyGameData.LibraryEffect ? ConstValues.SectorEffect_Library : 0;
                                                //도서관 방문 시 확률 증가 값
     switch (_selectiondata.ThisSelectionType)
     {
@@ -422,46 +421,31 @@ public class UI_dialogue : UI_default
         }
         else        //돈 지불일 경우 돈 적을 때 실행하는 뭔가 있어야 함
         {
-          int _paygoldvalue = (int)(GameManager.Instance.MyGameData.PayGoldValue_modified * GameManager.Instance.MyGameData.GetGoldPayModify(true));
+          int _paygoldvalue = (int)(GameManager.Instance.MyGameData.PayGoldValue_modified * GameManager.Instance.MyGameData.GetGoldLossModify(true));
           int _goldsuccesspercent = GameManager.Instance.MyGameData.Gold >= _paygoldvalue ? 100 : GameManager.Instance.MyGameData.CheckPercent_money(_paygoldvalue);
-          if (_goldsuccesspercent + _pluspercent >= 100)
+
+          if (Random.Range(0, 100) > _goldsuccesspercent )
           {
-            if (_goldsuccesspercent < 100 && !_pluspercent.Equals(0)) GameManager.Instance.MyGameData.LibraryEffect = false;
-            //장소 효과의 도움을 받아 성공한 것이라면 장소 효과 만료
+            int _elsevalue = GameManager.Instance.MyGameData.PayGoldValue_modified - GameManager.Instance.MyGameData.Gold;
+
             _issuccess = true;
-            GameManager.Instance.MyGameData.Gold -= GameManager.Instance.MyGameData.PayGoldValue_modified;
+            GameManager.Instance.MyGameData.Gold = 0;
+            GameManager.Instance.MyGameData.Sanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
             Debug.Log("정당한 값을 지불한 레후~");
-          }//100% 확률이 나온 상황(돈이 부족하거나 돈이 충분하거나 둘 다)
+          }//돈이 부족해 성공한 경우
           else
           {
-            if (Random.Range(0, 100) < _goldsuccesspercent + _pluspercent)
-            {
-              if (_goldsuccesspercent < 100 && !_pluspercent.Equals(0)) GameManager.Instance.MyGameData.LibraryEffect = false;
-              int _elsevalue = GameManager.Instance.MyGameData.PayGoldValue_modified - GameManager.Instance.MyGameData.Gold;
-              //장소 효과의 도움을 받아 성공한 것이라면 장소 효과 만료
-              _issuccess = true;
-              GameManager.Instance.MyGameData.Gold = 0;
-              GameManager.Instance.MyGameData.Sanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
-            }//돈이 부족해 성공한 경우
-            else
-            {
-              _issuccess = false;
-            }//돈이 부족해 실패한 경우
-          }//돈이 부족해 체크를 해야 하는 상황
+            _issuccess = false;
+          }//돈이 부족해 실패한 경우
         }
         break;
       case SelectionTargetType.Check_Single: //기술(단수) 선택지면 확률 검사
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
         _successpercent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
-        if (Random.Range(0, 100) < _successpercent + _pluspercent)
+        if (Random.Range(0, 100) > _successpercent)
         {
           _issuccess = true;
-          if (_successpercent < 100 && _pluspercent > 0)
-          {
-            GameManager.Instance.MyGameData.LibraryEffect = false;
-          }
-          //장소 효과의 도움을 받아 성공한 것이라면 효과 만료
         }
         else _issuccess = false;
         break;
@@ -470,14 +454,9 @@ public class UI_dialogue : UI_default
           GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
         _successpercent = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
-        if (Random.Range(0, 100) < _successpercent + _pluspercent)
+        if (Random.Range(0, 100) > _successpercent )
         {
           _issuccess = true;
-          if (_successpercent < 100 && _pluspercent > 0)
-          {
-            GameManager.Instance.MyGameData.LibraryEffect = false;
-          }
-          //장소 효과의 도움을 받아 성공한 것이라면 효과 만료
         }
         else _issuccess = false;
         break;
@@ -591,25 +570,6 @@ public class UI_dialogue : UI_default
     {
       UIManager.Instance.MapButton.Open(0, this);
     }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
-  }
-  public override void CloseForGameover()
-  {
-    StopAllCoroutines();
-
-    IsOpen = false;
-    CurrentSuccessData = null;
-    CurrentFailData = null;
-    EndingGroup.alpha = 0.0f;
-    EndingGroup.interactable = false;
-    EndingGroup.blocksRaycasts = false;
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
-
-    StartCoroutine(UIManager.Instance.moverect(NameRect, NameRect.anchoredPosition, NameClosePos, DialogueUIMoveTime, false));
-
-    StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionRect.anchoredPosition, DescriptionClosePos, DialogueUIMoveTime, false));
-
-    StartCoroutine(UIManager.Instance.moverect(IllustRect, IllustRect.anchoredPosition, IllustClosePos, DialogueUIMoveTime, false));
   }
   public override void CloseUI()
   {

@@ -87,7 +87,24 @@ public class ReturnButton : MonoBehaviour
     Vector2 _startpos = Dir == 0 ? LeftOutsidePos : RightOutsidePos;
     Vector2 _endpos = Dir == 0 ? LeftInsidePos : RightInsidePos;
     StartCoroutine(UIManager.Instance.moverect(MyRect, _startpos, _endpos, AppearTime, true));
-    MyText.text = IsMapButton == true ? GameManager.Instance.GetTextData("GOTOMAP") : GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+
+    if (IsMapButton)
+    {
+      if (GameManager.Instance.MyGameData.CurrentSettlement != null && GameManager.Instance.MyGameData.Tendency_Head.Level <0)
+      {
+        MyText.text = GameManager.Instance.GetTextData("GOTOMAP")+"<br>"+
+          string.Format("<sprite=100> {0} +{1}",GameManager.Instance.GetTextData("MOVEPOINT_TEXT"),WNCText.GetMovepointColor(ConstValues.Tendency_Head_m1));
+        LayoutRebuilder.ForceRebuildLayoutImmediate(MyRect);
+      }
+      else
+      {
+        MyText.text = GameManager.Instance.GetTextData("GOTOMAP");
+      }
+    }
+    else
+    {
+      MyText.text= GameManager.Instance.GetTextData("GOTOSETTLEMENT");
+    }
     if (MyGroup.alpha == 0.0f)
     {
       MyGroup.alpha = 1.0f;

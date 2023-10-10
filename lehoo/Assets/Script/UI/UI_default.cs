@@ -16,10 +16,6 @@ public class UI_default : MonoBehaviour
 {
   public float ReturnButton_ToLeft = 0.0f;
   public float ReturnButton_ToRight = 0.0f;
-  public virtual void CloseForGameover()
-  {
-
-  }
   private float ReturnButton_movetime = 0.4f;
   /// <summary>
   /// 0:왼쪽 1:오른쪽

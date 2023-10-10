@@ -34,6 +34,7 @@ public class MapButton : ReturnButton
       else
       {
         UIManager.Instance.MySettleUI.CloseUI();
+        if (GameManager.Instance.MyGameData.Tendency_Head.Level < 0) GameManager.Instance.MyGameData.MovePoint += ConstValues.Tendency_Head_m1;
       }
     }
 

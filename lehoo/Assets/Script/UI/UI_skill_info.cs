@@ -61,14 +61,4 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
     StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
     CurrentSkillIndex = -1;
   }
-  public override void CloseForGameover()
-  {
-    IsOpen = false;
-    BackButton.interactable = false;
-    BackButton.blocksRaycasts = false;
-    TouchBlock.enabled = false;
-    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
-    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").Rect.anchoredPosition, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
-    CurrentSkillIndex = -1;
-  }
 }

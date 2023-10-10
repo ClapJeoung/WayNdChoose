@@ -115,11 +115,6 @@ public class UI_Mad : UI_default
     SelectedDescription.text = _description;
     LayoutRebuilder.ForceRebuildLayoutImmediate(SelectedGroup.transform as RectTransform);
   }
-  public override void CloseForGameover()
-  {
-    IsOpen = false;
-    UIManager.Instance.AddUIQueue(changealpha(false));
-  }
 public override void CloseUI()
   {
     IsOpen = false;

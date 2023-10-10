@@ -231,7 +231,7 @@ public class PreviewManager : MonoBehaviour
     int _genvalue = 0, _payvalue = 0;
 
     _genvalue = (int)GameManager.Instance.MyGameData.GetGoldGenModify(false);
-    _payvalue = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
+    _payvalue = (int)GameManager.Instance.MyGameData.GetGoldLossModify(false);
 
     _description = GameManager.Instance.GetTextData(_currenttype, 3);
     if (_genvalue > 0)
@@ -503,7 +503,7 @@ public class PreviewManager : MonoBehaviour
     TendencyIcon_Current.sprite = _icon;
 
     string _name = _targettendency.Name;
-    string _description = WNCText.SetSize(EffectFontSize, GameManager.Instance.MyGameData.GetTendencyEffectString_short(_type)) +
+    string _description = WNCText.SetSize(EffectFontSize, _targettendency.GetTendencyEffectString) +
       "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
     OpenPreviewPanel(TendencyPreview, TendencyPreview.transform as RectTransform);
@@ -575,8 +575,7 @@ public class PreviewManager : MonoBehaviour
 
     Sprite _payicon = null;
     int _modifiedvalue = 0;
-    int _modify = 0;
-    string _payvaluetext="", _statusinfo = "";
+    string _payvaluetext = "";
     int _percent = -1;
     StatusTypeEnum _status = StatusTypeEnum.HP;
     switch (_selection.SelectionPayTarget)
@@ -584,14 +583,8 @@ public class PreviewManager : MonoBehaviour
       case StatusTypeEnum.HP:
         _status = StatusTypeEnum.HP;
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
-        _modify = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue_modified;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusTypeEnum.HP,1), WNCText.GetHPColor(_modifiedvalue.ToString()));
-        if (_modify.Equals(0)) _statusinfo = "";
-        else if (_modify > 0)
-        {
-          _statusinfo = $"({GameManager.Instance.GetTextData(_status,15)}{WNCText.NegativeColor("+"+_modify.ToString())}%)";
-        }//보정치가 0 이상이라면 부정적인것
         if (PayNoGoldHolder.activeInHierarchy.Equals(true)) PayNoGoldHolder.SetActive(false);
         if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
         break;//체력이라면 지불 기본값, 보정치, 최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
@@ -599,19 +592,8 @@ public class PreviewManager : MonoBehaviour
       case StatusTypeEnum.Sanity:
         _status = StatusTypeEnum.Sanity;
         _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
-        _modify = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue_modified;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor(_modifiedvalue.ToString()));
-        if (_modify.Equals(0)) _statusinfo = "";
-        else if (_modify > 0)
-        {
-          _statusinfo = $"{GameManager.Instance.GetTextData(_status, 15)} {WNCText.NegativeColor("+" + _modify.ToString())}%";
-      //    PayInfo.text = _statusinfo;
-        }//보정치가 0 이상이라면 부정적인것
-        else
-        {
-       //   PayInfo.text = "";
-        }//보정치가 없다면 빈 내용으로
 
         if (PayNoGoldHolder.activeInHierarchy.Equals(true)) PayNoGoldHolder.SetActive(false);
         if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
@@ -619,14 +601,7 @@ public class PreviewManager : MonoBehaviour
       case StatusTypeEnum.Gold:
         _status = StatusTypeEnum.Gold;
         _payicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
-        _modify = (int)GameManager.Instance.MyGameData.GetGoldPayModify(false);
         _modifiedvalue = GameManager.Instance.MyGameData.PayGoldValue_modified;
-        if (_modify.Equals(0)) _statusinfo = "";
-        else if (_modify > 0)
-        {
-          _statusinfo = $"{GameManager.Instance.GetTextData(_status, 15)} {WNCText.NegativeColor("+" + _modify.ToString())}%";
-        }//보정치가 0 이상이라면 부정적인것
-
         if (_modifiedvalue > GameManager.Instance.MyGameData.Gold)
         {
           _percent = GameManager.Instance.MyGameData.CheckPercent_money(_modifiedvalue);
