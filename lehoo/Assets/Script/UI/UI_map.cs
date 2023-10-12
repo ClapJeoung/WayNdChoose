@@ -60,7 +60,6 @@ public class UI_map : UI_default
 
   public Color NormalColor = Color.white;
   public Color DisableColor = Color.grey;
-  private List<Settlement> ActiveSettles = new List<Settlement>();
   private List<TileData> ActiveTileData = new List<TileData>();
 
   /// <summary>
@@ -68,57 +67,34 @@ public class UI_map : UI_default
   /// </summary>
   private void ResetEnableTiles()
   {
-    List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 2);
-    List<Settlement> _currentsettles = new List<Settlement>();
-    foreach (TileData _tile in _currents) //주위 2칸 타일 전부 가져오기
+
+    foreach(var tile in ActiveTileData)
     {
-      if (!ActiveTileData.Contains(_tile))
-      {
-        ActiveTileData.Add(_tile);
-        _tile.ButtonScript.Button.interactable = true;
-        if (_tile.ButtonScript.TopImage != null) _tile.ButtonScript.TopImage.color= NormalColor;
-      }//기존 활성화 타일 목록에 없던 타일이라면 리스트에 추가하고 활성화
-
-      if (_tile.TileSettle != null)
-      {
-        _currentsettles.Add(_tile.TileSettle);
-        if (!ActiveSettles.Contains(_tile.TileSettle))
-        {
-          ActiveSettles.Add(_tile.TileSettle);
-      //    StartCoroutine(UIManager.Instance.ChangeAlpha(_tile.TileSettle.HolderObject.GetComponent<CanvasGroup>(), 1.0f, 0.8f,false));
-        }
-      }//기존 활성화 정착지 목록에 없던 타일이라면 리스트에 추가하고 활성화
+      tile.ButtonScript.Button.interactable = false;
     }
+    ActiveTileData.Clear();
 
-    List<TileData> _removetiles = new List<TileData>();       //ActiveSettles에 있었으나 새 _current에 없어서 사라질 것들
-    List<Settlement> _removesettles = new List<Settlement>();
-
-    foreach (TileData _tile in ActiveTileData)
+    List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 3);
+    foreach (TileData _tile in _currents) //새로운 주위 2칸 타일 전부 가져오기
     {
-      if (!_currents.Contains(_tile))
-      {
-        _removetiles.Add(_tile);
-         _tile.ButtonScript.Button.interactable = false;
-        if (_tile.ButtonScript.TopImage != null) _tile.ButtonScript.TopImage.color = DisableColor;
-      }//화면에서 사라진 타일들은 비활성화 상태로 전환
+      _tile.ButtonScript.Button.interactable = true;
+      ActiveTileData.Add(_tile);
     }
-
-    foreach (Settlement _settle in ActiveSettles)
-    {
-      if (!_currentsettles.Contains(_settle))
-      {
-        _removesettles.Add(_settle);
-     //   StartCoroutine(UIManager.Instance.ChangeAlpha(GetSettleIcon(_settle).GetComponent<CanvasGroup>(), 0.0f, 0.3f, false));
-      }//화면에서 사라진 정착지들은 투명화
-    }
-
-    foreach(TileData _tile in _removetiles)ActiveTileData.Remove(_tile);
-    foreach(Settlement _settle in _removesettles)ActiveSettles.Remove(_settle);
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        SetRitualTile();
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+        {
+          case 0:
+            break;
+          case 1:
+            SetRitualTile();
+            break;
+          case 2:
+            if (GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown == 0) SetRitualTile();
+            break;
+        }
         break;
     }
     void SetRitualTile()
@@ -129,34 +105,34 @@ public class UI_map : UI_default
         GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.sprite = GameManager.Instance.ImageHolder.Transparent;
         GameManager.Instance.MyGameData.Cult_RitualTile = null;
       }
-      if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 0) return;
-      if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2 && GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown > 0) return;
 
-      List<TileData> _potentialtiles = new List<TileData>();
-      List<TileData> _aroundtiles = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 1);
-      foreach (var _tile in ActiveTileData)
+      int _mincount = 10;
+      List<TileData> _availabletiles=new List<TileData>();
+      foreach (var _tile in _currents)
       {
         if (_tile.Interactable == false) continue;
         if (_tile.Landmark != LandmarkType.Outer) continue;
-        if (_aroundtiles.Contains(_tile)) continue;
         if (_tile.Coordinate == GameManager.Instance.MyGameData.Coordinate) continue;
-        _potentialtiles.Add(_tile);
-      }
-      List<TileData> _resulttiles = new List<TileData>();
-      int _maxcount = 100;
-      for (int i = 0; i < _potentialtiles.Count; i++)
-      {
-        List<TileData> _targetaround = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_potentialtiles[i], 2);
-        List<Settlement> _settlementlist = new List<Settlement>();
-        foreach (var _tile in _targetaround)
+
+        int _count = 0;
+        foreach (var _aroundtile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_tile, 2))
         {
-          if (_tile.TileSettle != null && !_settlementlist.Contains(_tile.TileSettle)) _settlementlist.Add(_tile.TileSettle);
+          if (_aroundtile.TileSettle != null) _count++;
         }
-        if (_settlementlist.Count == _maxcount) { _resulttiles.Add(_potentialtiles[i]); }
-        else if (_settlementlist.Count < _maxcount) { _resulttiles.Clear(); _maxcount = _settlementlist.Count; _resulttiles.Add(_resulttiles[i]); }
+        if (_count < _mincount)
+        {
+          _mincount = _count;
+          _availabletiles.Clear();
+
+          _availabletiles.Add(_tile);
+        }
+        else
+        {
+          _availabletiles.Add(_tile);
+        }
       }
 
-      GameManager.Instance.MyGameData.Cult_RitualTile = _resulttiles[Random.Range(0, _resulttiles.Count)];
+      GameManager.Instance.MyGameData.Cult_RitualTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
       GameManager.Instance.MyGameData.Cult_RitualTile.Landmark = LandmarkType.Ritual;
       GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
         UIManager.Instance.MyMap.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
@@ -221,10 +197,10 @@ public class UI_map : UI_default
 
     ProgressGuideText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP");
 
-    TilePreview_Bottom.sprite = MapCreater.MyTiles.GetTile(SelectedTile.BottomEnvirSprite);
+    TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
     TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
-    TilePreview_Top.sprite = MapCreater.MyTiles.GetTile(SelectedTile.TopEnvirSprite);
-    TilePreview_Landmark.sprite = MapCreater.MyTiles.GetTile(SelectedTile.landmarkSprite);
+    TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
+    TilePreview_Landmark.sprite = SelectedTile.ButtonScript.TopImage.sprite;
 
     if (SelectedTile.TileSettle != null)
     {
@@ -247,14 +223,11 @@ public class UI_map : UI_default
             _progresstext = "";
             break;
           case 1:
-            if (SelectedTile.TileSettle == null)
+            if (SelectedTile.Landmark == LandmarkType.Ritual)
             {
-              if (SelectedTile.Landmark == LandmarkType.Ritual)
-              {
-                _progresstext += string.Format(GameManager.Instance.GetTextData("Quest_Progress_Ritual"), ConstValues.Quest_Cult_Progress_Ritual) +
-                  "<br>" +
-                  string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"),ConstValues.Quest_Cult_RitualMovepoint);
-              }
+              _progresstext += string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual"), ConstValues.Quest_Cult_Progress_Ritual) +
+                "<br>" +
+                string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"), ConstValues.Quest_Cult_RitualMovepoint);
             }
             break;
           case 2:
@@ -268,10 +241,10 @@ public class UI_map : UI_default
     MovecostButtonGroup.alpha = 1.0f;
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
-    SanityCost =GameManager.Instance.MyGameData.MovePoint>MovePointCost?
+    SanityCost =GameManager.Instance.MyGameData.MovePoint>=MovePointCost?
       GameManager.Instance.MyGameData.MoveSanityCost:
       Mathf.FloorToInt(GameManager.Instance.MyGameData.MoveSanityCost*GameManager.Instance.MyGameData.MovePointAmplified);
-    GoldCost = GameManager.Instance.MyGameData.MovePoint > MovePointCost ?
+    GoldCost = GameManager.Instance.MyGameData.MovePoint >= MovePointCost ?
       GameManager.Instance.MyGameData.MoveGoldCost :
       Mathf.FloorToInt(GameManager.Instance.MyGameData.MoveGoldCost * GameManager.Instance.MyGameData.MovePointAmplified);
     SanitybuttonGroup.interactable = true;
@@ -337,7 +310,8 @@ public class UI_map : UI_default
   /// <param name="index"></param>
   public void MoveMap()
   {
-    if (UIManager.Instance.IsWorking) return;    
+    if (UIManager.Instance.IsWorking) return;
+    if (SelectedCostType == StatusTypeEnum.Gold && GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
     MoveInfoGroup.interactable = false;
     DefaultGroup.blocksRaycasts = true;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
 using System;
 
 public class UI_QuestWolf : UI_default
@@ -223,12 +222,10 @@ public class UI_QuestWolf : UI_default
       case 1:
         if (index == 0)
         {
-          GameManager.Instance.MyGameData.Skill_Conversation.LevelByDefault += 1;
           GameManager.Instance.MyGameData.Tendency_Body.Level = -1;
         }
         else
         {
-          GameManager.Instance.MyGameData.Skill_Force.LevelByDefault += 1;
           GameManager.Instance.MyGameData.Tendency_Body.Level = +1;
         }
         break;//(정신적+대화)선택 , (육체적+무력)선택
@@ -236,12 +233,10 @@ public class UI_QuestWolf : UI_default
       case 3:
         if (index == 0)
         {
-          GameManager.Instance.MyGameData.Skill_Wild.LevelByDefault += 1;
           GameManager.Instance.MyGameData.Tendency_Head.Level = -1;
         }
         else
         {
-          GameManager.Instance.MyGameData.Skill_Intelligence.LevelByDefault += 1;
           GameManager.Instance.MyGameData.Tendency_Head.Level = +1;
         }
         break;//(감정적+자연)선택 , (물질적+지성)선택
@@ -266,6 +261,8 @@ public class UI_QuestWolf : UI_default
   /// <param name="progresstype"></param>
   public void AddProgress(int progresstype)
   {
+    if (DefaultRect.anchoredPosition != Vector2.zero) DefaultRect.anchoredPosition = Vector2.zero;
+
     int _eventtype = 0;
     //0:없음 1:페이즈 증가 2:정착지 3:집회 4:의식
 
@@ -357,7 +354,7 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
     IsProgressWorking = true;
     ProgressBackgroundGroup.blocksRaycasts = true;
     ProgressBackgroundGroup.interactable = true;
-     yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder, ProgressHolder_TopPos, Vector2.zero, 0.6f, UIManager.Instance.UIPanelOpenCurve));
+     yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder, ProgressHolder_TopPos, Vector2.zero, 1.3f, UIManager.Instance.UIPanelOpenCurve));
     IsProgressWorking = false;
   }
   public void CloseProgress()
@@ -370,7 +367,7 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
     IsProgressWorking = true;
     ProgressBackgroundGroup.blocksRaycasts = false;
     ProgressBackgroundGroup.interactable = false;
-    yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder,Vector2.zero,ProgressHolder_DownPos, 0.6f, UIManager.Instance.UIPanelCLoseCurve));
+    yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder,Vector2.zero,ProgressHolder_DownPos, 1.0f, UIManager.Instance.UIPanelCLoseCurve));
     IsProgressWorking = false;
   }
 

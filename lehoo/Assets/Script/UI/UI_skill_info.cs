@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
 
 public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하는 기능임
 {
@@ -44,7 +43,7 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
 
     if (CurrentSkillIndex.Equals(-1))
     {
-      UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime));
+   //   UIManager.Instance.AddUIQueue(UIManager.Instance.OpenUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").OutisdePos, GetPanelRect("myrect").InsidePos, UIManager.Instance.LargePanelMoveTime));
     }//닫혀 있던 상태에서 처음으로 열었을때면 UI 열기 이펙트
     else
     {
@@ -58,7 +57,7 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
     BackButton.blocksRaycasts = false;
     TouchBlock.enabled = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.1f));
-    StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
+   // StartCoroutine(UIManager.Instance.CloseUI(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, UIManager.Instance.LargePanelMoveTime));
     CurrentSkillIndex = -1;
   }
 }

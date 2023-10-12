@@ -64,7 +64,6 @@ public class UI_Main : UI_default
   [SerializeField] private TextMeshProUGUI NewGameText = null;
   [SerializeField] private TextMeshProUGUI OptionText = null;
   [SerializeField] private TextMeshProUGUI QuitText = null;
-  [SerializeField] private CanvasGroup QuestButtonGroup = null;
   [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
   [Space(10)]
   [SerializeField] private CanvasGroup QuestIllustGroup = null;
@@ -73,12 +72,11 @@ public class UI_Main : UI_default
   [SerializeField] private Button StartNewGameButton = null;
   [SerializeField] private TextMeshProUGUI StartNewGameText = null;
   [SerializeField] private TextMeshProUGUI BackToMainText = null;
-  [SerializeField] private Button BackToMainButton = null;
   [Space(10)]
-  private float MainUIOpenTime = 0.4f;
-  private float MainUICloseTime = 0.2f;
-  private WaitForSeconds LittleWait = new WaitForSeconds(0.1f);
-  private WaitForSeconds Wait = new WaitForSeconds(0.2f);
+  public float MainUIOpenTime = 0.4f;
+  public float MainUICloseTime = 0.2f;
+  private WaitForSeconds LittleWait = new WaitForSeconds(0.2f);
+  private WaitForSeconds Wait = new WaitForSeconds(0.3f);
   private void Start()
   {
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
@@ -149,8 +147,6 @@ public class UI_Main : UI_default
   private IEnumerator startscenario()
   {
  //   StartNewGameButton.interactable = false;
-    BackToMainButton.interactable = false;
-    QuestButtonGroup.interactable = false;
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(QuestIllustGroup, 0.0f, 3.0f));
 
@@ -211,7 +207,6 @@ public class UI_Main : UI_default
   private IEnumerator openscenario()
   {
  //   StartNewGameButton.interactable = false;
-    BackToMainButton.interactable = false;
     if (QuestIllustGroup.alpha == 0.0f) QuestIllustGroup.alpha = 1.0f;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("questillust").Rect, GetPanelRect("questillust").OutisdePos, GetPanelRect("questillust").InsidePos, MainUIOpenTime, true));
     yield return Wait;
@@ -219,7 +214,6 @@ public class UI_Main : UI_default
     yield return Wait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("questbuttonholder").Rect, GetPanelRect("questbuttonholder").OutisdePos, GetPanelRect("questbuttonholder").InsidePos, MainUIOpenTime, true));
     yield return Wait;
-    QuestButtonGroup.interactable = true;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("startgame").Rect, GetPanelRect("startgame").OutisdePos, GetPanelRect("startgame").InsidePos, MainUIOpenTime, true));
     yield return Wait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("back").Rect, GetPanelRect("back").OutisdePos, GetPanelRect("back").InsidePos, MainUIOpenTime, true));
@@ -227,8 +221,6 @@ public class UI_Main : UI_default
   private IEnumerator closescenario()
   {
 //  StartNewGameButton.interactable = false;
-    BackToMainButton.interactable = false;
-    QuestButtonGroup.interactable = false;
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("back").Rect, GetPanelRect("back").InsidePos, GetPanelRect("back").OutisdePos, MainUIOpenTime, true));
     yield return LittleWait;

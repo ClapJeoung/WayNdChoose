@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
-using System.Text;
-using Unity.VisualScripting;
 using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
 using System.Linq;
+using System;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
@@ -27,6 +26,8 @@ public class GameManager : MonoBehaviour
     for (int i = 1; i < _eventrow.Length; i++)
     {
       string[] _data = _eventrow[i].Split('\t');
+      if (_data[1] == "") continue;
+
       EventJsonData _json = new EventJsonData();
       _json.ID = _data[1];
 
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour
     for (int i = 1; i < _exprow.Length; i++)
     {
       string[] _data = _exprow[i].Split('\t');
+      if (_data[0] == "") continue;
       ExperienceJsonData _json = new ExperienceJsonData();
 
       _json.ID = _data[0];
@@ -90,6 +92,7 @@ public class GameManager : MonoBehaviour
     for (int i = 1; i < _textrow.Length; i++)
     {
       string[] _data = _textrow[i].Split("\t");
+      if (_data.Length == 0 || _data[0] == "") continue;
       Textdata _textdata = new Textdata();
       _textdata.ID = _data[0];
       _textdata.kor = _data[1];
@@ -151,8 +154,8 @@ public class GameManager : MonoBehaviour
       {
         goldfaildata = new GoldFailData();
         goldfaildata.Description = GetTextData("GOLDFAIL_TEXT");
-        goldfaildata.Panelty_target = PenaltyTarget.Status;
-        goldfaildata.Loss_target = StatusTypeEnum.Sanity;
+        goldfaildata.Penelty_target = PenaltyTarget.Status;
+        goldfaildata.StatusType = StatusTypeEnum.Sanity;
         goldfaildata.Illust = ImageHolder.NoGoldIllust;
 
       }
@@ -433,7 +436,7 @@ public class GameManager : MonoBehaviour
       MyGameData.Gold -= payvalue;
     }
 
-    if (MyGameData.Madness_Force == true && Random.Range(0, 100) < ConstValues.MadnessEffect_Force)
+    if (MyGameData.Madness_Force == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Force)
     {
       //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
     }
@@ -549,7 +552,7 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.UpdateExpPael();
     UIManager.Instance.UpdateSkillLevel();
   }
-  public void SetOuterEvent(EventDataDefulat _event)
+  public void SetOuterEvent(EventData _event)
   {
     MyGameData.CurrentEvent = _event;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
@@ -557,7 +560,7 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.OpenDialogue();
     //다이어로그 열기
   }//야외 이동을 통해 이벤트를 받은 경우
-  public void SelectEvent(EventDataDefulat _targetevent)
+  public void SelectEvent(EventData _targetevent)
   {
     MyGameData.CurrentEvent = _targetevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
@@ -565,7 +568,7 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.OpenDialogue();
     SaveData();
   }//제시 패널에서 이벤트를 선택한 경우
-  public void SelectQuestEvent(EventDataDefulat questevent)
+  public void SelectQuestEvent(EventData questevent)
   {
     Dictionary<Settlement, int> _temp = new Dictionary<Settlement, int>();
     MyGameData.CurrentEvent = questevent;
@@ -591,7 +594,6 @@ public class GameManager : MonoBehaviour
     if(instance == null)
     {
       instance = this;
-      DontDestroyOnLoad(gameObject);
       if(PlayerPrefs.GetInt("LanguageIndex", -1) == -1)
       {
         SystemLanguage _lang = Application.systemLanguage;
@@ -614,10 +616,18 @@ public class GameManager : MonoBehaviour
   }
   public void GameOver()
   {
-    int _index = Random.Range(0, ImageHolder.GameoverIllusts.Count);
+    int _index = UnityEngine.Random.Range(0, ImageHolder.GameoverIllusts.Count);
 
     UIManager.Instance.EndingUI.OpenUI_Dead(ImageHolder.GameoverIllusts[_index],GetTextData("GameOver_"+_index.ToString()));
   }
+  public void SubEnding(EndingIllusts endingdata)
+  {
+    Tuple<List<Sprite>, List<string>, string, string> _temp =
+      new Tuple<List<Sprite>, List<string>, string, string>(endingdata.Illusts, endingdata.Descriptions, endingdata.LastWord, "");
+
+    UIManager.Instance.OpenEnding(_temp);
+  }
+
   public void StartNewGame(QuestType newquest)
   {
     UIManager.Instance.AddUIQueue(startnewgame(newquest));
@@ -629,9 +639,9 @@ public class GameManager : MonoBehaviour
 
     yield return StartCoroutine(createnewmap());//새 맵 만들기
 
-    Settlement _randomsettle=MyGameData.MyMapData.AllSettles[Random.Range(0,MyGameData.MyMapData.AllSettles.Count)];
+    Settlement _randomsettle=MyGameData.MyMapData.AllSettles[UnityEngine.Random.Range(0,MyGameData.MyMapData.AllSettles.Count)];
     MyGameData.CurrentSettlement= _randomsettle;
-    MyGameData.Coordinate=_randomsettle.Tiles[Random.Range(0,_randomsettle.Tiles.Count)].Coordinate;
+    MyGameData.Coordinate=_randomsettle.Tiles[UnityEngine.Random.Range(0,_randomsettle.Tiles.Count)].Coordinate;
     UIManager.Instance.UpdateAllUI();
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
@@ -708,7 +718,7 @@ public class GameManager : MonoBehaviour
 
     List<TileData> _randomstartlands = MyGameData.MyMapData.GetEnvirTiles(new List<BottomEnvirType> { BottomEnvirType.Land }, new List<TopEnvirType> { TopEnvirType.Mountain }, 1);
 
-    MyGameData.Coordinate = _randomstartlands[Random.Range(0, _randomstartlands.Count)].Coordinate;
+    MyGameData.Coordinate = _randomstartlands[UnityEngine.Random.Range(0, _randomstartlands.Count)].Coordinate;
 
     _map.MakeTilemap();
     UIManager.Instance.UpdateMap_SetPlayerPos();
@@ -729,15 +739,14 @@ public class GameManager : MonoBehaviour
             {
               UIManager.Instance.QuestUI_Cult.AddProgress(2);
               MyGameData.Cult_SettlementNames.Add(targetsettlement.OriginName);
-              return;
             }
             break;
           case 1:
-            MyGameData.Cult_SabbatSector = targetsettlement.Sectors[Random.Range(0, targetsettlement.Sectors.Count)];
+            MyGameData.Cult_SabbatSector = targetsettlement.Sectors[UnityEngine.Random.Range(0, targetsettlement.Sectors.Count)];
             break;
           case 2:
             if (MyGameData.Cult_SabbatSector_CoolDown == 0)
-              MyGameData.Cult_SabbatSector = targetsettlement.Sectors[Random.Range(0, targetsettlement.Sectors.Count)];
+              MyGameData.Cult_SabbatSector = targetsettlement.Sectors[UnityEngine.Random.Range(0, targetsettlement.Sectors.Count)];
             else MyGameData.Cult_SabbatSector = SectorTypeEnum.NULL;
 
             break;

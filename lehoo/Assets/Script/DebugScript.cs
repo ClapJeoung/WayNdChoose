@@ -91,7 +91,7 @@ public class DebugScript : MonoBehaviour
     }
     else if (GameManager.Instance.ExpDic.ContainsKey(EXP_Long_ID.text))
     {
-      if (GameManager.Instance.MyGameData.LongExp.ID == EXP_Long_ID.text)
+      if (GameManager.Instance.MyGameData.LongExp!=null)
       {
         GameManager.Instance.MyGameData.LongExp.Duration = int.Parse(EXP_Long_Turn.text);
       }
@@ -107,7 +107,7 @@ public class DebugScript : MonoBehaviour
     }
     else if (GameManager.Instance.ExpDic.ContainsKey(EXP_Short_0_ID.text))
     {
-      if (GameManager.Instance.MyGameData.ShortExp_A.ID == EXP_Short_0_ID.text)
+      if (GameManager.Instance.MyGameData.ShortExp_A !=null)
       {
         GameManager.Instance.MyGameData.ShortExp_A.Duration = int.Parse(EXP_Short_0_Turn.text);
       }
@@ -123,7 +123,7 @@ public class DebugScript : MonoBehaviour
     }
     else if (GameManager.Instance.ExpDic.ContainsKey(EXP_Short_1_ID.text))
     {
-      if (GameManager.Instance.MyGameData.ShortExp_B.ID == EXP_Short_1_ID.text)
+      if (GameManager.Instance.MyGameData.ShortExp_B!=null)
       {
         GameManager.Instance.MyGameData.ShortExp_B.Duration = int.Parse(EXP_Short_1_Turn.text);
       }

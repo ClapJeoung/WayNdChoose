@@ -82,7 +82,7 @@ public class UI_RewardExp : UI_default
 
     for (int i = 0; i < 2; i++)
     {
-      Experience _shortexp = GameManager.Instance.MyGameData.ShortExp_A;
+      Experience _shortexp =i==0? GameManager.Instance.MyGameData.ShortExp_A:GameManager.Instance.MyGameData.ShortExp_B;
 
       if (_shortexp != null)
       {

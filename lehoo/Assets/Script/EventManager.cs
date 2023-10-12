@@ -32,7 +32,7 @@ public class EventManager : MonoBehaviour
   {
     if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != ""&&GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID!= "WRONG ID!")
     {
-      EventDataDefulat _customevent = MyEventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
+      EventData _customevent = MyEventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
       if (_customevent.AppearSpace != EventAppearType.Outer)
       {
         if (_customevent != null)
@@ -48,7 +48,7 @@ public class EventManager : MonoBehaviour
     }
 
     TileInfoData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData;
-    EventDataDefulat _event = MyEventHolder.ReturnPlaceEvent(_tiledta.Settlement.SettlementType, place, _tiledta.EnvirList); ;
+    EventData _event = MyEventHolder.ReturnPlaceEvent(_tiledta.Settlement.SettlementType, place, _tiledta.EnvirList); ;
     GameManager.Instance.SelectEvent(_event);
   }
 
@@ -60,7 +60,7 @@ public class EventManager : MonoBehaviour
   {
     if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "" && GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "WRONG ID!")
     {
-      EventDataDefulat _customevent = MyEventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
+      EventData _customevent = MyEventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
       if (_customevent.AppearSpace == EventAppearType.Outer)
       {
         if (_customevent != null)
@@ -75,7 +75,7 @@ public class EventManager : MonoBehaviour
       }
     }
 
-    EventDataDefulat _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
+    EventData _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
     if (_event == null) _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
 
     GameManager.Instance.SetOuterEvent(_event);

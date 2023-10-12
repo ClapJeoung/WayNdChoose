@@ -14,7 +14,6 @@ public class Experience
   public string Name { get { return GameManager.Instance.GetTextData(ID+"_Name"); } }
   public ExpTypeEnum ExpType = ExpTypeEnum.Normal; 
   public string Description { get { return GameManager.Instance.GetTextData(ID + "_Description"); } }
-  public string SubDescription { get { return GameManager.Instance.GetTextData(ID + "_Subdescription"); } }
     public List<EffectType> Effects=new List<EffectType>();
   private int _duration = 0;
   public int Duration
@@ -72,19 +71,6 @@ public class Experience
       return _str;
     }
   }
-  public string ShortEffectString
-  {
-    get
-    {
-      string _str = "";
-      foreach (var _data in Effects)
-      {
-        _str += GameManager.Instance.GetTextData(_data,true)+" ";
-      }
-
-      return _str;
-    }
-  }//짧게 아이콘만 주는거
   public Experience Copy()
   {
     Experience _exp=new Experience();

@@ -33,7 +33,7 @@ public static class ConstValues
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
                    EventPer_Sector = 2, EventPer_NoSector = 1,
-                   EventPer_Quest = 3, EventPer_Follow = 5, EventPer_Normal = 3;
+                   EventPer_Quest = 4, EventPer_Follow = 5, EventPer_Normal = 4;
 
   public const int MapSize = 21;
 
@@ -48,7 +48,7 @@ public static class ConstValues
 
   public const int TownSectorCount = 1, CitySectorCount = 2, CastleSectorCount = 3;
 
-  public const int StartGold = 50;
+  public const int StartGold = 20;
   public const float  HPGen_Exp = 0.08f,  HPLoss_Exp = 0.01f;
   public const float GoldGen_Exp = 0.15f,  GoldLoss_Exp = 0.15f;
   public const float SanityGen_Exp = 0.1f, SanityLoss_Exp = 0.08f;
@@ -72,7 +72,7 @@ public static class ConstValues
   //육체적 2: 격투+3 생존+3 화술-1 학식-1
 
   //성향 진행도 따라 긍정,부정 값
-  public const float minsuccesper_max = 75;
+  public const float minsuccesper_max = 50;
   public const float minsuccesper_min = 15;
   public const float MoneyCheck_min = 2.5f, MoneyCheck_max = 0.25f; //골드 지불 범위 벗어날 시 지불 실패 금액에 제곱비례
   //스킬 체크, 지불 체크 최대~최소
@@ -234,27 +234,38 @@ public class GameData    //게임 진행도 데이터
     {
       if (Year >= ConstValues.MaxYear) return ConstValues.minsuccesper_min;
       //10턴 이상이면 최솟값만 반환
-      return Mathf.Lerp(ConstValues.minsuccesper_min, ConstValues.minsuccesper_max, Mathf.Clamp(0, 1, Year / ConstValues.MaxYear));
+      return Mathf.Lerp(ConstValues.minsuccesper_max, ConstValues.minsuccesper_min, Mathf.Lerp(0, 1, Year / ConstValues.MaxYear));
       //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
     }
   }//스킬 체크, 지불 체크 최소 성공확률
+  /// <summary>
+  /// 최소 ~ 100
+  /// </summary>
+  /// <param name="_current"></param>
+  /// <param name="_target"></param>
+  /// <returns></returns>
   public int CheckPercent_themeorskill(int _current, int _target)
   {
+  //  Debug.Log($"{_current} {_target}");
     if (_current >= _target) return 100;
-    float _per = _current / _target;
-    return Mathf.CeilToInt((1 - MinSuccesPer) * Mathf.Pow(_per, 1.5f) + MinSuccesPer);
+    return Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/_target));
   }//origin : 대상 레벨   target : 목표 레벨
+  /// <summary>
+  /// 최소 ~ 100
+  /// </summary>
+  /// <param name="_target"></param>
+  /// <returns></returns>
   public int CheckPercent_money(int _target)
   {
     float _per = Gold / _target;
     //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
-    return Mathf.CeilToInt(Mathf.Pow(_per, Mathf.Lerp(ConstValues.MoneyCheck_min, ConstValues.MoneyCheck_max, Year / ConstValues.MaxYear)));
+    return Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer, 100, _per));
     //좌상향 곡선 ~ 우상향 곡선
   }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
   #endregion
 
   #region #값 프로퍼티#
-    public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, Year / ConstValues.MaxYear); } }
+  public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, Year / ConstValues.MaxYear); } }
   public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, Year / ConstValues.MaxYear); } }
     public int RestCost_Sanity
     { 
@@ -350,11 +361,11 @@ public class GameData    //게임 진행도 데이터
     get { return sanity; }
     set
     {
-      sanity = value;
+      sanity = Mathf.Clamp(value, 0, 100);
 
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateSanityText();
+      UIManager.Instance.UpdateSanityText();
 
-      if (sanity <= 0)
+      if (value<=0)
       {
         UIManager.Instance.GetMad();
       }
@@ -461,7 +472,7 @@ public class GameData    //게임 진행도 데이터
 
 
   #region #이벤트 관련#
-  public EventDataDefulat CurrentEvent = null;  //현재 진행 중인 이벤트
+  public EventData CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence = EventSequence.Progress;
   public bool IsAbleEvent(string eventid)
   {
@@ -510,8 +521,9 @@ public class GameData    //게임 진행도 데이터
     get { return quest_cult_progress; }
     set 
     {
+      if (value >= 100) UIManager.Instance.OpenEnding(GameManager.Instance.EventHolder.Quest_Cult.EndingDatas);
       int _lastprogress = quest_cult_progress;
-      quest_cult_progress = value > 100 ? 100 : value;
+      quest_cult_progress = Mathf.Clamp(value,0,100);
 
       UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
     }
@@ -802,7 +814,7 @@ public class Tendency
   {
     get
     {
-     return GameManager.Instance.ImageHolder.GettendencyIllust(Type, Level);
+      return null;
     }
   }
   public Sprite CurrentIcon
@@ -818,20 +830,20 @@ public class Tendency
     switch (level)
     {
       case -2:
-        _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1);
+        _spr =dir==true?null: GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1);
         break;
       case -1:
-        _spr=dir.Equals(true)?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,1);
+        _spr=dir==true?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,1);
         break;
       case 0:
         Debug.Log("데샤아앗!!!!");
         _spr = GameManager.Instance.ImageHolder.DefaultIcon;
         break;
       case 1:
-        _spr = dir.Equals(true) ? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
+        _spr = dir==true? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
         break;
       case 2:
-        _spr = GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1);
+        _spr =dir==true? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1):null;
         break;
     }
     return _spr;
@@ -888,7 +900,7 @@ public class Tendency
           }
           break;
         case TendencyTypeEnum.Head:
-          switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+          switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
           {
             case -2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),

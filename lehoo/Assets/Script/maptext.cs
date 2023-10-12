@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using static UnityEditor.PlayerSettings;
 
 public class maptext : MonoBehaviour
 {
@@ -320,6 +319,7 @@ public class maptext : MonoBehaviour
     LoopCount = 0;
 
     RiverData[] _riverdatas = new RiverData[6];
+    int _riverdiradd = UnityEngine.Random.Range(0, 1);
     for (int i = 0; i < _riverdatas.Length; i++)
     {
       bool _iscomplete = false;
@@ -1097,8 +1097,8 @@ public class maptext : MonoBehaviour
   }
   public void MakeTilemap()
   {
-
-    Vector3 _cellsize = new Vector3(190 * 0.7f, 190 * 0.7f); Debug.Log("맵을 만든 레후~");
+    //190*0.7f
+    Vector3 _cellsize = new Vector3(100.0f,100.0f); Debug.Log("맵을 만든 레후~");
     //타일로 구현화
     for (int i = 0; i < ConstValues.MapSize; i++)
     {
@@ -1132,7 +1132,7 @@ public class maptext : MonoBehaviour
         _bottomoutline.enabled = false;
         _bottomtile.AddComponent(typeof(TileButtonScript));
         _bottomimage.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
-        _button.interactable = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
+        _button.interactable = true;
         var _buttoncolor = _button.colors;
         _buttoncolor.disabledColor = Color.white;
         _button.colors = _buttoncolor;

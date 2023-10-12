@@ -94,7 +94,6 @@ public class ReturnButton : MonoBehaviour
       {
         MyText.text = GameManager.Instance.GetTextData("GOTOMAP")+"<br>"+
           string.Format("<sprite=100> {0} +{1}",GameManager.Instance.GetTextData("MOVEPOINT_TEXT"),WNCText.GetMovepointColor(ConstValues.Tendency_Head_m1));
-        LayoutRebuilder.ForceRebuildLayoutImmediate(MyRect);
       }
       else
       {
@@ -105,6 +104,8 @@ public class ReturnButton : MonoBehaviour
     {
       MyText.text= GameManager.Instance.GetTextData("GOTOSETTLEMENT");
     }
+    LayoutRebuilder.ForceRebuildLayoutImmediate(MyRect);
+
     if (MyGroup.alpha == 0.0f)
     {
       MyGroup.alpha = 1.0f;
@@ -119,22 +120,10 @@ public class ReturnButton : MonoBehaviour
     switch (Dir)
     {
       case 0:
-        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, LeftInsidePos, LeftOutsidePos, 0.6f, false));
+        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, LeftInsidePos, LeftOutsidePos, 0.8f, false));
         break;
       case 1:
-        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, RightInsidePos, RightOutsidePos, 0.6f, false));
-        break;
-    }
-  }
-  public virtual void CloseForGameover()
-  {
-    switch (Dir)
-    {
-      case 0:
-        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, LeftOutsidePos, 0.6f, false));
-        break;
-      case 1:
-        StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, RightOutsidePos, 0.6f, false));
+        UIManager.Instance.StartCoroutine(UIManager.Instance.moverect(MyRect, RightInsidePos, RightOutsidePos, 0.8f, false));
         break;
     }
   }

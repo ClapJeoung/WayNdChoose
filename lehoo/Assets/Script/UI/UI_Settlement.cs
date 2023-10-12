@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Diagnostics.Tracing;
-using Google.Apis.Json;
 
 public class UI_Settlement : UI_default
 {
@@ -15,6 +13,7 @@ public class UI_Settlement : UI_default
   [SerializeField] private Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementNameText = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
+  [SerializeField] private TextMeshProUGUI RestCostValueText = null;
   [SerializeField] private List<PlaceIconScript> SectorIcons=new List<PlaceIconScript>();
   private PlaceIconScript GetSectorIconScript(SectorTypeEnum sectortype)
   {
@@ -48,6 +47,8 @@ public class UI_Settlement : UI_default
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
     SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+    RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
+      (int)((ConstValues.MoveRest_Value_Deafult + ConstValues.MoveRest_Value_Ratio * CurrentSettlement.Discomfort)*100.0f));
     RestDescription.text = "";
 
     Sprite _settlementicon = null;
@@ -153,22 +154,22 @@ public class UI_Settlement : UI_default
 
             GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
             SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-            DiscomfortValue = ConstValues.Rest_Discomfort+ConstValues.SectorEffect_residence_discomfort;
-            MovePointValue = _discomfort_default + ConstValues.SectorEffect_residence_movepoint;
+            DiscomfortValue = _discomfort_default + ConstValues.SectorEffect_residence_discomfort;
+            MovePointValue = ConstValues.Rest_MovePoint + ConstValues.SectorEffect_residence_movepoint;
             break;
           case SectorTypeEnum.Temple:
             _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
 
             GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
             SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-            DiscomfortValue = ConstValues.Rest_Discomfort;
-            MovePointValue = _discomfort_default;
+            DiscomfortValue = _discomfort_default;
+            MovePointValue = ConstValues.Rest_MovePoint;
             break;
           case SectorTypeEnum.Marketplace:
             _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
 
-            GoldCost = GameManager.Instance.MyGameData.RestCost_Gold * (ConstValues.SectorEffect_marketSector / 100);
-            SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity * (ConstValues.SectorEffect_marketSector / 100);
+            GoldCost =Mathf.FloorToInt( GameManager.Instance.MyGameData.RestCost_Gold * (1.0f-ConstValues.SectorEffect_marketSector / 100.0f));
+            SanityCost =Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f-ConstValues.SectorEffect_marketSector / 100.0f));
             DiscomfortValue = _discomfort_default;
             MovePointValue = ConstValues.Rest_MovePoint;
             break;
@@ -214,6 +215,7 @@ WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_SabbatDiscomfort)) + "<br>" + 
     }
 
     if (RestbuttonHolder.activeInHierarchy == false) RestbuttonHolder.SetActive(true);
+    RestDescription.text = "";
     LayoutRebuilder.ForceRebuildLayoutImmediate(RestbuttonHolder.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(SectorName.transform.parent.transform as RectTransform);
   }

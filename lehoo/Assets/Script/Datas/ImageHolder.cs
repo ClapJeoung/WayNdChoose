@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,9 +66,9 @@ public class ImageHolder : ScriptableObject
   }
   [Space(10)]
   public Sprite[] TendencyIcon_Body = new Sprite[5];
-  public Sprite[] TendencyIllust_Body=new Sprite[5];
+ // public Sprite[] TendencyIllust_Body=new Sprite[5];
   public Sprite[] TendencyIcon_Head=new Sprite[5];
-  public Sprite[] TendencyIllust_Head = new Sprite[5];
+ // public Sprite[] TendencyIllust_Head = new Sprite[5];
   public Sprite StatusIcon(StatusTypeEnum status)
   {
     if (status == StatusTypeEnum.HP) return HPIcon;
@@ -76,24 +77,25 @@ public class ImageHolder : ScriptableObject
   }
   public Sprite GetTendencyIcon(TendencyTypeEnum type,int level)
   {
-    if(type.Equals(TendencyTypeEnum.Body))return TendencyIcon_Body[level+2];
-    else return TendencyIcon_Head[level+2];
+    if(type.Equals(TendencyTypeEnum.Body))return level==0?Transparent: TendencyIcon_Body[level+2];
+    else return level==0?Transparent: TendencyIcon_Head[level+2];
   }
-  public Sprite GettendencyIllust(TendencyTypeEnum type,int level)
+  /*public Sprite GettendencyIllust(TendencyTypeEnum type,int level)
   {
     if (type.Equals(TendencyTypeEnum.Body)) return TendencyIllust_Body[level + 2];
     else return TendencyIllust_Head[level + 2];
   }
+  */
   [Space(10)]
- // public Sprite TendencySelectionIcon = null;
- // public Sprite ExpSelectionIcon = null;
- // public Sprite SkillSelectionIcon = null;
+ /* public Sprite TendencySelectionIcon = null;
+  public Sprite ExpSelectionIcon = null;
+  public Sprite SkillSelectionIcon = null;
   public Sprite ResidenceIcon = null;
   public Sprite MarketPlaceIcon = null;
   public Sprite TempleIcon = null;
   public Sprite LibraryIcon = null;
-//  public Sprite TheaterIcon = null;
-//  public Sprite AcademyIcon = null;
+  public Sprite TheaterIcon = null;
+  public Sprite AcademyIcon = null;
   public Sprite GetPlaceIcon(SectorTypeEnum placetype)
   {
     switch (placetype)
@@ -108,7 +110,7 @@ public class ImageHolder : ScriptableObject
     return null;
   }
   [Space(10)]
-
+ */
     public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
   public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
   public Sprite GetRandomMainIllust(Sprite lastillust)
@@ -122,48 +124,6 @@ public class ImageHolder : ScriptableObject
   public Sprite DefaultIcon = null;
   public Sprite NoGoldIllust = null;
   public Sprite Transparent = null;
-  [Space(10)]
-  public List<Sprite> EndingIllusts=new List<Sprite>();//엔딩 일러스트
-  public Sprite GetEndingIllust(string index)
-  {
-    foreach (var _temp in EndingIllusts)
-      if (_temp.name.Equals(index)) return _temp;
-
-    return DefaultIllust;
-  }
-  [Space(10)]
-  public Sprite QuestIcon_Cult = null;
-  public Sprite QuestIcon_Hideout_Idle = null;
-  public Sprite QuestIcon_Hideout_Finish = null;
-  public Sprite QuestIcon_Wolf = null;
-  public Sprite QuestIcon_Ritual_Idle = null;
-  public Sprite QuestIcon_Ritual_Finish = null;
-  public Sprite Quest_Cult_MainIllust = null;
-    public List<Sprite> Cult_Prologue = new List<Sprite>();          //컬트-프롤로그
-  public List<Sprite> Cult_30= new List<Sprite>();
-  public List<Sprite> Cult_60=new List<Sprite>();
-  public List<Sprite> Cult_100=new List<Sprite>();
-  public List<Sprite> Cult_Settlement=new List<Sprite>();
-  public List<Sprite> Cult_Sabbat=new List<Sprite>();
-  public List<Sprite> Cult_Ritual=new List<Sprite>();
-  public List<Sprite> CultEnding_Idle=new List<Sprite>();
-  public List<Sprite> CultEnding_Rational=new List<Sprite>();
-  public List<Sprite> CultEnding_Physical=new List<Sprite>();
-  public List<Sprite> CultEnding_R_Mental=new List<Sprite>();
-  public List<Sprite> CultEnding_R_Mateiral=new List<Sprite>();
-  public List<Sprite> CultEnding_P_Mental= new List<Sprite>();
-  public List<Sprite> CultEnding_P_Material=new List<Sprite>();
-    public Sprite GetCultIllust(List<Sprite> targetlist, string id)
-    {
-        foreach(var _illust in targetlist)
-        {
-            if (string.Compare(id, _illust.name, true).Equals(0)) return _illust;
-        }
-        Debug.Log($"{id} 이미지 없음");
-        return DefaultIllust;
-    }
-    public Sprite EmptyLongExpIcon = null;
-    public Sprite EmptyShortExpIcon = null;
   [Space(10)]
     public Sprite SpringIcon_active = null;
   public Sprite SpringIcon_deactive = null;
@@ -427,6 +387,43 @@ public class ImageHolder : ScriptableObject
   [Space(10)]
   public Sprite IconBackground_normal = null;
   public Sprite IconBackground_status = null;
+  [Space(10)]
+  public List<EndingIllusts> EndingIllustList = new List<EndingIllusts>();//엔딩 일러스트
+  public EndingIllusts GetEndingIllust(string id)
+  {
+    foreach (var _temp in EndingIllustList)
+      if (_temp.ID== id) return _temp;
+
+    return null;
+  }
+  [Space(10)]
+  public Sprite QuestIcon_Cult = null;
+  public Sprite QuestIcon_Hideout_Idle = null;
+  public Sprite QuestIcon_Hideout_Finish = null;
+  public Sprite QuestIcon_Wolf = null;
+  public Sprite QuestIcon_Ritual_Idle = null;
+  public Sprite QuestIcon_Ritual_Finish = null;
+  public Sprite Quest_Cult_MainIllust = null;
+  public List<Sprite> Cult_Prologue = new List<Sprite>();          //컬트-프롤로그
+  public List<Sprite> Cult_ToPhase1 = new List<Sprite>();
+  public List<Sprite> Cult_ToPhase2 = new List<Sprite>();
+  public List<Sprite> Cult_Settlement = new List<Sprite>();
+  public List<Sprite> Cult_Sabbat = new List<Sprite>();
+  public List<Sprite> Cult_Ritual = new List<Sprite>();
+  public List<Sprite> CultEnding_Illusts = new List<Sprite>();
+  public Sprite CultEnding_Rational = null, CultEnding_Physical = null,
+    CultEnding_Mental = null, CultEnding_Material = null;
+  public Sprite CultEnding_Last = null;
+  public Sprite GetCultIllust(List<Sprite> targetlist, string id)
+  {
+    foreach (var _illust in targetlist)
+    {
+      if (string.Compare(id, _illust.name, true).Equals(0)) return _illust;
+    }
+    Debug.Log($"{id} 이미지 없음");
+    return DefaultIllust;
+  }
+
 }
 public class EventIllustHolder
 {
@@ -477,5 +474,26 @@ public class EventIllustHolder
       if (_target == null) _target = IdleIllust;
       return _target;
     }
+  }
+}
+[System.Serializable]
+public class EndingIllusts
+{
+  public string ID = "";
+  public string Name { get
+    {
+      return GameManager.Instance.GetTextData(ID + "_Name");
+    } }
+  public List<Sprite> Illusts;
+  public List<string> Descriptions
+  {
+    get
+    {
+      return GameManager.Instance.GetTextData(ID+"_Descriptions").Split('@').ToList();
+    }
+  }
+  public string LastWord
+  {
+    get { return GameManager.Instance.GetTextData(ID + "_LastWord"); }
   }
 }

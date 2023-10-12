@@ -144,7 +144,7 @@ public class Settlement
       return tileinfodata; 
     }
   }
-  public bool CheckAbleEvent(EventDataDefulat _event)
+  public bool CheckAbleEvent(EventData _event)
   {
 
     switch (_event.AppearSpace)

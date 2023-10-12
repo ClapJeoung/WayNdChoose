@@ -40,51 +40,44 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f104e0ef90e4bcd46837ecc8c4c5c12c, type: 3}
   - {fileID: 21300000, guid: f9cb334ba137ff645a081d2da16a4db5, type: 3}
   TendencyIcon_Body:
-  - {fileID: 21300000, guid: 90f890b6ce10f18439b9468b01da9346, type: 3}
-  - {fileID: 21300000, guid: 36d3dd0062294bf49acf7c8f48eafafe, type: 3}
+  - {fileID: 21300000, guid: 9289986581186de42ae3408a4f9bea8a, type: 3}
+  - {fileID: 21300000, guid: 6aa79cafdd5269143a4aa9ce7cae13a7, type: 3}
   - {fileID: 21300000, guid: 270b8618eec0c984687abf7237b9c31d, type: 3}
-  - {fileID: 21300000, guid: 9c82d165cf20d5f41840da3e0e05ea46, type: 3}
-  - {fileID: 21300000, guid: 49e373aa33c9c784b929c6ac76358acc, type: 3}
-  TendencyIllust_Body:
-  - {fileID: 21300000, guid: 42808f26c7927784fa6762c27e00d377, type: 3}
-  - {fileID: 21300000, guid: 4095bc07406123a468698c207f24b400, type: 3}
-  - {fileID: 0}
-  - {fileID: 21300000, guid: 813ef9387db4fb84f9bf3281ca1f5e4f, type: 3}
-  - {fileID: 21300000, guid: 5b67df9dcf0bc0d43bbedba41a839b78, type: 3}
+  - {fileID: 21300000, guid: 6d76b02d07fd30144903571587c20c34, type: 3}
+  - {fileID: 21300000, guid: 30bf2c8290c415a4190f79480f422c66, type: 3}
   TendencyIcon_Head:
-  - {fileID: 21300000, guid: cdba53ef6391a254c94df5f1c14aa230, type: 3}
-  - {fileID: 21300000, guid: 4c1b5956b04481641a471b528fadbaaa, type: 3}
+  - {fileID: 21300000, guid: 60fcd6e6ce8954d4aa4bd04ebef3651a, type: 3}
+  - {fileID: 21300000, guid: a9e9e4f876e54ca438743dff2b7d1e69, type: 3}
   - {fileID: 21300000, guid: 71a7fb53d88b4f94b9006f1f52ff7f3b, type: 3}
-  - {fileID: 21300000, guid: fef534efbe40331408dd0f97e15ac695, type: 3}
-  - {fileID: 21300000, guid: 9cba5a9c0ab94e34cb7397af403cecec, type: 3}
-  TendencyIllust_Head:
-  - {fileID: 21300000, guid: 2a5a788c8c74243438588148f6350bb8, type: 3}
-  - {fileID: 21300000, guid: 0f7639459ab09c6428d54573eb438cb4, type: 3}
-  - {fileID: 0}
-  - {fileID: 21300000, guid: 0a237dd7d05de494fb63b016e12edfd1, type: 3}
-  - {fileID: 21300000, guid: f82c568f46dd15f4b8f6e719fc378c52, type: 3}
-  ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
-  MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
-  TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
-  LibraryIcon: {fileID: 21300000, guid: 9c71aa13cdd3beb42b347760c03a7b9d, type: 3}
+  - {fileID: 21300000, guid: b58488e1e4c31c4468b708ecc39097ef, type: 3}
+  - {fileID: 21300000, guid: 95345bbe38a4dc44381ebf7dcebad01e, type: 3}
   EventIllust:
+  - {fileID: 21300000, guid: e70e2ee7bb4ab6c4aa080507ea3f187a, type: 3}
   - {fileID: 21300000, guid: dd225b3f10af382488489e2da9c64001, type: 3}
   - {fileID: 21300000, guid: 8d7ef4cafac4f3d48848393343f2c978, type: 3}
   - {fileID: 21300000, guid: 2913e9882e7fff04ca15ad56190f7e22, type: 3}
-  - {fileID: 21300000, guid: 4d8b03a946cf4254a8f3dcefb7c9ca54, type: 3}
-  - {fileID: 21300000, guid: c1cabaa797e7ab641ad9adbbf4cfe855, type: 3}
-  - {fileID: 21300000, guid: c40a3c2adf9d70e4fbb4536033e89ae4, type: 3}
-  - {fileID: 21300000, guid: 5d80ad359dab9334aa5f6a1058bd10a4, type: 3}
-  - {fileID: 21300000, guid: 18f2d2240f9c39e4da7481d38bdb5116, type: 3}
-  - {fileID: 21300000, guid: 2ec4c82cbdf6d294ca486e65cd363f22, type: 3}
-  - {fileID: 21300000, guid: 5f2ac7a7d815426498f9e10241d6bcf4, type: 3}
-  - {fileID: 21300000, guid: c17d911b40d7c29458158dc7b3711d1b, type: 3}
-  - {fileID: 21300000, guid: 7bb16f62b54ee6d438572aa58a890c61, type: 3}
+  - {fileID: 21300000, guid: a364824cbf5af5d4d84f1fc55a692848, type: 3}
+  - {fileID: 21300000, guid: bf551ea1eb60f8f449d2bbe1f6b08cb0, type: 3}
+  - {fileID: 21300000, guid: ba1631bf754bfcb4aae9d52ac5849f74, type: 3}
+  - {fileID: 21300000, guid: 296238bce0288604cbd592ede48ebe1d, type: 3}
+  - {fileID: 21300000, guid: 03f699973d0a29d44a3918a7bc919639, type: 3}
+  - {fileID: 21300000, guid: 536095ccece94a84799cbf7367ece29c, type: 3}
+  - {fileID: 21300000, guid: dd6b226562e8eb64cb5a272c65ab6ac7, type: 3}
   - {fileID: 21300000, guid: 288795b6338320341a207d61a6360ac5, type: 3}
   - {fileID: 21300000, guid: 274930fb9cb12774cab14ee806860622, type: 3}
   - {fileID: 21300000, guid: 85bcd961d6e481e4a99cefb14380e941, type: 3}
   - {fileID: 21300000, guid: 86a190461912d7d42b7c61b1fa45056e, type: 3}
   - {fileID: 21300000, guid: 6f67b57887049f24e820223ecb0a45d1, type: 3}
+  - {fileID: 21300000, guid: d4359298b31cab044a38e07364bedcb9, type: 3}
+  - {fileID: 21300000, guid: be5b7ee9afb770e43b06d2ddc0215c76, type: 3}
+  - {fileID: 21300000, guid: 256ffcb2fa588274fac10fb972e427cd, type: 3}
+  - {fileID: 21300000, guid: e843b2afbdf96bc40adeba6748c41ab7, type: 3}
+  - {fileID: 21300000, guid: 51661a47a7295dc4da5da144f245e82f, type: 3}
+  - {fileID: 21300000, guid: 909a0a6ad88e5f14aae67685f9971b30, type: 3}
+  - {fileID: 21300000, guid: f79712029c20aa943a5da075ea48b515, type: 3}
+  - {fileID: 21300000, guid: 98408af18e047674c862e6787b51c0a9, type: 3}
+  - {fileID: 21300000, guid: 2e312fddd8499c24bb86621827a865aa, type: 3}
+  - {fileID: 21300000, guid: 5fab7cafe3dc2054d9301c1faa7eab14, type: 3}
   - {fileID: 21300000, guid: 7ec04d7a73e67fd4f8b69d88b0df49b1, type: 3}
   - {fileID: 21300000, guid: f48558f9de8f93d4498e392f88c6d2e2, type: 3}
   - {fileID: 21300000, guid: c977f55fe00172a4c8d1fd120e8ae64f, type: 3}
@@ -101,83 +94,19 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3ac9af01aea05984f94dfc7df7682829, type: 3}
   - {fileID: 21300000, guid: ea0d21be40944b7489a59e87ffb7b459, type: 3}
   - {fileID: 21300000, guid: e7b4d962c43b6e44db091e7852691d59, type: 3}
-  - {fileID: 21300000, guid: e70e2ee7bb4ab6c4aa080507ea3f187a, type: 3}
+  - {fileID: 21300000, guid: 32428a89727506745a7724700e598c67, type: 3}
+  - {fileID: 21300000, guid: adf49e5dfa166944c9cd9c1fe61c80d1, type: 3}
+  - {fileID: 21300000, guid: 1459b8cf70eb7854d9fad470bcc44305, type: 3}
+  - {fileID: 21300000, guid: 18c77d05035dd864f862763abe9546d9, type: 3}
   EXPIllust:
-  - {fileID: 21300000, guid: 72b5cb0d1bf3d4d4cbfb588305636045, type: 3}
-  - {fileID: 21300000, guid: 0406bff0d857dd24cb28e886736e8794, type: 3}
-  - {fileID: 21300000, guid: 25c42252a579f1443a545e979c88fdcc, type: 3}
-  - {fileID: 21300000, guid: 71b1eec504fb61f44ab8e539a7727910, type: 3}
-  - {fileID: 21300000, guid: 7c98ac4ab230e4040a8a0dcb8f731599, type: 3}
-  - {fileID: 21300000, guid: a9714a3aff6799d4faac7bb608d0a809, type: 3}
-  - {fileID: 21300000, guid: 6fb60a478a796da42a43fa89faca08a1, type: 3}
-  - {fileID: 21300000, guid: bbecd4f193891104eb6c0e97d59c5273, type: 3}
-  - {fileID: 21300000, guid: b17f0cae5dca5d842b000944e4a46f2d, type: 3}
-  - {fileID: 21300000, guid: 2db482634be297a4580bc15fb84ee159, type: 3}
-  - {fileID: 21300000, guid: 13ee2f1c939e5a84bb51b31fafa967e5, type: 3}
-  - {fileID: 21300000, guid: 96286c3196c68be4383c10d9200c578d, type: 3}
-  - {fileID: 21300000, guid: 1835de5f3ecce2540aefe26b4f50908e, type: 3}
-  - {fileID: 21300000, guid: 2c04521d0b937aa418a5f59f7399c360, type: 3}
-  - {fileID: 21300000, guid: fd5e44f0e7012e44cb7d46257f215bab, type: 3}
-  - {fileID: 21300000, guid: 4dbb29ea5f3f86b4fbb1415c8d2496d6, type: 3}
-  - {fileID: 21300000, guid: 9a8c081a55c7e064f9bf9a8992d6340a, type: 3}
-  - {fileID: 21300000, guid: c44753252a6654146870d9e9944c1e52, type: 3}
-  - {fileID: 21300000, guid: 93b6ab07a36bd8940a7c12d129053969, type: 3}
-  - {fileID: 21300000, guid: 788e04384d79ad74b9cfa6abfe469817, type: 3}
-  - {fileID: 21300000, guid: a9baf163465dea34193cf59302cb53d0, type: 3}
-  - {fileID: 21300000, guid: d4b71fc0384fa2c439a7aa47d9b8b7ca, type: 3}
-  - {fileID: 21300000, guid: 96a83c65e8281f24991ef21aedc0cbb5, type: 3}
-  - {fileID: 21300000, guid: 264d315a6c58d45449afbdb1935e2f22, type: 3}
-  - {fileID: 21300000, guid: 66c537f367a1a344e9dbc831b298ec07, type: 3}
-  - {fileID: 21300000, guid: 53d44d9e90a2b1e42a08ac7b00ef9e67, type: 3}
-  - {fileID: 21300000, guid: c719b3935cf706c479ac57e824fcf938, type: 3}
-  - {fileID: 21300000, guid: 5e3486711d3201b42a86b121edbe80fd, type: 3}
-  - {fileID: 21300000, guid: 4318f44759362d44eb9869ef39253194, type: 3}
-  - {fileID: 21300000, guid: 590c0330e80af864fa32bf1f8169a47b, type: 3}
-  - {fileID: 21300000, guid: dca6b9fe90792794bac3e677670cca46, type: 3}
-  - {fileID: 21300000, guid: d225665e794898a4e91d70da1ace19e2, type: 3}
-  - {fileID: 21300000, guid: 55448ca771db7f947b128b9b4884ff2c, type: 3}
-  - {fileID: 21300000, guid: 946ac2f33d390ae40b18155a1e22edb5, type: 3}
+  - {fileID: 21300000, guid: 28cbcbc6b0e716a439a1c21fbfb4d5c2, type: 3}
+  - {fileID: 21300000, guid: fcceb2188905dca4ea81795fcd8e7566, type: 3}
+  - {fileID: 21300000, guid: c88ae36d21b23f74095558867b1d9af4, type: 3}
+  - {fileID: 21300000, guid: 3faddb50098e0c64e910c2514ecd4e65, type: 3}
   DefaultIllust: {fileID: 21300000, guid: 05a87a754e340fb4d933a04dd808c5b7, type: 3}
   DefaultIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
   NoGoldIllust: {fileID: 21300000, guid: 38c0406432c7ff742b7d87091ef90b31, type: 3}
   Transparent: {fileID: 21300000, guid: 622e8cc81030c2543be848d6ac0035b8, type: 3}
-  EndingIllusts: []
-  QuestIcon_Cult: {fileID: 21300000, guid: c94eefcacec954c4b85530c631592644, type: 3}
-  QuestIcon_Hideout_Idle: {fileID: 21300000, guid: 8d40cd6ccf29e9643bb8ffae3018dc1b, type: 3}
-  QuestIcon_Hideout_Finish: {fileID: 21300000, guid: c7ec4e0fcd3108c43899d37d506454ca, type: 3}
-  QuestIcon_Wolf: {fileID: 21300000, guid: 99700f1c2d684784b8712bc8f4e6a592, type: 3}
-  QuestIcon_Ritual_Idle: {fileID: 21300000, guid: f84b81a4c74f7ad41a7dc84f0b6b3ea1, type: 3}
-  QuestIcon_Ritual_Finish: {fileID: 21300000, guid: 578de4cf5dda664498c09108536df112, type: 3}
-  QuestIllust_Cult:
-  - {fileID: 21300000, guid: 00da322885566d34c9c29e6e2468ceb6, type: 3}
-  - {fileID: 21300000, guid: ad6c42c0e57f93742b21c7b2dd3a4b27, type: 3}
-  - {fileID: 21300000, guid: e3f9c15f6013bd448bf90effd2680f80, type: 3}
-  - {fileID: 21300000, guid: bd5edf032e3ab4a40b4dadd97e9fb5e7, type: 3}
-  - {fileID: 21300000, guid: 98afb1e422902864f85fbcbfedde724e, type: 3}
-  - {fileID: 21300000, guid: 87ed217e1a275d744b659cf79da29997, type: 3}
-  - {fileID: 21300000, guid: 1b16b2eebef6c394981e5c4fd5122bbc, type: 3}
-  - {fileID: 21300000, guid: a80975cfc3b2d38448fedec493e5cf78, type: 3}
-  - {fileID: 21300000, guid: 5a0439063757dc7448f6b4434f199164, type: 3}
-  - {fileID: 21300000, guid: 010c9f20cc4f6cf47b9997a573180b88, type: 3}
-  - {fileID: 21300000, guid: beef5ca902b69804297b75a497689ccb, type: 3}
-  - {fileID: 21300000, guid: cf9bfb19274d31b49a136206ba5f813e, type: 3}
-  - {fileID: 21300000, guid: 830c8d6b3f56b0144a5dfb2d58ab3462, type: 3}
-  - {fileID: 21300000, guid: 7c7a7ccd0a0f43d4ea14f6c394578b60, type: 3}
-  - {fileID: 21300000, guid: e60e50886feae314eb07d070baaa0f05, type: 3}
-  - {fileID: 21300000, guid: 16fe2363cfea9194b96a22ecd765ab96, type: 3}
-  - {fileID: 21300000, guid: 65cab48b49b7f0743ae6b20daf3057c6, type: 3}
-  - {fileID: 21300000, guid: c2fbf53d575a2d94b9f3986763e1cd11, type: 3}
-  - {fileID: 21300000, guid: dd5d758d892a29341b251c308882efc4, type: 3}
-  - {fileID: 21300000, guid: 821cd5f494208e043ba12a06fa730836, type: 3}
-  - {fileID: 21300000, guid: 332d24de0436b0c4faeb119637252884, type: 3}
-  - {fileID: 21300000, guid: ef82477ca48200246b29365e18ce57d2, type: 3}
-  - {fileID: 21300000, guid: f261c4685ea14de4aae0a17f7df581ab, type: 3}
-  - {fileID: 21300000, guid: 25c78af2c900c2d4780d44692a9ebf02, type: 3}
-  - {fileID: 21300000, guid: 45acf660c25d5c6429fae93d8844b903, type: 3}
-  - {fileID: 21300000, guid: 9ff14f47a9a90dc46a97d00c3dd0e45e, type: 3}
-  - {fileID: 21300000, guid: c187b4097636eaf418201d85632d8ba5, type: 3}
-  EmptyLongExpIcon: {fileID: 21300000, guid: c8859889966423244b72eb0209f9a7b0, type: 3}
-  EmptyShortExpIcon: {fileID: 21300000, guid: 909c3af100c69bb48b88201269d8348a, type: 3}
   SpringIcon_active: {fileID: 21300000, guid: 7f4699aae6a48f548815bbfc1037ae17, type: 3}
   SpringIcon_deactive: {fileID: 21300000, guid: 4bde7fd814d2af24f968614c37474f8a, type: 3}
   SummerIcon_active: {fileID: 21300000, guid: 27ca4437667ba1d4db4927f29d411ed1, type: 3}
@@ -199,7 +128,7 @@ MonoBehaviour:
   DisComfort: {fileID: 21300000, guid: b2a0bb0e9a8d0664a91e3295a415268a, type: 3}
   MadnessIdle: {fileID: 21300000, guid: 533227ba82acdd649bf6c2137697490f, type: 3}
   MadnessActive: {fileID: 21300000, guid: 886081899e6a4894482d7746622dca02, type: 3}
-  Arrow_Empty: {fileID: 0}
+  Arrow_Empty: {fileID: 21300000, guid: d59a3a542981d164b88cb7b5cd59dccf, type: 3}
   Arrow_DeActive: {fileID: 21300000, guid: f092d2f2ada0ff54894dc11780cf7678, type: 3}
   Arrow_Active_rational: {fileID: 21300000, guid: ba98f2d0708544047b52f9e68a044281, type: 3}
   Arrow_Active_physical: {fileID: 21300000, guid: e269443b03526ed4c93ebd6fdaf850ff, type: 3}
@@ -263,3 +192,48 @@ MonoBehaviour:
   SeaTile: {fileID: 21300000, guid: ee55fe9d99cd3714b9e06048f1e06c5f, type: 3}
   IconBackground_normal: {fileID: 21300000, guid: 9716a1c0b95964a4a80c1177f2d3e910, type: 3}
   IconBackground_status: {fileID: 21300000, guid: 082461aaf9a52ab47bf54e43c3e184e9, type: 3}
+  EndingIllustList: []
+  QuestIcon_Cult: {fileID: 21300000, guid: c94eefcacec954c4b85530c631592644, type: 3}
+  QuestIcon_Hideout_Idle: {fileID: 21300000, guid: 8d40cd6ccf29e9643bb8ffae3018dc1b, type: 3}
+  QuestIcon_Hideout_Finish: {fileID: 21300000, guid: c7ec4e0fcd3108c43899d37d506454ca, type: 3}
+  QuestIcon_Wolf: {fileID: 21300000, guid: 99700f1c2d684784b8712bc8f4e6a592, type: 3}
+  QuestIcon_Ritual_Idle: {fileID: 21300000, guid: f84b81a4c74f7ad41a7dc84f0b6b3ea1, type: 3}
+  QuestIcon_Ritual_Finish: {fileID: 21300000, guid: 578de4cf5dda664498c09108536df112, type: 3}
+  Quest_Cult_MainIllust: {fileID: 21300000, guid: 00da322885566d34c9c29e6e2468ceb6, type: 3}
+  Cult_Prologue:
+  - {fileID: 21300000, guid: ad6c42c0e57f93742b21c7b2dd3a4b27, type: 3}
+  - {fileID: 21300000, guid: e3f9c15f6013bd448bf90effd2680f80, type: 3}
+  - {fileID: 21300000, guid: bd5edf032e3ab4a40b4dadd97e9fb5e7, type: 3}
+  - {fileID: 21300000, guid: 98afb1e422902864f85fbcbfedde724e, type: 3}
+  - {fileID: 21300000, guid: 87ed217e1a275d744b659cf79da29997, type: 3}
+  - {fileID: 21300000, guid: 1b16b2eebef6c394981e5c4fd5122bbc, type: 3}
+  - {fileID: 21300000, guid: a80975cfc3b2d38448fedec493e5cf78, type: 3}
+  - {fileID: 21300000, guid: 5a0439063757dc7448f6b4434f199164, type: 3}
+  - {fileID: 21300000, guid: 010c9f20cc4f6cf47b9997a573180b88, type: 3}
+  - {fileID: 21300000, guid: beef5ca902b69804297b75a497689ccb, type: 3}
+  - {fileID: 21300000, guid: cf9bfb19274d31b49a136206ba5f813e, type: 3}
+  Cult_ToPhase1:
+  - {fileID: 21300000, guid: fb79fea03d05d344bafa0f8ecd506dd0, type: 3}
+  Cult_ToPhase2:
+  - {fileID: 21300000, guid: fe5aa490e504709439208963a72eec37, type: 3}
+  Cult_Settlement:
+  - {fileID: 21300000, guid: 9cd0ca91b37241c468ae44a9b625bd3d, type: 3}
+  Cult_Sabbat:
+  - {fileID: 21300000, guid: 412246b8b68d35a489dc93d52ac57de6, type: 3}
+  Cult_Ritual:
+  - {fileID: 21300000, guid: 2dcf4210eae847942a58c5b58c8f9650, type: 3}
+  CultEnding_Illusts:
+  - {fileID: 21300000, guid: f3adcc1aa05804148a4445670c0687ef, type: 3}
+  - {fileID: 21300000, guid: b6f42233aff4b6144a4185f38bbe6cbe, type: 3}
+  - {fileID: 21300000, guid: 14e1f9d0dfa21a34081adde78423c011, type: 3}
+  - {fileID: 21300000, guid: 2a834bb3c73945d47b5e85d0f1ce98b1, type: 3}
+  - {fileID: 21300000, guid: b9c1d9cd2f2e7964f804a92671673aae, type: 3}
+  - {fileID: 21300000, guid: f2987305ce04442478b4fcf48cfdeecc, type: 3}
+  - {fileID: 21300000, guid: f2b0be6328d418744a82ad32821ed9b6, type: 3}
+  - {fileID: 21300000, guid: 513d59d410b59b348ac3b8008fa6f288, type: 3}
+  - {fileID: 21300000, guid: 0511dcbfbb6706a46a452ddf5f1aa62c, type: 3}
+  CultEnding_Rational: {fileID: 21300000, guid: 3bcdf36f712fe4140b9e512e4f356316, type: 3}
+  CultEnding_Physical: {fileID: 21300000, guid: d93f3b7af34fa944fad791bd47102e1c, type: 3}
+  CultEnding_Mental: {fileID: 21300000, guid: 6c3e8be95cc2a654887aa7b56f19e538, type: 3}
+  CultEnding_Material: {fileID: 21300000, guid: 237639b48788e8b488ff2a5e2da75924, type: 3}
+  CultEnding_Last: {fileID: 21300000, guid: c4e354fe1e4a5a1469a886eea715e043, type: 3}

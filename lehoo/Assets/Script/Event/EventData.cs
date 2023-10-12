@@ -3,25 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
-using static UnityEditor.Progress;
 using System;
 using Unity.Mathematics;
+using UnityEditor.PackageManager;
 
 public class EventHolder
 {
 
-  public List<EventData> AllNormalEvents = new List<EventData>();
-  public List<FollowEventData> AllFollowEvents = new List<FollowEventData>();
-  public EventDataDefulat IsEventExist(string id)
+  public List<EventData> AllEvent = new List<EventData>();
+  public EventData IsEventExist(string id)
   {
-    for(int i = 0; i < AllNormalEvents.Count; i++)
+    for(int i = 0; i < AllEvent.Count; i++)
     {
-      if (string.Compare(AllNormalEvents[i].ID,id,false)==0) return AllNormalEvents[i];
-    }
-    for (int i = 0; i < AllFollowEvents.Count; i++)
-    {
-      if (string.Compare(AllFollowEvents[i].ID, id, false) == 0) return AllFollowEvents[i];
+      if (string.Compare(AllEvent[i].ID,id,false)==0) return AllEvent[i];
     }
     return null;
   }
@@ -39,13 +33,13 @@ public class EventHolder
         _json.PlaceInfo = "0@0@0";
         _json.Season = "";
         _json.Selection_Type = "1";
-        _json.Selection_Target = "1@2";
+        _json.Selection_Target = "2@3";
         _json.Selection_Info = "2@1,3";
         _json.Failure_Penalty = "1@1";
         _json.Failure_Penalty_info = "1@2";
         _json.Reward_Target = "0@3";
         _json.Reward_Info = "Exp_Test@0";
-        defaultevent_outer = ReturnEventDataDefault<EventData>(_json);
+        defaultevent_outer = ReturnEventDataDefault(_json);
       }
       return defaultevent_outer;
     }
@@ -67,7 +61,7 @@ public class EventHolder
         _json.Failure_Penalty_info = "0@0";
         _json.Reward_Target = "2@3";
         _json.Reward_Info = "0@0";
-        defaultevent_settlement = ReturnEventDataDefault<EventData>(_json);
+        defaultevent_settlement = ReturnEventDataDefault(_json);
       }
       return defaultevent_settlement;
     }
@@ -80,10 +74,9 @@ public class EventHolder
     }
     return null;
   }
-  public T ReturnEventDataDefault<T>(EventJsonData _data) where T : EventDataDefulat ,new()
+  public EventData ReturnEventDataDefault(EventJsonData _data) 
   {
-    T Data = new T();
-
+    EventData Data=new EventData();
     Data.ID = _data.ID;
 
     if (_data.Season != "")
@@ -125,12 +118,12 @@ public class EventHolder
             if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
               Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
             {
-              Data.SelectionDatas[0].FailureData = new FailureData(Data);
-              Data.SelectionDatas[0].FailureData.Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-              switch (Data.SelectionDatas[0].FailureData.Panelty_target)
+              Data.SelectionDatas[0].FailureData = new FailData(Data);
+              Data.SelectionDatas[0].FailureData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+              switch (Data.SelectionDatas[0].FailureData.Penelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.SelectionDatas[0].FailureData.Loss_target = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
+                case PenaltyTarget.Status: Data.SelectionDatas[0].FailureData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
                 case PenaltyTarget.EXP: Data.SelectionDatas[0].FailureData.ExpID = _data.Failure_Penalty_info; break;
               }
             }
@@ -184,12 +177,12 @@ public class EventHolder
             if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
               Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
             {
-              Data.SelectionDatas[i].FailureData = new FailureData(Data,tendencytype, i);
-              Data.SelectionDatas[i].FailureData.Panelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
-              switch (Data.SelectionDatas[i].FailureData.Panelty_target)
+              Data.SelectionDatas[i].FailureData = new FailData(Data,tendencytype, i);
+              Data.SelectionDatas[i].FailureData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
+              switch (Data.SelectionDatas[i].FailureData.Penelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.SelectionDatas[i].FailureData.Loss_target = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
+                case PenaltyTarget.Status: Data.SelectionDatas[i].FailureData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
                 case PenaltyTarget.EXP: Data.SelectionDatas[i].FailureData.ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
               }
             }
@@ -216,13 +209,14 @@ public class EventHolder
   }
   public void ConvertData_Normal(EventJsonData _data)
   {
-    EventData Data = ReturnEventDataDefault<EventData>(_data);
-      AllNormalEvents.Add(Data);
+    EventData Data = ReturnEventDataDefault(_data);
+      AllEvent.Add(Data);
   }
 
   public void ConvertData_Follow(EventJsonData _data)
   {
-    FollowEventData Data = ReturnEventDataDefault<FollowEventData>(_data);
+    EventData Data = ReturnEventDataDefault(_data);
+    Data.EventType = EventTypeEnum.Follow;
 
     int _temp = 0;
     string[] _followdatas = _data.EventInfo.Split('@');
@@ -242,16 +236,9 @@ public class EventHolder
         Data.FollowTargetLevel = int.Parse(_followdatas[2]);
         break;
     }
-    if (_data.EndingID != "")
-    {
-      FollowEndingData _endingdata = new FollowEndingData();
-      _endingdata.ID = $"ending_{_data.ID.Split("_")[1]}";
-      _endingdata.Illust = GameManager.Instance.ImageHolder.GetEndingIllust(_endingdata.ID);
-      _endingdata.Name = GameManager.Instance.GetTextData(Data.ID+"_NAME");
-      _endingdata.Description = GameManager.Instance.GetTextData(Data.ID+"_DESCRIPTION");
-      Data.EndingData = _endingdata;
-    }
-    AllFollowEvents.Add(Data);
+    Data.EndingID = _data.EndingID;
+
+    AllEvent.Add(Data);
   }
   public void ConvertData_Quest(EventJsonData _data)
   {
@@ -265,8 +252,8 @@ public class EventHolder
   }//퀘스트 디자인 기획 끝나고 추가해야함
   public void ConvertData_Quest_cult(EventJsonData jsondata)
   {
-    QuestEventData_Wolf eventdata = ReturnEventDataDefault<QuestEventData_Wolf>(jsondata);
-    eventdata.Type = QuestType.Cult;
+    EventData eventdata = ReturnEventDataDefault(jsondata);
+    eventdata.EventType = EventTypeEnum.Cult;
     switch (int.Parse(jsondata.EventInfo.Split('@')[2]))
     {
       case 0:
@@ -287,11 +274,11 @@ public class EventHolder
   /// <param name="eventdata"></param>
   /// <param name="success"></param>
   /// <param name="tendency"></param>
-  public void RemoveEvent(EventDataDefulat eventdata,bool success,int tendency)
+  public void RemoveEvent(EventData eventdata,bool success,int tendency)
   {
     if (GameManager.Instance.MyGameData.SuccessEvent_All.Contains(eventdata.ID) || GameManager.Instance.MyGameData.FailEvent_All.Contains(eventdata.ID)) return;
 
-    if (eventdata.GetType() == typeof(QuestEventData_Wolf))
+    if (eventdata.EventType==EventTypeEnum.Cult)
     {
       if (success) GameManager.Instance.MyGameData.SuccessEvent_All.Add(eventdata.ID);
       else GameManager.Instance.MyGameData.FailEvent_All.Add(eventdata.ID);
@@ -349,169 +336,150 @@ public class EventHolder
   /// </summary>
   /// <param name="envir"></param>
   /// <returns></returns>
-  public EventDataDefulat ReturnOutsideEvent(List<EnvironmentType> envirs)
+  public EventData ReturnOutsideEvent(List<EnvironmentType> envirs)
   {
-    List<EventDataDefulat> _allevents = new List<EventDataDefulat>();
+    List<EventData> _allevents = new List<EventData>();
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
+          if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID)==false) continue;
           if (_questevent.AppearSpace != EventAppearType.Outer) continue;
+          if (_questevent.IsRightSeason == false) continue;
+
           _allevents.Add(_questevent);
         }
         break;
     }
-    foreach (var _follow in AllFollowEvents)
+    foreach (var _event in AllEvent)
     {
-      if (GameManager.Instance.MyGameData.IsAbleEvent(_follow.ID)) continue;
-      if (_follow.IsRightSeason == false) continue;
-      if (_follow.AppearSpace!=EventAppearType.Outer) continue;
-
-      switch (_follow.FollowType)
-      {
-        case FollowTypeEnum.Event:  //이벤트 연계일 경우 
-          List<List<string>> _checktarget = new List<List<string>>();
-          switch (_follow.FollowTargetSuccess)
-          {
-            case 0:
-              switch (_follow.FollowTendency)
-              {
-                case 0: 
-                  _checktarget.Add (GameManager.Instance.MyGameData.SuccessEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
-                  break;
-                case 1: 
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material); break;
-                case 2: 
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
-              }
-              break;
-            case 2:
-              switch (_follow.FollowTendency)
-              {
-                case 0:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
-                  break;
-                case 1:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
-                case 2:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
-              }
-              break;
-            case 3:
-              switch (_follow.FollowTendency)
-              {
-                case 0:
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
-                  break;
-                case 1:
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
-                case 2:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); 
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
-              }
-              break;
-          }
-          foreach (var _list in _checktarget)
-            if(_list.Contains(_follow.ID))
-            _allevents.Add(_follow);
-          break;
-    /*    case FollowTypeEnum.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-          if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _allevents.Add(_follow);
-          foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-            if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);*/
-          break;
-        case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
-          int _targetlevel = 0;
-          SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
-          switch (_follow.FollowTarget)
-          {
-            case "0"://대화 테마
-              _type = SkillTypeEnum.Conversation; break;
-            case "1"://무력 테마
-              _type = SkillTypeEnum.Force; break;
-            case "2"://생존 테마
-              _type = SkillTypeEnum.Wild; break;
-            case "3"://학식 테마
-              _type = SkillTypeEnum.Intelligence; break;
-          }
-          _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
-          if (_follow.FollowTargetLevel <= _targetlevel) _allevents.Add(_follow);
-          break;
-      }
-    }
-    foreach (var _event in AllNormalEvents)
-    {
-      if (!GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
+      if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
       if (_event.IsRightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
 
-      _allevents.Add(_event);
-    }//해당 장소의 적합한 일반 이벤트 리스트
+      switch (_event.EventType)
+      {
+        case EventTypeEnum.Default:
+          _allevents.Add(_event);
+          break;
+        case EventTypeEnum.Follow:
+          switch (_event.FollowType)
+          {
+            case FollowTypeEnum.Event:  //이벤트 연계일 경우 
+              List<List<string>> _checktarget = new List<List<string>>();
+              switch (_event.FollowTargetSuccess)
+              {
+                case 0:
+                  switch (_event.FollowTendency)
+                  {
+                    case 0:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                      break;
+                    case 1:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material); break;
+                    case 2:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+                  }
+                  break;
+                case 2:
+                  switch (_event.FollowTendency)
+                  {
+                    case 0:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                      break;
+                    case 1:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                    case 2:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
+                  }
+                  break;
+                case 3:
+                  switch (_event.FollowTendency)
+                  {
+                    case 0:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                      break;
+                    case 1:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                    case 2:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+                  }
+                  break;
+              }
+              foreach (var _list in _checktarget)
+                if (_list.Contains(_event.ID))
+                {
+                  _allevents.Add(_event);
+                  break;
+                }
+              break;
+            case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+              int _targetlevel = 0;
+              SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
+              switch (_event.FollowTarget)
+              {
+                case "0"://대화 테마
+                  _type = SkillTypeEnum.Conversation; break;
+                case "1"://무력 테마
+                  _type = SkillTypeEnum.Force; break;
+                case "2"://생존 테마
+                  _type = SkillTypeEnum.Wild; break;
+                case "3"://학식 테마
+                  _type = SkillTypeEnum.Intelligence; break;
+              }
+              _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
+              if (_event.FollowTargetLevel <= _targetlevel)
+                 _allevents.Add(_event);
+              break;
+          }
+          break;
+      }
+    }
 
-    List<EventDataDefulat> _envirevents = new List<EventDataDefulat>();
-    List<EventDataDefulat> _noenvirevents = new List<EventDataDefulat>();
-    for (int i = 0; i < _allevents.Count; i++)
+    List<string> _eventlist= new List<string>();
+    for(int i = 0; i < _allevents.Count; i++)
     {
-      if (envirs.Contains(_allevents[i].EnvironmentType)) _envirevents.Add(_allevents[i]);
-      else if (_allevents[i].EnvironmentType == EnvironmentType.NULL) _noenvirevents.Add(_allevents[i]);
-    }
-    _allevents.Clear();
-    if (_envirevents.Count > 0 && _noenvirevents.Count > 0)
-    {
-      if (UnityEngine.Random.Range(0, ConstValues.EventPer_Envir + ConstValues.EventPer_NoEnvir) < ConstValues.EventPer_Envir)
-        foreach (var _event in _envirevents) _allevents.Add(_event);
-      else
-        foreach (var _event in _noenvirevents) _allevents.Add(_event);
-    }
-    else if (_envirevents.Count == 0 && _noenvirevents.Count > 0)
-    {
-      foreach (var _event in _noenvirevents) _allevents.Add(_event);
-    }
-    else if (_envirevents.Count > 0 && _noenvirevents.Count == 0)
-    {
-      foreach (var _event in _envirevents) _allevents.Add(_event);
+      int _count = 0;
+      EventData _event = _allevents[i];
+      switch(_event.EventType)
+      {
+        case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal;break;
+        case EventTypeEnum.Follow: _count += ConstValues.EventPer_Follow;break;
+        case EventTypeEnum.Cult: _count += ConstValues.EventPer_Quest;break;
+      }
+
+      if (envirs.Contains(_event.EnvironmentType)) _count *= ConstValues.EventPer_Envir;
+      else _count *= ConstValues.EventPer_NoEnvir;
+
+      for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);
     }
 
-    List<EventDataDefulat> _questevents = new List<EventDataDefulat>();
-    List<EventDataDefulat> _followevents = new List<EventDataDefulat>();
-    List<EventDataDefulat> _normalevents = new List<EventDataDefulat>();
-    foreach (var _event in _allevents)
-    {
-      if (_event.GetType() == typeof(QuestEventData_Wolf)) _questevents.Add(_event);
-      else if (_event.GetType() == typeof(FollowEventData)) _followevents.Add(_event);
-      else if (_event.GetType() == typeof(EventData)) _normalevents.Add(_event);
-    }
-    _allevents.Clear();
-    Dictionary<List<EventDataDefulat>, int> _dic = new Dictionary<List<EventDataDefulat>, int>();
-    if(_questevents.Count>0) _dic.Add(_questevents, ConstValues.EventPer_Quest);
-    if(_followevents.Count>0) _dic.Add(_followevents, ConstValues.EventPer_Follow);
-    if(_normalevents.Count>0) _dic.Add(_normalevents, ConstValues.EventPer_Normal);
-    var _result = GetListByRatio(_dic);
 
-    if (_result == null || _result.Count == 0)
-    {
-      return DefaultEvent_Outer;
-    }
-    else
-    {
-      return _result[UnityEngine.Random.Range(0, _result.Count)];
-    }
+    if (_eventlist.Count == 0) return DefaultEvent_Outer;
+
+    string _resultid = _eventlist[UnityEngine.Random.Range(0, _eventlist.Count)];
+    foreach (EventData _event in _allevents)
+      if (_event.ID == _resultid) return _event;
+
+    Debug.Log("여기까지 올 리가 없는디");
+    return null;
   }
   /// <summary>
   /// 정착지의 장소 이벤트 반환
@@ -521,186 +489,158 @@ public class EventHolder
   /// <param name="placelevel"></param>
   /// <param name="envir"></param>
   /// <returns></returns>
-  public EventDataDefulat ReturnPlaceEvent(SettlementType settletype, SectorTypeEnum sectortype, List<EnvironmentType> envirs)
+  public EventData ReturnPlaceEvent(SettlementType settletype, SectorTypeEnum sectortype, List<EnvironmentType> envirs)
   {
-    List<EventDataDefulat> _allevents= new List<EventDataDefulat>();
+    List<EventData> _allevents = new List<EventData>();
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        foreach(var _questevent in Quest_Cult.GetAvailableEvents())
+        foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
+          if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID)==false) continue;
           if (_questevent.RightSpace(settletype) == false) continue;
+          if (_questevent.IsRightSeason == false) continue;
+
           _allevents.Add(_questevent);
         }
         break;
     }
-    foreach (var _follow in AllFollowEvents)
+    foreach (var _event in AllEvent)
     {
-      if (GameManager.Instance.MyGameData.IsAbleEvent(_follow.ID)) continue;
-      if (_follow.IsRightSeason == false) continue;
-      if (_follow.RightSpace(settletype) == false) continue;
-
-      switch (_follow.FollowType)
-      {
-        case FollowTypeEnum.Event:  //이벤트 연계일 경우 
-          List<List<string>> _checktarget = new List<List<string>>();
-          switch (_follow.FollowTargetSuccess)
-          {
-            case 0:
-              switch (_follow.FollowTendency)
-              {
-                case 0:
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
-                  break;
-                case 1:
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material); break;
-                case 2:
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
-              }
-              break;
-            case 2:
-              switch (_follow.FollowTendency)
-              {
-                case 0:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
-                  break;
-                case 1:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
-                case 2:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
-              }
-              break;
-            case 3:
-              switch (_follow.FollowTendency)
-              {
-                case 0:
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
-                  break;
-                case 1:
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
-                case 2:
-                  _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All);
-                  _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
-              }
-              break;
-          }
-          foreach (var _list in _checktarget)
-            if (_list.Contains(_follow.ID))
-              _allevents.Add(_follow);
-          break;
-        case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
-          int _targetlevel = 0;
-          SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
-          switch (_follow.FollowTarget)
-          {
-            case "0"://대화 테마
-              _type = SkillTypeEnum.Conversation; break;
-            case "1"://무력 테마
-              _type = SkillTypeEnum.Force; break;
-            case "2"://생존 테마
-              _type = SkillTypeEnum.Wild; break;
-            case "3"://학식 테마
-              _type = SkillTypeEnum.Intelligence; break;
-          }
-          _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
-          if (_follow.FollowTargetLevel <= _targetlevel) _allevents.Add(_follow);
-          break;
-      }
-    }
-    foreach (var _event in AllNormalEvents)
-    {
-      if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
+      if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
       if (_event.IsRightSeason == false) continue;
       if (_event.RightSpace(settletype) == false) continue;
 
-      _allevents.Add(_event);
-    }//해당 장소의 적합한 일반 이벤트 리스트
+      switch (_event.EventType)
+      {
+        case EventTypeEnum.Default:
+          _allevents.Add(_event);
+          break;
+        case EventTypeEnum.Follow:
+          switch (_event.FollowType)
+          {
+            case FollowTypeEnum.Event:  //이벤트 연계일 경우 
+              List<List<string>> _checktarget = new List<List<string>>();
+              switch (_event.FollowTargetSuccess)
+              {
+                case 0:
+                  switch (_event.FollowTendency)
+                  {
+                    case 0:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                      break;
+                    case 1:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material); break;
+                    case 2:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+                  }
+                  break;
+                case 2:
+                  switch (_event.FollowTendency)
+                  {
+                    case 0:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                      break;
+                    case 1:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                    case 2:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
+                  }
+                  break;
+                case 3:
+                  switch (_event.FollowTendency)
+                  {
+                    case 0:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
+                      break;
+                    case 1:
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Material);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Physical);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Material); break;
+                    case 2:
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
+                  }
+                  break;
+              }
+              foreach (var _list in _checktarget)
+                if (_list.Contains(_event.ID))
+                {
+                  _allevents.Add(_event);
+                  break;
+                }
+              break;
+              /*    case FollowTypeEnum.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
+                    if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _allevents.Add(_follow);
+                    foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
+                      if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);*/
+              break;
+            case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+              int _targetlevel = 0;
+              SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
+              switch (_event.FollowTarget)
+              {
+                case "0"://대화 테마
+                  _type = SkillTypeEnum.Conversation; break;
+                case "1"://무력 테마
+                  _type = SkillTypeEnum.Force; break;
+                case "2"://생존 테마
+                  _type = SkillTypeEnum.Wild; break;
+                case "3"://학식 테마
+                  _type = SkillTypeEnum.Intelligence; break;
+              }
+              _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
+              if (_event.FollowTargetLevel <= _targetlevel)
+                _allevents.Add(_event);
+              break;
+          }
+          break;
+      }
+    }
 
-    List<EventDataDefulat> _envirevents= new List<EventDataDefulat>();
-    List<EventDataDefulat> _noenvirevents = new List<EventDataDefulat>();
-    for(int i = 0; i < _allevents.Count; i++)
+    List<string> _eventlist = new List<string>();
+    for (int i = 0; i < _allevents.Count; i++)
     {
-      if (envirs.Contains(_allevents[i].EnvironmentType)) _envirevents.Add(_allevents[i]);
-      else if (_allevents[i].EnvironmentType == EnvironmentType.NULL) _noenvirevents.Add(_allevents[i]);
-    }
-    _allevents.Clear();
-    if (_envirevents.Count > 0 && _noenvirevents.Count > 0)
-    {
-      if(UnityEngine.Random.Range(0,ConstValues.EventPer_Envir+ConstValues.EventPer_NoEnvir)<ConstValues.EventPer_Envir)
-        foreach (var _event in _envirevents) _allevents.Add(_event);
-      else
-        foreach (var _event in _noenvirevents) _allevents.Add(_event);
-    }
-    else if (_envirevents.Count == 0 && _noenvirevents.Count > 0)
-    {
-      foreach(var _event in _noenvirevents)_allevents.Add(_event);
-    }
-    else if (_envirevents.Count > 0 && _noenvirevents.Count == 0)
-    {
-      foreach (var _event in _envirevents) _allevents.Add(_event);
+      int _count = 0;
+      EventData _event = _allevents[i];
+      switch (_event.EventType)
+      {
+        case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal; break;
+        case EventTypeEnum.Follow: _count += ConstValues.EventPer_Follow; break;
+        case EventTypeEnum.Cult: _count += ConstValues.EventPer_Quest; break;
+      }
+
+      if (envirs.Contains(_event.EnvironmentType)) _count *= ConstValues.EventPer_Envir;
+      else _count *= ConstValues.EventPer_NoEnvir;
+
+      if (_event.Sector == sectortype) _count *= ConstValues.EventPer_Sector;
+      else _count *= ConstValues.EventPer_NoSector;
+
+
+      for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);
     }
 
-    List<EventDataDefulat> _sectorevents = new List<EventDataDefulat>();
-    List<EventDataDefulat> _notsectorevents= new List<EventDataDefulat>();
-    foreach(var _event in _allevents)
-    {
-      if(sectortype==_event.Sector)_sectorevents.Add(_event);
-      else _notsectorevents.Add(_event);
-    }
-    if (_sectorevents.Count > 0 && _notsectorevents.Count > 0)
-    {
-      if (UnityEngine.Random.Range(0, ConstValues.EventPer_Sector + ConstValues.EventPer_NoSector) < ConstValues.EventPer_Sector)
-        foreach (var _event in _sectorevents) _allevents.Add(_event);
-      else
-        foreach (var _event in _notsectorevents) _allevents.Add(_event);
-    }
-    else if (_sectorevents.Count == 0 && _notsectorevents.Count > 0)
-    {
-      foreach (var _event in _notsectorevents) _allevents.Add(_event);
-    }
-    else if (_sectorevents.Count > 0 && _notsectorevents.Count == 0)
-    {
-      foreach (var _event in _sectorevents) _allevents.Add(_event);
-    }
+    if (_eventlist.Count == 0) return DefaultEvent_Outer;
 
-    List<EventDataDefulat> _questevents= new List<EventDataDefulat>();
-    List<EventDataDefulat> _followevents= new List<EventDataDefulat>();
-    List<EventDataDefulat> _normalevents=new List<EventDataDefulat>();
-    foreach(var _event in _allevents)
-    {
-      if (_event.GetType() == typeof(QuestEventData_Wolf)) _questevents.Add(_event);
-      else if(_event.GetType()==typeof(FollowEventData))_followevents.Add(_event);
-      else if(_event.GetType()==typeof(EventData))_normalevents.Add(_event);
-    }
-    _allevents.Clear();
-    Dictionary<List<EventDataDefulat>, int> _dic = new Dictionary<List<EventDataDefulat>, int>();
-    _dic.Add(_questevents, ConstValues.EventPer_Quest);
-    if (_questevents.Count > 0) _dic.Add(_questevents, ConstValues.EventPer_Quest);
-    if (_followevents.Count > 0) _dic.Add(_followevents, ConstValues.EventPer_Follow);
-    if (_normalevents.Count > 0) _dic.Add(_normalevents, ConstValues.EventPer_Normal);
-    var _result = GetListByRatio(_dic);
+    string _resultid = _eventlist[UnityEngine.Random.Range(0, _eventlist.Count)];
+    foreach (EventData _event in _allevents)
+      if (_event.ID == _resultid) return _event;
 
-    if (_result == null|| _result.Count == 0)
-    {
-      return DefaultEvent_Settlement;
-    }
-    else
-      return _result[UnityEngine.Random.Range(0,_result.Count)];
+    Debug.Log("여기까지 올 리가 없는디");
+    return null;
   }
   private List<T> GetListByRatio<T>(Dictionary<List<T>,int> listAndvalue)
   {
@@ -744,9 +684,27 @@ public enum SelectionTypeEnum { Single,Body, Head,Tendency,Experience }// (Verti
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTypeEnum {None, Status,Skill, Experience }
 public enum EventSequence { Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
+public enum EventTypeEnum { Default,Follow,Cult}
 #endregion  
-public class EventDataDefulat
+public class EventData
 {
+  public EventTypeEnum EventType = EventTypeEnum.Default;
+
+  public FollowTypeEnum FollowType = 0;
+  public string FollowTarget = "";
+  public int FollowTargetLevel = 0;
+  /// <summary>
+  /// 0:성공 1:실패 2:노상관
+  /// </summary>
+  public int FollowTargetSuccess = 0;
+  /// <summary>
+  /// 0:왼쪽 1:오른쪽 2:노상관
+  /// </summary>
+  public int FollowTendency = 0;
+
+  public string EndingID = "";
+
+
   /// <summary>
   /// "Event_이름"
   /// </summary>
@@ -806,7 +764,7 @@ public class EventDataDefulat
       if (EnableSeasons.Count == 0) return true;
       else
       {
-        if (EnableSeasons.Contains(GameManager.Instance.MyGameData.Turn - 1)) return true;
+        if (EnableSeasons.Contains(GameManager.Instance.MyGameData.Turn)) return true;
       }
       return false;
     }
@@ -842,7 +800,7 @@ public class EventDataDefulat
 }
 public class SelectionData
 {
-  private EventDataDefulat MyEvent = null;
+  private EventData MyEvent = null;
   public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;
   /// <summary>
   /// 0,1
@@ -852,13 +810,13 @@ public class SelectionData
   /// 성향 없는 경우
   /// </summary>
   /// <param name="myevent"></param>
-  public SelectionData(EventDataDefulat myevent)
+  public SelectionData(EventData myevent)
   {
     MyEvent = myevent;
     Tendencytype = TendencyTypeEnum.None;
     Index = 0;
   }
-  public SelectionData(EventDataDefulat myevent,TendencyTypeEnum tendencytype, int index)
+  public SelectionData(EventData myevent,TendencyTypeEnum tendencytype, int index)
   {
     MyEvent = myevent;Index = index; Tendencytype = tendencytype;
   }
@@ -879,23 +837,23 @@ public class SelectionData
 
 
   public SuccessData SuccessData = null;
-  public FailureData FailureData = null;
+  public FailData FailureData = null;
 }    
 
-public class FailureData
+public class FailData
 {
-  private EventDataDefulat MyEvent = null;
+  private EventData MyEvent = null;
   public int Index = 0;
   public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;
   /// <summary>
   /// 성향 없는 경우
   /// </summary>
   /// <param name="myevent"></param>
-  public FailureData(EventDataDefulat myevent)
+  public FailData(EventData myevent)
   {
     MyEvent = myevent; Index = 0; Tendencytype = TendencyTypeEnum.None;
   }
-  public FailureData(EventDataDefulat myevent,TendencyTypeEnum tendencytype, int index)
+  public FailData(EventData myevent,TendencyTypeEnum tendencytype, int index)
   {
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
@@ -924,11 +882,11 @@ public class FailureData
       return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID, TypeID, Descriptions.Count);
     }
   }
-  public PenaltyTarget Panelty_target;
-  public StatusTypeEnum Loss_target= StatusTypeEnum.HP;
+  public PenaltyTarget Penelty_target;
+  public StatusTypeEnum StatusType= StatusTypeEnum.HP;
   public string ExpID;
 }
-public class GoldFailData : FailureData
+public class GoldFailData : FailData
 {
   public GoldFailData() : base(null,TendencyTypeEnum.None, -1) { }
   public string Description = "";
@@ -939,13 +897,13 @@ public enum StatusTypeEnum { HP,Sanity,Gold}
 public class SuccessData
 {
   public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;
-  private EventDataDefulat MyEvent = null;
+  private EventData MyEvent = null;
   public int Index = 0;
   /// <summary>
   /// 성향 없는 경우
   /// </summary>
   /// <param name="myevent"></param>
-  public SuccessData(EventDataDefulat myevent,TendencyTypeEnum tendencytype, int index)
+  public SuccessData(EventData myevent,TendencyTypeEnum tendencytype, int index)
   {
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
@@ -981,37 +939,6 @@ public class SuccessData
   public string Reward_EXPID;
 }
 
-public class EventData:EventDataDefulat
-{
-}//기본 이벤트
-public class FollowEventData:EventDataDefulat
-{
-  public FollowTypeEnum FollowType = 0;
-  public string FollowTarget = "";
-  public int FollowTargetLevel = 0;
-  /// <summary>
-  /// 0:성공 1:실패 2:노상관
-  /// </summary>
-  public int FollowTargetSuccess = 0;
-  /// <summary>
-  /// 0:왼쪽 1:오른쪽 2:노상관
-  /// </summary>
-  public int FollowTendency = 0; 
-
-  public FollowEndingData EndingData = null;
-}//연계 이벤트
-public class FollowEndingData
-{
-  public string ID = "";
-  public Sprite Illust = null;
-  public string Name = "";
-  public string Description = "";
-}
-public class QuestEventData_Wolf : EventDataDefulat
-{
-  public QuestType Type;
-  public QuestEnum_Cult EventType;
-}
 public enum QuestType { Cult}
 public enum QuestEnum_Cult { None,Prologue,Starting, Public, Sabbat,Ritual}
 public class Quest
@@ -1069,17 +996,17 @@ public class QuestHolder_Cult:Quest
   public string Prologue_8_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_8_Description"); } }
   #endregion
 
-  public List<QuestEventData_Wolf> Events_Cult_0to30 = new List<QuestEventData_Wolf>(); 
-  public List<QuestEventData_Wolf> Events_Cult_30to60 = new List<QuestEventData_Wolf>();
-  public List<QuestEventData_Wolf> Events_Cult_60to100 = new List<QuestEventData_Wolf>();
+  public List<EventData> Events_Cult_0to30 = new List<EventData>(); 
+  public List<EventData> Events_Cult_30to60 = new List<EventData>();
+  public List<EventData> Events_Cult_60to100 = new List<EventData>();
 
   /// <summary>
   /// Phase에 맞춰 사용 가능한 이벤트들을 반환(0,1,2)
   /// </summary>
   /// <returns></returns>
-  public List<EventDataDefulat> GetAvailableEvents()
+  public List<EventData> GetAvailableEvents()
   {
-    List<List<QuestEventData_Wolf>> _availablelists = new List<List<QuestEventData_Wolf>>();
+    List<List<EventData>> _availablelists = new List<List<EventData>>();
 
     _availablelists.Add(Events_Cult_0to30);
     if (GameManager.Instance.MyGameData.Quest_Cult_Phase>0)
@@ -1087,7 +1014,7 @@ public class QuestHolder_Cult:Quest
     if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 1)
       _availablelists.Add(Events_Cult_60to100);
 
-    List<EventDataDefulat> _availableevents=new List<EventDataDefulat>();
+    List<EventData> _availableevents=new List<EventData>();
     foreach(var list in _availablelists)
       foreach(var _event in list) _availableevents.Add(_event);
 
@@ -1098,30 +1025,53 @@ public class QuestHolder_Cult:Quest
   {
     get
     {
-      int _count = GameManager.Instance.ImageHolder.Cult_Settlement.Count / 4;
+      int _count = GameManager.Instance.ImageHolder.Cult_Settlement.Count;
       int _index=UnityEngine.Random.Range(0,_count);
-      if (GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Count < _count)
-      while(!GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
 
-      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Settlement[_index * 4 + GameManager.Instance.MyGameData.Turn];
-      string _filename = _illust.name.Split('_')[0];
+      if (GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Count == _count)
+      {
+        return new Tuple<Sprite, string, string>
+          (
+          GameManager.Instance.ImageHolder.Cult_Settlement[GameManager.Instance.MyGameData.Turn],
+          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Settlement_0_description")),
+          GameManager.Instance.GetTextData("Cult_Settlement_0_selecting")
+          );
+      }
+
+      while(GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
+
+      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Settlement[_index];
+      string _filename = "Cult_Settlement_"+_index.ToString()+"_";
+      GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Add(_index);
       return new Tuple<Sprite, string, string>(
         _illust,
-        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename+"_description")),
-        GameManager.Instance.GetTextData(_filename+"_selecting"));
+        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename+"description")),
+        GameManager.Instance.GetTextData(_filename+"selecting"));
     }
   }
   public Tuple<Sprite, string, string> GetSabbatData
   {
     get
     {
-      int _count = GameManager.Instance.ImageHolder.Cult_Sabbat.Count / 4;
+      int _count = GameManager.Instance.ImageHolder.Cult_Sabbat.Count ;
       int _index = UnityEngine.Random.Range(0, _count);
-      if (GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Count < _count)
-        while (!GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
 
-      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Sabbat[_index * 4 + GameManager.Instance.MyGameData.Turn];
-      string _filename = _illust.name.Split('_')[0];
+      if (GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Count == _count)
+      {
+        return new Tuple<Sprite, string, string>
+          (
+          GameManager.Instance.ImageHolder.Cult_Sabbat[GameManager.Instance.MyGameData.Turn],
+          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Sabbat_0_description")),
+          GameManager.Instance.GetTextData("Cult_Sabbat_0_selecting")
+          );
+      }
+
+
+      while (GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
+
+      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Sabbat[_index];
+      string _filename = "Cult_Sabbat_" + _index.ToString() + "_";
+      GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Add(_index);
       return new Tuple<Sprite, string, string>(
         _illust,
         WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")),
@@ -1132,13 +1082,24 @@ public class QuestHolder_Cult:Quest
   {
     get
     {
-      int _count = GameManager.Instance.ImageHolder.Cult_Ritual.Count / 4;
+      int _count = GameManager.Instance.ImageHolder.Cult_Ritual.Count;
       int _index = UnityEngine.Random.Range(0, _count);
-      if (GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Count < _count)
-        while (!GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
 
-      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Ritual[_index * 4 + GameManager.Instance.MyGameData.Turn];
-      string _filename = _illust.name.Split('_')[0];
+      if (GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Count == _count)
+      {
+        return new Tuple<Sprite, string, string>
+          (
+          GameManager.Instance.ImageHolder.Cult_Ritual[GameManager.Instance.MyGameData.Turn],
+          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Ritual_0_description")),
+          GameManager.Instance.GetTextData("Cult_Ritual_0_selecting")
+          );
+      }
+
+      while (GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
+
+      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Ritual[_index ];
+      string _filename = "Cult_Ritual_" + _index.ToString() + "_";
+      GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Add(_index);
       return new Tuple<Sprite, string, string>(
         _illust,
         WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")),
@@ -1154,23 +1115,63 @@ public class QuestHolder_Cult:Quest
       switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
       {
         case 1:
-          _list = GameManager.Instance.ImageHolder.Cult_30;
+          _list = GameManager.Instance.ImageHolder.Cult_ToPhase1;
           _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_30");
           break;
         case 2:
-          _list = GameManager.Instance.ImageHolder.Cult_60;
+          _list = GameManager.Instance.ImageHolder.Cult_ToPhase2;
           _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_60");
           break;
         case 3:
-          _list = GameManager.Instance.ImageHolder.Cult_100;
-          _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_100");
           break;
       }
-
-      return new Tuple<Sprite, string>(_list[UnityEngine.Random.Range(0, _list.Count)], _description);
+      int _index = UnityEngine.Random.Range(0, _list.Count);
+      return new Tuple<Sprite, string>(_list[_index], _description.Split('@')[UnityEngine.Random.Range(0, _list.Count)]);
     }
   }
+  public Tuple<List<Sprite>,List<string>,string,string> EndingDatas
+  {
+    get
+    {
+      int _beforebody = 6;
+      int _afterbody = _beforebody + 3;
+      List<Sprite> _endingillusts= new List<Sprite>();
+      var _stringraw = GameManager.Instance.GetTextData("Quest0_Ending_Idle").Split('@');
+      List<string> _descriptions = new List<string>();
 
+      for (int i = 0; i < _beforebody; i++)
+      {
+        _endingillusts.Add(GameManager.Instance.ImageHolder.CultEnding_Illusts[i]);
+        _descriptions.Add(_stringraw[i]);
+      }
+
+      _endingillusts.Add(GameManager.Instance.MyGameData.Tendency_Body.Level < 0 ?
+        GameManager.Instance.ImageHolder.CultEnding_Rational :
+        GameManager.Instance.ImageHolder.CultEnding_Physical);
+      _descriptions.Add(GameManager.Instance.MyGameData.Tendency_Body.Level < 0 ?
+        GameManager.Instance.GetTextData("Quest0_Ending_Rational") :
+        GameManager.Instance.GetTextData("Quest0_Ending_Physical"));
+
+      for (int i = _beforebody; i < _afterbody; i++)
+      {
+        _endingillusts.Add(GameManager.Instance.ImageHolder.CultEnding_Illusts[i]);
+        _descriptions.Add(_stringraw[i]);
+      }
+
+      _endingillusts.Add(GameManager.Instance.MyGameData.Tendency_Head.Level < 0 ?
+        GameManager.Instance.ImageHolder.CultEnding_Mental :
+        GameManager.Instance.ImageHolder.CultEnding_Material);
+      _descriptions.Add(GameManager.Instance.MyGameData.Tendency_Head.Level < 0 ?
+        GameManager.Instance.GetTextData("Quest0_Ending_Mental") :
+        GameManager.Instance.GetTextData("Quest0_Ending_Material"));
+
+      _endingillusts.Add(GameManager.Instance.ImageHolder.CultEnding_Last);
+      _descriptions.Add(_stringraw[_stringraw.Length - 1]);
+
+      return new Tuple<List<Sprite>, List<string>, string, string>(_endingillusts, _descriptions,
+        GameManager.Instance.GetTextData("Quest0_Ending_LastWord"), GameManager.Instance.GetTextData("Quest0_Ending_End"));
+    }
+  }
 }
 [System.Serializable]
 public class EventJsonData

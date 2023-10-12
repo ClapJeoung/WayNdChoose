@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 public class PreviewSelectionTendency : MonoBehaviour
 {
-  [SerializeField] private CanvasGroup ProgressGroup = null;
+  [SerializeField] private GameObject EnableObj = null;
   [SerializeField] private Image LeftIcon = null;
   [SerializeField] private GameObject[] Arrows = new GameObject[3];
   [SerializeField] private Image[] ArrowImages=new Image[3];
@@ -14,7 +14,7 @@ public class PreviewSelectionTendency : MonoBehaviour
   [SerializeField] private Image[] ArrowEffectImages=new Image[3];
   [SerializeField] private Image RightIcon = null;
   [Space(10)]
-  [SerializeField] private CanvasGroup NoneProgressGroup = null;
+  [SerializeField] private GameObject DisableObj = null;
   [SerializeField] private Image NoneProgressIcon = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI ProgressText = null;
@@ -23,9 +23,9 @@ public class PreviewSelectionTendency : MonoBehaviour
     if ((tendency.Level.Equals(-2) && dir.Equals(true)) || (tendency.Level.Equals(2) && dir.Equals(false)))
     {
       Debug.Log("성향 진행 불가");
-      ProgressGroup.alpha = 0.0f;
-      NoneProgressGroup.alpha = 1.0f;
 
+      if (EnableObj.activeInHierarchy == true) EnableObj.SetActive(false);
+      if (DisableObj.activeInHierarchy == false) DisableObj.SetActive(true);
       Sprite _limiticon = tendency.CurrentIcon;
       string _limittext = null;
       switch (tendency.Type)
@@ -41,8 +41,9 @@ public class PreviewSelectionTendency : MonoBehaviour
       ProgressText.text = _limittext;
     }
     else {
-      ProgressGroup.alpha = 1.0f;
-      NoneProgressGroup.alpha = 0.0f;
+      if (EnableObj.activeInHierarchy == false) EnableObj.SetActive(true);
+      if (DisableObj.activeInHierarchy == true) DisableObj.SetActive(false);
+
       Sprite _lefticon = null, _righticon = null;
       Sprite _currenticon = tendency.CurrentIcon;
       Sprite _nexticon = tendency.GetNextIcon(dir);
@@ -61,6 +62,7 @@ public class PreviewSelectionTendency : MonoBehaviour
       int _effectindex = 0;
       string _selectionname = "";
       int _requireprogress =0;
+      ProgressText.text = "";
       switch (tendency.Level)
       {
         case -2:
@@ -78,7 +80,7 @@ public class PreviewSelectionTendency : MonoBehaviour
               GameManager.Instance.GetTextData("Selection_Material");
             _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
 
-            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
+         //   ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           break;
         case -1:
@@ -92,7 +94,7 @@ public class PreviewSelectionTendency : MonoBehaviour
      GameManager.Instance.GetTextData("Selection_Mental");
             _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
 
-            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Progress"), _selectionname, _requireprogress);
+        //    ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Progress"), _selectionname, _requireprogress);
           }
           else
           {
@@ -104,7 +106,7 @@ public class PreviewSelectionTendency : MonoBehaviour
          GameManager.Instance.GetTextData("Selection_Material");
             _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
 
-            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
+        //    ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           break;
         case 1:
@@ -118,7 +120,7 @@ GameManager.Instance.GetTextData("Selection_Rational") :
 GameManager.Instance.GetTextData("Selection_Mental");
             _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
 
-            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
+       //     ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           else
           {
@@ -130,7 +132,7 @@ GameManager.Instance.GetTextData("Selection_Mental");
      GameManager.Instance.GetTextData("Selection_Material");
             _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
 
-            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Progress"), _selectionname, _requireprogress);
+        //    ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Progress"), _selectionname, _requireprogress);
           }
           break;
         case 2:
@@ -144,7 +146,7 @@ GameManager.Instance.GetTextData("Selection_Rational") :
 GameManager.Instance.GetTextData("Selection_Mental");
             _requireprogress = _arrowcount - Mathf.Abs(_effectindex);
 
-            ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
+         //   ProgressText.text = string.Format(GameManager.Instance.GetTextData("SelectionTendency_Regress"), _selectionname, _requireprogress);
           }
           else
           {
@@ -199,7 +201,7 @@ GameManager.Instance.GetTextData("Selection_Mental");
     private IEnumerator arroweffect(CanvasGroup group)
   {
     group.alpha = 1.0f;
-    float _time = 0.0f, _targettime = 0.7f;
+    float _time = 0.0f, _targettime = 1.0f;
     float _alpha = 0.0f;
     while (true)
     {

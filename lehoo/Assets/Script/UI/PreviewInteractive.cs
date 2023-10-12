@@ -79,23 +79,19 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.RewardExp:
         UIManager.Instance.PreviewManager.OpenRewardExpPreview(MyEXP, transform as RectTransform); break;
       case PreviewPanelType.RewardExpSelect_long:
-        _exp = GameManager.Instance.MyGameData.LongExp;
-        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,true, transform as RectTransform);
+        _exp = UIManager.Instance.ExpRewardUI.CurrentExp;
+        if (MyEXP == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, true, transform as RectTransform);
         else
         {
-          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP, true, transform as RectTransform);
-          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"), transform as RectTransform);
-          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"), transform as RectTransform);
+          UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(MyEXP, _exp, false, transform as RectTransform);
         }
         break;
       case PreviewPanelType.RewardExpSelect_short:
-        _exp = ExpIndex == 0 ? GameManager.Instance.MyGameData.ShortExp_A : GameManager.Instance.MyGameData.ShortExp_B;
-        if (_exp == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(MyEXP,false, transform as RectTransform);
+        _exp = UIManager.Instance.ExpRewardUI.CurrentExp;
+        if (MyEXP == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, false, transform as RectTransform);
         else
         {
-          if (_exp.ExpType.Equals(ExpTypeEnum.Normal)) UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(_exp, MyEXP,false, transform as RectTransform);
-          else if (_exp.ExpType == ExpTypeEnum.Bad) UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEBADEXP_NAME"), transform as RectTransform);
-          else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("CANNOTCHANGEMADNESS_NAME"), transform as RectTransform);
+          UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(MyEXP, _exp, false, transform as RectTransform);
         }
         break;
       case PreviewPanelType.Discomfort:
