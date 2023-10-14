@@ -176,66 +176,6 @@ public class Settlement
 }
 public class MapData
 {
-  public void CreateRitualCoordinate()
-  {
-    List<TileData> _ritualtiles=new List<TileData>();
-    HexDir _dir = HexDir.BottomLeft;
-    int _range = 1;
-    for(int i = 0; i<3; i++)
-    {
-      _dir = (HexDir)(i * 2);
-
-      TileData _targetcenter = GetDirLines(CenterTile, _dir)[Random.Range(3, ConstValues.LandRadius - 2)];
-
-      List<TileData> _availablelist= new List<TileData>();
-      foreach(var _tile in GetAroundTile(_targetcenter, _range))
-      {
-        if (_tile.Interactable == false) continue;
-        if (_tile.TileSettle != null) continue;
-
-        _availablelist.Add(_tile);
-      }
-      if (_availablelist.Count == 0)
-      {
-        _range++;
-        i--;
-        continue;
-      }
-      else
-      {
-        _ritualtiles.Add(_availablelist[Random.Range(0,_availablelist.Count)]);
-        _range = 1;
-      }
-    }
-    for(int i = 0; i < _ritualtiles.Count; i++)
-    {
-      _ritualtiles[i].Landmark = LandmarkType.Ritual;
-      _ritualtiles[i].ButtonScript.LandmarkImage.sprite = UIManager.Instance.MyMap.MapCreater.MyTiles.GetTile(_ritualtiles[i].landmarkSprite);
-    }
-  }
-  /// <summary>
-  /// 어짜피 주위 2개만 선택 가능하니까 계산 없이 하드코딩으로
-  /// </summary>
-  /// <param name="start"></param>
-  /// <param name="end"></param>
-  /// <returns></returns>
-  public int GetLength(TileData start, TileData end)
-  {
-    if (start.Coordinate == end.Coordinate) return 0;
-
-    Vector2Int _distnace= end.Coordinate - start.Coordinate;
-    _distnace=new Vector2Int(Mathf.Abs(_distnace.x),Mathf.Abs(_distnace.y));
-
-    if (_distnace.x == 0) return Mathf.Abs(_distnace.y);
-    else if (_distnace.y == 0) return Mathf.Abs(_distnace.x);
-    else return 2;
-
-  }
-  public int GetLength(Vector2 a, Vector2 b)
-  {
-    if (a == b) return 0;
-    return GetLength(Tile(a), Tile(b));
-  }
   public int CircleHexCount(int range)
   {
     List<Vector2Int> _center=new List<Vector2Int>();

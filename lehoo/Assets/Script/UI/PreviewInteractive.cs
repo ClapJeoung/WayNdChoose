@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel}
+CultSidePanel,SettlementTile}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -20,6 +20,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public Experience MyEXP = null;
   public SectorTypeEnum MyPlaceType = SectorTypeEnum.NULL;
   public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
+  public Settlement MySettleMent = null;
     public void OnPointerEnter(PointerEventData eventData)
     {
     Experience _exp = null;
@@ -105,10 +106,10 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.MadnessRefuse:
         break;
       case PreviewPanelType.MoveCostSanity:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MyMap.SanityCost)), transform as RectTransform);
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MapUI.SanityCost)), transform as RectTransform);
         break;
       case PreviewPanelType.MoveCostGold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), WNCText.GetGoldColor(UIManager.Instance.MyMap.GoldCost)), transform as RectTransform);
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), WNCText.GetGoldColor(UIManager.Instance.MapUI.GoldCost)), transform as RectTransform);
         break;
       case PreviewPanelType.RestSanity:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_SANITY"), transform as RectTransform);
@@ -145,6 +146,10 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,new Vector2(1.1f,1.1f),transform as RectTransform);
         break;
+      case PreviewPanelType.SettlementTile:
+        UIManager.Instance.PreviewManager.OpenSettlementPanel(MySettleMent, transform as RectTransform);
+        break;
+
     }
   }
     public void OnPointerExit(PointerEventData eventData) 

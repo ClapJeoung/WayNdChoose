@@ -458,7 +458,7 @@ public class GameManager : MonoBehaviour
             break;
           case 1:
             MyGameData.CurrentSettlement.Discomfort += discomfort;
-            UIManager.Instance.QuestUI_Cult.AddProgress(3);
+            UIManager.Instance.CultUI.AddProgress(3);
 
             if (MyGameData.Quest_Cult_Phase == 2) MyGameData.Cult_SabbatSector_CoolDown = ConstValues.Quest_Cult_CoolDown;
             break;
@@ -490,12 +490,11 @@ public class GameManager : MonoBehaviour
 
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     MyGameData.Turn++;
-    if (MyGameData.CurrentSettlement != null) MyGameData.DownAllDiscomfort(1);
 
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        UIManager.Instance.QuestUI_Cult.AddProgress(0);
+        UIManager.Instance.CultUI.AddProgress(0);
         break;
     }
   }
@@ -517,7 +516,6 @@ public class GameManager : MonoBehaviour
         break;
     }
     EventHolder.RemoveEvent(MyGameData.CurrentEvent, false, _tendencyindex);
-    if (MyGameData.CurrentSettlement != null) MyGameData.DownAllDiscomfort(1);
 
     MyGameData.CurrentEventSequence = EventSequence.Clear;
     MyGameData.Turn++;
@@ -525,7 +523,7 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        UIManager.Instance.QuestUI_Cult.AddProgress(1);
+        UIManager.Instance.CultUI.AddProgress(1);
 
         break;
     }
@@ -639,16 +637,13 @@ public class GameManager : MonoBehaviour
 
     yield return StartCoroutine(createnewmap());//»õ ¸Ê ¸¸µé±â
 
-    Settlement _randomsettle=MyGameData.MyMapData.AllSettles[UnityEngine.Random.Range(0,MyGameData.MyMapData.AllSettles.Count)];
-    MyGameData.CurrentSettlement= _randomsettle;
-    MyGameData.Coordinate=_randomsettle.Tiles[UnityEngine.Random.Range(0,_randomsettle.Tiles.Count)].Coordinate;
     UIManager.Instance.UpdateAllUI();
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
 
     switch (MyGameData.QuestType)
     {
-      case QuestType.Cult: UIManager.Instance.QuestUI_Cult.OpenUI_Prologue((QuestHolder_Cult)MyGameData.CurrentQuestData); break;
+      case QuestType.Cult: UIManager.Instance.CultUI.OpenUI_Prologue((QuestHolder_Cult)MyGameData.CurrentQuestData); break;
     }
   }
   /// <summary>
@@ -737,7 +732,7 @@ public class GameManager : MonoBehaviour
           case 0:
             if (!MyGameData.Cult_SettlementNames.Contains(targetsettlement.OriginName))
             {
-              UIManager.Instance.QuestUI_Cult.AddProgress(2);
+              UIManager.Instance.CultUI.AddProgress(2);
               MyGameData.Cult_SettlementNames.Add(targetsettlement.OriginName);
             }
             break;
@@ -754,8 +749,27 @@ public class GameManager : MonoBehaviour
         break;
     }
 
-    UIManager.Instance.MySettleUI.OpenUI();
+    UIManager.Instance.MySettleUI.OpenUI(false);
   }
+  public List<HexDir> GetLength(TileData start, TileData end)
+  {
+    Vector2Int _distancevector = end.Coordinate - start.Coordinate;
+
+    HexGrid _hex = new HexGrid(_distancevector);
+
+    return _hex.GetDir;
+  }
+  public List<HexDir> GetLength(Vector2 start, Vector2 end)
+  {
+    return GetLength(MyGameData.MyMapData.Tile(start),
+      MyGameData.MyMapData.Tile(end));
+  }
+  public List<HexDir> GetLength(Vector2Int start, Vector2Int end)
+  {
+    return GetLength(MyGameData.MyMapData.Tile(start),
+      MyGameData.MyMapData.Tile(end));
+  }
+
   [System.Serializable]
   public class Textdata
   {

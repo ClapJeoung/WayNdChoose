@@ -139,7 +139,7 @@ public class DebugScript : MonoBehaviour
     {
       GameManager.Instance.MyGameData.Quest_Cult_Progress = int.Parse(Cult_Progress.text);
 
-      UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+      UIManager.Instance.SidePanelCultUI.UpdateUI();
     }
 
   }

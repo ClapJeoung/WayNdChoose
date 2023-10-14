@@ -20,7 +20,7 @@ public class MapButton : ReturnButton
       }
       else
       {
-        UIManager.Instance.MyDialogue.CloseUI();
+        UIManager.Instance.DialogueUI.CloseUI();
       }
     }
     else if (CurrentUI as UI_Settlement != null)
@@ -33,7 +33,7 @@ public class MapButton : ReturnButton
       }
       else
       {
-        UIManager.Instance.MySettleUI.CloseUI();
+        UIManager.Instance.MySettleUI.CloseUI(false);
         if (GameManager.Instance.MyGameData.Tendency_Head.Level < 0) GameManager.Instance.MyGameData.MovePoint += ConstValues.Tendency_Head_m1;
       }
     }
@@ -44,7 +44,7 @@ public class MapButton : ReturnButton
         switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            if (UIManager.Instance.QuestUI_Cult.IsOpen) UIManager.Instance.QuestUI_Cult.CloseUI_Auto();
+            if (UIManager.Instance.CultUI.IsOpen) UIManager.Instance.CultUI.CloseUI_Auto();
             break;
           case 1:
             break;
@@ -55,9 +55,9 @@ public class MapButton : ReturnButton
     }
 
     UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.4f,false));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.MyMap.AppearTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.MapUI.UIOpenTime_Move));
 
-    UIManager.Instance.MyMap.OpenUI();
+    UIManager.Instance.MapUI.OpenUI();
 
   }
 }

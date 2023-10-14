@@ -127,6 +127,12 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelectNewEffect = null;
   [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
+  [Space(10)]
+  [SerializeField] private GameObject SettlementInfoPanel = null;
+  [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
+  [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
+  [SerializeField] private TextMeshProUGUI SettlementInfoDescription = null;
+
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
   {
@@ -521,7 +527,6 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(TendencyPreview, rect);
   }
-
   private void SetRewardInfo(SuccessData successdata, TextMeshProUGUI rewardtext,Image rewardicon,
     FailData failuredata,TextMeshProUGUI penaltytext,Image penaltyicon)
   {
@@ -810,7 +815,6 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(SelectionElsePanel,rect);
   }
-  //보상 설명 : 체력,정신력,돈 설명?
   public void OpenRewardStatusPreview(StatusTypeEnum status, int _value, RectTransform rect)
   {
     Sprite _icon = null;
@@ -945,11 +949,23 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenDisComfortPanel(RectTransform rect)
   {
-    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.DisComfort, GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION"), DiscomfortPivot, false, rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.DisComfort, 
+     string.Format(GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION"),ConstValues. DiscomfortDownValue,
+     GameManager.Instance.MyGameData.GetDiscomfortValue(GameManager.Instance.MyGameData.CurrentSettlement.Discomfort)),
+      DiscomfortPivot, false, rect);
   }
   public void OpenEnvirPanel(EnvironmentType envir)
   {
   }
+  public void OpenSettlementPanel(Settlement settlement,RectTransform tilerect)
+  {
+    SettlementInfoName.text = settlement.Name;
+    SettlementInfoDiscomfort.text = settlement.Discomfort.ToString();
+    SettlementInfoDescription.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),GameManager.Instance.MyGameData.GetDiscomfortValue(settlement.Discomfort));
+
+    OpenPreviewPanel(SettlementInfoPanel, tilerect);
+  }
+
   private Vector2 Newpos = Vector2.zero;
   public void Update()
   {

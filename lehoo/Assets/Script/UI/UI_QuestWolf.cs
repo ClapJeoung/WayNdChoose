@@ -34,7 +34,7 @@ public class UI_QuestWolf : UI_default
     CurrentPrologueIndex = 0;
     QuestHolder = wolf;
     IsOpen = true;
-    UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+    UIManager.Instance.SidePanelCultUI.UpdateUI();
     UIManager.Instance.AddUIQueue(openui_prologue());
   }
   private IEnumerator openui_prologue()

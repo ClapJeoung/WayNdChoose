@@ -5,10 +5,13 @@ using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
+using UnityEngine.WSA;
 
 public class UI_map : UI_default
 {
   [SerializeField] private RectTransform PlayerRect = null;
+  [SerializeField] private Image Outline_Idle = null;
+  [SerializeField] private Image Outline_Select = null;
   [SerializeField] private float MoveTime = 1.5f;
   private TileData SelectedTile = null;
   public maptext MapCreater = null;
@@ -31,7 +34,15 @@ public class UI_map : UI_default
     Debug.Log("뭔가 이상한 레후~");
     return null;
   }
-  public float AppearTime = 1.2f;
+  public Vector2 OpenPos = new Vector2(0.0f, 375.0f);
+  public Vector2 ClosePos = new Vector2(0.0f, 700.0f);
+  public Vector2 OpenSize = new Vector2(1100.0f, 750.0f);
+  public Vector2 CloseSize = new Vector2(1100.0f, 60.0f);
+  public float UIOpenTime_Fold = 0.7f;
+  public float UIOpenTime_Move = 0.4f;
+  public float UICloseTime_Fold = 0.5f;
+  public float UICloseTime_Move = 0.4f;
+
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private RectTransform HolderRect = null;
   [SerializeField] private RectTransform ScaleRect = null;
@@ -40,26 +51,23 @@ public class UI_map : UI_default
   [SerializeField] private float ZoomInTime = 1.2f;
 
   [SerializeField] private CanvasGroup MoveInfoGroup = null;
-  [SerializeField] private TextMeshProUGUI ProgressGuideText = null;
+  [SerializeField] private TextMeshProUGUI GuidText = null;
+  [SerializeField] private RectTransform GuidRect = null;
+  [SerializeField] private Vector2 GuidPos_Tile = new Vector2(316.0f, 281.0f);
+  [SerializeField] private Vector2 GuidPos_Cost = new Vector2(316.0f, 16.0f);
   [SerializeField] private Image TilePreview_Bottom = null;
   [SerializeField] private Image TilePreview_Top = null;
   [SerializeField] private Image TilePreview_Landmark = null;
-  [SerializeField] private GameObject SettlementInfoHolder = null;
-  [SerializeField] private TextMeshProUGUI SettlementNameText = null;
-  [SerializeField] private TextMeshProUGUI DiscomfortText = null;
-  [SerializeField] private TextMeshProUGUI MoveProgressInfoText = null;
+  [SerializeField] private TextMeshProUGUI TileInfoText = null;
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
   private float MoveButtonDisableAlpha = 0.2f;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
-  [SerializeField] private TextMeshProUGUI MoveDescriptionText = null;
+  [SerializeField] private TextMeshProUGUI MoveCostText = null;
+  [SerializeField] private TextMeshProUGUI ProgressText = null;
   private bool IsRitual = false;
 
-  public Transform SelectTileHolder = null;
-
-  public Color NormalColor = Color.white;
-  public Color DisableColor = Color.grey;
   private List<TileData> ActiveTileData = new List<TileData>();
 
   /// <summary>
@@ -135,11 +143,33 @@ public class UI_map : UI_default
       GameManager.Instance.MyGameData.Cult_RitualTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
       GameManager.Instance.MyGameData.Cult_RitualTile.Landmark = LandmarkType.Ritual;
       GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
-        UIManager.Instance.MyMap.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
+        UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
 
     }
   }
-  
+  public void SetOutline_Idle(TileData tile)
+  {
+    SetOutline(Outline_Idle, tile.Rect);
+
+    if (SelectedTile == null)
+    {
+      TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
+      TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
+      TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
+    }
+  }
+  public void DisableOutline_Idle() => DisableOutline(Outline_Idle);
+  public void SetOutline(Image outline, RectTransform tilerect)
+  {
+    if (outline.enabled == false) outline.enabled = true;
+    outline.rectTransform.position = tilerect.position;
+    outline.rectTransform.anchoredPosition3D = new Vector3(outline.rectTransform.anchoredPosition3D.x, outline.rectTransform.anchoredPosition3D.y, 0.0f);
+  }
+  public void DisableOutline(Image outline)
+  {
+    outline.enabled = false;
+  }
   public void OpenUI()
   {
     IsOpen = true;
@@ -150,68 +180,78 @@ public class UI_map : UI_default
   {
     ResetEnableTiles();
 
+    DisableOutline(Outline_Idle);
+    DisableOutline(Outline_Select);
+
     IsRitual = false;
     MoveInfoGroup.interactable = true;
-    MoveProgressInfoText.text = "";
-    MoveDescriptionText.text = "";
-    if (SettlementInfoHolder.activeInHierarchy == true) SettlementInfoHolder.SetActive(false);
+    GuidRect.anchoredPosition = GuidPos_Tile;
+    GuidText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+    TileInfoText.text = "";
+    MoveCostText.text = "";
+    ProgressText.text = "";
     MovecostButtonGroup.alpha = 0.0f;
     MovecostButtonGroup.interactable = false;
     MovecostButtonGroup.blocksRaycasts = false;
 
     SelectedCostType = StatusTypeEnum.HP;
 
-    if (DefaultGroup.alpha == 1.0f) DefaultGroup.alpha = 0.0f;
-    if (DefaultGroup.interactable == true) DefaultGroup.interactable = false;
-    if (DefaultGroup.blocksRaycasts == true) DefaultGroup.blocksRaycasts = false;
-
-    if (GetPanelRect("myrect").Rect.anchoredPosition == GetPanelRect("myrect").OutisdePos)
-      GetPanelRect("myrect").Rect.anchoredPosition = GetPanelRect("myrect").InsidePos;
-
     ScaleRect.localScale = IdleScale;
     ScaleRect.anchoredPosition = Vector2.zero;
 
+    DefaultGroup.interactable = false;
+    DefaultGroup.blocksRaycasts = false;
+    DefaultRect.sizeDelta = CloseSize;
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, ClosePos, OpenPos, UIOpenTime_Move, UIManager.Instance.UIPanelOpenCurve));
+    yield return new WaitForSeconds(0.3f);
     float _time = 0.0f;
-    while (_time < AppearTime)
+    Vector2 _rect = DefaultRect.rect.size;
+    while (_time < UIOpenTime_Fold)
     {
-      DefaultGroup.alpha = Mathf.Lerp(0.0f, 1.0f, _time / AppearTime);
-      _time += Time.deltaTime;
+      _rect = Vector2.Lerp(CloseSize, OpenSize, _time / UIOpenTime_Fold);
+      DefaultRect.sizeDelta = _rect;
+
+      _time+= Time.deltaTime;
       yield return null;
     }
-
-    DefaultGroup.alpha = 1.0f;
+    DefaultRect.sizeDelta = OpenSize;
     DefaultGroup.interactable = true;
     DefaultGroup.blocksRaycasts = true;
+
   }
+  public List<HexDir> Length=new List<HexDir>();
   public int SanityCost = 0, GoldCost = 0;
   [HideInInspector] public int QuestInfo = 0;
-  public void SelectTile(TileData selectedtiledata,Vector2 position)
+  public void SelectTile(TileData selectedtiledata)
   {
     //동일한 좌표면 호출되지 않게 이미 거름
+    if (selectedtiledata.Coordinate==GameManager.Instance.MyGameData.Coordinate||( SelectedTile != null && selectedtiledata == SelectedTile)) return;
 
-    if (SelectedTile != null) SelectedTile.ButtonScript.CancleTile();
+    SetOutline(Outline_Select, selectedtiledata.Rect);
+
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
-    int _length = GameManager.Instance.MyGameData.MyMapData.GetLength(_currenttile, selectedtiledata);
+    Length = GameManager.Instance.GetLength(_currenttile, selectedtiledata);
 
     SelectedTile = selectedtiledata;
-
-    ProgressGuideText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP");
 
     TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
     TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
     TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
-    TilePreview_Landmark.sprite = SelectedTile.ButtonScript.TopImage.sprite;
+    TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
+
+
+    GuidText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP");
+    GuidRect.anchoredPosition = GuidPos_Cost;
 
     if (SelectedTile.TileSettle != null)
     {
-      SettlementInfoHolder.SetActive(true);
-      SettlementNameText.text=SelectedTile.TileSettle.Name;
-      DiscomfortText.text = SelectedTile.TileSettle.Discomfort.ToString();
+      TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Settlement");
     }
     else
     {
-      if (SettlementInfoHolder.activeInHierarchy == true) SettlementInfoHolder.SetActive(false);
+      TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Outer");
     }
+
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
@@ -225,34 +265,35 @@ public class UI_map : UI_default
           case 1:
             if (SelectedTile.Landmark == LandmarkType.Ritual)
             {
-              _progresstext += string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual"), ConstValues.Quest_Cult_Progress_Ritual) +
-                "<br>" +
-                string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"), ConstValues.Quest_Cult_RitualMovepoint);
+              _progresstext += string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"),ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
             }
             break;
           case 2:
-            _progresstext = "";
+            if (SelectedTile.Landmark == LandmarkType.Ritual&&GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown==0)
+            {
+              _progresstext += string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"), ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
+            }
+            else _progresstext = "";
             break;
         }
-        MoveProgressInfoText.text = _progresstext;
+        ProgressText.text = _progresstext;
         break;
     }
 
     MovecostButtonGroup.alpha = 1.0f;
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
-    SanityCost =GameManager.Instance.MyGameData.MovePoint>=MovePointCost?
-      GameManager.Instance.MyGameData.MoveSanityCost:
-      Mathf.FloorToInt(GameManager.Instance.MyGameData.MoveSanityCost*GameManager.Instance.MyGameData.MovePointAmplified);
-    GoldCost = GameManager.Instance.MyGameData.MovePoint >= MovePointCost ?
-      GameManager.Instance.MyGameData.MoveGoldCost :
-      Mathf.FloorToInt(GameManager.Instance.MyGameData.MoveGoldCost * GameManager.Instance.MyGameData.MovePointAmplified);
+    
+    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Length.Count, MovePointCost);
+    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Length.Count, MovePointCost);
+
     SanitybuttonGroup.interactable = true;
   }
 
   private int MovePointCost = 0;
   public void EnterPointerStatus(StatusTypeEnum type)
   {
+    string _costtext = "";
     switch (type)
     {
       case StatusTypeEnum.Sanity:
@@ -277,9 +318,11 @@ public class UI_map : UI_default
             break;
         }
 
-        MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY")+"<br>"+ (GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>-{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)) :
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetGoldColor("-" + SanityCost)));
+        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), SanityCost);
+
+        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
+          _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
+            WNCText.GetSanityColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
         break;
       case StatusTypeEnum.Gold:
         if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
@@ -288,12 +331,16 @@ public class UI_map : UI_default
         SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
         GoldbuttonGroup.alpha = 1.0f;
 
-        MoveDescriptionText.text =GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD")+"<br>"+(GameManager.Instance.MyGameData.MovePoint > 0 ?
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_ENOUGH"), $"<#FFBF00>-{MovePointCost}</color>", GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)) :
-    string.Format(GameManager.Instance.GetTextData("MOVECOST_NOTENOUGH"), GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor("-" + GoldCost)));
+        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), GoldCost);
+
+        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
+          _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
+            WNCText.GetGoldColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
         break;
     }
-    LayoutRebuilder.ForceRebuildLayoutImmediate(MoveDescriptionText.transform.parent.transform as RectTransform);
+    MoveCostText.text = _costtext;
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(MoveCostText.transform.parent.transform as RectTransform);
   }
   public void ExitPointerStatus(StatusTypeEnum type)
   {
@@ -301,13 +348,9 @@ public class UI_map : UI_default
 
     SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
     GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
-    MoveDescriptionText.text = "";
+    MoveCostText.text = "";
   }
 
-  /// <summary>
-  /// 0:정신력 1:골드
-  /// </summary>
-  /// <param name="index"></param>
   public void MoveMap()
   {
     if (UIManager.Instance.IsWorking) return;
@@ -321,8 +364,6 @@ public class UI_map : UI_default
   private IEnumerator movemap()
   {
     GameManager.Instance.MyGameData.Turn++;
-
-    Vector2 _playerrectpos = PlayerRect.anchoredPosition;                 //현재 위치(Rect)
 
     if (GameManager.Instance.MyGameData.Madness_Wild == true && Random.Range(0, 100) < ConstValues.MadnessEffect_Wild)
     {
@@ -346,13 +387,13 @@ public class UI_map : UI_default
         }
       }
       SelectedTile = _availabletiles[Random.Range(0,_availabletiles.Count)];
+
+      Length = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
     }
-    Vector2 _targettilepos = SelectedTile.Rect.anchoredPosition;            //종점 위치(Rect)
-
-    Vector2 _endcoor = SelectedTile.Coordinate;//종점 위치(타일)
-
     GameManager.Instance.MyGameData.ClearBeforeEvents();
+    IsRitual = SelectedTile.Landmark == LandmarkType.Ritual;
 
+    GameManager.Instance.MyGameData.MovePoint -= MovePointCost;
     switch (SelectedCostType)
     {
       case StatusTypeEnum.Sanity:
@@ -363,20 +404,40 @@ public class UI_map : UI_default
         break;
     }
 
-    GameManager.Instance.MyGameData.MovePoint -= MovePointCost;
+    Debug.Log(GameManager.Instance.MyGameData.Coordinate);
+    Debug.Log(GameManager.Instance.MyGameData.CurrentSettlement);
+    Debug.Log(GameManager.Instance.MyGameData.CurrentTile.Coordinate);
+    List<Vector2> _path= new List<Vector2>();
+    _path.Add(PlayerRect.anchoredPosition);
+    MapData _map = GameManager.Instance.MyGameData.MyMapData;
+    TileData _currenttile = GameManager.Instance.MyGameData.CurrentTile;
+    for(int i = 0; i < Length.Count; i++)
+    {
+      _currenttile = _map.GetNextTile(_currenttile, Length[i]);
+      _path.Add(_currenttile.Rect.anchoredPosition);
+    }
+    //_path : (최초 플레이어 좌표,~~~,마지막 좌표)
 
     float _time = 0.0f;
-    while (_time < MoveTime)
+    float _time_split=MoveTime/(_path.Count-1);
+
+    for (int i = 0; i < _path.Count - 1; i++)
     {
-      PlayerRect.anchoredPosition = Vector3.Lerp(_playerrectpos, _targettilepos, UIManager.Instance.CharacterMoveCurve.Evaluate(_time / MoveTime));
-      HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
-      _time += Time.deltaTime;
+      while(_time<_time_split)
+      {
+        PlayerRect.anchoredPosition = Vector3.Lerp(_path[i], _path[i + 1], _time / _time_split);
+        HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
+        _time += Time.deltaTime;
+        yield return null;
+      }
+      _time = 0.0f;
       yield return null;
     }
-    PlayerRect.anchoredPosition = _targettilepos;
+
+    PlayerRect.anchoredPosition = _path[_path.Count-1];
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
-    GameManager.Instance.MyGameData.Coordinate = _endcoor;
+    GameManager.Instance.MyGameData.Coordinate = _currenttile.Coordinate;
 
     switch (SelectedTile.Landmark)
     {
@@ -385,7 +446,8 @@ public class UI_map : UI_default
           GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
-        yield return new WaitForSeconds(1.0f);
+        GameManager.Instance.MyGameData.DownAllDiscomfort(ConstValues.DiscomfortDownValue);
+        yield return new WaitForSeconds(0.5f);
         EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
         break;
 
@@ -398,7 +460,7 @@ public class UI_map : UI_default
         GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
         EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
 
         if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2) GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown = ConstValues.Quest_Cult_CoolDown;
@@ -406,14 +468,28 @@ public class UI_map : UI_default
     }
 
     StartCoroutine(zoominview());
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, ZoomInTime + 0.6f));
-    yield return new WaitForSeconds(0.1f);
-    if (IsRitual) UIManager.Instance.QuestUI_Cult.AddProgress(4);
-    IsOpen = false;
-    GetPanelRect("myrect").Rect.anchoredPosition = GetPanelRect("myrect").OutisdePos;
+
+    //CloseUI 안 쓰고 여기서 닫기 실행
     DefaultGroup.interactable = false;
     DefaultGroup.blocksRaycasts = false;
-    SelectedTile.ButtonScript.CancleTile();
+    _time = 0.0f;
+    Vector2 _rect = DefaultRect.rect.size;
+    while (_time < UIOpenTime_Fold)
+    {
+      _rect = Vector2.Lerp(OpenSize, CloseSize, _time / UIOpenTime_Fold);
+      DefaultRect.sizeDelta = _rect;
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    DefaultRect.sizeDelta = CloseSize;
+    yield return new WaitForSeconds(0.3f);
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, OpenPos, ClosePos, UIOpenTime_Move, UIManager.Instance.UIPanelCLoseCurve));
+
+
+    yield return new WaitForSeconds(0.1f);
+    if (IsRitual) UIManager.Instance.CultUI.AddProgress(4);
+    IsOpen = false;
     SelectedTile = null;
     Debug.Log("이동 코루틴이 끝난 레후~");
   }
@@ -437,23 +513,11 @@ public class UI_map : UI_default
   }//정착지,야외 이동 후 지도 줌인 하는 코루틴
   public void SetPlayerPos(Vector2 coordinate)
   {
-    Debug.Log("시작 플레이어 위치 설정");
     TileData _targettile = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
     PlayerRect.anchoredPosition = _targettile.Rect.anchoredPosition;
     ScaleRect.localScale =IdleScale;
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
-    GameManager.Instance.MyGameData.Coordinate = coordinate;
-  }
-  public override void CloseUI()
-  {
-    UIManager.Instance.AddUIQueue(closeui());
-    IsOpen = false;
-  }
-  private IEnumerator closeui()
-  {
-    DefaultGroup.blocksRaycasts = false;
-    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("myrect").Rect, GetPanelRect("myrect").InsidePos, GetPanelRect("myrect").OutisdePos, 0.3f, false));
-    DefaultGroup.interactable = false;
+    Debug.Log($"({coordinate.x},{coordinate.y}) -> {PlayerRect.anchoredPosition}");
   }
 
 }

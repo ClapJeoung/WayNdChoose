@@ -46,14 +46,14 @@ public class UIManager : MonoBehaviour
   public CanvasGroup CenterGroup = null;
   public CanvasGroup CurtainGroup = null;
   public TextMeshProUGUI CurtainText = null;
-  public UI_Main MainUI = null;
-  public UI_dialogue MyDialogue = null;
+  public UI_Main MainUi = null;
+  public UI_dialogue DialogueUI = null;
   public UI_RewardExp ExpRewardUI = null;
   public UI_Settlement MySettleUI = null;
-  public UI_QuestWolf QuestUI_Cult = null;
-  public UI_Mad MyMadPanel = null;
-  public SidePanel_Quest_Cult QuestSidePanel_Cult = null;
-  public UI_map MyMap = null;
+  public UI_QuestWolf CultUI = null;
+  public UI_Mad MadUI = null;
+  public SidePanel_Quest_Cult SidePanelCultUI = null;
+  public UI_map MapUI = null;
   public UI_Tendency MyTendencyPanelUI = null;
   public UI_skill_info MySkillUIPanelUI = null;
   public UI_Expereince_info MyExpPanelUI = null;
@@ -454,22 +454,22 @@ public class UIManager : MonoBehaviour
       _group.blocksRaycasts = true;
     }
   }
-  public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MyMap.SetPlayerPos(coordinate);
-  public void UpdateMap_SetPlayerPos() => MyMap.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
-  public void CreateMap() => MyMap.MapCreater.MakeTilemap();
+  public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MapUI.SetPlayerPos(coordinate);
+  public void UpdateMap_SetPlayerPos() => MapUI.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
+  public void CreateMap() => MapUI.MapCreater.MakeTilemap();
   public void OpenDialogue()
   {
     //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
 
-    MyDialogue.OpenUI();
+    DialogueUI.OpenUI();
   }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void ResetEventPanels()
   {
-    if(MyDialogue.IsOpen) MyDialogue.CloseUI();
+    if(DialogueUI.IsOpen) DialogueUI.CloseUI();
     if(MySettleUI.IsOpen) MySettleUI.CloseUI();
   }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
     public void CloseSuggestPanel_normal() => MySettleUI.CloseUI();
-  public void GetMad() => MyMadPanel.OpenUI();
+  public void GetMad() => MadUI.OpenUI();
 
   #region 메인-게임 전환
   [SerializeField] private List<PanelRectEditor> TitlePanels=new List<PanelRectEditor>();
@@ -599,11 +599,11 @@ public static class WNCText
   }
   public static string GetDiscomfortColor(string str)
   {
-    return $"<#DA81F5>{str}</color>";
+    return $"<#427573>{str}</color>";
   }
   public static string GetDiscomfortColor(int value)
   {
-    return $"<#DA81F5>{value}</color>";
+    return $"<#427573>{value}</color>";
   }
   public static string GetMovepointColor(string str)
   {

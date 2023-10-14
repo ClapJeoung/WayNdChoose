@@ -558,17 +558,19 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator checkanimation(Image image,float successvalue)
   {
+    Debug.Log(successvalue);
     float _time = 0.0f;
     while(_time<SelectionEffectTime* successvalue)
     {
       image.fillAmount=Mathf.Lerp(1.0f,0.0f, SelectionCheckCurve.Evaluate(_time/SelectionEffectTime));
       _time += Time.deltaTime;yield return null;
     }
-    image.fillAmount = 1.0f- successvalue;
+   // image.fillAmount = SelectionCheckCurve.Evaluate(_time / SelectionEffectTime);
 
   }
   private IEnumerator checkanimation(Image image_L,Image image_R,float successvalue)
   {
+    Debug.Log(successvalue);
     float _time = 0.0f;
     while (_time < SelectionEffectTime * successvalue)
     {
@@ -578,12 +580,12 @@ public class UI_dialogue : UI_default
         image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime / 2)));
       _time += Time.deltaTime;yield return null;
     }
-    image_L.fillAmount = successvalue > 0.5f ? 0.0f : 1.0f - successvalue * 2.0f;
-    image_R.fillAmount = successvalue > 0.5f ? 1.0f - (successvalue - 0.5f) * 2.0f : 1.0f;
+  //  image_L.fillAmount = successvalue > 0.5f ? 0.0f : 1.0f - successvalue * 2.0f;
+  //  image_R.fillAmount = successvalue > 0.5f ? 1.0f - (successvalue - 0.5f) * 2.0f : 1.0f;
   }
   private SuccessData CurrentSuccessData = null;
   public bool RemainReward = false;
-  [SerializeField] private float EffectTime = 2.0f;
+  [SerializeField] private float ResultEffectTime = 2.0f;
   public void SetSuccess(SuccessData _success)
   {
     CurrentSuccessData = _success;
@@ -642,7 +644,7 @@ public class UI_dialogue : UI_default
       case TendencyTypeEnum.Head:_color = _success.Index == 0 ? MentalColor : MaterialColor;break;
     }
     IllustEffect_Image.color = _color;
-    StartCoroutine (UIManager.Instance.ChangeAlpha(IllustEffect_Group, 0.0f, EffectTime));
+    StartCoroutine (UIManager.Instance.ChangeAlpha(IllustEffect_Group, 0.0f, ResultEffectTime));
 
       UIManager.Instance.AddUIQueue(displaynextindex());
 
@@ -668,7 +670,7 @@ public class UI_dialogue : UI_default
     CurrentEventDescriptions = CurrentFailData.Descriptions;
 
     IllustEffect_Image.color = FailColor;
-    StartCoroutine((UIManager.Instance.ChangeAlpha(IllustEffect_Group, 0.0f, EffectTime)));
+    StartCoroutine((UIManager.Instance.ChangeAlpha(IllustEffect_Group, 0.0f, ResultEffectTime)));
 
     UIManager.Instance.AddUIQueue(displaynextindex());
   }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
@@ -695,7 +697,7 @@ public class UI_dialogue : UI_default
     CurrentSuccessData = null;
     CurrentFailData = null;
 
-    UIManager.Instance.UpdateBackground(EnvironmentType.NULL);
+    UIManager.Instance.OffBackground();
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
     StartCoroutine(UIManager.Instance.moverect(DescriptionRect, DescriptionOpenPos, DescriptionClosePos, DialogueUIMoveTime, false));

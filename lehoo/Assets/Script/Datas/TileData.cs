@@ -41,7 +41,7 @@ public class TileData
   {
     get
     {
-      if (TopEnvir == TopEnvirType.Mountain || BottomEnvir == BottomEnvirType.Sea) return false;
+      if (BottomEnvir == BottomEnvirType.Sea) return false;
       return true;
     }
   }

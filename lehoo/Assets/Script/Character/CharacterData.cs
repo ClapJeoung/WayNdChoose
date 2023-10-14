@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public static class ConstValues
 {
@@ -28,7 +29,8 @@ public static class ConstValues
   public const int Rest_Discomfort = 3;
   public const int MoveRest_Sanity_min = 10, MoveRest_Sanity_max = 20;
   public const int MoveRest_Gold_min = 7, MoveRest_Gold_max = 15;
-  public const float MoveRest_Value_Deafult = 0.75f, MoveRest_Value_Ratio = 0.15f;
+  public const float Rest_Deafult = 0.75f, Rest_DiscomfortRatio = 0.15f;
+  public const float Move_Default = 0.8f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 3.0f;
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
@@ -39,12 +41,12 @@ public static class ConstValues
 
   public const int MinRiverCount = 5;
   public const float Ratio_highland = 0.2f;
-  public const float Ratio_forest = 0.4f;
+  public const float Ratio_forest = 0.2f;
   public const int Count_mountain = 3;
   public const int LandRadius = 6;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
 
-  public const int ForestRange = 1, RiverRange = 2, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
+  public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
   public const int TownSectorCount = 1, CitySectorCount = 2, CastleSectorCount = 3;
 
@@ -97,6 +99,7 @@ public static class ConstValues
   public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
 
+  public const int DiscomfortDownValue = 1;
     public const int SectorEffectMaxTurn = 3;
   public const int SectorEffect_residence_movepoint = 1, SectorEffect_residence_discomfort = 2;
     public const int SectorEffect_marketSector = 40;
@@ -122,6 +125,7 @@ public class GameData    //게임 진행도 데이터
   #region #지도,정착지 관련#
   public MapData MyMapData = null;
   public Vector2 Coordinate = Vector2.zero;
+  public TileData CurrentTile { get { return MyMapData.Tile(Coordinate); } }
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보]
   public bool FirstRest = false;
   public void DownAllDiscomfort(int value)
@@ -212,7 +216,7 @@ public class GameData    //게임 진행도 데이터
         switch (QuestType)
         {
           case QuestType.Cult:
-            UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+            UIManager.Instance.SidePanelCultUI.UpdateUI();
             if (Quest_Cult_Phase == 2)
             {
               if (Cult_SabbatSector_CoolDown > 0) Cult_SabbatSector_CoolDown--;
@@ -272,7 +276,7 @@ public class GameData    //게임 진행도 데이터
     get
     {
       int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Turn / ConstValues.SectorEffectMaxTurn);
-      float _value = ConstValues.MoveRest_Value_Deafult + ConstValues.MoveRest_Value_Ratio * CurrentSettlement.Discomfort;
+      float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true));
     }
@@ -282,10 +286,19 @@ public class GameData    //게임 진행도 데이터
     get
     {
       int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Turn / ConstValues.SectorEffectMaxTurn);
-      float _value = ConstValues.MoveRest_Value_Deafult + ConstValues.MoveRest_Value_Ratio * CurrentSettlement.Discomfort;
+      float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value * GetGoldLossModify(true));
     }
+  }
+  /// <summary>
+  /// 증가값 반환 (+n%)
+  /// </summary>
+  /// <param name="discomfort"></param>
+  /// <returns></returns>
+  public float GetDiscomfortValue(int discomfort)
+  {
+    return ConstValues.Rest_DiscomfortRatio * discomfort;
   }
   public int PayHPValue_modified
     { get { return (int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
@@ -305,23 +318,21 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max) * GetSanityGenModify(true)); } }
     public int RewardGoldValue_modified
     { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max) * GetGoldGenModify(true)); } }
-  public int MoveSanityCost
+  public int GetMoveSanityCost(int length,int movepoint)
   {
-    get
-    {
-      int _value = (int)Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Year / ConstValues.MaxYear);
+    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Year / ConstValues.MaxYear)
+      * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
-      return (int)(_value * GetSanityLossModify(true));
-    }
+    return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
+      (int)(_value * MovePointAmplified);
   }
-  public int MoveGoldCost
+  public int GetMoveGoldCost(int length,int movepoint)
   {
-    get
-    {
-      int _value = (int)Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Year / ConstValues.MaxYear);
+    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Year / ConstValues.MaxYear)
+      * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
-      return (int)(_value * GetGoldLossModify(true));
-    }
+    return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
+      (int)(_value * MovePointAmplified);
   }
   public float MovePointAmplified
   {
@@ -525,7 +536,7 @@ public class GameData    //게임 진행도 데이터
       int _lastprogress = quest_cult_progress;
       quest_cult_progress = Mathf.Clamp(value,0,100);
 
-      UIManager.Instance.QuestSidePanel_Cult.UpdateUI();
+      UIManager.Instance.SidePanelCultUI.UpdateUI();
     }
   }
   public List<string> Cult_SettlementNames=new List<string>();

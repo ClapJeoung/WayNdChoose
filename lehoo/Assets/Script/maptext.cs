@@ -10,6 +10,18 @@ using UnityEngine.SceneManagement;
 
 public class maptext : MonoBehaviour
 {
+  [ContextMenu("거리 받기 테스트")]
+  public void GetLength()
+  {
+    HexGrid Hexgrid = new HexGrid(AxisGrid);
+    string _str=$"({AxisGrid.x},{AxisGrid.y}) -> ({Hexgrid.q},{Hexgrid.r},{Hexgrid.s}) -> ";
+    foreach (var dir in Hexgrid.GetDir)
+      _str += (int)dir + " ";
+    print(_str);
+  }
+  public Vector2Int AxisGrid=new Vector2Int();
+
+
   [SerializeField] private UI_map MapUIScript = null;
   public Tilemap Tilemap_bottom, Tilemap_top;
    public TilePrefabs MyTiles;
@@ -56,7 +68,7 @@ public class maptext : MonoBehaviour
     while (true)
     {
       _index++;
-      MapData _data = MakeMap();
+      MapData _data = CreateMap();
       if (_data == null) continue;
       bool _villageriver = false, _villageforest = false, _villagemountain = false, _villagesea = false;
       bool _townriver = false, _townforest = false,  _townmountain = false, _townsea = false;
@@ -101,7 +113,7 @@ public class maptext : MonoBehaviour
   /// </summary>
   /// <param name="range"></param>
   /// <returns></returns>
-  public MapData MakeMap()
+  public MapData CreateMap()
   {
     int LoopCount = 0;
 
@@ -1114,6 +1126,8 @@ public class maptext : MonoBehaviour
         GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _bottomtile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, -60.0f * _rotate));
         _bottomtile.transform.SetParent(TileHolder_bottomenvir);
+        _bottomtile.AddComponent<Onpointer_tileoutline>().MyMapUI = MapUIScript;
+        _bottomtile.GetComponent<Onpointer_tileoutline>().MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
         Image _bottomimage = _bottomtile.GetComponent<Image>();
         _bottomimage.sprite = _bottomspr;
         RectTransform _bottomrect = _bottomtile.GetComponent<RectTransform>();
@@ -1122,14 +1136,14 @@ public class maptext : MonoBehaviour
         _bottomrect.transform.localScale = Vector3.one;
         _bottomrect.anchoredPosition3D = new Vector3(_bottomrect.anchoredPosition3D.x, _bottomrect.anchoredPosition3D.y, 0.0f);
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Rect = _bottomrect;
-        Outline _bottomoutline = _bottomtile.AddComponent<Outline>();
-        _bottomoutline.effectColor = Color.black;
-        _bottomoutline.effectDistance = Vector2.one * 2.0f;
+    //    Outline _bottomoutline = _bottomtile.AddComponent<Outline>();
+    //    _bottomoutline.effectColor = Color.black;
+    //    _bottomoutline.effectDistance = Vector2.one * 2.0f;
         Button _button = _bottomtile.AddComponent<Button>();
         Navigation _nav = new Navigation();
         _nav.mode = Navigation.Mode.None;
         _button.navigation = _nav;
-        _bottomoutline.enabled = false;
+    //    _bottomoutline.enabled = false;
         _bottomtile.AddComponent(typeof(TileButtonScript));
         _bottomimage.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
         _button.interactable = true;
@@ -1165,10 +1179,10 @@ public class maptext : MonoBehaviour
 
 
         TileButtonScript _buttonscript = _bottomtile.GetComponent<TileButtonScript>();
-        _buttonscript.OutLine = _bottomoutline;
+       // _buttonscript.OutLine = _bottomoutline;
         _buttonscript.Button = _button;
-        _buttonscript.SelectHolder = MapUIScript.SelectTileHolder;
-        _buttonscript.OriginHolder = TileHolder_bottomenvir;
+        //_buttonscript.SelectHolder = MapUIScript.SelectTileHolder;
+       // _buttonscript.OriginHolder = TileHolder_bottomenvir;
         _buttonscript.MapUI = MapUIScript;
         _buttonscript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
         _buttonscript.BottomImage = _bottomimage;
@@ -1194,8 +1208,14 @@ public class maptext : MonoBehaviour
       _villageholder.transform.SetParent(TileHolder_landmark);
       _villageholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
       _villageholder.GetComponent<CanvasGroup>().blocksRaycasts = false;
+      _villageholder.transform.localScale = Vector3.one;
 
       _village.Tiles[0].ButtonScript.LandmarkImage.transform.SetParent(_villageholder.transform);
+      _village.Tiles[0].Rect.localScale = Vector3.one;
+      PreviewInteractive _villagepreview = _village.Tiles[0].Rect.transform.AddComponent<PreviewInteractive>();
+      _villagepreview.PanelType = PreviewPanelType.SettlementTile;
+      _villagepreview.MySettleMent = _village;
+
       MapUIScript.VillageIcons.Add(_villageholder);
     }
 
@@ -1214,12 +1234,17 @@ public class maptext : MonoBehaviour
       _townholder.transform.SetParent(TileHolder_landmark);
       _townholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
       _townholder.GetComponent<CanvasGroup>().blocksRaycasts = false;
+    _townholder.transform.localScale = Vector3.one;
 
-      for (int j = 0; j < _settlementrectlist.Count; j++)
+    for (int j = 0; j < _settlementrectlist.Count; j++)
       {
         _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_townholder.transform);
-      }
-      MapUIScript.TownIcon=(_townholder);
+      _town.Tiles[j].Rect.localScale = Vector3.one;
+      PreviewInteractive _townpreview = _town.Tiles[j].Rect.transform.AddComponent<PreviewInteractive>();
+      _townpreview.PanelType = PreviewPanelType.SettlementTile;
+      _townpreview.MySettleMent = _town;
+    }
+    MapUIScript.TownIcon=(_townholder);
 
     _settlementrectlist.Clear();
     _settlementpos = Vector2.zero;
@@ -1236,10 +1261,15 @@ public class maptext : MonoBehaviour
     _cityholder.transform.SetParent(TileHolder_landmark);
     _cityholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
     _cityholder.GetComponent<CanvasGroup>().blocksRaycasts = false;
+    _cityholder.transform.localScale = Vector3.one;
 
     for (int j = 0; j < _settlementrectlist.Count; j++)
     {
       _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_cityholder.transform);
+      _city.Tiles[j].Rect.localScale = Vector3.one;
+      PreviewInteractive _settlementpreview = _city.Tiles[j].Rect.transform.AddComponent<PreviewInteractive>();
+      _settlementpreview.PanelType = PreviewPanelType.SettlementTile;
+      _settlementpreview.MySettleMent = _city;
     }
     MapUIScript.CityIcon=_cityholder;
 
@@ -1272,4 +1302,237 @@ public class RiverData
   public int RiverIndex = 0;                                            //시계방향 0~5
   public List<Vector2Int> RiverCoors= new List<Vector2Int>();           //모든 강 좌표
   public List<int> RiverDirs=new List<int>();                           //모든 강 진행 방향(절대 방향)
+}
+
+[System.Serializable]
+public class HexGrid
+{
+  public int q = 0, r = 0, s = 0;
+  public HexGrid()
+  {
+    q = 0;
+    r = 0;
+    s = 0;
+  }
+  public HexGrid(int q, int r, int s)
+  {
+    this.q = q;
+    this.r = r;
+    this.s = s;
+  }
+  public HexGrid(Vector2Int vector2)
+  {
+    q = vector2.x - (vector2.y - vector2.y % 2) / 2;
+    r = vector2.y;
+    s = -q - r;
+  }
+  public HexGrid(Vector2 vector2)
+  {
+    q = (int)(vector2.x - (vector2.y - vector2.y % 2) / 2);
+    r = (int)(vector2.y);
+    s = -q - r;
+  }
+  public void Clear()
+  {
+    q = 0; r = 0; s = 0;
+  }
+  public HexGrid AddHexdir(HexDir hexdir)
+  {
+    switch ((int)hexdir)
+    {
+      case 0:
+        return new HexGrid(q, r + 1, s - 1);
+      case 1:
+        return new HexGrid(q + 1, r, s - 1);
+      case 2:
+        return new HexGrid(q + 1, r - 1, s);
+      case 3:
+        return new HexGrid(q, r - 1, s + 1);
+      case 4:
+        return new HexGrid(q - 1, r, s + 1);
+      case 5:
+        return new HexGrid(q - 1, r + 1, s);
+    }
+    return null;
+  }
+  public static HexGrid operator +(HexGrid h0, HexGrid h1)
+  {
+    return new HexGrid(h0.q + h1.q, h0.r + h1.r, h0.s + h1.s);
+  }
+  public static HexGrid operator -(HexGrid h0, HexGrid h1)
+  {
+    return new HexGrid(h0.q - h1.q, h0.r - h1.r, h0.s - h1.s);
+  }
+  public List<HexDir> GetDir
+  {
+    get
+    {
+      int _loopcount = 0;
+      List<HexDir> _list = new List<HexDir>();
+      HexGrid _current = new HexGrid(q, r, s);
+      HexGrid _temp = new HexGrid();
+      int _value = 100;
+      int _sign = 0;
+      HexGrid _dirgrid = new HexGrid();
+
+      while (_value != 0)
+      {
+        _loopcount++;
+        if (_loopcount > 100) { Debug.Log("테챠앗!!!"); return null; }
+
+        _value = _current.q / 2;
+        if (_value != 0)
+        {
+          _sign = (int)Mathf.Sign(_value);
+          for (int i = 0; i < Mathf.Abs(_value); i++)
+          {
+            _dirgrid.q = 2 * _sign;
+            _dirgrid.r = -1 * _sign;
+            _dirgrid.s = -1 * _sign;
+
+            _current -= _dirgrid;
+
+            foreach (var _hex in GetDir(_dirgrid))
+              _list.Add(_hex);
+          }
+        }
+          _value = _current.r / 2;
+          if (_value != 0)
+          {
+            _sign = (int)Mathf.Sign(_value);
+            for (int i = 0; i < Mathf.Abs(_value); i++)
+            {
+              _dirgrid.q = -1 * _sign;
+              _dirgrid.r = 2 * _sign;
+              _dirgrid.s = -1 * _sign;
+
+              _current -= _dirgrid;
+
+              foreach (var _hex in GetDir(_dirgrid))
+                _list.Add(_hex);
+            }
+
+            _value = _current.s / 2;
+            if (_value != 0)
+            {
+              _sign = (int)Mathf.Sign(_value);
+              for (int i = 0; i < Mathf.Abs(_value); i++)
+              {
+                _dirgrid.q = -1 * _sign;
+                _dirgrid.r = -1 * _sign;
+                _dirgrid.s = 2 * _sign;
+
+                _current -= _dirgrid;
+
+                foreach (var _hex in GetDir(_dirgrid))
+                  _list.Add(_hex);
+              }
+
+            }
+          }
+
+        }
+
+      foreach(var hex in GetDir(_current))
+        _list.Add(hex);
+
+      bool _isoverlap = true;
+      while (_isoverlap == true)
+      {
+        _isoverlap = false;
+
+        if (_list.Contains((HexDir)0) && _list.Contains((HexDir)3))
+        {
+          _list.Remove((HexDir)0);
+          _list.Remove((HexDir)3);
+          _isoverlap = true;
+        }
+        if (_list.Contains((HexDir)1) && _list.Contains((HexDir)4))
+        {
+          _list.Remove((HexDir)1);
+          _list.Remove((HexDir)4);
+          _isoverlap = true;
+        }
+        if (_list.Contains((HexDir)2) && _list.Contains((HexDir)5))
+        {
+          _list.Remove((HexDir)2);
+          _list.Remove((HexDir)5);
+          _isoverlap = true;
+        }
+
+        if (_list.Contains((HexDir)1) && _list.Contains((HexDir)5))
+        {
+          _list.Remove((HexDir)1);
+          _list.Remove((HexDir)5);
+
+          _list.Add((HexDir)0);
+          _isoverlap = true;
+        }
+        if (_list.Contains((HexDir)0) && _list.Contains((HexDir)2))
+        {
+          _list.Remove((HexDir)0);
+          _list.Remove((HexDir)2);
+
+          _list.Add((HexDir)1);
+          _isoverlap = true;
+        }
+        if (_list.Contains((HexDir)1) && _list.Contains((HexDir)3))
+        {
+          _list.Remove((HexDir)1);
+          _list.Remove((HexDir)3);
+
+          _list.Add((HexDir)2);
+          _isoverlap = true;
+        }
+        if (_list.Contains((HexDir)2) && _list.Contains((HexDir)4))
+        {
+          _list.Remove((HexDir)2);
+          _list.Remove((HexDir)4);
+
+          _list.Add((HexDir)3);
+          _isoverlap = true;
+        }
+        if (_list.Contains((HexDir)3) && _list.Contains((HexDir)5))
+        {
+          _list.Remove((HexDir)3);
+          _list.Remove((HexDir)5);
+
+          _list.Add((HexDir)4);
+          _isoverlap = true;
+        }
+        if (_list.Contains((HexDir)0) && _list.Contains((HexDir)4))
+        {
+          _list.Remove((HexDir)0);
+          _list.Remove((HexDir)4);
+
+          _list.Add((HexDir)5);
+          _isoverlap = true;
+        }
+      }
+
+      return _list;
+
+      //최소단위 받아서 계산
+      List<HexDir> GetDir(HexGrid grid)
+      {
+        List<HexDir> _temp = new List<HexDir>();
+
+        if (grid.q == 2) { _temp.Add((HexDir)1); _temp.Add((HexDir)2); }
+        else if (grid.q == -2) { _temp.Add((HexDir)4); _temp.Add((HexDir)5); }
+        else if (grid.r == 2) { _temp.Add((HexDir)0); _temp.Add((HexDir)5); }
+        else if (grid.r == -2) { _temp.Add((HexDir)2); _temp.Add((HexDir)3); }
+        else if (grid.s == 2) { _temp.Add((HexDir)3); _temp.Add((HexDir)4); }
+        else if (grid.s == -2) { _temp.Add((HexDir)0); _temp.Add((HexDir)1); }
+        else if (grid.q == 0 && grid.r == 1 && grid.s == -1) _temp.Add((HexDir)0);
+        else if (grid.q == 1 && grid.r == 0 && grid.s == -1) _temp.Add((HexDir)1);
+        else if (grid.q == 1 && grid.r == -1 && grid.s == 0) _temp.Add((HexDir)2);
+        else if (grid.q == 0 && grid.r == -1 && grid.s == 1) _temp.Add((HexDir)3);
+        else if (grid.q == -1 && grid.r == 0 && grid.s == 1) _temp.Add((HexDir)4);
+        else if (grid.q == -1 && grid.r == 1 && grid.s == 0) _temp.Add((HexDir)5);
+
+        return _temp;
+      }
+
+    }
+  }
 }

@@ -132,7 +132,7 @@ public class UI_Mad : UI_default
         break;
       case 4:
         _target = "HP";
-        _description = GameManager.Instance.GetTextData("Madness_" + _target + "_Info");
+        _description = GameManager.Instance.GetTextData("Madness_HP_Description");
         GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen;
         GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_HP;
         break;
