@@ -18,8 +18,7 @@ public class UI_QuestWolf : UI_default
 
   #region 프롤로그
   [Space(5)]
-  [SerializeField] private Image Prologue_IllustImage = null;
-  [SerializeField] private CanvasGroup Prologue_IllustGroup = null;
+  [SerializeField] private ImageSwapScript Illust = null;
   [SerializeField] private TextMeshProUGUI Prologue_Description = null;
   [SerializeField] private CanvasGroup Prologue_DescriptionGroup = null;
   [SerializeField] private CanvasGroup Prologue_ButtonHolderGroup = null;
@@ -39,9 +38,6 @@ public class UI_QuestWolf : UI_default
   }
   private IEnumerator openui_prologue()
   {
-    Prologue_IllustImage.sprite = QuestHolder.Prologue_0_Illust;
-    Prologue_IllustGroup.alpha = 0.0f;
-
     Prologue_Description.text = QuestHolder.Prologue_0_Description;
     Prologue_DescriptionGroup.alpha = 0.0f;
 
@@ -59,7 +55,7 @@ public class UI_QuestWolf : UI_default
     yield return new WaitForSeconds(0.1f);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_start").Rect, GetPanelRect("description_start").OutisdePos, GetPanelRect("description_start").InsidePos, UIMoveInTime, true));
     yield return new WaitForSeconds(0.5f);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime));
+       Illust.Setup(QuestHolder.Prologue_0_Illust, FadeInTime);
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime));
     Prologue_ButtonHolderGroup.interactable = true;
@@ -167,12 +163,11 @@ public class UI_QuestWolf : UI_default
         break;
     }
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 0.0f, FadeOutTime));
+    Illust.Next(_illust,  FadeOutTime + FadeInTime);
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 0.0f, FadeOutTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 0.0f, FadeOutTime));
     yield return new WaitForSeconds(FadeOutTime);
 
-    Prologue_IllustImage.sprite = _illust;
     Prologue_Description.text = _description;
     Prologue_ButtonText_A.text= _buttontext_a;
     Prologue_Button_A.onClick.RemoveAllListeners();
@@ -200,7 +195,6 @@ public class UI_QuestWolf : UI_default
       }
     }
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_IllustGroup, 1.0f, FadeInTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime));
 

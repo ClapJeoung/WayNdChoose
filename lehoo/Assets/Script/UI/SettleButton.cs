@@ -21,20 +21,7 @@ public class SettleButton : ReturnButton
       }
       else
       {
-        UIManager.Instance.DialogueUI.CloseUI();
-      }
-    }
-    else if (CurrentUI as UI_Settlement != null)
-    {
-      if (GameManager.Instance.MyGameData.MovePoint == 0 && Warned == false)
-      {
-        WarningDescription.text = GameManager.Instance.GetTextData("NOMOVEPOINT");
-        SetWarningButton();
-        return;
-      }
-      else
-      {
-        UIManager.Instance.MySettleUI.CloseUI();
+        UIManager.Instance.DialogueUI.CloseUI(false);
       }
     }
 
@@ -54,8 +41,8 @@ public class SettleButton : ReturnButton
         break;
     }
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.6f, true));
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect, CenterPos, TopPos, 0.5f, true));
+
     SettlementUI.OpenUI(true);
+    Close();
   }
 }

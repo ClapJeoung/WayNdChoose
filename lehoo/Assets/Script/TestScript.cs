@@ -3,14 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Text;
+using UnityEngine.EventSystems;
 
-public class lehoo
-{
-}
-public class techa : lehoo
-{
-
-}
 public class TestScript:MonoBehaviour
 {
 }

@@ -76,7 +76,6 @@ public class EventManager : MonoBehaviour
     }
 
     EventData _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
-    if (_event == null) _event = MyEventHolder.ReturnOutsideEvent(_tiledata.EnvirList);
 
     GameManager.Instance.SetOuterEvent(_event);
 

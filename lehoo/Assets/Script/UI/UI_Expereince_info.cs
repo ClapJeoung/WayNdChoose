@@ -83,7 +83,7 @@ public class UI_Expereince_info : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(GetPanelRect("myrect").Rect);
 
   }
-  public override void CloseUI()
+  public  void CloseUI()
   {
     IsOpen = false;
     BackButton.interactable = false;

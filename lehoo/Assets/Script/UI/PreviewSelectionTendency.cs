@@ -62,7 +62,6 @@ public class PreviewSelectionTendency : MonoBehaviour
       int _effectindex = 0;
       string _selectionname = "";
       int _requireprogress =0;
-      ProgressText.text = "";
       switch (tendency.Level)
       {
         case -2:
@@ -154,6 +153,7 @@ GameManager.Instance.GetTextData("Selection_Mental");
           }
           break;
       }
+      ProgressText.text = _selectionname;
 
       SetArrow(tendency.Type, dir, _arrowcount,Mathf.Abs(_effectindex));
 

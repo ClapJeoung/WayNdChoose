@@ -117,6 +117,9 @@ public class ReturnButton : MonoBehaviour
   public virtual void Close()
   {
     IsOpen = false;
+    StartCoroutine(UIManager.Instance.moverect(MyRect, MyRect.anchoredPosition, Dir == 0 ? LeftOutsidePos : RightOutsidePos, 0.4f, false));
+
+    return;
     switch (Dir)
     {
       case 0:

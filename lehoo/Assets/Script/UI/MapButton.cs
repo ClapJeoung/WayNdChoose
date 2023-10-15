@@ -20,7 +20,7 @@ public class MapButton : ReturnButton
       }
       else
       {
-        UIManager.Instance.DialogueUI.CloseUI();
+        UIManager.Instance.DialogueUI.CloseUI(false);
       }
     }
     else if (CurrentUI as UI_Settlement != null)
@@ -54,10 +54,8 @@ public class MapButton : ReturnButton
         break;
     }
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(MyRect,MyRect.anchoredPosition, CenterPos, 0.4f,false));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup, 0.0f, UIManager.Instance.MapUI.UIOpenTime_Move));
+    UIManager.Instance.MapUI.OpenUI(Dir == 0 );
 
-    UIManager.Instance.MapUI.OpenUI();
-
+    Close();
   }
 }

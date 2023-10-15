@@ -7,51 +7,17 @@ using System.IO;
 
 public class UI_Main : UI_default
 {
-  [SerializeField] private Image MainImage_A = null;
-  [SerializeField] private CanvasGroup MainImageGroup_A = null;
-  [SerializeField] private Image MainImage_B = null;
-  [SerializeField] private CanvasGroup MainImageGroup_B = null;
-  [SerializeField] private float ImageTime = 2.5f;
-  [SerializeField] private AnimationCurve ImageCurve = null;
-  private IEnumerator ShowImage = null;
+  public ImageSwapScript Illust = null;
+  public static float ImageChangeTime = 6.0f;
+  private WaitForSeconds ImageSwapWait = new WaitForSeconds(ImageChangeTime);
+  private Sprite CurrentIllust = null;
   private IEnumerator showimage()
   {
-    float _time = 0.0f, _targettime = ImageTime;
-    if(GameManager.Instance.ImageHolder.Transparent) MainImage_A.sprite =GameManager.Instance.ImageHolder.GetRandomMainIllust(null);
-    MainImageGroup_A.alpha = 0.0f;
-    MainImageGroup_B.alpha = 0.0f;
-    while (_time < _targettime)
-    {
-      MainImageGroup_A.alpha = ImageCurve.Evaluate(_time / _targettime);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    MainImageGroup_A.alpha = 1.0f;
-    _time = 0.0f;
     while (true)
     {
-      MainImage_B.sprite = GameManager.Instance.ImageHolder.GetRandomMainIllust(MainImage_A.sprite);
-      while (_time < _targettime)
-      {
-        MainImageGroup_A.alpha = ImageCurve.Evaluate(1.0f - _time / _targettime);
-        MainImageGroup_B.alpha = ImageCurve.Evaluate(_time / _targettime);
-        _time += Time.deltaTime;
-        yield return null;
-      }
-      MainImageGroup_A.alpha = 0.0f;
-      MainImageGroup_B.alpha = 1.0f;
-      MainImage_A.sprite=GameManager.Instance.ImageHolder.GetRandomMainIllust(MainImage_B.sprite);
-      _time = 0.0f;
-      while (_time < _targettime)
-      {
-        MainImageGroup_A.alpha = ImageCurve.Evaluate(_time / _targettime);
-        MainImageGroup_B.alpha = ImageCurve.Evaluate(1.0f-_time / _targettime);
-        _time += Time.deltaTime;
-        yield return null;
-      }
-      _time = 0.0f;
-      MainImageGroup_A.alpha = 1.0f;
-      MainImageGroup_B.alpha = 0.0f;
+      Illust.Next(GameManager.Instance.ImageHolder.GetRandomMainIllust(CurrentIllust), ImageChangeTime);
+      CurrentIllust = GameManager.Instance.ImageHolder.GetRandomMainIllust(CurrentIllust);
+      yield return ImageSwapWait;
     }
   }
   [SerializeField] private CanvasGroup LogoGroup = null;
@@ -86,7 +52,6 @@ public class UI_Main : UI_default
     StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
     BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
    Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Cult.QuestName;
-    ShowImage = showimage();
     SetupMain();
   }
   public void SetupMain()
@@ -101,7 +66,7 @@ public class UI_Main : UI_default
       LoadGameButton.interactable = false;
       LoadInfoText.text = "";
     }
-    if (ShowImage != null) StartCoroutine(ShowImage);
+    StartCoroutine(showimage());
     UIManager.Instance.AddUIQueue(openmain());
   }//메인 화면 텍스트 세팅
   public void OpenScenario()//새 게임 눌러 시나리오 선택으로 넘어가는 메소드
@@ -165,8 +130,6 @@ public class UI_Main : UI_default
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, MainUIOpenTime));
 
-    ShowImage = showimage();
-    StartCoroutine(ShowImage);
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").OutisdePos, GetPanelRect("mainillust").InsidePos, MainUIOpenTime, true));
     yield return Wait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").OutisdePos, GetPanelRect("quitgame").InsidePos, MainUIOpenTime, true));
@@ -201,8 +164,6 @@ public class UI_Main : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").InsidePos, GetPanelRect("quitgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
     yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").InsidePos, GetPanelRect("mainillust").OutisdePos, MainUICloseTime, false));
-    StopCoroutine(ShowImage);
-    ShowImage = null;
   }
   private IEnumerator openscenario()
   {

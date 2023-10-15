@@ -11,6 +11,7 @@ public static class ConstValues
   public const int MadnessEffect_Force = 35;
   public const int MadnessEffect_Wild = 25;
   public const int MadnessEffect_Intelligence = 40;
+  public const int MadnessEffect_Intelligence_Value = 2;
 
   public const int Quest_Cult_Progress_Settlement=10, Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
   public const int Qeust_Cult_EventProgress_Clear_Less60 = 4, Quest_Cult_EventProgress_Clear_Over60 = 3;
@@ -200,6 +201,8 @@ public class GameData    //게임 진행도 데이터
             {
               case QuestType.Cult:
                 Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
+                Debug.Log("대화 광기 발동");
+                UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
                 break;
             }
           }
@@ -207,9 +210,18 @@ public class GameData    //게임 진행도 데이터
         }
         else turn = value;
 
-        if (LongExp != null) LongExp.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
-        if (ShortExp_A != null) ShortExp_A.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
-        if (ShortExp_B != null) ShortExp_B.Duration -= Madness_Intelligence == true ? UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence ? 2 : 1 : 1;
+        int _expvalue = 0;
+        if (Madness_Intelligence == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence)
+        {
+          _expvalue = ConstValues.MadnessEffect_Intelligence_Value;
+          Debug.Log("지성 광기 발동");
+          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
+        }
+        else _expvalue = 1;
+        if (LongExp != null) LongExp.Duration -= _expvalue;
+        if (ShortExp_A != null) ShortExp_A.Duration -= _expvalue;
+        if (ShortExp_B != null) ShortExp_B.Duration -= _expvalue;
+
 
         UIManager.Instance.UpdateExpPael();
 
@@ -251,8 +263,8 @@ public class GameData    //게임 진행도 데이터
   public int CheckPercent_themeorskill(int _current, int _target)
   {
   //  Debug.Log($"{_current} {_target}");
-    if (_current >= _target) return 100;
-    return Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/_target));
+    if (_current >= _target) return 1;
+    return 101-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/_target));
   }//origin : 대상 레벨   target : 목표 레벨
   /// <summary>
   /// 최소 ~ 100
@@ -263,7 +275,7 @@ public class GameData    //게임 진행도 데이터
   {
     float _per = Gold / _target;
     //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
-    return Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer, 100, _per));
+    return 101-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer, 101, _per));
     //좌상향 곡선 ~ 우상향 곡선
   }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
   #endregion
@@ -300,24 +312,24 @@ public class GameData    //게임 진행도 데이터
   {
     return ConstValues.Rest_DiscomfortRatio * discomfort;
   }
-  public int PayHPValue_modified
+  public int PayHPValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
-    public int PaySanityValue_modified
+    public int PaySanityValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
-    public int PayGoldValue_modified
+    public int PayGoldValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear) * GetGoldLossModify(true)); } }
-    public int FailHPValue_modified
+    public int FailHPValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
-    public int FailSanityValue_modified
+    public int FailSanityValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
-    public int FailGoldValue_modified
+    public int FailGoldValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear) * GetGoldLossModify(true)); } }
-    public int RewardHPValue_modified
+    public int RewardHPValue
     { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardHP_min, ConstValues.RewardHP_max) * GetHPGenModify(true)); } }
-    public int RewardSanityValue_modified
-    { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max) * GetSanityGenModify(true)); } }
-    public int RewardGoldValue_modified
-    { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardGold_min, ConstValues.RewardGold_max) * GetGoldGenModify(true)); } }
+    public int RewardSanityValue
+    { get { return (int)(Mathf.Lerp(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max, Year / ConstValues.MaxYear) * GetSanityGenModify(true)); } }
+    public int RewardGoldValue
+    { get { return (int)(Mathf.Lerp(ConstValues.RewardGold_min, ConstValues.RewardGold_max, Year / ConstValues.MaxYear) * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int length,int movepoint)
   {
     int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Year / ConstValues.MaxYear)
@@ -431,26 +443,9 @@ public class GameData    //게임 진행도 데이터
     }
     return 100;
   }
-  public void MixTendency()
+  public Tendency GetTendency(TendencyTypeEnum type)
   {
-    Tendency _currenttendency=UnityEngine.Random.Range(0,2)==0?Tendency_Head:Tendency_Body;
-    bool _changelittle = false;
-    if (_currenttendency.Level.Equals(0)) _changelittle = true;  //레벨이 0이라면 반전이 불가능하니 값 증감(changelittle)로 한다
-    else _changelittle = UnityEngine.Random.Range(0, 10) < 8 ? true : false;
-    //레벨이 0이 아니라면 80% 증감, 20% 확률로 반전을 실행한다
-    if (_changelittle)
-    {
-      int _value = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
-      //50% 확률로 +1 혹은 -1
-      if (_currenttendency.Level.Equals(-3)) _value = 1;
-      else if (_currenttendency.Level.Equals(3)) _value = -1;
-      //-3이면 더 감소 못하니 +1, +3이면 더 증가 못하니 -1로 변경
-      _currenttendency.Level += _value;
-    }
-    else
-    {
-      _currenttendency.Level *= -1;
-    }
+    return type==TendencyTypeEnum.Body?Tendency_Body:Tendency_Head;
   }
   #endregion
   #region #경험#

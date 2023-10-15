@@ -50,7 +50,7 @@ public class UI_skill_info : UI_default//스크립트 이름은 Skill인데 Theme 표시하�
     }//열린 상태에서 다른 테마 아이콘 클릭한거면 내용물만 바꾸기
     CurrentSkillIndex = _index;
   }
-  public override void CloseUI()
+  public void CloseUI()
   {
     IsOpen = false;
     BackButton.interactable = false;

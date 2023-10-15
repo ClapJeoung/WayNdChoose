@@ -55,48 +55,39 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private GameObject SelectionNonePanel = null;
   [SerializeField] private Image SelectionNoneBackground = null;
   //[SerializeField] private TextMeshProUGUI SelectionNoneText = null;
-  [SerializeField] private PreviewSelectionTendency SelectionNoneTendency = null;
-  [SerializeField] private TextMeshProUGUI SelectionNoneRewardText = null;
-  [SerializeField] private Image SelectionNoneRewardIcon = null;
-  [SerializeField] private TextMeshProUGUI SelectionNonePenaltyText = null;
-  [SerializeField] private Image SelectionNonePenaltyIcon = null;
+  // [SerializeField] private PreviewSelectionTendency SelectionNoneTendency = null;
+  [SerializeField] private PreviewRewardGroup SelectionNoneReward = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionPayPanel = null;
   [SerializeField] private Image SelectionPayBackground = null;
 //  [SerializeField] private Image PayIcon = null;
  // [SerializeField] private TextMeshProUGUI PayInfo = null;
-  [SerializeField] private TextMeshProUGUI PayRequireValue = null;
-  [SerializeField] private GameObject PayNoGoldHolder = null;
+//  [SerializeField] private TextMeshProUGUI PayRequireValue = null;
+ // [SerializeField] private GameObject PayNoGoldHolder = null;
   [SerializeField] private TextMeshProUGUI PayNoGold_Text = null;
-  [SerializeField] private TextMeshProUGUI PayNoGold_PercentText = null;
-  [SerializeField] private TextMeshProUGUI PayNoGold_PercentValue = null;
-  [SerializeField] private TextMeshProUGUI PayNoGold_Alternative = null;
+  // [SerializeField] private TextMeshProUGUI PayNoGold_PercentText = null;
+  //[SerializeField] private TextMeshProUGUI PayNoGold_PercentValue = null;
+  //[SerializeField] private TextMeshProUGUI PayNoGold_Alternative = null;
   // [SerializeField] private TextMeshProUGUI PaySubDescription = null;
-  [SerializeField] private TextMeshProUGUI SelectionPayRewardText = null;
-  [SerializeField] private Image SelectionPayRewardIcon = null;
-  [SerializeField] private TextMeshProUGUI SelectionPayPenaltyText = null;
-  [SerializeField] private Image SelectionPayPenaltyIcon = null;
-  [SerializeField] private PreviewSelectionTendency SelectionPayTendendcy = null;
+  [SerializeField] private PreviewRewardGroup SelectionPayReward = null;
+  // [SerializeField] private PreviewSelectionTendency SelectionPayTendendcy = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionCheckPanel = null;
   [SerializeField] private Image SelectionCheckBackground = null;
  // [SerializeField] private Image[] SelectionCheckIcons = null;
-  [SerializeField] private TextMeshProUGUI SelectionCheckInfo = null;
+//  [SerializeField] private TextMeshProUGUI SelectionCheckInfo = null;
  // [SerializeField] private TextMeshProUGUI SelectionCheckCurrentLevel = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_text = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_int = null;
-  [SerializeField] private TextMeshProUGUI SelectionCheckRewardText = null;
-  [SerializeField] private Image SelectionCheckRewardIcon = null;
-  [SerializeField] private TextMeshProUGUI SelectionCheckPenaltyText = null;
-  [SerializeField] private Image SelectionCheckPenaltyIcon = null;
+  [SerializeField] private PreviewRewardGroup SelectionCheckReward = null;
   //  [SerializeField] private TextMeshProUGUI SelectionCheckDescription = null;
-  [SerializeField] private PreviewSelectionTendency SelectionCheckTendendcy = null;
+  // [SerializeField] private PreviewSelectionTendency SelectionCheckTendendcy = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionElsePanel = null;
   [SerializeField] private Image SelectionElseBackground = null;
   [SerializeField] private Image SelectionElseIcon = null;
  // [SerializeField] private TextMeshProUGUI SelectionElseDescription = null;
-  [SerializeField] private PreviewSelectionTendency SelectionElseTendency = null;
+//  [SerializeField] private PreviewSelectionTendency SelectionElseTendency = null;
   [Space(10)]
   [SerializeField] private GameObject RewardStatusPanel = null;
   [SerializeField] private Image RewardStatusIcon = null;
@@ -527,112 +518,36 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(TendencyPreview, rect);
   }
-  private void SetRewardInfo(SuccessData successdata, TextMeshProUGUI rewardtext,Image rewardicon,
-    FailData failuredata,TextMeshProUGUI penaltytext,Image penaltyicon)
-  {
-    Sprite _rewardicon = null;
-    switch (successdata.Reward_Type)
-    {
-      case RewardTypeEnum.Status:
-        switch (successdata.Reward_StatusType)
-        {
-          case StatusTypeEnum.HP: _rewardicon = GameManager.Instance.ImageHolder.HPIcon; break;
-          case StatusTypeEnum.Sanity: _rewardicon = GameManager.Instance.ImageHolder.SanityIcon; break;
-          case StatusTypeEnum.Gold: _rewardicon = GameManager.Instance.ImageHolder.GoldIcon; break;
-        }
-        break;
-      case RewardTypeEnum.Experience: _rewardicon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon; break;
-      case RewardTypeEnum.Skill:
-        _rewardicon = GameManager.Instance.ImageHolder.GetSkillIcon(successdata.Reward_SkillType, false);
-        break;
-    }
-    Sprite _penaltyicon = null;
-    if (failuredata != null)
-    {
-      switch (failuredata.Penelty_target)
-      {
-        case PenaltyTarget.Status:
-          switch (failuredata.StatusType)
-          {
-            case StatusTypeEnum.HP: _penaltyicon = GameManager.Instance.ImageHolder.HPDecreaseIcon; break;
-            case StatusTypeEnum.Sanity: _penaltyicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon; break;
-            case StatusTypeEnum.Gold: _penaltyicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon; break;
-          }
-          break;
-      }
-    }
-
-    if (_rewardicon == null && _penaltyicon == null)
-    {
-      rewardicon.transform.parent.transform.gameObject.SetActive(false);
-    }
-    else
-    {
-      rewardicon.transform.parent.transform.gameObject.SetActive(true);
-
-      if (_rewardicon == null)
-      {
-        if (rewardtext.gameObject.activeInHierarchy == true) rewardtext.gameObject.SetActive(false);
-        if (rewardicon.gameObject.activeInHierarchy == true) rewardicon.gameObject.SetActive(false);
-      }
-      else
-      {
-        if (rewardtext.gameObject.activeInHierarchy == false) rewardtext.gameObject.SetActive(true);
-        if (rewardicon.gameObject.activeInHierarchy == false) rewardicon.gameObject.SetActive(true);
-        rewardtext.text = GameManager.Instance.GetTextData("SuccessReward");
-        rewardicon.sprite = _rewardicon;
-      }
-      if (_penaltyicon == null)
-      {
-        if (penaltytext.gameObject.activeInHierarchy == true) penaltytext.gameObject.SetActive(false);
-        if (penaltyicon.gameObject.activeInHierarchy == true) penaltyicon.gameObject.SetActive(false);
-      }
-      else
-      {
-        if (penaltytext.gameObject.activeInHierarchy == false) penaltytext.gameObject.SetActive(true);
-        if (penaltyicon.gameObject.activeInHierarchy == false) penaltyicon.gameObject.SetActive(true);
-        penaltytext.text = GameManager.Instance.GetTextData("FailPenalty");
-        penaltyicon.sprite = _penaltyicon;
-      }
-    }
-
-  }
   public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform rect)
   {
+    if (SelectionNoneReward.Setup(_selection) == false) return;
+
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
-  //  SelectionNoneText.text = _selection.SubDescription;
-  SetRewardInfo(_selection.SuccessData,SelectionNoneRewardText,SelectionNoneRewardIcon,
-    _selection.FailureData,SelectionNonePenaltyText,SelectionNonePenaltyIcon);
+    //  SelectionNoneText.text = _selection.SubDescription;
 
     Vector2 _pivot = new Vector2(1.1f, 0.5f);
+    
     switch (tendencytype)
     {
       case TendencyTypeEnum.None:
-        if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(true)) SelectionNoneTendency.gameObject.SetActive(false);
         break;
       case TendencyTypeEnum.Body:
-        if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(false))SelectionNoneTendency.gameObject.SetActive(true);
-        SelectionNoneTendency.Setup(GameManager.Instance.MyGameData.Tendency_Body,dir);
         _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
         break;
       case TendencyTypeEnum.Head:
-        if (SelectionNoneTendency.gameObject.activeInHierarchy.Equals(false)) SelectionNoneTendency.gameObject.SetActive(true);
-        SelectionNoneTendency.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
         _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
         break;
     }
-
+    
     OpenPreviewPanel(SelectionNonePanel,_pivot,rect);
   }
   public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
-    SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+    if (SelectionPayReward.Setup(_selection) == false) return;
 
     //PaySubDescription.text = _selection.SubDescription;
 
-    SetRewardInfo(_selection.SuccessData, SelectionPayRewardText, SelectionPayRewardIcon,
-      _selection.FailureData, SelectionPayPenaltyText, SelectionPayPenaltyIcon);
 
     Sprite _payicon = null;
     int _modifiedvalue = 0;
@@ -642,71 +557,64 @@ public class PreviewManager : MonoBehaviour
     switch (_selection.SelectionPayTarget)
     {
       case StatusTypeEnum.HP:
+        if (_selection.SuccessData.Reward_Type == RewardTypeEnum.None) return;
+
         _status = StatusTypeEnum.HP;
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
-        _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue_modified;
+        _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusTypeEnum.HP,1), WNCText.GetHPColor("-"+_modifiedvalue.ToString()));
-        if (PayNoGoldHolder.activeInHierarchy.Equals(true)) PayNoGoldHolder.SetActive(false);
-        if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
+        if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
+      //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
+       
         break;//체력이라면 지불 기본값, 보정치, 최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
 
       case StatusTypeEnum.Sanity:
+        if (_selection.SuccessData.Reward_Type == RewardTypeEnum.None) return;
+
         _status = StatusTypeEnum.Sanity;
         _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
-        _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue_modified;
+        _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor("-" + _modifiedvalue.ToString()));
 
-        if (PayNoGoldHolder.activeInHierarchy.Equals(true)) PayNoGoldHolder.SetActive(false);
-        if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
+        if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
+      //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
       case StatusTypeEnum.Gold:
         _status = StatusTypeEnum.Gold;
         _payicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
-        _modifiedvalue = GameManager.Instance.MyGameData.PayGoldValue_modified;
+        _modifiedvalue = GameManager.Instance.MyGameData.PayGoldValue;
         if (_modifiedvalue > GameManager.Instance.MyGameData.Gold)
         {
-          _percent = GameManager.Instance.MyGameData.CheckPercent_money(_modifiedvalue);
+          _percent = GameManager.Instance.MyGameData.CheckPercent_money(_modifiedvalue)-1;
           int _sanitypayvalue = (int)((_modifiedvalue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue);
 
-          PayNoGold_Text.text = GameManager.Instance.GetTextData("NOGOLD_TEXT");
-          PayNoGold_PercentText.text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
-          PayNoGold_PercentValue.text = WNCText.PercentageColor(_percent);
-          PayNoGold_Alternative.text = string.Format(GameManager.Instance.GetTextData("NOGOLD_PERCENTAGE_TEXT"),
-            GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold),
-            GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetSanityColor(_sanitypayvalue.ToString()));
-
-          if (PayNoGoldHolder.activeInHierarchy.Equals(false)) PayNoGoldHolder.SetActive(true);
-          if (PayRequireValue.gameObject.activeInHierarchy.Equals(true)) PayRequireValue.gameObject.SetActive(false);
-
+          if (PayNoGold_Text.gameObject.activeInHierarchy == false) PayNoGold_Text.gameObject.SetActive(true);
+          PayNoGold_Text.text = string.Format(GameManager.Instance.GetTextData("Nogold_Text"),
+            GameManager.Instance.MyGameData.Gold,
+            _sanitypayvalue,
+            _percent);
         }//지불 골드 값이 보유 값에 비해 높을 때
         else
         {
-          PayRequireValue.text = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 1), WNCText.GetGoldColor(_modifiedvalue));
-
-          if(PayNoGoldHolder.activeInHierarchy.Equals(true))PayNoGoldHolder.SetActive(false);
-          if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
-
+          if (_selection.SuccessData.Reward_Type == RewardTypeEnum.None) return;
+          
+          if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
         }//골드 지불이 가능할 때
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
     }
 
-  //  PayIcon.sprite = _payicon;
-    PayRequireValue.text = _payvaluetext;
+
+    //  PayIcon.sprite = _payicon;
 
     Vector2 _pivot = new Vector2(1.1f, 0.5f);
-    switch (tendencytype)//성향 존재하는거면 그거 활성화
+    switch (tendencytype)
     {
       case TendencyTypeEnum.None:
-        if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionPayTendendcy.gameObject.SetActive(false);
         break;
       case TendencyTypeEnum.Body:
-        if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionPayTendendcy.gameObject.SetActive(true);
-        SelectionPayTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
         _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
         break;
       case TendencyTypeEnum.Head:
-        if (SelectionPayTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionPayTendendcy.gameObject.SetActive(true);
-        SelectionPayTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
         _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
         break;
     }
@@ -715,10 +623,7 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
-    SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
-
-    SetRewardInfo(_selection.SuccessData, SelectionCheckRewardText, SelectionCheckRewardIcon,
-      _selection.FailureData, SelectionCheckPenaltyText, SelectionCheckPenaltyIcon);
+    if (SelectionCheckReward.Setup(_selection) == false) return;
 
     //  Sprite[] _icons = new Sprite[2];
     Skill[] _skills= new Skill[2];
@@ -756,30 +661,24 @@ public class PreviewManager : MonoBehaviour
      // if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
     }
 
-    _percentage = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel);
+    _percentage = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel)-1;
     _percentage_int = WNCText.PercentageColor(_percentage);
 
   //  SelectionCheckIcons[0].sprite = _icons[0];
   //  SelectionCheckIcons[1].sprite=_icons[1];
-    SelectionCheckInfo.text = _requiretext;
     SelectionCheckPercent_text.text = _percentage_text;
     SelectionCheckPercent_int.text = _percentage_int;
     // SelectionCheckDescription.text = _subdescription;
 
     Vector2 _pivot = new Vector2(1.1f, 0.5f);
-    switch (tendencytype)//성향 존재하는거면 그거 활성화
+    switch (tendencytype)
     {
       case TendencyTypeEnum.None:
-        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionCheckTendendcy.gameObject.SetActive(false);
         break;
       case TendencyTypeEnum.Body:
-        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
-        SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
         _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
         break;
       case TendencyTypeEnum.Head:
-        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
-        SelectionCheckTendendcy.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
         _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
         break;
     }
@@ -798,20 +697,6 @@ public class PreviewManager : MonoBehaviour
 
     CurrentPreview=SelectionElsePanel.GetComponent<RectTransform>();
 
-    switch (tendencytype)
-    {
-      case TendencyTypeEnum.None:
-        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(true)) SelectionCheckTendendcy.gameObject.SetActive(false);
-        break;
-      case TendencyTypeEnum.Body:
-        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
-        SelectionElseTendency.Setup(GameManager.Instance.MyGameData.Tendency_Body, dir);
-        break;
-      case TendencyTypeEnum.Head:
-        if (SelectionCheckTendendcy.gameObject.activeInHierarchy.Equals(false)) SelectionCheckTendendcy.gameObject.SetActive(true);
-        SelectionElseTendency.Setup(GameManager.Instance.MyGameData.Tendency_Head, dir);
-        break;
-    }
 
     OpenPreviewPanel(SelectionElsePanel,rect);
   }
@@ -976,10 +861,6 @@ public class PreviewManager : MonoBehaviour
     if (CurrentPreview == null) return;
 
     CurrentPreview.GetComponent<CanvasGroup>().alpha = 0.0f;
-    SelectionNoneTendency.StopEffect();
-    SelectionPayTendendcy.StopEffect();
-    SelectionCheckTendendcy.StopEffect();
-    SelectionElseTendency.StopEffect();
     CurrentPreview = null; 
   }
 

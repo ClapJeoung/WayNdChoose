@@ -58,7 +58,4 @@ public class UI_default : MonoBehaviour
         Debug.Log($"{name} 이름 뭔가 잘못 쓴듯");
         return null;
     }
-  public virtual void CloseUI()
-  {
-  }
 }

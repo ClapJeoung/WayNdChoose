@@ -59,7 +59,7 @@ public class EventHolder
         _json.Selection_Info = "1@2";
         _json.Failure_Penalty = "0@1";
         _json.Failure_Penalty_info = "0@0";
-        _json.Reward_Target = "2@3";
+        _json.Reward_Target = "2@2";
         _json.Reward_Info = "0@0";
         defaultevent_settlement = ReturnEventDataDefault(_json);
       }
@@ -749,14 +749,6 @@ public class EventData
     }
   }
   public List<int> EnableSeasons = new List<int>();  //0개면 사계절 분화 없음
-  public int Season
-  {
-    get
-    {
-      if (EnableSeasons.Contains(4)) return 4;
-      return GameManager.Instance.MyGameData.Turn;
-    }
-  }
   public bool IsRightSeason
   {
     get
@@ -1196,7 +1188,7 @@ public class EventJsonData
   public string Failure_Penalty;            //없음, 손실
   public string Failure_Penalty_info;       //0:X   1:체력,정신력,돈
 
-  public string Reward_Target;              //0:경험 1:체력 2:정신력 3:돈  4:기술               5:X
+  public string Reward_Target;              //없음, 스텟, 기술, 경험
   public string Reward_Info;                //  ID                         대화,무력,생존,학식
 
   public string EndingID = "";

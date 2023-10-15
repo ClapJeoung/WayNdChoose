@@ -55,7 +55,7 @@ public class UI_Menu : UI_default
     IsOpen = true;
     IsWorking = false;
   }
-  public override void CloseUI()
+  public void CloseUI()
   {
     if (IsWorking) return;
     StartCoroutine(closeui());

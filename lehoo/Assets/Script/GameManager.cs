@@ -426,6 +426,7 @@ public class GameManager : MonoBehaviour
 
   public void RestInSector(SectorTypeEnum sectortype,StatusTypeEnum statustype ,int payvalue ,int discomfort,int movepoint, int questinfoindex)
   {
+    MyGameData.Turn++;
     MyGameData.FirstRest = false;
     if (statustype==StatusTypeEnum.Sanity)
     {
@@ -438,6 +439,8 @@ public class GameManager : MonoBehaviour
 
     if (MyGameData.Madness_Force == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Force)
     {
+      Debug.Log("무력 광기 발동");
+      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
       //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
     }
     else
@@ -489,7 +492,6 @@ public class GameManager : MonoBehaviour
     EventHolder.RemoveEvent(MyGameData.CurrentEvent,true,_tendencyindex);
 
     MyGameData.CurrentEventSequence = EventSequence.Clear;
-    MyGameData.Turn++;
 
     switch (MyGameData.QuestType)
     {
@@ -518,7 +520,6 @@ public class GameManager : MonoBehaviour
     EventHolder.RemoveEvent(MyGameData.CurrentEvent, false, _tendencyindex);
 
     MyGameData.CurrentEventSequence = EventSequence.Clear;
-    MyGameData.Turn++;
 
     switch (MyGameData.QuestType)
     {
@@ -555,7 +556,7 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = _event;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    UIManager.Instance.OpenDialogue();
+    UIManager.Instance.OpenDialogue(false);
     //다이어로그 열기
   }//야외 이동을 통해 이벤트를 받은 경우
   public void SelectEvent(EventData _targetevent)
@@ -563,18 +564,9 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = _targetevent;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
     //현재 이벤트 데이터에 삽입
-    UIManager.Instance.OpenDialogue();
+    UIManager.Instance.OpenDialogue(false);
     SaveData();
-  }//제시 패널에서 이벤트를 선택한 경우
-  public void SelectQuestEvent(EventData questevent)
-  {
-    Dictionary<Settlement, int> _temp = new Dictionary<Settlement, int>();
-    MyGameData.CurrentEvent = questevent;
-    MyGameData.CurrentEventSequence = EventSequence.Progress;
-    //현재 이벤트 데이터에 삽입
-    UIManager.Instance.OpenDialogue();
-    SaveData();
-  }
+  }//정착지 패널에서 이벤트를 선택한 경우
   public void AddTendencyCount(TendencyTypeEnum _tendencytype,int index)
   {
     switch (_tendencytype)
@@ -722,7 +714,6 @@ public class GameManager : MonoBehaviour
   public void EnterSettlement(Settlement targetsettlement)
   {
     MyGameData.CurrentSettlement=targetsettlement;
-    MyGameData.FirstRest = true;
 
     switch (MyGameData.QuestType)
     {

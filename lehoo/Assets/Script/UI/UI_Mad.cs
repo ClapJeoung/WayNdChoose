@@ -147,7 +147,7 @@ public class UI_Mad : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(HolderGroup, 1.0f, 1.2f));
   }
-  public override void CloseUI()
+  public  void CloseUI()
   {
     IsOpen = false;
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup,0.0f,FadeoutTime));

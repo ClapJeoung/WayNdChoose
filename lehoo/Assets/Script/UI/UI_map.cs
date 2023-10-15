@@ -12,7 +12,7 @@ public class UI_map : UI_default
   [SerializeField] private RectTransform PlayerRect = null;
   [SerializeField] private Image Outline_Idle = null;
   [SerializeField] private Image Outline_Select = null;
-  [SerializeField] private float MoveTime = 1.5f;
+  [SerializeField] private float MoveTime = 0.8f;
   private TileData SelectedTile = null;
   public maptext MapCreater = null;
   [HideInInspector] public GameObject CityIcon = null;
@@ -34,23 +34,33 @@ public class UI_map : UI_default
     Debug.Log("뭔가 이상한 레후~");
     return null;
   }
-  public Vector2 OpenPos = new Vector2(0.0f, 375.0f);
-  public Vector2 ClosePos = new Vector2(0.0f, 700.0f);
-  public Vector2 OpenSize = new Vector2(1100.0f, 750.0f);
-  public Vector2 CloseSize = new Vector2(1100.0f, 60.0f);
-  public float UIOpenTime_Fold = 0.7f;
-  public float UIOpenTime_Move = 0.4f;
-  public float UICloseTime_Fold = 0.5f;
+  [SerializeField] private AnimationCurve OpenFoldCurve = new AnimationCurve();
+  [SerializeField] private AnimationCurve CloseFoldCurve = new AnimationCurve();
+  public Vector2 OpenSize = new Vector2(1240, 750.0f);
+  public Vector2 CloseSize = new Vector2(70.0f, 750.0f);
+  public RectTransform PanelLastHolder = null;
+  private Vector2 Left_Pivot = new Vector2(0.0f, 0.5f);
+  private Vector2 Left_OutsidePos = new Vector2(-1000.0f, -0.0f);
+  private Vector2 Left_InsidePos = new Vector2(-620.0f, 0.0f);
+  private Vector2 Left_Anchor = new Vector2(0.0f, 0.5f);
+  private Vector2 Left_LastHolderPos = new Vector2(620.0f, 0.0f);
+  private Vector2 Right_Pivot = new Vector2(1.0f, 0.5f);
+  private Vector2 Right_InsidePos = new Vector2(620.0f, 0.0f);
+  private Vector2 Right_OutsidePos = new Vector2(1200.0f, -0.0f);
+  private Vector2 Right_Anchor = new Vector2(1.0f, 0.5f);
+  private Vector2 Right_LastHolderPos = new Vector2(-620.0f, 0.0f);
+  public float UIOpenTime_Fold = 0.8f;
+  public float UIOpenTime_Move = 0.6f;
+  public float UICloseTime_Fold = 0.6f;
   public float UICloseTime_Move = 0.4f;
 
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private RectTransform HolderRect = null;
-  [SerializeField] private RectTransform ScaleRect = null;
-  private Vector3 IdleScale = Vector3.one;
-  [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
-  [SerializeField] private float ZoomInTime = 1.2f;
+ // [SerializeField] private RectTransform ScaleRect = null;
+ // private Vector3 IdleScale = Vector3.one;
+ // [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
+  //[SerializeField] private float ZoomInTime = 1.2f;
 
-  [SerializeField] private CanvasGroup MoveInfoGroup = null;
   [SerializeField] private TextMeshProUGUI GuidText = null;
   [SerializeField] private RectTransform GuidRect = null;
   [SerializeField] private Vector2 GuidPos_Tile = new Vector2(316.0f, 281.0f);
@@ -60,9 +70,11 @@ public class UI_map : UI_default
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
+  [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
+  [SerializeField] private Onpointer_highlight GoldButton_Highlight = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
-  private float MoveButtonDisableAlpha = 0.2f;
+ // private float MoveButtonDisableAlpha = 0.2f;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private TextMeshProUGUI MoveCostText = null;
   [SerializeField] private TextMeshProUGUI ProgressText = null;
@@ -170,13 +182,17 @@ public class UI_map : UI_default
   {
     outline.enabled = false;
   }
-  public void OpenUI()
+  /// <summary>
+  /// true:왼쪽에서 등장 false:오른쪽에서 등장
+  /// </summary>
+  /// <param name="dir"></param>
+  public void OpenUI(bool dir)
   {
     IsOpen = true;
-    UIManager.Instance.AddUIQueue(openui());
+    UIManager.Instance.AddUIQueue(openui(dir));
   }
   
-  private IEnumerator openui()
+  private IEnumerator openui(bool dir)
   {
     ResetEnableTiles();
 
@@ -184,7 +200,6 @@ public class UI_map : UI_default
     DisableOutline(Outline_Select);
 
     IsRitual = false;
-    MoveInfoGroup.interactable = true;
     GuidRect.anchoredPosition = GuidPos_Tile;
     GuidText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
     TileInfoText.text = "";
@@ -196,19 +211,38 @@ public class UI_map : UI_default
 
     SelectedCostType = StatusTypeEnum.HP;
 
-    ScaleRect.localScale = IdleScale;
-    ScaleRect.anchoredPosition = Vector2.zero;
+ //   ScaleRect.localScale = IdleScale;
+ //   ScaleRect.anchoredPosition = Vector2.zero;
 
     DefaultGroup.interactable = false;
     DefaultGroup.blocksRaycasts = false;
+    Vector2 _startpos= Vector2.zero,_endpos= Vector2.zero;
+    if (dir == true)
+    {
+      DefaultRect.pivot = Left_Pivot;
+      PanelLastHolder.anchorMin = Left_Anchor;
+      PanelLastHolder.anchorMax= Left_Anchor;
+      PanelLastHolder.anchoredPosition = Left_LastHolderPos;
+      _startpos = Left_OutsidePos;
+      _endpos = Left_InsidePos;
+    }
+    else
+    {
+      DefaultRect.pivot = Right_Pivot;
+      PanelLastHolder.anchorMin = Right_Anchor;
+      PanelLastHolder.anchorMax = Right_Anchor;
+      PanelLastHolder.anchoredPosition = Right_LastHolderPos;
+      _startpos = Right_OutsidePos;
+      _endpos = Right_InsidePos;
+    }
     DefaultRect.sizeDelta = CloseSize;
-    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, ClosePos, OpenPos, UIOpenTime_Move, UIManager.Instance.UIPanelOpenCurve));
-    yield return new WaitForSeconds(0.3f);
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, _endpos, UIOpenTime_Move,UIManager.Instance.UIPanelOpenCurve));
+    yield return new WaitForSeconds(0.2f);
     float _time = 0.0f;
     Vector2 _rect = DefaultRect.rect.size;
     while (_time < UIOpenTime_Fold)
     {
-      _rect = Vector2.Lerp(CloseSize, OpenSize, _time / UIOpenTime_Fold);
+      _rect = Vector2.Lerp(CloseSize, OpenSize, OpenFoldCurve.Evaluate(_time / UIOpenTime_Fold));
       DefaultRect.sizeDelta = _rect;
 
       _time+= Time.deltaTime;
@@ -287,7 +321,19 @@ public class UI_map : UI_default
     SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Length.Count, MovePointCost);
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Length.Count, MovePointCost);
 
+    SelectedCostType = StatusTypeEnum.HP;
+    MoveCostText.text = "";
+
     SanitybuttonGroup.interactable = true;
+    SanityButton_Highlight.Interactive = true;
+    bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
+    GoldbuttonGroup.interactable = _goldable;
+    GoldButton_Highlight.Interactive = _goldable;
+    GoldbuttonGroup.alpha = _goldable?1.0f:0.4f;
+
+    string _str = $"목표 타일: {SelectedTile.Coordinate}\n";
+    foreach (var dir in Length) _str += $"{(int)dir} ";
+    Debug.Log(_str);
   }
 
   private int MovePointCost = 0;
@@ -298,8 +344,8 @@ public class UI_map : UI_default
     {
       case StatusTypeEnum.Sanity:
         SelectedCostType = StatusTypeEnum.Sanity;
-        SanitybuttonGroup.alpha = 1.0f;
-        GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
+    //    SanitybuttonGroup.alpha = 1.0f;
+     //   GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
         switch (GameManager.Instance.MyGameData.QuestType)
         {
           case QuestType.Cult:
@@ -328,8 +374,8 @@ public class UI_map : UI_default
         if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
         SelectedCostType = StatusTypeEnum.Gold;
-        SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
-        GoldbuttonGroup.alpha = 1.0f;
+      //  SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
+      //  GoldbuttonGroup.alpha = 1.0f;
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), GoldCost);
 
@@ -339,15 +385,13 @@ public class UI_map : UI_default
         break;
     }
     MoveCostText.text = _costtext;
-
-    LayoutRebuilder.ForceRebuildLayoutImmediate(MoveCostText.transform.parent.transform as RectTransform);
   }
   public void ExitPointerStatus(StatusTypeEnum type)
   {
     if (type==StatusTypeEnum.Gold&& GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
-    SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
-    GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
+   // SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
+   // GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
     MoveCostText.text = "";
   }
 
@@ -356,9 +400,12 @@ public class UI_map : UI_default
     if (UIManager.Instance.IsWorking) return;
     if (SelectedCostType == StatusTypeEnum.Gold && GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
-    MoveInfoGroup.interactable = false;
-    DefaultGroup.blocksRaycasts = true;
-    UIManager.Instance.ResetEventPanels();
+    DefaultGroup.interactable = false;
+    DefaultGroup.blocksRaycasts = false;
+    SanityButton_Highlight.Interactive = false;
+    GoldButton_Highlight.Interactive = false;
+
+    //  UIManager.Instance.ResetEventPanels();
     UIManager.Instance.AddUIQueue(movemap());
   }
   private IEnumerator movemap()
@@ -388,8 +435,12 @@ public class UI_map : UI_default
       }
       SelectedTile = _availabletiles[Random.Range(0,_availabletiles.Count)];
 
+      Debug.Log("자연 광기 발동");
+      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
+
       Length = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
     }
+
     GameManager.Instance.MyGameData.ClearBeforeEvents();
     IsRitual = SelectedTile.Landmark == LandmarkType.Ritual;
 
@@ -404,9 +455,8 @@ public class UI_map : UI_default
         break;
     }
 
-    Debug.Log(GameManager.Instance.MyGameData.Coordinate);
-    Debug.Log(GameManager.Instance.MyGameData.CurrentSettlement);
-    Debug.Log(GameManager.Instance.MyGameData.CurrentTile.Coordinate);
+    Debug.Log($"시작 타일 {GameManager.Instance.MyGameData.Coordinate} 목표 타일 {SelectedTile.Coordinate}");
+
     List<Vector2> _path= new List<Vector2>();
     _path.Add(PlayerRect.anchoredPosition);
     MapData _map = GameManager.Instance.MyGameData.MyMapData;
@@ -419,13 +469,12 @@ public class UI_map : UI_default
     //_path : (최초 플레이어 좌표,~~~,마지막 좌표)
 
     float _time = 0.0f;
-    float _time_split=MoveTime/(_path.Count-1);
 
     for (int i = 0; i < _path.Count - 1; i++)
     {
-      while(_time<_time_split)
+      while(_time< MoveTime)
       {
-        PlayerRect.anchoredPosition = Vector3.Lerp(_path[i], _path[i + 1], _time / _time_split);
+        PlayerRect.anchoredPosition = Vector3.Lerp(_path[i], _path[i + 1], _time / MoveTime);
         HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
         _time += Time.deltaTime;
         yield return null;
@@ -439,6 +488,31 @@ public class UI_map : UI_default
 
     GameManager.Instance.MyGameData.Coordinate = _currenttile.Coordinate;
 
+ //   StartCoroutine(zoominview());
+
+    //CloseUI 안 쓰고 여기서 닫기 실행
+    yield return new WaitForSeconds(0.7f);
+
+    DefaultRect.pivot = Left_Pivot;
+    DefaultRect.anchoredPosition = Left_InsidePos;
+    PanelLastHolder.anchorMin = Left_Anchor;
+    PanelLastHolder.anchorMax = Left_Anchor;
+    PanelLastHolder.anchoredPosition = Left_LastHolderPos;
+
+    _time = 0.0f;
+    Vector2 _rect = DefaultRect.rect.size;
+    while (_time < UICloseTime_Fold)
+    {
+      _rect = Vector2.Lerp(OpenSize, CloseSize,CloseFoldCurve.Evaluate(_time / UICloseTime_Fold));
+      DefaultRect.sizeDelta = _rect;
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    DefaultRect.sizeDelta = CloseSize;
+    yield return new WaitForSeconds(0.2f);
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, Left_InsidePos,Left_OutsidePos , UIOpenTime_Move, UIManager.Instance.UIPanelCLoseCurve));
+
     switch (SelectedTile.Landmark)
     {
       case LandmarkType.Outer:
@@ -447,52 +521,30 @@ public class UI_map : UI_default
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
         GameManager.Instance.MyGameData.DownAllDiscomfort(ConstValues.DiscomfortDownValue);
-        yield return new WaitForSeconds(0.5f);
         EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
         break;
 
       case LandmarkType.Village:
       case LandmarkType.Town:
       case LandmarkType.City:
+        GameManager.Instance.MyGameData.FirstRest = true;
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;
       case LandmarkType.Ritual:
         GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
-        yield return new WaitForSeconds(0.5f);
         EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
 
         if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2) GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown = ConstValues.Quest_Cult_CoolDown;
         break;
     }
-
-    StartCoroutine(zoominview());
-
-    //CloseUI 안 쓰고 여기서 닫기 실행
-    DefaultGroup.interactable = false;
-    DefaultGroup.blocksRaycasts = false;
-    _time = 0.0f;
-    Vector2 _rect = DefaultRect.rect.size;
-    while (_time < UIOpenTime_Fold)
-    {
-      _rect = Vector2.Lerp(OpenSize, CloseSize, _time / UIOpenTime_Fold);
-      DefaultRect.sizeDelta = _rect;
-
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    DefaultRect.sizeDelta = CloseSize;
-    yield return new WaitForSeconds(0.3f);
-    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, OpenPos, ClosePos, UIOpenTime_Move, UIManager.Instance.UIPanelCLoseCurve));
-
-
-    yield return new WaitForSeconds(0.1f);
     if (IsRitual) UIManager.Instance.CultUI.AddProgress(4);
     IsOpen = false;
     SelectedTile = null;
     Debug.Log("이동 코루틴이 끝난 레후~");
   }
+  /*
   private IEnumerator zoominview()
   {
     float _time = 0.0f, _targettime = ZoomInTime;
@@ -511,13 +563,14 @@ public class UI_map : UI_default
     ScaleRect.localScale = _endscale;
     ScaleRect.anchoredPosition = _endposition;
   }//정착지,야외 이동 후 지도 줌인 하는 코루틴
+  */
   public void SetPlayerPos(Vector2 coordinate)
   {
     TileData _targettile = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
     PlayerRect.anchoredPosition = _targettile.Rect.anchoredPosition;
-    ScaleRect.localScale =IdleScale;
+ //   ScaleRect.localScale =IdleScale;
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
-    Debug.Log($"({coordinate.x},{coordinate.y}) -> {PlayerRect.anchoredPosition}");
+   // Debug.Log($"({coordinate.x},{coordinate.y}) -> {PlayerRect.anchoredPosition}");
   }
 
 }

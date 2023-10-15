@@ -7,8 +7,7 @@ using UnityEngine.UI;
 
 public class UI_Ending : UI_default
 {
-  [SerializeField] private Image Illust = null;
-  [SerializeField] private CanvasGroup IllustGroup = null;
+  [SerializeField] private ImageSwapScript Illust = null;
   [SerializeField] private TextMeshProUGUI Description = null;
   [SerializeField] private CanvasGroup DescriptionGroup = null;
   [SerializeField] private TextMeshProUGUI ButtonText = null;
@@ -25,7 +24,7 @@ public class UI_Ending : UI_default
   {
     UIManager.Instance.PreviewManager.ClosePreview();
 
-    Illust.sprite= illust;
+    Illust.Setup(illust, 0.5f);
     Description.text= description;
     ButtonText.text = GameManager.Instance.GetTextData("QUITTOMAIN");
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);
@@ -40,7 +39,7 @@ public void OpenUI_Ending(Tuple<List<Sprite>, List<string>, string, string> data
 
     Illusts = data.Item1; Descriptions = data.Item2; LastButtonText=data.Item3; QuitLogo = data.Item4;
 
-    Illust.sprite = Illusts[CurrentIndex];
+    Illust.Setup(Illusts[CurrentIndex], 0.5f);
     Description.text = Descriptions[CurrentIndex];
     ButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
 
@@ -64,13 +63,12 @@ public void OpenUI_Ending(Tuple<List<Sprite>, List<string>, string, string> data
   {
     CurrentIndex++;
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, 0.6f));
+    Illust.Next(Illusts[CurrentIndex], 0.6f + 0.6f);
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 0.0f, 0.6f));
-    Illust.sprite = Illusts[CurrentIndex];
+    
     Description.text = Descriptions[CurrentIndex];
     ButtonText.text = CurrentIndex<Length-1? GameManager.Instance.GetTextData("NEXT_TEXT"):LastButtonText;
     LayoutRebuilder.ForceRebuildLayoutImmediate(ButtonText.transform.parent.transform as RectTransform);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, 0.6f));
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 1.0f, 0.6f));
   }
 }

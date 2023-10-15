@@ -8,6 +8,11 @@ public class UI_Selection : MonoBehaviour
 {
   public CanvasGroup MyGroup = null;
   public Image MyImage = null;
+  public GameObject TendencyIconObj = null;
+  public Image TendencyIcon = null;
+  private int LayoutSizeTop_NoTendency = 15;
+  private int LayoutSizeTop_Tendency = -35;
+  public VerticalLayoutGroup LayoutGroup = null;
   public Vector2 LeftPos= Vector2.zero;
   public Vector2 RightPos= Vector2.zero;
   [SerializeField] private UI_dialogue MyUIDialogue = null;
@@ -21,6 +26,7 @@ public class UI_Selection : MonoBehaviour
   public Image SkillIcon_B = null;
   public TextMeshProUGUI SkillInfo = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
+  public Onpointer_highlight HighlightEffect = null;
   public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
   public bool IsLeft = true;
   public int Index
@@ -33,6 +39,7 @@ public class UI_Selection : MonoBehaviour
   public void DeActive() => StartCoroutine(UIManager.Instance.ChangeAlpha(MyGroup,0.0f,0.6f));
   public void Setup(SelectionData _data)
   {
+    HighlightEffect.HighlightList.Clear();
     SkillIcon_A.fillAmount = 1.0f;
     SkillIcon_B.fillAmount = 1.0f;
     MySelectionData = _data;
@@ -56,13 +63,18 @@ public class UI_Selection : MonoBehaviour
         switch (MySelectionData.SelectionPayTarget)
         {
           case StatusTypeEnum.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;
-            PayInfo.text = WNCText.GetHPColor("-"+GameManager.Instance.MyGameData.PayHPValue_modified);
+            PayInfo.text = WNCText.GetHPColor("-"+GameManager.Instance.MyGameData.PayHPValue);
+            HighlightEffect.AddHighlight(HighlightEffectEnum.HP);
             break;
           case StatusTypeEnum.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
-            PayInfo.text = WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.PaySanityValue_modified);
+            PayInfo.text = WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.PaySanityValue);
+            HighlightEffect.AddHighlight(HighlightEffectEnum.Sanity);
             break;
           case StatusTypeEnum.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;
-            PayInfo.text = WNCText.GetGoldColor("-" + GameManager.Instance.MyGameData.PayGoldValue_modified);
+            PayInfo.text = WNCText.GetGoldColor("-" + GameManager.Instance.MyGameData.PayGoldValue);
+            HighlightEffect.AddHighlight(HighlightEffectEnum.Gold);
+            if (GameManager.Instance.MyGameData.Gold < GameManager.Instance.MyGameData.PayGoldValue)
+              HighlightEffect.AddHighlight(HighlightEffectEnum.Sanity);
             break;
         }
         break;
@@ -75,6 +87,8 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0],false);
         SkillInfo.text =string.Format(GameManager.Instance.GetTextData("Require"),
           WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillSingleValue));
+        HighlightEffect.AddHighlight(HighlightEffectEnum.Skill);
+
         break;
       case SelectionTargetType.Check_Multy:
         if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
@@ -90,8 +104,11 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_B.sprite = _sprs[1];
         SkillInfo.text = string.Format(GameManager.Instance.GetTextData("Require"),
           WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillMultyValue));
+        HighlightEffect.AddHighlight(HighlightEffectEnum.Skill);
+
         break;
     }
+    HighlightEffect.Interactive = true;
 
     LayoutRebuilder.ForceRebuildLayoutImmediate(MyGroup.transform as RectTransform);
 
@@ -100,10 +117,27 @@ public class UI_Selection : MonoBehaviour
   //  Sprite _selectionimage = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
     if (MyTendencyType == TendencyTypeEnum.None)
     {
+      if (TendencyIconObj.activeInHierarchy == true) TendencyIconObj.SetActive(false);
+      LayoutGroup.padding.top = LayoutSizeTop_NoTendency;
     }
     else
     {
+      if (TendencyIconObj.activeInHierarchy == false) TendencyIconObj.SetActive(true);
+      LayoutGroup.padding.top = LayoutSizeTop_Tendency;
       MyPreviewInteractive.MySelectionTendencyDir = IsLeft;
+      Tendency _targettendency = GameManager.Instance.MyGameData.GetTendency(MyTendencyType);
+      Sprite _icon = null;
+      if (IsLeft)
+      {
+        if (_targettendency.Level < 0) _icon = _targettendency.CurrentIcon;
+        else _icon = GameManager.Instance.ImageHolder.GetTendencyIcon(MyTendencyType, -1);
+      }
+      else
+      {
+        if (_targettendency.Level > 0) _icon = _targettendency.CurrentIcon;
+        else _icon = GameManager.Instance.ImageHolder.GetTendencyIcon(MyTendencyType, +1);
+      }
+      TendencyIcon.sprite = _icon;
     }
 
     MyButton.transition = Selectable.Transition.SpriteSwap;
@@ -120,6 +154,8 @@ public class UI_Selection : MonoBehaviour
     MyUIDialogue.SelectSelection(this);
     if (MyTendencyType.Equals(TendencyTypeEnum.None)) return;
     GameManager.Instance.AddTendencyCount(MyTendencyType,Index);
+
+    HighlightEffect.Interactive = false;
   }
 
 }

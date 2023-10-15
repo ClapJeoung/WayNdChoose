@@ -23,6 +23,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public Settlement MySettleMent = null;
     public void OnPointerEnter(PointerEventData eventData)
     {
+    UIManager.Instance.PreviewManager.ClosePreview();
     Experience _exp = null;
     switch (PanelType)
     {
@@ -70,11 +71,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         break;
       case PreviewPanelType.RewardHP:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.HP, GameManager.Instance.MyGameData.RewardHPValue_modified, transform as RectTransform); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.HP, GameManager.Instance.MyGameData.RewardHPValue, transform as RectTransform); break;
       case PreviewPanelType.RewardSanity:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue_modified, transform as RectTransform); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue, transform as RectTransform); break;
       case PreviewPanelType.RewardGold:
-        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue_modified, transform as RectTransform); break;
+        UIManager.Instance.PreviewManager.OpenRewardStatusPreview(StatusTypeEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue, transform as RectTransform); break;
       case PreviewPanelType.RewardSkill:
         UIManager.Instance.PreviewManager.OpenRewardSkillPreview(Myskill, transform as RectTransform);  break;
       case PreviewPanelType.RewardExp:

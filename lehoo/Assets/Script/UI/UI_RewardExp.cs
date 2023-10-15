@@ -6,7 +6,6 @@ using TMPro;
 
 public class UI_RewardExp : UI_default
 {
-  [SerializeField] private GameObject LongExpName_Obj = null;
   [SerializeField] private TextMeshProUGUI LongExpName_Text = null;
   [SerializeField] private Image LongExpCap = null;
   [SerializeField] private Image LongExpIllust = null;
@@ -14,7 +13,6 @@ public class UI_RewardExp : UI_default
   [SerializeField] private TextMeshProUGUI LongExpTurn_Text = null;
   [SerializeField] private PreviewInteractive LongExpPreview = null;
 
-  [SerializeField] private GameObject[] ShortExpName_Obj = new GameObject[2];
   [SerializeField] private TextMeshProUGUI[] ShortExpName_Text = new TextMeshProUGUI[2];
   [SerializeField] private Image[] ShortExpCap = new Image[2];
   [SerializeField] private Image[] ShortExpIllust = new Image[2];
@@ -63,7 +61,6 @@ public class UI_RewardExp : UI_default
   {
     if (GameManager.Instance.MyGameData.LongExp != null)
     {
-      if (LongExpName_Obj.activeInHierarchy == false) LongExpName_Obj.SetActive(true);
       LongExpName_Text.text = GameManager.Instance.MyGameData.LongExp.Name;
       if (LongExpCap.enabled == true) LongExpCap.enabled = false;
       LongExpIllust.sprite = GameManager.Instance.MyGameData.LongExp.Illust;
@@ -75,7 +72,7 @@ public class UI_RewardExp : UI_default
     }
     else
     {
-      LongExpName_Obj.SetActive(false);
+      LongExpName_Text.text = "";
       LongExpCap.enabled = true;
       LongExpTurn_Obj.SetActive(false);
     }
@@ -86,7 +83,6 @@ public class UI_RewardExp : UI_default
 
       if (_shortexp != null)
       {
-        if (ShortExpName_Obj[i].activeInHierarchy == false) ShortExpName_Obj[i].SetActive(true);
         ShortExpName_Text[i].text = _shortexp.Name;
         if (ShortExpCap[i].enabled == true) ShortExpCap[i].enabled = false;
         ShortExpIllust[i].sprite = _shortexp.Illust;
@@ -97,14 +93,14 @@ public class UI_RewardExp : UI_default
       }
       else
       {
-        ShortExpName_Obj[i].SetActive(false);
+        ShortExpName_Text[i].text = "";
         ShortExpCap[i].enabled = true;
         ShortExpTurn_Obj[i].SetActive(false);
       }
 
     }
   }
-  public override void CloseUI()
+  public  void CloseUI()
   {
     IsOpen = false;
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.4f));

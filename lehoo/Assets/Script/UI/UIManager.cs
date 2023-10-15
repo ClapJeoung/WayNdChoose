@@ -7,10 +7,6 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
 
-public enum UIMoveDir { Horizontal, Vertical }
-public enum UIFadeMoveDir { Left, Right, Up, Down }
-//등장 시 우->좌, 좌->우, 하->상, 상->하
-//퇴장 시 왼쪽, 오른쪽, 위쪽, 아래쪽으로 이동
 public class UIManager : MonoBehaviour
 {
     private static UIManager instance;
@@ -58,11 +54,13 @@ public class UIManager : MonoBehaviour
   public UI_skill_info MySkillUIPanelUI = null;
   public UI_Expereince_info MyExpPanelUI = null;
   public UI_Ending EndingUI = null;
+  public HighlightEffects HighlightManager = null;
   public bool IsWorking = false;
   public PreviewManager PreviewManager = null;
   [SerializeField] private Image EnvirBackground = null;
   [SerializeField] private CanvasGroup EnvirGroup = null;
-  [SerializeField] private float EnvirChangeTime = 1.5f;
+  [SerializeField] private float EnvirOpenTime = 2.0f;
+  [SerializeField] private float EnvirCloseTime = 3.0f;
   [SerializeField] private DebugScript DebugUI = null;
   public MapButton MapButton = null;
   public SettleButton SettleButton = null;
@@ -71,12 +69,12 @@ public class UIManager : MonoBehaviour
   {
     Sprite _newbackground = GameManager.Instance.ImageHolder.GetEnvirBackground(envir);
     EnvirBackground.sprite = _newbackground;
-    StartCoroutine(ChangeAlpha(EnvirGroup,1.0f,EnvirChangeTime));
+    StartCoroutine(ChangeAlpha(EnvirGroup,1.0f, EnvirOpenTime));
   }
   public void OffBackground()
   {
-    EnvirBackground.sprite = GameManager.Instance.ImageHolder.Transparent;
-    StartCoroutine(ChangeAlpha(EnvirGroup, 0.0f, EnvirChangeTime));
+  //  EnvirBackground.sprite = GameManager.Instance.ImageHolder.Transparent;
+    StartCoroutine(ChangeAlpha(EnvirGroup, 0.0f, EnvirCloseTime));
   }
   [Space(10)]
   [SerializeField] private TextMeshProUGUI YearText = null;
@@ -104,10 +102,6 @@ public class UIManager : MonoBehaviour
   [Space(10)]
   public float StatusEffectTime = 1.5f;
   [SerializeField] private TextMeshProUGUI HPText = null;
-  [SerializeField] private Image HPEffect_Image = null;
-  [SerializeField] private CanvasGroup HPEffect_Group = null;
-  [SerializeField] private Color HPUpColor= Color.white;
-  [SerializeField] private Color HPDownColor= Color.white;
   private int lasthp = -1;
   public void UpdateHPText()
   {
@@ -120,19 +114,13 @@ public class UIManager : MonoBehaviour
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
     Debug.Log("체력 수치 업데이트");
 
-    Color _color = lasthp < GameManager.Instance.MyGameData.HP ? HPUpColor : HPDownColor;
-    HPEffect_Image.color = _color;
-    StartCoroutine(ChangeAlpha(HPEffect_Group, 0.0f, StatusEffectTime));
+    HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
 
     lasthp = GameManager.Instance.MyGameData.HP;
   }
   [SerializeField] private TextMeshProUGUI SanityText_current = null;
  // [SerializeField] private TextMeshProUGUI SanityText_max = null;
   private int lastsanity = -1;
-  [SerializeField] private Image SanityEffect_Image = null;
-  [SerializeField] private CanvasGroup SanityEffect_Group = null;
-  [SerializeField] private Color SanityUpColor = Color.white;
-  [SerializeField] private Color SanityDownColor = Color.white;
   public void UpdateSanityText()
   {
     if (!lastsanity.Equals(-1))
@@ -145,18 +133,12 @@ public class UIManager : MonoBehaviour
    // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
     Debug.Log("정신력, 최대 정신력 수치 업데이트");
 
-    Color _color = lastsanity < GameManager.Instance.MyGameData.Sanity ? SanityUpColor : SanityDownColor;
-    SanityEffect_Image.color = _color;
-    StartCoroutine(ChangeAlpha(SanityEffect_Group, 0.0f, StatusEffectTime));
-    
+    HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
+
     lastsanity = GameManager.Instance.MyGameData.Sanity;
   }
   [SerializeField] private TextMeshProUGUI GoldText = null;
   private int lastgold = -1;
-  [SerializeField] private Image GoldEffect_Image = null;
-  [SerializeField] private CanvasGroup GoldEffect_Group = null;
-  [SerializeField] private Color GoldUpColor = Color.white;
-  [SerializeField] private Color GoldDownColor = Color.white;
   public void UpdateGoldText()
   {
     if (!lastgold.Equals(-1))
@@ -168,19 +150,13 @@ public class UIManager : MonoBehaviour
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
     Debug.Log("골드 수치 업데이트");
 
-    Color _color = lastgold < GameManager.Instance.MyGameData.Gold ? GoldUpColor : GoldDownColor;
-    GoldEffect_Image.color = _color;
-    StartCoroutine(ChangeAlpha(GoldEffect_Group, 0.0f, StatusEffectTime));
+    HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
 
     lastgold = GameManager.Instance.MyGameData.Gold;
   }
   [SerializeField] private Image MovePoint_Icon = null;
   [SerializeField] private TextMeshProUGUI MovePointText = null;
   private int lastmovepoint = -1;
-  [SerializeField] private Image MovepointEffect_Image = null;
-  [SerializeField] private CanvasGroup MovepointEffect_Group = null;
-  [SerializeField] private Color MovepointUpColor = Color.white;
-  [SerializeField] private Color MovepointDownColor = Color.white;
   public void UpdateMovePointText()
   {
     if (lastmovepoint != -1)
@@ -193,10 +169,8 @@ public class UIManager : MonoBehaviour
     MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
     Debug.Log("이동력 수치 업데이트");
 
-    Color _color = lastmovepoint < GameManager.Instance.MyGameData.MovePoint ? MovepointUpColor : MovepointDownColor;
-    MovepointEffect_Image.color = _color;
-    StartCoroutine(ChangeAlpha(MovepointEffect_Group, 0.0f, StatusEffectTime));
-    
+    HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
+
     lastmovepoint = GameManager.Instance.MyGameData.MovePoint;
   }
   [Space(10)]
@@ -318,49 +292,78 @@ public class UIManager : MonoBehaviour
  // [SerializeField] private TextMeshProUGUI ShortExpEffect_B = null;
   public void UpdateExpPael()
   {
+    bool _starteffect = false;
+
     if (GameManager.Instance.MyGameData.LongExp == null)
     {
       LongExpTurn.text = "";
 
-      if (LongExpActive == true) StartCoroutine(moverect(LongExpCover, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+      if (LongExpActive == true)
+      {
+        StartCoroutine(moverect(LongExpCover, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+        _starteffect = true;
+      }
       LongExpActive = false;
     }
     else
     {
       LongExpTurn.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
 
-      if (LongExpActive == false) StartCoroutine(moverect(LongExpCover,Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
-      LongExpActive = true;
+      if (LongExpActive == false)
+      {
+        StartCoroutine(moverect(LongExpCover, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
+        _starteffect = true;
+      }
+        LongExpActive = true;
     }
 
     if (GameManager.Instance.MyGameData.ShortExp_A == null)
     {
       ShortExpTurn_A.text = "";
 
-      if (ShortExpAActive == true) StartCoroutine(moverect(ShortExpCover_A, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
-      ShortExpAActive = false;
+      if (ShortExpAActive == true)
+      {
+        StartCoroutine(moverect(ShortExpCover_A, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+        _starteffect = true;
+      }
+        ShortExpAActive = false;
     }
     else
     {
       ShortExpTurn_A.text = GameManager.Instance.MyGameData.ShortExp_A.Duration.ToString();
 
-      if (ShortExpAActive == false) StartCoroutine(moverect(ShortExpCover_A, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
+      if (ShortExpAActive == false)
+      {
+        StartCoroutine(moverect(ShortExpCover_A, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
+        _starteffect = true;
+      }
+
       ShortExpAActive = true;
     }
     if (GameManager.Instance.MyGameData.ShortExp_B == null)
     {
       ShortExpTurn_B.text = "";
 
-      if (ShortExpBActive == true) StartCoroutine(moverect(ShortExpCover_B, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+      if (ShortExpBActive == true) 
+      {
+        StartCoroutine(moverect(ShortExpCover_B, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+        _starteffect = true;
+      }
+
       ShortExpBActive = false;
     }
     else
     {
       ShortExpTurn_B.text = GameManager.Instance.MyGameData.ShortExp_B.Duration.ToString();
 
-      if (ShortExpBActive == false) StartCoroutine(moverect(ShortExpCover_B, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
+      if (ShortExpBActive == false)
+      {
+        StartCoroutine(moverect(ShortExpCover_B, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
+        _starteffect = true;
+      }
       ShortExpBActive = true;
     }
+    if (_starteffect) HighlightManager.HighlightAnimation(HighlightEffectEnum.Exp);
   }
   public void UpdateAllUI()
   {
@@ -376,7 +379,7 @@ public class UIManager : MonoBehaviour
   }
   private void Update()
   {
-    if (Input.GetKeyDown(KeyCode.F4))
+    if (Input.GetKeyDown(KeyCode.F12))
     {
       if(DebugUI.gameObject.activeInHierarchy==true)DebugUI.gameObject.SetActive(false);
       else
@@ -457,18 +460,12 @@ public class UIManager : MonoBehaviour
   public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MapUI.SetPlayerPos(coordinate);
   public void UpdateMap_SetPlayerPos() => MapUI.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
   public void CreateMap() => MapUI.MapCreater.MakeTilemap();
-  public void OpenDialogue()
+  public void OpenDialogue(bool dir)
   {
     //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
 
-    DialogueUI.OpenUI();
+    DialogueUI.OpenUI(dir);
   }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
-  public void ResetEventPanels()
-  {
-    if(DialogueUI.IsOpen) DialogueUI.CloseUI();
-    if(MySettleUI.IsOpen) MySettleUI.CloseUI();
-  }//이벤트 패널,리스트 패널,퀘스트 패널을 처음 상태로 초기화(맵 이동할 때 마다 호출)
-    public void CloseSuggestPanel_normal() => MySettleUI.CloseUI();
   public void GetMad() => MadUI.OpenUI();
 
   #region 메인-게임 전환

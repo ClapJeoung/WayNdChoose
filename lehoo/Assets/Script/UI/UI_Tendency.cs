@@ -58,7 +58,7 @@ public class UI_Tendency : UI_default
     }
     CurrentTendencyType = _tendencytype;
   }
-  public override void CloseUI()
+  public void CloseUI()
   {
     TouchBlock.enabled = false;
     IsOpen = false;

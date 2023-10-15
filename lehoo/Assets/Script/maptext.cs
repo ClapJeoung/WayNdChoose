@@ -1146,7 +1146,7 @@ public class maptext : MonoBehaviour
     //    _bottomoutline.enabled = false;
         _bottomtile.AddComponent(typeof(TileButtonScript));
         _bottomimage.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
-        _button.interactable = true;
+        _button.interactable = false;
         var _buttoncolor = _button.colors;
         _buttoncolor.disabledColor = Color.white;
         _button.colors = _buttoncolor;
@@ -1188,6 +1188,7 @@ public class maptext : MonoBehaviour
         _buttonscript.BottomImage = _bottomimage;
         _buttonscript.TopImage = _topimage;
         _buttonscript.LandmarkImage= _landmarkimage;
+        _buttonscript.OnPointer = _bottomtile.GetComponent<Onpointer_tileoutline>();
         _button.onClick.AddListener(() => _buttonscript.Clicked());
 
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _buttonscript;

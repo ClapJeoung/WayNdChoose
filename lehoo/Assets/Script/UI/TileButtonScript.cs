@@ -11,10 +11,10 @@ public class TileButtonScript : MonoBehaviour
   public Image BottomImage = null;
   public Image TopImage = null;
   public Image LandmarkImage = null;
+  public Onpointer_tileoutline OnPointer = null;
   public void Clicked()
   {
     if (UIManager.Instance.IsWorking) return;
-    if (TileData.Coordinate == GameManager.Instance.MyGameData.Coordinate) return;
 
     MapUI.SelectTile(TileData);
   }
