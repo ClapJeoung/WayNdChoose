@@ -318,7 +318,7 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
         _buttontext = GameManager.Instance.GetTextData("NEXT_TEXT");
         break;
       case 2:
-        var _tuple_0 = QuestHolder.GetSettlementData;
+        var _tuple_0 = QuestHolder.GetSettlementData(GameManager.Instance.MyGameData.CurrentSettlement.SettlementType);
         _illust = _tuple_0.Item1;
         _description = _tuple_0.Item2;
         _buttontext = _tuple_0.Item3;

@@ -15,26 +15,27 @@ public class UI_Settlement : UI_default
   [SerializeField] private AnimationCurve OpenFoldCurve = new AnimationCurve();
   [SerializeField] private AnimationCurve CloseFoldCurve = new AnimationCurve();
   [SerializeField] private RectTransform NameRect = null;
-  private Vector2 NameHolderPos_Left = new Vector2(-1250.0f, 330.0f);
-  private Vector2 NameHolderPos_Center = new Vector2(-110, 330.0f);
-  private Vector2 NameHolderPos_Right = new Vector2(1450.0f, 330.0f);
+  public Vector2 NameHolderPos_Left = new Vector2(-1250.0f, 330.0f);
+  public Vector2 NameHolderPos_Center = new Vector2(-110, 330.0f);
+  public Vector2 NameHolderPos_Right = new Vector2(1450.0f, 330.0f);
   [SerializeField] private RectTransform PanelRect = null;
-  private Vector2 OpenSize = new Vector2(740.0f, 450.0f);
-  private Vector2 CloseSize = new Vector2(60.0f, 450.0f);
+  public Vector2 OpenSize = new Vector2(740.0f, 450.0f);
+  public Vector2 CloseSize = new Vector2(60.0f, 450.0f);
   public RectTransform PanelLastHolder = null;
   private Vector2 Left_Anchor = new Vector2(0.0f, 0.5f);
   private Vector2 Left_Pivot = new Vector2(0.0f, 0.5f);
-  private Vector2 Left_PanelOutsidePos = new Vector2(-1000.0f, -0.0f);
-  private Vector2 Left_PanelInsidePos = new Vector2(-480, 0.0f);
-  private Vector2 Left_LastHolderPos = new Vector2(370.0f, 0.0f);
+  public Vector2 Left_PanelOutsidePos = new Vector2(-1000.0f, -0.0f);
+  public Vector2 Left_PanelInsidePos = new Vector2(-480, 0.0f);
+  public Vector2 Left_LastHolderPos = new Vector2(370.0f, 0.0f);
   private Vector2 Right_Anchor = new Vector2(1.0f, 0.5f);
   private Vector2 Right_Pivot = new Vector2(1.0f, 0.5f);
-  private Vector2 Right_PanelInsidePos = new Vector2(260, 0.0f);
-  private Vector2 Right_PanelOutsidePos = new Vector2(1150.0f, -0.0f);
-  private Vector2 Right_LastHolderPos = new Vector2(-370.0f, 0.0f);
+  public Vector2 Right_PanelInsidePos = new Vector2(260, 0.0f);
+  public Vector2 Right_PanelOutsidePos = new Vector2(1150.0f, -0.0f);
+  public Vector2 Right_LastHolderPos = new Vector2(-370.0f, 0.0f);
 
   [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementNameText = null;
+  [SerializeField] private RectTransform DiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
   [SerializeField] private TextMeshProUGUI RestCostValueText = null;
   [SerializeField] private List<PlaceIconScript> SectorIcons=new List<PlaceIconScript>();
@@ -303,9 +304,6 @@ public class UI_Settlement : UI_default
 ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
         SectorEffect.text = _effect + _sabbatdescription;
         break;
-      case 2:
-        SectorEffect.text = _effect;
-        break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), MovePointValue, DiscomfortValue);
 
@@ -407,9 +405,12 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     }
 
     CostHighlight_Sanity.Interactive = true;
-    Cost_Gold.interactable = GameManager.Instance.MyGameData.Gold >= GoldCost;
-    CostHighlight_Gold.Interactive = GameManager.Instance.MyGameData.Gold >= GoldCost;
+    CostHighlight_Sanity.SetInfo(HighlightEffectEnum.Sanity,-1* SanityCost);
 
+    bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
+    Cost_Gold.interactable = _goldable;
+    CostHighlight_Gold.Interactive = _goldable;
+    if (_goldable) CostHighlight_Gold.SetInfo(HighlightEffectEnum.Gold,-1*GoldCost);
   }
   public void OnPointerRestType(StatusTypeEnum type)
   {
@@ -439,13 +440,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     CostHighlight_Sanity.Interactive = false;
     CostHighlight_Gold.Interactive = false;
 
-    StartCoroutine(restclose_sanity());
-  }
-  private IEnumerator restclose_sanity()
-  {
-    IsOpen = false;
-    yield return StartCoroutine(closeui(true));
-    GameManager.Instance.RestInSector(SelectedSector, StatusTypeEnum.Sanity, SanityCost, DiscomfortValue, MovePointValue, QuestSectorInfo);
+    UIManager.Instance.AddUIQueue(restinsector(StatusTypeEnum.Sanity));
   }
   public void StartRest_Gold()
   {
@@ -454,13 +449,95 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     CostHighlight_Sanity.Interactive = false;
     CostHighlight_Gold.Interactive = false;
 
-    StartCoroutine(restclose_gold());
-  }
-  private IEnumerator restclose_gold()
-  {
-    IsOpen = false;
-    yield return StartCoroutine(closeui(true));
-    GameManager.Instance.RestInSector(SelectedSector, StatusTypeEnum.Gold, GoldCost, DiscomfortValue, MovePointValue, QuestSectorInfo);
+    UIManager.Instance.AddUIQueue(restinsector(StatusTypeEnum.Gold));
   }
 
+  private IEnumerator restinsector(StatusTypeEnum statustype)
+  {
+    IsOpen = false;
+
+    GameManager.Instance.MyGameData.FirstRest = false;
+
+    int _discomfortvalue = DiscomfortValue;
+       switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Cult:
+        switch (QuestSectorInfo)
+        {
+          case 0:
+            break;
+          case 1:
+            UIManager.Instance.CultUI.AddProgress(3);
+
+            if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2) GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown = ConstValues.Quest_Cult_CoolDown;
+            break;
+        }
+        break;
+    }
+
+    bool _madness_force = GameManager.Instance.MyGameData.Madness_Force == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Force;
+
+    switch (statustype)
+    {
+      case StatusTypeEnum.Sanity:
+        StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, Cost_Sanity.transform as RectTransform));
+
+        if(_madness_force)
+        {
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Sanity.transform as RectTransform, DiscomfortIcon));
+        }
+        else
+        {
+          StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Sanity.transform as RectTransform, DiscomfortIcon));
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(false,MovePointValue,Cost_Sanity.transform as RectTransform));
+        }
+
+        GameManager.Instance.MyGameData.Sanity -= SanityCost;
+        GameManager.Instance.MyGameData.CurrentSettlement.Discomfort += _discomfortvalue;
+        if (_madness_force)
+        {
+          Debug.Log("무력 광기 발동");
+          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
+          //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.MovePoint += MovePointValue;
+          GameManager.Instance.MyGameData.ApplySectorEffect(SelectedSector);
+        }
+        break;
+      case StatusTypeEnum.Gold:
+        StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, Cost_Gold.transform as RectTransform));
+
+        if (_madness_force)
+        {
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Gold.transform as RectTransform, DiscomfortIcon));
+        }
+        else
+        {
+          StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Gold.transform as RectTransform, DiscomfortIcon));
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(false, MovePointValue, Cost_Gold.transform as RectTransform));
+        }
+
+        GameManager.Instance.MyGameData.Gold -= GoldCost;
+        GameManager.Instance.MyGameData.CurrentSettlement.Discomfort += _discomfortvalue;
+        if (_madness_force)
+        {
+          Debug.Log("무력 광기 발동");
+          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
+          //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.MovePoint += MovePointValue;
+          GameManager.Instance.MyGameData.ApplySectorEffect(SelectedSector);
+        }
+        break;
+    }
+    yield return StartCoroutine(closeui(true));
+    GameManager.Instance.MyGameData.Turn++;
+
+    EventManager.Instance.SetSettlementEvent(SelectedSector);
+
+  }
 }

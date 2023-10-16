@@ -246,15 +246,15 @@ public class UI_dialogue : UI_default
                 {
                   case StatusTypeEnum.HP:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex]+
-                      $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP,2)} {WNCText.GetHPColor(-PenaltyValue)}";
+                     WNCText.SetSize(30,$"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP,2)} {WNCText.GetHPColor(-PenaltyValue)}");
                     break;
                   case StatusTypeEnum.Sanity:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
-        $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+       WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {WNCText.GetSanityColor(-PenaltyValue)}");
                     break;
                   case StatusTypeEnum.Gold:
                     DescriptionText.text = CurrentEventDescriptions[CurrentEventPhaseIndex] +
-        $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {WNCText.GetHPColor(-PenaltyValue)}";
+       WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {WNCText.GetGoldColor(-PenaltyValue)}");
                     break;
                 }
                 break;
@@ -427,6 +427,7 @@ public class UI_dialogue : UI_default
         if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.HP))
         {
           _payvalue = GameManager.Instance.MyGameData.PayHPValue;
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.HP, _selection.PayIcon.transform as RectTransform));
           yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.HP, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;
@@ -435,6 +436,7 @@ public class UI_dialogue : UI_default
         else if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.Sanity))
         {
           _payvalue = GameManager.Instance.MyGameData.PaySanityValue;
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
           yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
@@ -447,6 +449,7 @@ public class UI_dialogue : UI_default
 
           if (GameManager.Instance.MyGameData.Gold >= _payvalue)
           {
+            yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
             yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
           }
           else
@@ -455,6 +458,8 @@ public class UI_dialogue : UI_default
             {
               int _elsevalue = GameManager.Instance.MyGameData.PayGoldValue - GameManager.Instance.MyGameData.Gold;
 
+              StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
+              StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
               yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
 
               _issuccess = true;
@@ -585,7 +590,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private float ResultEffectTime = 2.0f;
   public void SetSuccess(SuccessData _success)
   {
-    Reward_Highlight.HighlightList.Clear();
+    Reward_Highlight.RemoveAllCall();
     CurrentSuccessData = _success;
     RemainReward = _success.Reward_Type == RewardTypeEnum.None ? false : true;
     Sprite _icon = null;
@@ -600,19 +605,19 @@ public class UI_dialogue : UI_default
             _icon = GameManager.Instance.ImageHolder.HPIcon;
             _name = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 0);
             _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue)}";
-            Reward_Highlight.AddHighlight(HighlightEffectEnum.HP);
+            Reward_Highlight.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.RewardHPValue);
             break;
           case StatusTypeEnum.Sanity:
             _icon = GameManager.Instance.ImageHolder.SanityIcon;
             _name = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 0);
             _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue)}";
-            Reward_Highlight.AddHighlight(HighlightEffectEnum.Sanity);
+            Reward_Highlight.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue);
             break;
           case StatusTypeEnum.Gold:
             _icon = GameManager.Instance.ImageHolder.GoldIcon;
             _name = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 0);
             _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue)}";
-            Reward_Highlight.AddHighlight(HighlightEffectEnum.Gold);
+            Reward_Highlight.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue);
             break;
         }
         break;
@@ -620,12 +625,12 @@ public class UI_dialogue : UI_default
         _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
         _name = GameManager.Instance.GetTextData("EXP_NAME");
         _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
-        Reward_Highlight.AddHighlight(HighlightEffectEnum.Exp);
+        Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
         break;
       case RewardTypeEnum.Skill:
         _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType,false);
         _name = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType,0)} +1";
-        Reward_Highlight.AddHighlight(HighlightEffectEnum.Skill);
+        Reward_Highlight.SetInfo(HighlightEffectEnum.Skill);
         break;
     }
     RewardIcon.sprite = _icon;
@@ -723,6 +728,10 @@ public class UI_dialogue : UI_default
   public void GetReward()
   {
     if (UIManager.Instance.IsWorking) return;
+    UIManager.Instance.AddUIQueue(getreward());
+  }
+  private IEnumerator getreward()
+  {
     Reward_Highlight.Interactive = false;
 
     if (CurrentSuccessData != null)
@@ -740,7 +749,7 @@ public class UI_dialogue : UI_default
         {
           RewardExpUI.OpenUI_RewardExp(GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID]);
         }
-        return;
+        yield break;
       }
       else
       {
@@ -750,17 +759,21 @@ public class UI_dialogue : UI_default
             switch (CurrentSuccessData.Reward_StatusType)
             {
               case StatusTypeEnum.HP:
+                yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.HP, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue;
                 break;
               case StatusTypeEnum.Sanity:
+                yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Sanity, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.RewardSanityValue;
                 break;
               case StatusTypeEnum.Gold:
+                yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Gold, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue;
                 break;
             }
             break;
           case RewardTypeEnum.Skill:
+            yield return StartCoroutine(UIManager.Instance.SetIconEffect(false,CurrentSuccessData.Reward_SkillType,RewardIcon.transform as RectTransform));
             GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
             break;
         }
@@ -779,7 +792,7 @@ public class UI_dialogue : UI_default
         RemainReward = false;
       }
       else
-      RewardExpUI.OpenUI_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
+        RewardExpUI.OpenUI_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
     }
   }
   private int PenaltyValue = 0;

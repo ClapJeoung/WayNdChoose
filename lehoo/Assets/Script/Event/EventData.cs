@@ -1013,33 +1013,14 @@ public class QuestHolder_Cult:Quest
     return _availableevents;
   }
 
-  public Tuple<Sprite,string,string> GetSettlementData
+  public Tuple<Sprite,string,string> GetSettlementData(SettlementType type)
   {
-    get
-    {
-      int _count = GameManager.Instance.ImageHolder.Cult_Settlement.Count;
-      int _index=UnityEngine.Random.Range(0,_count);
-
-      if (GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Count == _count)
-      {
-        return new Tuple<Sprite, string, string>
-          (
-          GameManager.Instance.ImageHolder.Cult_Settlement[GameManager.Instance.MyGameData.Turn],
-          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Settlement_0_description")),
-          GameManager.Instance.GetTextData("Cult_Settlement_0_selecting")
-          );
-      }
-
-      while(GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
-
-      Sprite _illust = GameManager.Instance.ImageHolder.Cult_Settlement[_index];
-      string _filename = "Cult_Settlement_"+_index.ToString()+"_";
-      GameManager.Instance.MyGameData.Cult_Progress_SettlementEventIndex.Add(_index);
-      return new Tuple<Sprite, string, string>(
-        _illust,
-        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename+"description")),
-        GameManager.Instance.GetTextData(_filename+"selecting"));
-    }
+    return new Tuple<Sprite, string, string>
+      (
+      GameManager.Instance.ImageHolder.GetCultSettlementIllust(type),
+      WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Settlement_"+type.ToString()+"_description")),
+      GameManager.Instance.GetTextData("Cult_Settlement_"+type.ToString()+"_selecting")
+      );
   }
   public Tuple<Sprite, string, string> GetSabbatData
   {

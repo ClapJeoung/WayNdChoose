@@ -12,6 +12,7 @@ public class UI_RewardExp : UI_default
   [SerializeField] private GameObject LongExpTurn_Obj = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn_Text = null;
   [SerializeField] private PreviewInteractive LongExpPreview = null;
+  [SerializeField] private Onpointer_highlight LongExpHighight = null;
 
   [SerializeField] private TextMeshProUGUI[] ShortExpName_Text = new TextMeshProUGUI[2];
   [SerializeField] private Image[] ShortExpCap = new Image[2];
@@ -59,6 +60,7 @@ public class UI_RewardExp : UI_default
 
   public void SetupCurrentExps()
   {
+    LongExpHighight.SetInfo(HighlightEffectEnum.Sanity, ConstValues.LongTermChangeCost);
     if (GameManager.Instance.MyGameData.LongExp != null)
     {
       LongExpName_Text.text = GameManager.Instance.MyGameData.LongExp.Name;

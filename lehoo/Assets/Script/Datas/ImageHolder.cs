@@ -160,11 +160,9 @@ public class ImageHolder : ScriptableObject
     switch (tendencytype)
     {
       case TendencyTypeEnum.Body:
-        if (dir.Equals(true)) return Arrow_Active_rational;
-        else return Arrow_Active_physical;
+        return dir ? Arrow_Active_rational : Arrow_Active_physical;
       case TendencyTypeEnum.Head:
-        if (dir.Equals(true)) return Arrow_Active_mental;
-        else return Arrow_Active_material;
+        return dir ? Arrow_Active_mental : Arrow_Active_material;
       default: return DefaultIcon;
     }
   }
@@ -407,7 +405,19 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> Cult_Prologue = new List<Sprite>();          //컬트-프롤로그
   public List<Sprite> Cult_ToPhase1 = new List<Sprite>();
   public List<Sprite> Cult_ToPhase2 = new List<Sprite>();
-  public List<Sprite> Cult_Settlement = new List<Sprite>();
+  public Sprite Cult_Settlement_village = null;
+  public Sprite Cult_Settlement_town = null;
+  public Sprite Cult_Settlement_city = null;
+  public Sprite GetCultSettlementIllust(SettlementType type)
+  {
+    switch (type)
+    {
+      case SettlementType.Village:return Cult_Settlement_village;
+        case SettlementType.Town:return Cult_Settlement_town;
+        case SettlementType.City:return Cult_Settlement_city;
+    }
+    return null;
+  }
   public List<Sprite> Cult_Sabbat = new List<Sprite>();
   public List<Sprite> Cult_Ritual = new List<Sprite>();
   public List<Sprite> CultEnding_Illusts = new List<Sprite>();

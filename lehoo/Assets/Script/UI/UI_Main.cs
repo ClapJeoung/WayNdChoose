@@ -69,6 +69,20 @@ public class UI_Main : UI_default
     StartCoroutine(showimage());
     UIManager.Instance.AddUIQueue(openmain());
   }//메인 화면 텍스트 세팅
+  public void StartGameDirect()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    UIManager.Instance.AddUIQueue(startgamedirect());
+  }
+  private IEnumerator startgamedirect()
+  {
+    SelectedQuest = QuestType.Cult;
+
+    yield return StartCoroutine(closemain());
+
+    GameManager.Instance.StartNewGame(SelectedQuest);
+
+  }
   public void OpenScenario()//새 게임 눌러 시나리오 선택으로 넘어가는 메소드
   {
     UIManager.Instance.AddUIQueue(closemain());

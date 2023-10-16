@@ -424,54 +424,6 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   #endregion
 
-  public void RestInSector(SectorTypeEnum sectortype,StatusTypeEnum statustype ,int payvalue ,int discomfort,int movepoint, int questinfoindex)
-  {
-    MyGameData.Turn++;
-    MyGameData.FirstRest = false;
-    if (statustype==StatusTypeEnum.Sanity)
-    {
-      MyGameData.Sanity -= payvalue;
-    }
-    else
-    {
-      MyGameData.Gold -= payvalue;
-    }
-
-    if (MyGameData.Madness_Force == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Force)
-    {
-      Debug.Log("무력 광기 발동");
-      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
-      //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
-    }
-    else
-    {
-      MyGameData.MovePoint += movepoint;
-      MyGameData.ApplySectorEffect(sectortype);
-    }
-
-    EventManager.Instance.SetSettlementEvent(sectortype);
-
-    switch (MyGameData.QuestType)
-    {
-      case QuestType.Cult:
-        switch (questinfoindex)
-        {
-          case 0:
-            MyGameData.CurrentSettlement.Discomfort += discomfort;
-            break;
-          case 1:
-            MyGameData.CurrentSettlement.Discomfort += discomfort;
-            UIManager.Instance.CultUI.AddProgress(3);
-
-            if (MyGameData.Quest_Cult_Phase == 2) MyGameData.Cult_SabbatSector_CoolDown = ConstValues.Quest_Cult_CoolDown;
-            break;
-          case 2:
-            MyGameData.CurrentSettlement.Discomfort += discomfort+ConstValues.Quest_Cult_SabbatDiscomfort;
-            break;
-        }
-        break;
-    }
-  }
   public void SuccessCurrentEvent(TendencyTypeEnum _tendencytype,int index)
   {
     int _tendencyindex = 0;
@@ -629,14 +581,15 @@ public class GameManager : MonoBehaviour
 
     yield return StartCoroutine(createnewmap());//새 맵 만들기
 
-    UIManager.Instance.UpdateAllUI();
-
-    yield return StartCoroutine(UIManager.Instance.opengamescene());
-
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult: UIManager.Instance.CultUI.OpenUI_Prologue((QuestHolder_Cult)MyGameData.CurrentQuestData); break;
     }
+
+    UIManager.Instance.UpdateAllUI();
+
+    yield return StartCoroutine(UIManager.Instance.opengamescene());
+
   }
   /// <summary>
   /// 저장된 데이터로 게임 시작
@@ -721,10 +674,10 @@ public class GameManager : MonoBehaviour
         switch (MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            if (!MyGameData.Cult_SettlementNames.Contains(targetsettlement.OriginName))
+            if (!MyGameData.Cult_SettlementTypes.Contains(targetsettlement.SettlementType))
             {
               UIManager.Instance.CultUI.AddProgress(2);
-              MyGameData.Cult_SettlementNames.Add(targetsettlement.OriginName);
+              MyGameData.Cult_SettlementTypes.Add(targetsettlement.SettlementType);
             }
             break;
           case 1:
@@ -747,7 +700,7 @@ public class GameManager : MonoBehaviour
     Vector2Int _distancevector = end.Coordinate - start.Coordinate;
 
     HexGrid _hex = new HexGrid(_distancevector);
-
+    Debug.Log($"{start.Coordinate} 부터 {end.Coordinate}까지\nCoordinate: {_distancevector} Hex:({_hex.q},{_hex.r},{_hex.s})");
     return _hex.GetDir;
   }
   public List<HexDir> GetLength(Vector2 start, Vector2 end)

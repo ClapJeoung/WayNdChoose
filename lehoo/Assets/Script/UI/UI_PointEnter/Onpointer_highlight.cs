@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Onpointer_highlight : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
@@ -16,14 +17,50 @@ public class Onpointer_highlight : MonoBehaviour,IPointerEnterHandler,IPointerEx
 
     }
   }
-  public List<HighlightEffectEnum> HighlightList=new List<HighlightEffectEnum> ();
-  public void AddHighlight(HighlightEffectEnum highlightEffect)
+  [SerializeField] private List<HighlightCallInfo> HighlightList=new List<HighlightCallInfo> ();
+  public HighlightCallInfo GetCallInfo(HighlightEffectEnum effect)
   {
-    if(!HighlightList.Contains(highlightEffect))HighlightList.Add(highlightEffect);
+    foreach (HighlightCallInfo call in HighlightList)
+      if (call.CallType == effect) return call;
+
+    return null;
   }
-  public void RemoveHighlight(HighlightEffectEnum highlightEffect)
+  public void SetInfo(HighlightEffectEnum type,int value)
   {
-    if(HighlightList.Contains(highlightEffect))HighlightList.Remove(highlightEffect);
+    bool _createnew = true;
+
+    foreach (HighlightCallInfo call in HighlightList)
+    {
+      if (call.CallType == type)
+      {
+        call.Value = value;
+        _createnew = false;
+      }
+    }
+    if (_createnew)
+    {
+      HighlightList.Add(new HighlightCallInfo(type,value));
+    }
+  }
+  public void SetInfo(HighlightEffectEnum type)
+  {
+    bool _createnew = true;
+
+    foreach (HighlightCallInfo call in HighlightList)
+    {
+      if (call.CallType == type)
+      {
+        _createnew = false;
+      }
+    }
+    if (_createnew)
+    {
+      HighlightList.Add(new HighlightCallInfo(type));
+    }
+  }
+  public void RemoveAllCall()
+  {
+    HighlightList.Clear();
   }
   public void OnPointerEnter(PointerEventData eventData)
   {
@@ -41,4 +78,19 @@ public class Onpointer_highlight : MonoBehaviour,IPointerEnterHandler,IPointerEx
     UIManager.Instance.HighlightManager.TurnOff();
   }
 
+}
+[System.Serializable]
+public class HighlightCallInfo
+{
+  public HighlightEffectEnum CallType;
+  public int Value = 0;
+  public HighlightCallInfo(HighlightEffectEnum type)
+  {
+    CallType = type;
+  }
+  public HighlightCallInfo(HighlightEffectEnum type,int value)
+  {
+    CallType = type;
+    Value = value;
+  }
 }

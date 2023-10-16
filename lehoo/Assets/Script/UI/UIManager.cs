@@ -6,6 +6,7 @@ using TMPro;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
+using System.Reflection;
 
 public class UIManager : MonoBehaviour
 {
@@ -98,9 +99,37 @@ public class UIManager : MonoBehaviour
       case 3:WinterIcon.sprite= GameManager.Instance.ImageHolder.WinterIcon_active;break;
     }
   }
-  [SerializeField] private AnimationCurve StatusEffectLossCurve = new AnimationCurve();
   [Space(10)]
-  public float StatusEffectTime = 1.5f;
+  [SerializeField] private float StatusGainTime = 0.8f;
+  [SerializeField] private float StatusGainSize = 1.4f;
+  [SerializeField] private float StatusLossTime = 0.8f;
+  [SerializeField] private float StatusLossSize = 1.5f;
+  [SerializeField] private AnimationCurve StatusGainCurve=new AnimationCurve();
+  [SerializeField] private AnimationCurve StatusLossCurve=new AnimationCurve();
+  private IEnumerator statusgainanimation(RectTransform rect)
+  {
+    float _time = 0.0f;
+
+    while (_time < StatusGainTime)
+    {
+      rect.localScale=Vector3.Lerp(Vector3.one,Vector3.one*StatusGainSize, StatusGainCurve.Evaluate(_time/ StatusGainTime));
+      _time+= Time.deltaTime;
+      yield return null;
+    }
+    rect.localScale = Vector3.one;
+  }
+  private IEnumerator statuslossanimation(RectTransform rect)
+  {
+    float _time = 0.0f;
+    while (_time < StatusLossTime)
+    {
+      rect.localScale = Vector3.Lerp(Vector3.one, Vector3.one * StatusLossSize, StatusLossCurve.Evaluate(_time / StatusLossTime));
+      _time+= Time.deltaTime;
+      yield return null;
+    }
+    rect.localScale = Vector3.one;
+  }
+  [SerializeField] private AnimationCurve StatusEffectLossCurve = new AnimationCurve();
   [SerializeField] private TextMeshProUGUI HPText = null;
   private int lasthp = -1;
   public void UpdateHPText()
@@ -110,7 +139,10 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
       if(_changedvalue!=0)
       StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
-    }
+      if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(HPText.rectTransform));
+      else StartCoroutine(statuslossanimation(HPText.rectTransform));
+  }
+
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
     Debug.Log("체력 수치 업데이트");
 
@@ -128,6 +160,8 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.Sanity - lastsanity;
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
+      if (lastsanity < GameManager.Instance.MyGameData.Sanity) StartCoroutine(statusgainanimation(SanityText_current.rectTransform));
+      else StartCoroutine(statuslossanimation(SanityText_current.rectTransform));
     }
     SanityText_current.text = GameManager.Instance.MyGameData.Sanity.ToString();
    // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
@@ -146,6 +180,8 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.Gold - lastgold;
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
+      if (lastgold < GameManager.Instance.MyGameData.Gold) StartCoroutine(statusgainanimation(GoldText.rectTransform));
+      else StartCoroutine(statuslossanimation(GoldText.rectTransform));
     }
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
     Debug.Log("골드 수치 업데이트");
@@ -164,15 +200,336 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.MovePoint- lastmovepoint;
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
+      if (lastmovepoint < GameManager.Instance.MyGameData.MovePoint) StartCoroutine(statusgainanimation(MovePointText.rectTransform));
+      else StartCoroutine(statuslossanimation(MovePointText.rectTransform));
     }
     MovePoint_Icon.sprite = GameManager.Instance.MyGameData.MovePoint >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
-    MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
-    Debug.Log("이동력 수치 업데이트");
 
+    Debug.Log("이동력 수치 업데이트");
+    if (lastmovepoint == 0 && GameManager.Instance.MyGameData.MovePoint == 0) return;
+
+    MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
     HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
 
     lastmovepoint = GameManager.Instance.MyGameData.MovePoint;
   }
+  [Space(10)]
+  [SerializeField] private float IconMoveTime_using = 1.0f;
+  [SerializeField] private float IconMoveTime_gain = 1.0f;
+  [SerializeField] private AnimationCurve IconUsingCurve = new AnimationCurve();
+  [SerializeField] private AnimationCurve IconGainCurve=new AnimationCurve();
+  [SerializeField] private AnimationCurve IconUsingScaleCurve=new AnimationCurve();
+  [SerializeField] private List<RectTransform> IconRectList= new List<RectTransform>();
+  [SerializeField] private RectTransform HPIconRect = null;
+  [SerializeField] private RectTransform SanityIconRect = null;
+  [SerializeField] private RectTransform GoldIconRect = null;
+  [SerializeField] private RectTransform MovepointIconRect = null;
+  [SerializeField] private RectTransform ConversationIconRect = null;
+  [SerializeField] private RectTransform ForceIconRect = null;
+  [SerializeField] private RectTransform WildIconRect = null;
+  [SerializeField] private RectTransform IntelligenceIconRect = null;
+  private List<int> ActiveIconIndexList= new List<int>();
+  /// <summary>
+  /// 체,정,골
+  /// </summary>
+  /// <param name="type"></param>
+  /// <param name="rect"></param>
+  /// <param name="isusing"></param>
+  public IEnumerator SetIconEffect(bool isusing,StatusTypeEnum status,RectTransform rect)
+  {
+    Vector2 _startpos=Vector2.zero, _endpos=Vector2.zero;
+    Sprite _icon = null;
+    switch(status)
+    {
+      case StatusTypeEnum.HP: 
+        _icon = isusing ? GameManager.Instance.ImageHolder.HPDecreaseIcon : GameManager.Instance.ImageHolder.HPIcon;
+        _startpos = isusing ? HPIconRect.position : rect.position;
+        _endpos=isusing?rect.position : HPIconRect.position;
+        break;
+      case StatusTypeEnum.Sanity:
+        _icon = isusing ? GameManager.Instance.ImageHolder.SanityDecreaseIcon : GameManager.Instance.ImageHolder.SanityIcon;
+        _startpos = isusing ? SanityIconRect.position : rect.position;
+        _endpos = isusing ? rect.position : SanityIconRect.position;
+        break;
+      case StatusTypeEnum.Gold:
+        _icon = isusing ? GameManager.Instance.ImageHolder.GoldDecreaseIcon : GameManager.Instance.ImageHolder.GoldIcon;
+        _startpos = isusing ? GoldIconRect.position : rect.position;
+        _endpos = isusing ? rect.position : GoldIconRect.position;
+        break;
+    }
+    int _index = 0;
+    RectTransform _iconrect = null;
+    for(int i=0;i<IconRectList.Count;i++)
+    {
+      _index = i;
+      if (ActiveIconIndexList.Contains(i)) continue;
+
+      _iconrect = IconRectList[_index];
+      _iconrect.GetComponent<Image>().sprite = _icon;
+      _iconrect.localScale = Vector3.one;
+      ActiveIconIndexList.Add(_index);
+      break;
+    }
+    
+    float _time = 0.0f;
+    AnimationCurve _curve = isusing ? IconUsingCurve : IconGainCurve;
+    float _targettime = isusing ? IconMoveTime_using : IconMoveTime_gain;
+    while (_time < _targettime)
+    {
+
+      _iconrect.position = Vector3.Lerp(_startpos, _endpos, _curve.Evaluate(_time / _targettime));
+      _iconrect.anchoredPosition3D = new Vector3(_iconrect.anchoredPosition3D.x, _iconrect.anchoredPosition3D.y, 0.0f);
+      if(isusing)_iconrect.localScale=Vector3.one*(1.0f-IconUsingScaleCurve.Evaluate(_time/ _targettime));
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _iconrect.anchoredPosition = Vector2.one * 3000.0f;
+    ActiveIconIndexList.Remove(_index);
+  }
+  /// <summary>
+  /// 기술
+  /// </summary>
+  /// <param name="isusing"></param>
+  /// <param name="skilltype"></param>
+  /// <param name="rect"></param>
+  /// <returns></returns>
+  public IEnumerator SetIconEffect(bool isusing, SkillTypeEnum skilltype, RectTransform rect)
+  {
+    Vector2 _startpos = Vector2.zero, _endpos = Vector2.zero;
+    Sprite _icon = null;
+    switch (skilltype)
+    {
+      case SkillTypeEnum.Conversation:
+        _icon = GameManager.Instance.ImageHolder.SkillIcon_Conversation_w;
+        _startpos = isusing ? ConversationIconRect.position : rect.position;
+        _endpos = isusing ? rect.position : ConversationIconRect.position;
+        break;
+      case SkillTypeEnum.Force:
+        _icon = GameManager.Instance.ImageHolder.SkillIcon_Force_w;
+        _startpos = isusing ? ForceIconRect.position : rect.position;
+        _endpos = isusing ? rect.position : ForceIconRect.position;
+        break;
+      case SkillTypeEnum.Wild:
+        _icon = GameManager.Instance.ImageHolder.SkillIcon_Wild_w;
+        _startpos = isusing ? WildIconRect.position : rect.position;
+        _endpos = isusing ? rect.position : WildIconRect.position;
+        break;
+      case SkillTypeEnum.Intelligence:
+        _icon = GameManager.Instance.ImageHolder.SkillIcon_Intelligence_w;
+        _startpos = isusing ? IntelligenceIconRect.position : rect.position;
+        _endpos = isusing ? rect.position : IntelligenceIconRect.position;
+        break;
+    }
+    int _index = 0;
+    RectTransform _iconrect = null;
+    for (int i = 0; i < IconRectList.Count; i++)
+    {
+      _index = i;
+      if (ActiveIconIndexList.Contains(i)) continue;
+
+      _iconrect = IconRectList[_index];
+      _iconrect.GetComponent<Image>().sprite = _icon;
+      _iconrect.localScale = Vector3.one;
+      ActiveIconIndexList.Add(_index);
+      break;
+    }
+
+    float _time = 0.0f;
+    AnimationCurve _curve = isusing ? IconUsingCurve : IconGainCurve;
+    float _targettime = isusing ? IconMoveTime_using : IconMoveTime_gain;
+    while (_time < _targettime)
+    {
+
+      _iconrect.position = Vector3.Lerp(_startpos, _endpos, _curve.Evaluate(_time / _targettime));
+      _iconrect.anchoredPosition3D = new Vector3(_iconrect.anchoredPosition3D.x, _iconrect.anchoredPosition3D.y, 0.0f);
+      if (isusing) _iconrect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / _targettime));
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _iconrect.anchoredPosition = Vector2.one * 3000.0f;
+    ActiveIconIndexList.Remove(_index);
+  }
+  /// <summary>
+  /// 성향
+  /// </summary>
+  /// <param name="tendencytype"></param>
+  /// <param name="dir"></param>
+  /// <param name="rect"></param>
+  /// <returns></returns>
+  public IEnumerator SetIconEffect(TendencyTypeEnum tendencytype,bool dir,RectTransform rect)
+  {
+    Vector2 _startpos = rect.position, _endpos = Vector2.zero;
+    int _level = 0;
+    Sprite _icon = GameManager.Instance.ImageHolder.GetTendencyIcon(tendencytype, dir ? -1 : 1);
+
+    switch (tendencytype)
+    {
+      case TendencyTypeEnum.Body:
+        _level = GameManager.Instance.MyGameData.Tendency_Body.Level;
+        break;
+      case TendencyTypeEnum.Head:
+        _level = GameManager.Instance.MyGameData.Tendency_Head.Level;
+        break;
+    }
+    int _targetlevel = 0;
+    switch (_level)
+    {
+      case -2:
+        _targetlevel = dir ? -2 : -1;
+            break;
+      case -1:
+        _targetlevel = dir ? -2 : 1;
+        break;
+      case 1:
+        _targetlevel = dir ? -1 : 2;
+        break;
+      case 2:
+        _targetlevel = dir ? 1 : 2;
+        break;
+    }
+    _endpos = GetTendencyRectPos(tendencytype, _targetlevel).position;
+
+    int _index = 0;
+    RectTransform _iconrect = null;
+    for (int i = 0; i < IconRectList.Count; i++)
+    {
+      _index = i;
+      if (ActiveIconIndexList.Contains(i)) continue;
+
+      _iconrect = IconRectList[_index];
+      _iconrect.GetComponent<Image>().sprite = _icon;
+      _iconrect.localScale = Vector3.one;
+      ActiveIconIndexList.Add(_index);
+      break;
+    }
+
+    float _time = 0.0f;
+    AnimationCurve _curve =IconGainCurve;
+    while (_time < IconMoveTime_using)
+    {
+
+      _iconrect.position = Vector3.Lerp(_startpos, _endpos, _curve.Evaluate(_time / IconMoveTime_using));
+      _iconrect.anchoredPosition3D = new Vector3(_iconrect.anchoredPosition3D.x, _iconrect.anchoredPosition3D.y, 0.0f);
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _iconrect.anchoredPosition = Vector2.one * 3000.0f;
+    ActiveIconIndexList.Remove(_index);
+  }
+  /// <summary>
+  /// 이동력
+  /// </summary>
+  /// <param name="tendencytype"></param>
+  /// <param name="dir"></param>
+  /// <param name="rect"></param>
+  /// <returns></returns>
+  public IEnumerator SetIconEffect_movepoint(bool isusing, int count, RectTransform playerrect)
+  {
+    Vector2 _startpos = isusing ? MovepointIconRect.position : playerrect.position, _endpos = isusing ? playerrect.position : MovepointIconRect.position;
+    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+
+    for (int j = 0; j < count; j++)
+    {
+      int _index = 0;
+      RectTransform _targetrect = null;
+      for (int i = 0; i < IconRectList.Count; i++)
+      {
+        _index = i;
+        if (ActiveIconIndexList.Contains(i)) continue;
+
+        _targetrect = IconRectList[_index];
+        _targetrect.GetComponent<Image>().sprite = _icon;
+        _targetrect.localScale = Vector3.one;
+        ActiveIconIndexList.Add(_index);
+        break;
+      }
+      if (j != count - 1)
+      {
+        StartCoroutine(iconmove_movepoint(isusing, _index, _targetrect, _startpos, _endpos, isusing? IconUsingCurve: IconGainCurve));
+        yield return new WaitForSeconds(0.1f);
+      }
+      else
+      {
+        yield return StartCoroutine(iconmove_movepoint(isusing, _index, _targetrect, _startpos, _endpos, isusing? IconUsingCurve : IconGainCurve));
+      }
+    }
+  }
+  private IEnumerator iconmove_movepoint(bool isusing, int index,RectTransform rect ,Vector2 startpos,Vector2 endpos,AnimationCurve curve)
+  {
+    float _time = 0.0f;
+    float _targettime = isusing ? IconMoveTime_using : IconMoveTime_gain;
+    while (_time < _targettime)
+    {
+      rect.position = Vector3.Lerp(startpos, endpos, curve.Evaluate(_time / _targettime));
+      rect.anchoredPosition3D = new Vector3(rect.anchoredPosition3D.x, rect.anchoredPosition3D.y, 0.0f);
+      if (isusing) rect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / _targettime));
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    rect.anchoredPosition = Vector2.one * 3000.0f;
+    ActiveIconIndexList.Remove(index);
+
+  }
+  /// <summary>
+  /// 불쾌(정착지)
+  /// </summary>
+  /// <param name="count"></param>
+  /// <param name="buttonrect"></param>
+  /// <param name="discomfortrect"></param>
+  /// <returns></returns>
+  public IEnumerator SetIconEffect_Discomfort(int count, RectTransform buttonrect,RectTransform discomfortrect)
+  {
+    Vector2 _startpos = buttonrect.position, _endpos = discomfortrect.position;
+    Sprite _icon = GameManager.Instance.ImageHolder.DisComfort;
+
+    for (int j = 0; j < count; j++)
+    {
+      int _index = 0;
+      RectTransform _targetrect = null;
+      for (int i = 0; i < IconRectList.Count; i++)
+      {
+        _index = i;
+        if (ActiveIconIndexList.Contains(i)) continue;
+
+        _targetrect = IconRectList[_index];
+        _targetrect.GetComponent<Image>().sprite = _icon;
+        _targetrect.localScale = Vector3.one;
+        ActiveIconIndexList.Add(_index);
+        break;
+      }
+      if (j != count - 1)
+      {
+        StartCoroutine(iconmove_discomfort(_index, _targetrect, _startpos, _endpos));
+        yield return new WaitForSeconds(0.1f);
+      }
+      else
+      {
+        yield return StartCoroutine(iconmove_discomfort(_index, _targetrect, _startpos, _endpos));
+      }
+    }
+  }
+  private IEnumerator iconmove_discomfort(int index, RectTransform rect, Vector2 startpos, Vector2 endpos)
+  {
+    float _time = 0.0f;
+    AnimationCurve _curve = IconGainCurve;
+    while (_time < IconMoveTime_gain)
+    {
+      rect.position = Vector3.Lerp(startpos, endpos, _curve.Evaluate(_time / IconMoveTime_gain));
+      rect.anchoredPosition3D = new Vector3(rect.anchoredPosition3D.x, rect.anchoredPosition3D.y, 0.0f);
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    rect.anchoredPosition = Vector2.one * 3000.0f;
+    ActiveIconIndexList.Remove(index);
+
+  }
+
+
   [Space(10)]
   [SerializeField] private float StatusTextMovetime = 1.0f;
   [SerializeField] private float LossStatusMoveSpace = 35.0f;
@@ -202,6 +559,10 @@ public class UIManager : MonoBehaviour
     Destroy(_prefab);
   }
   [Space(5)]
+  private int conversationlevel = -1;
+  private int forcelevel = -1;
+  private int wildlevel = -1;
+  private int intelligencelevel = -1;
   [SerializeField] private TextMeshProUGUI ConversationLevel = null;
   [SerializeField] private TextMeshProUGUI ForceLevel = null;
   [SerializeField] private TextMeshProUGUI WildLevel = null;
@@ -211,15 +572,50 @@ public class UIManager : MonoBehaviour
     ConversationLevel.text = GameManager.Instance.MyGameData.Madness_Conversation ?
       WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Conversation.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Conversation.Level);
+    if (conversationlevel != -1)
+    {
+      if (conversationlevel != GameManager.Instance.MyGameData.Skill_Conversation.Level)
+      {
+        StartCoroutine(statusgainanimation(ConversationLevel.rectTransform));
+        conversationlevel = GameManager.Instance.MyGameData.Skill_Conversation.Level;
+      }
+    }
+
     ForceLevel.text = GameManager.Instance.MyGameData.Madness_Force ?
       WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Force.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Force.Level);
+    if (forcelevel != -1)
+    {
+      if (forcelevel != GameManager.Instance.MyGameData.Skill_Force.Level)
+      {
+        StartCoroutine(statusgainanimation(ForceLevel.rectTransform));
+        forcelevel = GameManager.Instance.MyGameData.Skill_Force.Level;
+      }
+    }
+
     WildLevel.text = GameManager.Instance.MyGameData.Madness_Wild ?
       WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Wild.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Wild.Level);
+    if (wildlevel != -1)
+    {
+      if (wildlevel != GameManager.Instance.MyGameData.Skill_Wild.Level)
+      {
+        StartCoroutine(statusgainanimation(WildLevel.rectTransform));
+        wildlevel = GameManager.Instance.MyGameData.Skill_Wild.Level;
+      }
+    }
+
     IntelligenceLevel.text = GameManager.Instance.MyGameData.Madness_Intelligence ?
      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level) :
      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level);
+    if (intelligencelevel != -1)
+    {
+      if (intelligencelevel != GameManager.Instance.MyGameData.Skill_Intelligence.Level)
+      {
+        StartCoroutine(statusgainanimation(IntelligenceLevel.rectTransform));
+        intelligencelevel = GameManager.Instance.MyGameData.Skill_Intelligence.Level;
+      }
+    }
   }
 
   [Space(5)]
@@ -227,34 +623,37 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Image TendencyBodyIcon = null;
   [SerializeField] private RectTransform TendencyHeadRect = null;
   [SerializeField] private Image TendencyHeadIcon = null;
-  private Vector2 TendencyPos_m2 = new Vector2(-98.0f, 0.0f);
-  private Vector2 TendencyPos_m1 = new Vector2(-30.0f, 0.0f);
-  private Vector2 TendencyPos_p1 = new Vector2(35.0f, 0.0f);
-  private Vector2 TendencyPos_p2 = new Vector2(101.0f, 0.0f);
+  [SerializeField] private RectTransform TendencyPos_body_m2 = null;
+  [SerializeField] private RectTransform TendencyPos_body_m1 = null;
+  [SerializeField] private RectTransform TendencyPos_body_p1 = null;
+  [SerializeField] private RectTransform TendencyPos_body_p2 = null;
+  [SerializeField] private RectTransform TendencyPos_head_m2 = null;
+  [SerializeField] private RectTransform TendencyPos_head_m1 = null;
+  [SerializeField] private RectTransform TendencyPos_head_p1 = null;
+  [SerializeField] private RectTransform TendencyPos_head_p2 = null;
+  private RectTransform GetTendencyRectPos(TendencyTypeEnum type, int level)
+  {
+    switch (level)
+    {
+      case -2:return type==TendencyTypeEnum.Body?TendencyPos_body_m2:TendencyPos_head_m2;
+      case -1:return type == TendencyTypeEnum.Body ? TendencyPos_body_m1 : TendencyPos_head_m1;
+      case 1:return type == TendencyTypeEnum.Body ? TendencyPos_body_p1 : TendencyPos_head_p1;
+      case 2: return type == TendencyTypeEnum.Body ? TendencyPos_body_p2 : TendencyPos_head_p2;
+    }
+    return null;
+  }
   public void UpdateTendencyIcon()
   {
     if (GameManager.Instance.MyGameData.Tendency_Body.Level!=0&&TendencyBodyIcon.gameObject.activeInHierarchy == false) TendencyBodyIcon.gameObject.SetActive(true);
     if (GameManager.Instance.MyGameData.Tendency_Head.Level!=0&&TendencyHeadIcon.gameObject.activeInHierarchy == false) TendencyHeadIcon.gameObject.SetActive(true);
 
-    Vector2 _bodypos = Vector2.zero;
-    Vector2 _headpos= Vector2.zero;
-    switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
-    {
-      case -2:_bodypos = TendencyPos_m2;break;
-      case -1: _bodypos = TendencyPos_m1; break;
-      case 0: _bodypos = new Vector2(0.0f, 0.0f); break;
-      case 1: _bodypos = TendencyPos_p1; break;
-      case 2: _bodypos = TendencyPos_p2; break;
-    }
+    Vector2 _bodypos = GameManager.Instance.MyGameData.Tendency_Body.Level != 0 ?
+      GetTendencyRectPos(TendencyTypeEnum.Body, GameManager.Instance.MyGameData.Tendency_Body.Level).anchoredPosition :
+      Vector2.zero;
+    Vector2 _headpos = GameManager.Instance.MyGameData.Tendency_Body.Level!=0?
+      GetTendencyRectPos(TendencyTypeEnum.Head, GameManager.Instance.MyGameData.Tendency_Head.Level).anchoredPosition:
+      Vector2.zero;
     TendencyBodyIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(TendencyTypeEnum.Body, GameManager.Instance.MyGameData.Tendency_Body.Level);
-    switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
-    {
-      case -2: _headpos = TendencyPos_m2; break;
-      case -1: _headpos = TendencyPos_m1; break;
-      case 0: _headpos = new Vector2(0.0f, 0.0f);break;
-      case 1: _headpos = TendencyPos_p1; break;
-      case 2: _headpos = TendencyPos_p2; break;
-    }
     TendencyHeadIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(TendencyTypeEnum.Head, GameManager.Instance.MyGameData.Tendency_Head.Level);
 
     StartCoroutine(movetendencyrect(TendencyBodyRect,  _bodypos));

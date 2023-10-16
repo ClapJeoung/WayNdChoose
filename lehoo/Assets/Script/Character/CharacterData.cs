@@ -17,7 +17,6 @@ public static class ConstValues
   public const int Qeust_Cult_EventProgress_Clear_Less60 = 4, Quest_Cult_EventProgress_Clear_Over60 = 3;
   public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 2;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
-  public const int Quest_Cult_SabbatNegPer = 40, Quest_Cult_RitualNegPer = 35;
   public const int Quest_Cult_CoolDown = 4;
 
   public const int GoodExpAsSanity = 15;
@@ -31,7 +30,7 @@ public static class ConstValues
   public const int MoveRest_Sanity_min = 10, MoveRest_Sanity_max = 20;
   public const int MoveRest_Gold_min = 7, MoveRest_Gold_max = 15;
   public const float Rest_Deafult = 0.75f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.8f, Move_LengthRatio = 0.2f;
+  public const float Move_Default = 0.6f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 3.0f;
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
@@ -318,6 +317,10 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
     public int PayGoldValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear) * GetGoldLossModify(true)); } }
+  public int PayOverSanityValue
+  {
+    get { return (int)((PayGoldValue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue); }
+  }
     public int FailHPValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
     public int FailSanityValue
@@ -521,7 +524,7 @@ public class GameData    //게임 진행도 데이터
       return 3;
     }
   }
-  private int quest_cult_progress =-1;
+  private int quest_cult_progress =0;
   public int Quest_Cult_Progress
   {
     get { return quest_cult_progress; }
@@ -534,16 +537,17 @@ public class GameData    //게임 진행도 데이터
       UIManager.Instance.SidePanelCultUI.UpdateUI();
     }
   }
-  public List<string> Cult_SettlementNames=new List<string>();
+  public List<SettlementType> Cult_SettlementTypes=new List<SettlementType>();
+
   public SectorTypeEnum Cult_SabbatSector = SectorTypeEnum.NULL;
   public int Cult_SabbatSector_CoolDown = 0;
+  public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
+
   public TileData Cult_RitualTile = null;
   public int Cult_RitualTile_CoolDown = 0;
-  public List<int> Cult_Progress_SettlementEventIndex = new List<int>();
-  public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
   public List<int> Cult_Progress_RitualEventIndex = new List<int>();
   /// <summary>
-  /// 0:아님 1:맞음 2:패널티만
+  /// 0:아님 1:맞음
   /// </summary>
   /// <param name="sector"></param>
   /// <returns></returns>
@@ -552,20 +556,20 @@ public class GameData    //게임 진행도 데이터
     switch (Quest_Cult_Phase)
     {
       case 0:return 0;
-      case 1: if (Cult_SabbatSector == sector) return 1;
+      case 1:
+        if (Cult_SabbatSector == sector) return 1;
         else return 0;
       case 2:
         if (Cult_SabbatSector == sector && Cult_SabbatSector_CoolDown == 0) return 1;
         else
         {
-          if (UnityEngine.Random.Range(0, 100) > ConstValues.Quest_Cult_SabbatNegPer) return 2;
-          else return 0;
+           return 0;
         }
     }
     return 0;
   }
   /// <summary>
-  /// 0:아님 1:맞음 2:패널티만
+  /// 0:아님 1:맞음
   /// </summary>
   /// <param name="sector"></param>
   /// <returns></returns>
@@ -581,8 +585,7 @@ public class GameData    //게임 진행도 데이터
         if (tile.Landmark == LandmarkType.Ritual && Cult_RitualTile_CoolDown == 0) return 1;
         else
         {
-          if (UnityEngine.Random.Range(0, 100) > ConstValues.Quest_Cult_RitualNegPer) return 2;
-          else return 0;
+ return 0;
         }
     }
     return 0;
@@ -836,23 +839,49 @@ public class Tendency
     switch (level)
     {
       case -2:
-        _spr =dir==true?null: GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1);
+        _spr =dir?null: GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1);
         break;
       case -1:
-        _spr=dir==true?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,1);
+        _spr=dir?GameManager.Instance.ImageHolder.GetTendencyIcon(Type,-2):GameManager.Instance.ImageHolder.GetTendencyIcon(Type,1);
         break;
       case 0:
         Debug.Log("데샤아앗!!!!");
         _spr = GameManager.Instance.ImageHolder.DefaultIcon;
         break;
       case 1:
-        _spr = dir==true? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
+        _spr = dir? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, -1) : GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 2);
         break;
       case 2:
-        _spr =dir==true? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1):null;
+        _spr =dir? GameManager.Instance.ImageHolder.GetTendencyIcon(Type, 1):null;
         break;
     }
     return _spr;
+  }
+  public int CurrentProgressTargetCount
+  {
+    get
+    {
+      int _count = 0;
+      switch (level)
+      {
+        case -2:
+          _count = Progress > 0 ? ConstValues.TendencyRegress : -1;
+          break;
+        case -1:
+          _count = Progress > 0 ? ConstValues.TendencyRegress : ConstValues.TendencyProgress_1to2;
+          break;
+        case 0:
+          _count = ConstValues.TendencyProgress_1to2;
+          break;
+        case 1:
+          _count = Progress > 0 ? ConstValues.TendencyProgress_1to2 : ConstValues.TendencyRegress;
+          break;
+        case 2:
+          _count = Progress > 0 ? -1 : ConstValues.TendencyRegress;
+          break;
+      }
+      return _count;
+    }
   }
   public string GetTendencyEffectString
   {
@@ -961,54 +990,42 @@ public class Tendency
   public int Progress = 0;
   public int MaxTendencyLevel { get { return ConstValues.MaxTendencyLevel; } }
   /// <summary>
-  /// false: 마이너스     true: 플러스
+  /// treu:음수     true:양수
   /// </summary>
   /// <param name="_type"></param>
   /// <param name="dir"></param>
   public void AddCount(bool dir)
   {
-    if (dir.Equals(false))
-    {//False면 음수 진행
-
-      if (Progress <= 0) Progress = 1;
-      else Progress++;
-
-      int _abs=Mathf.Abs(Progress);
-      switch (Level)
-      {
-        case -2:
-          if (_abs.Equals(ConstValues.TendencyRegress)) Level = -1;
-          break;
-        case -1:
-          if (_abs.Equals(ConstValues.TendencyRegress)) Level = 1;
-          break;
-        case 1:
-          if (_abs.Equals(ConstValues.TendencyProgress_1to2)) Level = 2; //1레벨일때 count 개수를 충족하면 2레벨로
-          break;
-        case 2: Progress = 0; break;
-      }
-    }
-    else if (dir.Equals(true))
-    {//True면 음수 진행
+    if (dir)
+    { //왼쪽
 
       if (Progress >= 0) Progress = -1;
       else Progress--;
-
-      int _abs = Mathf.Abs(Progress);
-      switch (Level)
-      {
-        case -2:Progress = 0;break;
-        case -1:
-          if (_abs.Equals(ConstValues.TendencyProgress_1to2)) Level = -2; //-1레벨일때 count 개수를 충족하면 -2레벨로
-          break;
-        case 1:
-          if (_abs.Equals(ConstValues.TendencyRegress)) Level = -1; //+1레벨일때 count 개수를 충족하면 -1레벨로
-          break;
-        case 2:
-          if (_abs.Equals(ConstValues.TendencyRegress)) Level = 1; //+2레벨일때 count 개수를 충족하면 1레벨로
-          break;
-      }
     }
+    else if (dir==false)
+    { //오른쪽
+      if (Progress <= 0) Progress = 1;
+      else Progress++;
+    }
+
+    switch (Level)
+    {
+      case -2:
+        if (Progress == ConstValues.TendencyRegress) Level = -1;
+        break;
+      case -1:
+        if (Progress == ConstValues.TendencyProgress_1to2 * -1) Level = -2;
+        else if (Progress == ConstValues.TendencyRegress) Level = 1;
+        break;
+      case 1:
+        if (Progress == ConstValues.TendencyRegress * -1) Level = -1;
+        else if (Progress == ConstValues.TendencyProgress_1to2) Level = 2;
+        break;
+      case 2:
+        if (Progress == ConstValues.TendencyRegress * -1) Level = 1;
+        break;
+    }
+
   }
   private int level = 0;
   public int Level

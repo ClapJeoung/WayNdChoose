@@ -1323,14 +1323,8 @@ public class HexGrid
   }
   public HexGrid(Vector2Int vector2)
   {
-    q = vector2.x - (vector2.y - vector2.y % 2) / 2;
+    q = vector2.x - (vector2.y - (vector2.y &1)) / 2;
     r = vector2.y;
-    s = -q - r;
-  }
-  public HexGrid(Vector2 vector2)
-  {
-    q = (int)(vector2.x - (vector2.y - vector2.y % 2) / 2);
-    r = (int)(vector2.y);
     s = -q - r;
   }
   public void Clear()
@@ -1368,6 +1362,8 @@ public class HexGrid
   {
     get
     {
+      string _str = $"({q},{r},{s}) ->";
+
       int _loopcount = 0;
       List<HexDir> _list = new List<HexDir>();
       HexGrid _current = new HexGrid(q, r, s);
@@ -1434,9 +1430,11 @@ public class HexGrid
 
         }
 
-      foreach(var hex in GetDir(_current))
+      foreach (var hex in GetDir(_current))
+      {
         _list.Add(hex);
-
+      }
+      updatedirstr();
       bool _isoverlap = true;
       while (_isoverlap == true)
       {
@@ -1447,18 +1445,27 @@ public class HexGrid
           _list.Remove((HexDir)0);
           _list.Remove((HexDir)3);
           _isoverlap = true;
+
+          _str += "   0+3 중복 제거";
+          updatedirstr();
         }
         if (_list.Contains((HexDir)1) && _list.Contains((HexDir)4))
         {
           _list.Remove((HexDir)1);
           _list.Remove((HexDir)4);
           _isoverlap = true;
+        
+          _str += "   1+3 중복 제거";
+          updatedirstr();
         }
         if (_list.Contains((HexDir)2) && _list.Contains((HexDir)5))
         {
           _list.Remove((HexDir)2);
           _list.Remove((HexDir)5);
           _isoverlap = true;
+         
+          _str += "   2+5 중복 제거";
+          updatedirstr();
         }
 
         if (_list.Contains((HexDir)1) && _list.Contains((HexDir)5))
@@ -1468,6 +1475,9 @@ public class HexGrid
 
           _list.Add((HexDir)0);
           _isoverlap = true;
+
+          _str += "   5+1 => 0";
+          updatedirstr();
         }
         if (_list.Contains((HexDir)0) && _list.Contains((HexDir)2))
         {
@@ -1476,6 +1486,9 @@ public class HexGrid
 
           _list.Add((HexDir)1);
           _isoverlap = true;
+
+          _str += "   0+2 => 1";
+          updatedirstr();
         }
         if (_list.Contains((HexDir)1) && _list.Contains((HexDir)3))
         {
@@ -1484,6 +1497,9 @@ public class HexGrid
 
           _list.Add((HexDir)2);
           _isoverlap = true;
+
+          _str += "   1+3 => 2";
+          updatedirstr();
         }
         if (_list.Contains((HexDir)2) && _list.Contains((HexDir)4))
         {
@@ -1492,6 +1508,9 @@ public class HexGrid
 
           _list.Add((HexDir)3);
           _isoverlap = true;
+
+          _str += "   2+4 => 3";
+          updatedirstr();
         }
         if (_list.Contains((HexDir)3) && _list.Contains((HexDir)5))
         {
@@ -1500,6 +1519,9 @@ public class HexGrid
 
           _list.Add((HexDir)4);
           _isoverlap = true;
+
+          _str += "   3+5 => 4";
+          updatedirstr();
         }
         if (_list.Contains((HexDir)0) && _list.Contains((HexDir)4))
         {
@@ -1508,9 +1530,13 @@ public class HexGrid
 
           _list.Add((HexDir)5);
           _isoverlap = true;
+
+          _str += "   4+0 => 5";
+          updatedirstr();
         }
       }
 
+      Debug.Log(_str);
       return _list;
 
       //최소단위 받아서 계산
@@ -1533,7 +1559,15 @@ public class HexGrid
 
         return _temp;
       }
-
+      void updatedirstr()
+      {
+        _str += "\n(";
+        foreach(var hex in _list)
+        {
+          _str += $"{(int)hex},";
+        }
+        _str += ")";
+      }
     }
   }
 }

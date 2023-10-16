@@ -550,7 +550,7 @@ public class PreviewManager : MonoBehaviour
 
 
     Sprite _payicon = null;
-    int _modifiedvalue = 0;
+    int _payvalue = 0;
     string _payvaluetext = "";
     int _percent = -1;
     StatusTypeEnum _status = StatusTypeEnum.HP;
@@ -561,8 +561,8 @@ public class PreviewManager : MonoBehaviour
 
         _status = StatusTypeEnum.HP;
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
-        _modifiedvalue = GameManager.Instance.MyGameData.PayHPValue;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusTypeEnum.HP,1), WNCText.GetHPColor("-"+_modifiedvalue.ToString()));
+        _payvalue = GameManager.Instance.MyGameData.PayHPValue;
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusTypeEnum.HP,1), WNCText.GetHPColor("-"+_payvalue.ToString()));
         if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
       //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
        
@@ -573,8 +573,8 @@ public class PreviewManager : MonoBehaviour
 
         _status = StatusTypeEnum.Sanity;
         _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
-        _modifiedvalue = GameManager.Instance.MyGameData.PaySanityValue;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor("-" + _modifiedvalue.ToString()));
+        _payvalue = GameManager.Instance.MyGameData.PaySanityValue;
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor("-" + _payvalue.ToString()));
 
         if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
       //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
@@ -582,11 +582,11 @@ public class PreviewManager : MonoBehaviour
       case StatusTypeEnum.Gold:
         _status = StatusTypeEnum.Gold;
         _payicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
-        _modifiedvalue = GameManager.Instance.MyGameData.PayGoldValue;
-        if (_modifiedvalue > GameManager.Instance.MyGameData.Gold)
+        _payvalue = GameManager.Instance.MyGameData.PayGoldValue;
+        if (_payvalue > GameManager.Instance.MyGameData.Gold)
         {
-          _percent = GameManager.Instance.MyGameData.CheckPercent_money(_modifiedvalue)-1;
-          int _sanitypayvalue = (int)((_modifiedvalue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue);
+          _percent =101- GameManager.Instance.MyGameData.CheckPercent_money(_payvalue);
+          int _sanitypayvalue = GameManager.Instance.MyGameData.PayOverSanityValue;
 
           if (PayNoGold_Text.gameObject.activeInHierarchy == false) PayNoGold_Text.gameObject.SetActive(true);
           PayNoGold_Text.text = string.Format(GameManager.Instance.GetTextData("Nogold_Text"),
@@ -661,7 +661,7 @@ public class PreviewManager : MonoBehaviour
      // if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
     }
 
-    _percentage = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel)-1;
+    _percentage =101- GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel);
     _percentage_int = WNCText.PercentageColor(_percentage);
 
   //  SelectionCheckIcons[0].sprite = _icons[0];

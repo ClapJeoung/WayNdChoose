@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
 using UnityEngine.WSA;
+using System.IO;
 
 public class UI_map : UI_default
 {
@@ -40,15 +41,15 @@ public class UI_map : UI_default
   public Vector2 CloseSize = new Vector2(70.0f, 750.0f);
   public RectTransform PanelLastHolder = null;
   private Vector2 Left_Pivot = new Vector2(0.0f, 0.5f);
-  private Vector2 Left_OutsidePos = new Vector2(-1000.0f, -0.0f);
-  private Vector2 Left_InsidePos = new Vector2(-620.0f, 0.0f);
+  public Vector2 Left_OutsidePos = new Vector2(-1000.0f, -0.0f);
+  public Vector2 Left_InsidePos = new Vector2(-620.0f, 0.0f);
   private Vector2 Left_Anchor = new Vector2(0.0f, 0.5f);
-  private Vector2 Left_LastHolderPos = new Vector2(620.0f, 0.0f);
-  private Vector2 Right_Pivot = new Vector2(1.0f, 0.5f);
-  private Vector2 Right_InsidePos = new Vector2(620.0f, 0.0f);
-  private Vector2 Right_OutsidePos = new Vector2(1200.0f, -0.0f);
+  public Vector2 Left_LastHolderPos = new Vector2(620.0f, 0.0f);
+  public Vector2 Right_Pivot = new Vector2(1.0f, 0.5f);
+  public Vector2 Right_InsidePos = new Vector2(620.0f, 0.0f);
+  public Vector2 Right_OutsidePos = new Vector2(1200.0f, -0.0f);
   private Vector2 Right_Anchor = new Vector2(1.0f, 0.5f);
-  private Vector2 Right_LastHolderPos = new Vector2(-620.0f, 0.0f);
+  public Vector2 Right_LastHolderPos = new Vector2(-620.0f, 0.0f);
   public float UIOpenTime_Fold = 0.8f;
   public float UIOpenTime_Move = 0.6f;
   public float UICloseTime_Fold = 0.6f;
@@ -302,13 +303,6 @@ public class UI_map : UI_default
               _progresstext += string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"),ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
             }
             break;
-          case 2:
-            if (SelectedTile.Landmark == LandmarkType.Ritual&&GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown==0)
-            {
-              _progresstext += string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"), ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
-            }
-            else _progresstext = "";
-            break;
         }
         ProgressText.text = _progresstext;
         break;
@@ -326,14 +320,16 @@ public class UI_map : UI_default
 
     SanitybuttonGroup.interactable = true;
     SanityButton_Highlight.Interactive = true;
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity, -1*SanityCost);
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint,-1* MovePointCost);
+
     bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
     GoldbuttonGroup.interactable = _goldable;
     GoldButton_Highlight.Interactive = _goldable;
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold, -1*GoldCost);
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1*MovePointCost);
     GoldbuttonGroup.alpha = _goldable?1.0f:0.4f;
 
-    string _str = $"목표 타일: {SelectedTile.Coordinate}\n";
-    foreach (var dir in Length) _str += $"{(int)dir} ";
-    Debug.Log(_str);
   }
 
   private int MovePointCost = 0;
@@ -408,6 +404,7 @@ public class UI_map : UI_default
     //  UIManager.Instance.ResetEventPanels();
     UIManager.Instance.AddUIQueue(movemap());
   }
+  public AnimationCurve MoveAnimationCurve = new AnimationCurve();
   private IEnumerator movemap()
   {
     GameManager.Instance.MyGameData.Turn++;
@@ -442,6 +439,33 @@ public class UI_map : UI_default
     }
 
     GameManager.Instance.MyGameData.ClearBeforeEvents();
+
+    switch (SelectedCostType)
+    {
+      case StatusTypeEnum.Sanity:
+        if (GameManager.Instance.MyGameData.MovePoint >= 0)
+        {
+          StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
+        }
+        else
+        {
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
+        }
+        break;
+      case StatusTypeEnum.Gold:
+        if (GameManager.Instance.MyGameData.MovePoint >= 0)
+        {
+          StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
+        }
+        else
+        {
+          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
+        }
+        break;
+    }
+
     IsRitual = SelectedTile.Landmark == LandmarkType.Ritual;
 
     GameManager.Instance.MyGameData.MovePoint -= MovePointCost;
@@ -466,24 +490,32 @@ public class UI_map : UI_default
       _currenttile = _map.GetNextTile(_currenttile, Length[i]);
       _path.Add(_currenttile.Rect.anchoredPosition);
     }
-    //_path : (최초 플레이어 좌표,~~~,마지막 좌표)
 
-    float _time = 0.0f;
-
-    for (int i = 0; i < _path.Count - 1; i++)
+    float _time = 0.0f;             //x
+    int _pathcount = _path.Count-1; //길 개수-1 (마지막 좌표는 current가 되면 안되니까)   n
+    int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)
+    float _value = 0.0f;            //커브에 따른 이동 값(y)                              0.0f ~ 1.0f
+    float _valuedegree = 1.0f / _pathcount;
+    float _currentvalue = 0.0f;     //
+    Vector2 _current = Vector2.zero,_next= Vector2.zero;
+    float _movetime = MoveTime * _pathcount;
+    while (_time < _movetime)
     {
-      while(_time< MoveTime)
-      {
-        PlayerRect.anchoredPosition = Vector3.Lerp(_path[i], _path[i + 1], _time / MoveTime);
-        HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
-        _time += Time.deltaTime;
-        yield return null;
-      }
-      _time = 0.0f;
+      _value = MoveAnimationCurve.Evaluate(_time / _movetime);
+
+      _currentindex = Mathf.FloorToInt(_value / _valuedegree);
+      if (_currentindex == _pathcount) break;
+      _current = _path[_currentindex];
+      _next = _path[_currentindex+1];
+      _currentvalue = (_value % _valuedegree) * _pathcount;
+
+      PlayerRect.anchoredPosition = Vector3.Lerp(_current,_next,_currentvalue);
+      HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
+      _time += Time.deltaTime;
       yield return null;
     }
 
-    PlayerRect.anchoredPosition = _path[_path.Count-1];
+      PlayerRect.anchoredPosition = _path[_path.Count-1];
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
     GameManager.Instance.MyGameData.Coordinate = _currenttile.Coordinate;

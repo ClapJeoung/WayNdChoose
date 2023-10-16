@@ -7,4 +7,10 @@ using UnityEngine.EventSystems;
 
 public class TestScript:MonoBehaviour
 {
+  public int Index = 0;
+  [ContextMenu("test")]
+   void asdf()
+  {
+    print(Index & 1);
+  }
 }

@@ -139,13 +139,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
               ConstValues.Quest_Cult_RitualMovepoint);
             break;
           case 2:
-            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase1"),
-              ConstValues.Quest_Cult_CoolDown,
-              ConstValues.Quest_Cult_SabbatNegPer,
-              ConstValues.Quest_Cult_RitualNegPer);
+            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase2"),
+              ConstValues.Quest_Cult_CoolDown);
             break;
         }
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,new Vector2(1.1f,1.1f),transform as RectTransform);
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,new Vector2(1.2f,0.5f),transform as RectTransform);
         break;
       case PreviewPanelType.SettlementTile:
         UIManager.Instance.PreviewManager.OpenSettlementPanel(MySettleMent, transform as RectTransform);
