@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour
   private IEnumerator loadspreadsheetdatas()
   {
 
-    if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Quest0", QuestType.Cult);
+    if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Cult", QuestType.Cult);
 
     foreach (var _data in EventJsonDataList)
     {
@@ -697,11 +697,13 @@ public class GameManager : MonoBehaviour
   }
   public List<HexDir> GetLength(TileData start, TileData end)
   {
-    Vector2Int _distancevector = end.Coordinate - start.Coordinate;
 
-    HexGrid _hex = new HexGrid(_distancevector);
-    Debug.Log($"{start.Coordinate} 부터 {end.Coordinate}까지\nCoordinate: {_distancevector} Hex:({_hex.q},{_hex.r},{_hex.s})");
-    return _hex.GetDir;
+    HexGrid _current = new HexGrid(start.Coordinate);
+    HexGrid _end=new HexGrid(end.Coordinate);
+
+    HexGrid _distance = _end - _current;
+
+    return _distance.GetDir;
   }
   public List<HexDir> GetLength(Vector2 start, Vector2 end)
   {

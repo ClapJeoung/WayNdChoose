@@ -21,6 +21,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public SectorTypeEnum MyPlaceType = SectorTypeEnum.NULL;
   public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
   public Settlement MySettleMent = null;
+  public bool IsCultSidePanel = false;
     public void OnPointerEnter(PointerEventData eventData)
     {
     UIManager.Instance.PreviewManager.ClosePreview();
@@ -125,25 +126,25 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NOGOLD_TEXT"), transform as RectTransform);
         break;
       case PreviewPanelType.CultSidePanel:
-        string _cultinfo = "";
+        string _cultinfo = string.Format(GameManager.Instance.GetTextData("Cult_Preview_progress"), GameManager.Instance.MyGameData.Quest_Cult_Progress);
         switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase0"), ConstValues.Quest_Cult_Progress_Settlement);
+            _cultinfo += GameManager.Instance.GetTextData("Cult_Preview_Phase0");
             break;
           case 1:
-            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase1"),
+            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Phase1"),
               ConstValues.Quest_Cult_Progress_Sabbat,
               ConstValues.Quest_Cult_Progress_Ritual,
               ConstValues.Quest_Cult_SabbatDiscomfort,
               ConstValues.Quest_Cult_RitualMovepoint);
             break;
           case 2:
-            _cultinfo = string.Format(GameManager.Instance.GetTextData("Quest0_Preview_Phase2"),
+            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Phase2"),
               ConstValues.Quest_Cult_CoolDown);
             break;
         }
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,new Vector2(1.2f,0.5f),transform as RectTransform);
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo, IsCultSidePanel?new Vector2(1.2f,0.5f):new Vector2(0.5f,1.2f),transform as RectTransform);
         break;
       case PreviewPanelType.SettlementTile:
         UIManager.Instance.PreviewManager.OpenSettlementPanel(MySettleMent, transform as RectTransform);

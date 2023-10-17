@@ -427,7 +427,7 @@ public class UI_dialogue : UI_default
         if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.HP))
         {
           _payvalue = GameManager.Instance.MyGameData.PayHPValue;
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.HP, _selection.PayIcon.transform as RectTransform));
+       //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.HP, _selection.PayIcon.transform as RectTransform));
           yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.HP, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;
@@ -436,7 +436,7 @@ public class UI_dialogue : UI_default
         else if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.Sanity))
         {
           _payvalue = GameManager.Instance.MyGameData.PaySanityValue;
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
+       //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
           yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
@@ -449,7 +449,7 @@ public class UI_dialogue : UI_default
 
           if (GameManager.Instance.MyGameData.Gold >= _payvalue)
           {
-            yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
+        //    yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
             yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
           }
           else
@@ -458,8 +458,8 @@ public class UI_dialogue : UI_default
             {
               int _elsevalue = GameManager.Instance.MyGameData.PayGoldValue - GameManager.Instance.MyGameData.Gold;
 
-              StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
-              StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
+           //   StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
+            //  StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
               yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
 
               _issuccess = true;
@@ -630,7 +630,7 @@ public class UI_dialogue : UI_default
       case RewardTypeEnum.Skill:
         _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType,false);
         _name = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType,0)} +1";
-        Reward_Highlight.SetInfo(HighlightEffectEnum.Skill);
+        Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
         break;
     }
     RewardIcon.sprite = _icon;
@@ -759,15 +759,15 @@ public class UI_dialogue : UI_default
             switch (CurrentSuccessData.Reward_StatusType)
             {
               case StatusTypeEnum.HP:
-                yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.HP, RewardIcon.transform as RectTransform));
+             //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.HP, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue;
                 break;
               case StatusTypeEnum.Sanity:
-                yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Sanity, RewardIcon.transform as RectTransform));
+              //  yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Sanity, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.RewardSanityValue;
                 break;
               case StatusTypeEnum.Gold:
-                yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Gold, RewardIcon.transform as RectTransform));
+              //  yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Gold, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue;
                 break;
             }

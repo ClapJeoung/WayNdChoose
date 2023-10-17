@@ -13,7 +13,8 @@ public static class ConstValues
   public const int MadnessEffect_Intelligence = 40;
   public const int MadnessEffect_Intelligence_Value = 2;
 
-  public const int Quest_Cult_Progress_Settlement=10, Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
+  public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=8,Quest_Cult_Progress_City=10,
+    Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
   public const int Qeust_Cult_EventProgress_Clear_Less60 = 4, Quest_Cult_EventProgress_Clear_Over60 = 3;
   public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 2;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
@@ -531,8 +532,19 @@ public class GameData    //게임 진행도 데이터
     set 
     {
       if (value >= 100) UIManager.Instance.OpenEnding(GameManager.Instance.EventHolder.Quest_Cult.EndingDatas);
-      int _lastprogress = quest_cult_progress;
-      quest_cult_progress = Mathf.Clamp(value,0,100);
+
+      switch (Quest_Cult_Phase)
+      {
+        case 0:
+          quest_cult_progress = Mathf.Clamp(value, 0, 100);
+          break;
+        case 1:
+          quest_cult_progress = Mathf.Clamp(value, 30, 100);
+          break;
+        case 2:
+          quest_cult_progress = Mathf.Clamp(value, 60, 100);
+          break;
+      }
 
       UIManager.Instance.SidePanelCultUI.UpdateUI();
     }

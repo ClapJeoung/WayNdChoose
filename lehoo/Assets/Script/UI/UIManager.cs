@@ -106,28 +106,36 @@ public class UIManager : MonoBehaviour
   [SerializeField] private float StatusLossSize = 1.5f;
   [SerializeField] private AnimationCurve StatusGainCurve=new AnimationCurve();
   [SerializeField] private AnimationCurve StatusLossCurve=new AnimationCurve();
-  private IEnumerator statusgainanimation(RectTransform rect)
+  private IEnumerator statusgainanimation(List<RectTransform> rectlist)
   {
     float _time = 0.0f;
+    Vector3 _currentscale = Vector3.one;
 
     while (_time < StatusGainTime)
     {
-      rect.localScale=Vector3.Lerp(Vector3.one,Vector3.one*StatusGainSize, StatusGainCurve.Evaluate(_time/ StatusGainTime));
-      _time+= Time.deltaTime;
+      _currentscale= Vector3.Lerp(Vector3.one, Vector3.one * StatusGainSize, StatusGainCurve.Evaluate(_time / StatusGainTime));
+      foreach(var rect in rectlist)
+        rect.localScale = _currentscale;
+      _time += Time.deltaTime;
       yield return null;
     }
-    rect.localScale = Vector3.one;
+    foreach (var rect in rectlist)
+      rect.localScale = Vector3.one;
   }
-  private IEnumerator statuslossanimation(RectTransform rect)
+  private IEnumerator statuslossanimation(List<RectTransform> rectlist)
   {
     float _time = 0.0f;
+    Vector3 _currentscale = Vector3.one * StatusLossSize;
     while (_time < StatusLossTime)
     {
-      rect.localScale = Vector3.Lerp(Vector3.one, Vector3.one * StatusLossSize, StatusLossCurve.Evaluate(_time / StatusLossTime));
-      _time+= Time.deltaTime;
+      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * StatusLossSize, StatusLossCurve.Evaluate(_time / StatusLossTime));
+      foreach (var rect in rectlist)
+        rect.localScale = _currentscale;
+      _time += Time.deltaTime;
       yield return null;
     }
-    rect.localScale = Vector3.one;
+    foreach (var rect in rectlist)
+      rect.localScale = Vector3.one;
   }
   [SerializeField] private AnimationCurve StatusEffectLossCurve = new AnimationCurve();
   [SerializeField] private TextMeshProUGUI HPText = null;
@@ -139,8 +147,8 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
       if(_changedvalue!=0)
       StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
-      if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(HPText.rectTransform));
-      else StartCoroutine(statuslossanimation(HPText.rectTransform));
+      if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
+      else StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
   }
 
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
@@ -160,8 +168,8 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.Sanity - lastsanity;
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
-      if (lastsanity < GameManager.Instance.MyGameData.Sanity) StartCoroutine(statusgainanimation(SanityText_current.rectTransform));
-      else StartCoroutine(statuslossanimation(SanityText_current.rectTransform));
+      if (lastsanity < GameManager.Instance.MyGameData.Sanity) StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
+      else StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform}));
     }
     SanityText_current.text = GameManager.Instance.MyGameData.Sanity.ToString();
    // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
@@ -180,8 +188,8 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.Gold - lastgold;
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
-      if (lastgold < GameManager.Instance.MyGameData.Gold) StartCoroutine(statusgainanimation(GoldText.rectTransform));
-      else StartCoroutine(statuslossanimation(GoldText.rectTransform));
+      if (lastgold < GameManager.Instance.MyGameData.Gold) StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
+      else StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform}));
     }
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
     Debug.Log("골드 수치 업데이트");
@@ -197,11 +205,11 @@ public class UIManager : MonoBehaviour
   {
     if (lastmovepoint != -1)
     {
-      int _changedvalue = GameManager.Instance.MyGameData.MovePoint- lastmovepoint;
+      int _changedvalue = GameManager.Instance.MyGameData.MovePoint - lastmovepoint;
       if (_changedvalue != 0)
         StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
-      if (lastmovepoint < GameManager.Instance.MyGameData.MovePoint) StartCoroutine(statusgainanimation(MovePointText.rectTransform));
-      else StartCoroutine(statuslossanimation(MovePointText.rectTransform));
+      if (lastmovepoint < GameManager.Instance.MyGameData.MovePoint) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
+      else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform}));
     }
     MovePoint_Icon.sprite = GameManager.Instance.MyGameData.MovePoint >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
 
@@ -576,7 +584,7 @@ public class UIManager : MonoBehaviour
     {
       if (conversationlevel != GameManager.Instance.MyGameData.Skill_Conversation.Level)
       {
-        StartCoroutine(statusgainanimation(ConversationLevel.rectTransform));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { ConversationLevel.rectTransform}));
         conversationlevel = GameManager.Instance.MyGameData.Skill_Conversation.Level;
       }
     }
@@ -588,7 +596,7 @@ public class UIManager : MonoBehaviour
     {
       if (forcelevel != GameManager.Instance.MyGameData.Skill_Force.Level)
       {
-        StartCoroutine(statusgainanimation(ForceLevel.rectTransform));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { ForceLevel.rectTransform}));
         forcelevel = GameManager.Instance.MyGameData.Skill_Force.Level;
       }
     }
@@ -600,7 +608,7 @@ public class UIManager : MonoBehaviour
     {
       if (wildlevel != GameManager.Instance.MyGameData.Skill_Wild.Level)
       {
-        StartCoroutine(statusgainanimation(WildLevel.rectTransform));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { WildLevel.rectTransform}));
         wildlevel = GameManager.Instance.MyGameData.Skill_Wild.Level;
       }
     }
@@ -612,7 +620,7 @@ public class UIManager : MonoBehaviour
     {
       if (intelligencelevel != GameManager.Instance.MyGameData.Skill_Intelligence.Level)
       {
-        StartCoroutine(statusgainanimation(IntelligenceLevel.rectTransform));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { IntelligenceLevel.rectTransform}));
         intelligencelevel = GameManager.Instance.MyGameData.Skill_Intelligence.Level;
       }
     }
@@ -775,6 +783,7 @@ public class UIManager : MonoBehaviour
     UpdateExpPael();
     UpdateTendencyIcon();
     UpdateSkillLevel();
+    
   }
   private void Update()
   {
@@ -1011,19 +1020,19 @@ public static class WNCText
   }
   public static string GetHPColor(string str)
   {
-    return $"<#F78181>{str}</color>";
+    return $"<#A8616A>{str}</color>";
   }
   public static string GetHPColor(int value)
   {
-    return $"<#F78181>{value.ToString()}</color>"; 
+    return $"<#A8616A>{value.ToString()}</color>"; 
   }
   public static string GetSanityColor(string str)
   {
-    return $"<#BE81F7>{str}</color>";
+    return $"<#886D8F>{str}</color>";
   }
   public static string GetSanityColor(int value)
   {
-    return $"<#BE81F7>{value.ToString()}</color>";
+    return $"<#886D8F>{value.ToString()}</color>";
   }
   public static string GetMaxSanityColor(string str)
   {
@@ -1036,11 +1045,11 @@ public static class WNCText
 
   public static string GetGoldColor(string str)
   {
-    return $"<#F3F781>{str}</color>";
+    return $"<#AD9D63>{str}</color>";
   }
   public static string GetGoldColor(int value)
   {
-    return $"<#F3F781>{value.ToString()}</color>";
+    return $"<#AD9D63>{value.ToString()}</color>";
   }
   private static Color SuccessColor = new Color(0.8867924f, 5621194f, 0.3471876f, 1.0f);
   private static Color FailColor = new Color(0.5648571f, 0.8862745f, 0.3490196f, 1.0f);

@@ -300,7 +300,7 @@ public class UI_Settlement : UI_default
         break;
       case 1:
         DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
-        _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat_Effect"),
+        _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
 ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
         SectorEffect.text = _effect + _sabbatdescription;
         break;
@@ -387,7 +387,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         break;
       case 1:
         DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
-        _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Sabbat_Effect"),
+        _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
 ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
         SectorEffect.text = _effect + _sabbatdescription;
         break;
@@ -480,20 +480,23 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     switch (statustype)
     {
       case StatusTypeEnum.Sanity:
-        StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, Cost_Sanity.transform as RectTransform));
+       // StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, Cost_Sanity.transform as RectTransform));
 
         if(_madness_force)
         {
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Sanity.transform as RectTransform, DiscomfortIcon));
+        //  yield return StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Sanity.transform as RectTransform, DiscomfortIcon));
         }
         else
         {
-          StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Sanity.transform as RectTransform, DiscomfortIcon));
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(false,MovePointValue,Cost_Sanity.transform as RectTransform));
+        //  StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Sanity.transform as RectTransform, DiscomfortIcon));
+      //    yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(false,MovePointValue,Cost_Sanity.transform as RectTransform));
         }
 
         GameManager.Instance.MyGameData.Sanity -= SanityCost;
-        GameManager.Instance.MyGameData.CurrentSettlement.Discomfort += _discomfortvalue;
+        CurrentSettlement.Discomfort += _discomfortvalue;
+        DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+        StartCoroutine(discomfortscale());
+
         if (_madness_force)
         {
           Debug.Log("무력 광기 발동");
@@ -507,20 +510,23 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         }
         break;
       case StatusTypeEnum.Gold:
-        StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, Cost_Gold.transform as RectTransform));
+       // StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, Cost_Gold.transform as RectTransform));
 
         if (_madness_force)
         {
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Gold.transform as RectTransform, DiscomfortIcon));
+        //  yield return StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Gold.transform as RectTransform, DiscomfortIcon));
         }
         else
         {
-          StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Gold.transform as RectTransform, DiscomfortIcon));
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(false, MovePointValue, Cost_Gold.transform as RectTransform));
+       //   StartCoroutine(UIManager.Instance.SetIconEffect_Discomfort(_discomfortvalue, Cost_Gold.transform as RectTransform, DiscomfortIcon));
+       //   yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(false, MovePointValue, Cost_Gold.transform as RectTransform));
         }
 
         GameManager.Instance.MyGameData.Gold -= GoldCost;
-        GameManager.Instance.MyGameData.CurrentSettlement.Discomfort += _discomfortvalue;
+        CurrentSettlement.Discomfort += _discomfortvalue;
+        DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+        StartCoroutine(discomfortscale());
+
         if (_madness_force)
         {
           Debug.Log("무력 광기 발동");
@@ -539,5 +545,18 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
 
     EventManager.Instance.SetSettlementEvent(SelectedSector);
 
+  }
+  public float DiscomfortScaleEffectTime = 0.3f;
+  public AnimationCurve DiscomfortAnimationCurve = new AnimationCurve();
+  private IEnumerator discomfortscale()
+  {
+    float _time = 0.0f;
+    while(_time< DiscomfortScaleEffectTime)
+    {
+      DiscomfortIcon.localScale=Vector3.Lerp(Vector3.one,Vector3.one*1.5f,DiscomfortAnimationCurve.Evaluate(_time/DiscomfortScaleEffectTime));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    DiscomfortIcon.localScale = Vector3.one;
   }
 }

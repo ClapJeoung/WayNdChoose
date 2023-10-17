@@ -6,44 +6,47 @@ using TMPro;
 
 public class UI_Mad : UI_default
 {
-  [SerializeField] private float FadeinTime = 2.0f;
-  [SerializeField] private float FadeoutTime = 1.5f;
+  [SerializeField] private float OpenTime = 2.0f;
+  [SerializeField] private float CloseTime = 1.5f;
 
-  [SerializeField] private CanvasGroup HolderGroup = null;
-
-  [SerializeField] private GameObject SelectingHolder = null;
-  [SerializeField] private TextMeshProUGUI SelectingName = null;
-  [SerializeField] private TextMeshProUGUI SelectingDescription = null;
-  [SerializeField] private Button Select_Conversation = null, Select_Force = null, Select_Wild = null, Select_Intelligence = null;
-
-  [SerializeField] private GameObject SelectedHolder = null;
-  [SerializeField] private TextMeshProUGUI SelectedName = null;
-  [SerializeField] private Image SelectedIllust = null;
-  [SerializeField] private TextMeshProUGUI SelectedDescription = null;
+  public CanvasGroup Button_Conversation = null;
+  public CanvasGroup Button_Force = null;
+  public CanvasGroup Button_Wild = null;
+  public CanvasGroup Button_Intelligence = null;
+  public Image Illust = null;
+  public TextMeshProUGUI Description = null;
 
   public void OpenUI()
   {
     IsOpen = true;
 
-    SelectingHolder.gameObject.SetActive(true);
-    SelectedHolder.gameObject.SetActive(false);
-    HolderGroup.alpha = 1.0f;
-    HolderGroup.interactable = true;
-    HolderGroup.blocksRaycasts = true;
+    if (GameManager.Instance.MyGameData.Madness_Conversation)
+    {
+      Button_Conversation.interactable = false;
+      Button_Conversation.blocksRaycasts = false;
+    }
+    if (GameManager.Instance.MyGameData.Madness_Force)
+    {
+      Button_Force.interactable = false;
+      Button_Force.blocksRaycasts = false;
+    }
+    if (GameManager.Instance.MyGameData.Madness_Wild)
+    {
+      Button_Wild.interactable = false;
+      Button_Wild.blocksRaycasts = false;
+    }
+    if (GameManager.Instance.MyGameData.Madness_Intelligence)
+    {
+      Button_Intelligence.interactable = false;
+      Button_Intelligence.blocksRaycasts = false;
+    }
 
-    SelectingName.text = GameManager.Instance.GetTextData("EnterMadness_Description");
-    SelectingDescription.text = GameManager.Instance.GetTextData("ChooseMadness");
-    if (GameManager.Instance.MyGameData.Madness_Conversation == true||
-      (GameManager.Instance.MyGameData.QuestType==QuestType.Cult&&GameManager.Instance.MyGameData.Quest_Cult_Phase==0))Select_Conversation.interactable = false;
-    if(GameManager.Instance.MyGameData.Madness_Force == true) Select_Force.interactable = false;
-    if(GameManager.Instance.MyGameData.Madness_Wild == true) Select_Wild.interactable = false;
-    if(GameManager.Instance.MyGameData.Madness_Intelligence == true) Select_Intelligence.interactable = false;
-
-    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectingDescription.transform.parent.transform as RectTransform);
-    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectingHolder.transform as RectTransform);
+    Illust.sprite = GameManager.Instance.ImageHolder.Transparent;
+    Description.text = GameManager.Instance.GetTextData("EnterMadness_Description");
 
     StartCoroutine(changealpha(true));
   }
+
   /// <summary>
   /// 대화,무력,자연,지성,체력
   /// </summary>
@@ -54,103 +57,39 @@ public class UI_Mad : UI_default
     switch(index)
     {
       case 0:
-        _str = GameManager.Instance.GetTextData("Madness_Conversation_SelectingName") + "<br>"
-          + GameManager.Instance.GetTextData("Madness_Conversation_Effect")
+        _str = GameManager.Instance.GetTextData("Madness_Conversation_SelectedName") + "<br>"
+          + string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Info"), ConstValues.MadnessEffect_Conversation)
           +string.Format( GameManager.Instance.GetTextData("Madness_Result"),ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 1:
-        _str = GameManager.Instance.GetTextData("Madness_Force_SelectingName") + "<br>"
-                 + GameManager.Instance.GetTextData("Madness_Force_Effect")
+        _str = GameManager.Instance.GetTextData("Madness_Force_SelectedName") + "<br>"
+                 + string.Format(GameManager.Instance.GetTextData("Madness_Force_Info"),ConstValues.MadnessEffect_Force)
    + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 2:
-        _str = GameManager.Instance.GetTextData("Madness_Wild_SelectingName")+"<br>"
-                    + GameManager.Instance.GetTextData("Madness_Wild_Effect")
+        _str = GameManager.Instance.GetTextData("Madness_Wild_SelectedName")+"<br>"
+                    + string.Format(GameManager.Instance.GetTextData("Madness_Wild_Info"),ConstValues.MadnessEffect_Wild)
   + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 3:
-        _str = GameManager.Instance.GetTextData("Madness_Intelligence_SelectingName") + "<br>"
-                        + GameManager.Instance.GetTextData("Madness_Intelligence_Effect")
+        _str = GameManager.Instance.GetTextData("Madness_Intelligence_SelectedName") + "<br>"
+                        + string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Info"),ConstValues.MadnessEffect_Intelligence)
  + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
         break;
       case 4:
-        _str = GameManager.Instance.GetTextData("Madness_HP_SelectingName")
+        _str = GameManager.Instance.GetTextData("Madness_HP_SelectedName")
      +string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_HP, ConstValues.MadnessSanityGen);
         break;
     }
 
-    _str += "<br>" + WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData("ClickToChoose"));
-    SelectingDescription.text = _str;
-    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectingDescription.transform.parent.transform as RectTransform);
+    Description.text = _str;
   }
   public void SelectMadness(int index)
   {
     if (UIManager.Instance.IsWorking) return;
 
-    UIManager.Instance.AddUIQueue(changetoselected(index));
-  }
-  private IEnumerator changetoselected(int index)
-  {
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(HolderGroup, 0.0f, 1.5f));
-
-    SelectingHolder.SetActive(false);
-    SelectedHolder.SetActive(true);
-
-    Sprite _illust = GameManager.Instance.ImageHolder.GetMadnessIllust(index);
-    string _target = "";
-    string _name = "";
-    string _description = "";
-    switch (index)
-    {
-      case 0:
-        _target = "Conversation";
-        _description =string.Format( GameManager.Instance.GetTextData("Madness_" + _target + "_Info"),ConstValues.MadnessEffect_Conversation);
-        GameManager.Instance.MyGameData.Madness_Conversation = true;
-        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen;
-        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
-        break;
-      case 1:
-        _target = "Force";
-        _description = string.Format(GameManager.Instance.GetTextData("Madness_" + _target + "_Info"), ConstValues.MadnessEffect_Force);
-        GameManager.Instance.MyGameData.Madness_Force = true;
-        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen;
-        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
-        break;
-      case 2:
-        _target = "Wild";
-        _description = string.Format(GameManager.Instance.GetTextData("Madness_" + _target + "_Info"), ConstValues.MadnessEffect_Wild);
-        GameManager.Instance.MyGameData.Madness_Wild = true;
-        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen;
-        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
-        break;
-      case 3:
-        _target = "Intelligence";
-        _description = string.Format(GameManager.Instance.GetTextData("Madness_" + _target + "_Info"), ConstValues.MadnessEffect_Intelligence);
-        GameManager.Instance.MyGameData.Madness_Intelligence = true;
-        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen;
-        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
-        break;
-      case 4:
-        _target = "HP";
-        _description = GameManager.Instance.GetTextData("Madness_HP_Description");
-        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen;
-        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_HP;
-        break;
-    }
-    UIManager.Instance.UpdateSkillLevel();
-    _name = GameManager.Instance.GetTextData("Madness_" + _target + "_SelectedName");
-    SelectedName.text = _name;
-    SelectedIllust.sprite = _illust;
-    SelectedDescription.text = _description;
-    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectedDescription.transform.parent.transform as RectTransform);
-    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectedHolder.transform as RectTransform);
-
-    StartCoroutine(UIManager.Instance.ChangeAlpha(HolderGroup, 1.0f, 1.2f));
-  }
-  public  void CloseUI()
-  {
     IsOpen = false;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup,0.0f,FadeoutTime));
+    StartCoroutine(changealpha(false));
   }
   private IEnumerator changealpha(bool open)
   {
@@ -159,7 +98,7 @@ public class UI_Mad : UI_default
       DefaultGroup.interactable = true;
       DefaultGroup.blocksRaycasts = true;
     }
-    float _time = 0.0f, _targettime = open ? FadeinTime : FadeoutTime;
+    float _time = 0.0f, _targettime = open ? OpenTime : CloseTime;
     float _startalpha = open ? 0.0f : 1.0f;
     float _endalpha = open ? 1.0f : 0.0f;
     while(_time< _targettime)

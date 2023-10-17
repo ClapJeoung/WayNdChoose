@@ -300,7 +300,7 @@ public class UI_map : UI_default
           case 1:
             if (SelectedTile.Landmark == LandmarkType.Ritual)
             {
-              _progresstext += string.Format(GameManager.Instance.GetTextData("Quest0_Progress_Ritual_Effect"),ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
+              _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"),ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
             }
             break;
         }
@@ -445,23 +445,23 @@ public class UI_map : UI_default
       case StatusTypeEnum.Sanity:
         if (GameManager.Instance.MyGameData.MovePoint >= 0)
         {
-          StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
+       //   StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
           yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
         }
         else
         {
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
+        //  yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
         }
         break;
       case StatusTypeEnum.Gold:
         if (GameManager.Instance.MyGameData.MovePoint >= 0)
         {
-          StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
+        //  StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
           yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
         }
         else
         {
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
+       //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
         }
         break;
     }

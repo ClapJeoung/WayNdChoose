@@ -92,7 +92,7 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0],false);
         SkillInfo.text =string.Format(GameManager.Instance.GetTextData("Require"),
           WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillSingleValue));
-        HighlightEffect.SetInfo(HighlightEffectEnum.Skill);
+        HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] });
 
         break;
       case SelectionTargetType.Check_Multy:
@@ -109,7 +109,7 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_B.sprite = _sprs[1];
         SkillInfo.text = string.Format(GameManager.Instance.GetTextData("Require"),
           WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillMultyValue));
-        HighlightEffect.SetInfo(HighlightEffectEnum.Skill);
+        HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] , MySelectionData.SelectionCheckSkill[1] });
 
         break;
     }
@@ -303,17 +303,17 @@ public class UI_Selection : MonoBehaviour
       case SelectionTargetType.Pay:
         break;
       case SelectionTargetType.Check_Single:
-        yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, MySelectionData.SelectionCheckSkill[0], SkillIcon_A.transform as RectTransform));
+      //  yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, MySelectionData.SelectionCheckSkill[0], SkillIcon_A.transform as RectTransform));
         break;
       case SelectionTargetType.Check_Multy:
-        StartCoroutine(UIManager.Instance.SetIconEffect(true, MySelectionData.SelectionCheckSkill[0], SkillIcon_A.transform as RectTransform));
-        yield return new WaitForSeconds(0.1f);
-        yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, MySelectionData.SelectionCheckSkill[0], SkillIcon_B.transform as RectTransform));
+      //  StartCoroutine(UIManager.Instance.SetIconEffect(true, MySelectionData.SelectionCheckSkill[0], SkillIcon_A.transform as RectTransform));
+      //  yield return new WaitForSeconds(0.1f);
+       // yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, MySelectionData.SelectionCheckSkill[0], SkillIcon_B.transform as RectTransform));
         break;
     }
     MyUIDialogue.SelectSelection(this);
 
-
+    yield return null;
   }
 
 }

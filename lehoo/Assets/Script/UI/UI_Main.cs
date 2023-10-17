@@ -7,6 +7,7 @@ using System.IO;
 
 public class UI_Main : UI_default
 {
+  public CanvasGroup IllustGroup = null;
   public ImageSwapScript Illust = null;
   public static float ImageChangeTime = 6.0f;
   private WaitForSeconds ImageSwapWait = new WaitForSeconds(ImageChangeTime);
@@ -30,6 +31,7 @@ public class UI_Main : UI_default
   [SerializeField] private TextMeshProUGUI NewGameText = null;
   [SerializeField] private TextMeshProUGUI OptionText = null;
   [SerializeField] private TextMeshProUGUI QuitText = null;
+  
   [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
   [Space(10)]
   [SerializeField] private CanvasGroup QuestIllustGroup = null;
@@ -177,7 +179,7 @@ public class UI_Main : UI_default
     yield return LittleWait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").InsidePos, GetPanelRect("quitgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
-    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").InsidePos, GetPanelRect("mainillust").OutisdePos, MainUICloseTime, false));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, MainUICloseTime));
   }
   private IEnumerator openscenario()
   {

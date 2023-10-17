@@ -18,6 +18,7 @@ public class UI_QuestWolf : UI_default
 
   #region 프롤로그
   [Space(5)]
+  [SerializeField] private CanvasGroup PrologueGroup = null;
   [SerializeField] private ImageSwapScript Illust = null;
   [SerializeField] private TextMeshProUGUI Prologue_Description = null;
   [SerializeField] private CanvasGroup Prologue_DescriptionGroup = null;
@@ -51,10 +52,7 @@ public class UI_QuestWolf : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.transform.parent.GetComponent<RectTransform>());
 
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_start").Rect, GetPanelRect("illust_start").OutisdePos, GetPanelRect("illust_start").InsidePos, UIMoveInTime, true));
-    yield return new WaitForSeconds(0.1f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_start").Rect, GetPanelRect("description_start").OutisdePos, GetPanelRect("description_start").InsidePos, UIMoveInTime, true));
-    yield return new WaitForSeconds(0.5f);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup,1.0f,FadeInTime));
        Illust.Setup(QuestHolder.Prologue_0_Illust, FadeInTime);
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime));
@@ -69,10 +67,7 @@ public class UI_QuestWolf : UI_default
   {
     CurrentPrologueIndex = 0;
     IsOpen = false;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("illust_start").Rect, GetPanelRect("illust_start").InsidePos, GetPanelRect("illust_start").OutisdePos, UIMoveOutTime, false));
-    yield return new WaitForSeconds(0.1f);
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("description_start").Rect, GetPanelRect("description_start").InsidePos, GetPanelRect("description_start").OutisdePos, UIMoveOutTime, false));
-    yield return new WaitForSeconds(0.5f);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup, 0.0f, FadeOutTime));
     Prologue_ButtonText_A.gameObject.SetActive(true);
   }
   public void Next()
@@ -241,10 +236,8 @@ public class UI_QuestWolf : UI_default
   #endregion
 
   #region 진행도 이벤트
-  [SerializeField] private CanvasGroup ProgressBackgroundGroup = null;
-  [SerializeField] private RectTransform ProgresseventHolder = null;
-  [SerializeField] private Vector2 ProgressHolder_TopPos= Vector2.zero;
-  [SerializeField] private Vector2 ProgressHolder_DownPos = Vector2.zero;
+  [SerializeField] private CanvasGroup ProgressEventGroup = null;
+  [SerializeField] private GameObject ProgressBackgroundButton = null;
   [SerializeField] private Image ProgressEventIllust = null;
   [SerializeField] private TextMeshProUGUI ProgressEventDescription = null;
   [SerializeField] private TextMeshProUGUI ProgressQuitButtonText = null;
@@ -279,7 +272,18 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
         if (_lastphase < _currentphase) _eventtype = 1;
         break;
       case 2:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Settlement;
+        switch (GameManager.Instance.MyGameData.CurrentSettlement.SettlementType)
+        {
+          case SettlementType.Village:
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Village;
+            break;
+          case SettlementType.Town:
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town;
+            break;
+          case SettlementType.City:
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_City;
+            break;
+        }
         _eventtype = 2;
 
         _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
@@ -340,15 +344,13 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
     ProgressEventDescription.text = _description;
     ProgressQuitButtonText.text = _buttontext;
 
-    LayoutRebuilder.ForceRebuildLayoutImmediate(ProgresseventHolder);
     StartCoroutine(openprogress());
   }
   private IEnumerator openprogress()
   {
     IsProgressWorking = true;
-    ProgressBackgroundGroup.blocksRaycasts = true;
-    ProgressBackgroundGroup.interactable = true;
-     yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder, ProgressHolder_TopPos, Vector2.zero, 1.3f, UIManager.Instance.UIPanelOpenCurve));
+    ProgressBackgroundButton.SetActive(true);
+     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressEventGroup, 1.0f,UIMoveInTime));
     IsProgressWorking = false;
   }
   public void CloseProgress()
@@ -359,9 +361,8 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
   private IEnumerator closeprogress()
   {
     IsProgressWorking = true;
-    ProgressBackgroundGroup.blocksRaycasts = false;
-    ProgressBackgroundGroup.interactable = false;
-    yield return StartCoroutine(UIManager.Instance.moverect(ProgresseventHolder,Vector2.zero,ProgressHolder_DownPos, 1.0f, UIManager.Instance.UIPanelCLoseCurve));
+    ProgressBackgroundButton.SetActive(false);
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressEventGroup, 0.0f, UIMoveOutTime));
     IsProgressWorking = false;
   }
 

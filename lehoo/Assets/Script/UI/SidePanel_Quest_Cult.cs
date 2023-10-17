@@ -10,7 +10,9 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   public Image VillageIcon = null;
   public Image TownIcon = null;
   public Image CityIcon = null;
-  [SerializeField] private TextMeshProUGUI SettlementProgress = null;
+  public TextMeshProUGUI VillageProgress = null;
+  public TextMeshProUGUI TownProgress = null;
+  public TextMeshProUGUI CityProgress = null;
   [SerializeField] private GameObject After30 = null;
   [SerializeField] private Image Sabbat_Icon = null;
   [SerializeField] private TextMeshProUGUI Sabbat_Progress = null;
@@ -18,9 +20,14 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   [SerializeField] private Image Ritual_Icon = null;
   [SerializeField] private TextMeshProUGUI Ritual_Progress = null;
   [SerializeField] private TextMeshProUGUI Ritual_CoolDown = null;
-  [SerializeField] private TextMeshProUGUI Progress= null;
   [SerializeField] private Slider ProgressSlider = null;
   private int LastPhase = -1;
+  private bool VillageOff = false;
+  private bool LastVillage = false;
+  private bool TownOff = false;
+  private bool LastTown = false;
+  private bool CityOff = false;
+  private bool LastCity = false;
   public void UpdateUI()
   {
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
@@ -28,10 +35,62 @@ public class SidePanel_Quest_Cult : MonoBehaviour
       case 0:
         if (Before30.activeInHierarchy == false) Before30.SetActive(true);
         if (After30.activeInHierarchy == true) After30.SetActive(false);
-        if (LastPhase != 0) SettlementProgress.text = string.Format("<#A2A6B4>+{0}%</color>",ConstValues.Quest_Cult_Progress_Settlement);
-        VillageIcon.sprite = !GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.Village) ? GameManager.Instance.ImageHolder.VillageIcon_white : GameManager.Instance.ImageHolder.VillageIcon_black;
-        TownIcon.sprite = !GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.Town) ? GameManager.Instance.ImageHolder.TownIcon_white : GameManager.Instance.ImageHolder.TownIcon_black;
-        CityIcon.sprite = !GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.City) ? GameManager.Instance.ImageHolder.CityIcon_white : GameManager.Instance.ImageHolder.CityIcon_black;
+
+        if (VillageOff == false)
+        {
+          if (GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.Village))
+          {
+            VillageIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_black;
+            VillageProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
+            VillageOff = true;
+          }
+          else
+          {
+            if (LastVillage == false)
+            {
+              VillageIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_white;
+              VillageProgress.text= string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Village);
+              LastVillage = true;
+            }
+          }
+        }
+        if (TownOff == false)
+        {
+          if (GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.Town))
+          {
+            TownIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_black;
+            TownProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
+            TownOff = true;
+          }
+          else
+          {
+            if (LastTown == false)
+            {
+              TownIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_white;
+              TownProgress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Town);
+              LastTown = true;
+            }
+          }
+        }
+        if (CityOff == false)
+        {
+          if (GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.City))
+          {
+            CityIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_black;
+            CityProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
+            CityOff = true;
+          }
+          else
+          {
+            if (LastCity == false)
+            {
+              CityIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_white;
+              CityProgress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_City);
+              LastCity = true;
+            }
+          }
+        }
+
         break;
       case 1:
         if (Before30.activeInHierarchy == true) Before30.SetActive(false);
@@ -59,8 +118,20 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         break;
     }
 
-    ProgressSlider.value = GameManager.Instance.MyGameData.Quest_Cult_Progress;
-    Progress.text=GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString()+"%";
     LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+    StartCoroutine(changeslidervalue());
+  }
+  private IEnumerator changeslidervalue()
+  {
+    float _current = ProgressSlider.value;
+    float _target = GameManager.Instance.MyGameData.Quest_Cult_Progress;
+    float _time = 0.0f, _targettime = 0.4f;
+    while( _time < _targettime )
+    {
+      ProgressSlider.value = Mathf.Lerp(_current, _target, _time / _targettime);
+      _time+=Time.deltaTime;
+      yield return null;
+    }
+
   }
 }

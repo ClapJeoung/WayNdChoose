@@ -19,9 +19,9 @@ public class PreviewManager : MonoBehaviour
   private int EffectFontSize = 20;
   private int SubdescriptionSize = 16;
   private Vector2 TurnPivot = new Vector2(0.5f, 1.1f);
-  private Vector2 HPPivot= new Vector2(0.5f, 1.1f);
-  private Vector2 SanityPivot= new Vector2(0.5f, 1.1f);
-  private Vector2 GoldPivot= new Vector2(0.5f, 1.1f);
+  private Vector2 HPPivot= new Vector2(1.1f, 1.1f);
+  private Vector2 SanityPivot= new Vector2(1.1f, 1.1f);
+  private Vector2 GoldPivot= new Vector2(1.1f, 1.1f);
   private Vector2 MovePointPivot= new Vector2(1.1f, 1.1f);
   private Vector2 MapPivot= new Vector2(0.5f, 1.1f);
   private Vector2 TendencyPivot = new Vector2(1.1f, -0.1f);
@@ -269,7 +269,7 @@ public class PreviewManager : MonoBehaviour
   }//현재 퀘스트 이름, 일러스트, 다음 내용                             수정요망
   public void OpenSkillPreview(SkillTypeEnum _skilltype,RectTransform rect)
   {
-    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype,true);
+    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype,false);
 
     int _level = GameManager.Instance.MyGameData.GetSkill(_skilltype).Level ;
     string _leveltext = WNCText.UIIdleColor(_level);
@@ -526,8 +526,9 @@ public class PreviewManager : MonoBehaviour
 
     //  SelectionNoneText.text = _selection.SubDescription;
 
-    Vector2 _pivot = new Vector2(1.1f, 0.5f);
+    Vector2 _pivot = new Vector2(0.5f,-1.5f);
     
+    /*
     switch (tendencytype)
     {
       case TendencyTypeEnum.None:
@@ -539,6 +540,7 @@ public class PreviewManager : MonoBehaviour
         _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
         break;
     }
+    */
     
     OpenPreviewPanel(SelectionNonePanel,_pivot,rect);
   }
@@ -606,18 +608,7 @@ public class PreviewManager : MonoBehaviour
 
     //  PayIcon.sprite = _payicon;
 
-    Vector2 _pivot = new Vector2(1.1f, 0.5f);
-    switch (tendencytype)
-    {
-      case TendencyTypeEnum.None:
-        break;
-      case TendencyTypeEnum.Body:
-        _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
-        break;
-      case TendencyTypeEnum.Head:
-        _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
-        break;
-    }
+    Vector2 _pivot = new Vector2(0.5f, -1.5f);
 
     OpenPreviewPanel(SelectionPayPanel,_pivot,rect);
   }
@@ -670,18 +661,7 @@ public class PreviewManager : MonoBehaviour
     SelectionCheckPercent_int.text = _percentage_int;
     // SelectionCheckDescription.text = _subdescription;
 
-    Vector2 _pivot = new Vector2(1.1f, 0.5f);
-    switch (tendencytype)
-    {
-      case TendencyTypeEnum.None:
-        break;
-      case TendencyTypeEnum.Body:
-        _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
-        break;
-      case TendencyTypeEnum.Head:
-        _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
-        break;
-    }
+    Vector2 _pivot = new Vector2(0.5f, -1.5f);
 
     OpenPreviewPanel(SelectionCheckPanel,_pivot,rect);
   }

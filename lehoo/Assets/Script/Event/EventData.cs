@@ -1109,7 +1109,7 @@ public class QuestHolder_Cult:Quest
       int _beforebody = 6;
       int _afterbody = _beforebody + 3;
       List<Sprite> _endingillusts= new List<Sprite>();
-      var _stringraw = GameManager.Instance.GetTextData("Quest0_Ending_Idle").Split('@');
+      var _stringraw = GameManager.Instance.GetTextData("Cult_Ending_Idle").Split('@');
       List<string> _descriptions = new List<string>();
 
       for (int i = 0; i < _beforebody; i++)
@@ -1122,8 +1122,8 @@ public class QuestHolder_Cult:Quest
         GameManager.Instance.ImageHolder.CultEnding_Rational :
         GameManager.Instance.ImageHolder.CultEnding_Physical);
       _descriptions.Add(GameManager.Instance.MyGameData.Tendency_Body.Level < 0 ?
-        GameManager.Instance.GetTextData("Quest0_Ending_Rational") :
-        GameManager.Instance.GetTextData("Quest0_Ending_Physical"));
+        GameManager.Instance.GetTextData("Cult_Ending_Rational") :
+        GameManager.Instance.GetTextData("Cult_Ending_Physical"));
 
       for (int i = _beforebody; i < _afterbody; i++)
       {
@@ -1135,14 +1135,14 @@ public class QuestHolder_Cult:Quest
         GameManager.Instance.ImageHolder.CultEnding_Mental :
         GameManager.Instance.ImageHolder.CultEnding_Material);
       _descriptions.Add(GameManager.Instance.MyGameData.Tendency_Head.Level < 0 ?
-        GameManager.Instance.GetTextData("Quest0_Ending_Mental") :
-        GameManager.Instance.GetTextData("Quest0_Ending_Material"));
+        GameManager.Instance.GetTextData("Cult_Ending_Mental") :
+        GameManager.Instance.GetTextData("Cult_Ending_Material"));
 
       _endingillusts.Add(GameManager.Instance.ImageHolder.CultEnding_Last);
       _descriptions.Add(_stringraw[_stringraw.Length - 1]);
 
       return new Tuple<List<Sprite>, List<string>, string, string>(_endingillusts, _descriptions,
-        GameManager.Instance.GetTextData("Quest0_Ending_LastWord"), GameManager.Instance.GetTextData("Quest0_Ending_End"));
+        GameManager.Instance.GetTextData("Cult_Ending_LastWord"), GameManager.Instance.GetTextData("Cult_Ending_End"));
     }
   }
 }
