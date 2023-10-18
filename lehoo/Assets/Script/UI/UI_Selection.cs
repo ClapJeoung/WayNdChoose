@@ -9,10 +9,10 @@ public class UI_Selection : MonoBehaviour
 {
   public CanvasGroup MyGroup = null;
   public Image MyImage = null;
-  public GameObject TendencyIconObj = null;
-  public Image TendencyIcon = null;
-  private int LayoutSizeTop_NoTendency = 15;
-  private int LayoutSizeTop_Tendency = -35;
+//  public GameObject TendencyIconObj = null;
+//  public Image TendencyIcon = null;
+ // private int LayoutSizeTop_NoTendency = 15;
+ // private int LayoutSizeTop_Tendency = -35;
   public VerticalLayoutGroup LayoutGroup = null;
   public Vector2 LeftPos= Vector2.zero;
   public Vector2 RightPos= Vector2.zero;
@@ -122,18 +122,20 @@ public class UI_Selection : MonoBehaviour
   //  Sprite _selectionimage = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
     if (MyTendencyType == TendencyTypeEnum.None)
     {
-      if (TendencyIconObj.activeInHierarchy == true) TendencyIconObj.SetActive(false);
-      if (TendencyHolder.activeInHierarchy == true) TendencyIconObj.SetActive(false);
-      LayoutGroup.padding.top = LayoutSizeTop_NoTendency;
+  //    if (TendencyIconObj.activeInHierarchy == true) TendencyIconObj.SetActive(false);
+      if (TendencyHolder.activeInHierarchy == true) TendencyHolder.SetActive(false);
+    //  LayoutGroup.padding.top = LayoutSizeTop_NoTendency;
     }
     else
     {
-      if (TendencyIconObj.activeInHierarchy == false) TendencyIconObj.SetActive(true);
-      LayoutGroup.padding.top = LayoutSizeTop_Tendency;
+ //     if (TendencyIconObj.activeInHierarchy == false) TendencyIconObj.SetActive(true);
+     // LayoutGroup.padding.top = LayoutSizeTop_Tendency;
       MyPreviewInteractive.MySelectionTendencyDir = IsLeft;
+
       Tendency _targettendency = GameManager.Instance.MyGameData.GetTendency(MyTendencyType);
       Sprite _nexttendencyicon = null;
       Sprite _tendencyicon = null;
+
       if (IsLeft)
       {
         HighlightEffect.SetInfo(_targettendency.Type == TendencyTypeEnum.Body ? HighlightEffectEnum.Rational : HighlightEffectEnum.Mental);
@@ -148,17 +150,20 @@ public class UI_Selection : MonoBehaviour
 
         if(_targettendency.Progress>=0)
         {
-          if (TendencyHolder.activeInHierarchy == true) TendencyIconObj.SetActive(false);
+          if (TendencyHolder.activeInHierarchy == true) TendencyHolder.SetActive(false);
         }
         else
         {
           if (_targettendency.Level == -2)
           {
-            if (TendencyHolder.activeInHierarchy == true) TendencyIconObj.SetActive(false);
+            if (TendencyHolder.activeInHierarchy == true) TendencyHolder.SetActive(false);
           }
           else
           {
+            if (TendencyHolder.activeInHierarchy == false) TendencyHolder.SetActive(true);
+
             _nexttendencyicon = _targettendency.GetNextIcon(true);
+            NextTendencyIcon.sprite = _nexttendencyicon;
 
             int _progress = -1 * _targettendency.Progress;
             int _maxprogress = _targettendency.CurrentProgressTargetCount;
@@ -208,47 +213,57 @@ public class UI_Selection : MonoBehaviour
 
         if (_targettendency.Progress <= 0)
         {
-          if (TendencyHolder.activeInHierarchy == true) TendencyIconObj.SetActive(false);
+          if (TendencyHolder.activeInHierarchy == true) TendencyHolder.SetActive(false);
         }
         else
         {
-          _nexttendencyicon = _targettendency.GetNextIcon(false);
-
-          int _progress = -1 * _targettendency.Progress;
-          int _maxprogress = _targettendency.CurrentProgressTargetCount;
-          Sprite _arrow = GameManager.Instance.ImageHolder.Arrow_Active(_targettendency.Type, false);
-          for (int i = 0; i < 3; i++)
+          if (_targettendency.Level == 2)
           {
-            if (i >= _maxprogress)
-            {
-              TendencyProgressArrows[i].gameObject.SetActive(false);
-              continue;
-            }
+            if (TendencyHolder.activeInHierarchy == true) TendencyHolder.SetActive(false);
+          }
+          else
+          {
+            if (TendencyHolder.activeInHierarchy == false) TendencyHolder.SetActive(true);
 
-            if (TendencyProgressArrows[i].gameObject.activeInHierarchy.Equals(false)) TendencyProgressArrows[i].gameObject.SetActive(true);
+            _nexttendencyicon = _targettendency.GetNextIcon(false);
+            NextTendencyIcon.sprite = _nexttendencyicon;
 
-            if (i < _progress)
+            int _progress =  _targettendency.Progress;
+            int _maxprogress = _targettendency.CurrentProgressTargetCount;
+            Sprite _arrow = GameManager.Instance.ImageHolder.Arrow_Active(_targettendency.Type, false);
+            for (int i = 0; i < 3; i++)
             {
-              TendencyProgressArrows[i].sprite = _arrow;
-              TendencyProgressArrows_inside[i].alpha = 0.0f;
-            }
-            else if (i == _progress)
-            {
-              TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+              if (i >= _maxprogress)
+              {
+                TendencyProgressArrows[i].gameObject.SetActive(false);
+                continue;
+              }
 
-              TendencyProgressArrows_inside[i].GetComponent<Image>().sprite = _arrow;
-              StartCoroutine(arroweffect(TendencyProgressArrows_inside[i]));
-            }
-            else
-            {
-              TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
-              TendencyProgressArrows_inside[i].alpha = 0.0f;
+              if (TendencyProgressArrows[i].gameObject.activeInHierarchy.Equals(false)) TendencyProgressArrows[i].gameObject.SetActive(true);
+
+              if (i < _progress)
+              {
+                TendencyProgressArrows[i].sprite = _arrow;
+                TendencyProgressArrows_inside[i].alpha = 0.0f;
+              }
+              else if (i == _progress)
+              {
+                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+
+                TendencyProgressArrows_inside[i].GetComponent<Image>().sprite = _arrow;
+                StartCoroutine(arroweffect(TendencyProgressArrows_inside[i]));
+              }
+              else
+              {
+                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+                TendencyProgressArrows_inside[i].alpha = 0.0f;
+              }
             }
           }
         }
 
       }
-      TendencyIcon.sprite = _tendencyicon;
+  //    TendencyIcon.sprite = _tendencyicon;
     }
 
     MyButton.transition = Selectable.Transition.SpriteSwap;

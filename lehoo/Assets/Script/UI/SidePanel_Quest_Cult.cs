@@ -125,7 +125,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   {
     float _current = ProgressSlider.value;
     float _target = GameManager.Instance.MyGameData.Quest_Cult_Progress;
-    float _time = 0.0f, _targettime = 0.4f;
+    float _time = 0.0f, _targettime = 1.2f;
     while( _time < _targettime )
     {
       ProgressSlider.value = Mathf.Lerp(_current, _target, _time / _targettime);

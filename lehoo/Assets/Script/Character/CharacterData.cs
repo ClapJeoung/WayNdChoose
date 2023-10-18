@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
 
   public const int MadnessEffect_Conversation = 15;
   public const int MadnessEffect_Force = 35;
@@ -31,7 +32,7 @@ public static class ConstValues
   public const int MoveRest_Sanity_min = 10, MoveRest_Sanity_max = 20;
   public const int MoveRest_Gold_min = 7, MoveRest_Gold_max = 15;
   public const float Rest_Deafult = 0.75f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.6f, Move_LengthRatio = 0.2f;
+  public const float Move_Default = 0.4f, Move_LengthRatio = 0.15f;
   public const float LackMPAmplifiedValue_Idle = 3.0f;
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
@@ -460,11 +461,11 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      if (LongExp != null && LongExp.ExpType != ExpTypeEnum.Normal) return false;
+      if (LongExp != null) return false;
 
-      if (ShortExp_A != null && ShortExp_A.ExpType != ExpTypeEnum.Normal) return false;
+      if (ShortExp_A != null) return false;
 
-      if (ShortExp_B != null && ShortExp_B.ExpType != ExpTypeEnum.Normal) return false;
+      if (ShortExp_B != null ) return false;
 
       return true;
     }

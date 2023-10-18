@@ -68,7 +68,6 @@ public class GameManager : MonoBehaviour
       ExperienceJsonData _json = new ExperienceJsonData();
 
       _json.ID = _data[0];
-      _json.GoodOrBad = int.Parse(_data[1]);
       _json.Type = _data[2];
 
       ExpJsonDataList.Add(_json);

@@ -12,6 +12,15 @@ public enum EventPhaseTypeEnum { Beginning,Selecting,Success,Fail,LSuccess,LFail
 [CreateAssetMenu(menuName ="ImageHolder")]
 public class ImageHolder : ScriptableObject
 {
+  public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
+  public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
+  public Sprite GetRandomMainIllust(Sprite lastillust)
+  {
+    Sprite _spr = EventIllust[Random.Range(0, EventIllust.Count)];
+    while (_spr == lastillust) _spr = EventIllust[Random.Range(0, EventIllust.Count)];
+    return _spr;
+  }//대문에 넣을 일러스트 무작위로 전달
+  [Space(20)]
   public List<Sprite> GameoverIllusts = new List<Sprite>();
 
   public Sprite MovePointIcon_Enable = null;
@@ -111,15 +120,6 @@ public class ImageHolder : ScriptableObject
   }
   [Space(10)]
  */
-    public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
-  public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
-  public Sprite GetRandomMainIllust(Sprite lastillust)
-  {
-    Sprite _spr = Random.Range(0, 2).Equals(0) ? EventIllust[Random.Range(0, EventIllust.Count)] : EXPIllust[Random.Range(0, EXPIllust.Count)];
-    while (_spr == lastillust) _spr = Random.Range(0, 2).Equals(0) ? EventIllust[Random.Range(0, EventIllust.Count)] : EXPIllust[Random.Range(0, EXPIllust.Count)];
-    return _spr;
-  }//대문에 넣을 일러스트 무작위로 전달
-  [Space(5)]
   public Sprite DefaultIllust = null;                                 //빈 일러스트
   public Sprite DefaultIcon = null;
   public Sprite NoGoldIllust = null;
@@ -453,10 +453,10 @@ public class EventIllustHolder
       bool _noneseason = true;
       for (int i = 0; i < illusts.Count; i++)
       {
-        if (illusts[i].name.Contains("spring")) { SpringIllust = illusts[i]; _noneseason = false; }
-        if (illusts[i].name.Contains("summer")){ SummerIllust = illusts[i]; _noneseason = false; }
-        if (illusts[i].name.Contains("winter")){ AutumnIllust = illusts[i]; _noneseason = false; }
-          if (illusts[i].name.Contains("autumn")){ WinterIllust = illusts[i]; _noneseason = false; }
+        if (illusts[i].name.Contains("s0")) { SpringIllust = illusts[i]; _noneseason = false; }
+        if (illusts[i].name.Contains("s1")){ SummerIllust = illusts[i]; _noneseason = false; }
+        if (illusts[i].name.Contains("s2")){ AutumnIllust = illusts[i]; _noneseason = false; }
+          if (illusts[i].name.Contains("s3")){ WinterIllust = illusts[i]; _noneseason = false; }
             if(_noneseason==true) IdleIllust = illusts[i];
       }
     }
@@ -477,7 +477,7 @@ public class EventIllustHolder
         case 2:
           if (AutumnIllust != null) _target = AutumnIllust;
           break;
-        case 4:
+        case 3:
           if (WinterIllust != null) _target = WinterIllust;
           break;
       }

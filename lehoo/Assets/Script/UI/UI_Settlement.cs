@@ -79,10 +79,13 @@ public class UI_Settlement : UI_default
     QuestSectorInfo = 0;
     SelectedSector = SectorTypeEnum.NULL;
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
+
     SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+    DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
+      Mathf.Clamp(CurrentSettlement.Discomfort*0.1f, 0.0f, 1.0f));
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
-     (int)GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort)*100);
+     (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort)*100));
     if (RestButtonHolder.gameObject.activeInHierarchy == true) RestButtonHolder.gameObject.SetActive(false);
     RestButtonHolder.anchoredPosition = RestButtonRect_Hide;
 
@@ -242,8 +245,7 @@ public class UI_Settlement : UI_default
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
-      ConstValues.Rest_Discomfort :
-      ConstValues.Tendency_Head_p1;
+      ConstValues.Tendency_Head_p1 : ConstValues.Rest_Discomfort;
     switch (sector)
     {
       case SectorTypeEnum.Residence:
@@ -329,8 +331,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
-      ConstValues.Rest_Discomfort :
-      ConstValues.Tendency_Head_p1;
+      ConstValues.Tendency_Head_p1 : ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
@@ -551,12 +552,17 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
   private IEnumerator discomfortscale()
   {
     float _time = 0.0f;
-    while(_time< DiscomfortScaleEffectTime)
+    float _startsize = DiscomfortIcon.sizeDelta.x,
+      _endsize= Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
+  Mathf.Clamp(CurrentSettlement.Discomfort*0.1f, 0.0f, 1.0f));
+    while (_time< DiscomfortScaleEffectTime)
     {
       DiscomfortIcon.localScale=Vector3.Lerp(Vector3.one,Vector3.one*1.5f,DiscomfortAnimationCurve.Evaluate(_time/DiscomfortScaleEffectTime));
+      DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(_startsize, _endsize, _time / DiscomfortScaleEffectTime);
       _time += Time.deltaTime;
       yield return null;
     }
     DiscomfortIcon.localScale = Vector3.one;
+
   }
 }

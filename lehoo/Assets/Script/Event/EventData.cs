@@ -37,7 +37,7 @@ public class EventHolder
         _json.Selection_Info = "2@1,3";
         _json.Failure_Penalty = "1@1";
         _json.Failure_Penalty_info = "1@2";
-        _json.Reward_Target = "0@3";
+        _json.Reward_Target = "3@0";
         _json.Reward_Info = "Exp_Test@0";
         defaultevent_outer = ReturnEventDataDefault(_json);
       }
@@ -249,7 +249,7 @@ public class EventHolder
         break;
     }
     
-  }//퀘스트 디자인 기획 끝나고 추가해야함
+  }
   public void ConvertData_Quest_cult(EventJsonData jsondata)
   {
     EventData eventdata = ReturnEventDataDefault(jsondata);
@@ -1013,45 +1013,39 @@ public class QuestHolder_Cult:Quest
     return _availableevents;
   }
 
-  public Tuple<Sprite,string,string> GetSettlementData(SettlementType type)
+  public Tuple<Sprite,string> GetSettlementData(SettlementType type)
   {
-    return new Tuple<Sprite, string, string>
+    return new Tuple<Sprite, string>
       (
       GameManager.Instance.ImageHolder.GetCultSettlementIllust(type),
-      WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Settlement_"+type.ToString()+"_description")),
-      GameManager.Instance.GetTextData("Cult_Settlement_"+type.ToString()+"_selecting")
-      );
+      WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_"+type.ToString()+"_description"))      );
   }
-  public Tuple<Sprite, string, string> GetSabbatData
+  public Tuple<Sprite, string> GetSabbatData
   {
     get
     {
-      int _count = GameManager.Instance.ImageHolder.Cult_Sabbat.Count ;
+      int _count = GameManager.Instance.ImageHolder.Cult_Sabbat.Count;
       int _index = UnityEngine.Random.Range(0, _count);
 
       if (GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Count == _count)
       {
-        return new Tuple<Sprite, string, string>
+        return new Tuple<Sprite, string>
           (
-          GameManager.Instance.ImageHolder.Cult_Sabbat[GameManager.Instance.MyGameData.Turn],
-          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Sabbat_0_description")),
-          GameManager.Instance.GetTextData("Cult_Sabbat_0_selecting")
-          );
+          GameManager.Instance.ImageHolder.Cult_Sabbat[0],
+          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Sabbat_0_description")));
       }
 
 
       while (GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
 
       Sprite _illust = GameManager.Instance.ImageHolder.Cult_Sabbat[_index];
-      string _filename = "Cult_Sabbat_" + _index.ToString() + "_";
+      string _filename = "Cult_Sabbat_" + _index.ToString();
       GameManager.Instance.MyGameData.Cult_Progress_SabbatEventIndex.Add(_index);
-      return new Tuple<Sprite, string, string>(
+      return new Tuple<Sprite, string>(
         _illust,
-        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")),
-        GameManager.Instance.GetTextData(_filename + "_selecting"));
-    }
+        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")));    }
   }
-  public Tuple<Sprite, string, string> GetRitualData
+  public Tuple<Sprite, string> GetRitualData
   {
     get
     {
@@ -1060,23 +1054,20 @@ public class QuestHolder_Cult:Quest
 
       if (GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Count == _count)
       {
-        return new Tuple<Sprite, string, string>
+        return new Tuple<Sprite, string>
           (
-          GameManager.Instance.ImageHolder.Cult_Ritual[GameManager.Instance.MyGameData.Turn],
-          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Ritual_0_description")),
-          GameManager.Instance.GetTextData("Cult_Ritual_0_selecting")
-          );
+          GameManager.Instance.ImageHolder.Cult_Ritual[0],
+          WNCText.GetSeasonText(GameManager.Instance.GetTextData("Cult_Ritual_0_description"))          );
       }
 
       while (GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Contains(_index)) _index = UnityEngine.Random.Range(0, _count);
 
       Sprite _illust = GameManager.Instance.ImageHolder.Cult_Ritual[_index ];
-      string _filename = "Cult_Ritual_" + _index.ToString() + "_";
+      string _filename = "Cult_Ritual_" + _index.ToString();
       GameManager.Instance.MyGameData.Cult_Progress_RitualEventIndex.Add(_index);
-      return new Tuple<Sprite, string, string>(
+      return new Tuple<Sprite, string>(
         _illust,
-        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")),
-        GameManager.Instance.GetTextData(_filename + "_selecting"));
+        WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")));
     }
   }
   public Tuple<Sprite,string> GetPhaseUpgradeData

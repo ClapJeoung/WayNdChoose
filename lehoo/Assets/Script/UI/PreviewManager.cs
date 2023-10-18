@@ -107,13 +107,16 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI RewardSkillClickText = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectEmptyPanel = null;
+  [SerializeField] private Image ExpSelectEmptyIllust = null;
   [SerializeField] private TextMeshProUGUI ExpSelectEmptyDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSelectEmptyTurn = null;
   [SerializeField] private TextMeshProUGUI ExpSelectEmptyEffect = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectExistPanel = null;
+  [SerializeField] private Image ExpSelectExistOriginIllust = null;
   [SerializeField] private TextMeshProUGUI ExpSelectOriginTurn = null;
   [SerializeField] private TextMeshProUGUI ExpSelectOriginEffect = null;
+  [SerializeField] private Image ExpSelectExistNewIllust = null;
   [SerializeField] private TextMeshProUGUI ExpSelectNewTurn = null;
   [SerializeField] private TextMeshProUGUI ExpSelectNewEffect = null;
   [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
@@ -518,6 +521,7 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(TendencyPreview, rect);
   }
+  private Vector2 SelectionPivot = new Vector2(0.5f, -0.8f);
   public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform rect)
   {
     if (SelectionNoneReward.Setup(_selection) == false) return;
@@ -526,7 +530,6 @@ public class PreviewManager : MonoBehaviour
 
     //  SelectionNoneText.text = _selection.SubDescription;
 
-    Vector2 _pivot = new Vector2(0.5f,-1.5f);
     
     /*
     switch (tendencytype)
@@ -542,12 +545,13 @@ public class PreviewManager : MonoBehaviour
     }
     */
     
-    OpenPreviewPanel(SelectionNonePanel,_pivot,rect);
+    OpenPreviewPanel(SelectionNonePanel, SelectionPivot, rect);
   }
   public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
     if (SelectionPayReward.Setup(_selection) == false) return;
 
+    SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
     //PaySubDescription.text = _selection.SubDescription;
 
 
@@ -608,13 +612,14 @@ public class PreviewManager : MonoBehaviour
 
     //  PayIcon.sprite = _payicon;
 
-    Vector2 _pivot = new Vector2(0.5f, -1.5f);
 
-    OpenPreviewPanel(SelectionPayPanel,_pivot,rect);
+    OpenPreviewPanel(SelectionPayPanel, SelectionPivot, rect);
   }
   public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
     if (SelectionCheckReward.Setup(_selection) == false) return;
+
+    SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
     //  Sprite[] _icons = new Sprite[2];
     Skill[] _skills= new Skill[2];
@@ -661,9 +666,8 @@ public class PreviewManager : MonoBehaviour
     SelectionCheckPercent_int.text = _percentage_int;
     // SelectionCheckDescription.text = _subdescription;
 
-    Vector2 _pivot = new Vector2(0.5f, -1.5f);
 
-    OpenPreviewPanel(SelectionCheckPanel,_pivot,rect);
+    OpenPreviewPanel(SelectionCheckPanel, SelectionPivot, rect);
   }
   public void OpenSelectionElsePreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
@@ -750,6 +754,7 @@ public class PreviewManager : MonoBehaviour
 
     ExpSelectEmptyTurn.text = _turn.ToString();
     ExpSelectEmptyEffect.text = _exp.EffectString;
+    ExpSelectEmptyIllust.sprite = _exp.Illust;
     ExpSelectEmptyDescription.text = _description;
     ExpSelectClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(false)) ExpSelectClickText.gameObject.SetActive(true);
@@ -771,10 +776,12 @@ public class PreviewManager : MonoBehaviour
 
     string _origineffect = _origin.EffectString;
     ExpSelectOriginEffect.text = _origineffect;
+    ExpSelectExistOriginIllust.sprite = _origin.Illust;
     ExpSelectOriginTurn.text = _origin.Duration.ToString();
 
     string _neweffect = _new.EffectString;
     ExpSelectNewEffect.text = _neweffect;
+    ExpSelectExistNewIllust.sprite= _new.Illust;
     ExpSelectNewTurn.text = _turn.ToString();
     ExpSelecitonExistDescription.text = _description;
     ExpSelectClickText.text=

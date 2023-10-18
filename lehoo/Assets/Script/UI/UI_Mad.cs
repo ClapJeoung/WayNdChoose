@@ -82,6 +82,8 @@ public class UI_Mad : UI_default
         break;
     }
 
+    Illust.sprite = GameManager.Instance.ImageHolder.GetMadnessIllust(index);
+
     Description.text = _str;
   }
   public void SelectMadness(int index)

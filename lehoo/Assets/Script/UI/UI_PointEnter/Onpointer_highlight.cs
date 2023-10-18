@@ -35,6 +35,7 @@ public class Onpointer_highlight : MonoBehaviour,IPointerEnterHandler,IPointerEx
       {
         call.Value = value;
         _createnew = false;
+        break;
       }
     }
     if (_createnew)

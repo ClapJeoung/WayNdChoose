@@ -7,12 +7,10 @@ public enum EffectType {
   HPGen, HPLoss,
   SanityGen, SanityLoss,
   GoldGen, GoldLoss }
-public enum ExpTypeEnum{ Normal,Bad}
 public class Experience
 {
   public string ID = "";
   public string Name { get { return GameManager.Instance.GetTextData(ID+"_Name"); } }
-  public ExpTypeEnum ExpType = ExpTypeEnum.Normal; 
   public string Description { get { return GameManager.Instance.GetTextData(ID + "_Description"); } }
     public List<EffectType> Effects=new List<EffectType>();
   private int _duration = 0;
@@ -75,7 +73,6 @@ public class Experience
   {
     Experience _exp=new Experience();
     _exp.ID=ID;
-    _exp.ExpType = ExpType;
     _exp.Effects=Effects;
     _exp.Duration=Duration;
     return _exp;
@@ -85,13 +82,11 @@ public class Experience
 public class ExperienceJsonData
 {
   public string ID = "";
-  public int GoodOrBad;
   public string Type;    //0~9 : 기술들  10~   체력,정신력,돈 등
   public Experience ReturnEXPClass()
   {
     Experience _exp = new Experience();
     _exp.ID = ID;
-    _exp.ExpType = (ExpTypeEnum)GoodOrBad;
     string[] _temp = Type.Split("@");
     for (int i = 0; i < _temp.Length; i++) _exp.Effects.Add((EffectType)int.Parse(_temp[i]));
 

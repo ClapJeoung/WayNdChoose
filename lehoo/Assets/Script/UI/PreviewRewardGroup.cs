@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -49,7 +50,7 @@ public class PreviewRewardGroup : MonoBehaviour
     }
 
     FailData _faildata = selection.FailureData;
-    if (_faildata == null)
+    if (_faildata == null||selection.ThisSelectionType==SelectionTargetType.Pay)
     {
       if (PenaltyObj.activeInHierarchy == true) PenaltyObj.SetActive(false);
     }
@@ -61,6 +62,7 @@ public class PreviewRewardGroup : MonoBehaviour
       }
       else
       {
+
         if (PenaltyObj.activeInHierarchy == false) PenaltyObj.SetActive(true);
         Sprite _penaltyicon = null;
         switch (_faildata.Penelty_target)

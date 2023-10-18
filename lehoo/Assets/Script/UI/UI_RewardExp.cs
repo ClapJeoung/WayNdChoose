@@ -23,15 +23,13 @@ public class UI_RewardExp : UI_default
 
   [SerializeField] private GameObject ExpQuitButton = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
-  [SerializeField] private GameObject ExpIllustIcon = null;
+  //[SerializeField] private GameObject ExpIllustIcon = null;
   public Experience CurrentExp = null;
   public void OpenUI_RewardExp(Experience rewardexp)
   {
     if (IsOpen) return;
     IsOpen = true;
 
-    ExpIllustIcon.GetComponent<Image>().sprite = rewardexp.Illust;
-    ExpIllustIcon.gameObject.SetActive(true);
     if (ExpQuitButton.activeInHierarchy == false) ExpQuitButton.SetActive(true);
 
     ExpDescription.text = GameManager.Instance.GetTextData("SAVETHEEXP_NAME");
@@ -106,7 +104,6 @@ public class UI_RewardExp : UI_default
   {
     IsOpen = false;
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.4f));
-    ExpIllustIcon.gameObject.SetActive(false);
   }
 
   public void GetExp_Long()
@@ -115,26 +112,14 @@ public class UI_RewardExp : UI_default
 
     Experience _selectexp = GameManager.Instance.MyGameData.LongExp;
 
-    switch (CurrentExp.ExpType)
+    GameManager.Instance.MyGameData.Sanity -= ConstValues.LongTermChangeCost;
+
+    GameManager.Instance.AddExp_Long(CurrentExp);
+    if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
     {
-      case ExpTypeEnum.Normal:
-        GameManager.Instance.MyGameData.Sanity -= ConstValues.LongTermChangeCost;
-
-        GameManager.Instance.AddExp_Long(CurrentExp);
-        if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
-        {
-          UIManager.Instance.DialogueUI.ExpAcquired();
-        }
-        CloseUI();
-
-        break;
-      case ExpTypeEnum.Bad:
-        if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Long(CurrentExp); CloseUI();
-          UIManager.Instance.DialogueUI.CurrentReturnButton.interactable = true;
-        }
-        else return;
-        break;
+      UIManager.Instance.DialogueUI.ExpAcquired();
     }
+    CloseUI();
 
   }
   public void GetExp_Short(bool index)
@@ -143,24 +128,11 @@ public class UI_RewardExp : UI_default
 
     Experience _selectexp =index==true? GameManager.Instance.MyGameData.ShortExp_A:GameManager.Instance.MyGameData.ShortExp_B;
 
-    switch (CurrentExp.ExpType)
+    GameManager.Instance.AddExp_Short(CurrentExp, index);
+    if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
     {
-      case ExpTypeEnum.Normal:
-
-        GameManager.Instance.AddExp_Short(CurrentExp, index);
-        if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
-        {
-          UIManager.Instance.DialogueUI.ExpAcquired();
-        }
-        CloseUI();
-
-        break;
-      case ExpTypeEnum.Bad:
-        if (_selectexp == null || _selectexp.ExpType == ExpTypeEnum.Normal) {GameManager.Instance.AddExp_Short(CurrentExp, index); CloseUI();
-          UIManager.Instance.DialogueUI.CurrentReturnButton.interactable = true;
-        }
-        else return;
-        break;
+      UIManager.Instance.DialogueUI.ExpAcquired();
     }
+    CloseUI();
   }
 }

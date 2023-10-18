@@ -240,7 +240,6 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private GameObject ProgressBackgroundButton = null;
   [SerializeField] private Image ProgressEventIllust = null;
   [SerializeField] private TextMeshProUGUI ProgressEventDescription = null;
-  [SerializeField] private TextMeshProUGUI ProgressQuitButtonText = null;
   private bool IsProgressWorking=false;
   /// <summary>
   /// 0:성공 1:실패 2:정착지 3:집회 4:의식
@@ -312,37 +311,31 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
 
     Sprite _illust = null;
     string _description = "";
-    string _buttontext = "";
     switch (_eventtype)
     {
       case 1:
         var _tuple = QuestHolder.GetPhaseUpgradeData;
         _illust = _tuple.Item1;
         _description = _tuple.Item2;
-        _buttontext = GameManager.Instance.GetTextData("NEXT_TEXT");
         break;
       case 2:
         var _tuple_0 = QuestHolder.GetSettlementData(GameManager.Instance.MyGameData.CurrentSettlement.SettlementType);
         _illust = _tuple_0.Item1;
         _description = _tuple_0.Item2;
-        _buttontext = _tuple_0.Item3;
         break;
       case 3:
         var _tuple_1 = QuestHolder.GetSabbatData;
         _illust = _tuple_1.Item1;
         _description = _tuple_1.Item2;
-        _buttontext = _tuple_1.Item3;
         break;
       case 4:
         var _tuple_2 = QuestHolder.GetRitualData;
         _illust = _tuple_2.Item1;
         _description = _tuple_2.Item2;
-        _buttontext = _tuple_2.Item3;
         break;
     }
     ProgressEventIllust.sprite = _illust;
     ProgressEventDescription.text = _description;
-    ProgressQuitButtonText.text = _buttontext;
 
     StartCoroutine(openprogress());
   }
