@@ -149,12 +149,15 @@ public class UIManager : MonoBehaviour
       StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
       if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
-  }
 
+      HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
+    }
+
+
+    HPIconRect.sizeDelta = Vector2.one * Mathf.Lerp( ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.HP / 100.0f);
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
     Debug.Log("체력 수치 업데이트");
 
-    HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
 
     lasthp = GameManager.Instance.MyGameData.HP;
   }
@@ -170,12 +173,15 @@ public class UIManager : MonoBehaviour
         StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
       if (lastsanity < GameManager.Instance.MyGameData.Sanity) StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform}));
+
+      HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
     }
+
+    SanityIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.Sanity / 100.0f);
     SanityText_current.text = GameManager.Instance.MyGameData.Sanity.ToString();
    // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
     Debug.Log("정신력, 최대 정신력 수치 업데이트");
 
-    HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
 
     lastsanity = GameManager.Instance.MyGameData.Sanity;
   }
@@ -190,11 +196,13 @@ public class UIManager : MonoBehaviour
         StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
       if (lastgold < GameManager.Instance.MyGameData.Gold) StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform}));
+
+      HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
     }
+
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
     Debug.Log("골드 수치 업데이트");
 
-    HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
 
     lastgold = GameManager.Instance.MyGameData.Gold;
   }
@@ -210,14 +218,16 @@ public class UIManager : MonoBehaviour
         StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
       if (lastmovepoint < GameManager.Instance.MyGameData.MovePoint) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform}));
+
+      HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
     }
+
     MovePoint_Icon.sprite = GameManager.Instance.MyGameData.MovePoint >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
 
     Debug.Log("이동력 수치 업데이트");
     if (lastmovepoint == 0 && GameManager.Instance.MyGameData.MovePoint == 0) return;
 
     MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
-    HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
 
     lastmovepoint = GameManager.Instance.MyGameData.MovePoint;
   }
@@ -658,7 +668,7 @@ public class UIManager : MonoBehaviour
     Vector2 _bodypos = GameManager.Instance.MyGameData.Tendency_Body.Level != 0 ?
       GetTendencyRectPos(TendencyTypeEnum.Body, GameManager.Instance.MyGameData.Tendency_Body.Level).anchoredPosition :
       Vector2.zero;
-    Vector2 _headpos = GameManager.Instance.MyGameData.Tendency_Body.Level!=0?
+    Vector2 _headpos = GameManager.Instance.MyGameData.Tendency_Head.Level!=0?
       GetTendencyRectPos(TendencyTypeEnum.Head, GameManager.Instance.MyGameData.Tendency_Head.Level).anchoredPosition:
       Vector2.zero;
     TendencyBodyIcon.sprite = GameManager.Instance.ImageHolder.GetTendencyIcon(TendencyTypeEnum.Body, GameManager.Instance.MyGameData.Tendency_Body.Level);
@@ -887,15 +897,10 @@ public class UIManager : MonoBehaviour
   {
     var _titlewait = new WaitForSeconds(TitleWaitTime);
     var _objwait = new WaitForSeconds(ObjWaitTime);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < TitlePanels.Count; i++)
     {
       StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].OutisdePos, TitlePanels[i].InsidePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
       yield return _titlewait;
-    }
-    for(int i = 4; i < TitlePanels.Count; i++)
-    {
-      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].OutisdePos, TitlePanels[i].InsidePos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-      yield return _objwait;
     }
   }
   public IEnumerator moverect(RectTransform rect, Vector2 startpos, Vector2 endpos, float targettime, bool isopen)
@@ -944,7 +949,16 @@ public class UIManager : MonoBehaviour
   }
   #endregion
   #region 게임-엔딩 전환
-
+  public void OpenDead(Sprite illust,string description)
+  {
+    StopAllCoroutines();
+  StartCoroutine(opendead(illust,description));
+  }
+  private IEnumerator opendead(Sprite illsut,string description)
+  {
+    yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
+    EndingUI.OpenUI_Dead(illsut,description);
+  }
   public void OpenEnding(Tuple<List<Sprite>, List<string>, string, string> data)
   {
     StopAllCoroutines();
@@ -952,22 +966,7 @@ public class UIManager : MonoBehaviour
   }
   private IEnumerator openending(Tuple<List<Sprite>, List<string>, string, string> data)
   {
-    StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
-
-    var _titlewait = new WaitForSeconds(TitleWaitTime);
-    var _objwait = new WaitForSeconds(ObjWaitTime);
-
-    for (int i = TitlePanels.Count - 1; i > 3; i--)
-    {
-      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-      yield return _objwait;
-    }
-    for (int i = 3; i > -1; i--)
-    {
-      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
-      yield return _titlewait;
-    }
-
+   yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
     EndingUI.OpenUI_Ending(data);
   }
   #endregion
@@ -1060,7 +1059,7 @@ public static class WNCText
   }
   public static string PositiveColor(string str)
   {
-    return "<#64FE2E>"+str+"</color>";
+    return "<#A5D9A5>" + str+"</color>";
   }
   public static string NegativeColor(string str)
   {

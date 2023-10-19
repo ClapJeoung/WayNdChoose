@@ -557,9 +557,53 @@ public class GameManager : MonoBehaviour
   }
   public void GameOver()
   {
-    int _index = UnityEngine.Random.Range(0, ImageHolder.GameoverIllusts.Count);
+    Sprite _illust = null;
+    string _description = "";
+    if(MyGameData.Madness_Conversation==false&&
+      MyGameData.Madness_Force==false&&
+      MyGameData.Madness_Wild==false&&
+      MyGameData.Madness_Intelligence == false)
+    {
+      _illust = ImageHolder.GameOver_Idle;
+      _description = GetTextData("GameOver_Normal");
+    }
+    else if(MyGameData.Madness_Conversation==true&&
+      MyGameData.Madness_Force== true &&
+      MyGameData.Madness_Wild== true &&
+      MyGameData.Madness_Intelligence == true)
+    {
+      _illust = ImageHolder.GameOver_Madness;
+      _description = GetTextData("GameOver_Mad");
+    }
+    else
+    {
+      List<int> _ableindexes = new List<int>();
+      if (MyGameData.Madness_Conversation == true) _ableindexes.Add(0);
+      if (MyGameData.Madness_Force == true) _ableindexes.Add(1);
+      if (MyGameData.Madness_Wild == true) _ableindexes.Add(2);
+      if (MyGameData.Madness_Intelligence == true) _ableindexes.Add(3);
+      switch (_ableindexes[UnityEngine.Random.Range(0, _ableindexes.Count - 1)])
+      {
+        case 0:
+          _illust = ImageHolder.GameOver_Conversation;
+          _description = GetTextData("GameOver_Conversation");
+          break;
+        case 1:
+          _illust = ImageHolder.GameOver_Force;
+          _description = GetTextData("GameOver_GameOver_Mad");
+          break;
+        case 2:
+          _illust = ImageHolder.GameOver_Wild;
+          _description = GetTextData("GameOver_Wild");
+          break;
+        case 3:
+          _illust = ImageHolder.GameOver_Intelligence;
+          _description = GetTextData("GameOver_Intelligence");
+          break;
+      }
+    }
 
-    UIManager.Instance.EndingUI.OpenUI_Dead(ImageHolder.GameoverIllusts[_index],GetTextData("GameOver_"+_index.ToString()));
+    UIManager.Instance.OpenDead(_illust, _description);
   }
   public void SubEnding(EndingIllusts endingdata)
   {

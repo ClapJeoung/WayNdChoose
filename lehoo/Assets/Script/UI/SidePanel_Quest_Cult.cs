@@ -22,6 +22,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   [SerializeField] private TextMeshProUGUI Ritual_CoolDown = null;
   [SerializeField] private Slider ProgressSlider = null;
   private int LastPhase = -1;
+  private int LastProgress = -1;
   private bool VillageOff = false;
   private bool LastVillage = false;
   private bool TownOff = false;
@@ -119,19 +120,28 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     }
 
     LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-    StartCoroutine(changeslidervalue());
+
+    if (LastProgress != GameManager.Instance.MyGameData.Quest_Cult_Progress)
+    {
+      StartCoroutine(changeslidervalue());
+      LastProgress = GameManager.Instance.MyGameData.Quest_Cult_Progress;
+    }
   }
+  public RectTransform HandleRect = null;
+  public float HandleMaxScale = 1.4f;
+  public AnimationCurve HandleScaleCurve = new AnimationCurve();
   private IEnumerator changeslidervalue()
   {
     float _current = ProgressSlider.value;
     float _target = GameManager.Instance.MyGameData.Quest_Cult_Progress;
     float _time = 0.0f, _targettime = 1.2f;
+    Vector2 _originsize = Vector2.one, _maxsize = Vector2.one * HandleMaxScale;
     while( _time < _targettime )
     {
       ProgressSlider.value = Mathf.Lerp(_current, _target, _time / _targettime);
+      HandleRect.localScale=Vector2.Lerp(_originsize,_maxsize,HandleScaleCurve.Evaluate(_time/_targettime));
       _time+=Time.deltaTime;
       yield return null;
     }
-
   }
 }

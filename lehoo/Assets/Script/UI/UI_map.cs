@@ -238,7 +238,7 @@ public class UI_map : UI_default
     }
     DefaultRect.sizeDelta = CloseSize;
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, _endpos, UIOpenTime_Move,UIManager.Instance.UIPanelOpenCurve));
-    yield return new WaitForSeconds(0.2f);
+    yield return new WaitForSeconds(0.1f);
     float _time = 0.0f;
     Vector2 _rect = DefaultRect.rect.size;
     while (_time < UIOpenTime_Fold)

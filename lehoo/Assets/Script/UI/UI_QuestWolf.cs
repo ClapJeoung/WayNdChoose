@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEditor.PackageManager;
 
 public class UI_QuestWolf : UI_default
 {
@@ -21,12 +22,37 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private CanvasGroup PrologueGroup = null;
   [SerializeField] private ImageSwapScript Illust = null;
   [SerializeField] private TextMeshProUGUI Prologue_Description = null;
-  [SerializeField] private CanvasGroup Prologue_DescriptionGroup = null;
+  [SerializeField] private Scrollbar PrologueScrollbar = null;
+  public AnimationCurve ScrollbarCurve = new AnimationCurve();
+  private IEnumerator updatescrollbar()
+  {
+
+    float _time = 0.0f, _targettime = 1.5f;
+    while (_time < _targettime)
+    {
+      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f,ScrollbarCurve.Evaluate(_time / _targettime));
+      _time += Time.deltaTime; 
+      yield return null;
+    }
+    PrologueScrollbar.value = 0.0f;
+  }
   [SerializeField] private CanvasGroup Prologue_ButtonHolderGroup = null;
   [SerializeField] private Button Prologue_Button_A = null;
   [SerializeField] private TextMeshProUGUI Prologue_ButtonText_A = null;
   [SerializeField] private Button Prologue_Button_B = null;
   [SerializeField] private TextMeshProUGUI Prologue_ButtonText_B = null;
+  [SerializeField] private float PrologueFadetime = 0.7f;
+  private float DisableAlpha = 0.2f;
+  private void SetPrologueButtonDisable()
+  {
+    Prologue_ButtonHolderGroup.alpha = DisableAlpha;
+    Prologue_ButtonHolderGroup.interactable = false;
+  }
+  public void SetPrologueButtonActive()
+  {
+    Prologue_ButtonHolderGroup.alpha = 1.0f;
+    Prologue_ButtonHolderGroup.interactable = true;
+  }
   public int CurrentPrologueIndex = 0;
   public void OpenUI_Prologue(QuestHolder_Cult wolf)
   {
@@ -39,27 +65,24 @@ public class UI_QuestWolf : UI_default
   }
   private IEnumerator openui_prologue()
   {
-    Prologue_Description.text = QuestHolder.Prologue_0_Description;
-    Prologue_DescriptionGroup.alpha = 0.0f;
+    SetPrologueButtonDisable();
 
-    Prologue_ButtonHolderGroup.alpha = 0.0f;
     Prologue_Button_A.gameObject.SetActive(true);
     Prologue_Button_A.onClick.RemoveAllListeners();
     Prologue_Button_A.onClick.AddListener(Next);
     Prologue_ButtonText_A.text = GameManager.Instance.GetTextData("NEXT_TEXT");
     Prologue_Button_B.gameObject.SetActive(false);
 
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.transform.parent.GetComponent<RectTransform>());
+       Illust.Setup(QuestHolder.Prologue_0_Illust, 0.1f);
 
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup,1.0f,FadeInTime));
-       Illust.Setup(QuestHolder.Prologue_0_Illust, FadeInTime);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime));
-    Prologue_ButtonHolderGroup.interactable = true;
-    Prologue_ButtonHolderGroup.blocksRaycasts = true;
-    DefaultGroup.interactable = true;
-    DefaultGroup.blocksRaycasts = true;
+    Prologue_Description.text = QuestHolder.Prologue_0_Description;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);
+    StartCoroutine(updatescrollbar());
+
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup, 1.0f, 2.0f));
+
+    SetPrologueButtonActive();
+
     yield return null;
   }
   public  void CloseUI_Prologue() => UIManager.Instance.AddUIQueue(closeui_prologue());
@@ -93,6 +116,7 @@ public class UI_QuestWolf : UI_default
     string _description = null;
     string _buttontext_a = null;
     string _buttontext_b = null;
+
 
     switch (CurrentPrologueIndex)
     {
@@ -158,20 +182,23 @@ public class UI_QuestWolf : UI_default
         break;
     }
 
-    Illust.Next(_illust,  FadeOutTime + FadeInTime);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 0.0f, FadeOutTime));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 0.0f, FadeOutTime));
-    yield return new WaitForSeconds(FadeOutTime);
+    SetPrologueButtonDisable();
+    Illust.Next(_illust,  PrologueFadetime);
 
-    Prologue_Description.text = _description;
     Prologue_ButtonText_A.text= _buttontext_a;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Button_A.transform as RectTransform);
     Prologue_Button_A.onClick.RemoveAllListeners();
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.GetComponent<RectTransform>());
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonHolderGroup.transform.parent.GetComponent<RectTransform>());
+    Prologue_Description.text +="<br><br>"+ _description;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);
+   yield return  StartCoroutine(updatescrollbar());
+    SetPrologueButtonActive();
 
     if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
     {
       Prologue_Button_A.gameObject.SetActive(false);
+
+      MoveRectForButton(0);
+      UIManager.Instance.MapButton.Open(1, this);
     }
     else
     {
@@ -187,19 +214,10 @@ public class UI_QuestWolf : UI_default
 
         if (Prologue_Button_B.gameObject.activeInHierarchy == false) Prologue_Button_B.gameObject.SetActive(true);
         Prologue_ButtonText_B.text = _buttontext_b;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Button_B.transform as RectTransform);
       }
     }
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_DescriptionGroup, 1.0f, FadeInTime));
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_ButtonHolderGroup, 1.0f, FadeInTime));
-
-    Prologue_ButtonHolderGroup.interactable = true;
-
-    if (CurrentPrologueIndex == 8)
-    {
-      MoveRectForButton(0);
-      UIManager.Instance.MapButton.Open(1, this);
-    }
   }
   public void SelectTendency(int index)
   {

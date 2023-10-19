@@ -68,15 +68,15 @@ public class UI_Selection : MonoBehaviour
         switch (MySelectionData.SelectionPayTarget)
         {
           case StatusTypeEnum.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;
-            PayInfo.text = WNCText.GetHPColor("-"+GameManager.Instance.MyGameData.PayHPValue);
+            PayInfo.text = (GameManager.Instance.MyGameData.PayHPValue * -1).ToString();
             HighlightEffect.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.PayHPValue*-1);
             break;
           case StatusTypeEnum.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
-            PayInfo.text = WNCText.GetSanityColor("-" + GameManager.Instance.MyGameData.PaySanityValue);
+            PayInfo.text = (GameManager.Instance.MyGameData.PaySanityValue * -1).ToString();
             HighlightEffect.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.PaySanityValue*-1);
             break;
           case StatusTypeEnum.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;
-            PayInfo.text = WNCText.GetGoldColor("-" + GameManager.Instance.MyGameData.PayGoldValue);
+            PayInfo.text = (GameManager.Instance.MyGameData.PayGoldValue * -1).ToString();
             HighlightEffect.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.PayGoldValue*-1);
             if (GameManager.Instance.MyGameData.Gold < GameManager.Instance.MyGameData.PayGoldValue)
               HighlightEffect.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.PayOverSanityValue*-1);
@@ -90,8 +90,7 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_A.fillAmount = 1.0f;
 
         SkillIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0],false);
-        SkillInfo.text =string.Format(GameManager.Instance.GetTextData("Require"),
-          WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillSingleValue));
+        SkillInfo.text = $"{GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level}/{GameManager.Instance.MyGameData.CheckSkillSingleValue}";
         HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] });
 
         break;
@@ -107,8 +106,8 @@ public class UI_Selection : MonoBehaviour
         _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[1], false);
         SkillIcon_A.sprite = _sprs[0];
         SkillIcon_B.sprite = _sprs[1];
-        SkillInfo.text = string.Format(GameManager.Instance.GetTextData("Require"),
-          WNCText.UIIdleColor(GameManager.Instance.MyGameData.CheckSkillMultyValue));
+        SkillInfo.text = $"{GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level+GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[1]).Level}" +
+          $"/{GameManager.Instance.MyGameData.CheckSkillMultyValue}";
         HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] , MySelectionData.SelectionCheckSkill[1] });
 
         break;

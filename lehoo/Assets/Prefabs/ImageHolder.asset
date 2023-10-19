@@ -81,7 +81,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: fcceb2188905dca4ea81795fcd8e7566, type: 3}
   - {fileID: 21300000, guid: d5ec4964f6d52924fa1f3715f9d26ef2, type: 3}
   - {fileID: 21300000, guid: 3faddb50098e0c64e910c2514ecd4e65, type: 3}
-  GameoverIllusts: []
+  GameOver_Idle: {fileID: 21300000, guid: bffb0636d01aabd48835af6b8985ed16, type: 3}
+  GameOver_Conversation: {fileID: 21300000, guid: e554bffbf93473c4d9bc24c0e0667517, type: 3}
+  GameOver_Force: {fileID: 21300000, guid: 9b0d034b656d4ed4cae7dc36fb66ef74, type: 3}
+  GameOver_Wild: {fileID: 21300000, guid: f5f8ef03f61a3594c96b255d49942269, type: 3}
+  GameOver_Intelligence: {fileID: 21300000, guid: f4ddf5c78e3ead64483685202e28ceaa, type: 3}
+  GameOver_Madness: {fileID: 21300000, guid: 1e804cc870a34de4fb3b4a1360e3d712, type: 3}
   MovePointIcon_Enable: {fileID: 21300000, guid: cfdf7cb8ba959524e90a6ac0ba00007f, type: 3}
   MovePointIcon_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
   VillageIcon_black: {fileID: 21300000, guid: a4e91d81e0dd57b45888a932340e1161, type: 3}
@@ -145,8 +150,8 @@ MonoBehaviour:
   DisComfort: {fileID: 21300000, guid: b2a0bb0e9a8d0664a91e3295a415268a, type: 3}
   MadnessIdle: {fileID: 21300000, guid: 533227ba82acdd649bf6c2137697490f, type: 3}
   MadnessActive: {fileID: 21300000, guid: 886081899e6a4894482d7746622dca02, type: 3}
-  Arrow_Empty: {fileID: 21300000, guid: 6c6b2ac4d5435fc4d84d5f62ff7d33d6, type: 3}
-  Arrow_DeActive: {fileID: 21300000, guid: f092d2f2ada0ff54894dc11780cf7678, type: 3}
+  Arrow_Empty: {fileID: 21300000, guid: df43d4d08611c0a41b4c799717246d4c, type: 3}
+  Arrow_DeActive: {fileID: 21300000, guid: a31c9901f04eb0d428dc2e927aad09fa, type: 3}
   Arrow_Active_rational: {fileID: 21300000, guid: ba98f2d0708544047b52f9e68a044281, type: 3}
   Arrow_Active_physical: {fileID: 21300000, guid: e269443b03526ed4c93ebd6fdaf850ff, type: 3}
   Arrow_Active_mental: {fileID: 21300000, guid: 6c779bf83d2052145a54db3541faad02, type: 3}

@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
 
   public const int MadnessEffect_Conversation = 15;
@@ -14,7 +15,7 @@ public static class ConstValues
   public const int MadnessEffect_Intelligence = 40;
   public const int MadnessEffect_Intelligence_Value = 2;
 
-  public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=8,Quest_Cult_Progress_City=10,
+  public const int Quest_Cult_Progress_Village=4,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=8,
     Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
   public const int Qeust_Cult_EventProgress_Clear_Less60 = 4, Quest_Cult_EventProgress_Clear_Over60 = 3;
   public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 2;
@@ -371,7 +372,7 @@ public class GameData    //게임 진행도 데이터
       //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
       hp = value;
       if (hp > 100) hp = 100;
-      if (hp < 0) { hp = 0; GameManager.Instance.GameOver(); }
+      if (hp <= 0) { hp = 0; GameManager.Instance.GameOver(); }
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateHPText();
     }
   }

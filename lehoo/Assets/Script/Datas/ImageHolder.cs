@@ -21,7 +21,12 @@ public class ImageHolder : ScriptableObject
     return _spr;
   }//대문에 넣을 일러스트 무작위로 전달
   [Space(20)]
-  public List<Sprite> GameoverIllusts = new List<Sprite>();
+  public Sprite GameOver_Idle = null;
+  public Sprite GameOver_Conversation = null;
+  public Sprite GameOver_Force = null;
+  public Sprite GameOver_Wild = null;
+  public Sprite GameOver_Intelligence = null;
+  public Sprite GameOver_Madness = null;
 
   public Sprite MovePointIcon_Enable = null;
   public Sprite MovePointIcon_Lack = null;

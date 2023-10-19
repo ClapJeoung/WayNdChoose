@@ -10,7 +10,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Camera MainCamera = null;
   [Space(10)]
   [SerializeField] private GameObject IconAndDescription_Panel = null;
-  [SerializeField] private Image IconAndDescription_IconBackground = null;
+ // [SerializeField] private Image IconAndDescription_IconBackground = null;
   [SerializeField] private Image IconAndDescription_Icon = null;
   [SerializeField] private TextMeshProUGUI IconAndDescription_Description = null;
   [Space(10)]
@@ -367,7 +367,8 @@ public class PreviewManager : MonoBehaviour
     }
     Sprite _icon = _targettendency.CurrentIcon;
     Sprite _icon_left=_targettendency.GetNextIcon(true), _icon_right=_targettendency.GetNextIcon(false);
-    int _progress = Mathf.Abs(_targettendency.Progress) - 1;
+    int _progress = Mathf.Abs(_targettendency.Progress);
+    int _sign = (int)Mathf.Sign(_targettendency.Progress);
     switch (_targettendency.Level)
     {
       case -2:
@@ -375,36 +376,27 @@ public class PreviewManager : MonoBehaviour
 
         for(int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
         {
-          if (i <= _progress)
+          if (i <= _progress-1)
           {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
               TendencyArrows_Right[i].sprite = _arrowsprite_right;
-            }
-          else 
-            {
-              if (i < ConstValues.TendencyRegress)
-              {
-                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-                TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
-              }
-              else
-              {
-                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
-              }
-            }
           }
+          else if (i < ConstValues.TendencyRegress)
+          {
+            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+            TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+          }
+          else
+          {
+            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+          }
+        }
         break;
       case -1:
         if (TendencyProgress_Left.activeInHierarchy == false) TendencyProgress_Left.SetActive(true);
-        if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
-        for (int i =0; i < ConstValues.TendencyProgress_1to2; i++)
+        if (_sign >= 0)
         {
-          if (i <= _progress)
-          {
-            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-            TendencyArrows_Left[i].sprite = _arrowsprite_left;
-          }
-          else
+          for(int i = 0; i < 3; i++)
           {
             if (i < ConstValues.TendencyProgress_1to2)
             {
@@ -412,19 +404,37 @@ public class PreviewManager : MonoBehaviour
               TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
             }
             else
-            {
+            { 
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
             }
           }
         }
-        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        else
         {
-          if (i <= _progress)
+          for (int i = 0;i< 3; i++)
           {
-            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-            TendencyArrows_Right[i].sprite = _arrowsprite_right;
+            if (i <= _progress-1)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = _arrowsprite_left;
+            }
+            else if (i < ConstValues.TendencyProgress_1to2)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+            }
+            else
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            }
+
           }
-          else
+        }
+
+        if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
+        if (_sign <= 0)
+        {
+          for (int i = 0; i < 3; i++)
           {
             if (i < ConstValues.TendencyRegress)
             {
@@ -437,18 +447,32 @@ public class PreviewManager : MonoBehaviour
             }
           }
         }
+        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        {
+          if (i <= _progress-1)
+          {
+            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+            TendencyArrows_Right[i].sprite = _arrowsprite_right;
+          }
+          else
+          {
+            if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+            }
+            else
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+            }
+          }
+        }
         break;
       case 1:
         if (TendencyProgress_Left.activeInHierarchy == false) TendencyProgress_Left.SetActive(true);
-        if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
-        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        if (_sign >= 0)
         {
-          if (i <= _progress)
-          {
-            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-            TendencyArrows_Left[i].sprite = _arrowsprite_left;
-          }
-          else
+          for (int i = 0; i < 3; i++)
           {
             if (i < ConstValues.TendencyRegress)
             {
@@ -461,9 +485,47 @@ public class PreviewManager : MonoBehaviour
             }
           }
         }
+        else
+        {
+          for (int i = 0; i < 3; i++)
+          {
+            if (i <= _progress - 1)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = _arrowsprite_left;
+            }
+            else if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+            }
+            else
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            }
+
+          }
+        }
+
+        if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
+        if (_sign <= 0)
+        {
+          for (int i = 0; i < 3; i++)
+          {
+            if (i < ConstValues.TendencyProgress_1to2)
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+            }
+            else
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+            }
+          }
+        }
         for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
         {
-          if (i <= _progress)
+          if (i <= _progress - 1)
           {
             if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
             TendencyArrows_Right[i].sprite = _arrowsprite_right;
@@ -473,7 +535,7 @@ public class PreviewManager : MonoBehaviour
             if (i < ConstValues.TendencyProgress_1to2)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
             }
             else
             {
@@ -485,22 +547,19 @@ public class PreviewManager : MonoBehaviour
       case 2:
         for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
         {
-          if (i <= _progress)
+          if (i <= _progress - 1)
           {
             if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
             TendencyArrows_Left[i].sprite = _arrowsprite_left;
           }
+          else if (i < ConstValues.TendencyRegress)
+          {
+            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+            TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+          }
           else
           {
-            if (i < ConstValues.TendencyRegress)
-            {
-              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
-            }
-            else
-            {
-              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
-            }
+            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
           }
         }
 
@@ -745,11 +804,11 @@ public class PreviewManager : MonoBehaviour
     _turn=islong?ConstValues.LongTermStartTurn.ToString():ConstValues.ShortTermStartTurn.ToString();
     if (islong)
     {
-      _description =GameManager.Instance.GetTextData("LONGTERMSAVE_NAME")+"<br><br>"+ string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
+      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
     }
     else
     {
-      _description = GameManager.Instance.GetTextData("SHORTTERMSAVE_NAME") + "<br><br>" + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
+      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
@@ -767,11 +826,11 @@ public class PreviewManager : MonoBehaviour
     string _description = "";
     if (islong)
     {
-      _description = GameManager.Instance.GetTextData("LONGTERMSHIFT_NAME") + string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
+      _description =string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
     }
     else
     {
-      _description = GameManager.Instance.GetTextData("SHORTTERMSHIFT_NAME") + string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
+      _description = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
     }
 
     string _origineffect = _origin.EffectString;
@@ -806,7 +865,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenIconAndDescriptionPanel(Sprite icon,string text,bool isstatus, RectTransform rect)
   {
     IconAndDescription_Icon.sprite = icon;
-    IconAndDescription_IconBackground.sprite = isstatus ? GameManager.Instance.ImageHolder.IconBackground_status : GameManager.Instance.ImageHolder.IconBackground_normal;
+  //  IconAndDescription_IconBackground.sprite = isstatus ? GameManager.Instance.ImageHolder.IconBackground_status : GameManager.Instance.ImageHolder.IconBackground_normal;
     IconAndDescription_Description.text = text;
 
     OpenPreviewPanel(IconAndDescription_Panel,rect);
@@ -814,7 +873,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenIconAndDescriptionPanel(Sprite icon, string text,Vector2 pivot, bool isstatus, RectTransform rect)
   {
     IconAndDescription_Icon.sprite = icon;
-    IconAndDescription_IconBackground.sprite = isstatus ? GameManager.Instance.ImageHolder.IconBackground_status : GameManager.Instance.ImageHolder.IconBackground_normal;
+  //  IconAndDescription_IconBackground.sprite = isstatus ? GameManager.Instance.ImageHolder.IconBackground_status : GameManager.Instance.ImageHolder.IconBackground_normal;
     IconAndDescription_Description.text = text;
 
     OpenPreviewPanel(IconAndDescription_Panel,pivot,rect);

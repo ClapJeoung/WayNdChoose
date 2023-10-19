@@ -9,8 +9,34 @@ public class UI_Ending : UI_default
 {
   [SerializeField] private ImageSwapScript Illust = null;
   [SerializeField] private TextMeshProUGUI Description = null;
-  [SerializeField] private CanvasGroup DescriptionGroup = null;
+  [SerializeField] private Scrollbar DescriptionScrollbar = null;
+  public AnimationCurve ScrollbarCurve = new AnimationCurve();
+  private IEnumerator updatescrollbar()
+  {
+    float _time = 0.0f;
+    float _targettime = 1.5f;
+    while (_time < _targettime)
+    {
+      DescriptionScrollbar.value = Mathf.Lerp(DescriptionScrollbar.value, 0.0f, ScrollbarCurve.Evaluate(_time / _targettime));
+      _time += Time.deltaTime;
+      yield return null;
+
+    }
+    DescriptionScrollbar.value = 0.0f;
+  }
   [SerializeField] private TextMeshProUGUI ButtonText = null;
+  [SerializeField] private CanvasGroup ButtonGroup = null;
+  private float DisableAlpha = 0.2f;
+  private void SetNextButtonDisable()
+  {
+    ButtonGroup.alpha = DisableAlpha;
+    ButtonGroup.interactable = false;
+  }
+  public void SetNextButtonActive()
+  {
+    ButtonGroup.alpha = 1.0f;
+    ButtonGroup.interactable = true;
+  }
 
   private List<Sprite> Illusts=new List<Sprite>();
   private List<string> Descriptions=new List<string>();
@@ -25,7 +51,7 @@ public class UI_Ending : UI_default
     UIManager.Instance.PreviewManager.ClosePreview();
 
     Illust.Setup(illust, 0.5f);
-    Description.text= description;
+    Description.text = description;
     ButtonText.text = GameManager.Instance.GetTextData("QUITTOMAIN");
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(ButtonText.transform.parent.transform as RectTransform);
@@ -33,7 +59,7 @@ public class UI_Ending : UI_default
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 2.0f));
   }
 
-public void OpenUI_Ending(Tuple<List<Sprite>, List<string>, string, string> data)
+  public void OpenUI_Ending(Tuple<List<Sprite>, List<string>, string, string> data)
   {
     UIManager.Instance.PreviewManager.ClosePreview();
 
@@ -59,16 +85,20 @@ public void OpenUI_Ending(Tuple<List<Sprite>, List<string>, string, string> data
     else
     UIManager.Instance.StartCoroutine(next());
   }
+  private float NextTime = 0.6f;
   private IEnumerator next()
   {
     CurrentIndex++;
 
-    Illust.Next(Illusts[CurrentIndex], 0.6f + 0.6f);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 0.0f, 0.6f));
+    SetNextButtonDisable();
+    Illust.Next(Illusts[CurrentIndex], NextTime);
+    yield return new WaitForSeconds(NextTime);
     
-    Description.text = Descriptions[CurrentIndex];
+    Description.text +="<br><br>"+ Descriptions[CurrentIndex];
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);
+    yield return StartCoroutine(updatescrollbar());
+
     ButtonText.text = CurrentIndex<Length-1? GameManager.Instance.GetTextData("NEXT_TEXT"):LastButtonText;
-    LayoutRebuilder.ForceRebuildLayoutImmediate(ButtonText.transform.parent.transform as RectTransform);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionGroup, 1.0f, 0.6f));
+    LayoutRebuilder.ForceRebuildLayoutImmediate(ButtonGroup.transform as RectTransform);
   }
 }
