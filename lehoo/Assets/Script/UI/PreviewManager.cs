@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class PreviewManager : MonoBehaviour
 {
@@ -40,6 +41,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpDuration = null;
   [SerializeField] private Image ExpIllust = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
+  [SerializeField] private TextMeshProUGUI ExpSubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject TendencyPreview = null;
   [SerializeField] private Image TendencyIcon_Current = null;
@@ -186,23 +188,18 @@ public class PreviewManager : MonoBehaviour
   {
     StatusTypeEnum _currenttype = StatusTypeEnum.HP;
 
-    string _description = "";
-    int _genvalue = 0, _payvalue = 0;
+    string _description = GameManager.Instance.GetTextData(_currenttype, 3);
 
-    _genvalue = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
-    _payvalue = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
+    int _modifyvalue = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
+    if (_modifyvalue == 100)
+    {
 
-    _description = GameManager.Instance.GetTextData(_currenttype, 3);
-    if (_genvalue > 0)
-    {
-      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
     }
-    if (_payvalue > 0)
+    else
     {
-      if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
-      else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " "
+        + string.Format("{0}%", WNCText.PositiveColor("+" + (100 - _modifyvalue).ToString()));
     }
-    //  _description+="<br><br>"+WNCText.SetSize(SubdescriptionSize,WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
     OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.HPIcon, _description, HPPivot,true,rect);
   }//체력 설명, 증감량 표기 후 열기
@@ -210,24 +207,18 @@ public class PreviewManager : MonoBehaviour
   {
     StatusTypeEnum _currenttype = StatusTypeEnum.Sanity;
 
-    string _description = "";
-    int _genvalue = 0, _payvalue = 0;
+    string _description = GameManager.Instance.GetTextData(_currenttype, 3);
 
-    _genvalue = (int)GameManager.Instance.MyGameData.GetSanityGenModify(false);
-    _payvalue = (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
-
-    _description = string.Format(GameManager.Instance.GetTextData(_currenttype, 3));
-    if (_genvalue > 0)
+    int  _modifyvalue= (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
+    if (_modifyvalue == 100)
     {
-      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
-    }
-    if (_payvalue > 0)
-    {
-      if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
-      else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
-    }
-    //   _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
+    }
+    else
+    {
+      _description+="<br><br>"+ GameManager.Instance.GetTextData(_currenttype, 12) + " " 
+        + string.Format("{0}%", WNCText.PositiveColor("+" + (100- _modifyvalue).ToString()));
+    }
 
     OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.SanityIcon, _description, SanityPivot,true, rect);
   }//정신력 설명,증감량 표기 후 열기
@@ -235,23 +226,18 @@ public class PreviewManager : MonoBehaviour
   {
     StatusTypeEnum _currenttype = StatusTypeEnum.Gold;
 
-    string _description = "";
-    int _genvalue = 0, _payvalue = 0;
+    string _description = GameManager.Instance.GetTextData(_currenttype, 3);
 
-    _genvalue = (int)GameManager.Instance.MyGameData.GetGoldGenModify(false);
-    _payvalue = (int)GameManager.Instance.MyGameData.GetGoldLossModify(false);
+    int _modifyvalue = (int)GameManager.Instance.MyGameData.GetGoldGenModify(false);
+    if (_modifyvalue == 100)
+    {
 
-    _description = GameManager.Instance.GetTextData(_currenttype, 3);
-    if (_genvalue > 0)
-    {
-      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " " + string.Format("{0}%", WNCText.PositiveColor("+" + _genvalue.ToString()));
     }
-    if (_payvalue > 0)
+    else
     {
-      if (_genvalue == 0) _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
-      else _description += "<br>" + GameManager.Instance.GetTextData(_currenttype, 15) + " " + string.Format("{0}%", WNCText.NegativeColor("+" + _payvalue.ToString()));
+      _description += "<br><br>" + GameManager.Instance.GetTextData(_currenttype, 12) + " "
+        + string.Format("{0}%", WNCText.PositiveColor("+" + (_modifyvalue-100).ToString()));
     }
-    //  _description += "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_currenttype, 4)));
 
     OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.GoldIcon, _description, GoldPivot,true, rect);
   }//골드 설명,증감량 표기 후 열기
@@ -341,10 +327,11 @@ public class PreviewManager : MonoBehaviour
   public void OpenExpPreview(Experience _exp, RectTransform rect)
   {
     ExpName.text =_exp.Name;
-    ExpDuration.text = $"{_exp.Duration}";
+//    ExpDuration.text = $"{_exp.Duration}";
     ExpIllust.sprite = _exp.Illust;
-    string _description = WNCText.SetSize(EffectFontSize, _exp.EffectString) + "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_exp.Description));
+    string _description = WNCText.SetSize(EffectFontSize, _exp.EffectString);
     ExpDescription.text = _description;
+    ExpSubdescription.text = WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_exp.Description));
 
     OpenPreviewPanel(ExpPreview,rect);
   }
@@ -352,6 +339,8 @@ public class PreviewManager : MonoBehaviour
   {
     Tendency _targettendency = null;
     Sprite _arrowsprite_left = null, _arrowsprite_right = null;
+    Sprite _emptyarrow = GameManager.Instance.ImageHolder.Arrow_Empty;
+  //  Sprite _disablearrow = GameManager.Instance.ImageHolder.Arrow_White;
  switch (_type)
     {
       case TendencyTypeEnum.Head:
@@ -367,41 +356,59 @@ public class PreviewManager : MonoBehaviour
     }
     Sprite _icon = _targettendency.CurrentIcon;
     Sprite _icon_left=_targettendency.GetNextIcon(true), _icon_right=_targettendency.GetNextIcon(false);
-    int _progress = Mathf.Abs(_targettendency.Progress);
-    int _sign = (int)Mathf.Sign(_targettendency.Progress);
+    int _progress =_targettendency.Progress;
     switch (_targettendency.Level)
     {
       case -2:
         if(TendencyProgress_Left.activeInHierarchy==true) TendencyProgress_Left.SetActive(false);
 
-        for(int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        if (_progress <= 0)
         {
-          if (i <= _progress-1)
+          for (int i = 0; i < ConstValues.TendencyProgress_1to2;i++)
           {
+            if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+              TendencyArrows_Right[i].sprite = _emptyarrow;
+            }
+            else
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+            }
+          }
+        }
+        else
+        {
+          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+          {
+            if (i <= _progress - 1)
+            {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
               TendencyArrows_Right[i].sprite = _arrowsprite_right;
+            }
+            else if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+              TendencyArrows_Right[i].sprite = _emptyarrow;
+            }
+            else
+            {
+              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+            }
           }
-          else if (i < ConstValues.TendencyRegress)
-          {
-            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-            TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
-          }
-          else
-          {
-            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
-          }
+
         }
         break;
       case -1:
         if (TendencyProgress_Left.activeInHierarchy == false) TendencyProgress_Left.SetActive(true);
-        if (_sign >= 0)
+        if (_progress >= 0)
         {
           for(int i = 0; i < 3; i++)
           {
             if (i < ConstValues.TendencyProgress_1to2)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+              TendencyArrows_Left[i].sprite = _emptyarrow;
             }
             else
             { 
@@ -413,7 +420,7 @@ public class PreviewManager : MonoBehaviour
         {
           for (int i = 0;i< 3; i++)
           {
-            if (i <= _progress-1)
+            if (i <= _progress*-1-1)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _arrowsprite_left;
@@ -421,7 +428,7 @@ public class PreviewManager : MonoBehaviour
             else if (i < ConstValues.TendencyProgress_1to2)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+              TendencyArrows_Left[i].sprite = _emptyarrow;
             }
             else
             {
@@ -432,14 +439,14 @@ public class PreviewManager : MonoBehaviour
         }
 
         if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
-        if (_sign <= 0)
+        if (_progress <= 0)
         {
           for (int i = 0; i < 3; i++)
           {
             if (i < ConstValues.TendencyRegress)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+              TendencyArrows_Right[i].sprite = _emptyarrow;
             }
             else
             {
@@ -447,37 +454,40 @@ public class PreviewManager : MonoBehaviour
             }
           }
         }
-        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        else
         {
-          if (i <= _progress-1)
+          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
           {
-            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-            TendencyArrows_Right[i].sprite = _arrowsprite_right;
-          }
-          else
-          {
-            if (i < ConstValues.TendencyRegress)
+            if (i <= _progress - 1)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+              TendencyArrows_Right[i].sprite = _arrowsprite_right;
             }
             else
             {
-              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+              if (i < ConstValues.TendencyRegress)
+              {
+                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+                TendencyArrows_Right[i].sprite = _emptyarrow;
+              }
+              else
+              {
+                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+              }
             }
           }
         }
         break;
       case 1:
         if (TendencyProgress_Left.activeInHierarchy == false) TendencyProgress_Left.SetActive(true);
-        if (_sign >= 0)
+        if (_progress >= 0)
         {
           for (int i = 0; i < 3; i++)
           {
             if (i < ConstValues.TendencyRegress)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+              TendencyArrows_Left[i].sprite = _emptyarrow;
             }
             else
             {
@@ -489,7 +499,7 @@ public class PreviewManager : MonoBehaviour
         {
           for (int i = 0; i < 3; i++)
           {
-            if (i <= _progress - 1)
+            if (i <= _progress*-1 - 1)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _arrowsprite_left;
@@ -497,7 +507,7 @@ public class PreviewManager : MonoBehaviour
             else if (i < ConstValues.TendencyRegress)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-              TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+              TendencyArrows_Left[i].sprite = _emptyarrow;
             }
             else
             {
@@ -508,14 +518,14 @@ public class PreviewManager : MonoBehaviour
         }
 
         if (TendencyProgress_Right.activeInHierarchy == false) TendencyProgress_Right.SetActive(true);
-        if (_sign <= 0)
+        if (_progress <= 0)
         {
           for (int i = 0; i < 3; i++)
           {
             if (i < ConstValues.TendencyProgress_1to2)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
+              TendencyArrows_Right[i].sprite = _emptyarrow;
             }
             else
             {
@@ -523,43 +533,64 @@ public class PreviewManager : MonoBehaviour
             }
           }
         }
-        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        else
         {
-          if (i <= _progress - 1)
+          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
           {
-            if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-            TendencyArrows_Right[i].sprite = _arrowsprite_right;
-          }
-          else
-          {
-            if (i < ConstValues.TendencyProgress_1to2)
+            if (i <= _progress - 1)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
-              TendencyArrows_Right[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+              TendencyArrows_Right[i].sprite = _arrowsprite_right;
             }
             else
             {
-              if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+              if (i < ConstValues.TendencyProgress_1to2)
+              {
+                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
+                TendencyArrows_Right[i].sprite = _emptyarrow;
+              }
+              else
+              {
+                if (TendencyArrows_Right[i].gameObject.activeInHierarchy == true) TendencyArrows_Right[i].gameObject.SetActive(false);
+              }
             }
           }
         }
         break;
       case 2:
-        for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+        if (_progress >= 0)
         {
-          if (i <= _progress - 1)
+          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
           {
-            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-            TendencyArrows_Left[i].sprite = _arrowsprite_left;
+            if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = _emptyarrow;
+            }
+            else
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            }
           }
-          else if (i < ConstValues.TendencyRegress)
+        }
+        else
+        {
+          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
           {
-            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
-            TendencyArrows_Left[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
-          }
-          else
-          {
-            if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            if (i <= _progress * -1 - 1)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = _arrowsprite_left;
+            }
+            else if (i < ConstValues.TendencyRegress)
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
+              TendencyArrows_Left[i].sprite = _emptyarrow;
+            }
+            else
+            {
+              if (TendencyArrows_Left[i].gameObject.activeInHierarchy == true) TendencyArrows_Left[i].gameObject.SetActive(false);
+            }
           }
         }
 
@@ -575,13 +606,13 @@ public class PreviewManager : MonoBehaviour
 
     TendencyName.text = _name;
     TendencyDescription.text = _description;
-    TendencyIcon_Left.sprite = _icon_left;
-    TendencyIcon_Right.sprite = _icon_right;
+    TendencyIcon_Left.sprite = _icon_left != null?_icon_left:GameManager.Instance.ImageHolder.Transparent;
+    TendencyIcon_Right.sprite = _icon_right != null ? _icon_right : GameManager.Instance.ImageHolder.Transparent;
 
     OpenPreviewPanel(TendencyPreview, rect);
   }
   private Vector2 SelectionPivot = new Vector2(0.5f, -0.8f);
-  public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform rect)
+  public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform toprect)
   {
     if (SelectionNoneReward.Setup(_selection) == false) return;
 
@@ -604,9 +635,9 @@ public class PreviewManager : MonoBehaviour
     }
     */
     
-    OpenPreviewPanel(SelectionNonePanel, SelectionPivot, rect);
+    OpenPreviewPanel(SelectionNonePanel, toprect);
   }
-  public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
+  public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform toprect)
   {
     if (SelectionPayReward.Setup(_selection) == false) return;
 
@@ -627,10 +658,10 @@ public class PreviewManager : MonoBehaviour
         _status = StatusTypeEnum.HP;
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
         _payvalue = GameManager.Instance.MyGameData.PayHPValue;
-        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"),GameManager.Instance.GetTextData(StatusTypeEnum.HP,1), WNCText.GetHPColor("-"+_payvalue.ToString()));
+        _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.HP, 1), WNCText.GetHPColor("-" + _payvalue.ToString()));
         if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
-      //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
-       
+        //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
+
         break;//체력이라면 지불 기본값, 보정치, 최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
 
       case StatusTypeEnum.Sanity:
@@ -642,7 +673,7 @@ public class PreviewManager : MonoBehaviour
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor("-" + _payvalue.ToString()));
 
         if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
-      //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
+        //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
       case StatusTypeEnum.Gold:
         _status = StatusTypeEnum.Gold;
@@ -650,7 +681,7 @@ public class PreviewManager : MonoBehaviour
         _payvalue = GameManager.Instance.MyGameData.PayGoldValue;
         if (_payvalue > GameManager.Instance.MyGameData.Gold)
         {
-          _percent =101- GameManager.Instance.MyGameData.CheckPercent_money(_payvalue);
+          _percent = 101 - GameManager.Instance.MyGameData.CheckPercent_money(_payvalue);
           int _sanitypayvalue = GameManager.Instance.MyGameData.PayOverSanityValue;
 
           if (PayNoGold_Text.gameObject.activeInHierarchy == false) PayNoGold_Text.gameObject.SetActive(true);
@@ -662,7 +693,7 @@ public class PreviewManager : MonoBehaviour
         else
         {
           if (_selection.SuccessData.Reward_Type == RewardTypeEnum.None) return;
-          
+
           if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
         }//골드 지불이 가능할 때
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
@@ -672,9 +703,9 @@ public class PreviewManager : MonoBehaviour
     //  PayIcon.sprite = _payicon;
 
 
-    OpenPreviewPanel(SelectionPayPanel, SelectionPivot, rect);
+    OpenPreviewPanel(SelectionPayPanel, toprect);
   }
-  public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
+  public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform toprect)
   {
     if (SelectionCheckReward.Setup(_selection) == false) return;
 
@@ -726,7 +757,7 @@ public class PreviewManager : MonoBehaviour
     // SelectionCheckDescription.text = _subdescription;
 
 
-    OpenPreviewPanel(SelectionCheckPanel, SelectionPivot, rect);
+    OpenPreviewPanel(SelectionCheckPanel, toprect);
   }
   public void OpenSelectionElsePreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
   {
@@ -746,12 +777,13 @@ public class PreviewManager : MonoBehaviour
   public void OpenRewardStatusPreview(StatusTypeEnum status, int _value, RectTransform rect)
   {
     Sprite _icon = null;
-    int  _modify = 0;
+  //  int  _modify = 0;
     string _valuetext="",_modifydescription = "";
 
     _icon = GameManager.Instance.ImageHolder.StatusIcon(status);
-    _modify = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
+ //   _modify = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
     _valuetext = "+" + _value.ToString();
+    /*
     if (_modify > 0)
     {
       _modifydescription = $"(+{GameManager.Instance.GetTextData(status,13)}{WNCText.PositiveColor(_modify.ToString())})";
@@ -761,10 +793,10 @@ public class PreviewManager : MonoBehaviour
     {
       if (RewardStatusModify.gameObject.activeInHierarchy.Equals(true)) RewardStatusModify.gameObject.SetActive(false);
     }
-
+*/
     RewardStatusIcon.sprite = _icon;
     RewardStatusValue.text = _valuetext;
-    RewardStatusModify.text= _modifydescription;
+   // RewardStatusModify.text= _modifydescription;
     RewardStatusClickText.text = GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
 
     OpenPreviewPanel(RewardStatusPanel,rect);

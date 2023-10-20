@@ -7,6 +7,16 @@ using System.Linq;
 
 public class Settlement
 {
+  public int Index = -1;
+  public int Discomfort = 0;
+  public bool IsForest = false;//주변 2칸에 숲 여부
+  public bool IsRiver = false;//주변 2칸에 강 여부
+  public bool IsHighland = false;  //주변 1칸에 언덕 여부
+  public bool IsMountain = false;//주변 2칸에 산 여부
+  public bool IsSea = false;    //주변 1칸에 바다 여부
+
+  public List<TileData> Tiles = new List<TileData>();//일반 타일맵 기준
+
   public Settlement(SettlementType settletype)
   {
     SettlementType = settletype;
@@ -36,7 +46,6 @@ public class Settlement
     }
   }
   public SettlementType SettlementType;
-  public int Index=-1;
   public string OriginName
   {
     get
@@ -52,8 +61,6 @@ public class Settlement
       }
     }
   }
-  public int Discomfort = 0;
-  private string name;
   public string Name { 
     get
     {
@@ -97,13 +104,6 @@ public class Settlement
       }
     } }
   */
-  public bool IsForest = false;//주변 2칸에 숲 여부
-  public bool IsRiver=false;//주변 2칸에 강 여부
-  public bool IsHighland = false;  //주변 1칸에 언덕 여부
-  public bool IsMountain = false;//주변 2칸에 산 여부
-  public bool IsSea = false;    //주변 1칸에 바다 여부
-
-  public List<TileData> Tiles=new List<TileData>();//일반 타일맵 기준
   public Vector3 Position
   {
     get
@@ -117,10 +117,9 @@ public class Settlement
   {
     get
     {
-      return Tiles[0].Rect.transform.parent.gameObject;
+      return Tiles[0].ButtonScript.Rect.transform.parent.gameObject;
     }
   }
-  public List<RectTransform> TileIcons=new List<RectTransform>();
   private TileInfoData tileinfodata = null;
   public TileInfoData TileInfoData
   {
@@ -144,35 +143,6 @@ public class Settlement
       return tileinfodata; 
     }
   }
-  public bool CheckAbleEvent(EventData _event)
-  {
-
-    switch (_event.AppearSpace)
-    {
-      case EventAppearType.Outer: return false;
-      case EventAppearType.Village:
-        if (SettlementType != SettlementType.Village) return false;
-        break;
-      case EventAppearType.Town:
-        if (SettlementType != SettlementType.Town) return false;
-        break;
-      case EventAppearType.City:
-        if (SettlementType != SettlementType.City) return false;
-        break;
-      case EventAppearType.Settlement:
-        break;
-    }
-
-    if (_event.EnvironmentType != EnvironmentType.NULL)
-    {
-      if(!tileinfodata.EnvirList.Contains(_event.EnvironmentType))
-      return false;
-    }
-    //환경이 맞지 않으면 X
-
-    return true;
-  }
-
 }
 public class MapData
 {

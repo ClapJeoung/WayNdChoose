@@ -25,11 +25,9 @@ public class UI_Main : UI_default
   [SerializeField] private Button LoadGameButton = null;
   [SerializeField] private TextMeshProUGUI LoadGameText = null;
   [SerializeField] private TextMeshProUGUI LoadInfoText = null;
-  [SerializeField] private RectTransform LoadInfoRect = null;
-  private Vector2 LoadInfoClosePos=new Vector2(-1165.0f,131.0f),
-    LoadInfoOpenPos=new Vector2(-396.0f,131.0f);
+  [SerializeField] private CanvasGroup LoadInfoGroup=null;
   [SerializeField] private TextMeshProUGUI NewGameText = null;
-  [SerializeField] private TextMeshProUGUI OptionText = null;
+ // [SerializeField] private TextMeshProUGUI OptionText = null;
   [SerializeField] private TextMeshProUGUI QuitText = null;
   
   [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
@@ -49,7 +47,7 @@ public class UI_Main : UI_default
   {
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
     LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
-    OptionText.text = GameManager.Instance.GetTextData("OPTION");
+ //   OptionText.text = GameManager.Instance.GetTextData("OPTION");
     QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
     StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
     BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
@@ -58,14 +56,46 @@ public class UI_Main : UI_default
   }
   public void SetupMain()
   {
-    if (GameManager.Instance.MyGameData != null)
+    if (GameManager.Instance.GameSaveData != null)
     {
-      LoadGameButton.interactable = true;
-      LoadInfoText.text = "저장 중인 내용(어케 설명할지 못 정했음)";
+
+      string _turnname = "";
+      switch (GameManager.Instance.GameSaveData.Turn)
+      {
+        case 0:
+          _turnname = GameManager.Instance.GetTextData("SPRING_NAME");
+          break;
+        case 1:
+          _turnname = GameManager.Instance.GetTextData("SUMMER_NAME");
+          break;
+        case 2:
+          _turnname = GameManager.Instance.GetTextData("AUTUMN_NAME");
+          break;
+        case 3:
+          _turnname = GameManager.Instance.GetTextData("WINTER_NAME");
+          break;
+      }
+
+
+
+      switch ((QuestType) GameManager.Instance.GameSaveData.QuestType)
+      {
+        case QuestType.Cult:
+          LoadInfoText.text = string.Format(GameManager.Instance.GetTextData("ProgressInfo"),
+       GameManager.Instance.GameSaveData.Year,
+       _turnname,
+       GameManager.Instance.GameSaveData.Cult_Progress,
+       GameManager.Instance.EventHolder.GetEvent(GameManager.Instance.GameSaveData.CurrentEventID).Name,
+       GameManager.Instance.GameSaveData.HP,
+       GameManager.Instance.GameSaveData.Sanity,
+       GameManager.Instance.GameSaveData.Gold,
+       GameManager.Instance.GameSaveData.Movepoint);
+          break;
+      }
     }
     else
     {
-      LoadGameButton.interactable = false;
+      LoadGameButton.gameObject.SetActive(false);
       LoadInfoText.text = "";
     }
     StartCoroutine(showimage());
@@ -95,11 +125,13 @@ public class UI_Main : UI_default
   }
   public void LoadGame()//불러오기 버튼 눌러 게임 시작(미완성)
   {
+    if (UIManager.Instance.IsWorking) return;
+
     UIManager.Instance.AddUIQueue(loadgame());
   }
   private IEnumerator loadgame()
   {
-    yield return null;
+    yield return StartCoroutine(closemain());
 
     GameManager.Instance.LoadGame();
   }
@@ -150,14 +182,11 @@ public class UI_Main : UI_default
     yield return Wait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").OutisdePos, GetPanelRect("quitgame").InsidePos, MainUIOpenTime, true));
     yield return Wait;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("option").Rect, GetPanelRect("option").OutisdePos, GetPanelRect("option").InsidePos, MainUIOpenTime, true));
-    yield return Wait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("newgame").Rect, GetPanelRect("newgame").OutisdePos, GetPanelRect("newgame").InsidePos, MainUIOpenTime, true));
     yield return Wait;
     if (LoadInfoText.text != "")
     {
-      StartCoroutine(UIManager.Instance.moverect(LoadInfoRect, LoadInfoClosePos, LoadInfoOpenPos, MainUIOpenTime, true));
-      yield return Wait;
+      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup,1.0f,1.0f));
     }
   yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
   }
@@ -169,13 +198,10 @@ public class UI_Main : UI_default
 
     if (LoadInfoText.text != "")
     {
-      StartCoroutine(UIManager.Instance.moverect(LoadInfoRect, LoadInfoOpenPos, LoadInfoClosePos, MainUICloseTime, false));
-      yield return LittleWait;
+      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup, 0.0f, 1.0f));
     }
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("newgame").Rect, GetPanelRect("newgame").InsidePos, GetPanelRect("newgame").OutisdePos, MainUICloseTime, false));
-    yield return LittleWait;
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("option").Rect, GetPanelRect("option").InsidePos, GetPanelRect("option").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").InsidePos, GetPanelRect("quitgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;

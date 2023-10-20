@@ -12,11 +12,10 @@ public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
 public class TileData
 {
   public Vector2Int Coordinate = Vector2Int.zero;
+  public int Rotation = 0;
   public BottomEnvirType BottomEnvir = BottomEnvirType.NULL;
   public TopEnvirType TopEnvir = TopEnvirType.NULL;
-  public int Rotation = 0;
   public LandmarkType Landmark = LandmarkType.Outer;
-  public Settlement TileSettle = null;
   public TileSpriteType TopEnvirSprite = TileSpriteType.NULL;
   public TileSpriteType BottomEnvirSprite= TileSpriteType.Sea;
   public TileSpriteType landmarkSprite
@@ -34,7 +33,9 @@ public class TileData
       return TileSpriteType.NULL;
     }
   }
-  public RectTransform Rect = null;
+
+  public Settlement TileSettle = null;
+
   public TileButtonScript ButtonScript = null;
 
   public bool Interactable

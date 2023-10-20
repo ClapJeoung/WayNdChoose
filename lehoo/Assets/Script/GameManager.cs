@@ -7,10 +7,12 @@ using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
 using System.Linq;
 using System;
+using UnityEditor.PackageManager;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
+  public bool IsPlaying = false;
   [ContextMenu("이벤트 데이터 업데이트")]
   void EventDataUpdate()
   {
@@ -68,7 +70,7 @@ public class GameManager : MonoBehaviour
       ExperienceJsonData _json = new ExperienceJsonData();
 
       _json.ID = _data[0];
-      _json.Type = _data[2];
+      _json.Type = _data[1];
 
       ExpJsonDataList.Add(_json);
     }
@@ -106,7 +108,7 @@ public class GameManager : MonoBehaviour
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
 
-  [HideInInspector] public GameJsonData GameJsonData = null;
+  public GameJsonData GameSaveData = null;
   [HideInInspector] public const string GameDataName = "WNCGameData.json";
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
 
@@ -291,10 +293,7 @@ public class GameManager : MonoBehaviour
       case EffectType.Wild: return GetTextData(SkillTypeEnum.Wild, true, false, isicon);
       case EffectType.Intelligence: return GetTextData(SkillTypeEnum.Intelligence, true, false, isicon);
       case EffectType.HPLoss: return GetTextData(StatusTypeEnum.HP,false,isicon?2:1);
-      case EffectType.HPGen: return GetTextData(StatusTypeEnum.HP, true, isicon?2:1);
       case EffectType.SanityLoss: return GetTextData(StatusTypeEnum.Sanity, false, isicon?2:1);
-      case EffectType.SanityGen: return GetTextData(StatusTypeEnum.Sanity, true, isicon?2:1);
-      case EffectType.GoldLoss: return GetTextData(StatusTypeEnum.Gold, false, isicon?2:1);
       case EffectType.GoldGen: return GetTextData(StatusTypeEnum.Gold, true, isicon?2:1);
       default: return NullText;
     }
@@ -410,8 +409,7 @@ public class GameManager : MonoBehaviour
   {
     if (System.IO.File.Exists(Application.persistentDataPath+"/"+GameDataName ))
     {
-      GameJsonData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
-      MyGameData = GameJsonData.GetGameData();
+      GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
@@ -419,7 +417,9 @@ public class GameManager : MonoBehaviour
   }//각종 Json 가져와서 변환
   public void SaveData()
   {
-
+    GameJsonData _newjsondata=new GameJsonData(MyGameData);
+    string _json = JsonUtility.ToJson(_newjsondata);
+    System.IO.File.WriteAllText(Application.persistentDataPath + "/" + GameDataName, _json);
   }//현재 데이터 저장
   #endregion
 
@@ -502,22 +502,15 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.UpdateExpPael();
     UIManager.Instance.UpdateSkillLevel();
   }
-  public void SetOuterEvent(EventData _event)
+  public void SetEvent(EventData eventdata)
   {
-    MyGameData.CurrentEvent = _event;
+    MyGameData.CurrentEvent = eventdata;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
-    //현재 이벤트 데이터에 삽입
+
     UIManager.Instance.OpenDialogue(false);
-    //다이어로그 열기
-  }//야외 이동을 통해 이벤트를 받은 경우
-  public void SelectEvent(EventData _targetevent)
-  {
-    MyGameData.CurrentEvent = _targetevent;
-    MyGameData.CurrentEventSequence = EventSequence.Progress;
-    //현재 이벤트 데이터에 삽입
-    UIManager.Instance.OpenDialogue(false);
+
     SaveData();
-  }//정착지 패널에서 이벤트를 선택한 경우
+  }
   public void AddTendencyCount(TendencyTypeEnum _tendencytype,int index)
   {
     switch (_tendencytype)
@@ -550,7 +543,7 @@ public class GameManager : MonoBehaviour
   {
     if (Input.GetKeyDown(KeyCode.Backspace))
     {
-      MyGameData = new GameData();
+      MyGameData = new GameData(QuestType.Cult);
       CreateNewMap();
 
     }
@@ -619,8 +612,7 @@ public class GameManager : MonoBehaviour
   }
   private IEnumerator startnewgame(QuestType newquest)
   {
-    MyGameData = new GameData();//새로운 게임 데이터 생성
-    MyGameData.QuestType= newquest;
+    MyGameData = new GameData(newquest);//새로운 게임 데이터 생성
 
     yield return StartCoroutine(createnewmap());//새 맵 만들기
 
@@ -633,6 +625,7 @@ public class GameManager : MonoBehaviour
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
 
+    IsPlaying = true;
   }
   /// <summary>
   /// 저장된 데이터로 게임 시작
@@ -643,49 +636,48 @@ public class GameManager : MonoBehaviour
   }
   private IEnumerator loadgame()
   {
-    //게임 데이터는 이미 불러온 데이터 사용
+    MyGameData = new GameData(GameSaveData);
 
-    UIManager.Instance.CreateMap();
+    UIManager.Instance.MakeTileMap();
     UIManager.Instance.UpdateMap_SetPlayerPos();
-    yield return StartCoroutine(UIManager.Instance.opengamescene());
     UIManager.Instance.UpdateAllUI();
 
-    /*
-    if (MyGameData.CurrentEvent == null)
+    yield return StartCoroutine(UIManager.Instance.opengamescene());
+
+    string _eventid = MyGameData.CurrentEvent.ID;
+
+    if (MyGameData.CurrentEventSequence == EventSequence.Progress)
     {
-      UIManager.Instance.OpenSuggestUI();
+      UIManager.Instance.DialogueUI.OpenUI(true);
     }
     else
     {
-      if (MyGameData.CurrentEventSequence.Equals(EventSequence.Progress))
+      bool _issuccess = false;
+      bool _isleft = false;
+      if (MyGameData.SuccessEvent_Rational.Contains(_eventid) || MyGameData.SuccessEvent_Mental.Contains(_eventid))
       {
-        UIManager.Instance.OpenDialogue();
-        //이벤트 있을 때, 진행 단계일 경우 이름, 일러스트, 설명, 선택지 세팅하고 이벤트 패널 열기
+        _issuccess = true;
+        _isleft = true;
       }
-      else
+      else if (MyGameData.SuccessEvent_Physical.Contains(_eventid) || MyGameData.SuccessEvent_Material.Contains(_eventid))
       {
-        string _id = MyGameData.CurrentEvent.ID;
-        SuccessData _success = null;
-        if (MyGameData.SuccessEvent_None.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
-        else if(MyGameData.SuccessEvent_Rational.Contains(_id))_success = MyGameData.CurrentEvent.SuccessDatas[0];
-        else if(MyGameData.SuccessEvent_Mental.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[0];
-        else if(MyGameData.SuccessEvent_Physical.Contains(_id)) _success = MyGameData.CurrentEvent.SuccessDatas[1];
-        else _success=MyGameData.CurrentEvent.SuccessDatas[1];
-        if (_success != null) { UIManager.Instance.OpenSuccessDialogue(_success); yield break; }
-
-        FailureData _fail = null;
-        if (MyGameData.FailEvent_None.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
-        else if (MyGameData.FailEvent_Rational.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
-        else if (MyGameData.FailEvent_Mental.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[0];
-        else if (MyGameData.FailEvent_Physical.Contains(_id)) _fail = MyGameData.CurrentEvent.FailureDatas[1];
-        else _fail = MyGameData.CurrentEvent.FailureDatas[1];
-        if (_fail != null) { UIManager.Instance.OpenFailDialogue(_fail); yield break; }
-        
-
-        //이벤트 있을 때, 완료 단계일 경우 완료 리스트에서 현재 이벤트 찾고 완료 결과에 따라 설명, 보상 세팅 열고 이벤트 패널 열기
+        _issuccess = true;
+        _isleft = false;
       }
+      else if (MyGameData.FailEvent_Rational.Contains(_eventid) || MyGameData.FailEvent_Mental.Contains(_eventid))
+      {
+        _issuccess = false;
+        _isleft = true;
+      }
+      else if (MyGameData.FailEvent_Physical.Contains(_eventid) || MyGameData.FailEvent_Material.Contains(_eventid))
+      {
+        _issuccess = false;
+        _isleft = false;
+      }
+      UIManager.Instance.DialogueUI.OpenUI(_issuccess, _isleft);
     }
-    */
+
+    IsPlaying = true;
     yield return null;
   }
   public void CreateNewMap() => StartCoroutine(createnewmap());

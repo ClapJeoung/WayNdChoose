@@ -24,13 +24,15 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private TextMeshProUGUI Prologue_Description = null;
   [SerializeField] private Scrollbar PrologueScrollbar = null;
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
+  [SerializeField] private float ScrollSpeed = 0.4f;
   private IEnumerator updatescrollbar()
   {
+    yield return new WaitForSeconds(0.05f);
 
-    float _time = 0.0f, _targettime = 1.5f;
-    while (_time < _targettime)
+    float _time = 0.0f, _targettime = 1.0f;
+    while (PrologueScrollbar.value > 0.001f)
     {
-      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f,ScrollbarCurve.Evaluate(_time / _targettime));
+      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f, ScrollSpeed);
       _time += Time.deltaTime; 
       yield return null;
     }

@@ -4,9 +4,8 @@ using UnityEngine;
 
 public enum EffectType {
     Conversation,Force,Wild,Intelligence,
-  HPGen, HPLoss,
-  SanityGen, SanityLoss,
-  GoldGen, GoldLoss }
+    HPLoss,SanityLoss,GoldGen
+   }
 public class Experience
 {
   public string ID = "";
@@ -51,14 +50,8 @@ public class Experience
             break;
 
           case EffectType.HPLoss:
-            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 15); break;
-          case EffectType.SanityLoss:
-            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 15); break;
-          case EffectType.GoldLoss:
-            _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 15); break;
-          case EffectType.HPGen:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12); break;
-          case EffectType.SanityGen:
+          case EffectType.SanityLoss:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12); break;
           case EffectType.GoldGen:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12); break;

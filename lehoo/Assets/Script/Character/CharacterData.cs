@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro.SpriteAssetUtilities;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,6 +9,7 @@ public static class ConstValues
 {
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
+  public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
 
   public const int MadnessEffect_Conversation = 15;
   public const int MadnessEffect_Force = 35;
@@ -15,18 +17,17 @@ public static class ConstValues
   public const int MadnessEffect_Intelligence = 40;
   public const int MadnessEffect_Intelligence_Value = 2;
 
+  public const int MadnessHPCost_Skill = 30;
+  public const int MadnessSanityGen_Skill = 50;
+  public const int MadnessHPCost_HP = 40;
+  public const int MadnessSanityGen_HP = 70;
+
   public const int Quest_Cult_Progress_Village=4,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=8,
     Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
-  public const int Qeust_Cult_EventProgress_Clear_Less60 = 4, Quest_Cult_EventProgress_Clear_Over60 = 3;
-  public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 2;
+  public const int Qeust_Cult_EventProgress_Clear_Less60 = 3, Quest_Cult_EventProgress_Clear_Over60 = 2;
+  public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 1;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
   public const int Quest_Cult_CoolDown = 4;
-
-  public const int GoodExpAsSanity = 15;
-  public const int BadExpAsSanity = 20;
-  public const int MadnessHPCost_Skill = 25;
-  public const int MadnessHPCost_HP = 30;
-  public const int MadnessSanityGen = 50;
 
   public const int Rest_MovePoint = 1;
   public const int Rest_Discomfort = 3;
@@ -54,9 +55,9 @@ public static class ConstValues
   public const int TownSectorCount = 1, CitySectorCount = 2, CastleSectorCount = 3;
 
   public const int StartGold = 20;
-  public const float  HPGen_Exp = 0.08f,  HPLoss_Exp = 0.01f;
-  public const float GoldGen_Exp = 0.15f,  GoldLoss_Exp = 0.15f;
-  public const float SanityGen_Exp = 0.1f, SanityLoss_Exp = 0.08f;
+  public const float HPLoss_Exp = 0.15f;
+  public const float GoldGen_Exp = 0.25f;
+  public const float  SanityLoss_Exp = 0.2f;
 
   public const float Tendency_Head_m2 = 1.5f;
   public const int Tendency_Head_m1 = 1;
@@ -302,7 +303,7 @@ public class GameData    //게임 진행도 데이터
       int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Turn / ConstValues.SectorEffectMaxTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
-      return Mathf.FloorToInt(_default * _value * GetGoldLossModify(true));
+      return Mathf.FloorToInt(_default * _value );
     }
   }
   /// <summary>
@@ -319,7 +320,7 @@ public class GameData    //게임 진행도 데이터
     public int PaySanityValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
     public int PayGoldValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear) * GetGoldLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear) ); } }
   public int PayOverSanityValue
   {
     get { return (int)((PayGoldValue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue); }
@@ -329,11 +330,11 @@ public class GameData    //게임 진행도 데이터
     public int FailSanityValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
     public int FailGoldValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear) * GetGoldLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear)); } }
     public int RewardHPValue
-    { get { return (int)(UnityEngine.Random.Range(ConstValues.RewardHP_min, ConstValues.RewardHP_max) * GetHPGenModify(true)); } }
+    { get { return 0; } }
     public int RewardSanityValue
-    { get { return (int)(Mathf.Lerp(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max, Year / ConstValues.MaxYear) * GetSanityGenModify(true)); } }
+    { get { return (int)(Mathf.Lerp(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max, Year / ConstValues.MaxYear) ); } }
     public int RewardGoldValue
     { get { return (int)(Mathf.Lerp(ConstValues.RewardGold_min, ConstValues.RewardGold_max, Year / ConstValues.MaxYear) * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int length,int movepoint)
@@ -376,14 +377,6 @@ public class GameData    //게임 진행도 데이터
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateHPText();
     }
   }
-  private int gold = 0;
-  public int Gold
-  {
-    get { return gold; }
-    set { gold = value;
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText();
-    }
-  }
   private int sanity = 0;
   public int Sanity
   {
@@ -400,8 +393,17 @@ public class GameData    //게임 진행도 데이터
       }
     }
   }
- // public int MadnessRefuseSanityGenValue { get { return (int)(MaxSanity * ConstValues.MadnessMaxSanityLoseValue); } }
- // public int MaxSanity = 100;
+  private int gold = 0;
+  public int Gold
+  {
+    get { return gold; }
+    set
+    {
+      gold = value;
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText();
+    }
+  }
+
   private int movepoint = 0;
   public int MovePoint
   {
@@ -458,19 +460,6 @@ public class GameData    //게임 진행도 데이터
   public Experience LongExp = null;
   public Experience ShortExp_A = null;
   public Experience ShortExp_B = null;
-  public bool AvailableExpSlot
-  {
-    get
-    {
-      if (LongExp != null) return false;
-
-      if (ShortExp_A != null) return false;
-
-      if (ShortExp_B != null ) return false;
-
-      return true;
-    }
-  }
   public void DeleteExp(Experience _exp)
   {
     if (LongExp == _exp) LongExp = null;
@@ -638,55 +627,23 @@ public class GameData    //게임 진행도 데이터
 
   }//현재 경험들 중에서 해당 기술의 값 합 반환
   /// <summary>
-  /// true: 소수, false: 정수
-  /// </summary>
-  /// <param name="_formultiply"></param>
-  /// <returns></returns>
-  public float GetHPGenModify(bool _formultiply)
-  {
-    float _plusamount = 0;
-
-    int _count = GetEffectModifyCount_Exp(EffectType.HPGen);
-
-    for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.HPGen_Exp;
-    
-    if (!_formultiply) return _plusamount;
-    else return (100.0f+ _plusamount) /100.0f;
-  }// 체력 회복 변화량(경험,성향)
-  /// <summary>
-  /// true: 소수, false: 정수
+  /// true: 소수(0.nf), false: 정수(nm%)
   /// </summary>
   /// <param name="_formultiply"></param>
   /// <returns></returns>
   public float GetHPLossModify(bool _formultiply)
   {
-    float _minusamount = 0;
-
-    int _count = GetEffectModifyCount_Exp(EffectType.HPLoss);
-
-    for (int i = 0; i < _count; i++) _minusamount += (100.0f- _minusamount) * ConstValues.HPLoss_Exp;
-
-    if (!_formultiply) return _minusamount;
-    else return (100.0f+ _minusamount) / 100.0f;
-  }// 체력 감소 변화량(경험,성향)
-  /// <summary>
-  /// true: 소수, false: 정수
-  /// </summary>
-  /// <param name="_formultiply"></param>
-  /// <returns></returns>
-  public float GetSanityGenModify(bool _formultiply)
-  {
     float _plusamount = 0;
 
-    int _count = GetEffectModifyCount_Exp(EffectType.SanityGen);
+    var _count = GetEffectModifyCount_Exp(EffectType.HPLoss);
 
-    for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityGen_Exp;
+    _plusamount = 1.0f - _count * ConstValues.HPLoss_Exp;
 
-    if (!_formultiply) return _plusamount;
-    else return (100.0f+ _plusamount) / 100.0f;
-  }// 정신력 회복 변화량(특성,경험,성향)
+    if (_formultiply) return _plusamount;
+    else return _plusamount * 100.0f;
+  }// 체력 감소 변화량(경험,성향)
   /// <summary>
-  /// true: 소수, false: 정수
+  /// true: 소수(0.nf), false: 정수(nm%)
   /// </summary>
   /// <param name="_formultiply"></param>
   /// <returns></returns>
@@ -696,10 +653,10 @@ public class GameData    //게임 진행도 데이터
 
     var _count = GetEffectModifyCount_Exp(EffectType.SanityLoss);
 
-    for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.SanityLoss_Exp;
+    _plusamount=1.0f-_count*ConstValues.SanityLoss_Exp;
 
-    if (!_formultiply) return _plusamount;
-    else return (100.0f+ _plusamount) / 100.0f;
+    if (_formultiply) return _plusamount;
+    else return _plusamount*100.0f;
   }// 정신력 소모 변환량(특성,경험,성향)
   /// <summary>
   /// true: 소수, false: 정수
@@ -709,37 +666,26 @@ public class GameData    //게임 진행도 데이터
   public float GetGoldGenModify(bool _formultiply)
   {
     float _plusamount = 0;
-    int _count = GetEffectModifyCount_Exp(EffectType.GoldGen);
 
-    for (int i = 0; i < _count; i++) _plusamount += (100.0f- _plusamount) * ConstValues.GoldGen_Exp;
+    var _count = GetEffectModifyCount_Exp(EffectType.GoldGen);
 
-    if (!_formultiply) return _plusamount;
-    else return (100.0f+ _plusamount) / 100.0f;
+    _plusamount = 1.0f + _count * ConstValues.GoldGen_Exp;
+
+    if (_formultiply) return _plusamount;
+    else return _plusamount * 100.0f;
   }// 돈 습득 변환량(특성,경험,성향)
-  /// <summary>
-  /// true: 소수, false: 정수
-  /// </summary>
-  /// <param name="_formultiply"></param>
-  /// <returns></returns>
-  public float GetGoldLossModify(bool _formultiply)
-  {
-    float _minusamount = 0;
-    int _count = GetEffectModifyCount_Exp(EffectType.GoldLoss);
-
-    for (int i = 0; i < _count; i++) _minusamount += (100.0f- _minusamount) * ConstValues.GoldLoss_Exp;
-
-    if (!_formultiply) return _minusamount;
-    else return (100.0f+ _minusamount) / 100.0f;
-  }// 돈 소모 변화량(특성,경험,성향)
   #endregion
-  public GameData()
+  /// <summary>
+  /// 새 게임
+  /// </summary>
+  public GameData(QuestType questtype)
   {
     turn = 0;
     hp = 100;
- //   MaxSanity = 100;
     movepoint = 2;
     sanity = 100;
     gold = ConstValues.StartGold ;
+    QuestType=questtype;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
     Skill_Conversation = new Skill(SkillTypeEnum.Conversation);
@@ -748,13 +694,166 @@ public class GameData    //게임 진행도 데이터
     Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence);
   }
   /// <summary>
-  /// 이전 정착지 제시 리스트, 이전 이벤트 지우기
+  /// 불러오기
   /// </summary>
-  public void ClearBeforeEvents()
+  /// <param name="jsondata"></param>
+  public GameData(GameJsonData jsondata)
   {
-    CurrentSettlement = null;
-    CurrentEvent = null;
+    MapData _map = new MapData();
+    _map.TileDatas = new TileData[ConstValues.MapSize, ConstValues.MapSize];
+    int _index = 0;
+    //[j,i]
+    for(int i = 0; i < ConstValues.MapSize; i++)
+    {
+      for(int j=0;j< ConstValues.MapSize; j++)
+      {
+        _index = j + i * ConstValues.MapSize;
+        TileData _tiledata = new TileData();
+        _tiledata.Coordinate = new Vector2Int(j, i);
+        _tiledata.Rotation = jsondata.Tiledata_Rotation[_index];
+        _tiledata.BottomEnvir =(BottomEnvirType) jsondata.Tiledata_BottomEnvir[_index];
+        _tiledata.TopEnvir = (TopEnvirType)jsondata.Tiledata_TopEnvir[_index];
+        _tiledata.Landmark = (LandmarkType)jsondata.Tiledata_Landmark[_index];
+        _tiledata.TopEnvirSprite = (TileSpriteType)jsondata.Tiledata_TopEnvirSprite[_index];
+        _tiledata.BottomEnvirSprite = (TileSpriteType)jsondata.Tiledata_BottomEnvirSprite[_index];
+       
+        _map.TileDatas[j, i] = _tiledata;
+      }
+    }
+    
+    
+    for(int i = 0; i < jsondata.Village_Id.Count; i++)
+    {
+      Settlement _village = new Settlement(SettlementType.Village);
+      _village.Index = jsondata.Village_Id[i];
+      _village.Discomfort = jsondata.Village_Discomfort[i];
+      _village.IsForest = jsondata.Village_Forest[i];
+      _village.IsRiver = jsondata.Village_River[i];
+      _village.IsMountain = jsondata.Village_Mountain[i];
+      _village.IsSea = jsondata.Village_Sea[i];
+      _village.Tiles.Add(_map.Tile(jsondata.Village_Tiles[i]));
+      _map.Tile(jsondata.Village_Tiles[i]).TileSettle = _village;
+
+      _map.AllSettles.Add(_village);
+      _map.Villages.Add(_village);
+    }
+
+    Settlement _Town = new Settlement(SettlementType.Town);
+    _Town.Index = jsondata.Town_Id;
+    _Town.Discomfort = jsondata.Town_Discomfort;
+    _Town.IsForest = jsondata.Town_Forest;
+    _Town.IsRiver = jsondata.Town_River;
+    _Town.IsMountain = jsondata.Town_Mountain;
+    _Town.IsSea = jsondata.Town_Sea;
+    for (int i = 0; i < jsondata.Town_Tiles.Count; i++)
+    {
+      _Town.Tiles.Add(_map.Tile(jsondata.Town_Tiles[i]));
+      _map.Tile(jsondata.Town_Tiles[i]).TileSettle = _Town;
+    }
+    _map.AllSettles.Add(_Town);
+    _map.Town = _Town;
+
+    Settlement _City = new Settlement(SettlementType.City);
+    _City.Index = jsondata.City_Id;
+    _City.Discomfort = jsondata.City_Discomfort;
+    _City.IsForest = jsondata.City_Forest;
+    _City.IsRiver = jsondata.City_River;
+    _City.IsMountain = jsondata.City_Mountain;
+    _City.IsSea = jsondata.City_Sea;
+    for (int i = 0; i < jsondata.City_Tiles.Count; i++)
+    {
+      _City.Tiles.Add(_map.Tile(jsondata.City_Tiles[i]));
+      _map.Tile(jsondata.City_Tiles[i]).TileSettle = _City;
+    }
+    _map.AllSettles.Add(_City);
+    _map.City= _City;
+
+    Coordinate = jsondata.Coordinate;
+    if(jsondata.CurrentSettlementName!="")
+    foreach(var settlement in _map.AllSettles)
+    {
+      if (settlement.OriginName == jsondata.CurrentSettlementName)
+      {
+        CurrentSettlement = settlement;
+        break;
+      }
+    }
+    FirstRest= jsondata.FirstRest;
+
+    MyMapData = _map;
+
+    Year = jsondata.Year;
+    turn = jsondata.Turn;
+    hp = jsondata.HP;
+    sanity = jsondata.Sanity;
+    gold = jsondata.Gold;
+    movepoint= jsondata.Movepoint;
+
+    Madness_Conversation = jsondata.Madness_Conversation;
+    Madness_Force = jsondata.Madness_Force;
+    Madness_Wild = jsondata.Madness_Wild;
+    Madness_Intelligence = jsondata.Madness_Intelligence;
+
+    Skill_Conversation = new Skill(SkillTypeEnum.Conversation, jsondata.Conversation_Level);
+    Skill_Force = new Skill(SkillTypeEnum.Force, jsondata.Force_Level);
+    Skill_Wild = new Skill(SkillTypeEnum.Wild, jsondata.Wild_Level);
+    Skill_Intelligence = new Skill(SkillTypeEnum.Intelligence, jsondata.Intelligence_Level);
+
+    Tendency_Body = new Tendency(TendencyTypeEnum.Body, jsondata.Body_Level, jsondata.Body_Progress);
+    Tendency_Head = new Tendency(TendencyTypeEnum.Head, jsondata.Head_Level, jsondata.Head_Progress);
+
+    if (jsondata.LongExp_Id != "")
+    {
+      LongExp = GameManager.Instance.ExpDic[jsondata.LongExp_Id];
+      LongExp.Duration = jsondata.LongExp_Turn;
+    }
+    if (jsondata.ShortExpA_ID != "")
+    {
+      ShortExp_A = GameManager.Instance.ExpDic[jsondata.ShortExpA_ID];
+      ShortExp_A.Duration = jsondata.ShortExpA_Turn;
+    }
+    if (jsondata.ShortExpB_Id != "")
+    {
+      ShortExp_B = GameManager.Instance.ExpDic[jsondata.ShortExpB_Id];
+      ShortExp_B.Duration = jsondata.ShortExpB_Turn;
+    }
+
+    CurrentEvent = GameManager.Instance.EventHolder.GetEvent(jsondata.CurrentEventID);
+    CurrentEventSequence = jsondata.CurrentEventSequence ? EventSequence.Progress : EventSequence.Clear;
+
+    SuccessEvent_None = jsondata.SuccessEvent_None;
+    SuccessEvent_Rational = jsondata.SuccessEvent_Rational;
+    SuccessEvent_Physical= jsondata.SuccessEvent_Physical;
+    SuccessEvent_Mental= jsondata.SuccessEvent_Mental;
+    SuccessEvent_Material= jsondata.SuccessEvent_Material;
+    SuccessEvent_All= jsondata.SuccessEvent_All;
+
+    FailEvent_None = jsondata.FailEvent_None;
+    FailEvent_Rational = jsondata.FailEvent_Rational;
+    FailEvent_Physical = jsondata.FailEvent_Physical;
+    FailEvent_Mental = jsondata.FailEvent_Mental;
+    FailEvent_Material = jsondata.FailEvent_Material;
+    FailEvent_All = jsondata.FailEvent_All;
+
+    QuestType=(QuestType)jsondata.QuestType;
+    switch (QuestType)
+    {
+      case QuestType.Cult:
+        quest_cult_progress = jsondata.Cult_Progress;
+        foreach(var settlement in jsondata.Cult_SettlementTypes)
+          Cult_SettlementTypes.Add((SettlementType)settlement);
+        Cult_SabbatSector = (SectorTypeEnum)jsondata.Cult_SabbatSector;
+        Cult_SabbatSector_CoolDown = jsondata.Cult_SabbatCoolDown;
+        Cult_Progress_SabbatEventIndex = jsondata.Cult_Progress_SabbatEventIndex;
+        Cult_RitualTile = _map.Tile(jsondata.Cult_RitualTile);
+        Cult_RitualTile_CoolDown = jsondata.Cult_RitualCoolDown;
+        Cult_Progress_RitualEventIndex = jsondata.Cult_Progress_RitualEventIndex;
+        break;
+    }
   }
+
+
+
   public string DEBUG_NEXTEVENTID = "";
 
 }
@@ -764,6 +863,11 @@ public class Skill
   public Skill(SkillTypeEnum type)
   {
     MySkillType= type;
+  }
+  public Skill(SkillTypeEnum type,int startlevel)
+  {
+    MySkillType = type;
+    levelbydefault = startlevel;
   }
   public SkillTypeEnum MySkillType;
   private int levelbydefault = 0;
@@ -1056,42 +1160,12 @@ public class Tendency
     }
   }
   public Tendency(TendencyTypeEnum type) { Type = type; }
-
-}
-public class GameJsonData
-{
-  public int Year, Turn, HP, Sanity, Gold;//년도,턴,체력,정신력,골드
-  public List<int> SkillLevels = new List<int>();
-  public int TendencyBodyLevel, TendencyBodyCount, TenndencyChangeDir;
-  public int TendencyHeadLevel, TendencyHeadCount, TendencyChangeDir;
-  public string[] LongTermExpID, ShortTermExpID;
-  public int[] LongTermExpTurn, ShortTermExpTurn;
-  public Vector2 CurrentPos;
-  public float MoveProgress;
-  public string CurrentSettleOriginName;
-
-
-  public const int Size = 13;
-  public int[] BottomMapCode;
-  public int[] BottomTileCode;
-  public int[] TopMapCode;
-  public int[] TopTileCode;
-  public int[] RotCode;
-  public Vector3Int[] Village_Pos;
-  public Vector3Int[] Town_Pos;
-  public Vector3Int[] City_Pos;
-  public int[] Village_InfoIndex, Town_InfoIndex;
-  public int City_InfoIndex;
-  public bool[] Isriver_Village, Isforest_Village, Ismine_Village, Ismountain_Village, Issea_Village;
-  public bool[] Isriver_Town, Isforest_Town, Ismine_Town, Ismountain_Town, Issea_Town;
-  public bool Isriver_City, Isforest_City, Ismine_City, Ismountain_City, Issea_City;
-  public int[] Discomfort;
-  //마을,마을,마을,도시,도시,성채
-
-  public GameData GetGameData()
-  {
-    return null;
+  public Tendency(TendencyTypeEnum type,int startlevel,int startprogress) 
+  { Type = type; 
+    level= startlevel;
+    Progress = startprogress;
   }
+
 }
 public class ProgressData
 {

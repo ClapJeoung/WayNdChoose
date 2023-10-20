@@ -145,8 +145,8 @@ public class UIManager : MonoBehaviour
     if (!lasthp.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
-      if(_changedvalue!=0)
-      StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
+     // if(_changedvalue!=0)
+     // StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
       if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
 
@@ -169,8 +169,8 @@ public class UIManager : MonoBehaviour
     if (!lastsanity.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.Sanity - lastsanity;
-      if (_changedvalue != 0)
-        StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
+     // if (_changedvalue != 0)
+     //   StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
       if (lastsanity < GameManager.Instance.MyGameData.Sanity) StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform}));
 
@@ -192,8 +192,8 @@ public class UIManager : MonoBehaviour
     if (!lastgold.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.Gold - lastgold;
-      if (_changedvalue != 0)
-        StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
+    //  if (_changedvalue != 0)
+     //   StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
       if (lastgold < GameManager.Instance.MyGameData.Gold) StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform}));
 
@@ -214,8 +214,8 @@ public class UIManager : MonoBehaviour
     if (lastmovepoint != -1)
     {
       int _changedvalue = GameManager.Instance.MyGameData.MovePoint - lastmovepoint;
-      if (_changedvalue != 0)
-        StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
+   //   if (_changedvalue != 0)
+    //    StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
       if (lastmovepoint < GameManager.Instance.MyGameData.MovePoint) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform}));
 
@@ -793,7 +793,12 @@ public class UIManager : MonoBehaviour
     UpdateExpPael();
     UpdateTendencyIcon();
     UpdateSkillLevel();
-    
+    switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Cult:
+        SidePanelCultUI.UpdateUI();
+        break;
+    }
   }
   private void Update()
   {
@@ -877,7 +882,7 @@ public class UIManager : MonoBehaviour
   }
   public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MapUI.SetPlayerPos(coordinate);
   public void UpdateMap_SetPlayerPos() => MapUI.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
-  public void CreateMap() => MapUI.MapCreater.MakeTilemap();
+  public void MakeTileMap() => MapUI.MapCreater.MakeTilemap();
   public void OpenDialogue(bool dir)
   {
     //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
@@ -902,6 +907,7 @@ public class UIManager : MonoBehaviour
       StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].OutisdePos, TitlePanels[i].InsidePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
       yield return _titlewait;
     }
+    yield return new WaitForSeconds(1.0f);
   }
   public IEnumerator moverect(RectTransform rect, Vector2 startpos, Vector2 endpos, float targettime, bool isopen)
   {
@@ -930,22 +936,6 @@ public class UIManager : MonoBehaviour
       yield return null;
     }
     rect.anchoredPosition = endpos;
-  }
-  public IEnumerator closegamescene()
-  {
-    var _titlewait = new WaitForSeconds(TitleWaitTime);
-    var _objwait = new WaitForSeconds(ObjWaitTime);
-
-    for (int i = TitlePanels.Count-1; i >3; i++)
-    {
-      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationObjMoveTime, SceneAnimationCurve));
-      yield return _objwait;
-    }
-    for (int i = 3; i >-1; i++)
-    {
-      StartCoroutine(moverect(TitlePanels[i].Rect, TitlePanels[i].InsidePos, TitlePanels[i].OutisdePos, SceneAnimationTitleMoveTime, SceneAnimationCurve));
-      yield return _titlewait;
-    }
   }
   #endregion
   #region 게임-엔딩 전환

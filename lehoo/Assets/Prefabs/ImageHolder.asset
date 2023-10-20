@@ -125,6 +125,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 71a7fb53d88b4f94b9006f1f52ff7f3b, type: 3}
   - {fileID: 21300000, guid: b58488e1e4c31c4468b708ecc39097ef, type: 3}
   - {fileID: 21300000, guid: 95345bbe38a4dc44381ebf7dcebad01e, type: 3}
+  ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
+  MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
+  TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
+  LibraryIcon: {fileID: 21300000, guid: 9c71aa13cdd3beb42b347760c03a7b9d, type: 3}
+  TheaterIcon: {fileID: 21300000, guid: e0a1aff2efc28ba49bf9fea542b9288a, type: 3}
+  AcademyIcon: {fileID: 21300000, guid: b2ed8b7c7cf8da349b1685bebb032fbb, type: 3}
   DefaultIllust: {fileID: 21300000, guid: 05a87a754e340fb4d933a04dd808c5b7, type: 3}
   DefaultIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
   NoGoldIllust: {fileID: 21300000, guid: 38c0406432c7ff742b7d87091ef90b31, type: 3}
@@ -150,12 +156,13 @@ MonoBehaviour:
   DisComfort: {fileID: 21300000, guid: b2a0bb0e9a8d0664a91e3295a415268a, type: 3}
   MadnessIdle: {fileID: 21300000, guid: 533227ba82acdd649bf6c2137697490f, type: 3}
   MadnessActive: {fileID: 21300000, guid: 886081899e6a4894482d7746622dca02, type: 3}
+  Arrow_White: {fileID: 21300000, guid: a31c9901f04eb0d428dc2e927aad09fa, type: 3}
   Arrow_Empty: {fileID: 21300000, guid: df43d4d08611c0a41b4c799717246d4c, type: 3}
   Arrow_DeActive: {fileID: 21300000, guid: a31c9901f04eb0d428dc2e927aad09fa, type: 3}
-  Arrow_Active_rational: {fileID: 21300000, guid: ba98f2d0708544047b52f9e68a044281, type: 3}
-  Arrow_Active_physical: {fileID: 21300000, guid: e269443b03526ed4c93ebd6fdaf850ff, type: 3}
-  Arrow_Active_mental: {fileID: 21300000, guid: 6c779bf83d2052145a54db3541faad02, type: 3}
-  Arrow_Active_material: {fileID: 21300000, guid: 50996e3cd6a9de448b03012ae010f376, type: 3}
+  Arrow_Active_rational: {fileID: 21300000, guid: 739f14729a1f0ee45b73c716fec0d06b, type: 3}
+  Arrow_Active_physical: {fileID: 21300000, guid: e089d8270d5abc344a346fc663896e00, type: 3}
+  Arrow_Active_mental: {fileID: 21300000, guid: 9c6c71fc51d0449419c872c1e046e0fd, type: 3}
+  Arrow_Active_material: {fileID: 21300000, guid: 2b10fc259cace9f43908e6f8e030ceaa, type: 3}
   SelectionBackground_none: {fileID: 21300000, guid: 57a5c29b2f416674796854c96c001025, type: 3}
   SelectionBackground_rational: {fileID: 21300000, guid: f2602b3b528d174469e001f7aadb9d24, type: 3}
   SelectionBackground_physical: {fileID: 21300000, guid: da78041cf78703346b564ebf9da0ceb7, type: 3}

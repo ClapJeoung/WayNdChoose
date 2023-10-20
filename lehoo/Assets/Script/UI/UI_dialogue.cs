@@ -34,11 +34,13 @@ public class UI_dialogue : UI_default
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
   private IEnumerator updatescrollbar()
   {
+    yield return new WaitForSeconds(0.05f);
+
     float _time = 0.0f;
-    float _targettime = 1.5f;
-    while (_time < _targettime)
+    float _targettime = 1.0f;
+    while (DescriptionScrollBar.value>0.001f)
     {
-      DescriptionScrollBar.value = Mathf.Lerp(DescriptionScrollBar.value, 0.0f, ScrollbarCurve.Evaluate(_time / _targettime));
+      DescriptionScrollBar.value = Mathf.Lerp(DescriptionScrollBar.value, 0.0f, 0.013f);
       _time += Time.deltaTime;
       yield return null;
 
@@ -46,7 +48,6 @@ public class UI_dialogue : UI_default
     DescriptionScrollBar.value = 0.0f;
   }
   // [SerializeField] private CanvasGroup DescriptionTextGroup = null;
-  string CurrentDescriptionText = "";
   [Space(10)]
   [SerializeField] private CanvasGroup NextButtonGroup = null;
   private void SetNextButtonDisable()
@@ -98,22 +99,73 @@ public class UI_dialogue : UI_default
   public void OpenUI(bool dir)
   {
     IsOpen = true;
-    if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
-    // if (Reward_clicktoget.text == "getreward") Reward_clicktoget.text = GameManager.Instance.GetTextData("GETREWARD");
-    CurrentDescriptionText = "";
-    Reward_Highlight.Interactive = false;
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+    if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
+  
+    Reward_Highlight.Interactive = false;
     EndingButtonGroup.alpha = 0.0f;
     EndingButtonGroup.interactable = false;
     EndingButtonGroup.blocksRaycasts = false;
-    DescriptionText.text = "";
-    CurrentEventPhaseIndex = 0;
+
     CurrentEventIllustHolderes = CurrentEvent.BeginningIllusts;
     CurrentEventDescriptions = CurrentEvent.BeginningDescriptions;
-    CurrentEventPhaseMaxIndex=CurrentEventIllustHolderes.Count;
     IsBeginning = true;
+    CurrentEventPhaseIndex = 0;
+    CurrentEventPhaseMaxIndex = CurrentEventIllustHolderes.Count;
 
-    UIManager.Instance.AddUIQueue(displaynextindex(dir));
+    DescriptionText.text = "";
+
+    UIManager.Instance.AddUIQueue(openui());
+  }
+  public void OpenUI(bool issuccess,bool isleft)
+  {
+    IsOpen = true;
+    UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+    if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
+
+    Reward_Highlight.Interactive = false;
+    EndingButtonGroup.alpha = 0.0f;
+    EndingButtonGroup.interactable = false;
+    EndingButtonGroup.blocksRaycasts = false;
+
+    DescriptionText.text = "";
+    for(int i=0;i<CurrentEvent.BeginningDescriptions.Count;i++)
+    {
+      if (i > 0) DescriptionText.text += "<br><br>";
+      DescriptionText.text += CurrentEvent.BeginningDescriptions[i];
+    }
+
+    IsBeginning = false;
+    CurrentEventPhaseIndex = 0;
+    if (issuccess)
+    {
+      if (isleft)
+      {
+        CurrentSuccessData = CurrentEvent.SelectionDatas[0].SuccessData;
+      }
+      else
+      {
+        CurrentSuccessData = CurrentEvent.SelectionDatas[1].SuccessData;
+      }
+      CurrentEventIllustHolderes = CurrentSuccessData.Illusts;
+      CurrentEventDescriptions = CurrentSuccessData.Descriptions;
+    }
+    else
+    {
+      if (isleft)
+      {
+        CurrentFailData = CurrentEvent.SelectionDatas[0].FailData;
+      }
+      else
+      {
+        CurrentFailData = CurrentEvent.SelectionDatas[1].FailData;
+      }
+      CurrentEventIllustHolderes = CurrentFailData.Illusts;
+      CurrentEventDescriptions = CurrentFailData.Descriptions;
+    }
+    CurrentEventPhaseMaxIndex = CurrentEventIllustHolderes.Count;
+
+    UIManager.Instance.AddUIQueue(openui());
   }
   [Space(15)]
   public int CurrentEventPhaseMaxIndex = 0;
@@ -127,6 +179,16 @@ public class UI_dialogue : UI_default
 
     UIManager.Instance.AddUIQueue(displaynextindex(true));
   }
+  private IEnumerator openui()
+  {
+    DefaultGroup.interactable = false;
+    StartCoroutine(displaynextindex(true));
+
+    yield return  StartCoroutine(UIManager.Instance.moverect(DefaultRect, LeftPos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+
+    DefaultGroup.interactable = true;
+    yield return null;
+  }
   private IEnumerator displaynextindex(bool dir)
   {
     if (IsBeginning)
@@ -135,34 +197,24 @@ public class UI_dialogue : UI_default
       {
         if (CurrentEventPhaseIndex == 0)     //UI 처음 열고 바로 선택지일때
         {
-
-          SelectionGroup.alpha = 0.0f;
-          if (NextButtonGroup.gameObject.activeInHierarchy == true) NextButtonGroup.gameObject.SetActive(false);
           if (SelectionGroup.gameObject.activeInHierarchy == false) SelectionGroup.gameObject.SetActive(true);
-          if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
-          if (EndingButtonGroup.gameObject.activeInHierarchy == true) EndingButtonGroup.gameObject.SetActive(false);
+          SelectionGroup.alpha = 0.0f;
           StartCoroutine(setupselections());
           //열기 전에 선택지 세팅
 
+          if (NextButtonGroup.gameObject.activeInHierarchy == true) NextButtonGroup.gameObject.SetActive(false);
+          if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+          if (EndingButtonGroup.gameObject.activeInHierarchy == true) EndingButtonGroup.gameObject.SetActive(false);
+
           Illust.Setup(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust,0.5f);
           NameText.text = CurrentEvent.Name;
-         // DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text += CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
 
-          if (dir == true)
-          {
-            UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(DefaultRect, LeftPos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
-          }
-          else
-          {
-            UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(DefaultRect, RightPos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
-          }
         }
         else                                 //다음 버튼 눌러서 선택지에 도달할때
         {
           Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust,FadeTime);
-          //  StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 0.0f, FadeOutTime));
           NextButtonGroup.gameObject.SetActive(false);
 
           yield return new WaitForSeconds(FadeTime);
@@ -173,7 +225,6 @@ public class UI_dialogue : UI_default
           SelectionGroup.gameObject.SetActive(true);
 
           yield return StartCoroutine(setupselections());
-      //    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DescriptionTextGroup, 1.0f, FadeInTime));
         }
       }
       else                                                                 //다음 내용으로 진행
@@ -188,18 +239,8 @@ public class UI_dialogue : UI_default
 
           Illust.Setup(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, 0.5f) ;
           NameText.text = CurrentEvent.Name;
-       //   DescriptionTextGroup.alpha = 1.0f;
           DescriptionText.text += CurrentEventDescriptions[CurrentEventPhaseIndex];
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
-
-          if (dir == true)
-          {
-            UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(DefaultRect, LeftPos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
-          }
-          else
-          {
-            UIManager.Instance.AddUIQueue(UIManager.Instance.moverect(DefaultRect, RightPos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
-          }
 
           SetNextButtonActive();
         }
@@ -223,6 +264,10 @@ public class UI_dialogue : UI_default
       {
         if (CurrentEventPhaseIndex == 0)     //선택지 선택 후 바로 보상일때         (선택지 애니메이션은 완료)
         {
+          if(SelectionGroup.gameObject.activeInHierarchy==true) SelectionGroup.gameObject.SetActive(false);
+          if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+          if (EndingButtonGroup.gameObject.activeInHierarchy == true) EndingButtonGroup.gameObject.SetActive(false);
+
           SetNextButtonDisable();
 
           Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
@@ -233,9 +278,10 @@ public class UI_dialogue : UI_default
           yield return StartCoroutine(updatescrollbar());
           SetNextButtonActive();
 
-          SelectionGroup.gameObject.SetActive(false);
           if (CurrentSuccessData != null)
           {
+            SetRewardButton();
+            
             if (CurrentSuccessData.Reward_Type != RewardTypeEnum.None)
             {
               RewardButtonGroup.alpha = 0.0f;
@@ -252,6 +298,8 @@ public class UI_dialogue : UI_default
           }
           else if (CurrentFailData != null)
           {
+            SetPenalty();
+            
             switch (CurrentFailData.Penelty_target)
             {
               case PenaltyTarget.None:
@@ -286,6 +334,8 @@ public class UI_dialogue : UI_default
 
           if (CurrentSuccessData != null)
           {
+            SetRewardButton();
+
             if (CurrentSuccessData.Reward_Type != RewardTypeEnum.None)
             {
               RewardButtonGroup.alpha = 0.0f;
@@ -338,7 +388,10 @@ public class UI_dialogue : UI_default
       {
         if (CurrentEventPhaseIndex == 0)     //선택지 선택 후 새로 설명으로 넘어갈때 
         {
-          CurrentUISelection.DeActive();
+          
+          if (SelectionGroup.gameObject.activeInHierarchy == true) SelectionGroup.gameObject.SetActive(false);
+          if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+          if (EndingButtonGroup.gameObject.activeInHierarchy == true) EndingButtonGroup.gameObject.SetActive(false);
 
           if (NextButtonGroup.gameObject.activeInHierarchy == false) NextButtonGroup.gameObject.SetActive(true);
           SetNextButtonDisable();
@@ -524,9 +577,12 @@ public class UI_dialogue : UI_default
     else            //실패하면 실패
     {
       Debug.Log("실패함");
-      SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailureData);
+      SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailData);
       GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.Index);
     }
+    _selection.DeActive();
+
+    GameManager.Instance.SaveData();
 
     yield return null;
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
@@ -597,54 +653,9 @@ public class UI_dialogue : UI_default
   [SerializeField] private float ResultEffectTime = 2.0f;
   public void SetSuccess(SuccessData _success)
   {
-    Reward_Highlight.RemoveAllCall();
     CurrentSuccessData = _success;
-    RemainReward = _success.Reward_Type == RewardTypeEnum.None ? false : true;
-    Sprite _icon = null;
-   // string _name = "";
-    string _description = "";
-    switch (_success.Reward_Type)
-    {
-      case RewardTypeEnum.Status:
-        switch (_success.Reward_StatusType)
-        {
-          case StatusTypeEnum.HP:
-            _icon = GameManager.Instance.ImageHolder.HPIcon;
-        //    _name = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 0);
-            _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue)}";
-            Reward_Highlight.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.RewardHPValue);
-            break;
-          case StatusTypeEnum.Sanity:
-            _icon = GameManager.Instance.ImageHolder.SanityIcon;
-        //    _name = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 0);
-            _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue)}";
-            Reward_Highlight.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue);
-            break;
-          case StatusTypeEnum.Gold:
-            _icon = GameManager.Instance.ImageHolder.GoldIcon;
-         //   _name = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 0);
-            _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue)}";
-            Reward_Highlight.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue);
-            break;
-        }
-        break;
-      case RewardTypeEnum.Experience:
-        _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
-     //   _name = GameManager.Instance.GetTextData("EXP_NAME");
-        _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
-        Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
-        break;
-      case RewardTypeEnum.Skill:
-        _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType,false);
-        _description = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType,0)} +1";
-        Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
-        break;
-    }
-    RewardIcon.sprite = _icon;
- //   RewardName.text = _name;
-    RewardDescription.text = _description;
 
-      IsBeginning = false;
+    IsBeginning = false;
       CurrentEventPhaseMaxIndex = CurrentSuccessData.Descriptions.Count;
       CurrentEventPhaseIndex = 0;
       CurrentEventIllustHolderes = CurrentSuccessData.Illusts;
@@ -669,13 +680,60 @@ public class UI_dialogue : UI_default
     }
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
   }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체, 퀘스트 이벤트일 경우 진행도 ++
+  private void SetRewardButton()
+  {
+    RewardButtonGroup.alpha = 0.0f;
+    if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
+    if (NextButtonGroup.gameObject.activeInHierarchy == true) NextButtonGroup.gameObject.SetActive(false);
 
+    Reward_Highlight.RemoveAllCall();
+    RemainReward = CurrentSuccessData.Reward_Type == RewardTypeEnum.None ? false : true;
+    Sprite _icon = null;
+    string _description = "";
+    switch (CurrentSuccessData.Reward_Type)
+    {
+      case RewardTypeEnum.Status:
+        switch (CurrentSuccessData.Reward_StatusType)
+        {
+          case StatusTypeEnum.HP:
+            _icon = GameManager.Instance.ImageHolder.HPIcon;
+            _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue)}";
+            Reward_Highlight.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.RewardHPValue);
+            break;
+          case StatusTypeEnum.Sanity:
+            _icon = GameManager.Instance.ImageHolder.SanityIcon;
+            _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue)}";
+            Reward_Highlight.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue);
+            break;
+          case StatusTypeEnum.Gold:
+            _icon = GameManager.Instance.ImageHolder.GoldIcon;
+            _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue)}";
+            Reward_Highlight.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue);
+            break;
+        }
+        break;
+      case RewardTypeEnum.Experience:
+        _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
+        //   _name = GameManager.Instance.GetTextData("EXP_NAME");
+        _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
+        Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
+        break;
+      case RewardTypeEnum.Skill:
+        _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType, false);
+        _description = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType, 0)} +1";
+        Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
+        break;
+    }
+    RewardIcon.sprite = _icon;
+    RewardDescription.text = _description;
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.3f));
+  }
   private FailData CurrentFailData = null;
   public UnityEngine.UI.Button CurrentReturnButton = null;
   public void SetFail(FailData _fail)
   {
     CurrentFailData = _fail;
-    SetPenalty(_fail);
 
     IsBeginning = false;
     CurrentEventPhaseMaxIndex = CurrentFailData.Descriptions.Count;
@@ -745,17 +803,7 @@ public class UI_dialogue : UI_default
     {
       if (CurrentSuccessData.Reward_Type == RewardTypeEnum.Experience)
       {
-        if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
-        {
-          GameManager.Instance.MyGameData.Sanity += ConstValues.GoodExpAsSanity;
-
-          StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
-          RemainReward = false;
-        }
-        else
-        {
-          RewardExpUI.OpenUI_RewardExp(GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID]);
-        }
+        RewardExpUI.OpenUI_RewardExp(GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID]);
         yield break;
       }
       else
@@ -791,15 +839,7 @@ public class UI_dialogue : UI_default
     }
     else if (CurrentFailData != null)
     {
-      if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
-      {
-        GameManager.Instance.MyGameData.Sanity -= ConstValues.BadExpAsSanity;
-
-        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
-        RemainReward = false;
-      }
-      else
-        RewardExpUI.OpenUI_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
+      RewardExpUI.OpenUI_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
     }
   }
   private int PenaltyValue = 0;
@@ -808,14 +848,14 @@ public class UI_dialogue : UI_default
     RemainReward = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
   }
-  public void SetPenalty(FailData _fail)
+  public void SetPenalty()
   {
-    switch (_fail.Penelty_target)
+    switch (CurrentFailData.Penelty_target)
     {
       case PenaltyTarget.None:
         break;
       case PenaltyTarget.Status:
-        switch (_fail.StatusType)
+        switch (CurrentFailData.StatusType)
         {
           case StatusTypeEnum.HP:
             GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.FailHPValue;
@@ -838,25 +878,6 @@ public class UI_dialogue : UI_default
             }
             break;
         }
-        break;
-      case PenaltyTarget.EXP:
-        Sprite _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
-        string _name = "";
-        string _description = "";
-
-        if (GameManager.Instance.MyGameData.AvailableExpSlot == false)
-        {
-          _name = "<s>" + GameManager.Instance.GetTextData("EXP_NAME") + "</s>";
-          _description = "<s>" + GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name + "</s><br>" + string.Format(GameManager.Instance.GetTextData("NOEMPTYSLOT"), WNCText.GetSanityColor(ConstValues.BadExpAsSanity));
-        }
-        else
-        {
-          _name = GameManager.Instance.GetTextData("EXP_NAME");
-          _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
-        }
-
-        StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
-
         break;
     }
   }//실패할 경우 패널티 부과하는 연출

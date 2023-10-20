@@ -14,20 +14,16 @@ public class UI_Settlement : UI_default
   public float CloseTime_Move = 0.6f;
   [SerializeField] private AnimationCurve OpenFoldCurve = new AnimationCurve();
   [SerializeField] private AnimationCurve CloseFoldCurve = new AnimationCurve();
-  [SerializeField] private RectTransform NameRect = null;
-  public Vector2 NameHolderPos_Left = new Vector2(-1250.0f, 330.0f);
-  public Vector2 NameHolderPos_Center = new Vector2(-110, 330.0f);
-  public Vector2 NameHolderPos_Right = new Vector2(1450.0f, 330.0f);
   [SerializeField] private RectTransform PanelRect = null;
   public Vector2 OpenSize = new Vector2(740.0f, 450.0f);
   public Vector2 CloseSize = new Vector2(60.0f, 450.0f);
   public RectTransform PanelLastHolder = null;
-  private Vector2 Left_Anchor = new Vector2(0.0f, 0.5f);
+  private Vector2 Left_Anchor = new Vector2(1.0f, 0.5f);
   private Vector2 Left_Pivot = new Vector2(0.0f, 0.5f);
   public Vector2 Left_PanelOutsidePos = new Vector2(-1000.0f, -0.0f);
   public Vector2 Left_PanelInsidePos = new Vector2(-480, 0.0f);
   public Vector2 Left_LastHolderPos = new Vector2(370.0f, 0.0f);
-  private Vector2 Right_Anchor = new Vector2(1.0f, 0.5f);
+  private Vector2 Right_Anchor = new Vector2(0.0f, 0.5f);
   private Vector2 Right_Pivot = new Vector2(1.0f, 0.5f);
   public Vector2 Right_PanelInsidePos = new Vector2(260, 0.0f);
   public Vector2 Right_PanelOutsidePos = new Vector2(1150.0f, -0.0f);
@@ -47,6 +43,7 @@ public class UI_Settlement : UI_default
     }
     return null;
   }
+  [SerializeField] private UnityEngine.UI.Image SelectSectorIcon = null;
   [SerializeField] private TextMeshProUGUI SectorName = null;
   [SerializeField] private TextMeshProUGUI SectorEffect = null;
   [SerializeField] private TextMeshProUGUI RestResult = null;
@@ -81,9 +78,11 @@ public class UI_Settlement : UI_default
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
 
     SettlementNameText.text = CurrentSettlement.Name;
-    DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
       Mathf.Clamp(CurrentSettlement.Discomfort*0.1f, 0.0f, 1.0f));
+    DiscomfortText.fontSize=Mathf.Lerp(ConstValues.DiscomfortFontSize_min,ConstValues.DiscomfortFontSize_max,
+          Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+    DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort)*100));
     if (RestButtonHolder.gameObject.activeInHierarchy == true) RestButtonHolder.gameObject.SetActive(false);
@@ -111,13 +110,14 @@ public class UI_Settlement : UI_default
     }
 
     SettlementIcon.sprite = _settlementicon;
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
     SectorName.text = GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
 
     RestResult.text = "";
     CostText.text = "";
 
-    Vector2 _startpos_panel = Vector2.zero,_endpos_panel= Vector2.zero,_startpos_name= Vector2.zero,_endpos_name= Vector2.zero;
+    Vector2 _startpos_panel = Vector2.zero, _endpos_panel = Vector2.zero;
     if (dir == true)
     {
       PanelRect.pivot = Left_Pivot;
@@ -126,8 +126,6 @@ public class UI_Settlement : UI_default
       PanelLastHolder.anchoredPosition = Left_LastHolderPos;
       _startpos_panel = Left_PanelOutsidePos;
       _endpos_panel = Left_PanelInsidePos;
-      _startpos_name = NameHolderPos_Left;
-      _endpos_name = NameHolderPos_Center;
 
     }
     else
@@ -140,15 +138,11 @@ public class UI_Settlement : UI_default
 
       _startpos_panel = Right_PanelOutsidePos;
       _endpos_panel = Right_PanelInsidePos;
-      _startpos_name = NameHolderPos_Right;
-      _endpos_name = NameHolderPos_Center;
     }
 
     PanelRect.sizeDelta = CloseSize;
 
     float _time = 0.0f;
-    StartCoroutine(UIManager.Instance.moverect(NameRect, _startpos_name, _endpos_name,OpenTime_Move, UIManager.Instance.UIPanelOpenCurve));
-    yield return LittleWait;
     yield return StartCoroutine(UIManager.Instance.moverect(PanelRect,_startpos_panel,_endpos_panel,OpenTime_Move,UIManager.Instance.UIPanelOpenCurve));
     while (_time < OpenTime_Fold)
     {
@@ -180,11 +174,11 @@ public class UI_Settlement : UI_default
     {
       yield return StartCoroutine(UIManager.Instance.moverect(RestButtonHolder, RestButtonRect_Open, RestButtonRect_Hide, RestButtonCloseTime, UIManager.Instance.UIPanelCLoseCurve));
       RestButtonHolder.gameObject.SetActive(false);
-      yield return new WaitForSeconds(0.5f);
+      yield return new WaitForSeconds(0.1f);
     }
 
     PanelRect.sizeDelta = OpenSize;
-    Vector2 _startpos_panel = Vector2.zero, _endpos_panel = Vector2.zero, _startpos_name = Vector2.zero, _endpos_name = Vector2.zero;
+    Vector2 _startpos_panel = Vector2.zero, _endpos_panel = Vector2.zero;
     if (dir == true)
     {
       PanelRect.pivot = Left_Pivot;
@@ -194,8 +188,6 @@ public class UI_Settlement : UI_default
 
       _startpos_panel = Left_PanelInsidePos;
       _endpos_panel = Left_PanelOutsidePos;
-      _startpos_name = NameHolderPos_Center;
-      _endpos_name = NameHolderPos_Left;
     }
     else
     {
@@ -207,8 +199,6 @@ public class UI_Settlement : UI_default
 
       _startpos_panel = Right_PanelInsidePos;
       _endpos_panel = Right_PanelOutsidePos;
-      _startpos_name = NameHolderPos_Center;
-      _endpos_name = NameHolderPos_Right;
     }
     PanelRect.anchoredPosition = _startpos_panel;
 
@@ -221,8 +211,6 @@ public class UI_Settlement : UI_default
     }
     yield return LittleWait;
     PanelRect.sizeDelta = CloseSize;
-    StartCoroutine(UIManager.Instance.moverect(NameRect, _startpos_name, _endpos_name, CloseTime_Move, UIManager.Instance.UIPanelCLoseCurve));
-    yield return LittleWait;
     yield return StartCoroutine(UIManager.Instance.moverect(PanelRect, _startpos_panel, _endpos_panel, CloseTime_Move, UIManager.Instance.UIPanelCLoseCurve));
 
   }
@@ -242,6 +230,7 @@ public class UI_Settlement : UI_default
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(sector);
 
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(sector);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
@@ -307,13 +296,14 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         SectorEffect.text = _effect + _sabbatdescription;
         break;
     }
-    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), MovePointValue, DiscomfortValue);
+    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), DiscomfortValue, MovePointValue);
 
   }
   public void OutPointerSector()
   {
     if (IsSelectSector == true) return;
 
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
     SectorName.text = "";
     SectorEffect.text = "";
     RestResult.text = "";
@@ -328,6 +318,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
 
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
@@ -396,7 +387,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         SectorEffect.text = _effect;
         break;
     }
-    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), MovePointValue, DiscomfortValue);
+    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), DiscomfortValue, MovePointValue);
 
     CostText.text = "";
     if (RestButtonHolder.gameObject.activeInHierarchy == false)
@@ -555,14 +546,20 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     float _startsize = DiscomfortIcon.sizeDelta.x,
       _endsize= Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
   Mathf.Clamp(CurrentSettlement.Discomfort*0.1f, 0.0f, 1.0f));
+    float _fontstartsize = DiscomfortText.fontSize;
+    float _fontendsize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
+          Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+
     while (_time< DiscomfortScaleEffectTime)
     {
       DiscomfortIcon.localScale=Vector3.Lerp(Vector3.one,Vector3.one*1.5f,DiscomfortAnimationCurve.Evaluate(_time/DiscomfortScaleEffectTime));
       DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(_startsize, _endsize, _time / DiscomfortScaleEffectTime);
+      DiscomfortText.fontSize=Mathf.Lerp(_fontstartsize,_fontendsize,_time/DiscomfortScaleEffectTime);
       _time += Time.deltaTime;
       yield return null;
     }
     DiscomfortIcon.localScale = Vector3.one;
+    DiscomfortText.fontSize = _fontendsize;
 
   }
 }

@@ -184,14 +184,14 @@ public class UI_Selection : MonoBehaviour
               }
               else if (i==_progress)
               {
-                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+                TendencyProgressArrows[i].sprite = _arrow;
 
                 TendencyProgressArrows_inside[i].GetComponent<Image>().sprite = _arrow;
                 StartCoroutine(arroweffect(TendencyProgressArrows_inside[i]));
               }
               else
               {
-                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
                 TendencyProgressArrows_inside[i].alpha = 0.0f;
               }
             }
@@ -247,14 +247,14 @@ public class UI_Selection : MonoBehaviour
               }
               else if (i == _progress)
               {
-                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+                TendencyProgressArrows[i].sprite = _arrow;
 
                 TendencyProgressArrows_inside[i].GetComponent<Image>().sprite = _arrow;
                 StartCoroutine(arroweffect(TendencyProgressArrows_inside[i]));
               }
               else
               {
-                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_DeActive;
+                TendencyProgressArrows[i].sprite = GameManager.Instance.ImageHolder.Arrow_Empty;
                 TendencyProgressArrows_inside[i].alpha = 0.0f;
               }
             }

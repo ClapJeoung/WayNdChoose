@@ -59,26 +59,26 @@ public class UI_Mad : UI_default
       case 0:
         _str = GameManager.Instance.GetTextData("Madness_Conversation_SelectedName") + "<br>"
           + string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Info"), ConstValues.MadnessEffect_Conversation)
-          +string.Format( GameManager.Instance.GetTextData("Madness_Result"),ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
+          +string.Format( GameManager.Instance.GetTextData("Madness_Result"),ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen_Skill);
         break;
       case 1:
         _str = GameManager.Instance.GetTextData("Madness_Force_SelectedName") + "<br>"
                  + string.Format(GameManager.Instance.GetTextData("Madness_Force_Info"),ConstValues.MadnessEffect_Force)
-   + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
+   + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen_Skill);
         break;
       case 2:
         _str = GameManager.Instance.GetTextData("Madness_Wild_SelectedName")+"<br>"
                     + string.Format(GameManager.Instance.GetTextData("Madness_Wild_Info"),ConstValues.MadnessEffect_Wild)
-  + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
+  + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen_Skill);
         break;
       case 3:
         _str = GameManager.Instance.GetTextData("Madness_Intelligence_SelectedName") + "<br>"
                         + string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Info"),ConstValues.MadnessEffect_Intelligence)
- + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen);
+ + string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_Skill, ConstValues.MadnessSanityGen_Skill);
         break;
       case 4:
         _str = GameManager.Instance.GetTextData("Madness_HP_SelectedName")
-     +string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_HP, ConstValues.MadnessSanityGen);
+     +string.Format(GameManager.Instance.GetTextData("Madness_Result"), ConstValues.MadnessHPCost_HP, ConstValues.MadnessSanityGen_HP);
         break;
     }
 

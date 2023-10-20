@@ -13,14 +13,15 @@ public class UI_Ending : UI_default
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
   private IEnumerator updatescrollbar()
   {
+    yield return new WaitForSeconds(0.05f);
+
     float _time = 0.0f;
     float _targettime = 1.5f;
-    while (_time < _targettime)
+    while (DescriptionScrollbar.value > 0.001f)
     {
-      DescriptionScrollbar.value = Mathf.Lerp(DescriptionScrollbar.value, 0.0f, ScrollbarCurve.Evaluate(_time / _targettime));
+      DescriptionScrollbar.value = Mathf.Lerp(DescriptionScrollbar.value, 0.0f, 0.013f);
       _time += Time.deltaTime;
       yield return null;
-
     }
     DescriptionScrollbar.value = 0.0f;
   }

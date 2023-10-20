@@ -49,7 +49,7 @@ public class PreviewRewardGroup : MonoBehaviour
       _reward = true;
     }
 
-    FailData _faildata = selection.FailureData;
+    FailData _faildata = selection.FailData;
     if (_faildata == null||selection.ThisSelectionType==SelectionTargetType.Pay)
     {
       if (PenaltyObj.activeInHierarchy == true) PenaltyObj.SetActive(false);

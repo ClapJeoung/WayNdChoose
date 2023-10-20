@@ -22,6 +22,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
   public Settlement MySettleMent = null;
   public bool IsCultSidePanel = false;
+  public RectTransform TopRect = null;
     public void OnPointerEnter(PointerEventData eventData)
     {
     UIManager.Instance.PreviewManager.ClosePreview();
@@ -64,11 +65,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         switch (_selection.ThisSelectionType)
         {
-          case SelectionTargetType.None: UIManager.Instance.PreviewManager.OpenSelectionNonePreview(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform);break;
-          case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
+          case SelectionTargetType.None: UIManager.Instance.PreviewManager.OpenSelectionNonePreview(_selection, MySelectionTendency, MySelectionTendencyDir, TopRect);break;
+          case SelectionTargetType.Pay: UIManager.Instance.PreviewManager.OpenSelectionPayPreview(_selection, MySelectionTendency, MySelectionTendencyDir, TopRect); break;
           case SelectionTargetType.Check_Single:case SelectionTargetType.Check_Multy:
-            UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
-          default: UIManager.Instance.PreviewManager.OpenSelectionElsePreview(_selection, MySelectionTendency, MySelectionTendencyDir, transform as RectTransform); break;
+            UIManager.Instance.PreviewManager.OpenSelectionCheckPreview_skill(_selection, MySelectionTendency, MySelectionTendencyDir, TopRect); break;
+          default: UIManager.Instance.PreviewManager.OpenSelectionElsePreview(_selection, MySelectionTendency, MySelectionTendencyDir, TopRect); break;
         }
         break;
       case PreviewPanelType.RewardHP:
@@ -83,6 +84,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenRewardExpPreview(MyEXP, transform as RectTransform); break;
       case PreviewPanelType.RewardExpSelect_long:
         _exp = UIManager.Instance.ExpRewardUI.CurrentExp;
+        UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, true, transform as RectTransform);
+        break;
         if (MyEXP == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, true, transform as RectTransform);
         else
         {
@@ -91,6 +94,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.RewardExpSelect_short:
         _exp = UIManager.Instance.ExpRewardUI.CurrentExp;
+        UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, false, transform as RectTransform);
+        break;
         if (MyEXP == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, false, transform as RectTransform);
         else
         {

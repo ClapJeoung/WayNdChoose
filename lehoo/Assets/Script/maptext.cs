@@ -1135,7 +1135,6 @@ public class maptext : MonoBehaviour
         _bottomrect.position = new Vector3(_pos.x, _pos.y, _bottomrect.position.z);
         _bottomrect.transform.localScale = Vector3.one;
         _bottomrect.anchoredPosition3D = new Vector3(_bottomrect.anchoredPosition3D.x, _bottomrect.anchoredPosition3D.y, 0.0f);
-        GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Rect = _bottomrect;
     //    Outline _bottomoutline = _bottomtile.AddComponent<Outline>();
     //    _bottomoutline.effectColor = Color.black;
     //    _bottomoutline.effectDistance = Vector2.one * 2.0f;
@@ -1179,6 +1178,7 @@ public class maptext : MonoBehaviour
 
 
         TileButtonScript _buttonscript = _bottomtile.GetComponent<TileButtonScript>();
+        _buttonscript.Rect = _bottomrect;
        // _buttonscript.OutLine = _bottomoutline;
         _buttonscript.Button = _button;
         //_buttonscript.SelectHolder = MapUIScript.SelectTileHolder;
@@ -1202,7 +1202,7 @@ public class maptext : MonoBehaviour
     for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
     {
       Settlement _village = GameManager.Instance.MyGameData.MyMapData.Villages[i];
-      _settlementpos = _village.Tiles[0].Rect.anchoredPosition;
+      _settlementpos = _village.Tiles[0].ButtonScript.Rect.anchoredPosition;
 
       string _villagename = _village.OriginName;
       GameObject _villageholder = new GameObject(_villagename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
@@ -1212,8 +1212,8 @@ public class maptext : MonoBehaviour
       _villageholder.transform.localScale = Vector3.one;
 
       _village.Tiles[0].ButtonScript.LandmarkImage.transform.SetParent(_villageholder.transform);
-      _village.Tiles[0].Rect.localScale = Vector3.one;
-      PreviewInteractive _villagepreview = _village.Tiles[0].Rect.transform.AddComponent<PreviewInteractive>();
+      _village.Tiles[0].ButtonScript.Rect.localScale = Vector3.one;
+      PreviewInteractive _villagepreview = _village.Tiles[0].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _villagepreview.PanelType = PreviewPanelType.SettlementTile;
       _villagepreview.MySettleMent = _village;
 
@@ -1226,7 +1226,7 @@ public class maptext : MonoBehaviour
       for(int j = 0; j < _town.Tiles.Count; j++)
       {
         _settlementrectlist.Add(_town.Tiles[j]);
-        _settlementpos += _town.Tiles[j].Rect.anchoredPosition;
+        _settlementpos += _town.Tiles[j].ButtonScript.Rect.anchoredPosition;
       }
       _settlementpos /= 2.0f;
 
@@ -1240,8 +1240,8 @@ public class maptext : MonoBehaviour
     for (int j = 0; j < _settlementrectlist.Count; j++)
       {
         _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_townholder.transform);
-      _town.Tiles[j].Rect.localScale = Vector3.one;
-      PreviewInteractive _townpreview = _town.Tiles[j].Rect.transform.AddComponent<PreviewInteractive>();
+      _town.Tiles[j].ButtonScript.Rect.localScale = Vector3.one;
+      PreviewInteractive _townpreview = _town.Tiles[j].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _townpreview.PanelType = PreviewPanelType.SettlementTile;
       _townpreview.MySettleMent = _town;
     }
@@ -1253,7 +1253,7 @@ public class maptext : MonoBehaviour
     for (int i = 0; i < _city.Tiles.Count; i++)
     {
       _settlementrectlist.Add(_city.Tiles[i]);
-      _settlementpos += _city.Tiles[i].Rect.anchoredPosition;
+      _settlementpos += _city.Tiles[i].ButtonScript.Rect.anchoredPosition;
     }
     _settlementpos /= 3.0f;
 
@@ -1267,8 +1267,8 @@ public class maptext : MonoBehaviour
     for (int j = 0; j < _settlementrectlist.Count; j++)
     {
       _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_cityholder.transform);
-      _city.Tiles[j].Rect.localScale = Vector3.one;
-      PreviewInteractive _settlementpreview = _city.Tiles[j].Rect.transform.AddComponent<PreviewInteractive>();
+      _city.Tiles[j].ButtonScript.Rect.localScale = Vector3.one;
+      PreviewInteractive _settlementpreview = _city.Tiles[j].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _settlementpreview.PanelType = PreviewPanelType.SettlementTile;
       _settlementpreview.MySettleMent = _city;
     }

@@ -101,16 +101,13 @@ public class ImageHolder : ScriptableObject
   }
   */
   [Space(10)]
- /* public Sprite TendencySelectionIcon = null;
-  public Sprite ExpSelectionIcon = null;
-  public Sprite SkillSelectionIcon = null;
   public Sprite ResidenceIcon = null;
   public Sprite MarketPlaceIcon = null;
   public Sprite TempleIcon = null;
   public Sprite LibraryIcon = null;
   public Sprite TheaterIcon = null;
   public Sprite AcademyIcon = null;
-  public Sprite GetPlaceIcon(SectorTypeEnum placetype)
+  public Sprite GetSectorIcon(SectorTypeEnum placetype)
   {
     switch (placetype)
     {
@@ -123,8 +120,6 @@ public class ImageHolder : ScriptableObject
     }
     return null;
   }
-  [Space(10)]
- */
   public Sprite DefaultIllust = null;                                 //∫Û ¿œ∑ØΩ∫∆Æ
   public Sprite DefaultIcon = null;
   public Sprite NoGoldIllust = null;
@@ -154,6 +149,7 @@ public class ImageHolder : ScriptableObject
   public Sprite MadnessIdle = null;
   public Sprite MadnessActive = null;
   [Space(10)]
+  public Sprite Arrow_White = null;
   public Sprite Arrow_Empty = null;
   public Sprite Arrow_DeActive = null;
   public Sprite Arrow_Active_rational = null;

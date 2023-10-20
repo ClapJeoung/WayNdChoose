@@ -10,10 +10,20 @@ public class UI_Menu : UI_default
   [SerializeField] private Slider BGMSlider = null;
   [SerializeField] private Slider SFXSlider = null;
   [SerializeField] private TextMeshProUGUI QuitText = null;
+  [SerializeField] private TextMeshProUGUI DataSaveInfo = null;
   private bool IsWorking = false;
+
+  private void Update()
+  {
+    if (Input.GetKeyDown(KeyCode.Escape))
+    {
+      if (!GameManager.Instance.IsPlaying) return;
+
+      Click();
+    }
+  }
   public void Click()
   {
-    if (IsWorking) return;
 
     if (IsOpen)
     {
@@ -50,8 +60,9 @@ public class UI_Menu : UI_default
 
     QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
     LayoutRebuilder.ForceRebuildLayoutImmediate(QuitText.transform.parent.transform as RectTransform);
+    DataSaveInfo.text = GameManager.Instance.GetTextData("AutosaveInfo");
 
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.4f));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.2f));
     IsOpen = true;
     IsWorking = false;
   }
@@ -66,5 +77,9 @@ private IEnumerator closeui()
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 0.0f, 0.4f));
     IsWorking = false;
     IsOpen = false;
+  }
+  public void QuitGame()
+  {
+    UIManager.Instance.ResetGame("");
   }
 }

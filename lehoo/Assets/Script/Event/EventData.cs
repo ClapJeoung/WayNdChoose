@@ -20,6 +20,13 @@ public class EventHolder
     return null;
   }
   public QuestHolder_Cult Quest_Cult = null;
+  public EventData GetEvent(string id)
+  {
+    foreach(EventData e in AllEvent)
+      if(e.ID== id) return e;
+    return null;
+  }
+
   private EventData defaultevent_outer = null;
   private EventData defaultevent_settlement = null;
   public EventData DefaultEvent_Outer
@@ -118,18 +125,18 @@ public class EventHolder
             if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
               Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
             {
-              Data.SelectionDatas[0].FailureData = new FailData(Data);
-              Data.SelectionDatas[0].FailureData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-              switch (Data.SelectionDatas[0].FailureData.Penelty_target)
+              Data.SelectionDatas[0].FailData = new FailData(Data);
+              Data.SelectionDatas[0].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+              switch (Data.SelectionDatas[0].FailData.Penelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.SelectionDatas[0].FailureData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
-                case PenaltyTarget.EXP: Data.SelectionDatas[0].FailureData.ExpID = _data.Failure_Penalty_info; break;
+                case PenaltyTarget.Status: Data.SelectionDatas[0].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
+                case PenaltyTarget.EXP: Data.SelectionDatas[0].FailData.ExpID = _data.Failure_Penalty_info; break;
               }
             }
             else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
             {
-             Data.SelectionDatas[0].FailureData = GameManager.Instance.GoldFailData;
+             Data.SelectionDatas[0].FailData = GameManager.Instance.GoldFailData;
             }
             Data.SelectionDatas[0].SuccessData = new SuccessData(Data, TendencyTypeEnum.None,0);
             Data.SelectionDatas[0].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target);
@@ -177,18 +184,18 @@ public class EventHolder
             if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
               Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
             {
-              Data.SelectionDatas[i].FailureData = new FailData(Data,tendencytype, i);
-              Data.SelectionDatas[i].FailureData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
-              switch (Data.SelectionDatas[i].FailureData.Penelty_target)
+              Data.SelectionDatas[i].FailData = new FailData(Data,tendencytype, i);
+              Data.SelectionDatas[i].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
+              switch (Data.SelectionDatas[i].FailData.Penelty_target)
               {
                 case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.SelectionDatas[i].FailureData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
-                case PenaltyTarget.EXP: Data.SelectionDatas[i].FailureData.ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
+                case PenaltyTarget.Status: Data.SelectionDatas[i].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
+                case PenaltyTarget.EXP: Data.SelectionDatas[i].FailData.ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
               }
             }
             else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
             {
-              Data.SelectionDatas[i].FailureData = GameManager.Instance.GoldFailData;
+              Data.SelectionDatas[i].FailData = GameManager.Instance.GoldFailData;
             }
             Data.SelectionDatas[i].SuccessData = new SuccessData(Data,tendencytype, i);
             Data.SelectionDatas[i].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target.Split('@')[i]);
@@ -248,7 +255,7 @@ public class EventHolder
         ConvertData_Quest_cult(_data);
         break;
     }
-    
+
   }
   public void ConvertData_Quest_cult(EventJsonData jsondata)
   {
@@ -266,6 +273,7 @@ public class EventHolder
         Quest_Cult.Events_Cult_60to100.Add(eventdata);
         break;
     }
+    AllEvent.Add(eventdata);
   }
   /// <summary>
   /// 0:없음 1:정신 2:육체 3:감정 4:물질
@@ -683,7 +691,7 @@ public enum EnvironmentType { NULL, River,Forest,Mountain,Sea,Beach,Land,RiverBe
 public enum SelectionTypeEnum { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTypeEnum {None, Status,Skill, Experience }
-public enum EventSequence { Progress,Clear}//Suggest: 3개 제시하는 단계  Progress: 선택지 버튼 눌러야 하는 단계  Clear: 보상 수령해야 하는 단계
+public enum EventSequence { Progress,Clear}
 public enum EventTypeEnum { Default,Follow,Cult}
 #endregion  
 public class EventData
@@ -829,7 +837,7 @@ public class SelectionData
 
 
   public SuccessData SuccessData = null;
-  public FailData FailureData = null;
+  public FailData FailData = null;
 }    
 
 public class FailData

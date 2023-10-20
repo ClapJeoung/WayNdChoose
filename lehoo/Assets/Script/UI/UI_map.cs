@@ -43,12 +43,12 @@ public class UI_map : UI_default
   private Vector2 Left_Pivot = new Vector2(0.0f, 0.5f);
   public Vector2 Left_OutsidePos = new Vector2(-1000.0f, -0.0f);
   public Vector2 Left_InsidePos = new Vector2(-620.0f, 0.0f);
-  private Vector2 Left_Anchor = new Vector2(0.0f, 0.5f);
+  private Vector2 Left_Anchor = new Vector2(1.0f, 0.5f);
   public Vector2 Left_LastHolderPos = new Vector2(620.0f, 0.0f);
   public Vector2 Right_Pivot = new Vector2(1.0f, 0.5f);
   public Vector2 Right_InsidePos = new Vector2(620.0f, 0.0f);
   public Vector2 Right_OutsidePos = new Vector2(1200.0f, -0.0f);
-  private Vector2 Right_Anchor = new Vector2(1.0f, 0.5f);
+  private Vector2 Right_Anchor = new Vector2(0.0f, 0.5f);
   public Vector2 Right_LastHolderPos = new Vector2(-620.0f, 0.0f);
   public float UIOpenTime_Fold = 0.8f;
   public float UIOpenTime_Move = 0.6f;
@@ -162,7 +162,7 @@ public class UI_map : UI_default
   }
   public void SetOutline_Idle(TileData tile)
   {
-    SetOutline(Outline_Idle, tile.Rect);
+    SetOutline(Outline_Idle, tile.ButtonScript.Rect);
 
     if (SelectedTile == null)
     {
@@ -262,7 +262,7 @@ public class UI_map : UI_default
     //동일한 좌표면 호출되지 않게 이미 거름
     if (selectedtiledata.Coordinate==GameManager.Instance.MyGameData.Coordinate||( SelectedTile != null && selectedtiledata == SelectedTile)) return;
 
-    SetOutline(Outline_Select, selectedtiledata.Rect);
+    SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
 
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
     Length = GameManager.Instance.GetLength(_currenttile, selectedtiledata);
@@ -438,8 +438,6 @@ public class UI_map : UI_default
       Length = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
     }
 
-    GameManager.Instance.MyGameData.ClearBeforeEvents();
-
     switch (SelectedCostType)
     {
       case StatusTypeEnum.Sanity:
@@ -488,7 +486,7 @@ public class UI_map : UI_default
     for(int i = 0; i < Length.Count; i++)
     {
       _currenttile = _map.GetNextTile(_currenttile, Length[i]);
-      _path.Add(_currenttile.Rect.anchoredPosition);
+      _path.Add(_currenttile.ButtonScript.Rect.anchoredPosition);
     }
 
     float _time = 0.0f;             //x
@@ -599,7 +597,7 @@ public class UI_map : UI_default
   public void SetPlayerPos(Vector2 coordinate)
   {
     TileData _targettile = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);
-    PlayerRect.anchoredPosition = _targettile.Rect.anchoredPosition;
+    PlayerRect.anchoredPosition = _targettile.ButtonScript.Rect.anchoredPosition;
  //   ScaleRect.localScale =IdleScale;
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
    // Debug.Log($"({coordinate.x},{coordinate.y}) -> {PlayerRect.anchoredPosition}");

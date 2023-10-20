@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class TileButtonScript : MonoBehaviour
 {
+  public RectTransform Rect = null;
   public Button Button = null;
   public UI_map MapUI = null;
   public TileData TileData = null;
