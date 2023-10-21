@@ -5,7 +5,7 @@ using UnityEngine;
 public class SettleButton : ReturnButton
 {
   public Vector2 TopPos = Vector2.zero;
-  public UI_Settlement SettlementUI = null;
+  public UI_dialogue DialogueUI = null;
   public override void Clicked()
   {
     base.Clicked();
@@ -42,7 +42,7 @@ public class SettleButton : ReturnButton
     }
 
 
-    SettlementUI.OpenUI(true);
+    UIManager.Instance.AddUIQueue(DialogueUI.openui_settlement(true));
     Close();
   }
 }

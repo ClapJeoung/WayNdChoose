@@ -1107,7 +1107,7 @@ public class maptext : MonoBehaviour
     if (_temp == 6) Debug.Log($"{origindir} {modify} Å×Ã­¾Æ¾Æ¾Ñ");
     return (HexDir)_temp;
   }
-  public void MakeTilemap()
+  public IEnumerator MakeTilemap()
   {
     //190*0.7f
     Vector3 _cellsize = new Vector3(100.0f,100.0f); Debug.Log("¸ÊÀ» ¸¸µç ·¹ÈÄ~");
@@ -1274,6 +1274,7 @@ public class maptext : MonoBehaviour
     }
     MapUIScript.CityIcon=_cityholder;
 
+    yield return null;
   }
 
   /// <summary>

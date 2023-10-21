@@ -81,7 +81,7 @@ public class UI_Ending : UI_default
 
     if (CurrentIndex == Length - 1||IsDead)
     {
-      UIManager.Instance.ResetGame(QuitLogo);
+      UIManager.Instance.ResetGame(QuitLogo,true);
     }
     else
     UIManager.Instance.StartCoroutine(next());

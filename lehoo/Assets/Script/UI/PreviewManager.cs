@@ -125,6 +125,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
   [Space(10)]
   [SerializeField] private GameObject SettlementInfoPanel = null;
+  [SerializeField] private Image SettlementInfoIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDescription = null;
@@ -321,7 +322,7 @@ public class PreviewManager : MonoBehaviour
         break;
     }
     SkillLevel.text = _leveltext;
-    SkillSubdescription.text = WNCText.GetSubdescriptionColor(GameManager.Instance.GetTextData(_skilltype, 4));
+    SkillSubdescription.text = GameManager.Instance.GetTextData(_skilltype, 4);
     OpenPreviewPanel(SkillPreview,rect);
   }
   public void OpenExpPreview(Experience _exp, RectTransform rect)
@@ -922,9 +923,16 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenSettlementPanel(Settlement settlement,RectTransform tilerect)
   {
+    switch (settlement.SettlementType)
+    {
+      case SettlementType.Village: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_white; break;
+      case SettlementType.Town:  SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_white; break;
+      case SettlementType.City:SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_white; break;
+    }
+
     SettlementInfoName.text = settlement.Name;
     SettlementInfoDiscomfort.text = settlement.Discomfort.ToString();
-    SettlementInfoDescription.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),GameManager.Instance.MyGameData.GetDiscomfortValue(settlement.Discomfort));
+    SettlementInfoDescription.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),GameManager.Instance.MyGameData.GetDiscomfortValue(settlement.Discomfort)*100);
 
     OpenPreviewPanel(SettlementInfoPanel, tilerect);
   }

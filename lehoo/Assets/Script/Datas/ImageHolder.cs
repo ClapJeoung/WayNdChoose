@@ -27,6 +27,55 @@ public class ImageHolder : ScriptableObject
   public Sprite GameOver_Wild = null;
   public Sprite GameOver_Intelligence = null;
   public Sprite GameOver_Madness = null;
+  [Space(10)]
+  public List<Sprite> Village_spring = new List<Sprite>();
+  public List<Sprite> Village_summer = new List<Sprite>();
+  public List<Sprite> Village_autumn = new List<Sprite>();
+  public List<Sprite> Village_winter = new List<Sprite>();
+  public List<Sprite> Town_spring= new List<Sprite>();
+  public List<Sprite> Town_summer= new List<Sprite>();
+  public List<Sprite> Town_autumn= new List<Sprite>();
+  public List<Sprite> Town_winter=new List<Sprite>();
+  public List<Sprite> City_spring = new List<Sprite>();
+  public List<Sprite> City_summer = new List<Sprite>();
+  public List<Sprite> City_autumn = new List<Sprite>();
+  public List<Sprite> City_winter = new List<Sprite>();
+  public Sprite GetSettlementIllust(SettlementType type,int season)
+  {
+    List<Sprite> _targetlist=new List<Sprite>();
+    switch (type)
+    {
+      case SettlementType.Village:
+        switch (season)
+        {
+          case 0:_targetlist = Village_spring; break;
+          case 1:_targetlist = Village_summer;break;
+          case 2:_targetlist = Village_autumn;break;
+          case 3: _targetlist=Village_winter;break;
+        }
+        break;
+      case SettlementType.Town:
+        switch (season)
+        {
+          case 0: _targetlist = Town_spring; break;
+          case 1: _targetlist = Town_summer; break;
+          case 2: _targetlist = Town_autumn; break;
+          case 3: _targetlist = Town_winter; break;
+        }
+        break;
+      case SettlementType.City:
+        switch (season)
+        {
+          case 0: _targetlist = City_spring; break;
+          case 1: _targetlist = City_summer; break;
+          case 2: _targetlist = City_autumn; break;
+          case 3: _targetlist = City_winter; break;
+        }
+        break;
+    }
+
+    return _targetlist[Random.Range(0,_targetlist.Count)];
+  }
 
   public Sprite MovePointIcon_Enable = null;
   public Sprite MovePointIcon_Lack = null;
@@ -355,11 +404,24 @@ public class ImageHolder : ScriptableObject
     List<EventIllustHolder> _holders= new List<EventIllustHolder>();
     if (length > 1)
     {
+      string[] _typearray = null;
       for (int i = 0; i < length; i++)
       {
         List<Sprite> _listtemp = new List<Sprite>();
-        foreach (Sprite _spr in _illusts) if (_spr.name.Contains(i.ToString())) _listtemp.Add(_spr);
+        foreach (Sprite _spr in _illusts)
+        {
+          _typearray = _spr.name.Split('_')[2].Split('@');  //3번째 문자열(Beginning0,RSuccess2,LSuccess1 이런거) 에서 타입 글자확인+숫자확인
+          foreach(string _type in _typearray)
+          {
+            if (_type.Contains(typeid) && _type.Contains(i.ToString())) 
+            { 
+              _listtemp.Add(_spr);
+              break;
+            }
+            else continue;
+          }
 
+        }
         _holders.Add(new EventIllustHolder(_listtemp));
       }
     }
@@ -451,14 +513,21 @@ public class EventIllustHolder
     }
     else
     {
-      bool _noneseason = true;
+      string[] _namearray = null;
       for (int i = 0; i < illusts.Count; i++)
       {
-        if (illusts[i].name.Contains("s0")) { SpringIllust = illusts[i]; _noneseason = false; }
-        if (illusts[i].name.Contains("s1")){ SummerIllust = illusts[i]; _noneseason = false; }
-        if (illusts[i].name.Contains("s2")){ AutumnIllust = illusts[i]; _noneseason = false; }
-          if (illusts[i].name.Contains("s3")){ WinterIllust = illusts[i]; _noneseason = false; }
-            if(_noneseason==true) IdleIllust = illusts[i];
+        _namearray = illusts[i].name.Split('_');
+        if (_namearray.Length < 4)
+        {
+          IdleIllust = illusts[i];
+        }
+        else
+        {
+          if (_namearray[3]=="s0") { SpringIllust = illusts[i]; }
+         else if (_namearray[3] == "s1") { SummerIllust = illusts[i]; }
+         else if (_namearray[3] == "s2") { AutumnIllust = illusts[i];  }
+         else if (_namearray[3] == "s3") { WinterIllust = illusts[i];  }
+        }
       }
     }
   }

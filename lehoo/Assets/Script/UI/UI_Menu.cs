@@ -80,6 +80,6 @@ private IEnumerator closeui()
   }
   public void QuitGame()
   {
-    UIManager.Instance.ResetGame("");
+    UIManager.Instance.ResetGame("",false);
   }
 }

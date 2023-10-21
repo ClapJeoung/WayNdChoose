@@ -9,26 +9,28 @@ public class UI_dialogue : UI_default
   public float OpenTime = 1.5f;
   public float CloseTime = 1.0f;
   private float MoveForButtonTime = 0.5f;
+  public RectTransform DialogueRect = null;
 
-  [SerializeField] private TextMeshProUGUI NameText = null;
+  public Vector2 EventDialogueSize = new Vector2(475.0f, 480.0f);
+  public Vector2 SettlementDialogueSize = new Vector2(475.0f, 780.0f);
+  public Vector2 LeftPos = new Vector2(-1350.0f, 0.0f);
+  public Vector2 CenterPos_Event = new Vector2(0.0f, 0.0f);
+  public Vector2 CenterPos_Settlement = new Vector2(125.0f, 0.0f);
+  public Vector2 RightPos = new Vector2(1250.0f, 0.0f);
+
+  [Header("이벤트")]
+  #region 이벤트
+  public GameObject EventObjectHolder = null;
+  [Space(10)]
   [SerializeField] private ImageSwapScript Illust = null;
+  public float FadeTime = 0.8f;
   [SerializeField] private Image IllustEffect_Image = null;
   [SerializeField] private CanvasGroup IllustEffect_Group = null;
-  [SerializeField] private Color IdleColor = Color.white;
-  [SerializeField] private Color RationalColor = Color.white;
-  [SerializeField] private Color PhysicalColor = Color.white;
-  [SerializeField] private Color MentalColor = Color.white;
-  [SerializeField] private Color MaterialColor = Color.white;
+  [SerializeField] private Color SuccessColor = Color.white;
   [SerializeField] private Color FailColor = Color.red;
-  // [SerializeField] private float FadeOutTime = 0.7f;
-  // [SerializeField] private float FadeInTime = 0.9f;
-  //[SerializeField] private float FadeWaitTime = 0.3f;
-  public float FadeTime = 0.8f;
-  public float DisableAlpha = 0.2f;
+
+  [SerializeField] private TextMeshProUGUI NameText = null;
   [SerializeField] private float ButtonFadeinTime = 0.4f;
- // [SerializeField] private Image EventIcon = null;
- // private GameObject EventIconHolder { get { return EventIcon.transform.parent.gameObject; } }
-  [Space(10)]
   [SerializeField] private TextMeshProUGUI DescriptionText = null;
   public Scrollbar DescriptionScrollBar = null;
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
@@ -37,7 +39,6 @@ public class UI_dialogue : UI_default
     yield return new WaitForSeconds(0.05f);
 
     float _time = 0.0f;
-    float _targettime = 1.0f;
     while (DescriptionScrollBar.value>0.001f)
     {
       DescriptionScrollBar.value = Mathf.Lerp(DescriptionScrollBar.value, 0.0f, 0.013f);
@@ -47,9 +48,9 @@ public class UI_dialogue : UI_default
     }
     DescriptionScrollBar.value = 0.0f;
   }
-  // [SerializeField] private CanvasGroup DescriptionTextGroup = null;
-  [Space(10)]
+  public float DisableAlpha = 0.2f;
   [SerializeField] private CanvasGroup NextButtonGroup = null;
+  [SerializeField] private TextMeshProUGUI NextButtonText = null;
   private void SetNextButtonDisable()
   {
     NextButtonGroup.alpha = DisableAlpha;
@@ -60,32 +61,17 @@ public class UI_dialogue : UI_default
     NextButtonGroup.alpha = 1.0f;
     NextButtonGroup.interactable = true;
   }
-
-  //  [SerializeField] private UnityEngine.UI.Button NextButton = null;
-  [SerializeField] private TextMeshProUGUI NextButtonText = null;
-  [Space(10)]
+  [SerializeField] private CanvasGroup RewardButtonGroup = null;
+  [SerializeField] private Image RewardIcon = null;
+  [SerializeField] private TextMeshProUGUI RewardDescription = null;
+  [SerializeField] private Onpointer_highlight Reward_Highlight = null;
+  [SerializeField] private UI_RewardExp RewardExpUI = null;
+  [SerializeField] private CanvasGroup EndingButtonGroup = null;
+  [SerializeField] private TextMeshProUGUI EndingButtonText = null;
   [SerializeField] private CanvasGroup SelectionGroup = null;
   [SerializeField] private UI_Selection Selection_A = null;
   [SerializeField] private UI_Selection Selection_B = null;
-//  [SerializeField] private ParticleSystem SuccessParticle = null;
-//  [SerializeField] private ParticleSystem FailParticle = null;
-  [Space(10)]
-  [SerializeField] private CanvasGroup RewardButtonGroup = null;
-  [SerializeField] private Image RewardIcon = null;
- // [SerializeField] private TextMeshProUGUI RewardName = null;
-  [SerializeField] private TextMeshProUGUI RewardDescription = null;
- // [SerializeField] private TextMeshProUGUI Reward_clicktoget = null;
-  [SerializeField] private Onpointer_highlight Reward_Highlight = null;
-  [Space(10)]
-  [SerializeField] private CanvasGroup EndingButtonGroup = null;
-  [SerializeField] private TextMeshProUGUI EndingButtonText = null;
-  [Space(10)]
-  [SerializeField] private UI_Settlement SettlementUI = null;
-  [SerializeField] private UI_map MapUI = null;
-  [SerializeField] private UI_RewardExp RewardExpUI = null;
-  private Vector2 LeftPos = new Vector2(-1350.0f, 0.0f);
-  private Vector2 CenterPos = new Vector2(0.0f, 0.0f);
-  private Vector2 RightPos = new Vector2(1670.0f, 0.0f);
+
   private EventData CurrentEvent
   {
     get { return GameManager.Instance.MyGameData.CurrentEvent; }
@@ -96,9 +82,14 @@ public class UI_dialogue : UI_default
     if (_selection == Selection_A) return Selection_B;
     return Selection_A;
   }
-  public void OpenUI(bool dir)
+  public IEnumerator OpenEventUI(bool dir)
   {
     IsOpen = true;
+
+    if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
+    if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
+    DialogueRect.sizeDelta = EventDialogueSize;
+
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
     if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
   
@@ -115,11 +106,22 @@ public class UI_dialogue : UI_default
 
     DescriptionText.text = "";
 
-    UIManager.Instance.AddUIQueue(openui());
+    DefaultGroup.interactable = false;
+    StartCoroutine(displaynextindex(true));
+
+    Vector2 _startpos = dir ? LeftPos : RightPos;
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos_Event, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+
+    DefaultGroup.interactable = true;
+    yield return null;
   }
-  public void OpenUI(bool issuccess,bool isleft)
+  public IEnumerator OpenEventUI(bool issuccess,bool isleft,bool dir)
   {
     IsOpen = true;
+    if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
+    if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
+    DialogueRect.sizeDelta = EventDialogueSize;
+
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
     if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
 
@@ -165,7 +167,15 @@ public class UI_dialogue : UI_default
     }
     CurrentEventPhaseMaxIndex = CurrentEventIllustHolderes.Count;
 
-    UIManager.Instance.AddUIQueue(openui());
+    DefaultGroup.interactable = false;
+    Illust.Setup(CurrentEventIllustHolderes[0].CurrentIllust);
+    StartCoroutine(displaynextindex(true));
+
+    Vector2 _startpos = dir ? LeftPos : RightPos;
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos_Event, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+
+    DefaultGroup.interactable = true;
+    yield return null;
   }
   [Space(15)]
   public int CurrentEventPhaseMaxIndex = 0;
@@ -178,16 +188,6 @@ public class UI_dialogue : UI_default
     if (UIManager.Instance.IsWorking) return;
 
     UIManager.Instance.AddUIQueue(displaynextindex(true));
-  }
-  private IEnumerator openui()
-  {
-    DefaultGroup.interactable = false;
-    StartCoroutine(displaynextindex(true));
-
-    yield return  StartCoroutine(UIManager.Instance.moverect(DefaultRect, LeftPos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
-
-    DefaultGroup.interactable = true;
-    yield return null;
   }
   private IEnumerator displaynextindex(bool dir)
   {
@@ -267,71 +267,6 @@ public class UI_dialogue : UI_default
           if(SelectionGroup.gameObject.activeInHierarchy==true) SelectionGroup.gameObject.SetActive(false);
           if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
           if (EndingButtonGroup.gameObject.activeInHierarchy == true) EndingButtonGroup.gameObject.SetActive(false);
-
-          SetNextButtonDisable();
-
-          Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
-          yield return new WaitForSeconds(FadeTime);
-
-          DescriptionText.text +="<br><br>"+ CurrentEventDescriptions[CurrentEventPhaseIndex];
-          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
-          yield return StartCoroutine(updatescrollbar());
-          SetNextButtonActive();
-
-          if (CurrentSuccessData != null)
-          {
-            SetRewardButton();
-            
-            if (CurrentSuccessData.Reward_Type != RewardTypeEnum.None)
-            {
-              RewardButtonGroup.alpha = 0.0f;
-              if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
-              StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
-            }
-
-            if (CurrentEvent.EndingID != "")
-            {
-              if (EndingButtonGroup.gameObject.activeInHierarchy == false) EndingButtonGroup.gameObject.SetActive(true);
-              LayoutRebuilder.ForceRebuildLayoutImmediate(EndingButtonGroup.transform as RectTransform);
-              StartCoroutine(UIManager.Instance.ChangeAlpha(EndingButtonGroup,1.0f,ButtonFadeinTime));
-            }
-          }
-          else if (CurrentFailData != null)
-          {
-            SetPenalty();
-            
-            switch (CurrentFailData.Penelty_target)
-            {
-              case PenaltyTarget.None:
-                break;
-              case PenaltyTarget.EXP:
-                break;
-              case PenaltyTarget.Status:
-                switch (CurrentFailData.StatusType)
-                {
-                  case StatusTypeEnum.HP:
-                    DescriptionText.text += WNCText.SetSize(30,$"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP,2)} {-1*PenaltyValue}");
-                    break;
-                  case StatusTypeEnum.Sanity:
-                    DescriptionText.text +=   WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {-1*PenaltyValue}");
-                    break;
-                  case StatusTypeEnum.Gold:
-                    DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {-1*-PenaltyValue}");
-                    break;
-                }
-                break;
-            }
-          }
-        }
-        else                                 //다음 버튼 눌러서 보상에 도달할때
-        {
-          NextButtonGroup.gameObject.SetActive(false);
-
-          Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
-          yield return new WaitForSeconds(FadeTime);
-
-          DescriptionText.text += "<br><br>" + CurrentEventDescriptions[CurrentEventPhaseIndex];
-
           if (CurrentSuccessData != null)
           {
             SetRewardButton();
@@ -341,6 +276,10 @@ public class UI_dialogue : UI_default
               RewardButtonGroup.alpha = 0.0f;
               if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
               StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
+            }
+            else
+            {
+              if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
             }
 
             if (CurrentEvent.EndingID != "")
@@ -352,6 +291,17 @@ public class UI_dialogue : UI_default
           }
           else if (CurrentFailData != null)
           {
+            SetPenalty();
+
+          }
+
+
+          Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
+          yield return new WaitForSeconds(FadeTime);
+
+          DescriptionText.text +="<br><br>"+ CurrentEventDescriptions[CurrentEventPhaseIndex];
+          if (CurrentFailData != null)
+          {
             switch (CurrentFailData.Penelty_target)
             {
               case PenaltyTarget.None:
@@ -362,21 +312,81 @@ public class UI_dialogue : UI_default
                 switch (CurrentFailData.StatusType)
                 {
                   case StatusTypeEnum.HP:
-                    DescriptionText.text += "<br>" +
-                     WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {-1*PenaltyValue}");
+                    DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {-1 * PenaltyValue}");
                     break;
                   case StatusTypeEnum.Sanity:
-                    DescriptionText.text += "<br>" + CurrentEventDescriptions[CurrentEventPhaseIndex] +
-                     WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {-1*PenaltyValue}");
+                    DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {-1 * PenaltyValue}");
                     break;
                   case StatusTypeEnum.Gold:
-                    DescriptionText.text += "<br>" + CurrentEventDescriptions[CurrentEventPhaseIndex] +
-                     WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {-1*PenaltyValue}");
+                    DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {-1 * PenaltyValue}");
                     break;
                 }
                 break;
             }
           }
+          LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
+          yield return StartCoroutine(updatescrollbar());
+
+        }
+        else                                 //다음 버튼 눌러서 보상에 도달할때
+        {
+          if (CurrentSuccessData != null)
+          {
+            SetRewardButton();
+
+            if (CurrentSuccessData.Reward_Type != RewardTypeEnum.None)
+            {
+              RewardButtonGroup.alpha = 0.0f;
+              if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
+              StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
+            }
+            else
+            {
+              if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+            }
+
+            if (CurrentEvent.EndingID != "")
+            {
+              if (EndingButtonGroup.gameObject.activeInHierarchy == false) EndingButtonGroup.gameObject.SetActive(true);
+              LayoutRebuilder.ForceRebuildLayoutImmediate(EndingButtonGroup.transform as RectTransform);
+              StartCoroutine(UIManager.Instance.ChangeAlpha(EndingButtonGroup, 1.0f, ButtonFadeinTime));
+            }
+          }
+          else if (CurrentFailData != null)
+          {
+            SetPenalty();
+
+          }
+
+          Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
+          yield return new WaitForSeconds(FadeTime);
+
+          DescriptionText.text += "<br><br>" + CurrentEventDescriptions[CurrentEventPhaseIndex];
+          if (CurrentFailData != null)
+          {
+            switch (CurrentFailData.Penelty_target)
+            {
+              case PenaltyTarget.None:
+                break;
+              case PenaltyTarget.EXP:
+                break;
+              case PenaltyTarget.Status:
+                switch (CurrentFailData.StatusType)
+                {
+                  case StatusTypeEnum.HP:
+                    DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {-1 * PenaltyValue}");
+                    break;
+                  case StatusTypeEnum.Sanity:
+                    DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {-1 * PenaltyValue}");
+                    break;
+                  case StatusTypeEnum.Gold:
+                    DescriptionText.text +=WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {-1 * PenaltyValue}");
+                    break;
+                }
+                break;
+            }
+          }
+
           LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
 
           yield return StartCoroutine(updatescrollbar());
@@ -487,7 +497,7 @@ public class UI_dialogue : UI_default
         {
           _payvalue = GameManager.Instance.MyGameData.PayHPValue;
        //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.HP, _selection.PayIcon.transform as RectTransform));
-          yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.HP, _payvalue, 0, _selection.PayInfo));
+          yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;
           GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.PayHPValue;
@@ -496,7 +506,7 @@ public class UI_dialogue : UI_default
         {
           _payvalue = GameManager.Instance.MyGameData.PaySanityValue;
        //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
-          yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
+          yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
           GameManager.Instance.MyGameData.Sanity -= GameManager.Instance.MyGameData.PaySanityValue;
@@ -510,7 +520,7 @@ public class UI_dialogue : UI_default
           {
             //    yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
             _issuccess = true;
-            yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
+            yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
           }
           else
           {
@@ -520,7 +530,7 @@ public class UI_dialogue : UI_default
 
            //   StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
             //  StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, _selection.PayIcon.transform as RectTransform));
-              yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue, 0, _selection.PayInfo));
+              yield return StartCoroutine(payanimation(_selection.PayIcon,_payvalue, 0, _selection.PayInfo));
 
               _issuccess = true;
               GameManager.Instance.MyGameData.Gold = 0;
@@ -529,7 +539,7 @@ public class UI_dialogue : UI_default
             }//돈이 부족해 성공한 경우
             else
             {
-              yield return StartCoroutine(payanimation(_selection.PayIcon, StatusTypeEnum.Sanity, _payvalue,_payvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
+              yield return StartCoroutine(payanimation(_selection.PayIcon,  _payvalue,_payvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
 
               _issuccess = false;
             }//돈이 부족해 실패한 경우
@@ -572,13 +582,13 @@ public class UI_dialogue : UI_default
     {
       Debug.Log("성공함");
       SetSuccess(CurrentEvent.SelectionDatas[_selection.Index].SuccessData);
-      GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType, _selection.Index);
+      GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType, _selection.IsLeft);
     }
     else            //실패하면 실패
     {
       Debug.Log("실패함");
       SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailData);
-      GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.Index);
+      GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.IsLeft);
     }
     _selection.DeActive();
 
@@ -590,29 +600,19 @@ public class UI_dialogue : UI_default
   [SerializeField] private float SelectionEffectTime_check = 4.0f;
   [SerializeField] private float SelectionEffectTime_pay = 1.5f;
   [SerializeField] private AnimationCurve SelectionCheckCurve = null;
-  private IEnumerator payanimation(Image image, StatusTypeEnum status,int payvalue, int targetvalue, TextMeshProUGUI tmp)
+  private IEnumerator payanimation(Image image, int payvalue, int targetvalue, TextMeshProUGUI tmp)
   {
     float _time = 0.0f;
     string _str = "";
     while(_time< SelectionEffectTime_pay * (1.0f-targetvalue/(float)payvalue))
     {
       image.fillAmount = 1.0f - _time / SelectionEffectTime_pay;
-      switch (status)
-      {
-        case StatusTypeEnum.HP:_str = WNCText.GetHPColor((int)Mathf.Lerp(payvalue, targetvalue, _time / SelectionEffectTime_pay));break;
-        case StatusTypeEnum.Sanity: _str = WNCText.GetSanityColor((int)Mathf.Lerp(payvalue, targetvalue, _time / SelectionEffectTime_pay)); break;
-        case StatusTypeEnum.Gold: _str = WNCText.GetGoldColor((int)Mathf.Lerp(payvalue, targetvalue, _time / SelectionEffectTime_pay)); break;
-      }
+      _str = ((int)Mathf.Lerp(payvalue, targetvalue, _time / SelectionEffectTime_pay)).ToString();
       tmp.text = _str;
       _time += Time.deltaTime;
       yield return null;
     }
-    switch (status)
-    {
-      case StatusTypeEnum.HP: _str = WNCText.GetHPColor(targetvalue); break;
-      case StatusTypeEnum.Sanity: _str = WNCText.GetSanityColor(targetvalue); break;
-      case StatusTypeEnum.Gold: _str = WNCText.GetGoldColor(targetvalue); break;
-    }
+    _str = targetvalue.ToString();
     tmp.text= _str;
 
     yield return new WaitForSeconds(0.3f);
@@ -632,7 +632,6 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator checkanimation(Image image_L,Image image_R,float successvalue)
   {
-    Debug.Log(successvalue);
     float _time = 0.0f;
     while (_time < SelectionEffectTime_check * successvalue)
     {
@@ -661,14 +660,7 @@ public class UI_dialogue : UI_default
       CurrentEventIllustHolderes = CurrentSuccessData.Illusts;
       CurrentEventDescriptions = CurrentSuccessData.Descriptions;
 
-    Color _color = new Color();
-    switch (_success.Tendencytype)
-    {
-      case TendencyTypeEnum.None:_color = IdleColor;break;
-      case TendencyTypeEnum.Body:_color = _success.Index == 0 ? RationalColor : PhysicalColor;break;
-      case TendencyTypeEnum.Head:_color = _success.Index == 0 ? MentalColor : MaterialColor;break;
-    }
-    IllustEffect_Image.color = _color;
+    IllustEffect_Image.color = SuccessColor;
     StartCoroutine (UIManager.Instance.ChangeAlpha(IllustEffect_Group, 0.0f, ResultEffectTime));
 
       UIManager.Instance.AddUIQueue(displaynextindex(true));
@@ -687,6 +679,7 @@ public class UI_dialogue : UI_default
     if (NextButtonGroup.gameObject.activeInHierarchy == true) NextButtonGroup.gameObject.SetActive(false);
 
     Reward_Highlight.RemoveAllCall();
+    Reward_Highlight.Interactive = true;
     RemainReward = CurrentSuccessData.Reward_Type == RewardTypeEnum.None ? false : true;
     Sprite _icon = null;
     string _description = "";
@@ -765,16 +758,20 @@ public class UI_dialogue : UI_default
   /// <param name="dir"></param>
   public void CloseUI(bool dir)
   {
-    IsOpen = false;
-    UIManager.Instance.AddUIQueue(closeui(dir));
+    UIManager.Instance.AddUIQueue(closeui_all(dir));
   }
-  private IEnumerator closeui(bool dir)
+  private IEnumerator closeui_all(bool dir)
   {
+    IsOpen = false;
+
     CurrentSuccessData = null;
     CurrentFailData = null;
 
     UIManager.Instance.OffBackground();
-    StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
+
+    if (UIManager.Instance.MapButton.IsOpen) UIManager.Instance.MapButton.Close();
+    if (UIManager.Instance.SettleButton.IsOpen) UIManager.Instance.SettleButton.Close();
+    if (RewardButtonGroup.alpha==1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
     if (dir == true)
     {
@@ -880,5 +877,444 @@ public class UI_dialogue : UI_default
         }
         break;
     }
+
+    if(NextButtonGroup.gameObject.activeInHierarchy==true)NextButtonGroup.gameObject.SetActive(false);
+    if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+    if(EndingButtonGroup.gameObject.activeInHierarchy == true) EndingButtonGroup.gameObject.SetActive(false);
+
   }//실패할 경우 패널티 부과하는 연출
+  #endregion
+  [Space(20)]
+  [Header("정착지")]
+  #region 정착지
+  public GameObject SettlementObjectHolder = null;
+  [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
+  [SerializeField] private TextMeshProUGUI SettlementNameText = null;
+  [SerializeField] private RectTransform DiscomfortIcon = null;
+  [SerializeField] private TextMeshProUGUI DiscomfortText = null;
+  [SerializeField] private TextMeshProUGUI RestCostValueText = null;
+  [SerializeField] private List<PlaceIconScript> SectorIcons = new List<PlaceIconScript>();
+  private PlaceIconScript GetSectorIconScript(SectorTypeEnum sectortype)
+  {
+    for (int i = 0; i < SectorIcons.Count; i++)
+    {
+      if (SectorIcons[i].MyType == sectortype) return SectorIcons[i];
+    }
+    return null;
+  }
+  [SerializeField] private UnityEngine.UI.Image SelectSectorIcon = null;
+  [SerializeField] private TextMeshProUGUI SectorName = null;
+  [SerializeField] private TextMeshProUGUI SectorEffect = null;
+  [SerializeField] private TextMeshProUGUI RestResult = null;
+  [SerializeField] private GameObject RestButtonHolder = null;
+  [SerializeField] private TextMeshProUGUI CostText = null;
+  [SerializeField] private Onpointer_highlight CostHighlight_Sanity = null;
+  [SerializeField] private UnityEngine.UI.Button Cost_Sanity = null;
+  [SerializeField] private Onpointer_highlight CostHighlight_Gold = null;
+  [SerializeField] private UnityEngine.UI.Button Cost_Gold = null;
+  private Settlement CurrentSettlement = null;
+  private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
+  public IEnumerator openui_settlement(bool dir)
+  {
+    DefaultGroup.interactable = false;
+
+    IsOpen = true;
+
+    if (EventObjectHolder.activeInHierarchy == true) EventObjectHolder.SetActive(false);
+    if (SettlementObjectHolder.activeInHierarchy == false) SettlementObjectHolder.SetActive(true);
+    DialogueRect.sizeDelta = SettlementDialogueSize;
+
+    IsSelectSector = false;
+    QuestSectorInfo = 0;
+    SelectedSector = SectorTypeEnum.NULL;
+    CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
+    Illust.Setup(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
+
+
+SettlementNameText.text = CurrentSettlement.Name;
+    DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
+      Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+    DiscomfortText.fontSize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
+          Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+    DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+    RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
+     (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
+    if (RestButtonHolder.gameObject.activeInHierarchy == true) RestButtonHolder.gameObject.SetActive(false);
+
+    Sprite _settlementicon = null;
+    int _placecount = 0;
+    switch (CurrentSettlement.SettlementType)
+    {
+      case SettlementType.Village: _placecount = 2; _settlementicon = GameManager.Instance.ImageHolder.VillageIcon_white; break;
+      case SettlementType.Town: _placecount = 3; _settlementicon = GameManager.Instance.ImageHolder.TownIcon_white; break;
+      case SettlementType.City: _placecount = 4; _settlementicon = GameManager.Instance.ImageHolder.CityIcon_white; break;
+    }
+    for (int i = 0; i < SectorIcons.Count; i++)
+    {
+      if (i < _placecount)
+      {
+        if (SectorIcons[i].gameObject.activeInHierarchy == false) SectorIcons[i].gameObject.SetActive(true);
+        SectorIcons[i].OpenIcon();
+      }
+      else
+      {
+        if (SectorIcons[i].gameObject.activeInHierarchy == true) SectorIcons[i].gameObject.SetActive(false);
+      }
+    }
+
+    SettlementIcon.sprite = _settlementicon;
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
+    SectorName.text = GameManager.Instance.GetTextData("SELECTPLACE");
+    SectorEffect.text = "";
+
+    RestResult.text = "";
+    CostText.text = "";
+
+    Vector2 _startpos_panel = Vector2.zero, _endpos_panel = Vector2.zero;
+    if (dir == true)
+    {
+      _startpos_panel = LeftPos;
+      _endpos_panel = CenterPos_Settlement;
+
+    }
+    else
+    {
+      _startpos_panel = RightPos;
+      _endpos_panel = CenterPos_Settlement;
+    }
+
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos_panel, _endpos_panel, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+
+    UIManager.Instance.MapButton.Open(0, this);
+
+    DefaultGroup.interactable = true;
+  }
+  /// <summary>
+  /// 0:일반 1:집회 2:페널티만
+  /// </summary>
+ [HideInInspector] public int QuestSectorInfo = 0;
+  [HideInInspector] public int GoldCost = 0;
+  [HideInInspector] public int SanityCost = 0;
+  [HideInInspector] public int DiscomfortValue = 0;
+  [HideInInspector] public int MovePointValue = 0;
+  [HideInInspector] public bool IsSelectSector = false;
+
+  public void OnPointerSector(SectorTypeEnum sector)
+  {
+    if (IsSelectSector == true) return;
+
+    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(sector);
+
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(sector);
+    SectorName.text = GameManager.Instance.GetTextData(sector, 0);
+    string _effect = GameManager.Instance.GetTextData(sector, 3);
+    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
+      ConstValues.Tendency_Head_p1 : ConstValues.Rest_Discomfort;
+    switch (sector)
+    {
+      case SectorTypeEnum.Residence:
+        _effect = string.Format(_effect,
+          WNCText.GetMovepointColor(ConstValues.SectorEffect_residence_movepoint),
+          WNCText.GetDiscomfortColor(ConstValues.SectorEffect_residence_discomfort));
+
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = _discomfort_default + ConstValues.SectorEffect_residence_discomfort;
+        MovePointValue = ConstValues.Rest_MovePoint + ConstValues.SectorEffect_residence_movepoint;
+        break;
+      case SectorTypeEnum.Temple:
+        _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
+
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = _discomfort_default;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        break;
+      case SectorTypeEnum.Marketplace:
+        _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
+
+        GoldCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        SanityCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        DiscomfortValue = _discomfort_default;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        break;
+      case SectorTypeEnum.Library:
+        _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
+
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = _discomfort_default;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        break;
+      case SectorTypeEnum.Theater:
+        //서비스 종료다...!
+        break;
+      case SectorTypeEnum.Academy:
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = ConstValues.Rest_Discomfort;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
+        break;
+    }
+
+    string _sabbatdescription = "";
+    switch (QuestSectorInfo)
+    {
+      case 0:
+        SectorEffect.text = _effect;
+        break;
+      case 1:
+        DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
+        _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
+ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
+        SectorEffect.text = _effect + _sabbatdescription;
+        break;
+    }
+    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), DiscomfortValue, MovePointValue);
+
+  }
+  public void OutPointerSector()
+  {
+    if (IsSelectSector == true) return;
+
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
+    SectorName.text = "";
+    SectorEffect.text = "";
+    RestResult.text = "";
+  }
+  public void SelectPlace(int index)  //Sectortype은 0이 NULL임
+  {
+    if (SelectedSector == (SectorTypeEnum)index) return;
+
+    if (SelectedSector != SectorTypeEnum.NULL) GetSectorIconScript(SelectedSector).SetIdleColor();
+    SelectedSector = (SectorTypeEnum)index;
+    IsSelectSector = true;
+
+    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
+
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
+    SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
+    string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
+    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
+      ConstValues.Tendency_Head_p1 : ConstValues.Rest_Discomfort;
+    switch (SelectedSector)
+    {
+      case SectorTypeEnum.Residence:
+        _effect = string.Format(_effect,
+          WNCText.GetMovepointColor(ConstValues.SectorEffect_residence_movepoint),
+          WNCText.GetDiscomfortColor(ConstValues.SectorEffect_residence_discomfort));
+
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = _discomfort_default + ConstValues.SectorEffect_residence_discomfort;
+        MovePointValue = ConstValues.Rest_MovePoint + ConstValues.SectorEffect_residence_movepoint;
+        break;
+      case SectorTypeEnum.Temple:
+        _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
+
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = _discomfort_default;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        break;
+      case SectorTypeEnum.Marketplace:
+        _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
+
+        GoldCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        SanityCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        DiscomfortValue = _discomfort_default;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        break;
+      case SectorTypeEnum.Library:
+        _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
+
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = _discomfort_default;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        break;
+      case SectorTypeEnum.Theater:
+        //서비스 종료다...!
+        break;
+      case SectorTypeEnum.Academy:
+        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
+        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
+        DiscomfortValue = ConstValues.Rest_Discomfort;
+        MovePointValue = ConstValues.Rest_MovePoint;
+        //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
+        break;
+    }
+
+    string _sabbatdescription = "";
+    switch (QuestSectorInfo)
+    {
+      case 0:
+        SectorEffect.text = _effect;
+        break;
+      case 1:
+        DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
+        _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
+ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
+        SectorEffect.text = _effect + _sabbatdescription;
+        break;
+      case 2:
+        SectorEffect.text = _effect;
+        break;
+    }
+    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), DiscomfortValue, MovePointValue);
+
+    CostText.text = "";
+    if (RestButtonHolder.gameObject.activeInHierarchy == false)
+    {
+      RestButtonHolder.gameObject.SetActive(true);
+    }
+
+    CostHighlight_Sanity.Interactive = true;
+    CostHighlight_Sanity.SetInfo(HighlightEffectEnum.Sanity, -1 * SanityCost);
+
+    bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
+    Cost_Gold.interactable = _goldable;
+    CostHighlight_Gold.Interactive = _goldable;
+    if (_goldable) CostHighlight_Gold.SetInfo(HighlightEffectEnum.Gold, -1 * GoldCost);
+  }
+  public void OnPointerRestType(StatusTypeEnum type)
+  {
+    if (UIManager.Instance.IsWorking) return;
+
+    switch (type)
+    {
+      case StatusTypeEnum.Sanity:
+
+        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"), SanityCost);
+        break;
+      case StatusTypeEnum.Gold:
+
+        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"), GoldCost);
+        break;
+
+    }
+  }
+  public void OnExitRestType(StatusTypeEnum type)
+  {
+    return;
+  }
+  public void StartRest_Sanity()
+  {
+    if (UIManager.Instance.IsWorking) return;
+
+    CostHighlight_Sanity.Interactive = false;
+    CostHighlight_Gold.Interactive = false;
+
+    UIManager.Instance.AddUIQueue(restinsector(StatusTypeEnum.Sanity));
+  }
+  public void StartRest_Gold()
+  {
+    if (UIManager.Instance.IsWorking) return;
+
+    CostHighlight_Sanity.Interactive = false;
+    CostHighlight_Gold.Interactive = false;
+
+    UIManager.Instance.AddUIQueue(restinsector(StatusTypeEnum.Gold));
+  }
+
+  private IEnumerator restinsector(StatusTypeEnum statustype)
+  {
+    IsOpen = false;
+
+    GameManager.Instance.MyGameData.FirstRest = false;
+
+    int _discomfortvalue = DiscomfortValue;
+    switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Cult:
+        switch (QuestSectorInfo)
+        {
+          case 0:
+            break;
+          case 1:
+            UIManager.Instance.CultUI.AddProgress(3);
+
+            if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2) GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown = ConstValues.Quest_Cult_CoolDown;
+            break;
+        }
+        break;
+    }
+
+    bool _madness_force = GameManager.Instance.MyGameData.Madness_Force == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Force;
+
+    switch (statustype)
+    {
+      case StatusTypeEnum.Sanity:
+        GameManager.Instance.MyGameData.Sanity -= SanityCost;
+        CurrentSettlement.Discomfort += _discomfortvalue;
+        DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+        if(DiscomfortValue>0) yield return StartCoroutine(discomfortscale());
+
+        if (_madness_force)
+        {
+          Debug.Log("무력 광기 발동");
+          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
+          //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.MovePoint += MovePointValue;
+          GameManager.Instance.MyGameData.ApplySectorEffect(SelectedSector);
+        }
+        break;
+      case StatusTypeEnum.Gold:
+
+        GameManager.Instance.MyGameData.Gold -= GoldCost;
+        CurrentSettlement.Discomfort += _discomfortvalue;
+        DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
+        if (DiscomfortValue > 0) yield return StartCoroutine(discomfortscale());
+
+        if (_madness_force)
+        {
+          Debug.Log("무력 광기 발동");
+          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
+          //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.MovePoint += MovePointValue;
+          GameManager.Instance.MyGameData.ApplySectorEffect(SelectedSector);
+        }
+        break;
+    }
+    yield return StartCoroutine(closeui_all(true));
+    GameManager.Instance.MyGameData.Turn++;
+
+    EventManager.Instance.SetSettlementEvent(SelectedSector);
+
+  }
+  public float DiscomfortScaleEffectTime = 0.3f;
+  public AnimationCurve DiscomfortAnimationCurve = new AnimationCurve();
+  private IEnumerator discomfortscale()
+  {
+    float _time = 0.0f;
+    float _startsize = DiscomfortIcon.sizeDelta.x,
+      _endsize = Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
+  Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+    float _fontstartsize = DiscomfortText.fontSize;
+    float _fontendsize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
+          Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+
+    while (_time < DiscomfortScaleEffectTime)
+    {
+      DiscomfortIcon.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 1.5f, DiscomfortAnimationCurve.Evaluate(_time / DiscomfortScaleEffectTime));
+      DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(_startsize, _endsize, _time / DiscomfortScaleEffectTime);
+      DiscomfortText.fontSize = Mathf.Lerp(_fontstartsize, _fontendsize, _time / DiscomfortScaleEffectTime);
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    DiscomfortIcon.localScale = Vector3.one;
+    DiscomfortText.fontSize = _fontendsize;
+    yield return new WaitForSeconds(0.1f);
+  }
+  #endregion
+
+  [SerializeField] private UI_map MapUI = null;
+
 }

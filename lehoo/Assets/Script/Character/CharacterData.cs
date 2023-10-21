@@ -307,7 +307,7 @@ public class GameData    //게임 진행도 데이터
     }
   }
   /// <summary>
-  /// 증가값 반환 (+n%)
+  /// 증가값 반환 (+0.n%)
   /// </summary>
   /// <param name="discomfort"></param>
   /// <returns></returns>
@@ -699,15 +699,15 @@ public class GameData    //게임 진행도 데이터
   /// <param name="jsondata"></param>
   public GameData(GameJsonData jsondata)
   {
-    MapData _map = new MapData();
-    _map.TileDatas = new TileData[ConstValues.MapSize, ConstValues.MapSize];
+    MyMapData = new MapData();
+    MyMapData.TileDatas = new TileData[ConstValues.MapSize, ConstValues.MapSize];
     int _index = 0;
     //[j,i]
     for(int i = 0; i < ConstValues.MapSize; i++)
     {
       for(int j=0;j< ConstValues.MapSize; j++)
       {
-        _index = j + i * ConstValues.MapSize;
+        _index = j * ConstValues.MapSize + i ;
         TileData _tiledata = new TileData();
         _tiledata.Coordinate = new Vector2Int(j, i);
         _tiledata.Rotation = jsondata.Tiledata_Rotation[_index];
@@ -717,7 +717,7 @@ public class GameData    //게임 진행도 데이터
         _tiledata.TopEnvirSprite = (TileSpriteType)jsondata.Tiledata_TopEnvirSprite[_index];
         _tiledata.BottomEnvirSprite = (TileSpriteType)jsondata.Tiledata_BottomEnvirSprite[_index];
        
-        _map.TileDatas[j, i] = _tiledata;
+        MyMapData.TileDatas[j, i] = _tiledata;
       }
     }
     
@@ -731,11 +731,11 @@ public class GameData    //게임 진행도 데이터
       _village.IsRiver = jsondata.Village_River[i];
       _village.IsMountain = jsondata.Village_Mountain[i];
       _village.IsSea = jsondata.Village_Sea[i];
-      _village.Tiles.Add(_map.Tile(jsondata.Village_Tiles[i]));
-      _map.Tile(jsondata.Village_Tiles[i]).TileSettle = _village;
+      _village.Tiles.Add(MyMapData.Tile(jsondata.Village_Tiles[i]));
+      MyMapData.Tile(jsondata.Village_Tiles[i]).TileSettle = _village;
 
-      _map.AllSettles.Add(_village);
-      _map.Villages.Add(_village);
+      MyMapData.AllSettles.Add(_village);
+      MyMapData.Villages.Add(_village);
     }
 
     Settlement _Town = new Settlement(SettlementType.Town);
@@ -747,11 +747,11 @@ public class GameData    //게임 진행도 데이터
     _Town.IsSea = jsondata.Town_Sea;
     for (int i = 0; i < jsondata.Town_Tiles.Count; i++)
     {
-      _Town.Tiles.Add(_map.Tile(jsondata.Town_Tiles[i]));
-      _map.Tile(jsondata.Town_Tiles[i]).TileSettle = _Town;
+      _Town.Tiles.Add(MyMapData.Tile(jsondata.Town_Tiles[i]));
+      MyMapData.Tile(jsondata.Town_Tiles[i]).TileSettle = _Town;
     }
-    _map.AllSettles.Add(_Town);
-    _map.Town = _Town;
+    MyMapData.AllSettles.Add(_Town);
+    MyMapData.Town = _Town;
 
     Settlement _City = new Settlement(SettlementType.City);
     _City.Index = jsondata.City_Id;
@@ -762,15 +762,15 @@ public class GameData    //게임 진행도 데이터
     _City.IsSea = jsondata.City_Sea;
     for (int i = 0; i < jsondata.City_Tiles.Count; i++)
     {
-      _City.Tiles.Add(_map.Tile(jsondata.City_Tiles[i]));
-      _map.Tile(jsondata.City_Tiles[i]).TileSettle = _City;
+      _City.Tiles.Add(MyMapData.Tile(jsondata.City_Tiles[i]));
+      MyMapData.Tile(jsondata.City_Tiles[i]).TileSettle = _City;
     }
-    _map.AllSettles.Add(_City);
-    _map.City= _City;
+    MyMapData.AllSettles.Add(_City);
+    MyMapData.City= _City;
 
     Coordinate = jsondata.Coordinate;
     if(jsondata.CurrentSettlementName!="")
-    foreach(var settlement in _map.AllSettles)
+    foreach(var settlement in MyMapData.AllSettles)
     {
       if (settlement.OriginName == jsondata.CurrentSettlementName)
       {
@@ -780,7 +780,6 @@ public class GameData    //게임 진행도 데이터
     }
     FirstRest= jsondata.FirstRest;
 
-    MyMapData = _map;
 
     Year = jsondata.Year;
     turn = jsondata.Turn;
@@ -845,7 +844,7 @@ public class GameData    //게임 진행도 데이터
         Cult_SabbatSector = (SectorTypeEnum)jsondata.Cult_SabbatSector;
         Cult_SabbatSector_CoolDown = jsondata.Cult_SabbatCoolDown;
         Cult_Progress_SabbatEventIndex = jsondata.Cult_Progress_SabbatEventIndex;
-        Cult_RitualTile = _map.Tile(jsondata.Cult_RitualTile);
+        Cult_RitualTile = MyMapData.Tile(jsondata.Cult_RitualTile);
         Cult_RitualTile_CoolDown = jsondata.Cult_RitualCoolDown;
         Cult_Progress_RitualEventIndex = jsondata.Cult_Progress_RitualEventIndex;
         break;

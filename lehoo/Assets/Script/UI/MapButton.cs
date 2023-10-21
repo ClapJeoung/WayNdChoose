@@ -23,20 +23,6 @@ public class MapButton : ReturnButton
         UIManager.Instance.DialogueUI.CloseUI(false);
       }
     }
-    else if (CurrentUI as UI_Settlement != null)
-    {
-      if (GameManager.Instance.MyGameData.MovePoint == 0 && Warned == false)
-      {
-        WarningDescription.text = GameManager.Instance.GetTextData("NOMOVEPOINT");
-        SetWarningButton();
-        return;
-      }
-      else
-      {
-        UIManager.Instance.MySettleUI.CloseUI(false);
-        if (GameManager.Instance.MyGameData.Tendency_Head.Level < 0) GameManager.Instance.MyGameData.MovePoint += ConstValues.Tendency_Head_m1;
-      }
-    }
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {

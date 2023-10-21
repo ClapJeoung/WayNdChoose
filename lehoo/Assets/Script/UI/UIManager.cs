@@ -23,16 +23,16 @@ public class UIManager : MonoBehaviour
     }
     StartCoroutine(ChangeAlpha(CurtainGroup, 0.0f, 2.5f));
   }
-  public void ResetGame(string text)
+  public void ResetGame(string text,bool isending)
   {
     IsWorking = true;
     CurtainText.text=text;
-    StartCoroutine(resetgame());
+    StartCoroutine(resetgame(isending));
   }
-  private IEnumerator resetgame()
+  private IEnumerator resetgame(bool isending)
   {
     yield return StartCoroutine(ChangeAlpha(CurtainGroup, 1.0f, 1.2f));
-    yield return new WaitForSeconds(3.0f);
+    if(isending) yield return new WaitForSeconds(3.0f);
     UnityEngine.SceneManagement.SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
   public AnimationCurve UIPanelOpenCurve = null;
@@ -46,7 +46,6 @@ public class UIManager : MonoBehaviour
   public UI_Main MainUi = null;
   public UI_dialogue DialogueUI = null;
   public UI_RewardExp ExpRewardUI = null;
-  public UI_Settlement MySettleUI = null;
   public UI_QuestWolf CultUI = null;
   public UI_Mad MadUI = null;
   public SidePanel_Quest_Cult SidePanelCultUI = null;
@@ -882,12 +881,11 @@ public class UIManager : MonoBehaviour
   }
   public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MapUI.SetPlayerPos(coordinate);
   public void UpdateMap_SetPlayerPos() => MapUI.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
-  public void MakeTileMap() => MapUI.MapCreater.MakeTilemap();
-  public void OpenDialogue(bool dir)
+  public void OpenDialogue_Event(bool dir)
   {
     //야외에서 바로 이벤트로 진입하는 경우는 UiMap에서 지도 닫는 메소드를 이미 실행한 상태
 
-    DialogueUI.OpenUI(dir);
+    AddUIQueue(DialogueUI.OpenEventUI(dir));
   }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void GetMad() => MadUI.OpenUI();
 

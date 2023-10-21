@@ -9,6 +9,7 @@ public enum BottomEnvirType
 public enum TopEnvirType {NULL, Forest,Mountain,Highland }
 public enum LandmarkType { Outer,Village,Town,City,Ritual}
 public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
+[System.Serializable]
 public class TileData
 {
   public Vector2Int Coordinate = Vector2Int.zero;

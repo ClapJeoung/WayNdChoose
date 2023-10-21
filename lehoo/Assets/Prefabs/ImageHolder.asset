@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ImageHolder
   m_EditorClassIdentifier: 
   EventIllust:
-  - {fileID: 21300000, guid: e70e2ee7bb4ab6c4aa080507ea3f187a, type: 3}
+  - {fileID: 21300000, guid: 4f514dc503369734c89af76c50f849bb, type: 3}
+  - {fileID: 21300000, guid: dd225b3f10af382488489e2da9c64001, type: 3}
   - {fileID: 21300000, guid: dd225b3f10af382488489e2da9c64001, type: 3}
   - {fileID: 21300000, guid: 8d7ef4cafac4f3d48848393343f2c978, type: 3}
   - {fileID: 21300000, guid: 2913e9882e7fff04ca15ad56190f7e22, type: 3}
@@ -22,7 +23,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: ba1631bf754bfcb4aae9d52ac5849f74, type: 3}
   - {fileID: 21300000, guid: 296238bce0288604cbd592ede48ebe1d, type: 3}
   - {fileID: 21300000, guid: 03f699973d0a29d44a3918a7bc919639, type: 3}
-  - {fileID: 21300000, guid: 9a2ad1e73a14d654f880ae3dbc557aa5, type: 3}
   - {fileID: 21300000, guid: c82d07c5e3dcb03469e961e2f9bfc717, type: 3}
   - {fileID: 21300000, guid: dd6b226562e8eb64cb5a272c65ab6ac7, type: 3}
   - {fileID: 21300000, guid: 8651a397c3c031345a7f32205489d1ec, type: 3}
@@ -87,6 +87,67 @@ MonoBehaviour:
   GameOver_Wild: {fileID: 21300000, guid: f5f8ef03f61a3594c96b255d49942269, type: 3}
   GameOver_Intelligence: {fileID: 21300000, guid: f4ddf5c78e3ead64483685202e28ceaa, type: 3}
   GameOver_Madness: {fileID: 21300000, guid: 1e804cc870a34de4fb3b4a1360e3d712, type: 3}
+  Village_spring:
+  - {fileID: 21300000, guid: 52477fb93cae6414395a5edbbbb35896, type: 3}
+  - {fileID: 21300000, guid: 494b45a1292761f40ba08d46f8e4a946, type: 3}
+  - {fileID: 21300000, guid: 343ab3129a548ae49b809ed578c055fe, type: 3}
+  - {fileID: 21300000, guid: d8f51e8b3e3de2843a32040c8bb0e89c, type: 3}
+  Village_summer:
+  - {fileID: 21300000, guid: 483e179232db0d549b6d41a86f044aa8, type: 3}
+  - {fileID: 21300000, guid: 56196245e00041d45ac68c2a6ba7329f, type: 3}
+  - {fileID: 21300000, guid: 64ee094e08c965745b43c31db4cb8c51, type: 3}
+  - {fileID: 21300000, guid: c694bdb31b1bc6e4c9a1128472590b1c, type: 3}
+  Village_autumn:
+  - {fileID: 21300000, guid: 38cc37e4c01cd1741b7768261cc72285, type: 3}
+  - {fileID: 21300000, guid: 91f36ccb06822ce4b80cf7ec678751a8, type: 3}
+  - {fileID: 21300000, guid: db929402613e44042bfa8508bae2efcf, type: 3}
+  - {fileID: 21300000, guid: 7ccea3558c46f3642a470ae6cc0e392f, type: 3}
+  - {fileID: 21300000, guid: 76d31395654dd0f4992778e8287d648b, type: 3}
+  Village_winter:
+  - {fileID: 21300000, guid: 7b02b31d76fad7046a7655fefb1f04fb, type: 3}
+  - {fileID: 21300000, guid: bc85257cb899d0f45b4dd2fd0330425a, type: 3}
+  - {fileID: 21300000, guid: 6e67899b7b3ff1940a51091e3a52d47a, type: 3}
+  - {fileID: 21300000, guid: 5ad61326d4a7a2c4391973fe3234cde9, type: 3}
+  Town_spring:
+  - {fileID: 21300000, guid: 297afa5ea41cd6e4e9ed976ab2862373, type: 3}
+  - {fileID: 21300000, guid: 10944c6960a7d564ab1b20a1b630dfdb, type: 3}
+  - {fileID: 21300000, guid: 4a59ef2966191cf4aabde670883d3f17, type: 3}
+  - {fileID: 21300000, guid: 317ce04a67cd8a949ad8549600a74414, type: 3}
+  Town_summer:
+  - {fileID: 21300000, guid: b66f616d96b2b124eb18a3a15eb23b6f, type: 3}
+  - {fileID: 21300000, guid: 751b32082e3bde2478ad330984b408bd, type: 3}
+  - {fileID: 21300000, guid: 1819163c18c3df54eba5a2c81e3b6134, type: 3}
+  - {fileID: 21300000, guid: 60e9b90da6feafb4c8074da1cb423f9f, type: 3}
+  Town_autumn:
+  - {fileID: 21300000, guid: 19b212b5fba1214469300936fd5c8658, type: 3}
+  - {fileID: 21300000, guid: 22050add954f86340b4ad1541a00d52b, type: 3}
+  - {fileID: 21300000, guid: 95acaf0eaf84b0448b23a81dcafd279b, type: 3}
+  - {fileID: 21300000, guid: 5017213cf301cb442a8f793b0a00f8c9, type: 3}
+  Town_winter:
+  - {fileID: 21300000, guid: 00cf94313cdc82345a5db6b5504fead7, type: 3}
+  - {fileID: 21300000, guid: 2832f785e615cfd47b7b64a728e895a6, type: 3}
+  - {fileID: 21300000, guid: bd08f2d24fbbd3f4bad09599266e45ed, type: 3}
+  - {fileID: 21300000, guid: 897c89f165b11d744bd749a939fd646f, type: 3}
+  City_spring:
+  - {fileID: 21300000, guid: ad252afb451ce4549856b59afe06d8fb, type: 3}
+  - {fileID: 21300000, guid: 885b53d7122d67a4bbea1fad1e38ff7e, type: 3}
+  - {fileID: 21300000, guid: e012a67b76264cb4980ce8f728f33bd6, type: 3}
+  - {fileID: 21300000, guid: 6ea90c58b57c246429f54a7578c167a9, type: 3}
+  City_summer:
+  - {fileID: 21300000, guid: 90123e51d9f6c844e856980cc1b98ea9, type: 3}
+  - {fileID: 21300000, guid: 9ca1fa344c2ac454fad50fe57f97c6ec, type: 3}
+  - {fileID: 21300000, guid: e1a9307a3346b09469bfd6560f53d14f, type: 3}
+  - {fileID: 21300000, guid: 883205e51da73c34295271eacae660ba, type: 3}
+  City_autumn:
+  - {fileID: 21300000, guid: 039a6b2003009b443abcc26617b3a6d3, type: 3}
+  - {fileID: 21300000, guid: 87a41ebdcbe3f444aa7e329cec308b8b, type: 3}
+  - {fileID: 21300000, guid: 0447ad3299c31e34384015ace2304a61, type: 3}
+  - {fileID: 21300000, guid: 058e1aec3cd5f1145b8c3eb49493f3ad, type: 3}
+  City_winter:
+  - {fileID: 21300000, guid: e418ec61d71f20f4ba5dd472535d10d5, type: 3}
+  - {fileID: 21300000, guid: 49cf9232b8ad8a444a4e1c63187fd8e8, type: 3}
+  - {fileID: 21300000, guid: 358280792d9448b4b836a5ec9e8195ae, type: 3}
+  - {fileID: 21300000, guid: 468dbcb374ff8e34c8541e2739400527, type: 3}
   MovePointIcon_Enable: {fileID: 21300000, guid: cfdf7cb8ba959524e90a6ac0ba00007f, type: 3}
   MovePointIcon_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
   VillageIcon_black: {fileID: 21300000, guid: a4e91d81e0dd57b45888a932340e1161, type: 3}

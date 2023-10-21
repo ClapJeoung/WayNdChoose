@@ -9,13 +9,20 @@ using UnityEditor.PackageManager;
 public class UI_QuestWolf : UI_default
 {
   [Space(10)]
-  [SerializeField] private UI_Settlement SettlementUI = null;
   public bool Skip = false;
   [SerializeField] private float UIMoveInTime = 0.7f;
   [SerializeField] private float UIMoveOutTime = 0.4f;//Rect 움직이는거
   [SerializeField] private float FadeInTime = 1.0f;
   [SerializeField] private float FadeOutTime = 0.4f;  //이미지,텍스트 투명도
-  private QuestHolder_Cult QuestHolder = null;
+  private QuestHolder_Cult questholder = null;
+  private QuestHolder_Cult QuestHolder
+  {
+    get 
+    { 
+      if (questholder == null) questholder = (QuestHolder_Cult)GameManager.Instance.MyGameData.CurrentQuestData;
+      return questholder;
+    }
+  }
 
   #region 프롤로그
   [Space(5)]
@@ -60,7 +67,6 @@ public class UI_QuestWolf : UI_default
   {
     if(DefaultRect.anchoredPosition!=Vector2.zero)DefaultRect.anchoredPosition = Vector2.zero;
     CurrentPrologueIndex = 0;
-    QuestHolder = wolf;
     IsOpen = true;
     UIManager.Instance.SidePanelCultUI.UpdateUI();
     UIManager.Instance.AddUIQueue(openui_prologue());
@@ -363,6 +369,7 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
   {
     IsProgressWorking = true;
     ProgressBackgroundButton.SetActive(true);
+    UIManager.Instance.SidePanelCultUI.UpdateUI();
      yield return StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressEventGroup, 1.0f,UIMoveInTime));
     IsProgressWorking = false;
   }

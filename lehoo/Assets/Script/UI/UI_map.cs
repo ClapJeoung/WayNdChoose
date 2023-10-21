@@ -43,12 +43,12 @@ public class UI_map : UI_default
   private Vector2 Left_Pivot = new Vector2(0.0f, 0.5f);
   public Vector2 Left_OutsidePos = new Vector2(-1000.0f, -0.0f);
   public Vector2 Left_InsidePos = new Vector2(-620.0f, 0.0f);
-  private Vector2 Left_Anchor = new Vector2(1.0f, 0.5f);
+  private Vector2 Left_Anchor = new Vector2(0.0F, 0.5f);
   public Vector2 Left_LastHolderPos = new Vector2(620.0f, 0.0f);
   public Vector2 Right_Pivot = new Vector2(1.0f, 0.5f);
   public Vector2 Right_InsidePos = new Vector2(620.0f, 0.0f);
   public Vector2 Right_OutsidePos = new Vector2(1200.0f, -0.0f);
-  private Vector2 Right_Anchor = new Vector2(0.0f, 0.5f);
+  private Vector2 Right_Anchor = new Vector2(1.0F, 0.5f);
   public Vector2 Right_LastHolderPos = new Vector2(-620.0f, 0.0f);
   public float UIOpenTime_Fold = 0.8f;
   public float UIOpenTime_Move = 0.6f;
@@ -574,26 +574,6 @@ public class UI_map : UI_default
     SelectedTile = null;
     Debug.Log("이동 코루틴이 끝난 레후~");
   }
-  /*
-  private IEnumerator zoominview()
-  {
-    float _time = 0.0f, _targettime = ZoomInTime;
-    Vector3 _startscale = IdleScale, _endscale = ZoomInScale;
-    Vector2 _startposition = ScaleRect.anchoredPosition, 
-      _endposition = new Vector2(SelectedTile.Rect.anchoredPosition.x*-1.0f*ZoomInScale.x,SelectedTile.Rect.anchoredPosition.y*-1.0f*ZoomInScale.y)-HolderRect.anchoredPosition;
-    float _degree = 0.0f;
-    while (_time < _targettime)
-    {
-      _degree = ZoomInCurve.Evaluate(_time / _targettime);
-      ScaleRect.localScale = Vector3.Lerp(_startscale, _endscale, _degree);
-      ScaleRect.anchoredPosition=Vector2.Lerp(_startposition,_endposition,_degree);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    ScaleRect.localScale = _endscale;
-    ScaleRect.anchoredPosition = _endposition;
-  }//정착지,야외 이동 후 지도 줌인 하는 코루틴
-  */
   public void SetPlayerPos(Vector2 coordinate)
   {
     TileData _targettile = GameManager.Instance.MyGameData.MyMapData.Tile(coordinate);

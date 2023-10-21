@@ -423,7 +423,7 @@ public class GameManager : MonoBehaviour
   }//현재 데이터 저장
   #endregion
 
-  public void SuccessCurrentEvent(TendencyTypeEnum _tendencytype,int index)
+  public void SuccessCurrentEvent(TendencyTypeEnum _tendencytype,bool dir)
   {
     int _tendencyindex = 0;
     switch (_tendencytype)
@@ -432,11 +432,11 @@ public class GameManager : MonoBehaviour
         _tendencyindex = 0;
         break;
       case TendencyTypeEnum.Body:
-        if (index.Equals(0)) _tendencyindex = 1;
+        if (dir) _tendencyindex = 1;
         else _tendencyindex = 2;
         break;
       case TendencyTypeEnum.Head:
-        if (index.Equals(0)) _tendencyindex = 3;
+        if (dir) _tendencyindex = 3;
         else _tendencyindex = 4;
         break;
     }
@@ -451,7 +451,7 @@ public class GameManager : MonoBehaviour
         break;
     }
   }
-  public void FailCurrentEvent(TendencyTypeEnum _tendencytype, int index)
+  public void FailCurrentEvent(TendencyTypeEnum _tendencytype, bool dir)
   {
     int _tendencyindex = 0;
     switch (_tendencytype)
@@ -460,11 +460,11 @@ public class GameManager : MonoBehaviour
         _tendencyindex = 0;
         break;
       case TendencyTypeEnum.Body:
-        if (index.Equals(0)) _tendencyindex = 1;
+        if (dir) _tendencyindex = 1;
         else _tendencyindex = 2;
         break;
       case TendencyTypeEnum.Head:
-        if (index.Equals(0)) _tendencyindex = 3;
+        if (dir) _tendencyindex = 3;
         else _tendencyindex = 4;
         break;
     }
@@ -507,7 +507,7 @@ public class GameManager : MonoBehaviour
     MyGameData.CurrentEvent = eventdata;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
 
-    UIManager.Instance.OpenDialogue(false);
+    UIManager.Instance.OpenDialogue_Event(false);
 
     SaveData();
   }
@@ -638,7 +638,10 @@ public class GameManager : MonoBehaviour
   {
     MyGameData = new GameData(GameSaveData);
 
-    UIManager.Instance.MakeTileMap();
+    //    Debug.Log(JsonUtility.ToJson(GameSaveData));
+    //    Debug.Log(JsonUtility.ToJson(new GameJsonData(new GameData(new GameJsonData(MyGameData)))));
+
+    yield return StartCoroutine(UIManager.Instance.MapUI.MapCreater.MakeTilemap());
     UIManager.Instance.UpdateMap_SetPlayerPos();
     UIManager.Instance.UpdateAllUI();
 
@@ -648,13 +651,13 @@ public class GameManager : MonoBehaviour
 
     if (MyGameData.CurrentEventSequence == EventSequence.Progress)
     {
-      UIManager.Instance.DialogueUI.OpenUI(true);
+      UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.OpenEventUI(false));
     }
     else
     {
       bool _issuccess = false;
       bool _isleft = false;
-      if (MyGameData.SuccessEvent_Rational.Contains(_eventid) || MyGameData.SuccessEvent_Mental.Contains(_eventid))
+      if (MyGameData.SuccessEvent_Rational.Contains(_eventid) || MyGameData.SuccessEvent_Mental.Contains(_eventid)||MyGameData.SuccessEvent_None.Contains(_eventid))
       {
         _issuccess = true;
         _isleft = true;
@@ -664,7 +667,7 @@ public class GameManager : MonoBehaviour
         _issuccess = true;
         _isleft = false;
       }
-      else if (MyGameData.FailEvent_Rational.Contains(_eventid) || MyGameData.FailEvent_Mental.Contains(_eventid))
+      else if (MyGameData.FailEvent_Rational.Contains(_eventid) || MyGameData.FailEvent_Mental.Contains(_eventid) || MyGameData.FailEvent_None.Contains(_eventid))
       {
         _issuccess = false;
         _isleft = true;
@@ -674,7 +677,7 @@ public class GameManager : MonoBehaviour
         _issuccess = false;
         _isleft = false;
       }
-      UIManager.Instance.DialogueUI.OpenUI(_issuccess, _isleft);
+      UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.OpenEventUI(_issuccess, _isleft,false));
     }
 
     IsPlaying = true;
@@ -695,7 +698,7 @@ public class GameManager : MonoBehaviour
 
     MyGameData.Coordinate = _randomstartlands[UnityEngine.Random.Range(0, _randomstartlands.Count)].Coordinate;
 
-    _map.MakeTilemap();
+    yield return StartCoroutine(_map.MakeTilemap());
     UIManager.Instance.UpdateMap_SetPlayerPos();
     yield return null;
   }
@@ -728,7 +731,7 @@ public class GameManager : MonoBehaviour
         break;
     }
 
-    UIManager.Instance.MySettleUI.OpenUI(false);
+    UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(false));
   }
   public List<HexDir> GetLength(TileData start, TileData end)
   {

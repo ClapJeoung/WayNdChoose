@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 public class UI_Settlement : UI_default
 {
+  /*
   private WaitForSeconds LittleWait = new WaitForSeconds(0.2f);
   public float OpenTime_Fold = 0.4f;
   public float OpenTime_Move = 0.8f;
@@ -59,15 +60,6 @@ public class UI_Settlement : UI_default
   [SerializeField] private UnityEngine.UI.Button Cost_Gold = null;
   private Settlement CurrentSettlement = null;
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
-  /// <summary>
-  /// true:좌측에서 등장 false:우측에서 등장
-  /// </summary>
-  /// <param name="type"></param>
-  public void OpenUI(bool dir)
-  {
-    IsOpen = true;
-    UIManager.Instance.AddUIQueue(openui(dir));
-  }
   private IEnumerator openui(bool dir)
   {
     DefaultGroup.blocksRaycasts = false;
@@ -562,4 +554,5 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     DiscomfortText.fontSize = _fontendsize;
 
   }
+  */
 }

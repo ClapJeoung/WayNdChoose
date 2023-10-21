@@ -288,8 +288,50 @@ public class EventHolder
 
     if (eventdata.EventType==EventTypeEnum.Cult)
     {
-      if (success) GameManager.Instance.MyGameData.SuccessEvent_All.Add(eventdata.ID);
-      else GameManager.Instance.MyGameData.FailEvent_All.Add(eventdata.ID);
+      if (success == true)
+      {
+        switch (tendency)
+        {
+          case 0:
+            GameManager.Instance.MyGameData.SuccessEvent_None.Add(eventdata.ID);
+            break;
+          case 1:
+            GameManager.Instance.MyGameData.SuccessEvent_Rational.Add(eventdata.ID);
+            break;
+          case 2:
+            GameManager.Instance.MyGameData.SuccessEvent_Physical.Add(eventdata.ID);
+            break;
+          case 3:
+            GameManager.Instance.MyGameData.SuccessEvent_Mental.Add(eventdata.ID);
+            break;
+          case 4:
+            GameManager.Instance.MyGameData.SuccessEvent_Material.Add(eventdata.ID);
+            break;
+        }
+        GameManager.Instance.MyGameData.SuccessEvent_All.Add(eventdata.ID);
+      }
+      else
+      {
+        switch (tendency)
+        {
+          case 0:
+            GameManager.Instance.MyGameData.FailEvent_None.Add(eventdata.ID);
+            break;
+          case 1:
+            GameManager.Instance.MyGameData.FailEvent_Rational.Add(eventdata.ID);
+            break;
+          case 2:
+            GameManager.Instance.MyGameData.FailEvent_Physical.Add(eventdata.ID);
+            break;
+          case 3:
+            GameManager.Instance.MyGameData.FailEvent_Mental.Add(eventdata.ID);
+            break;
+          case 4:
+            GameManager.Instance.MyGameData.FailEvent_Material.Add(eventdata.ID);
+            break;
+        }
+        GameManager.Instance.MyGameData.FailEvent_All.Add(eventdata.ID);
+      }
     }
     else
     {
@@ -736,7 +778,7 @@ public class EventData
   {
     get
     {
-     return  GameManager.Instance.ImageHolder.GetEventIllusts(ID,"_Beginning",BeginningLength );
+     return  GameManager.Instance.ImageHolder.GetEventIllusts(ID,"Beginning",BeginningLength );
     }
   }
   private List<string> beginningdescriptions=new List<string>();
@@ -858,7 +900,7 @@ public class FailData
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
   private string OriginID { get { return MyEvent.ID; } }
-  private string TypeID { get { return "_" + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Fail"; } }
+  private string TypeID { get { return  (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Fail"; } }
   private List<string> descriptions=new List<string>();
   public List<string> Descriptions
   {
@@ -866,7 +908,7 @@ public class FailData
     {
       if (descriptions.Count == 0)
       {
-        List<string> _temp = GameManager.Instance.GetTextData(OriginID+TypeID+"_Descriptions").Split('@').ToList();
+        List<string> _temp = GameManager.Instance.GetTextData(OriginID+"_"+TypeID+"_Descriptions").Split('@').ToList();
         for (int i = 0; i < _temp.Count; i++)
         {
           descriptions.Add(WNCText.GetSeasonText(_temp[i]));
@@ -908,7 +950,7 @@ public class SuccessData
     MyEvent = myevent; Index = index; Tendencytype = tendencytype;
   }
   private string OriginID { get { return MyEvent.ID; } }
-  private string TypeID { get { return "_" + (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
+  private string TypeID { get { return  (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
   private List<string> descriptions= new List<string>();
   public List<string> Descriptions
   {
@@ -916,7 +958,7 @@ public class SuccessData
     {
       if (descriptions.Count == 0)
       {
-        List<string> _temp = GameManager.Instance.GetTextData(OriginID+TypeID + "_Descriptions").Split('@').ToList();
+        List<string> _temp = GameManager.Instance.GetTextData(OriginID + "_" + TypeID + "_Descriptions").Split('@').ToList();
         for (int i = 0; i < _temp.Count; i++)
         {
           descriptions.Add(WNCText.GetSeasonText(_temp[i]));
