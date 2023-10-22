@@ -8,17 +8,19 @@ public class MapButton : ReturnButton
   {
     base.Clicked();
 
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null && GameManager.Instance.MyGameData.Tendency_Head.Level < 0)
+      GameManager.Instance.MyGameData.MovePoint++;
 
-    if (CurrentUI as UI_dialogue != null)
+      if (CurrentUI as UI_dialogue != null)
     {
       UI_dialogue _dialogue = CurrentUI as UI_dialogue;
-      if (_dialogue.RemainReward == true && Warned == false)
+ /*     if (_dialogue.RemainReward == true && Warned == false)
       {
         WarningDescription.text = GameManager.Instance.GetTextData("NOREWARD");
         SetWarningButton();
         return;
       }
-      else
+      else*/
       {
         UIManager.Instance.DialogueUI.CloseUI(false);
       }

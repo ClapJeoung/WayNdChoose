@@ -714,8 +714,8 @@ public class GameManager : MonoBehaviour
           case 0:
             if (!MyGameData.Cult_SettlementTypes.Contains(targetsettlement.SettlementType))
             {
-              UIManager.Instance.CultUI.AddProgress(2);
               MyGameData.Cult_SettlementTypes.Add(targetsettlement.SettlementType);
+              UIManager.Instance.CultUI.AddProgress(2);
             }
             break;
           case 1:

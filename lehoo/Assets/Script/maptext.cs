@@ -1216,6 +1216,8 @@ public class maptext : MonoBehaviour
       PreviewInteractive _villagepreview = _village.Tiles[0].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _villagepreview.PanelType = PreviewPanelType.SettlementTile;
       _villagepreview.MySettleMent = _village;
+      _village.Tiles[0].ButtonScript.Preview = _villagepreview;
+      _villagepreview.enabled = false;
 
       MapUIScript.VillageIcons.Add(_villageholder);
     }
@@ -1244,6 +1246,8 @@ public class maptext : MonoBehaviour
       PreviewInteractive _townpreview = _town.Tiles[j].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _townpreview.PanelType = PreviewPanelType.SettlementTile;
       _townpreview.MySettleMent = _town;
+      _town.Tiles[j].ButtonScript.Preview = _townpreview;
+      _townpreview.enabled = false;
     }
     MapUIScript.TownIcon=(_townholder);
 
@@ -1271,6 +1275,8 @@ public class maptext : MonoBehaviour
       PreviewInteractive _settlementpreview = _city.Tiles[j].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _settlementpreview.PanelType = PreviewPanelType.SettlementTile;
       _settlementpreview.MySettleMent = _city;
+      _city.Tiles[j].ButtonScript.Preview = _settlementpreview;
+      _settlementpreview.enabled = false;
     }
     MapUIScript.CityIcon=_cityholder;
 

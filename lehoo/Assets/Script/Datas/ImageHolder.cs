@@ -12,14 +12,14 @@ public enum EventPhaseTypeEnum { Beginning,Selecting,Success,Fail,LSuccess,LFail
 [CreateAssetMenu(menuName ="ImageHolder")]
 public class ImageHolder : ScriptableObject
 {
-  public List<Sprite> EventIllust = new List<Sprite>();              //모든 이벤트 일러스트
-  public List<Sprite> EXPIllust = new List<Sprite>();                  //모든 경험 일러스트
+  public List<Sprite> EventIllust = new List<Sprite>();
+  public List<Sprite> EXPIllust = new List<Sprite>();
   public Sprite GetRandomMainIllust(Sprite lastillust)
   {
     Sprite _spr = EventIllust[Random.Range(0, EventIllust.Count)];
     while (_spr == lastillust) _spr = EventIllust[Random.Range(0, EventIllust.Count)];
     return _spr;
-  }//대문에 넣을 일러스트 무작위로 전달
+  }
   [Space(20)]
   public Sprite GameOver_Idle = null;
   public Sprite GameOver_Conversation = null;
@@ -76,6 +76,219 @@ public class ImageHolder : ScriptableObject
 
     return _targetlist[Random.Range(0,_targetlist.Count)];
   }
+  [Space(5)]
+  public List<Sprite> Village_Residence_s0 = new List<Sprite>();
+  public List<Sprite> Village_Residence_s1 = new List<Sprite>();
+  public List<Sprite> Village_Residence_s2 = new List<Sprite>();
+  public List<Sprite> Village_Residence_s3 = new List<Sprite>();
+  public List<Sprite> Village_Temple_s0 = new List<Sprite>();
+  public List<Sprite> Village_Temple_s1 = new List<Sprite>();
+  public List<Sprite> Village_Temple_s2 = new List<Sprite>();
+  public List<Sprite> Village_Temple_s3 = new List<Sprite>();
+  public List<Sprite> Town_Residence_s0 = new List<Sprite>();
+  public List<Sprite> Town_Residence_s1 = new List<Sprite>();
+  public List<Sprite> Town_Residence_s2 = new List<Sprite>();
+  public List<Sprite> Town_Residence_s3 = new List<Sprite>();
+  public List<Sprite> Town_Temple_s0 = new List<Sprite>();
+  public List<Sprite> Town_Temple_s1 = new List<Sprite>();
+  public List<Sprite> Town_Temple_s2 = new List<Sprite>();
+  public List<Sprite> Town_Temple_s3 = new List<Sprite>();
+  public List<Sprite> Town_Market_s0 = new List<Sprite>();
+  public List<Sprite> Town_Market_s1 = new List<Sprite>();
+  public List<Sprite> Town_Market_s2 = new List<Sprite>();
+  public List<Sprite> Town_Market_s3 = new List<Sprite>();
+  public List<Sprite> City_Residence_s0 = new List<Sprite>();
+  public List<Sprite> City_Residence_s1 = new List<Sprite>();
+  public List<Sprite> City_Residence_s2 = new List<Sprite>();
+  public List<Sprite> City_Residence_s3 = new List<Sprite>();
+  public List<Sprite> City_Temple_s0 = new List<Sprite>();
+  public List<Sprite> City_Temple_s1 = new List<Sprite>();
+  public List<Sprite> City_Temple_s2 = new List<Sprite>();
+  public List<Sprite> City_Temple_s3 = new List<Sprite>();
+  public List<Sprite> City_Market_s0 = new List<Sprite>();
+  public List<Sprite> City_Market_s1 = new List<Sprite>();
+  public List<Sprite> City_Market_s2 = new List<Sprite>();
+  public List<Sprite> City_Market_s3 = new List<Sprite>();
+  public List<Sprite> City_Library_s0 = new List<Sprite>();
+  public List<Sprite> City_Library_s1 = new List<Sprite>();
+  public List<Sprite> City_Library_s2 = new List<Sprite>();
+  public List<Sprite> City_Library_s3 = new List<Sprite>();
+  public Sprite GetSectorIllust(SettlementType settlement, SectorTypeEnum sector,int seasen)
+  {
+    List<Sprite> _targetlist = new List<Sprite>();
+    switch (settlement)
+    {
+      case SettlementType.Village:
+        switch (sector)
+        {
+          case SectorTypeEnum.Residence:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = Village_Residence_s0;
+                break;
+              case 1:
+                _targetlist = Village_Residence_s1;
+                break;
+              case 2:
+                _targetlist = Village_Residence_s2;
+                break;
+              case 3:
+                _targetlist = Village_Residence_s3;
+                break;
+            }
+            break;
+          case SectorTypeEnum.Temple:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = Village_Temple_s0;
+                break;
+              case 1:
+                _targetlist = Village_Temple_s1;
+                break;
+              case 2:
+                _targetlist = Village_Temple_s2;
+                break;
+              case 3:
+                _targetlist = Village_Temple_s3;
+                break;
+            }
+            break;
+        }
+        break;
+      case SettlementType.Town:
+        switch (sector)
+        {
+          case SectorTypeEnum.Residence:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = Town_Residence_s0;
+                break;
+              case 1:
+                _targetlist = Town_Residence_s1;
+                break;
+              case 2:
+                _targetlist = Town_Residence_s2;
+                break;
+              case 3:
+                _targetlist = Town_Residence_s3;
+                break;
+            }
+            break;
+          case SectorTypeEnum.Temple:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = Town_Temple_s0;
+                break;
+              case 1:
+                _targetlist = Town_Temple_s1;
+                break;
+              case 2:
+                _targetlist = Town_Temple_s2;
+                break;
+              case 3:
+                _targetlist = Town_Temple_s3;
+                break;
+            }
+            break;
+          case SectorTypeEnum.Marketplace:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = Town_Market_s0;
+                break;
+              case 1:
+                _targetlist = Town_Market_s1;
+                break;
+              case 2:
+                _targetlist = Town_Market_s2;
+                break;
+              case 3:
+                _targetlist = Town_Market_s3;
+                break;
+            }
+            break;
+        }
+        break;
+      case SettlementType.City:
+        switch (sector)
+        {
+          case SectorTypeEnum.Residence:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = City_Residence_s0;
+                break;
+              case 1:
+                _targetlist = City_Residence_s1;
+                break;
+              case 2:
+                _targetlist = City_Residence_s2;
+                break;
+              case 3:
+                _targetlist = City_Residence_s3;
+                break;
+            }
+            break;
+          case SectorTypeEnum.Temple:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = City_Temple_s0;
+                break;
+              case 1:
+                _targetlist = City_Temple_s1;
+                break;
+              case 2:
+                _targetlist = City_Temple_s2;
+                break;
+              case 3:
+                _targetlist = City_Temple_s3;
+                break;
+            }
+            break;
+          case SectorTypeEnum.Marketplace:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = City_Market_s0;
+                break;
+              case 1:
+                _targetlist = City_Market_s1;
+                break;
+              case 2:
+                _targetlist = City_Market_s2;
+                break;
+              case 3:
+                _targetlist = City_Market_s3;
+                break;
+            }
+            break;
+          case SectorTypeEnum.Library:
+            switch (seasen)
+            {
+              case 0:
+                _targetlist = City_Library_s0;
+                break;
+              case 1:
+                _targetlist = City_Library_s1;
+                break;
+              case 2:
+                _targetlist = City_Library_s2;
+                break;
+              case 3:
+                _targetlist = City_Library_s3;
+                break;
+            }
+            break;
+        }
+        break;
+    }
+    return _targetlist[Random.Range(0, _targetlist.Count)];
+  }
 
   public Sprite MovePointIcon_Enable = null;
   public Sprite MovePointIcon_Lack = null;
@@ -88,9 +301,9 @@ public class ImageHolder : ScriptableObject
   public Sprite CityIcon_black = null;
   public Sprite CityIcon_white = null;
   //public List<Sprite> CityIllust=new List<Sprite>();               //성채 일러스트
-  [Space(10)]
-  public Sprite SkillIllust_Conversation = null;
-  public Sprite SkillIllust_Force = null, SkillIllust_Wild = null, SkillIllust_Intelligence = null;
+ // [Space(10)]
+//  public Sprite SkillIllust_Conversation = null;
+//  public Sprite SkillIllust_Force = null, SkillIllust_Wild = null, SkillIllust_Intelligence = null;
   [Space(5)]
   public Sprite SkillIcon_Conversation_b = null;
   public Sprite SkillIcon_Force_b = null;
@@ -339,6 +552,7 @@ public class ImageHolder : ScriptableObject
       default: return DefaultIcon;
     }
   }
+  /*
   public Sprite GetSkillIllust(SkillTypeEnum _type)
   {
     switch (_type)
@@ -349,6 +563,7 @@ public class ImageHolder : ScriptableObject
       default: return SkillIllust_Intelligence;
     }
   }
+  */
 
   /*  public Sprite GetVillageSprite(string _name)
   {
@@ -523,10 +738,10 @@ public class EventIllustHolder
         }
         else
         {
-          if (_namearray[3]=="s0") { SpringIllust = illusts[i]; }
-         else if (_namearray[3] == "s1") { SummerIllust = illusts[i]; }
-         else if (_namearray[3] == "s2") { AutumnIllust = illusts[i];  }
-         else if (_namearray[3] == "s3") { WinterIllust = illusts[i];  }
+          if (_namearray[3].Contains("s0")) { SpringIllust = illusts[i]; }
+         else if (_namearray[3].Contains("s1")) { SummerIllust = illusts[i]; }
+         else if (_namearray[3].Contains("s2")) { AutumnIllust = illusts[i];  }
+         else if (_namearray[3].Contains("s3")) { WinterIllust = illusts[i];  }
         }
       }
     }

@@ -88,66 +88,149 @@ MonoBehaviour:
   GameOver_Intelligence: {fileID: 21300000, guid: f4ddf5c78e3ead64483685202e28ceaa, type: 3}
   GameOver_Madness: {fileID: 21300000, guid: 1e804cc870a34de4fb3b4a1360e3d712, type: 3}
   Village_spring:
-  - {fileID: 21300000, guid: 52477fb93cae6414395a5edbbbb35896, type: 3}
-  - {fileID: 21300000, guid: 494b45a1292761f40ba08d46f8e4a946, type: 3}
-  - {fileID: 21300000, guid: 343ab3129a548ae49b809ed578c055fe, type: 3}
-  - {fileID: 21300000, guid: d8f51e8b3e3de2843a32040c8bb0e89c, type: 3}
+  - {fileID: 21300000, guid: a0e73dd4855f22247a12c782f466257c, type: 3}
+  - {fileID: 21300000, guid: ca1d5f4f7c8d5e14e88593ac5efa3156, type: 3}
   Village_summer:
-  - {fileID: 21300000, guid: 483e179232db0d549b6d41a86f044aa8, type: 3}
-  - {fileID: 21300000, guid: 56196245e00041d45ac68c2a6ba7329f, type: 3}
-  - {fileID: 21300000, guid: 64ee094e08c965745b43c31db4cb8c51, type: 3}
-  - {fileID: 21300000, guid: c694bdb31b1bc6e4c9a1128472590b1c, type: 3}
+  - {fileID: 21300000, guid: f8a4a2221c24b1b48afe415fad885760, type: 3}
+  - {fileID: 21300000, guid: 7729a033088af75419cbcf965376d6fa, type: 3}
   Village_autumn:
-  - {fileID: 21300000, guid: 38cc37e4c01cd1741b7768261cc72285, type: 3}
-  - {fileID: 21300000, guid: 91f36ccb06822ce4b80cf7ec678751a8, type: 3}
-  - {fileID: 21300000, guid: db929402613e44042bfa8508bae2efcf, type: 3}
-  - {fileID: 21300000, guid: 7ccea3558c46f3642a470ae6cc0e392f, type: 3}
-  - {fileID: 21300000, guid: 76d31395654dd0f4992778e8287d648b, type: 3}
+  - {fileID: 21300000, guid: be4b81c01e465ce4fa92fbcce70db2e2, type: 3}
+  - {fileID: 21300000, guid: 966f5ce2576dafd4e94ea7ecab2ac7d0, type: 3}
   Village_winter:
-  - {fileID: 21300000, guid: 7b02b31d76fad7046a7655fefb1f04fb, type: 3}
-  - {fileID: 21300000, guid: bc85257cb899d0f45b4dd2fd0330425a, type: 3}
-  - {fileID: 21300000, guid: 6e67899b7b3ff1940a51091e3a52d47a, type: 3}
-  - {fileID: 21300000, guid: 5ad61326d4a7a2c4391973fe3234cde9, type: 3}
+  - {fileID: 21300000, guid: 438c0f3aa26d8864089835b2e20b60f1, type: 3}
+  - {fileID: 21300000, guid: 421ff4bbfe0668340bef14a56b8ed5a8, type: 3}
   Town_spring:
-  - {fileID: 21300000, guid: 297afa5ea41cd6e4e9ed976ab2862373, type: 3}
-  - {fileID: 21300000, guid: 10944c6960a7d564ab1b20a1b630dfdb, type: 3}
-  - {fileID: 21300000, guid: 4a59ef2966191cf4aabde670883d3f17, type: 3}
-  - {fileID: 21300000, guid: 317ce04a67cd8a949ad8549600a74414, type: 3}
+  - {fileID: 21300000, guid: 6aecb9a7cfd37404abe8781fa094cb28, type: 3}
+  - {fileID: 21300000, guid: 26684cbb8afcb674c91b7684a447047c, type: 3}
   Town_summer:
-  - {fileID: 21300000, guid: b66f616d96b2b124eb18a3a15eb23b6f, type: 3}
-  - {fileID: 21300000, guid: 751b32082e3bde2478ad330984b408bd, type: 3}
-  - {fileID: 21300000, guid: 1819163c18c3df54eba5a2c81e3b6134, type: 3}
-  - {fileID: 21300000, guid: 60e9b90da6feafb4c8074da1cb423f9f, type: 3}
+  - {fileID: 21300000, guid: 35c9f490173485e4ea6df9cd9d5beccb, type: 3}
+  - {fileID: 21300000, guid: bb6ac5d566d6f0b4db0ac8094c462d43, type: 3}
   Town_autumn:
-  - {fileID: 21300000, guid: 19b212b5fba1214469300936fd5c8658, type: 3}
-  - {fileID: 21300000, guid: 22050add954f86340b4ad1541a00d52b, type: 3}
-  - {fileID: 21300000, guid: 95acaf0eaf84b0448b23a81dcafd279b, type: 3}
-  - {fileID: 21300000, guid: 5017213cf301cb442a8f793b0a00f8c9, type: 3}
+  - {fileID: 21300000, guid: 796d5a6f4c2d5384cb011f315ebc2ff6, type: 3}
+  - {fileID: 21300000, guid: 9ff44e7bd0a774847ae7c80e8e4beb3f, type: 3}
   Town_winter:
-  - {fileID: 21300000, guid: 00cf94313cdc82345a5db6b5504fead7, type: 3}
-  - {fileID: 21300000, guid: 2832f785e615cfd47b7b64a728e895a6, type: 3}
-  - {fileID: 21300000, guid: bd08f2d24fbbd3f4bad09599266e45ed, type: 3}
-  - {fileID: 21300000, guid: 897c89f165b11d744bd749a939fd646f, type: 3}
+  - {fileID: 21300000, guid: ada1936289e8e8e42a3adb6668518567, type: 3}
+  - {fileID: 21300000, guid: 947760940853b5340ba1bdb446c0ca2d, type: 3}
   City_spring:
-  - {fileID: 21300000, guid: ad252afb451ce4549856b59afe06d8fb, type: 3}
-  - {fileID: 21300000, guid: 885b53d7122d67a4bbea1fad1e38ff7e, type: 3}
-  - {fileID: 21300000, guid: e012a67b76264cb4980ce8f728f33bd6, type: 3}
-  - {fileID: 21300000, guid: 6ea90c58b57c246429f54a7578c167a9, type: 3}
+  - {fileID: 21300000, guid: 31092b811a6178842a8e3a9939639917, type: 3}
+  - {fileID: 21300000, guid: ba521dbb9fc714f4a8c88435bca4f7b0, type: 3}
   City_summer:
-  - {fileID: 21300000, guid: 90123e51d9f6c844e856980cc1b98ea9, type: 3}
-  - {fileID: 21300000, guid: 9ca1fa344c2ac454fad50fe57f97c6ec, type: 3}
-  - {fileID: 21300000, guid: e1a9307a3346b09469bfd6560f53d14f, type: 3}
-  - {fileID: 21300000, guid: 883205e51da73c34295271eacae660ba, type: 3}
+  - {fileID: 21300000, guid: f767013f543d1bc449351d5df4574825, type: 3}
+  - {fileID: 21300000, guid: 6f8113145057b4748b2c30bb8d194b75, type: 3}
   City_autumn:
-  - {fileID: 21300000, guid: 039a6b2003009b443abcc26617b3a6d3, type: 3}
-  - {fileID: 21300000, guid: 87a41ebdcbe3f444aa7e329cec308b8b, type: 3}
-  - {fileID: 21300000, guid: 0447ad3299c31e34384015ace2304a61, type: 3}
-  - {fileID: 21300000, guid: 058e1aec3cd5f1145b8c3eb49493f3ad, type: 3}
+  - {fileID: 21300000, guid: f8bafdd66365e0f479c0f4d715140a05, type: 3}
+  - {fileID: 21300000, guid: dbdb6defcb83f51419c847c40a42292a, type: 3}
   City_winter:
-  - {fileID: 21300000, guid: e418ec61d71f20f4ba5dd472535d10d5, type: 3}
-  - {fileID: 21300000, guid: 49cf9232b8ad8a444a4e1c63187fd8e8, type: 3}
-  - {fileID: 21300000, guid: 358280792d9448b4b836a5ec9e8195ae, type: 3}
-  - {fileID: 21300000, guid: 468dbcb374ff8e34c8541e2739400527, type: 3}
+  - {fileID: 21300000, guid: 3c0da1ebaafc6244ba5a077996274fc7, type: 3}
+  - {fileID: 21300000, guid: b6cfb5473cce1de44a24b41aa31bfb27, type: 3}
+  Village_Residence_s0:
+  - {fileID: 21300000, guid: b264dd60d1ad1a34b99b5e0586234598, type: 3}
+  - {fileID: 21300000, guid: ab5afa00abbaacb4cb3662fcd02c6785, type: 3}
+  Village_Residence_s1:
+  - {fileID: 21300000, guid: f78903e2fc688f544a268df8a8620b50, type: 3}
+  - {fileID: 21300000, guid: 765aa96aab048a742ae33075f2282ce4, type: 3}
+  Village_Residence_s2:
+  - {fileID: 21300000, guid: fc14d3fe9de76a949ade2437bc3871d1, type: 3}
+  - {fileID: 21300000, guid: e301b8d4a6789b84083036ce9b03cfae, type: 3}
+  Village_Residence_s3:
+  - {fileID: 21300000, guid: 6b0ed12a1091c974090c3b1a81dc35f9, type: 3}
+  - {fileID: 21300000, guid: 6ca6a024f8c2ac544b3c1d708212887a, type: 3}
+  Village_Temple_s0:
+  - {fileID: 21300000, guid: 8d13c1259cf44d6449c42ee4bb4d1a95, type: 3}
+  - {fileID: 21300000, guid: b179024f500d307478afd59ff11726a6, type: 3}
+  Village_Temple_s1:
+  - {fileID: 21300000, guid: 2385c246dba65b341af8b2e3a6c91208, type: 3}
+  - {fileID: 21300000, guid: 9a9345e88f77b5044afb66d69a32e818, type: 3}
+  Village_Temple_s2:
+  - {fileID: 21300000, guid: 72b6d9de7b764dd4e93fa9c97727333d, type: 3}
+  - {fileID: 21300000, guid: 1121ccedfe47e2446b7873ca58b1e4f8, type: 3}
+  Village_Temple_s3:
+  - {fileID: 21300000, guid: ad5a003e20a07bb48ad00f1b3ef35ef2, type: 3}
+  - {fileID: 21300000, guid: 16920b41d7f39e747bab360d8b2b2de7, type: 3}
+  Town_Residence_s0:
+  - {fileID: 21300000, guid: 4f1e94390b7107a4f8760a4bf94742d3, type: 3}
+  - {fileID: 21300000, guid: 00032deb0ad655441b77af4b6cccd680, type: 3}
+  Town_Residence_s1:
+  - {fileID: 21300000, guid: 242faaf3c3196de4287fc838edc397e6, type: 3}
+  - {fileID: 21300000, guid: fd06cec85759d1e45a6034858e456175, type: 3}
+  Town_Residence_s2:
+  - {fileID: 21300000, guid: c8e58ba1a8eb438479e057eb437bf439, type: 3}
+  - {fileID: 21300000, guid: 6920e4143e93fc842b7e2e64d332199d, type: 3}
+  Town_Residence_s3:
+  - {fileID: 21300000, guid: a58848c0386f66b45a47fdceaad17ee1, type: 3}
+  - {fileID: 21300000, guid: 64e48023716ca064c88e8f56f7a60819, type: 3}
+  Town_Temple_s0:
+  - {fileID: 21300000, guid: f910c623a742a784da8825e9c7b16f99, type: 3}
+  - {fileID: 21300000, guid: 98e9c8d7e4c2b144582457177c0053ef, type: 3}
+  Town_Temple_s1:
+  - {fileID: 21300000, guid: e63a97fb61e867a48af21b9159a7710e, type: 3}
+  - {fileID: 21300000, guid: 1a36d5d1522a1ca45b667731f2640f1c, type: 3}
+  Town_Temple_s2:
+  - {fileID: 21300000, guid: ce2a431585a4fcc47bb924be132f2b91, type: 3}
+  - {fileID: 21300000, guid: 13bdb7210fad1854f9bf422b184bd9b5, type: 3}
+  Town_Temple_s3:
+  - {fileID: 21300000, guid: 2f382146a277789498c0c3d19fbf2635, type: 3}
+  - {fileID: 21300000, guid: aefc691331d40a64eb448cffe7a4f929, type: 3}
+  Town_Market_s0:
+  - {fileID: 21300000, guid: 66fc1cc6e9268ef4cad4212f851a29c9, type: 3}
+  - {fileID: 21300000, guid: ec69474862e01474d8e5a899fa8a02c7, type: 3}
+  Town_Market_s1:
+  - {fileID: 21300000, guid: 15c672e3356fbea42930b96d59bf302a, type: 3}
+  - {fileID: 21300000, guid: dd81ce1d5e4e0fe4aa9a2c0546498b50, type: 3}
+  Town_Market_s2:
+  - {fileID: 21300000, guid: a2c40b2fb1c6d99418a00b240a5c59f2, type: 3}
+  - {fileID: 21300000, guid: cccddd1c7fbef824882ff0fdbd3028c7, type: 3}
+  Town_Market_s3:
+  - {fileID: 21300000, guid: 9b2ed9aee30bf9c43adab20376d6ea87, type: 3}
+  - {fileID: 21300000, guid: d41c4821f3184ed44bf1964746b99678, type: 3}
+  City_Residence_s0:
+  - {fileID: 21300000, guid: ca41f198d1c85524bbca8e0f45975ecd, type: 3}
+  - {fileID: 21300000, guid: 6ad4b36ff4d9eed46af2f6c6bf0a74da, type: 3}
+  City_Residence_s1:
+  - {fileID: 21300000, guid: d7f491a5b752c6d4db83ee2b78dc6789, type: 3}
+  - {fileID: 21300000, guid: 93aa3c0f3e060694b9ad24d61152034b, type: 3}
+  City_Residence_s2:
+  - {fileID: 21300000, guid: eecc5a2bd8d761d4ba161e106c26769a, type: 3}
+  - {fileID: 21300000, guid: 9182d6ef04f254749bc7742de154cc16, type: 3}
+  City_Residence_s3:
+  - {fileID: 21300000, guid: 990077f8f0ad1f447b263e00a41ca9ed, type: 3}
+  - {fileID: 21300000, guid: cf195f5af03631c42bb23bbb1882af74, type: 3}
+  City_Temple_s0:
+  - {fileID: 21300000, guid: 19530f4f4d989454ea0c1a589f3c58f8, type: 3}
+  - {fileID: 21300000, guid: 3fe0e6a704286104282476eb267249c9, type: 3}
+  City_Temple_s1:
+  - {fileID: 21300000, guid: 3b81db06994ebe948a61e685a3c862ff, type: 3}
+  - {fileID: 21300000, guid: 68a14b9f0bf5efc4c8d7e3864bdfe5d3, type: 3}
+  City_Temple_s2:
+  - {fileID: 21300000, guid: 14c3c52145e3f4541abe9825bfbe8268, type: 3}
+  - {fileID: 21300000, guid: 2395f4bf369772e449b551e907ac3dd3, type: 3}
+  City_Temple_s3:
+  - {fileID: 21300000, guid: 752b672f12d1c874b8017d8a4d6ed0a7, type: 3}
+  - {fileID: 21300000, guid: 7a6f48dcac980f24da8c81ea46c7e371, type: 3}
+  City_Market_s0:
+  - {fileID: 21300000, guid: 84c20cfbe3dfb5a488ceaadcd1bff4d2, type: 3}
+  - {fileID: 21300000, guid: 97789fa092583a74cadc8a68eac20789, type: 3}
+  City_Market_s1:
+  - {fileID: 21300000, guid: 6a432f5b625164640a161e4dc1cba3d0, type: 3}
+  - {fileID: 21300000, guid: aabc1fe99dacfec468972c2dbfb0dabc, type: 3}
+  City_Market_s2:
+  - {fileID: 21300000, guid: 3b479fc9ca7394443aae01cd3faea6c1, type: 3}
+  - {fileID: 21300000, guid: bf116cb1928aba542b376e62568b3307, type: 3}
+  City_Market_s3:
+  - {fileID: 21300000, guid: 286cfb9f4448a174c9b00c1538c536d7, type: 3}
+  - {fileID: 21300000, guid: b257c450fbb66df4e82d0514af477e9d, type: 3}
+  City_Library_s0:
+  - {fileID: 21300000, guid: ed57f87b80cd8b4408d820c5e811706f, type: 3}
+  - {fileID: 21300000, guid: 5899d2554e3a0144e8aa702c8242733d, type: 3}
+  City_Library_s1:
+  - {fileID: 21300000, guid: 87c3b112e1945e84eb0d3e38504ab2fe, type: 3}
+  - {fileID: 21300000, guid: ee9141a9298f15941bae6ec8cd27bbeb, type: 3}
+  City_Library_s2:
+  - {fileID: 21300000, guid: 740770bc9f81ddc4c9de6b5a264cfc22, type: 3}
+  - {fileID: 21300000, guid: 0b7c0594e10d88d4fbe32308a167b3fd, type: 3}
+  City_Library_s3:
+  - {fileID: 21300000, guid: efaabf5544eba9f46893db061dfebd44, type: 3}
+  - {fileID: 21300000, guid: 79e5746cf8f0a8d498e2b1171b1e0af2, type: 3}
   MovePointIcon_Enable: {fileID: 21300000, guid: cfdf7cb8ba959524e90a6ac0ba00007f, type: 3}
   MovePointIcon_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
   VillageIcon_black: {fileID: 21300000, guid: a4e91d81e0dd57b45888a932340e1161, type: 3}
@@ -156,10 +239,6 @@ MonoBehaviour:
   TownIcon_white: {fileID: 21300000, guid: fe46ae87ac098644081abe4d9693bef1, type: 3}
   CityIcon_black: {fileID: 21300000, guid: 9b091495955a09844988bd6ffa5c8a78, type: 3}
   CityIcon_white: {fileID: 21300000, guid: 964452aecc598b2418822a2971a5cf39, type: 3}
-  SkillIllust_Conversation: {fileID: 21300000, guid: 16d47ffe49052184faaa7e7e94904eca, type: 3}
-  SkillIllust_Force: {fileID: 21300000, guid: 903ee6b4757198440a9d6b2890df78ce, type: 3}
-  SkillIllust_Wild: {fileID: 21300000, guid: c36fd2d4f56cb72468f569793c49e3e8, type: 3}
-  SkillIllust_Intelligence: {fileID: 21300000, guid: 5c9c2a63e308d4540965e934fa527097, type: 3}
   SkillIcon_Conversation_b: {fileID: 21300000, guid: 5953298e872babc449ad69c31219b06d, type: 3}
   SkillIcon_Force_b: {fileID: 21300000, guid: 146e0d6cd03064945ad1385fcb241d65, type: 3}
   SkillIcon_Wild_b: {fileID: 21300000, guid: ada1f95262e66f4408a56950f4ab3dbe, type: 3}

@@ -29,9 +29,10 @@ public class UI_Main : UI_default
   [SerializeField] private TextMeshProUGUI NewGameText = null;
  // [SerializeField] private TextMeshProUGUI OptionText = null;
   [SerializeField] private TextMeshProUGUI QuitText = null;
-  
-  [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
+  [SerializeField] private CanvasGroup TutorialButtonGroup = null;
+  [SerializeField] private TextMeshProUGUI TutorialButtonText = null;
   [Space(10)]
+  [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
   [SerializeField] private CanvasGroup QuestIllustGroup = null;
   [SerializeField] private Image QuestIllust = null;
   [SerializeField] private TextMeshProUGUI QuestDescription = null;
@@ -157,6 +158,21 @@ public class UI_Main : UI_default
     GameManager.Instance.StartNewGame(SelectedQuest);
     //게임매니저에서 데이터 생성->맵 생성->(메인->게임)전환 코루틴 실행->이후 처리
   }
+  public void TutorialButton()
+  {
+    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement",0) == 1)
+    {
+      PlayerPrefs.SetInt("Tutorial_Map", 0);
+      PlayerPrefs.SetInt("Tutorial_Settlement", 0);
+      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOff");
+    }
+    else
+    {
+      PlayerPrefs.SetInt("Tutorial_Map", 1);
+      PlayerPrefs.SetInt("Tutorial_Settlement", 1);
+      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOn");
+    }
+  }
   private IEnumerator startscenario()
   {
  //   StartNewGameButton.interactable = false;
@@ -188,7 +204,16 @@ public class UI_Main : UI_default
     {
       StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup,1.0f,1.0f));
     }
-  yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
+    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement") == 1)
+    {
+      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOn");
+    }
+    else
+    {
+      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOff");
+    }
+    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, 1.0f));
+    yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
   }
   private IEnumerator closemain()
   {
@@ -200,6 +225,7 @@ public class UI_Main : UI_default
     {
       StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup, 0.0f, 1.0f));
     }
+    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 0.0f, 1.0f));
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("newgame").Rect, GetPanelRect("newgame").InsidePos, GetPanelRect("newgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;

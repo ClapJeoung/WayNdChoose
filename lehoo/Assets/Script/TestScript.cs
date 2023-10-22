@@ -4,13 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Text;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 
 public class TestScript:MonoBehaviour
 {
-  public int Index = 0;
-  [ContextMenu("test")]
-   void asdf()
-  {
-    print(Index & 1);
-  }
 }

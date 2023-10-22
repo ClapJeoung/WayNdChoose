@@ -27,7 +27,7 @@ public class ReturnButton : MonoBehaviour
   public TextMeshProUGUI WarningDescription = null;
   public Button Warning_Yes = null, Warning_No = null, Warning_No_Background = null;
   public TextMeshProUGUI YesText = null, NoText = null;
-  public bool Warned = false;
+ // public bool Warned = false;
   public bool IsOpen = false;
   public virtual void Clicked()
   {
@@ -42,7 +42,7 @@ public class ReturnButton : MonoBehaviour
   {
     Debug.Log("·¹ÈÄ");
     LayoutRebuilder.ForceRebuildLayoutImmediate(WarningDescription.transform.parent.transform as RectTransform);
-    Warned = true;
+  //  Warned = true;
     StartCoroutine(UIManager.Instance.ChangeAlpha(WarningPanelGroup, 1.0f, 0.6f));
 
     Warning_Yes.onClick.RemoveAllListeners();
@@ -81,7 +81,7 @@ public class ReturnButton : MonoBehaviour
   /// <param name="curerntui"></param>
   public void Open(int dir,UI_default curerntui)
   {
-    Warned = false;
+  //  Warned = false;
     Dir = dir;
     CurrentUI= curerntui;
     Vector2 _startpos = Dir == 0 ? LeftOutsidePos : RightOutsidePos;

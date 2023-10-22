@@ -54,6 +54,7 @@ public class UIManager : MonoBehaviour
   public UI_skill_info MySkillUIPanelUI = null;
   public UI_Expereince_info MyExpPanelUI = null;
   public UI_Ending EndingUI = null;
+  public UI_Tutorial TutorialUI = null;
   public HighlightEffects HighlightManager = null;
   public bool IsWorking = false;
   public PreviewManager PreviewManager = null;
@@ -74,6 +75,7 @@ public class UIManager : MonoBehaviour
   public void OffBackground()
   {
   //  EnvirBackground.sprite = GameManager.Instance.ImageHolder.Transparent;
+  if(EnvirGroup.alpha!=0.0f)
     StartCoroutine(ChangeAlpha(EnvirGroup, 0.0f, EnvirCloseTime));
   }
   [Space(10)]

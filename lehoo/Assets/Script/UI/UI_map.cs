@@ -62,14 +62,15 @@ public class UI_map : UI_default
  // [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
   //[SerializeField] private float ZoomInTime = 1.2f;
 
-  [SerializeField] private TextMeshProUGUI GuidText = null;
-  [SerializeField] private RectTransform GuidRect = null;
-  [SerializeField] private Vector2 GuidPos_Tile = new Vector2(316.0f, 281.0f);
-  [SerializeField] private Vector2 GuidPos_Cost = new Vector2(316.0f, 16.0f);
+ // [SerializeField] private TextMeshProUGUI GuidText = null;
+ // [SerializeField] private RectTransform GuidRect = null;
+//  [SerializeField] private Vector2 GuidPos_Tile = new Vector2(316.0f, 647.0f);
+//  [SerializeField] private Vector2 GuidPos_Cost = new Vector2(316.0f, 391.0f);
   [SerializeField] private Image TilePreview_Bottom = null;
   [SerializeField] private Image TilePreview_Top = null;
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
+  [SerializeField] private TextMeshProUGUI MoveLengthText = null;
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
@@ -92,6 +93,7 @@ public class UI_map : UI_default
     foreach(var tile in ActiveTileData)
     {
       tile.ButtonScript.Button.interactable = false;
+      if (tile.ButtonScript.Preview != null) tile.ButtonScript.Preview.enabled = false;
     }
     ActiveTileData.Clear();
 
@@ -99,6 +101,7 @@ public class UI_map : UI_default
     foreach (TileData _tile in _currents) //새로운 주위 2칸 타일 전부 가져오기
     {
       _tile.ButtonScript.Button.interactable = true;
+      if (_tile.ButtonScript.Preview != null) _tile.ButtonScript.Preview.enabled = true;
       ActiveTileData.Add(_tile);
     }
 
@@ -195,15 +198,17 @@ public class UI_map : UI_default
   
   private IEnumerator openui(bool dir)
   {
+    if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
+
     ResetEnableTiles();
 
     DisableOutline(Outline_Idle);
     DisableOutline(Outline_Select);
 
     IsRitual = false;
-    GuidRect.anchoredPosition = GuidPos_Tile;
-    GuidText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
-    TileInfoText.text = "";
+   // GuidRect.anchoredPosition = GuidPos_Tile;
+    TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+    MoveLengthText.text = "";
     MoveCostText.text = "";
     ProgressText.text = "";
     MovecostButtonGroup.alpha = 0.0f;
@@ -269,14 +274,16 @@ public class UI_map : UI_default
 
     SelectedTile = selectedtiledata;
 
+    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"), Length.Count);
+
     TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
     TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
     TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
     TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
 
 
-    GuidText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP");
-    GuidRect.anchoredPosition = GuidPos_Cost;
+  //  GuidText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP");
+ //   GuidRect.anchoredPosition = GuidPos_Cost;
 
     if (SelectedTile.TileSettle != null)
     {
@@ -296,12 +303,11 @@ public class UI_map : UI_default
         {
           case 0:
             _progresstext = "";
+            UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
             break;
           case 1:
-            if (SelectedTile.Landmark == LandmarkType.Ritual)
-            {
-              _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"),ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
-            }
+            _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
+            UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
             break;
         }
         ProgressText.text = _progresstext;
@@ -364,7 +370,7 @@ public class UI_map : UI_default
 
         if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
           _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
-            WNCText.GetSanityColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
+            WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
         break;
       case StatusTypeEnum.Gold:
         if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
@@ -377,7 +383,7 @@ public class UI_map : UI_default
 
         if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
           _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
-            WNCText.GetGoldColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
+            WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
         break;
     }
     MoveCostText.text = _costtext;
@@ -522,6 +528,8 @@ public class UI_map : UI_default
 
     //CloseUI 안 쓰고 여기서 닫기 실행
     yield return new WaitForSeconds(0.7f);
+
+    UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
 
     DefaultRect.pivot = Left_Pivot;
     DefaultRect.anchoredPosition = Left_InsidePos;

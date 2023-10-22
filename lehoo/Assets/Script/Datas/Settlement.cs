@@ -28,12 +28,15 @@ public class Settlement
     {
       if (sectors.Count == 0)
       {
-        sectors = new List<SectorTypeEnum>() { SectorTypeEnum.Residence, SectorTypeEnum.Temple};
+        sectors = new List<SectorTypeEnum>();
         switch (SettlementType)
         {
           case SettlementType.Village:
+            sectors.Add(SectorTypeEnum.Residence);
+            sectors.Add(SectorTypeEnum.Temple);
             break;
           case SettlementType.Town:
+            sectors.Add(SectorTypeEnum.Temple);
             sectors.Add(SectorTypeEnum.Marketplace);
             break;
           case SettlementType.City:

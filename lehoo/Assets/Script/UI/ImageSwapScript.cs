@@ -21,7 +21,7 @@ public class ImageSwapScript : MonoBehaviour
     CurrentGroup.alpha = 0.0f;
     NextGroup.alpha = 0.0f;
     CurrentImage.sprite = illust;
-    StartCoroutine(changealpha(CurrentGroup,1.0f,ChangeTime/2));
+    CurrentGroup.alpha = 1.0f;
   }
   public void Setup(Sprite illust,float time)
   {

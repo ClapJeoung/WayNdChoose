@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int ExpSkillLevel = 2;
+
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
@@ -82,7 +84,7 @@ public static class ConstValues
   public const float minsuccesper_min = 15;
   public const float MoneyCheck_min = 2.5f, MoneyCheck_max = 0.25f; //골드 지불 범위 벗어날 시 지불 실패 금액에 제곱비례
   //스킬 체크, 지불 체크 최대~최소
-  public const int MaxYear = 8;
+  public const int MaxTime = 20;
   //보정치 최대 년도
   public const int CheckSkill_single_min = 1, CheckSkill_single_max = 8;
   public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 14;
@@ -247,14 +249,15 @@ public class GameData    //게임 진행도 데이터
   public const int MaxTurn = 3;//최대 턴(0,1,2,3)
 
   #region #턴에 비례한 성공 확률들#
+  public float LerpByTurn
+  {
+    get { return UnityEngine.Mathf.Lerp(0.0f, 1.0f, (Year * 4 + turn) / ConstValues.MaxTime); }
+  }
   public float MinSuccesPer
   {
     get
     {
-      if (Year >= ConstValues.MaxYear) return ConstValues.minsuccesper_min;
-      //10턴 이상이면 최솟값만 반환
-      return Mathf.Lerp(ConstValues.minsuccesper_max, ConstValues.minsuccesper_min, Mathf.Lerp(0, 1, Year / ConstValues.MaxYear));
-      //0턴~10턴이면 최댓값 - (최댓값-최솟값)(0~10)
+      return Mathf.Lerp(ConstValues.minsuccesper_max, ConstValues.minsuccesper_min, LerpByTurn);
     }
   }//스킬 체크, 지불 체크 최소 성공확률
   /// <summary>
@@ -284,8 +287,8 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #값 프로퍼티#
-  public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, Year / ConstValues.MaxYear); } }
-  public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, Year / ConstValues.MaxYear); } }
+  public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, LerpByTurn); } }
+  public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, LerpByTurn); } }
     public int RestCost_Sanity
     { 
     get
@@ -316,30 +319,30 @@ public class GameData    //게임 진행도 데이터
     return ConstValues.Rest_DiscomfortRatio * discomfort;
   }
   public int PayHPValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max,LerpByTurn) * GetHPLossModify(true)); } }
     public int PaySanityValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max,LerpByTurn) * GetSanityLossModify(true)); } }
     public int PayGoldValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, Year / ConstValues.MaxYear) ); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max,LerpByTurn) ); } }
   public int PayOverSanityValue
   {
     get { return (int)((PayGoldValue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue); }
   }
     public int FailHPValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max, Year / ConstValues.MaxYear) * GetHPLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max,LerpByTurn) * GetHPLossModify(true)); } }
     public int FailSanityValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max, Year / ConstValues.MaxYear) * GetSanityLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max,LerpByTurn) * GetSanityLossModify(true)); } }
     public int FailGoldValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max, Year / ConstValues.MaxYear)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max,LerpByTurn)); } }
     public int RewardHPValue
     { get { return 0; } }
     public int RewardSanityValue
-    { get { return (int)(Mathf.Lerp(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max, Year / ConstValues.MaxYear) ); } }
+    { get { return (int)(Mathf.Lerp(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max,LerpByTurn) ); } }
     public int RewardGoldValue
-    { get { return (int)(Mathf.Lerp(ConstValues.RewardGold_min, ConstValues.RewardGold_max, Year / ConstValues.MaxYear) * GetGoldGenModify(true)); } }
+    { get { return (int)(Mathf.Lerp(ConstValues.RewardGold_min, ConstValues.RewardGold_max,LerpByTurn) * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int length,int movepoint)
   {
-    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Year / ConstValues.MaxYear)
+    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max,LerpByTurn)
       * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
     return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
@@ -347,7 +350,7 @@ public class GameData    //게임 진행도 데이터
   }
   public int GetMoveGoldCost(int length,int movepoint)
   {
-    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Year / ConstValues.MaxYear)
+    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max,LerpByTurn)
       * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
     return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
@@ -623,7 +626,7 @@ public class GameData    //게임 진행도 데이터
     if (ShortExp_A != null && ShortExp_A.Effects.Contains(_targeteffect)) _count++;
     if (ShortExp_B != null && ShortExp_B.Effects.Contains(_targeteffect)) _count++;
 
-    return _count;
+    return _count*ConstValues.ExpSkillLevel;
 
   }//현재 경험들 중에서 해당 기술의 값 합 반환
   /// <summary>

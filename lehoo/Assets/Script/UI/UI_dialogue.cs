@@ -64,7 +64,6 @@ public class UI_dialogue : UI_default
   [SerializeField] private CanvasGroup RewardButtonGroup = null;
   [SerializeField] private Image RewardIcon = null;
   [SerializeField] private TextMeshProUGUI RewardDescription = null;
-  [SerializeField] private Onpointer_highlight Reward_Highlight = null;
   [SerializeField] private UI_RewardExp RewardExpUI = null;
   [SerializeField] private CanvasGroup EndingButtonGroup = null;
   [SerializeField] private TextMeshProUGUI EndingButtonText = null;
@@ -93,7 +92,7 @@ public class UI_dialogue : UI_default
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
     if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
   
-    Reward_Highlight.Interactive = false;
+   // Reward_Highlight.Interactive = false;
     EndingButtonGroup.alpha = 0.0f;
     EndingButtonGroup.interactable = false;
     EndingButtonGroup.blocksRaycasts = false;
@@ -125,7 +124,7 @@ public class UI_dialogue : UI_default
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
     if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
 
-    Reward_Highlight.Interactive = false;
+   // Reward_Highlight.Interactive = false;
     EndingButtonGroup.alpha = 0.0f;
     EndingButtonGroup.interactable = false;
     EndingButtonGroup.blocksRaycasts = false;
@@ -678,8 +677,8 @@ public class UI_dialogue : UI_default
     if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
     if (NextButtonGroup.gameObject.activeInHierarchy == true) NextButtonGroup.gameObject.SetActive(false);
 
-    Reward_Highlight.RemoveAllCall();
-    Reward_Highlight.Interactive = true;
+  //  Reward_Highlight.RemoveAllCall();
+   // Reward_Highlight.Interactive = true;
     RemainReward = CurrentSuccessData.Reward_Type == RewardTypeEnum.None ? false : true;
     Sprite _icon = null;
     string _description = "";
@@ -691,17 +690,17 @@ public class UI_dialogue : UI_default
           case StatusTypeEnum.HP:
             _icon = GameManager.Instance.ImageHolder.HPIcon;
             _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue)}";
-            Reward_Highlight.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.RewardHPValue);
+        //    Reward_Highlight.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.RewardHPValue);
             break;
           case StatusTypeEnum.Sanity:
             _icon = GameManager.Instance.ImageHolder.SanityIcon;
             _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue)}";
-            Reward_Highlight.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue);
+      //      Reward_Highlight.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue);
             break;
           case StatusTypeEnum.Gold:
             _icon = GameManager.Instance.ImageHolder.GoldIcon;
             _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue)}";
-            Reward_Highlight.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue);
+        //    Reward_Highlight.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue);
             break;
         }
         break;
@@ -709,12 +708,12 @@ public class UI_dialogue : UI_default
         _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
         //   _name = GameManager.Instance.GetTextData("EXP_NAME");
         _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
-        Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
+      //  Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
         break;
       case RewardTypeEnum.Skill:
         _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType, false);
         _description = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType, 0)} +1";
-        Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
+     //   Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
         break;
     }
     RewardIcon.sprite = _icon;
@@ -766,8 +765,10 @@ public class UI_dialogue : UI_default
 
     CurrentSuccessData = null;
     CurrentFailData = null;
-
+    
     UIManager.Instance.OffBackground();
+    UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
+
 
     if (UIManager.Instance.MapButton.IsOpen) UIManager.Instance.MapButton.Close();
     if (UIManager.Instance.SettleButton.IsOpen) UIManager.Instance.SettleButton.Close();
@@ -775,11 +776,11 @@ public class UI_dialogue : UI_default
 
     if (dir == true)
     {
-      yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, DefaultRect.anchoredPosition, LeftPos, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+      yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, DefaultRect.anchoredPosition, LeftPos, CloseTime, UIManager.Instance.UIPanelOpenCurve));
     }
     else
     {
-      yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, DefaultRect.anchoredPosition, RightPos, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+      yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, DefaultRect.anchoredPosition, RightPos, CloseTime, UIManager.Instance.UIPanelOpenCurve));
     }
 
   }
@@ -794,7 +795,7 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator getreward()
   {
-    Reward_Highlight.Interactive = false;
+ //   Reward_Highlight.Interactive = false;
 
     if (CurrentSuccessData != null)
     {
@@ -916,6 +917,8 @@ public class UI_dialogue : UI_default
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
   public IEnumerator openui_settlement(bool dir)
   {
+    if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
+
     DefaultGroup.interactable = false;
 
     IsOpen = true;
@@ -1090,6 +1093,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     if (SelectedSector != SectorTypeEnum.NULL) GetSectorIconScript(SelectedSector).SetIdleColor();
     SelectedSector = (SectorTypeEnum)index;
     IsSelectSector = true;
+    Illust.Setup(GameManager.Instance.ImageHolder.GetSectorIllust(CurrentSettlement.SettlementType, SelectedSector, GameManager.Instance.MyGameData.Turn));
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
 
@@ -1151,15 +1155,14 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     {
       case 0:
         SectorEffect.text = _effect;
+        UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
         break;
       case 1:
         DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
 ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
         SectorEffect.text = _effect + _sabbatdescription;
-        break;
-      case 2:
-        SectorEffect.text = _effect;
+        UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
         break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), DiscomfortValue, MovePointValue);
@@ -1249,7 +1252,10 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         GameManager.Instance.MyGameData.Sanity -= SanityCost;
         CurrentSettlement.Discomfort += _discomfortvalue;
         DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
-        if(DiscomfortValue>0) yield return StartCoroutine(discomfortscale());
+        if (DiscomfortValue > 0)
+        {
+          yield return StartCoroutine(discomfortscale());
+        }
 
         if (_madness_force)
         {
@@ -1268,7 +1274,10 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         GameManager.Instance.MyGameData.Gold -= GoldCost;
         CurrentSettlement.Discomfort += _discomfortvalue;
         DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
-        if (DiscomfortValue > 0) yield return StartCoroutine(discomfortscale());
+        if (DiscomfortValue > 0)
+        {
+          yield return StartCoroutine(discomfortscale());
+        }
 
         if (_madness_force)
         {
@@ -1283,6 +1292,9 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         }
         break;
     }
+
+    yield return new WaitForSeconds(0.8f);
+
     yield return StartCoroutine(closeui_all(true));
     GameManager.Instance.MyGameData.Turn++;
 
@@ -1311,7 +1323,6 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     }
     DiscomfortIcon.localScale = Vector3.one;
     DiscomfortText.fontSize = _fontendsize;
-    yield return new WaitForSeconds(0.1f);
   }
   #endregion
 

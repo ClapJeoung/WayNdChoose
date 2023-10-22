@@ -8,16 +8,21 @@ public class SidePanel_Quest_Cult : MonoBehaviour
 {
   [SerializeField] private GameObject Before30 = null;
   public Image VillageIcon = null;
+  public CanvasGroup VillageIconEffect = null;
   public Image TownIcon = null;
+  public CanvasGroup TownIconEffect = null;
   public Image CityIcon = null;
+  public CanvasGroup CityIconEffect = null;
   public TextMeshProUGUI VillageProgress = null;
   public TextMeshProUGUI TownProgress = null;
   public TextMeshProUGUI CityProgress = null;
   [SerializeField] private GameObject After30 = null;
   [SerializeField] private Image Sabbat_Icon = null;
+  [SerializeField] private Outline Sabbat_Effect = null;
   [SerializeField] private TextMeshProUGUI Sabbat_Progress = null;
   [SerializeField] private TextMeshProUGUI Sabbat_CoolDown = null;
   [SerializeField] private Image Ritual_Icon = null;
+  [SerializeField] private Outline Ritual_Effect = null;
   [SerializeField] private TextMeshProUGUI Ritual_Progress = null;
   [SerializeField] private TextMeshProUGUI Ritual_CoolDown = null;
   [SerializeField] private Slider ProgressSlider = null;
@@ -44,6 +49,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
             VillageIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_black;
             VillageProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
             VillageOff = true;
+            StartCoroutine(UIManager.Instance.ChangeAlpha(VillageIconEffect, 0.0f, 1.5f));
           }
           else
           {
@@ -62,6 +68,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
             TownIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_black;
             TownProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
             TownOff = true;
+            StartCoroutine(UIManager.Instance.ChangeAlpha(TownIconEffect, 0.0f, 1.5f));
           }
           else
           {
@@ -80,6 +87,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
             CityIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_black;
             CityProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
             CityOff = true;
+            StartCoroutine(UIManager.Instance.ChangeAlpha(CityIconEffect, 0.0f, 1.5f));
           }
           else
           {
@@ -143,5 +151,14 @@ public class SidePanel_Quest_Cult : MonoBehaviour
       _time+=Time.deltaTime;
       yield return null;
     }
+  }
+
+  public void SetSabbatEffect(bool enable)
+  {
+    if(Sabbat_Effect.enabled!=enable) Sabbat_Effect.enabled= enable;
+  }
+  public void SetRitualEffect(bool enable)
+  {
+    if(Ritual_Effect.enabled!=enable) Ritual_Effect.enabled = enable;
   }
 }

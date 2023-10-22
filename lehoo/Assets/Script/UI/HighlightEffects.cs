@@ -73,16 +73,10 @@ public class HighlightHolder
   public CanvasGroup Group = null;
   public TextMeshProUGUI Text = null;
   private int OriginValue = 100;
-  public Image Conversation_Frame = null;
-  public Image Conversation_Icon = null;
-  public Image Force_Frame = null;
-  public Image Force_Icon = null;
-  public Image Wild_Frame = null;
-  public Image Wild_Icon = null;
-  public Image Intelligence_Frame = null;
-  public Image Intelligence_Icon = null;
-  public Sprite Frame_black = null;
-  public Sprite Frame_white = null;
+  public Image ConversationEffect = null;
+  public Image ForceEffect = null;
+  public Image WildEffect = null;
+  public Image IntelligenceEffect = null;
   public void SetEffect(int value)
   {
     Group.alpha = 1.0f;
@@ -101,20 +95,16 @@ public class HighlightHolder
       switch (type)
       {
         case SkillTypeEnum.Conversation:
-          Conversation_Frame.sprite = Frame_white;
-          Conversation_Icon.sprite = _spr;
+          ConversationEffect.enabled = true;
           break;
         case SkillTypeEnum.Force:
-          Force_Frame.sprite = Frame_white;
-          Force_Icon.sprite = _spr;
+          ForceEffect.enabled = true;
           break;
         case SkillTypeEnum.Wild:
-          Wild_Frame.sprite = Frame_white;
-          Wild_Icon.sprite = _spr;
+          WildEffect.enabled = true;
           break;
         case SkillTypeEnum.Intelligence:
-          Intelligence_Frame.sprite = Frame_white;
-          Intelligence_Icon.sprite = _spr;
+          IntelligenceEffect.enabled = true;
           break;
       }
     }
@@ -134,20 +124,16 @@ public class HighlightHolder
         switch (_skilltype)
         {
           case SkillTypeEnum.Conversation:
-            Conversation_Frame.sprite = Frame_black;
-            Conversation_Icon.sprite = _spr;
+            ConversationEffect.enabled = false;
             break;
           case SkillTypeEnum.Force:
-            Force_Frame.sprite = Frame_black;
-            Force_Icon.sprite = _spr;
+            ForceEffect.enabled = false;
             break;
           case SkillTypeEnum.Wild:
-            Wild_Frame.sprite = Frame_black;
-            Wild_Icon.sprite = _spr;
+            WildEffect.enabled = false;
             break;
           case SkillTypeEnum.Intelligence:
-            Intelligence_Frame.sprite = Frame_black;
-            Intelligence_Icon.sprite = _spr;
+            IntelligenceEffect.enabled = false;
             break;
         }
       }
