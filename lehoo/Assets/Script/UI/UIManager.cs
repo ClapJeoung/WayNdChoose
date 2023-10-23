@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
   }
   public void ResetGame(string text,bool isending)
   {
+    GameManager.Instance.AudioManager.SetoffBGM();
     IsWorking = true;
     CurtainText.text=text;
     StartCoroutine(resetgame(isending));
@@ -138,6 +139,33 @@ public class UIManager : MonoBehaviour
     foreach (var rect in rectlist)
       rect.localScale = Vector3.one;
   }
+  public IEnumerator statusgainanimation(RectTransform rect)
+  {
+    float _time = 0.0f;
+    Vector3 _currentscale = Vector3.one;
+
+    while (_time < StatusGainTime)
+    {
+      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * StatusGainSize, StatusGainCurve.Evaluate(_time / StatusGainTime));
+        rect.localScale = _currentscale;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+      rect.localScale = Vector3.one;
+  }
+  private IEnumerator statuslossanimation(RectTransform rect)
+  {
+    float _time = 0.0f;
+    Vector3 _currentscale = Vector3.one * StatusLossSize;
+    while (_time < StatusLossTime)
+    {
+      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * StatusLossSize, StatusLossCurve.Evaluate(_time / StatusLossTime));
+        rect.localScale = _currentscale;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+      rect.localScale = Vector3.one;
+  }
   [SerializeField] private AnimationCurve StatusEffectLossCurve = new AnimationCurve();
   [SerializeField] private TextMeshProUGUI HPText = null;
   private int lasthp = -1;
@@ -146,10 +174,14 @@ public class UIManager : MonoBehaviour
     if (!lasthp.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
-     // if(_changedvalue!=0)
-     // StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
+      // if(_changedvalue!=0)
+      // StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
       if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
-      else StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
+      else
+      {
+        StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
+        GameManager.Instance.AudioManager.PlaySFX(15);
+      }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
     }
@@ -170,10 +202,18 @@ public class UIManager : MonoBehaviour
     if (!lastsanity.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.Sanity - lastsanity;
-     // if (_changedvalue != 0)
-     //   StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
-      if (lastsanity < GameManager.Instance.MyGameData.Sanity) StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
-      else StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform}));
+      // if (_changedvalue != 0)
+      //   StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
+      if (lastsanity < GameManager.Instance.MyGameData.Sanity)
+      {
+        StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
+        GameManager.Instance.AudioManager.PlaySFX(16);
+      }
+      else
+      {
+        StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
+        GameManager.Instance.AudioManager.PlaySFX(17);
+      }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
     }
@@ -193,10 +233,17 @@ public class UIManager : MonoBehaviour
     if (!lastgold.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.Gold - lastgold;
-    //  if (_changedvalue != 0)
-     //   StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
-      if (lastgold < GameManager.Instance.MyGameData.Gold) StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
-      else StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform}));
+      //  if (_changedvalue != 0)
+      //   StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
+      if (lastgold < GameManager.Instance.MyGameData.Gold)
+      {
+        StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
+        GameManager.Instance.AudioManager.PlaySFX(18);
+      }
+      else
+      {
+        StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
+      }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
     }
@@ -586,6 +633,10 @@ public class UIManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ForceLevel = null;
   [SerializeField] private TextMeshProUGUI WildLevel = null;
   [SerializeField] private TextMeshProUGUI IntelligenceLevel = null;
+  [SerializeField] private CanvasGroup ConversationEffectGroup = null;
+  [SerializeField] private CanvasGroup ForceEffectGroup = null;
+  [SerializeField] private CanvasGroup WildEffectGroup = null;
+  [SerializeField] private CanvasGroup IntelligenceEffectGroup = null;
   public void UpdateSkillLevel()
   {
     ConversationLevel.text = GameManager.Instance.MyGameData.Madness_Conversation ?
@@ -595,7 +646,8 @@ public class UIManager : MonoBehaviour
     {
       if (conversationlevel != GameManager.Instance.MyGameData.Skill_Conversation.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { ConversationLevel.rectTransform}));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { ConversationLevel.rectTransform, ConversationEffectGroup.transform as RectTransform}));
+        StartCoroutine(ChangeAlpha(ConversationEffectGroup, 0.0f, StatusGainTime));
         conversationlevel = GameManager.Instance.MyGameData.Skill_Conversation.Level;
       }
     }
@@ -607,7 +659,8 @@ public class UIManager : MonoBehaviour
     {
       if (forcelevel != GameManager.Instance.MyGameData.Skill_Force.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { ForceLevel.rectTransform}));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { ForceLevel.rectTransform, ForceEffectGroup.transform as RectTransform }));
+        StartCoroutine(ChangeAlpha(ForceEffectGroup, 0.0f, StatusGainTime));
         forcelevel = GameManager.Instance.MyGameData.Skill_Force.Level;
       }
     }
@@ -619,7 +672,8 @@ public class UIManager : MonoBehaviour
     {
       if (wildlevel != GameManager.Instance.MyGameData.Skill_Wild.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { WildLevel.rectTransform}));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { WildLevel.rectTransform, WildEffectGroup.transform as RectTransform }));
+        StartCoroutine(ChangeAlpha(WildEffectGroup, 0.0f, StatusGainTime));
         wildlevel = GameManager.Instance.MyGameData.Skill_Wild.Level;
       }
     }
@@ -631,7 +685,8 @@ public class UIManager : MonoBehaviour
     {
       if (intelligencelevel != GameManager.Instance.MyGameData.Skill_Intelligence.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { IntelligenceLevel.rectTransform}));
+        StartCoroutine(statusgainanimation(new List<RectTransform> { IntelligenceLevel.rectTransform, IntelligenceEffectGroup.transform as RectTransform }));
+        StartCoroutine(ChangeAlpha(IntelligenceEffectGroup, 0.0f, StatusGainTime));
         intelligencelevel = GameManager.Instance.MyGameData.Skill_Intelligence.Level;
       }
     }
@@ -720,6 +775,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(LongExpCover, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
+        GameManager.Instance.AudioManager.PlaySFX(21);
       }
       LongExpActive = false;
     }
@@ -731,8 +787,14 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(LongExpCover, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
+        StartCoroutine(statusgainanimation(LongExpTurn.rectTransform));
+        GameManager.Instance.AudioManager.PlaySFX(20);
       }
-        LongExpActive = true;
+      else
+      {
+        StartCoroutine(statuslossanimation(LongExpTurn.rectTransform));
+      }
+      LongExpActive = true;
     }
 
     if (GameManager.Instance.MyGameData.ShortExp_A == null)
@@ -743,8 +805,9 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_A, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
+        GameManager.Instance.AudioManager.PlaySFX(21);
       }
-        ShortExpAActive = false;
+      ShortExpAActive = false;
     }
     else
     {
@@ -754,9 +817,14 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_A, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
+        StartCoroutine(statusgainanimation(ShortExpTurn_A.rectTransform));
+        GameManager.Instance.AudioManager.PlaySFX(20);
       }
-
-      ShortExpAActive = true;
+      else
+      {
+        StartCoroutine(statuslossanimation(ShortExpTurn_A.rectTransform));
+      }
+        ShortExpAActive = true;
     }
     if (GameManager.Instance.MyGameData.ShortExp_B == null)
     {
@@ -766,6 +834,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_B, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
+        GameManager.Instance.AudioManager.PlaySFX(21);
       }
 
       ShortExpBActive = false;
@@ -778,6 +847,12 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_B, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
+        StartCoroutine(statusgainanimation(ShortExpTurn_B.rectTransform));
+        GameManager.Instance.AudioManager.PlaySFX(20);
+      }
+      else
+      {
+        StartCoroutine(statuslossanimation(ShortExpTurn_B.rectTransform));
       }
       ShortExpBActive = true;
     }
@@ -869,6 +944,32 @@ public class UIManager : MonoBehaviour
     while (_time < _targettime)
     {
       _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time/_targettime));
+      _group.alpha = _alpha;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _alpha = _endalpha;
+    _group.alpha = _alpha;
+    if (_targetalpha.Equals(1.0f))
+    {
+      _group.interactable = true;
+      _group.blocksRaycasts = true;
+    }
+  }
+  public IEnumerator ChangeAlpha(CanvasGroup _group,float _startalpha, float _targetalpha, float targettime)
+  {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);
+
+    float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
+    float _time = 0.0f;
+    float _targettime = targettime;
+    float _alpha = _startalpha;
+    _group.alpha = _alpha;
+    _group.interactable = false;
+    _group.blocksRaycasts = false;
+    while (_time < _targettime)
+    {
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, FadeAnimationCurve.Evaluate(_time / _targettime));
       _group.alpha = _alpha;
       _time += Time.deltaTime;
       yield return null;

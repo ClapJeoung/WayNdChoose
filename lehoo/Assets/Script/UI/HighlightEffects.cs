@@ -73,10 +73,10 @@ public class HighlightHolder
   public CanvasGroup Group = null;
   public TextMeshProUGUI Text = null;
   private int OriginValue = 100;
-  public Image ConversationEffect = null;
-  public Image ForceEffect = null;
-  public Image WildEffect = null;
-  public Image IntelligenceEffect = null;
+  public CanvasGroup ConversationEffect = null;
+  public CanvasGroup ForceEffect = null;
+  public CanvasGroup WildEffect = null;
+  public CanvasGroup IntelligenceEffect = null;
   public void SetEffect(int value)
   {
     Group.alpha = 1.0f;
@@ -95,16 +95,16 @@ public class HighlightHolder
       switch (type)
       {
         case SkillTypeEnum.Conversation:
-          ConversationEffect.enabled = true;
+          ConversationEffect.alpha = 1.0f;
           break;
         case SkillTypeEnum.Force:
-          ForceEffect.enabled = true;
+          ForceEffect.alpha = 1.0f;
           break;
         case SkillTypeEnum.Wild:
-          WildEffect.enabled = true;
+          WildEffect.alpha = 1.0f;
           break;
         case SkillTypeEnum.Intelligence:
-          IntelligenceEffect.enabled = true;
+          IntelligenceEffect.alpha = 1.0f;
           break;
       }
     }
@@ -124,16 +124,16 @@ public class HighlightHolder
         switch (_skilltype)
         {
           case SkillTypeEnum.Conversation:
-            ConversationEffect.enabled = false;
+            ConversationEffect.alpha = 0.0f;
             break;
           case SkillTypeEnum.Force:
-            ForceEffect.enabled = false;
+            ForceEffect.alpha = 0.0f;
             break;
           case SkillTypeEnum.Wild:
-            WildEffect.enabled = false;
+            WildEffect.alpha = 0.0f;
             break;
           case SkillTypeEnum.Intelligence:
-            IntelligenceEffect.enabled = false;
+            IntelligenceEffect.alpha = 0.0f;
             break;
         }
       }

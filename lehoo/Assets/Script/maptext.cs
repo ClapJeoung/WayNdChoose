@@ -864,36 +864,24 @@ public class maptext : MonoBehaviour
     LoopCount = 0;
 
     Settlement City = new Settlement(SettlementType.City);
-    List<TileData> _citytiles = new List<TileData>();
+    TileData _citytile = null;
     HexDir _cityhexdir = (HexDir)Random.Range(0, 6);
     List<TileData> _citycreatetiles = _NewMapData.GetDirLines(_NewMapData.CenterTile, _cityhexdir);
-    HexDir _citydir_1=HexDir.BottomRight, _citydir_2=HexDir.BottomLeft;
 
-    while (_citytiles.Count != 3)
+    while (true)
     {
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
 
       Vector2Int _starcoor = _citycreatetiles[Random.Range(3, _citycreatetiles.Count - 2)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
      
-      TileData _starttile = _NewMapData.TileDatas[_starcoor.x, _starcoor.y];
-      if (cityCheck(_starttile) == false) continue;
+      _citytile = _NewMapData.TileDatas[_starcoor.x, _starcoor.y];
+      if (cityCheck(_citytile) == false) continue;
 
-      TileData _secondtile = _NewMapData.GetNextTile(_starttile, _citydir_1);
-      if (cityCheck(_secondtile) == false) continue;
-
-      TileData _thirdtile = _NewMapData.GetNextTile(_starttile, _citydir_2);
-      if (cityCheck(_thirdtile) == false) continue;
-
-      _NewMapData.TileDatas[_starttile.Coordinate.x, _starttile.Coordinate.y].TileSettle = City;
-      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].TileSettle = City;
-      _NewMapData.TileDatas[_thirdtile.Coordinate.x, _thirdtile.Coordinate.y].TileSettle = City;
-      _citytiles.Add(_starttile);
-      _citytiles.Add(_secondtile);
-      _citytiles.Add(_thirdtile);
-      _NewMapData.TileDatas[_starttile.Coordinate.x, _starttile.Coordinate.y].Landmark = LandmarkType.City;
-      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].Landmark = LandmarkType.City;
-      _NewMapData.TileDatas[_thirdtile.Coordinate.x, _thirdtile.Coordinate.y].Landmark = LandmarkType.City;
+      _NewMapData.TileDatas[_citytile.Coordinate.x, _citytile.Coordinate.y].TileSettle = City;
+      _NewMapData.TileDatas[_citytile.Coordinate.x, _citytile.Coordinate.y].Landmark = LandmarkType.City;
+      City.Tile = _citytile;
+      break;
       bool cityCheck(TileData tile)
       {
         if (tile.BottomEnvir == BottomEnvirType.Sea) return false;
@@ -902,10 +890,6 @@ public class maptext : MonoBehaviour
         return true;
       }
     }
-    for(int i = 0; i < _citytiles.Count; i++)
-    {
-      City.Tiles.Add(_citytiles[i]);
-    }
 
     #endregion
     //   Debug.Log("성채 생성 완료");
@@ -913,7 +897,7 @@ public class maptext : MonoBehaviour
     #region 마을
     LoopCount = 0;
 
-    List<TileData> _towntiles=new List<TileData>();
+    TileData _towntile = null;
     Settlement Town = new Settlement(SettlementType.Town);
     HexDir _towndir = RotateDir(_cityhexdir, 3);
     List<HexDir> _villagedirs = new List<HexDir>() { (HexDir)0, (HexDir)1, (HexDir)2, (HexDir)3, (HexDir)4, (HexDir)5 };
@@ -922,49 +906,33 @@ public class maptext : MonoBehaviour
     _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _towndir));
     List<TileData> _disabletiles=new List<TileData>();
 
-    while (_towntiles.Count != 2)
+    while (true)
     {
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("마을 생성 중 무한루프"); return null; }
       int _index = 0;
 
       Vector2Int _selectcoor = _enablelines[_index][Random.Range(3, _enablelines.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
-      TileData _firsttile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
-      if(towncheck(_firsttile)==false)continue;
+      _towntile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
+      if(towncheck(_towntile) ==false)continue;
 
-      int _loopcount = 0;
-      TileData _secondtile = null;
-      while (_loopcount < 6)
-      {
-        _secondtile = _NewMapData.GetNextTile(_firsttile, (HexDir)Random.Range(0, 6));
-        if (towncheck(_secondtile) == true) break;
-        _loopcount++;
-      }
-      if (_loopcount == 6) continue;
 
-      _NewMapData.TileDatas[_firsttile.Coordinate.x, _firsttile.Coordinate.y].TileSettle = Town;
-      _NewMapData.TileDatas[_secondtile.Coordinate.x, _secondtile.Coordinate.y].TileSettle = Town;
-      _NewMapData.Tile(_firsttile.Coordinate).Landmark = LandmarkType.Town;
-      _NewMapData.Tile(_secondtile.Coordinate).Landmark = LandmarkType.Town;
-      _towntiles.Add(_firsttile);
-      _towntiles.Add(_secondtile);
+      _NewMapData.TileDatas[_towntile.Coordinate.x, _towntile.Coordinate.y].TileSettle = Town;
+      _NewMapData.Tile(_towntile.Coordinate).Landmark = LandmarkType.Town;
+      Town.Tile = _towntile;
+      break;
 
       bool towncheck(TileData tile)
       {
         if (tile.TopEnvir == TopEnvirType.Mountain) return false;
         if (tile.BottomEnvir == BottomEnvirType.Sea) return false;
         if (tile.TileSettle != null) return false;
-        if(_towntiles.Contains(tile)) return false;
 
         List<TileData> _aroundtiles = _NewMapData.GetAroundTile(tile, 1);
         foreach (var _tile in _aroundtiles) if (_tile.TileSettle != null) return false;
 
         return true;
       }
-    }
-    for(int i=0;i<_towntiles.Count; i++)
-    {
-      Town.Tiles.Add(_towntiles[i]);
     }
     #endregion
     //      Debug.Log("도시 생성 완료");
@@ -1006,7 +974,7 @@ public class maptext : MonoBehaviour
 
     for(int i = 0; i < _villagetiles.Count; i++)
     {
-      Villages[i].Tiles.Add(_villagetiles[i]);
+      Villages[i].Tile=_villagetiles[i];
     }
     #endregion
     //    Debug.Log("마을 생성 완료");
@@ -1035,17 +1003,16 @@ public class maptext : MonoBehaviour
     {
       for (int i = 0; i < newsettles.Count; i++)
       {
-        List<TileData> _aroundtiles_1 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 1);
-        List<TileData> _aroundtiles_2 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 2);
-        List<TileData> _aroundtiles_3 = _NewMapData.GetAroundTile(newsettles[i].Tiles, 3);
+        List<TileData> _aroundtiles_1 = _NewMapData.GetAroundTile(newsettles[i].Tile, 1);
+        List<TileData> _aroundtiles_2 = _NewMapData.GetAroundTile(newsettles[i].Tile, 2);
 
         newsettles[i].IsRiver = CheckEnvir(_aroundtiles_1, BottomEnvirType.River) ||
           CheckEnvir(_aroundtiles_1, BottomEnvirType.Source) ||
           CheckEnvir(_aroundtiles_1, BottomEnvirType.RiverBeach);
-        newsettles[i].IsMountain = CheckEnvir(_aroundtiles_3, TopEnvirType.Mountain);
+        newsettles[i].IsMountain = CheckEnvir(_aroundtiles_2, TopEnvirType.Mountain);
         newsettles[i].IsSea = CheckEnvir(_aroundtiles_2, BottomEnvirType.Sea) || CheckEnvir(_aroundtiles_2, BottomEnvirType.Beach) || CheckEnvir(_aroundtiles_2, BottomEnvirType.RiverBeach);
     //    newsettles[i].IsHighland = CheckEnvir(_aroundtiles_1, TopEnvirType.Highland);
-        newsettles[i].IsForest = CheckEnvir(_aroundtiles_2, TopEnvirType.Forest);
+        newsettles[i].IsForest = CheckEnvir(_aroundtiles_1, TopEnvirType.Forest);
 
 
         string[] _namearray;
@@ -1202,7 +1169,7 @@ public class maptext : MonoBehaviour
     for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
     {
       Settlement _village = GameManager.Instance.MyGameData.MyMapData.Villages[i];
-      _settlementpos = _village.Tiles[0].ButtonScript.Rect.anchoredPosition;
+      _settlementpos = _village.Tile.ButtonScript.Rect.anchoredPosition;
 
       string _villagename = _village.OriginName;
       GameObject _villageholder = new GameObject(_villagename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
@@ -1211,12 +1178,12 @@ public class maptext : MonoBehaviour
       _villageholder.GetComponent<CanvasGroup>().blocksRaycasts = false;
       _villageholder.transform.localScale = Vector3.one;
 
-      _village.Tiles[0].ButtonScript.LandmarkImage.transform.SetParent(_villageholder.transform);
-      _village.Tiles[0].ButtonScript.Rect.localScale = Vector3.one;
-      PreviewInteractive _villagepreview = _village.Tiles[0].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
+      _village.Tile.ButtonScript.LandmarkImage.transform.SetParent(_villageholder.transform);
+      _village.Tile.ButtonScript.Rect.localScale = Vector3.one;
+      PreviewInteractive _villagepreview = _village.Tile.ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _villagepreview.PanelType = PreviewPanelType.SettlementTile;
       _villagepreview.MySettleMent = _village;
-      _village.Tiles[0].ButtonScript.Preview = _villagepreview;
+      _village.Tile.ButtonScript.Preview = _villagepreview;
       _villagepreview.enabled = false;
 
       MapUIScript.VillageIcons.Add(_villageholder);
@@ -1225,12 +1192,9 @@ public class maptext : MonoBehaviour
     _settlementrectlist.Clear();
     _settlementpos = Vector2.zero;
       Settlement _town = GameManager.Instance.MyGameData.MyMapData.Town;
-      for(int j = 0; j < _town.Tiles.Count; j++)
-      {
-        _settlementrectlist.Add(_town.Tiles[j]);
-        _settlementpos += _town.Tiles[j].ButtonScript.Rect.anchoredPosition;
-      }
-      _settlementpos /= 2.0f;
+    _settlementrectlist.Add(_town.Tile);
+    _settlementpos += _town.Tile.ButtonScript.Rect.anchoredPosition;
+    _settlementpos /= 2.0f;
 
       string _townname = _town.OriginName;
       GameObject _townholder = new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(CanvasGroup) });
@@ -1242,11 +1206,11 @@ public class maptext : MonoBehaviour
     for (int j = 0; j < _settlementrectlist.Count; j++)
       {
         _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_townholder.transform);
-      _town.Tiles[j].ButtonScript.Rect.localScale = Vector3.one;
-      PreviewInteractive _townpreview = _town.Tiles[j].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
+      _town.Tile.ButtonScript.Rect.localScale = Vector3.one;
+      PreviewInteractive _townpreview = _town.Tile.ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _townpreview.PanelType = PreviewPanelType.SettlementTile;
       _townpreview.MySettleMent = _town;
-      _town.Tiles[j].ButtonScript.Preview = _townpreview;
+      _town.Tile.ButtonScript.Preview = _townpreview;
       _townpreview.enabled = false;
     }
     MapUIScript.TownIcon=(_townholder);
@@ -1254,11 +1218,8 @@ public class maptext : MonoBehaviour
     _settlementrectlist.Clear();
     _settlementpos = Vector2.zero;
     Settlement _city = GameManager.Instance.MyGameData.MyMapData.City;
-    for (int i = 0; i < _city.Tiles.Count; i++)
-    {
-      _settlementrectlist.Add(_city.Tiles[i]);
-      _settlementpos += _city.Tiles[i].ButtonScript.Rect.anchoredPosition;
-    }
+    _settlementrectlist.Add(_city.Tile);
+    _settlementpos += _city.Tile.ButtonScript.Rect.anchoredPosition;
     _settlementpos /= 3.0f;
 
     string _cityname = _city.OriginName;
@@ -1271,11 +1232,11 @@ public class maptext : MonoBehaviour
     for (int j = 0; j < _settlementrectlist.Count; j++)
     {
       _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_cityholder.transform);
-      _city.Tiles[j].ButtonScript.Rect.localScale = Vector3.one;
-      PreviewInteractive _settlementpreview = _city.Tiles[j].ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
+      _city.Tile.ButtonScript.Rect.localScale = Vector3.one;
+      PreviewInteractive _settlementpreview = _city.Tile.ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
       _settlementpreview.PanelType = PreviewPanelType.SettlementTile;
       _settlementpreview.MySettleMent = _city;
-      _city.Tiles[j].ButtonScript.Preview = _settlementpreview;
+      _city.Tile.ButtonScript.Preview = _settlementpreview;
       _settlementpreview.enabled = false;
     }
     MapUIScript.CityIcon=_cityholder;

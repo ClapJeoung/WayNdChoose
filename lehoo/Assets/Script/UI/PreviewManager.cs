@@ -142,6 +142,8 @@ public class PreviewManager : MonoBehaviour
     CurrentPreview.anchoredPosition3D = new Vector3(CurrentPreview.anchoredPosition.x, CurrentPreview.anchoredPosition.y, 0.0f);
   
     CurrentPreview.GetComponent<CanvasGroup>().alpha = 1.0f;
+
+    GameManager.Instance.AudioManager.PlaySFX(0, 3);
   }
   private void OpenPreviewPanel(GameObject panel,RectTransform rect)
   {
@@ -153,6 +155,8 @@ public class PreviewManager : MonoBehaviour
     CurrentPreview.anchoredPosition3D = new Vector3(CurrentPreview.anchoredPosition.x, CurrentPreview.anchoredPosition.y, 0.0f);
 
     CurrentPreview.GetComponent<CanvasGroup>().alpha = 1.0f;
+  
+    GameManager.Instance.AudioManager.PlaySFX(0,3);
   }
   public void OpenTurnPreview(RectTransform rect)
   {

@@ -734,7 +734,7 @@ public class GameData    //게임 진행도 데이터
       _village.IsRiver = jsondata.Village_River[i];
       _village.IsMountain = jsondata.Village_Mountain[i];
       _village.IsSea = jsondata.Village_Sea[i];
-      _village.Tiles.Add(MyMapData.Tile(jsondata.Village_Tiles[i]));
+      _village.Tile=MyMapData.Tile(jsondata.Village_Tiles[i]);
       MyMapData.Tile(jsondata.Village_Tiles[i]).TileSettle = _village;
 
       MyMapData.AllSettles.Add(_village);
@@ -748,11 +748,8 @@ public class GameData    //게임 진행도 데이터
     _Town.IsRiver = jsondata.Town_River;
     _Town.IsMountain = jsondata.Town_Mountain;
     _Town.IsSea = jsondata.Town_Sea;
-    for (int i = 0; i < jsondata.Town_Tiles.Count; i++)
-    {
-      _Town.Tiles.Add(MyMapData.Tile(jsondata.Town_Tiles[i]));
-      MyMapData.Tile(jsondata.Town_Tiles[i]).TileSettle = _Town;
-    }
+    _Town.Tile = MyMapData.Tile(jsondata.Town_Tile);
+    MyMapData.Tile(jsondata.Town_Tile).TileSettle = _Town;
     MyMapData.AllSettles.Add(_Town);
     MyMapData.Town = _Town;
 
@@ -763,11 +760,8 @@ public class GameData    //게임 진행도 데이터
     _City.IsRiver = jsondata.City_River;
     _City.IsMountain = jsondata.City_Mountain;
     _City.IsSea = jsondata.City_Sea;
-    for (int i = 0; i < jsondata.City_Tiles.Count; i++)
-    {
-      _City.Tiles.Add(MyMapData.Tile(jsondata.City_Tiles[i]));
-      MyMapData.Tile(jsondata.City_Tiles[i]).TileSettle = _City;
-    }
+    _City.Tile=MyMapData.Tile(jsondata.City_Tile);
+    MyMapData.Tile(jsondata.City_Tile).TileSettle = _City;
     MyMapData.AllSettles.Add(_City);
     MyMapData.City= _City;
 

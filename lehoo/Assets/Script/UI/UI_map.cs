@@ -57,15 +57,17 @@ public class UI_map : UI_default
 
   [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private RectTransform HolderRect = null;
- // [SerializeField] private RectTransform ScaleRect = null;
- // private Vector3 IdleScale = Vector3.one;
- // [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
+  // [SerializeField] private RectTransform ScaleRect = null;
+  // private Vector3 IdleScale = Vector3.one;
+  // [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
   //[SerializeField] private float ZoomInTime = 1.2f;
 
- // [SerializeField] private TextMeshProUGUI GuidText = null;
- // [SerializeField] private RectTransform GuidRect = null;
-//  [SerializeField] private Vector2 GuidPos_Tile = new Vector2(316.0f, 647.0f);
-//  [SerializeField] private Vector2 GuidPos_Cost = new Vector2(316.0f, 391.0f);
+  // [SerializeField] private TextMeshProUGUI GuidText = null;
+  // [SerializeField] private RectTransform GuidRect = null;
+  //  [SerializeField] private Vector2 GuidPos_Tile = new Vector2(316.0f, 647.0f);
+  //  [SerializeField] private Vector2 GuidPos_Cost = new Vector2(316.0f, 391.0f);
+  [SerializeField] private RectTransform TilePreviewRect = null;
+  [SerializeField] private CanvasGroup TilePreviewGroup = null;
   [SerializeField] private Image TilePreview_Bottom = null;
   [SerializeField] private Image TilePreview_Top = null;
   [SerializeField] private Image TilePreview_Landmark = null;
@@ -200,6 +202,7 @@ public class UI_map : UI_default
   {
     if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
 
+
     ResetEnableTiles();
 
     DisableOutline(Outline_Idle);
@@ -244,6 +247,8 @@ public class UI_map : UI_default
     DefaultRect.sizeDelta = CloseSize;
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, _endpos, UIOpenTime_Move,UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.1f);
+
+    GameManager.Instance.AudioManager.PlaySFX(3);
     float _time = 0.0f;
     Vector2 _rect = DefaultRect.rect.size;
     while (_time < UIOpenTime_Fold)
@@ -259,6 +264,8 @@ public class UI_map : UI_default
     DefaultGroup.blocksRaycasts = true;
 
   }
+  private Vector2 TilePreviewDownPos = new Vector2(-200.0f, -20.0f);
+  private float TilePreviewStartAlpha = 0.5f;
   public List<HexDir> Length=new List<HexDir>();
   public int SanityCost = 0, GoldCost = 0;
   [HideInInspector] public int QuestInfo = 0;
@@ -267,6 +274,7 @@ public class UI_map : UI_default
     //동일한 좌표면 호출되지 않게 이미 거름
     if (selectedtiledata.Coordinate==GameManager.Instance.MyGameData.Coordinate||( SelectedTile != null && selectedtiledata == SelectedTile)) return;
 
+    GameManager.Instance.AudioManager.PlaySFX(5);
     SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
 
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
@@ -276,14 +284,15 @@ public class UI_map : UI_default
 
     MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"), Length.Count);
 
+    TilePreviewRect.anchoredPosition = TilePreviewDownPos;
+    TilePreviewGroup.alpha = TilePreviewStartAlpha;
     TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
     TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
     TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
     TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
-
-
-  //  GuidText.text = GameManager.Instance.GetTextData("CHOOSECOSTTYPE_MAP");
- //   GuidRect.anchoredPosition = GuidPos_Cost;
+    StopAllCoroutines();
+    StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-200.0f,0.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
 
     if (SelectedTile.TileSettle != null)
     {
@@ -470,6 +479,8 @@ public class UI_map : UI_default
         break;
     }
 
+    yield return StartCoroutine(UIManager.Instance.statusgainanimation(PlayerRect));
+
     IsRitual = SelectedTile.Landmark == LandmarkType.Ritual;
 
     GameManager.Instance.MyGameData.MovePoint -= MovePointCost;
@@ -495,6 +506,7 @@ public class UI_map : UI_default
       _path.Add(_currenttile.ButtonScript.Rect.anchoredPosition);
     }
 
+    GameManager.Instance.AudioManager.PlayWalking();
     float _time = 0.0f;             //x
     int _pathcount = _path.Count-1; //길 개수-1 (마지막 좌표는 current가 되면 안되니까)   n
     int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)
@@ -518,8 +530,9 @@ public class UI_map : UI_default
       _time += Time.deltaTime;
       yield return null;
     }
+    GameManager.Instance.AudioManager.StopWalking();
 
-      PlayerRect.anchoredPosition = _path[_path.Count-1];
+    PlayerRect.anchoredPosition = _path[_path.Count-1];
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
     GameManager.Instance.MyGameData.Coordinate = _currenttile.Coordinate;
@@ -528,6 +541,8 @@ public class UI_map : UI_default
 
     //CloseUI 안 쓰고 여기서 닫기 실행
     yield return new WaitForSeconds(0.7f);
+
+    GameManager.Instance.AudioManager.PlaySFX(4);
 
     UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
 

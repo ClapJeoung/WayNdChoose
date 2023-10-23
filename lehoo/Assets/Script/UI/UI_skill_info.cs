@@ -84,7 +84,7 @@ public class GameJsonData
   public bool Town_River = false;
   public bool Town_Mountain = false;
   public bool Town_Sea = false;
-  public List<Vector2Int> Town_Tiles=new List<Vector2Int>();
+  public Vector2Int Town_Tile=new Vector2Int();
 
   public int City_Id = 0;
   public int City_Discomfort = 0;
@@ -92,7 +92,7 @@ public class GameJsonData
   public bool City_River = false;
   public bool City_Mountain = false;
   public bool City_Sea = false;
-  public List<Vector2Int> City_Tiles = new List<Vector2Int>();
+  public Vector2Int City_Tile =new Vector2Int();
 
   public Vector2 Coordinate=new Vector2();
   public string CurrentSettlementName = "";
@@ -166,7 +166,7 @@ public class GameJsonData
       Village_River.Add(_village.IsRiver);
       Village_Mountain.Add(_village.IsMountain);
       Village_Sea.Add(_village.IsSea);
-      Village_Tiles.Add(_village.Tiles[0].Coordinate);
+      Village_Tiles.Add(_village.Tile.Coordinate);
     }
 
     Town_Id = data.MyMapData.Town.Index;
@@ -175,8 +175,7 @@ public class GameJsonData
     Town_River = data.MyMapData.Town.IsRiver;
     Town_Mountain = data.MyMapData.Town.IsMountain;
     Town_Sea = data.MyMapData.Town.IsSea;
-    Town_Tiles.Add(data.MyMapData.Town.Tiles[0].Coordinate);
-    Town_Tiles.Add(data.MyMapData.Town.Tiles[1].Coordinate);
+    Town_Tile=data.MyMapData.Town.Tile.Coordinate;
 
     City_Id = data.MyMapData.City.Index;
     City_Discomfort = data.MyMapData.City.Discomfort;
@@ -184,9 +183,7 @@ public class GameJsonData
     City_River = data.MyMapData.City.IsRiver;
     City_Mountain = data.MyMapData.City.IsMountain;
     City_Sea = data.MyMapData.City.IsSea;
-    City_Tiles.Add(data.MyMapData.City.Tiles[0].Coordinate);
-    City_Tiles.Add(data.MyMapData.City.Tiles[1].Coordinate);
-    City_Tiles.Add(data.MyMapData.City.Tiles[2].Coordinate);
+    City_Tile=data.MyMapData.City.Tile.Coordinate;
 
     Coordinate = data.Coordinate;
     CurrentSettlementName = data.CurrentSettlement == null ? "" : data.CurrentSettlement.OriginName;

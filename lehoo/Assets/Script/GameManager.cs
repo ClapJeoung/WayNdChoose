@@ -534,6 +534,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("LanguageIndex", (int)_lang);
       }
       LoadData();
+      AudioManager.PlayBGM();
       //  DebugAllEvents();
     }
 

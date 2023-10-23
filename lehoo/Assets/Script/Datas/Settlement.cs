@@ -15,7 +15,7 @@ public class Settlement
   public bool IsMountain = false;//주변 2칸에 산 여부
   public bool IsSea = false;    //주변 1칸에 바다 여부
 
-  public List<TileData> Tiles = new List<TileData>();//일반 타일맵 기준
+  public TileData Tile = null;
 
   public Settlement(SettlementType settletype)
   {
@@ -111,16 +111,14 @@ public class Settlement
   {
     get
     {
-      Vector2Int _pos = Vector2Int.zero;
-      foreach (var asdf in Tiles) _pos += asdf.Coordinate;
-      return new Vector3(_pos.x/Tiles.Count,_pos.y/Tiles.Count);
+      return new Vector3(Tile.Coordinate.x, Tile.Coordinate.y,0.0f);
     }
   }
   public GameObject HolderObject
   {
     get
     {
-      return Tiles[0].ButtonScript.Rect.transform.parent.gameObject;
+      return Tile.ButtonScript.Rect.transform.parent.gameObject;
     }
   }
   private TileInfoData tileinfodata = null;

@@ -19,7 +19,7 @@ public class UI_Mad : UI_default
   public void OpenUI()
   {
     IsOpen = true;
-
+    GameManager.Instance.AudioManager.PlaySFX(27);
     if (GameManager.Instance.MyGameData.Madness_Conversation)
     {
       Button_Conversation.interactable = false;

@@ -15,7 +15,7 @@ public class ImageSwapScript : MonoBehaviour
   private Image NextImage { get { return Index==true?Image_B : Image_A; } }
   private CanvasGroup CurrentGroup { get { return Index==true?Group_A : Group_B; } }
   private CanvasGroup NextGroup { get { return Index==true?Group_B : Group_A; } }
-
+  public bool Sound = true;
   public void Setup(Sprite illust)
   {
     CurrentGroup.alpha = 0.0f;
@@ -37,6 +37,8 @@ public class ImageSwapScript : MonoBehaviour
     StartCoroutine(changealpha(NextGroup,1.0f,ChangeTime));
     NextGroup.transform.SetSiblingIndex(0);
     Index = !Index;
+
+    GameManager.Instance.AudioManager.PlaySFX(1);
   }
   public void Next(Sprite illust,float time)
   {
@@ -45,6 +47,8 @@ public class ImageSwapScript : MonoBehaviour
     StartCoroutine(changealpha(NextGroup, 1.0f, time));
     NextGroup.transform.SetSiblingIndex(0);
     Index = !Index;
+
+   if(Sound) GameManager.Instance.AudioManager.PlaySFX(1);
   }
   private IEnumerator changealpha(CanvasGroup group,float targetalpha, float targettime)
   {

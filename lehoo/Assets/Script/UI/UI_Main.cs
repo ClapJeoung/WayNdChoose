@@ -31,6 +31,13 @@ public class UI_Main : UI_default
   [SerializeField] private TextMeshProUGUI QuitText = null;
   [SerializeField] private CanvasGroup TutorialButtonGroup = null;
   [SerializeField] private TextMeshProUGUI TutorialButtonText = null;
+  [SerializeField] private CanvasGroup MusicLicenseButton = null;
+  public void LicenseClick()
+  {
+    if (MusicLicensePanel.activeInHierarchy == true) MusicLicensePanel.SetActive(false);
+    else if(MusicLicensePanel.activeInHierarchy == false) MusicLicensePanel.SetActive(true);
+  }
+  [SerializeField] private GameObject MusicLicensePanel = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
   [SerializeField] private CanvasGroup QuestIllustGroup = null;
@@ -192,6 +199,8 @@ public class UI_Main : UI_default
   }
   private IEnumerator openmain()
   {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
+
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, MainUIOpenTime));
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").OutisdePos, GetPanelRect("mainillust").InsidePos, MainUIOpenTime, true));
@@ -217,6 +226,9 @@ public class UI_Main : UI_default
   }
   private IEnumerator closemain()
   {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 0.0f  , MainUICloseTime));
+    if (MusicLicensePanel.activeInHierarchy==true) MusicLicensePanel.SetActive(false);
+
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").InsidePos, GetPanelRect("loadgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;

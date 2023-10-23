@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class UI_dialogue : UI_default
 {
@@ -22,6 +23,7 @@ public class UI_dialogue : UI_default
   #region 이벤트
   public GameObject EventObjectHolder = null;
   [Space(10)]
+  [SerializeField] private RectTransform IllustRect = null;
   [SerializeField] private ImageSwapScript Illust = null;
   public float FadeTime = 0.8f;
   [SerializeField] private Image IllustEffect_Image = null;
@@ -490,8 +492,10 @@ public class UI_dialogue : UI_default
     {
       case SelectionTargetType.None:
         _issuccess = true;
+        GameManager.Instance.AudioManager.PlaySFX(25);
         break;
       case SelectionTargetType.Pay:
+        GameManager.Instance.AudioManager.PlaySFX(2);
         if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.HP))
         {
           _payvalue = GameManager.Instance.MyGameData.PayHPValue;
@@ -499,6 +503,7 @@ public class UI_dialogue : UI_default
           yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;
+          GameManager.Instance.AudioManager.PlaySFX(25);
           GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.PayHPValue;
         }
         else if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.Sanity))
@@ -508,6 +513,7 @@ public class UI_dialogue : UI_default
           yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
+          GameManager.Instance.AudioManager.PlaySFX(25);
           GameManager.Instance.MyGameData.Sanity -= GameManager.Instance.MyGameData.PaySanityValue;
         }
         else        //돈 지불일 경우 돈 적을 때 실행하는 뭔가 있어야 함
@@ -518,8 +524,11 @@ public class UI_dialogue : UI_default
           if (GameManager.Instance.MyGameData.Gold >= _payvalue)
           {
             //    yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, _selection.PayIcon.transform as RectTransform));
-            _issuccess = true;
             yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
+
+            GameManager.Instance.MyGameData.Gold -= _payvalue;
+            GameManager.Instance.AudioManager.PlaySFX(25);
+            _issuccess = true;
           }
           else
           {
@@ -532,6 +541,7 @@ public class UI_dialogue : UI_default
               yield return StartCoroutine(payanimation(_selection.PayIcon,_payvalue, 0, _selection.PayInfo));
 
               _issuccess = true;
+              GameManager.Instance.AudioManager.PlaySFX(25);
               GameManager.Instance.MyGameData.Gold = 0;
               GameManager.Instance.MyGameData.Sanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
               Debug.Log("정당한 값을 지불한 레후~");
@@ -541,26 +551,35 @@ public class UI_dialogue : UI_default
               yield return StartCoroutine(payanimation(_selection.PayIcon,  _payvalue,_payvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
 
               _issuccess = false;
+              GameManager.Instance.AudioManager.PlaySFX(26);
             }//돈이 부족해 실패한 경우
           }
         }
+
         break;
       case SelectionTargetType.Check_Single: //기술(단수) 선택지면 확률 검사
+        GameManager.Instance.AudioManager.PlaySFX(2);
+
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
         _requirevalue = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
         if (_percentvalue >= _requirevalue)
         {
           _issuccess = true;
+          GameManager.Instance.AudioManager.PlaySFX(25);
         }
         else
         {
           _issuccess = false;
+          GameManager.Instance.AudioManager.PlaySFX(26);
         }
 
         yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_percentvalue / (float)_requirevalue, 0.0f, 1.0f)));
+        yield return new WaitForSeconds(0.5f);
         break;
       case SelectionTargetType.Check_Multy: //기술(복수) 선택지면 확률 검사
+        GameManager.Instance.AudioManager.PlaySFX(2);
+        
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level +
           GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
@@ -574,6 +593,7 @@ public class UI_dialogue : UI_default
           _issuccess = false;
         }
         yield return StartCoroutine(checkanimation(_selection.SkillIcon_A, _selection.SkillIcon_B,Mathf.Clamp(_percentvalue / (float)_requirevalue, 0.0f, 1.0f)));
+        yield return new WaitForSeconds(0.5f);
         break;
     }
 
@@ -596,14 +616,16 @@ public class UI_dialogue : UI_default
     yield return null;
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
   //이 코루틴에서 SetSuccess 아니면 SetFail로 바로 넘어감
-  [SerializeField] private float SelectionEffectTime_check = 4.0f;
-  [SerializeField] private float SelectionEffectTime_pay = 1.5f;
+  [SerializeField] private float SelectionEffectTime_check = 3.5f;
+  [SerializeField] private float SelectionEffectTime_pay = 1.0f;
   [SerializeField] private AnimationCurve SelectionCheckCurve = null;
   private IEnumerator payanimation(Image image, int payvalue, int targetvalue, TextMeshProUGUI tmp)
   {
     float _time = 0.0f;
     string _str = "";
-    while(_time< SelectionEffectTime_pay * (1.0f-targetvalue/(float)payvalue))
+    float _stoptime = SelectionEffectTime_pay * (1.0f - targetvalue / (float)payvalue);
+
+    while (_time< _stoptime)
     {
       image.fillAmount = 1.0f - _time / SelectionEffectTime_pay;
       _str = ((int)Mathf.Lerp(payvalue, targetvalue, _time / SelectionEffectTime_pay)).ToString();
@@ -613,8 +635,7 @@ public class UI_dialogue : UI_default
     }
     _str = targetvalue.ToString();
     tmp.text= _str;
-
-    yield return new WaitForSeconds(0.3f);
+    yield return new WaitForSeconds(0.5f);
   }
   private IEnumerator checkanimation(Image image,float successvalue)
   {
@@ -627,24 +648,31 @@ public class UI_dialogue : UI_default
     }
     // image.fillAmount = SelectionCheckCurve.Evaluate(_time / SelectionEffectTime);
 
-    yield return new WaitForSeconds(0.3f);
+    yield return new WaitForSeconds(0.5f);
   }
   private IEnumerator checkanimation(Image image_L,Image image_R,float successvalue)
   {
     float _time = 0.0f;
-    while (_time < SelectionEffectTime_check * successvalue)
-    {
-      if (_time < SelectionEffectTime_check / 2)
-        image_L.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
-      else
-        image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate((_time-SelectionEffectTime_check/2) / (SelectionEffectTime_check / 2)));
+    float _firstvalue = Mathf.Clamp(successvalue * 2.0f, 0.0f, 1.0f), _secondvalue = (successvalue - 0.5f) * 2.0f;
 
+    while (_time < (SelectionEffectTime_check/2)* _firstvalue)
+    {
+      image_L.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
+      _time += Time.deltaTime; yield return null;
+    }
+    if (_firstvalue == 1.0f) { GameManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
+    else { GameManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.5f); yield break; }
+
+
+    while (_time < (SelectionEffectTime_check / 2) *_secondvalue)
+    {
+      image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime;yield return null;
     }
+    if (_firstvalue == 1.0f) { GameManager.Instance.AudioManager.PlaySFX(25);  }
+    else { GameManager.Instance.AudioManager.PlaySFX(26); }
 
-    yield return new WaitForSeconds(0.3f);
-    //  image_L.fillAmount = successvalue > 0.5f ? 0.0f : 1.0f - successvalue * 2.0f;
-    //  image_R.fillAmount = successvalue > 0.5f ? 1.0f - (successvalue - 0.5f) * 2.0f : 1.0f;
+    yield return new WaitForSeconds(0.5f);
   }
   private SuccessData CurrentSuccessData = null;
   public bool RemainReward = false;
@@ -733,12 +761,38 @@ public class UI_dialogue : UI_default
     CurrentEventIllustHolderes = CurrentFailData.Illusts;
     CurrentEventDescriptions = CurrentFailData.Descriptions;
 
+    StartCoroutine(shakeillust());
+
     IllustEffect_Image.color = FailColor;
     StartCoroutine((UIManager.Instance.ChangeAlpha(IllustEffect_Group, 0.0f, ResultEffectTime)));
 
     UIManager.Instance.AddUIQueue(displaynextindex(true));
   }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
+  [SerializeField] private float IllustShakeDegree = 10;
+  [SerializeField] private float IllustShakeTime = 0.7f;
+  [SerializeField] private float IllustShakePeriod = 0.1f;
+  [SerializeField] private float IllustRotateDegree = 2.5f;
+  private IEnumerator shakeillust()
+  {
+    Vector2 _originpos = new Vector2(-300.0f, 0.0f);
+    float _time = 0.0f;
+    while (_time < IllustShakeTime)
+    {
+      IllustRect.anchoredPosition = _originpos + new Vector2(Random.Range(-IllustShakeDegree, IllustShakeDegree), Random.Range(-IllustShakeDegree, IllustShakeDegree));
+      IllustRect.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Random.Range(-IllustRotateDegree, IllustRotateDegree)));
 
+      yield return new WaitForSeconds(IllustShakePeriod);
+      _time += IllustShakePeriod;
+      yield return null;
+    }
+    IllustRect.anchoredPosition = _originpos;
+    IllustRect.rotation = Quaternion.Euler(Vector3.zero);
+  }
+  private void Update()
+  {
+    if(Input.GetKeyDown(KeyCode.KeypadPlus)) StartCoroutine(shakeillust());
+
+  }
   public void OpenReturnButton()
   {
     MoveRectForButton(1);
@@ -828,6 +882,7 @@ public class UI_dialogue : UI_default
           case RewardTypeEnum.Skill:
             yield return StartCoroutine(UIManager.Instance.SetIconEffect(false,CurrentSuccessData.Reward_SkillType,RewardIcon.transform as RectTransform));
             GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
+            GameManager.Instance.AudioManager.PlaySFX(19);
             break;
         }
 
@@ -919,6 +974,8 @@ public class UI_dialogue : UI_default
   {
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
 
+    GameManager.Instance.AudioManager.PlaySFX(14);
+
     DefaultGroup.interactable = false;
 
     IsOpen = true;
@@ -945,16 +1002,15 @@ SettlementNameText.text = CurrentSettlement.Name;
     if (RestButtonHolder.gameObject.activeInHierarchy == true) RestButtonHolder.gameObject.SetActive(false);
 
     Sprite _settlementicon = null;
-    int _placecount = 0;
     switch (CurrentSettlement.SettlementType)
     {
-      case SettlementType.Village: _placecount = 2; _settlementicon = GameManager.Instance.ImageHolder.VillageIcon_white; break;
-      case SettlementType.Town: _placecount = 3; _settlementicon = GameManager.Instance.ImageHolder.TownIcon_white; break;
-      case SettlementType.City: _placecount = 4; _settlementicon = GameManager.Instance.ImageHolder.CityIcon_white; break;
+      case SettlementType.Village: _settlementicon = GameManager.Instance.ImageHolder.VillageIcon_white; break;
+      case SettlementType.Town:  _settlementicon = GameManager.Instance.ImageHolder.TownIcon_white; break;
+      case SettlementType.City:_settlementicon = GameManager.Instance.ImageHolder.CityIcon_white; break;
     }
     for (int i = 0; i < SectorIcons.Count; i++)
     {
-      if (i < _placecount)
+      if (CurrentSettlement.Sectors.Contains(SectorIcons[i].MyType))
       {
         if (SectorIcons[i].gameObject.activeInHierarchy == false) SectorIcons[i].gameObject.SetActive(true);
         SectorIcons[i].OpenIcon();
@@ -995,7 +1051,7 @@ SettlementNameText.text = CurrentSettlement.Name;
   /// <summary>
   /// 0:일반 1:집회 2:페널티만
   /// </summary>
- [HideInInspector] public int QuestSectorInfo = 0;
+  [HideInInspector] public int QuestSectorInfo = 0;
   [HideInInspector] public int GoldCost = 0;
   [HideInInspector] public int SanityCost = 0;
   [HideInInspector] public int DiscomfortValue = 0;
@@ -1093,6 +1149,23 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     if (SelectedSector != SectorTypeEnum.NULL) GetSectorIconScript(SelectedSector).SetIdleColor();
     SelectedSector = (SectorTypeEnum)index;
     IsSelectSector = true;
+
+    switch (SelectedSector)
+    {
+      case SectorTypeEnum.Residence:
+        GameManager.Instance.AudioManager.PlaySFX(10,1);
+        break;
+      case SectorTypeEnum.Temple:
+        GameManager.Instance.AudioManager.PlaySFX(11,1);
+        break;
+      case SectorTypeEnum.Marketplace:
+        GameManager.Instance.AudioManager.PlaySFX(12,1);
+        break;
+      case SectorTypeEnum.Library:
+        GameManager.Instance.AudioManager.PlaySFX(13,1);
+        break;
+    }
+
     Illust.Setup(GameManager.Instance.ImageHolder.GetSectorIllust(CurrentSettlement.SettlementType, SelectedSector, GameManager.Instance.MyGameData.Turn));
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
@@ -1178,6 +1251,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
 
     bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
     Cost_Gold.interactable = _goldable;
+    Cost_Gold.GetComponent<CanvasGroup>().alpha=_goldable?1.0f:0.3f;
     CostHighlight_Gold.Interactive = _goldable;
     if (_goldable) CostHighlight_Gold.SetInfo(HighlightEffectEnum.Gold, -1 * GoldCost);
   }
@@ -1293,7 +1367,11 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         break;
     }
 
+    GameManager.Instance.AudioManager.PlaySFX(2);
+
     yield return new WaitForSeconds(0.8f);
+
+    GameManager.Instance.AudioManager.PlaySFX(14);
 
     yield return StartCoroutine(closeui_all(true));
     GameManager.Instance.MyGameData.Turn++;
