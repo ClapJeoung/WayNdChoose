@@ -73,7 +73,8 @@ public class AudioManager : MonoBehaviour
     AudioClip _currentclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
     while (true)
     {
-      yield return new WaitForSeconds(_lastclip.length);
+      Debug.Log($"현재 트랙 {_lastclip.name} {_lastclip.length}초");
+      yield return new WaitUntil(() => { return !BGMAudio.isPlaying; });
 
       while (_currentclip == _lastclip)
       {
@@ -81,7 +82,7 @@ public class AudioManager : MonoBehaviour
         yield return null;
       }
 
-      yield return new WaitForSeconds(1.5f);
+      yield return new WaitForSeconds(1.0f);
       BGMAudio.clip = _currentclip;
       BGMAudio.Play();
 

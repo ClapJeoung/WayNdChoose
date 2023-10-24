@@ -1130,7 +1130,9 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         SectorEffect.text = _effect + _sabbatdescription;
         break;
     }
-    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), DiscomfortValue, MovePointValue);
+    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"),
+      GameManager.Instance.MyGameData.Tendency_Head.Level == +1 && GameManager.Instance.MyGameData.FirstRest ? "<sprite=95>" : ""
+      ,DiscomfortValue, MovePointValue);
 
   }
   public void OutPointerSector()
@@ -1238,7 +1240,9 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
         break;
     }
-    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), DiscomfortValue, MovePointValue);
+    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), 
+      GameManager.Instance.MyGameData.Tendency_Head.Level==1&&GameManager.Instance.MyGameData.FirstRest ? "<sprite=95>":"",
+      DiscomfortValue, MovePointValue);
 
     CostText.text = "";
     if (RestButtonHolder.gameObject.activeInHierarchy == false)

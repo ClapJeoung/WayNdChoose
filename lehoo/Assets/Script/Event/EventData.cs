@@ -388,31 +388,32 @@ public class EventHolder
   /// <returns></returns>
   public EventData ReturnOutsideEvent(List<EnvironmentType> envirs)
   {
-    List<EventData> _allevents = new List<EventData>();
+    List<EventData> _disableevents=new List<EventData>();
+    List<EventData> _ableevents = new List<EventData>();
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
-          if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID)==false) continue;
           if (_questevent.AppearSpace != EventAppearType.Outer) continue;
           if (_questevent.IsRightSeason == false) continue;
 
-          _allevents.Add(_questevent);
+          if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
+          else { _ableevents.Add(_questevent); }
         }
         break;
     }
     foreach (var _event in AllEvent)
     {
-      if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
       if (_event.IsRightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
 
       switch (_event.EventType)
       {
         case EventTypeEnum.Default:
-          _allevents.Add(_event);
+          if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
+          else { _ableevents.Add(_event); }
           break;
         case EventTypeEnum.Follow:
           switch (_event.FollowType)
@@ -476,7 +477,8 @@ public class EventHolder
               foreach (var _list in _checktarget)
                 if (_list.Contains(_event.ID))
                 {
-                  _allevents.Add(_event);
+                  if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
+                  else { _ableevents.Add(_event); }
                   break;
                 }
               break;
@@ -496,18 +498,21 @@ public class EventHolder
               }
               _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
               if (_event.FollowTargetLevel <= _targetlevel)
-                 _allevents.Add(_event);
+                if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
+                else { _ableevents.Add(_event); }
               break;
           }
           break;
       }
     }
 
+    List<EventData> _targetevents = _ableevents.Count > 0 ? _ableevents : _disableevents;
+
     List<string> _eventlist= new List<string>();
-    for(int i = 0; i < _allevents.Count; i++)
+    for(int i = 0; i < _targetevents.Count; i++)
     {
       int _count = 0;
-      EventData _event = _allevents[i];
+      EventData _event = _targetevents[i];
       switch(_event.EventType)
       {
         case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal;break;
@@ -522,10 +527,8 @@ public class EventHolder
     }
 
 
-    if (_eventlist.Count == 0) return DefaultEvent_Outer;
-
     string _resultid = _eventlist[UnityEngine.Random.Range(0, _eventlist.Count)];
-    foreach (EventData _event in _allevents)
+    foreach (EventData _event in _targetevents)
       if (_event.ID == _resultid) return _event;
 
     Debug.Log("여기까지 올 리가 없는디");
@@ -541,18 +544,19 @@ public class EventHolder
   /// <returns></returns>
   public EventData ReturnPlaceEvent(SettlementType settletype, SectorTypeEnum sectortype, List<EnvironmentType> envirs)
   {
-    List<EventData> _allevents = new List<EventData>();
+    List<EventData> _disableevents = new List<EventData>();
+    List<EventData> _ableevents = new List<EventData>();
 
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
-          if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID)==false) continue;
           if (_questevent.RightSpace(settletype) == false) continue;
           if (_questevent.IsRightSeason == false) continue;
 
-          _allevents.Add(_questevent);
+          if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
+          else { _ableevents.Add(_questevent); }
         }
         break;
     }
@@ -565,7 +569,8 @@ public class EventHolder
       switch (_event.EventType)
       {
         case EventTypeEnum.Default:
-          _allevents.Add(_event);
+          if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
+          else { _ableevents.Add(_event); }
           break;
         case EventTypeEnum.Follow:
           switch (_event.FollowType)
@@ -629,7 +634,8 @@ public class EventHolder
               foreach (var _list in _checktarget)
                 if (_list.Contains(_event.ID))
                 {
-                  _allevents.Add(_event);
+                  if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
+                  else { _ableevents.Add(_event); }
                   break;
                 }
               break;
@@ -654,18 +660,22 @@ public class EventHolder
               }
               _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
               if (_event.FollowTargetLevel <= _targetlevel)
-                _allevents.Add(_event);
+                if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
+                else { _ableevents.Add(_event); }
               break;
           }
           break;
       }
     }
 
+
+    List<EventData> _targetevents = _ableevents.Count > 0 ? _ableevents : _disableevents;
+    
     List<string> _eventlist = new List<string>();
-    for (int i = 0; i < _allevents.Count; i++)
+    for (int i = 0; i < _targetevents.Count; i++)
     {
       int _count = 0;
-      EventData _event = _allevents[i];
+      EventData _event = _targetevents[i];
       switch (_event.EventType)
       {
         case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal; break;
@@ -683,38 +693,12 @@ public class EventHolder
       for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);
     }
 
-    if (_eventlist.Count == 0) return DefaultEvent_Outer;
-
     string _resultid = _eventlist[UnityEngine.Random.Range(0, _eventlist.Count)];
-    foreach (EventData _event in _allevents)
+    foreach (EventData _event in _targetevents)
       if (_event.ID == _resultid) return _event;
 
     Debug.Log("여기까지 올 리가 없는디");
     return null;
-  }
-  private List<T> GetListByRatio<T>(Dictionary<List<T>,int> listAndvalue)
-  {
-    List<List<T>> _availabelists= new List<List<T>>();
-    List<int> _availablevalues= new List<int>();
-    int _max = 0;
-    foreach(var dic in listAndvalue)
-    {
-      if (dic.Key.Count == 0) continue;
-
-      _availabelists.Add(dic.Key);
-      _availablevalues.Add(dic.Value);
-      _max += dic.Value;
-    }
-    _max = UnityEngine.Random.Range(0, _max);
-    int _sum = 0;
-    for(int i = 0; i < _availabelists.Count; i++)
-    {
-      _sum += _availablevalues[i];
-      if (_max < _sum) return _availabelists[i];
-    }
-    if (_availabelists.Count > 0)
-      return _availabelists[_availabelists.Count];
-    else return null;
   }
 }
 public class TileInfoData

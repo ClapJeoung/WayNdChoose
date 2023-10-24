@@ -379,7 +379,8 @@ public class UI_map : UI_default
 
         if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
           _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
-            WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
+            WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%")
+            +(GameManager.Instance.MyGameData.Tendency_Head.Level==-2?"<sprite=92>":""));
         break;
       case StatusTypeEnum.Gold:
         if (GameManager.Instance.MyGameData.Gold < GoldCost) return;

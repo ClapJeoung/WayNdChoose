@@ -93,7 +93,7 @@ public class ReturnButton : MonoBehaviour
       if (GameManager.Instance.MyGameData.CurrentSettlement != null && GameManager.Instance.MyGameData.Tendency_Head.Level <0)
       {
         MyText.text = GameManager.Instance.GetTextData("GOTOMAP")+"<br>"+
-          string.Format("<sprite=100> {0} +{1}",GameManager.Instance.GetTextData("MOVEPOINT_TEXT"),WNCText.GetMovepointColor(ConstValues.Tendency_Head_m1));
+          string.Format("<sprite=93> <sprite=100> {0} +{1}",GameManager.Instance.GetTextData("MOVEPOINT_TEXT"),WNCText.GetMovepointColor(ConstValues.Tendency_Head_m1));
       }
       else
       {

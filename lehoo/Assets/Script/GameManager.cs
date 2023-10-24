@@ -13,10 +13,12 @@ public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
   public bool IsPlaying = false;
-  [ContextMenu("이벤트 데이터 업데이트")]
+  [ContextMenu("데이터 업데이트")]
   void EventDataUpdate()
   {
     StartCoroutine(eventdataupdate());
+    StartCoroutine(expdataupdate());
+    StartCoroutine(textdataupdate());
   }
   private IEnumerator eventdataupdate()
   {
@@ -52,11 +54,6 @@ public class GameManager : MonoBehaviour
     }
     print("이벤트 데이터 업데이트 완료");
   }
-  [ContextMenu("경험 데이터 업데이트")]
-  void ExpDataUpdate()
-  {
-    StartCoroutine(expdataupdate());
-  }
   private IEnumerator expdataupdate()
   {
     UnityWebRequest _sheet_exp = UnityWebRequest.Get(SeetURL_Exp);
@@ -75,11 +72,6 @@ public class GameManager : MonoBehaviour
       ExpJsonDataList.Add(_json);
     }
     print("경험 데이터 업데이트 완료");
-  }
-  [ContextMenu("텍스트 데이터 업데이트")]
-  void TextDataUpdate()
-  {
-    StartCoroutine(textdataupdate());
   }
   private IEnumerator textdataupdate()
   {

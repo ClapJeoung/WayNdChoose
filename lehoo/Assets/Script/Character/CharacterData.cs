@@ -35,8 +35,8 @@ public static class ConstValues
   public const int Rest_Discomfort = 3;
   public const int MoveRest_Sanity_min = 10, MoveRest_Sanity_max = 20;
   public const int MoveRest_Gold_min = 7, MoveRest_Gold_max = 15;
-  public const float Rest_Deafult = 0.75f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.4f, Move_LengthRatio = 0.15f;
+  public const float Rest_Deafult = 0.8f, Rest_DiscomfortRatio = 0.15f;
+  public const float Move_Default = 0.5f, Move_LengthRatio = 0.15f;
   public const float LackMPAmplifiedValue_Idle = 3.0f;
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
@@ -56,7 +56,7 @@ public static class ConstValues
 
   public const int TownSectorCount = 1, CitySectorCount = 2, CastleSectorCount = 3;
 
-  public const int StartGold = 20;
+  public const int StartGold = 15;
   public const float HPLoss_Exp = 0.15f;
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.2f;
@@ -89,15 +89,15 @@ public static class ConstValues
   public const int CheckSkill_single_min = 1, CheckSkill_single_max = 8;
   public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 14;
 
-  public const int PayHP_min = 4, PayHP_max = 10;      
-  public const int PaySanity_min = 8, PaySanity_max = 20;
-  public const int PayGold_min = 6, PayGold_max = 15; 
-  public const int FailHP_min = 6, FailHP_max = 10;   
-  public const int FailSanity_min = 12, FailSanity_max = 20;
-  public const int FailGold_min = 9, FailGold_max = 15;  
+  public const int PayHP_min = 6, PayHP_max = 15;      
+  public const int PaySanity_min = 12, PaySanity_max = 30;
+  public const int PayGold_min = 9, PayGold_max = 22; 
+  public const int FailHP_min = 9, FailHP_max = 15;   
+  public const int FailSanity_min = 18, FailSanity_max = 30;
+  public const int FailGold_min = 13, FailGold_max = 22;  
   public const int RewardHP_min = 0, RewardHP_max = 0;  
-  public const int RewardSanity_min = 10, RewardSanity_max = 25;
-  public const int RewardGold_min=7, RewardGold_max=18; 
+  public const int RewardSanity_min = 10, RewardSanity_max = 15;
+  public const int RewardGold_min=10, RewardGold_max=15; 
 
   public const int ShortTermStartTurn = 6;
   public const int LongTermStartTurn =  12;
