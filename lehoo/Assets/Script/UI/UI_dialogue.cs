@@ -41,7 +41,7 @@ public class UI_dialogue : UI_default
     yield return new WaitForSeconds(0.05f);
 
     float _time = 0.0f;
-    while (DescriptionScrollBar.value>0.001f)
+    while (DescriptionScrollBar.value>0.001f || _time < 1.5f)
     {
       DescriptionScrollBar.value = Mathf.Lerp(DescriptionScrollBar.value, 0.0f, 0.013f);
       _time += Time.deltaTime;
@@ -92,7 +92,7 @@ public class UI_dialogue : UI_default
     DialogueRect.sizeDelta = EventDialogueSize;
 
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
-    if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
+    if (NextButtonText.text == GameManager.Instance.GetTextData("NEXT_TEXT")) NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
   
    // Reward_Highlight.Interactive = false;
     EndingButtonGroup.alpha = 0.0f;
@@ -124,7 +124,7 @@ public class UI_dialogue : UI_default
     DialogueRect.sizeDelta = EventDialogueSize;
 
     UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
-    if (NextButtonText.text == "next") NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
+    if (NextButtonText.text == GameManager.Instance.GetTextData("NEXT_TEXT")) NextButtonText.text = GameManager.Instance.GetTextData("NEXT_TEXT");
 
    // Reward_Highlight.Interactive = false;
     EndingButtonGroup.alpha = 0.0f;
@@ -268,32 +268,35 @@ public class UI_dialogue : UI_default
           if(SelectionGroup.gameObject.activeInHierarchy==true) SelectionGroup.gameObject.SetActive(false);
           if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
           if (EndingButtonGroup.gameObject.activeInHierarchy == true) EndingButtonGroup.gameObject.SetActive(false);
+
           if (CurrentSuccessData != null)
           {
-            SetRewardButton();
-
-            if (CurrentSuccessData.Reward_Type != RewardTypeEnum.None)
+            if (CurrentEvent.EndingID != "")
             {
-              RewardButtonGroup.alpha = 0.0f;
-              if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
-              StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
+              StartCoroutine(UIManager.Instance.ChangeAlpha(EndingButtonGroup, 1.0f, ButtonFadeinTime));
+              NextButtonText.text = CurrentEndingData.Refuse;
+
             }
             else
             {
-              if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+              SetRewardButton();
+
+              if (CurrentSuccessData.Reward_Type != RewardTypeEnum.None)
+              {
+                RewardButtonGroup.alpha = 0.0f;
+                if (RewardButtonGroup.gameObject.activeInHierarchy == false) RewardButtonGroup.gameObject.SetActive(true);
+                StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, ButtonFadeinTime));
+              }
+              else
+              {
+                if (RewardButtonGroup.gameObject.activeInHierarchy == true) RewardButtonGroup.gameObject.SetActive(false);
+              }
             }
 
-            if (CurrentEvent.EndingID != "")
-            {
-              if (EndingButtonGroup.gameObject.activeInHierarchy == false) EndingButtonGroup.gameObject.SetActive(true);
-              LayoutRebuilder.ForceRebuildLayoutImmediate(EndingButtonGroup.transform as RectTransform);
-              StartCoroutine(UIManager.Instance.ChangeAlpha(EndingButtonGroup, 1.0f, ButtonFadeinTime));
-            }
           }
           else if (CurrentFailData != null)
           {
             SetPenalty();
-
           }
 
 
@@ -492,10 +495,10 @@ public class UI_dialogue : UI_default
     {
       case SelectionTargetType.None:
         _issuccess = true;
-        GameManager.Instance.AudioManager.PlaySFX(25);
+        UIManager.Instance.AudioManager.PlaySFX(25);
         break;
       case SelectionTargetType.Pay:
-        GameManager.Instance.AudioManager.PlaySFX(2);
+        UIManager.Instance.AudioManager.PlaySFX(2);
         if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.HP))
         {
           _payvalue = GameManager.Instance.MyGameData.PayHPValue;
@@ -503,7 +506,7 @@ public class UI_dialogue : UI_default
           yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;
-          GameManager.Instance.AudioManager.PlaySFX(25);
+          UIManager.Instance.AudioManager.PlaySFX(25);
           GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.PayHPValue;
         }
         else if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.Sanity))
@@ -513,7 +516,7 @@ public class UI_dialogue : UI_default
           yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
 
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
-          GameManager.Instance.AudioManager.PlaySFX(25);
+          UIManager.Instance.AudioManager.PlaySFX(25);
           GameManager.Instance.MyGameData.Sanity -= GameManager.Instance.MyGameData.PaySanityValue;
         }
         else        //돈 지불일 경우 돈 적을 때 실행하는 뭔가 있어야 함
@@ -527,7 +530,7 @@ public class UI_dialogue : UI_default
             yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
 
             GameManager.Instance.MyGameData.Gold -= _payvalue;
-            GameManager.Instance.AudioManager.PlaySFX(25);
+            UIManager.Instance.AudioManager.PlaySFX(25);
             _issuccess = true;
           }
           else
@@ -541,7 +544,7 @@ public class UI_dialogue : UI_default
               yield return StartCoroutine(payanimation(_selection.PayIcon,_payvalue, 0, _selection.PayInfo));
 
               _issuccess = true;
-              GameManager.Instance.AudioManager.PlaySFX(25);
+              UIManager.Instance.AudioManager.PlaySFX(25);
               GameManager.Instance.MyGameData.Gold = 0;
               GameManager.Instance.MyGameData.Sanity -= (int)(_elsevalue * ConstValues.GoldSanityPayAmplifiedValue);
               Debug.Log("정당한 값을 지불한 레후~");
@@ -551,14 +554,14 @@ public class UI_dialogue : UI_default
               yield return StartCoroutine(payanimation(_selection.PayIcon,  _payvalue,_payvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
 
               _issuccess = false;
-              GameManager.Instance.AudioManager.PlaySFX(26);
+              UIManager.Instance.AudioManager.PlaySFX(26);
             }//돈이 부족해 실패한 경우
           }
         }
 
         break;
       case SelectionTargetType.Check_Single: //기술(단수) 선택지면 확률 검사
-        GameManager.Instance.AudioManager.PlaySFX(2);
+        UIManager.Instance.AudioManager.PlaySFX(2);
 
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
@@ -566,19 +569,19 @@ public class UI_dialogue : UI_default
         if (_percentvalue >= _requirevalue)
         {
           _issuccess = true;
-          GameManager.Instance.AudioManager.PlaySFX(25);
+          UIManager.Instance.AudioManager.PlaySFX(25);
         }
         else
         {
           _issuccess = false;
-          GameManager.Instance.AudioManager.PlaySFX(26);
+          UIManager.Instance.AudioManager.PlaySFX(26);
         }
 
         yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_percentvalue / (float)_requirevalue, 0.0f, 1.0f)));
         yield return new WaitForSeconds(0.5f);
         break;
       case SelectionTargetType.Check_Multy: //기술(복수) 선택지면 확률 검사
-        GameManager.Instance.AudioManager.PlaySFX(2);
+        UIManager.Instance.AudioManager.PlaySFX(2);
         
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level +
           GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
@@ -660,8 +663,8 @@ public class UI_dialogue : UI_default
       image_L.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime; yield return null;
     }
-    if (_firstvalue == 1.0f) { GameManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
-    else { GameManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.5f); yield break; }
+    if (_firstvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
+    else { UIManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.5f); yield break; }
 
 
     while (_time < (SelectionEffectTime_check / 2) *_secondvalue)
@@ -669,8 +672,8 @@ public class UI_dialogue : UI_default
       image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime;yield return null;
     }
-    if (_firstvalue == 1.0f) { GameManager.Instance.AudioManager.PlaySFX(25);  }
-    else { GameManager.Instance.AudioManager.PlaySFX(26); }
+    if (_firstvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25);  }
+    else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
     yield return new WaitForSeconds(0.5f);
   }
@@ -694,11 +697,15 @@ public class UI_dialogue : UI_default
 
     if (CurrentEvent.EndingID != "")
     {
-      EndingButtonText.text = GameManager.Instance.ImageHolder.GetEndingIllust(CurrentEvent.EndingID).Name + "<br>" +
-        GameManager.Instance.GetTextData("Ending_Description");
+      CurrentEndingData = GameManager.Instance.ImageHolder.GetEndingData(CurrentEvent.EndingID);
+      EndingButtonGroup.alpha = 0.0f;
+      EndingButtonText.text =string.Format(GameManager.Instance.GetTextData("Ending"), CurrentEndingData.Name);
+      if (EndingButtonGroup.gameObject.activeInHierarchy == false) EndingButtonGroup.gameObject.SetActive(true);
+      LayoutRebuilder.ForceRebuildLayoutImmediate(EndingButtonGroup.transform as RectTransform);
     }
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
   }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체, 퀘스트 이벤트일 경우 진행도 ++
+  public EndingDatas CurrentEndingData = null;
   private void SetRewardButton()
   {
     RewardButtonGroup.alpha = 0.0f;
@@ -840,7 +847,7 @@ public class UI_dialogue : UI_default
   }
   public void GetEnding()
   {
-    GameManager.Instance.SubEnding(GameManager.Instance.ImageHolder.GetEndingIllust(GameManager.Instance.MyGameData.CurrentEvent.EndingID));
+    GameManager.Instance.SubEnding(GameManager.Instance.ImageHolder.GetEndingData(GameManager.Instance.MyGameData.CurrentEvent.EndingID));
   }
   public void GetReward()
   {
@@ -882,7 +889,7 @@ public class UI_dialogue : UI_default
           case RewardTypeEnum.Skill:
             yield return StartCoroutine(UIManager.Instance.SetIconEffect(false,CurrentSuccessData.Reward_SkillType,RewardIcon.transform as RectTransform));
             GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
-            GameManager.Instance.AudioManager.PlaySFX(19);
+            UIManager.Instance.AudioManager.PlaySFX(19);
             break;
         }
 
@@ -974,7 +981,7 @@ public class UI_dialogue : UI_default
   {
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
 
-    GameManager.Instance.AudioManager.PlaySFX(14);
+    UIManager.Instance.AudioManager.PlaySFX(14);
 
     DefaultGroup.interactable = false;
 
@@ -1155,16 +1162,16 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
-        GameManager.Instance.AudioManager.PlaySFX(10,1);
+        UIManager.Instance.AudioManager.PlaySFX(10,1);
         break;
       case SectorTypeEnum.Temple:
-        GameManager.Instance.AudioManager.PlaySFX(11,1);
+        UIManager.Instance.AudioManager.PlaySFX(11,1);
         break;
       case SectorTypeEnum.Marketplace:
-        GameManager.Instance.AudioManager.PlaySFX(12,1);
+        UIManager.Instance.AudioManager.PlaySFX(12,1);
         break;
       case SectorTypeEnum.Library:
-        GameManager.Instance.AudioManager.PlaySFX(13,1);
+        UIManager.Instance.AudioManager.PlaySFX(13,1);
         break;
     }
 
@@ -1371,11 +1378,11 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
         break;
     }
 
-    GameManager.Instance.AudioManager.PlaySFX(2);
+    UIManager.Instance.AudioManager.PlaySFX(2);
 
     yield return new WaitForSeconds(0.8f);
 
-    GameManager.Instance.AudioManager.PlaySFX(14);
+    UIManager.Instance.AudioManager.PlaySFX(14);
 
     yield return StartCoroutine(closeui_all(true));
     GameManager.Instance.MyGameData.Turn++;

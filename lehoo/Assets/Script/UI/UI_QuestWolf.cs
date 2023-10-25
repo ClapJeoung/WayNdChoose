@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
-using UnityEditor.PackageManager;
 
 public class UI_QuestWolf : UI_default
 {
@@ -36,12 +35,13 @@ public class UI_QuestWolf : UI_default
   {
     yield return new WaitForSeconds(0.05f);
 
-    float _time = 0.0f, _targettime = 1.0f;
-    while (PrologueScrollbar.value > 0.001f)
+    float _time = 0.0f;
+    while (PrologueScrollbar.value > 0.01f||_time<1.5f)
     {
-      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f, ScrollSpeed);
-      _time += Time.deltaTime; 
+      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f, 0.013f);
+      _time += Time.deltaTime;
       yield return null;
+
     }
     PrologueScrollbar.value = 0.0f;
   }

@@ -36,11 +36,11 @@ public class UI_Menu : UI_default
   }
   public void SetBGMMixer()
   {
-    GameManager.Instance.AudioManager.AudioMixer.SetFloat("BGM",BGMSlider.value<-40?-80:BGMSlider.value);
+    UIManager.Instance.AudioManager.AudioMixer.SetFloat("BGM",BGMSlider.value<-40?-80:BGMSlider.value);
   }
   public void SetSFMMixer()
   {
-    GameManager.Instance.AudioManager.AudioMixer.SetFloat("SFX", SFXSlider.value < -40 ? -80 : SFXSlider.value);
+    UIManager.Instance.AudioManager.AudioMixer.SetFloat("SFX", SFXSlider.value < -40 ? -80 : SFXSlider.value);
   }
   private IEnumerator openui()
   {
@@ -49,12 +49,12 @@ public class UI_Menu : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(ReturnText.transform.parent.transform as RectTransform);
 
     float _bgmvalue = 0;
-    GameManager.Instance.AudioManager.AudioMixer.GetFloat("BGM", out _bgmvalue);
+    UIManager.Instance.AudioManager.AudioMixer.GetFloat("BGM", out _bgmvalue);
     if (_bgmvalue < -40) _bgmvalue = -40;
     BGMSlider.value = _bgmvalue;
 
     float _sfxvalue = 0;
-    GameManager.Instance.AudioManager.AudioMixer.GetFloat("SFX", out _sfxvalue);
+    UIManager.Instance.AudioManager.AudioMixer.GetFloat("SFX", out _sfxvalue);
     if (_sfxvalue < -40) _sfxvalue = -40;
     SFXSlider.value = _sfxvalue;
 

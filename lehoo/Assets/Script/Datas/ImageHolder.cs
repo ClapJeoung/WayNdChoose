@@ -664,8 +664,8 @@ public class ImageHolder : ScriptableObject
   public Sprite IconBackground_normal = null;
   public Sprite IconBackground_status = null;
   [Space(10)]
-  public List<EndingIllusts> EndingIllustList = new List<EndingIllusts>();//엔딩 일러스트
-  public EndingIllusts GetEndingIllust(string id)
+  public List<EndingDatas> EndingIllustList = new List<EndingDatas>();//엔딩 일러스트
+  public EndingDatas GetEndingData(string id)
   {
     foreach (var _temp in EndingIllustList)
       if (_temp.ID== id) return _temp;
@@ -772,7 +772,7 @@ public class EventIllustHolder
   }
 }
 [System.Serializable]
-public class EndingIllusts
+public class EndingDatas
 {
   public string ID = "";
   public string Name { get
@@ -780,6 +780,10 @@ public class EndingIllusts
       return GameManager.Instance.GetTextData(ID + "_Name");
     } }
   public List<Sprite> Illusts;
+  public string Refuse
+  {
+    get { return GameManager.Instance.GetTextData(ID + "_Refuse"); }
+  }
   public List<string> Descriptions
   {
     get

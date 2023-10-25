@@ -65,6 +65,7 @@ public class AudioManager : MonoBehaviour
   }
   private IEnumerator bgm()
   {
+    Debug.Log("배경 시작");
     AudioClip _lastclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
     BGMAudio.clip = _lastclip;
     BGMAudio.Play();
@@ -74,7 +75,9 @@ public class AudioManager : MonoBehaviour
     while (true)
     {
       Debug.Log($"현재 트랙 {_lastclip.name} {_lastclip.length}초");
-      yield return new WaitUntil(() => { return !BGMAudio.isPlaying; });
+      yield return new WaitForSeconds(_lastclip.length);
+
+    //  yield return new WaitUntil(() => { return !BGMAudio.isPlaying||Input.GetKeyDown(KeyCode.N); });
 
       while (_currentclip == _lastclip)
       {
@@ -83,6 +86,7 @@ public class AudioManager : MonoBehaviour
       }
 
       yield return new WaitForSeconds(1.0f);
+      Debug.Log("다음 음악");
       BGMAudio.clip = _currentclip;
       BGMAudio.Play();
 

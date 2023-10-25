@@ -51,19 +51,14 @@ public class UI_Main : UI_default
   public float MainUICloseTime = 0.2f;
   private WaitForSeconds LittleWait = new WaitForSeconds(0.2f);
   private WaitForSeconds Wait = new WaitForSeconds(0.3f);
-  private void Start()
+  public void SetupMain()
   {
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
     LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
- //   OptionText.text = GameManager.Instance.GetTextData("OPTION");
     QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
     StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
     BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
-   Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Cult.QuestName;
-    SetupMain();
-  }
-  public void SetupMain()
-  {
+    Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Cult.QuestName;
     if (GameManager.Instance.GameSaveData != null)
     {
 

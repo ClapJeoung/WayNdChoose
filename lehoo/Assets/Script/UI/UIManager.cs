@@ -10,7 +10,8 @@ using System.Reflection;
 
 public class UIManager : MonoBehaviour
 {
-    private static UIManager instance;
+  public AudioManager AudioManager = null;
+  private static UIManager instance;
   public static UIManager Instance
   {
     get { return instance; }
@@ -25,7 +26,7 @@ public class UIManager : MonoBehaviour
   }
   public void ResetGame(string text,bool isending)
   {
-    GameManager.Instance.AudioManager.SetoffBGM();
+    AudioManager.SetoffBGM();
     IsWorking = true;
     CurtainText.text=text;
     StartCoroutine(resetgame(isending));
@@ -180,7 +181,7 @@ public class UIManager : MonoBehaviour
       else
       {
         StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
-        GameManager.Instance.AudioManager.PlaySFX(15);
+        UIManager.Instance.AudioManager.PlaySFX(15);
       }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
@@ -207,12 +208,12 @@ public class UIManager : MonoBehaviour
       if (lastsanity < GameManager.Instance.MyGameData.Sanity)
       {
         StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
-        GameManager.Instance.AudioManager.PlaySFX(16);
+        UIManager.Instance.AudioManager.PlaySFX(16);
       }
       else
       {
         StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
-        GameManager.Instance.AudioManager.PlaySFX(17);
+        UIManager.Instance.AudioManager.PlaySFX(17);
       }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
@@ -238,7 +239,7 @@ public class UIManager : MonoBehaviour
       if (lastgold < GameManager.Instance.MyGameData.Gold)
       {
         StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
-        GameManager.Instance.AudioManager.PlaySFX(18);
+        UIManager.Instance.AudioManager.PlaySFX(18);
       }
       else
       {
@@ -775,7 +776,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(LongExpCover, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
-        GameManager.Instance.AudioManager.PlaySFX(21);
+        UIManager.Instance.AudioManager.PlaySFX(21);
       }
       LongExpActive = false;
     }
@@ -788,7 +789,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(moverect(LongExpCover, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(statusgainanimation(LongExpTurn.rectTransform));
-        GameManager.Instance.AudioManager.PlaySFX(20);
+        UIManager.Instance.AudioManager.PlaySFX(20);
       }
       else
       {
@@ -805,7 +806,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_A, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
-        GameManager.Instance.AudioManager.PlaySFX(21);
+        UIManager.Instance.AudioManager.PlaySFX(21);
       }
       ShortExpAActive = false;
     }
@@ -818,7 +819,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(moverect(ShortExpCover_A, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(statusgainanimation(ShortExpTurn_A.rectTransform));
-        GameManager.Instance.AudioManager.PlaySFX(20);
+        UIManager.Instance.AudioManager.PlaySFX(20);
       }
       else
       {
@@ -834,7 +835,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_B, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
-        GameManager.Instance.AudioManager.PlaySFX(21);
+        UIManager.Instance.AudioManager.PlaySFX(21);
       }
 
       ShortExpBActive = false;
@@ -848,7 +849,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(moverect(ShortExpCover_B, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(statusgainanimation(ShortExpTurn_B.rectTransform));
-        GameManager.Instance.AudioManager.PlaySFX(20);
+        UIManager.Instance.AudioManager.PlaySFX(20);
       }
       else
       {

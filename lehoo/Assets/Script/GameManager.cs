@@ -7,18 +7,30 @@ using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
 using System.Linq;
 using System;
-using UnityEditor.PackageManager;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
   public bool IsPlaying = false;
-  [ContextMenu("데이터 업데이트")]
-  void EventDataUpdate()
+  private void EventDataUpdate()
   {
-    StartCoroutine(eventdataupdate());
-    StartCoroutine(expdataupdate());
-    StartCoroutine(textdataupdate());
+    StartCoroutine(updatedatas());
+  }
+  private IEnumerator updatedatas()
+  {
+    yield return StartCoroutine(textdataupdate());
+    yield return StartCoroutine(expdataupdate());
+    yield return StartCoroutine(eventdataupdate());
+
+    if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName))
+    {
+      GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
+    }
+    //저장된 플레이어 데이터가 있으면 데이터 불러오기
+
+    yield return StartCoroutine((loadspreadsheetdatas()));
+ //   Debug.Log(GetTextData("ProgressInfo"));
+    UIManager.Instance.MainUi.SetupMain();
   }
   private IEnumerator eventdataupdate()
   {
@@ -53,6 +65,8 @@ public class GameManager : MonoBehaviour
       EventJsonDataList.Add(_json);
     }
     print("이벤트 데이터 업데이트 완료");
+
+    yield return null;
   }
   private IEnumerator expdataupdate()
   {
@@ -72,6 +86,8 @@ public class GameManager : MonoBehaviour
       ExpJsonDataList.Add(_json);
     }
     print("경험 데이터 업데이트 완료");
+
+    yield return null;
   }
   private IEnumerator textdataupdate()
   {
@@ -92,11 +108,12 @@ public class GameManager : MonoBehaviour
       TextDatas.Add(_textdata);
     }
     print($"텍스트 딕셔너리 업데이트 완료\n{_previewcount}개 -> {TextDatas.Count}개");
+
+    yield return null;
   }
 
   private static GameManager instance;
   public static GameManager Instance { get { return instance; } }
-  public AudioManager AudioManager = null;
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
 
@@ -397,16 +414,6 @@ public class GameManager : MonoBehaviour
     _typecode += icontype;
     return GetTextData(type, _typecode);
   }
-    public void LoadData()
-  {
-    if (System.IO.File.Exists(Application.persistentDataPath+"/"+GameDataName ))
-    {
-      GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
-    }
-    //저장된 플레이어 데이터가 있으면 데이터 불러오기
-
-    UIManager.Instance.AddUIQueue((loadspreadsheetdatas()));
-  }//각종 Json 가져와서 변환
   public void SaveData()
   {
     GameJsonData _newjsondata=new GameJsonData(MyGameData);
@@ -525,11 +532,16 @@ public class GameManager : MonoBehaviour
         SystemLanguage _lang = Application.systemLanguage;
         PlayerPrefs.SetInt("LanguageIndex", (int)_lang);
       }
-      LoadData();
-      AudioManager.PlayBGM();
+      EventDataUpdate();
+      DontDestroyOnLoad(gameObject);
       //  DebugAllEvents();
     }
+    else { Destroy(this); }
 
+  }
+  private void Start()
+  {
+    UIManager.Instance.AudioManager.PlayBGM();
   }
 
   private void Update()
@@ -540,6 +552,7 @@ public class GameManager : MonoBehaviour
       CreateNewMap();
 
     }
+    if (Input.GetKeyDown(KeyCode.T)) UIManager.Instance.AudioManager.PlayBGM();
   }
   public void GameOver()
   {
@@ -591,7 +604,7 @@ public class GameManager : MonoBehaviour
 
     UIManager.Instance.OpenDead(_illust, _description);
   }
-  public void SubEnding(EndingIllusts endingdata)
+  public void SubEnding(EndingDatas endingdata)
   {
     Tuple<List<Sprite>, List<string>, string, string> _temp =
       new Tuple<List<Sprite>, List<string>, string, string>(endingdata.Illusts, endingdata.Descriptions, endingdata.LastWord, "");

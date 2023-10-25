@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
-using UnityEngine.WSA;
 using System.IO;
 
 public class UI_map : UI_default
@@ -248,7 +247,7 @@ public class UI_map : UI_default
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, _endpos, UIOpenTime_Move,UIManager.Instance.UIPanelOpenCurve));
     yield return new WaitForSeconds(0.1f);
 
-    GameManager.Instance.AudioManager.PlaySFX(3);
+    UIManager.Instance.AudioManager.PlaySFX(3);
     float _time = 0.0f;
     Vector2 _rect = DefaultRect.rect.size;
     while (_time < UIOpenTime_Fold)
@@ -274,7 +273,7 @@ public class UI_map : UI_default
     //동일한 좌표면 호출되지 않게 이미 거름
     if (selectedtiledata.Coordinate==GameManager.Instance.MyGameData.Coordinate||( SelectedTile != null && selectedtiledata == SelectedTile)) return;
 
-    GameManager.Instance.AudioManager.PlaySFX(5);
+    UIManager.Instance.AudioManager.PlaySFX(5);
     SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
 
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
@@ -507,7 +506,7 @@ public class UI_map : UI_default
       _path.Add(_currenttile.ButtonScript.Rect.anchoredPosition);
     }
 
-    GameManager.Instance.AudioManager.PlayWalking();
+    UIManager.Instance.AudioManager.PlayWalking();
     float _time = 0.0f;             //x
     int _pathcount = _path.Count-1; //길 개수-1 (마지막 좌표는 current가 되면 안되니까)   n
     int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)
@@ -531,7 +530,7 @@ public class UI_map : UI_default
       _time += Time.deltaTime;
       yield return null;
     }
-    GameManager.Instance.AudioManager.StopWalking();
+    UIManager.Instance.AudioManager.StopWalking();
 
     PlayerRect.anchoredPosition = _path[_path.Count-1];
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
@@ -543,7 +542,7 @@ public class UI_map : UI_default
     //CloseUI 안 쓰고 여기서 닫기 실행
     yield return new WaitForSeconds(0.7f);
 
-    GameManager.Instance.AudioManager.PlaySFX(4);
+    UIManager.Instance.AudioManager.PlaySFX(4);
 
     UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
 

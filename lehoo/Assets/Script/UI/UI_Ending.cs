@@ -17,7 +17,7 @@ public class UI_Ending : UI_default
 
     float _time = 0.0f;
     float _targettime = 1.5f;
-    while (DescriptionScrollbar.value > 0.001f)
+    while (DescriptionScrollbar.value > 0.001f || _time < 1.5f)
     {
       DescriptionScrollbar.value = Mathf.Lerp(DescriptionScrollbar.value, 0.0f, 0.013f);
       _time += Time.deltaTime;

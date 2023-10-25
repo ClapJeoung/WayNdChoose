@@ -38,7 +38,7 @@ public class ImageSwapScript : MonoBehaviour
     NextGroup.transform.SetSiblingIndex(0);
     Index = !Index;
 
-    GameManager.Instance.AudioManager.PlaySFX(1);
+    UIManager.Instance.AudioManager.PlaySFX(1);
   }
   public void Next(Sprite illust,float time)
   {
@@ -48,7 +48,7 @@ public class ImageSwapScript : MonoBehaviour
     NextGroup.transform.SetSiblingIndex(0);
     Index = !Index;
 
-   if(Sound) GameManager.Instance.AudioManager.PlaySFX(1);
+   if(Sound) UIManager.Instance.AudioManager.PlaySFX(1);
   }
   private IEnumerator changealpha(CanvasGroup group,float targetalpha, float targettime)
   {
