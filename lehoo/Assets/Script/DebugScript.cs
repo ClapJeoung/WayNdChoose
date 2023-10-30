@@ -64,6 +64,8 @@ public class DebugScript : MonoBehaviour
     {
       Cult_Progress.text = GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString();
     }
+
+    NextEventId.text = GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID;
   }
   public void ApplyValues()
   {
@@ -141,6 +143,7 @@ public class DebugScript : MonoBehaviour
 
       UIManager.Instance.SidePanelCultUI.UpdateUI();
     }
+   GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = NextEventId.text;
 
   }
 }

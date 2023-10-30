@@ -7,7 +7,7 @@ using TMPro;
 public class UI_RewardExp : UI_default
 {
   [SerializeField] private TextMeshProUGUI LongExpName_Text = null;
-  [SerializeField] private Image LongExpCap = null;
+ // [SerializeField] private Image LongExpCap = null;
   [SerializeField] private Image LongExpIllust = null;
   [SerializeField] private GameObject LongExpTurn_Obj = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn_Text = null;
@@ -15,7 +15,7 @@ public class UI_RewardExp : UI_default
   [SerializeField] private Onpointer_highlight LongExpHighight = null;
 
   [SerializeField] private TextMeshProUGUI[] ShortExpName_Text = new TextMeshProUGUI[2];
-  [SerializeField] private Image[] ShortExpCap = new Image[2];
+//  [SerializeField] private Image[] ShortExpCap = new Image[2];
   [SerializeField] private Image[] ShortExpIllust = new Image[2];
   [SerializeField] private GameObject[] ShortExpTurn_Obj = new GameObject[2];
   [SerializeField] private TextMeshProUGUI[] ShortExpTurn_Text = new TextMeshProUGUI[2];
@@ -62,7 +62,7 @@ public class UI_RewardExp : UI_default
     if (GameManager.Instance.MyGameData.LongExp != null)
     {
       LongExpName_Text.text = GameManager.Instance.MyGameData.LongExp.Name;
-      if (LongExpCap.enabled == true) LongExpCap.enabled = false;
+    //  if (LongExpCap.enabled == true) LongExpCap.enabled = false;
       LongExpIllust.sprite = GameManager.Instance.MyGameData.LongExp.Illust;
       if (LongExpTurn_Obj.activeInHierarchy == false) LongExpTurn_Obj.SetActive(true);
 
@@ -73,7 +73,8 @@ public class UI_RewardExp : UI_default
     else
     {
       LongExpName_Text.text = "";
-      LongExpCap.enabled = true;
+      LongExpIllust.sprite = GameManager.Instance.ImageHolder.Transparent;
+   //   LongExpCap.enabled = true;
       LongExpTurn_Obj.SetActive(false);
     }
 
@@ -84,7 +85,7 @@ public class UI_RewardExp : UI_default
       if (_shortexp != null)
       {
         ShortExpName_Text[i].text = _shortexp.Name;
-        if (ShortExpCap[i].enabled == true) ShortExpCap[i].enabled = false;
+     //   if (ShortExpCap[i].enabled == true) ShortExpCap[i].enabled = false;
         ShortExpIllust[i].sprite = _shortexp.Illust;
         if (ShortExpTurn_Obj[i].activeInHierarchy == false) ShortExpTurn_Obj[i].SetActive(true);
 
@@ -94,7 +95,8 @@ public class UI_RewardExp : UI_default
       else
       {
         ShortExpName_Text[i].text = "";
-        ShortExpCap[i].enabled = true;
+        ShortExpIllust[i].sprite = GameManager.Instance.ImageHolder.Transparent;
+       // ShortExpCap[i].enabled = true;
         ShortExpTurn_Obj[i].SetActive(false);
       }
 

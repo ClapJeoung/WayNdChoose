@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const float ScrollTime = 1.5f;
+
   public const int ExpSkillLevel = 2;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
@@ -40,8 +42,8 @@ public static class ConstValues
   public const float LackMPAmplifiedValue_Idle = 3.0f;
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
-                   EventPer_Sector = 2, EventPer_NoSector = 1,
-                   EventPer_Quest = 4, EventPer_Follow = 5, EventPer_Normal = 4;
+                   EventPer_Sector = 3, EventPer_NoSector = 1,
+                   EventPer_Quest = 1, EventPer_Follow = 2, EventPer_Normal = 1;
 
   public const int MapSize = 21;
 
@@ -525,7 +527,7 @@ public class GameData    //게임 진행도 데이터
     get { return quest_cult_progress; }
     set 
     {
-      if (value >= 100) UIManager.Instance.OpenEnding(GameManager.Instance.EventHolder.Quest_Cult.EndingDatas);
+      if (value >= 100) UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.CultEndingData);
 
       switch (Quest_Cult_Phase)
       {

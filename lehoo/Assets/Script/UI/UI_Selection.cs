@@ -266,7 +266,7 @@ public class UI_Selection : MonoBehaviour
 
     MyButton.transition = Selectable.Transition.SpriteSwap;
     MyButton.spriteState = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
-    MyImage.sprite = MyButton.spriteState.disabledSprite;
+    MyImage.sprite = MyButton.spriteState.selectedSprite;
     MyDescription.text = _data.Name;
 
   }

@@ -606,10 +606,7 @@ public class GameManager : MonoBehaviour
   }
   public void SubEnding(EndingDatas endingdata)
   {
-    Tuple<List<Sprite>, List<string>, string, string> _temp =
-      new Tuple<List<Sprite>, List<string>, string, string>(endingdata.Illusts, endingdata.Descriptions, endingdata.LastWord, "");
-
-    UIManager.Instance.OpenEnding(_temp);
+    UIManager.Instance.OpenEnding(endingdata);
   }
 
   public void StartNewGame(QuestType newquest)

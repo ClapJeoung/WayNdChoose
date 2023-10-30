@@ -638,11 +638,16 @@ public class UIManager : MonoBehaviour
   [SerializeField] private CanvasGroup ForceEffectGroup = null;
   [SerializeField] private CanvasGroup WildEffectGroup = null;
   [SerializeField] private CanvasGroup IntelligenceEffectGroup = null;
+  [SerializeField] private Color MadnessColor = new Color();
+  [SerializeField] private Color IdleColor = Color.white;
   public void UpdateSkillLevel()
   {
     ConversationLevel.text = GameManager.Instance.MyGameData.Madness_Conversation ?
       WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Conversation.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Conversation.Level);
+    ConversationIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Conversation ?
+      MadnessColor : IdleColor;
+
     if (conversationlevel != -1)
     {
       if (conversationlevel != GameManager.Instance.MyGameData.Skill_Conversation.Level)
@@ -656,6 +661,8 @@ public class UIManager : MonoBehaviour
     ForceLevel.text = GameManager.Instance.MyGameData.Madness_Force ?
       WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Force.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Force.Level);
+    ForceIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Force ?
+   MadnessColor : IdleColor;
     if (forcelevel != -1)
     {
       if (forcelevel != GameManager.Instance.MyGameData.Skill_Force.Level)
@@ -669,6 +676,8 @@ public class UIManager : MonoBehaviour
     WildLevel.text = GameManager.Instance.MyGameData.Madness_Wild ?
       WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Wild.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Wild.Level);
+    WildIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Wild ?
+    MadnessColor : IdleColor;
     if (wildlevel != -1)
     {
       if (wildlevel != GameManager.Instance.MyGameData.Skill_Wild.Level)
@@ -682,6 +691,8 @@ public class UIManager : MonoBehaviour
     IntelligenceLevel.text = GameManager.Instance.MyGameData.Madness_Intelligence ?
      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level) :
      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level);
+    IntelligenceIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Intelligence ?
+    MadnessColor : IdleColor;
     if (intelligencelevel != -1)
     {
       if (intelligencelevel != GameManager.Instance.MyGameData.Skill_Intelligence.Level)
@@ -1051,12 +1062,12 @@ public class UIManager : MonoBehaviour
     yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
     EndingUI.OpenUI_Dead(illsut,description);
   }
-  public void OpenEnding(Tuple<List<Sprite>, List<string>, string, string> data)
+  public void OpenEnding(EndingDatas data)
   {
     StopAllCoroutines();
     StartCoroutine(openending(data));
   }
-  private IEnumerator openending(Tuple<List<Sprite>, List<string>, string, string> data)
+  private IEnumerator openending(EndingDatas data)
   {
    yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
     EndingUI.OpenUI_Ending(data);

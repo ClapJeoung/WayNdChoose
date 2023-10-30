@@ -20,6 +20,16 @@ public class ImageHolder : ScriptableObject
     while (_spr == lastillust) _spr = EventIllust[Random.Range(0, EventIllust.Count)];
     return _spr;
   }
+  [Space(10)]
+  public EndingDatas CultEndingData=new EndingDatas();
+  public List<EndingDatas> EndingIllustList = new List<EndingDatas>();//엔딩 일러스트
+  public EndingDatas GetEndingData(string id)
+  {
+    foreach (var _temp in EndingIllustList)
+      if (_temp.ID == id) return _temp;
+
+    return null;
+  }
   [Space(20)]
   public Sprite GameOver_Idle = null;
   public Sprite GameOver_Conversation = null;
@@ -451,18 +461,23 @@ public class ImageHolder : ScriptableObject
   public Sprite SelectionButtonImage_None_Idle = null;
   public Sprite SelectionButtonImage_None_Enter = null;
   public Sprite SelectionButtonImage_None_Clicked = null;
+  public Sprite SelectionButtonImage_None_Disable = null;
   public Sprite SelectionButtonImage_BodyM_Idle = null;
   public Sprite SelectionButtonImage_BodyM_Enter = null;
   public Sprite SelectionButtonImage_BodyM_Clicked = null;
+  public Sprite SelectionButtonImage_BodyM_Disable = null;
   public Sprite SelectionButtonImage_BodyP_Idle = null;
   public Sprite SelectionButtonImage_BodyP_Enter = null;
   public Sprite SelectionButtonImage_BodyP_Clicked = null;
+  public Sprite SelectionButtonImage_BodyP_Disable = null;
   public Sprite SelectionButtonImage_HeadM_Idle = null;
   public Sprite SelectionButtonImage_HeadM_Enter = null;
+  public Sprite SelectionButtonImage_HeadM_Disable = null;
   public Sprite SelectionButtonImage_HeadM_Clicked = null;
   public Sprite SelectionButtonImage_HeadP_Idle = null;
   public Sprite SelectionButtonImage_HeadP_Enter = null;
   public Sprite SelectionButtonImage_HeadP_Clicked = null;
+  public Sprite SelectionButtonImage_HeadP_Disable = null;
   public SpriteState GetSelectionButtonBackground(TendencyTypeEnum tendencytype,bool dir)
   {
     SpriteState _state = new SpriteState();
@@ -474,14 +489,14 @@ public class ImageHolder : ScriptableObject
           _state.highlightedSprite = SelectionButtonImage_BodyM_Enter;
           _state.pressedSprite = SelectionButtonImage_BodyM_Clicked;
           _state.selectedSprite = SelectionButtonImage_BodyM_Idle;
-          _state.disabledSprite = SelectionButtonImage_BodyM_Idle;
+          _state.disabledSprite = SelectionButtonImage_BodyM_Disable;
         }
         else
         {
           _state.highlightedSprite = SelectionButtonImage_BodyP_Enter;
           _state.pressedSprite = SelectionButtonImage_BodyP_Clicked;
           _state.selectedSprite = SelectionButtonImage_BodyP_Idle;
-          _state.disabledSprite = SelectionButtonImage_BodyP_Idle;
+          _state.disabledSprite = SelectionButtonImage_BodyP_Disable;
         }
         break;
       case TendencyTypeEnum.Head:
@@ -490,14 +505,14 @@ public class ImageHolder : ScriptableObject
           _state.highlightedSprite = SelectionButtonImage_HeadM_Enter;
           _state.pressedSprite = SelectionButtonImage_HeadM_Clicked;
           _state.selectedSprite = SelectionButtonImage_HeadM_Idle;
-          _state.disabledSprite = SelectionButtonImage_HeadM_Idle;
+          _state.disabledSprite = SelectionButtonImage_HeadM_Disable;
         }
         else
         {
           _state.highlightedSprite = SelectionButtonImage_HeadP_Enter;
           _state.pressedSprite = SelectionButtonImage_HeadP_Clicked;
           _state.selectedSprite = SelectionButtonImage_HeadP_Idle;
-          _state.disabledSprite = SelectionButtonImage_HeadP_Idle;
+          _state.disabledSprite = SelectionButtonImage_HeadP_Disable;
         }
         break;
       default:
@@ -505,7 +520,7 @@ public class ImageHolder : ScriptableObject
           _state.highlightedSprite = SelectionButtonImage_None_Enter;
           _state.pressedSprite = SelectionButtonImage_None_Clicked;
           _state.selectedSprite = SelectionButtonImage_None_Idle;
-          _state.disabledSprite = SelectionButtonImage_None_Idle;
+          _state.disabledSprite = SelectionButtonImage_None_Disable;
         }
         break;
     }
@@ -664,15 +679,6 @@ public class ImageHolder : ScriptableObject
   public Sprite IconBackground_normal = null;
   public Sprite IconBackground_status = null;
   [Space(10)]
-  public List<EndingDatas> EndingIllustList = new List<EndingDatas>();//엔딩 일러스트
-  public EndingDatas GetEndingData(string id)
-  {
-    foreach (var _temp in EndingIllustList)
-      if (_temp.ID== id) return _temp;
-
-    return null;
-  }
-  [Space(10)]
   public Sprite QuestIcon_Cult = null;
   public Sprite QuestIcon_Hideout_Idle = null;
   public Sprite QuestIcon_Hideout_Finish = null;
@@ -698,10 +704,6 @@ public class ImageHolder : ScriptableObject
   }
   public List<Sprite> Cult_Sabbat = new List<Sprite>();
   public List<Sprite> Cult_Ritual = new List<Sprite>();
-  public List<Sprite> CultEnding_Illusts = new List<Sprite>();
-  public Sprite CultEnding_Rational = null, CultEnding_Physical = null,
-    CultEnding_Mental = null, CultEnding_Material = null;
-  public Sprite CultEnding_Last = null;
   public Sprite GetCultIllust(List<Sprite> targetlist, string id)
   {
     foreach (var _illust in targetlist)
@@ -780,10 +782,15 @@ public class EndingDatas
       return GameManager.Instance.GetTextData(ID + "_Name");
     } }
   public List<Sprite> Illusts;
-  public string Refuse
+  public string Refuse_Name
   {
-    get { return GameManager.Instance.GetTextData(ID + "_Refuse"); }
+    get { return GameManager.Instance.GetTextData(ID + "_Refuse_Name"); }
   }
+  public string Refuse_Description
+  {
+    get { return GameManager.Instance.GetTextData(ID + "_Refuse_Description"); }
+  }
+  public Sprite RefuseIllust = null;
   public List<string> Descriptions
   {
     get

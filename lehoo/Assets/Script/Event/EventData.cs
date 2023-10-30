@@ -218,7 +218,6 @@ public class EventHolder
     EventData Data = ReturnEventDataDefault(_data);
       AllEvent.Add(Data);
   }
-
   public void ConvertData_Follow(EventJsonData _data)
   {
     EventData Data = ReturnEventDataDefault(_data);
@@ -397,6 +396,7 @@ public class EventHolder
         {
           if (_questevent.AppearSpace != EventAppearType.Outer) continue;
           if (_questevent.IsRightSeason == false) continue;
+          if (_questevent.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_questevent.EnvironmentType)) continue;
 
           if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
           else { _ableevents.Add(_questevent); }
@@ -407,6 +407,7 @@ public class EventHolder
     {
       if (_event.IsRightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
+      if (_event.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_event.EnvironmentType)) continue;
 
       switch (_event.EventType)
       {
@@ -551,8 +552,9 @@ public class EventHolder
       case QuestType.Cult:
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
-          if (_questevent.RightSpace(settletype) == false) continue;
+          if (_questevent.RightSpace(settletype,_questevent.Sector) == false) continue;
           if (_questevent.IsRightSeason == false) continue;
+          if (_questevent.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_questevent.EnvironmentType)) continue;
 
           if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
           else { _ableevents.Add(_questevent); }
@@ -563,7 +565,8 @@ public class EventHolder
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
       if (_event.IsRightSeason == false) continue;
-      if (_event.RightSpace(settletype) == false) continue;
+      if (_event.RightSpace(settletype, _event.Sector) == false) continue;
+      if (_event.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_event.EnvironmentType)) continue;
 
       switch (_event.EventType)
       {
@@ -795,27 +798,42 @@ public class EventData
     }
   }
   public EventAppearType AppearSpace;
-    public bool RightSpace(SettlementType currentsettle)
+  public bool RightSpace(SettlementType currentsettle,SectorTypeEnum eventsector)
+  {
+    switch (AppearSpace)
     {
-        switch (AppearSpace)
-        {
-            case EventAppearType.Outer:
-                return false;
-            case EventAppearType.Village:
-                if (currentsettle == SettlementType.Village) return true;
-                break;
-            case EventAppearType.Town:
-                if (currentsettle == SettlementType.Town) return true;
-                break;
-            case EventAppearType.City:
-                if (currentsettle == SettlementType.City) return true;
-                break;
-            case EventAppearType.Settlement:
-                if (currentsettle == SettlementType.Outer) return false;
-                return true;
-        }
+      case EventAppearType.Outer:
         return false;
+      case EventAppearType.Village:
+        if (currentsettle == SettlementType.Village)
+        {
+          if (eventsector == SectorTypeEnum.Marketplace || eventsector == SectorTypeEnum.Library) return false;
+          return true;
+        }
+        break;
+      case EventAppearType.Town:
+        if (currentsettle == SettlementType.Town)
+        {
+          if (eventsector == SectorTypeEnum.Residence || eventsector == SectorTypeEnum.Library) return false;
+          return true;
+        }
+        break;
+      case EventAppearType.City:
+        if (currentsettle == SettlementType.City)
+        {
+          if (eventsector == SectorTypeEnum.Residence || eventsector == SectorTypeEnum.Temple) return false;
+          return true;
+        }
+        break;
+      case EventAppearType.Settlement:
+        if (currentsettle == SettlementType.Outer)
+        {
+          return false;
+        }
+        return true;
     }
+    return false;
+  }
 
   public SectorTypeEnum Sector = SectorTypeEnum.NULL;
   public EnvironmentType EnvironmentType = EnvironmentType.NULL;
@@ -1124,49 +1142,6 @@ public class QuestHolder_Cult:Quest
       }
       int _index = UnityEngine.Random.Range(0, _list.Count);
       return new Tuple<Sprite, string>(_list[_index], _description.Split('@')[UnityEngine.Random.Range(0, _list.Count)]);
-    }
-  }
-  public Tuple<List<Sprite>,List<string>,string,string> EndingDatas
-  {
-    get
-    {
-      int _beforebody = 6;
-      int _afterbody = _beforebody + 3;
-      List<Sprite> _endingillusts= new List<Sprite>();
-      var _stringraw = GameManager.Instance.GetTextData("Cult_Ending_Idle").Split('@');
-      List<string> _descriptions = new List<string>();
-
-      for (int i = 0; i < _beforebody; i++)
-      {
-        _endingillusts.Add(GameManager.Instance.ImageHolder.CultEnding_Illusts[i]);
-        _descriptions.Add(_stringraw[i]);
-      }
-
-      _endingillusts.Add(GameManager.Instance.MyGameData.Tendency_Body.Level < 0 ?
-        GameManager.Instance.ImageHolder.CultEnding_Rational :
-        GameManager.Instance.ImageHolder.CultEnding_Physical);
-      _descriptions.Add(GameManager.Instance.MyGameData.Tendency_Body.Level < 0 ?
-        GameManager.Instance.GetTextData("Cult_Ending_Rational") :
-        GameManager.Instance.GetTextData("Cult_Ending_Physical"));
-
-      for (int i = _beforebody; i < _afterbody; i++)
-      {
-        _endingillusts.Add(GameManager.Instance.ImageHolder.CultEnding_Illusts[i]);
-        _descriptions.Add(_stringraw[i]);
-      }
-
-      _endingillusts.Add(GameManager.Instance.MyGameData.Tendency_Head.Level < 0 ?
-        GameManager.Instance.ImageHolder.CultEnding_Mental :
-        GameManager.Instance.ImageHolder.CultEnding_Material);
-      _descriptions.Add(GameManager.Instance.MyGameData.Tendency_Head.Level < 0 ?
-        GameManager.Instance.GetTextData("Cult_Ending_Mental") :
-        GameManager.Instance.GetTextData("Cult_Ending_Material"));
-
-      _endingillusts.Add(GameManager.Instance.ImageHolder.CultEnding_Last);
-      _descriptions.Add(_stringraw[_stringraw.Length - 1]);
-
-      return new Tuple<List<Sprite>, List<string>, string, string>(_endingillusts, _descriptions,
-        GameManager.Instance.GetTextData("Cult_Ending_LastWord"), GameManager.Instance.GetTextData("Cult_Ending_End"));
     }
   }
 }

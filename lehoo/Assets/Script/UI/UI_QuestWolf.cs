@@ -36,7 +36,7 @@ public class UI_QuestWolf : UI_default
     yield return new WaitForSeconds(0.05f);
 
     float _time = 0.0f;
-    while (PrologueScrollbar.value > 0.01f||_time<1.5f)
+    while (PrologueScrollbar.value > 0.001f && _time < ConstValues.ScrollTime)
     {
       PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f, 0.013f);
       _time += Time.deltaTime;
@@ -45,22 +45,36 @@ public class UI_QuestWolf : UI_default
     }
     PrologueScrollbar.value = 0.0f;
   }
-  [SerializeField] private CanvasGroup Prologue_ButtonHolderGroup = null;
-  [SerializeField] private Button Prologue_Button_A = null;
-  [SerializeField] private TextMeshProUGUI Prologue_ButtonText_A = null;
-  [SerializeField] private Button Prologue_Button_B = null;
-  [SerializeField] private TextMeshProUGUI Prologue_ButtonText_B = null;
+  [SerializeField] private CanvasGroup Prologue_TendencyGroup = null;
+  [SerializeField] private Button Prologue_Button_Left = null;
+  [SerializeField] private TextMeshProUGUI Prologue_ButtonText_Left = null;
+  [SerializeField] private Button Prologue_Button_Right = null;
+  [SerializeField] private TextMeshProUGUI Prologue_ButtonText_Right = null;
+  [SerializeField] private CanvasGroup Prologue_Nextbutton_Group = null;
   [SerializeField] private float PrologueFadetime = 0.7f;
-  private float DisableAlpha = 0.2f;
-  private void SetPrologueButtonDisable()
+  private void ActiveSetNextButton()
   {
-    Prologue_ButtonHolderGroup.alpha = DisableAlpha;
-    Prologue_ButtonHolderGroup.interactable = false;
+    if (Prologue_TendencyGroup.gameObject.activeInHierarchy == true) Prologue_TendencyGroup.gameObject.SetActive(false);
+    if (Prologue_Nextbutton_Group.gameObject.activeInHierarchy == false) Prologue_Nextbutton_Group.gameObject.SetActive(true);
+
+    Prologue_Nextbutton_Group.interactable = true;
   }
-  public void SetPrologueButtonActive()
+  public void DeActiveSetNextButton()
   {
-    Prologue_ButtonHolderGroup.alpha = 1.0f;
-    Prologue_ButtonHolderGroup.interactable = true;
+    if (Prologue_TendencyGroup.gameObject.activeInHierarchy == true) Prologue_TendencyGroup.gameObject.SetActive(false);
+    if (Prologue_Nextbutton_Group.gameObject.activeInHierarchy == false) Prologue_Nextbutton_Group.gameObject.SetActive(true);
+
+    Prologue_Nextbutton_Group.interactable = false;
+  }
+  public void ActiveTendencybutton()
+  {
+    Prologue_TendencyGroup.alpha = 0.0f;
+    Prologue_TendencyGroup.interactable = false;
+
+    if (Prologue_TendencyGroup.gameObject.activeInHierarchy == false) Prologue_TendencyGroup.gameObject.SetActive(true);
+    if (Prologue_Nextbutton_Group.gameObject.activeInHierarchy == true) Prologue_Nextbutton_Group.gameObject.SetActive(false);
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_TendencyGroup, 1.0f, 0.5f));
   }
   public int CurrentPrologueIndex = 0;
   public void OpenUI_Prologue(QuestHolder_Cult wolf)
@@ -73,15 +87,9 @@ public class UI_QuestWolf : UI_default
   }
   private IEnumerator openui_prologue()
   {
-    SetPrologueButtonDisable();
-
-    Prologue_Button_A.gameObject.SetActive(true);
-    Prologue_Button_A.onClick.RemoveAllListeners();
-    Prologue_Button_A.onClick.AddListener(Next);
-    Prologue_ButtonText_A.text = GameManager.Instance.GetTextData("NEXT_TEXT");
-    Prologue_Button_B.gameObject.SetActive(false);
-
-       Illust.Setup(QuestHolder.Prologue_0_Illust, 0.1f);
+    DeActiveSetNextButton();
+     
+    Illust.Setup(QuestHolder.Prologue_0_Illust, 0.1f);
 
     Prologue_Description.text = QuestHolder.Prologue_0_Description;
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);
@@ -89,7 +97,7 @@ public class UI_QuestWolf : UI_default
 
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup, 1.0f, 2.0f));
 
-    SetPrologueButtonActive();
+    ActiveSetNextButton();
 
     yield return null;
   }
@@ -99,7 +107,6 @@ public class UI_QuestWolf : UI_default
     CurrentPrologueIndex = 0;
     IsOpen = false;
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup, 0.0f, FadeOutTime));
-    Prologue_ButtonText_A.gameObject.SetActive(true);
   }
   public void Next()
   {
@@ -112,7 +119,7 @@ public class UI_QuestWolf : UI_default
       UIManager.Instance.AddUIQueue(next());
       return;
     }
-    Prologue_ButtonHolderGroup.interactable = false;
+    DeActiveSetNextButton();
 
     UIManager.Instance.AddUIQueue(next());
   }
@@ -122,8 +129,8 @@ public class UI_QuestWolf : UI_default
 
     Sprite _illust = null;
     string _description = null;
-    string _buttontext_a = null;
-    string _buttontext_b = null;
+    string _buttontext_a = "";
+    string _buttontext_b = "";
 
 
     switch (CurrentPrologueIndex)
@@ -139,13 +146,11 @@ public class UI_QuestWolf : UI_default
         {
           _illust = QuestHolder.Prologue_2_0_Illust;
           _description = QuestHolder.Prologue_2_0_Description;
-          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         }
         else
         {
           _illust = QuestHolder.Prologue_2_1_Illust;
           _description = QuestHolder.Prologue_2_1_Description;
-          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         }
         break;
       case 3:
@@ -159,71 +164,67 @@ public class UI_QuestWolf : UI_default
         {
           _illust = QuestHolder.Prologue_4_0_Illust;
           _description = QuestHolder.Prologue_4_0_Description;
-          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         }
         else
         {
           _illust = QuestHolder.Prologue_4_1_Illust;
           _description = QuestHolder.Prologue_4_1_Description;
-          _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         }
         break;
       case 5:
         _illust = QuestHolder.Prologue_5_Illust;
         _description = QuestHolder.Prologue_5_Description;
-        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         break;
       case 6:
         _illust = QuestHolder.Prologue_6_Illust;
         _description = QuestHolder.Prologue_6_Description;
-        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         break;
       case 7:
         _illust = QuestHolder.Prologue_7_Illust;
         _description = QuestHolder.Prologue_7_Description;
-        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         break;
       case 8:
         _illust = QuestHolder.Prologue_8_Illust;
         _description = QuestHolder.Prologue_8_Description;
-        _buttontext_a = GameManager.Instance.GetTextData("NEXT_TEXT");
         break;
     }
-
-    SetPrologueButtonDisable();
     Illust.Next(_illust,  PrologueFadetime);
 
-    Prologue_ButtonText_A.text= _buttontext_a;
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Button_A.transform as RectTransform);
-    Prologue_Button_A.onClick.RemoveAllListeners();
-    Prologue_Description.text +="<br><br>"+ _description;
-    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);
-   yield return  StartCoroutine(updatescrollbar());
-    SetPrologueButtonActive();
+    Prologue_Description.text += "<br><br>" + _description;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.parent.transform as RectTransform);
+    yield return StartCoroutine(updatescrollbar());
 
-    if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
+    if (_buttontext_a == "")
     {
-      Prologue_Button_A.gameObject.SetActive(false);
-
-      MoveRectForButton(0);
-      UIManager.Instance.MapButton.Open(1, this);
+      ActiveSetNextButton();
     }
     else
     {
-      if (_buttontext_b == null)                //선택지 없는 상황 - A 세팅하고 B 비활성화
-      {
-        Prologue_Button_A.onClick.AddListener(Next);
+      Prologue_TendencyGroup.alpha = 0.0f;
+      Prologue_TendencyGroup.interactable = false;
+      if (Prologue_TendencyGroup.gameObject.activeInHierarchy == false) Prologue_TendencyGroup.gameObject.SetActive(true);
 
-        if (Prologue_Button_B.gameObject.activeInHierarchy == true) Prologue_Button_B.gameObject.SetActive(false);
-      }
-      else                                      //선택지 있는 상황 - A 세팅하고 B 활성화,세팅
-      {
-        Prologue_Button_A.onClick.AddListener(() => SelectTendency(0));
+      Prologue_ButtonText_Left.text = _buttontext_a;
+      Prologue_Button_Left.transform.GetComponent<Image>().sprite =
+        CurrentPrologueIndex == 1 ? GameManager.Instance.ImageHolder.SelectionButtonImage_BodyM_Idle : GameManager.Instance.ImageHolder.SelectionButtonImage_HeadM_Idle;
+      Prologue_Button_Left.spriteState = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(CurrentPrologueIndex == 1 ? TendencyTypeEnum.Body : TendencyTypeEnum.Head, true);
+      LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonText_Left.transform as RectTransform);
+      LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Button_Left.transform as RectTransform);
+      Prologue_ButtonText_Right.text = _buttontext_b;
+      Prologue_Button_Right.transform.GetComponent<Image>().sprite =
+    CurrentPrologueIndex == 1 ? GameManager.Instance.ImageHolder.SelectionButtonImage_BodyP_Idle : GameManager.Instance.ImageHolder.SelectionButtonImage_HeadP_Idle;
+      Prologue_Button_Right.spriteState = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(CurrentPrologueIndex == 1 ? TendencyTypeEnum.Body : TendencyTypeEnum.Head, false);
+      LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_ButtonText_Right.transform as RectTransform);
+      LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Button_Right.transform as RectTransform);
+      ActiveTendencybutton();
+    }
 
-        if (Prologue_Button_B.gameObject.activeInHierarchy == false) Prologue_Button_B.gameObject.SetActive(true);
-        Prologue_ButtonText_B.text = _buttontext_b;
-        LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Button_B.transform as RectTransform);
-      }
+
+    if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
+    {
+      MoveRectForButton(0);
+      UIManager.Instance.MapButton.Open(1, this);
     }
 
   }
@@ -231,7 +232,7 @@ public class UI_QuestWolf : UI_default
   {
     if (UIManager.Instance.IsWorking) return;
 
-    Prologue_ButtonHolderGroup.interactable = false;
+    Prologue_TendencyGroup.interactable = false;
     switch (CurrentPrologueIndex)
     {
       case 1:
@@ -256,6 +257,8 @@ public class UI_QuestWolf : UI_default
         }
         break;//(감정적+자연)선택 , (물질적+지성)선택
     }
+
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_TendencyGroup, 0.0f, 0.5f));
 
     UIManager.Instance.AddUIQueue(next());
   }

@@ -88,10 +88,47 @@ public class UI_Mad : UI_default
   }
   public void SelectMadness(int index)
   {
-    if (UIManager.Instance.IsWorking) return;
+
+    Debug.Log("·¹ÈÄ");
+    if (UIManager.Instance.IsWorking|| IsOpen==false) return;
+
+    Debug.Log("Å×Ã­");
+
+    switch (index)
+    {
+      case 0:
+        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
+        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen_Skill;
+        GameManager.Instance.MyGameData.Madness_Conversation = true;
+        UIManager.Instance.UpdateSkillLevel();
+        break;
+      case 1:
+        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
+        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen_Skill;
+        GameManager.Instance.MyGameData.Madness_Force = true;
+        UIManager.Instance.UpdateSkillLevel();
+        break;
+      case 2:
+        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
+        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen_Skill;
+        GameManager.Instance.MyGameData.Madness_Wild = true;
+        UIManager.Instance.UpdateSkillLevel();
+        break;
+      case 3:
+        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_Skill;
+        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen_Skill;
+        GameManager.Instance.MyGameData.Madness_Intelligence = true;
+        UIManager.Instance.UpdateSkillLevel();
+        break;
+
+        case 4:
+        GameManager.Instance.MyGameData.HP -= ConstValues.MadnessHPCost_HP;
+        GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen_HP;
+        break;
+    }
 
     IsOpen = false;
-    StartCoroutine(changealpha(false));
+    UIManager.Instance.AddUIQueue(changealpha(false));
   }
   private IEnumerator changealpha(bool open)
   {
@@ -112,8 +149,8 @@ public class UI_Mad : UI_default
     DefaultGroup.alpha = _endalpha;
     if (!open)
     {
-      DefaultGroup.interactable = true;
-      DefaultGroup.blocksRaycasts = true;
+      DefaultGroup.interactable = false;
+      DefaultGroup.blocksRaycasts = false;
 
     }
   }

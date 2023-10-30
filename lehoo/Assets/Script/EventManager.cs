@@ -39,6 +39,7 @@ public class EventManager : MonoBehaviour
         {
           GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "";
           GameManager.Instance.SetEvent(_customevent);
+          return;
         }
         else
         {
@@ -67,6 +68,7 @@ public class EventManager : MonoBehaviour
         {
           GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "";
           GameManager.Instance.SetEvent(_customevent);
+          return;
         }
         else
         {
