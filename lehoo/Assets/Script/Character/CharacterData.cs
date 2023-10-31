@@ -7,7 +7,8 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const float ScrollTime = 1.5f;
+  public const float ScrollSpeed = 0.015f;
+  public const float ScrollTime = 2.0f;
 
   public const int ExpSkillLevel = 2;
 
@@ -15,7 +16,7 @@ public static class ConstValues
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
 
-  public const int MadnessEffect_Conversation = 15;
+  public const int MadnessEffect_Conversation = 5;
   public const int MadnessEffect_Force = 35;
   public const int MadnessEffect_Wild = 25;
   public const int MadnessEffect_Intelligence = 40;
@@ -26,10 +27,10 @@ public static class ConstValues
   public const int MadnessHPCost_HP = 40;
   public const int MadnessSanityGen_HP = 70;
 
-  public const int Quest_Cult_Progress_Village=4,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=8,
-    Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
+  public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
+    Quest_Cult_Progress_Sabbat = 7,Quest_Cult_Progress_Ritual = 7;
   public const int Qeust_Cult_EventProgress_Clear_Less60 = 3, Quest_Cult_EventProgress_Clear_Over60 = 2;
-  public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 1;
+  public const int Quest_Cult_EventProgress_Fail_Less60 = 3, Quest_Cult_EventProgress_Fail_Over60 = 2;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
   public const int Quest_Cult_CoolDown = 4;
 
@@ -43,7 +44,7 @@ public static class ConstValues
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
                    EventPer_Sector = 3, EventPer_NoSector = 1,
-                   EventPer_Quest = 1, EventPer_Follow = 2, EventPer_Normal = 1;
+                   EventPer_Quest = 1, EventPer_Follow = 3, EventPer_Normal = 1;
 
   public const int MapSize = 21;
 
@@ -295,7 +296,7 @@ public class GameData    //게임 진행도 데이터
     { 
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, Turn / ConstValues.SectorEffectMaxTurn);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, LerpByTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true));
@@ -305,7 +306,7 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, Turn / ConstValues.SectorEffectMaxTurn);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, LerpByTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value );
@@ -468,8 +469,8 @@ public class GameData    //게임 진행도 데이터
   public void DeleteExp(Experience _exp)
   {
     if (LongExp == _exp) LongExp = null;
-    else if(ShortExp_A==null)ShortExp_A = null;
-    else if(ShortExp_B==null)ShortExp_B = null;
+    else if(ShortExp_A== _exp) ShortExp_A = null;
+    else if(ShortExp_B== _exp) ShortExp_B = null;
 
     UIManager.Instance.UpdateExpPael();
     UIManager.Instance.UpdateSkillLevel();

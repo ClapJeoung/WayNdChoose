@@ -122,7 +122,8 @@ public class EventHolder
                 break;
             }
             if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
-              Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
+              Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy)||
+                Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
             {
               Data.SelectionDatas[0].FailData = new FailData(Data);
               Data.SelectionDatas[0].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
@@ -132,10 +133,6 @@ public class EventHolder
                 case PenaltyTarget.Status: Data.SelectionDatas[0].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
                 case PenaltyTarget.EXP: Data.SelectionDatas[0].FailData.ExpID = _data.Failure_Penalty_info; break;
               }
-            }
-            else if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
-            {
-             Data.SelectionDatas[0].FailData = GameManager.Instance.GoldFailData;
             }
             Data.SelectionDatas[0].SuccessData = new SuccessData(Data, TendencyTypeEnum.None,0);
             Data.SelectionDatas[0].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target);
@@ -181,7 +178,9 @@ public class EventHolder
             }
 
             if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
-              Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy))
+              Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy)||
+                              Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
+
             {
               Data.SelectionDatas[i].FailData = new FailData(Data,tendencytype, i);
               Data.SelectionDatas[i].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
@@ -191,10 +190,6 @@ public class EventHolder
                 case PenaltyTarget.Status: Data.SelectionDatas[i].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
                 case PenaltyTarget.EXP: Data.SelectionDatas[i].FailData.ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
               }
-            }
-            else if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
-            {
-              Data.SelectionDatas[i].FailData = GameManager.Instance.GoldFailData;
             }
             Data.SelectionDatas[i].SuccessData = new SuccessData(Data,tendencytype, i);
             Data.SelectionDatas[i].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target.Split('@')[i]);

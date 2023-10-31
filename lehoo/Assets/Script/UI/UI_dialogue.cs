@@ -43,7 +43,7 @@ public class UI_dialogue : UI_default
     float _time = 0.0f;
     while (DescriptionScrollBar.value > 0.001f && _time < ConstValues.ScrollTime)
     {
-      DescriptionScrollBar.value = Mathf.Lerp(DescriptionScrollBar.value, 0.0f, 0.013f);
+      DescriptionScrollBar.value = Mathf.Lerp(DescriptionScrollBar.value, 0.0f, ConstValues.ScrollSpeed);
       _time += Time.deltaTime;
       yield return null;
 
@@ -206,6 +206,7 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator displaynextindex(bool dir)
   {
+    SetNextButtonDisable();
 
     int _phasetype = 0;
     if (IsBeginning)
@@ -232,8 +233,6 @@ public class UI_dialogue : UI_default
           _phasetype = 1;
         }
       }
-
-      SetNextButtonDisable();
 
       if(CurrentEventPhaseIndex==0) Illust.Setup(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, 0.1f);
       else Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
@@ -683,6 +682,8 @@ public class UI_dialogue : UI_default
   public EndingDatas CurrentEndingData = null;
   private void SetRewardButton()
   {
+    if (CurrentSuccessData.Reward_Type == RewardTypeEnum.None) return;
+
     RewardButtonGroup.alpha = 0.0f;
 
   //  Reward_Highlight.RemoveAllCall();
@@ -886,7 +887,7 @@ public class UI_dialogue : UI_default
     switch (CurrentFailData.Penelty_target)
     {
       case PenaltyTarget.None:
-        break;
+        return;
       case PenaltyTarget.Status:
         switch (CurrentFailData.StatusType)
         {

@@ -11,17 +11,29 @@ using System;
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
-  public bool IsPlaying = false;
-  private void EventDataUpdate()
+  [ContextMenu("데이터 업데이트")]
+  public void UpdateSpreadsheetData()
   {
-    StartCoroutine(updatedatas());
+    StartCoroutine(updatesheet());
   }
-  private IEnumerator updatedatas()
+  private IEnumerator updatesheet()
   {
     yield return StartCoroutine(textdataupdate());
     yield return StartCoroutine(expdataupdate());
     yield return StartCoroutine(eventdataupdate());
-
+  }
+  private void EventDataUpdate()
+  {
+    StartCoroutine(updatedatas());
+  }
+  public bool IsPlaying = false;
+  private IEnumerator updatedatas()
+  {
+#if UNITY_EDITOR
+    yield return StartCoroutine(textdataupdate());
+    yield return StartCoroutine(expdataupdate());
+    yield return StartCoroutine(eventdataupdate());
+#endif
     if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName))
     {
       GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));

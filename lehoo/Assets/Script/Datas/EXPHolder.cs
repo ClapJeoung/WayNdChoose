@@ -17,7 +17,7 @@ public class Experience
   {
     get { return _duration; }
     set { _duration = value;
-      if (_duration<0) GameManager.Instance.MyGameData.DeleteExp(this);
+      if (_duration<=0) GameManager.Instance.MyGameData.DeleteExp(this);
     }
   }
   private Sprite illust = null;
@@ -51,15 +51,15 @@ public class Experience
 
           case EffectType.HPLoss:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12) + " "
-        + string.Format("{0}%", WNCText.PositiveColor(ConstValues.HPLoss_Exp.ToString()));
+        + string.Format("{0}%", WNCText.PositiveColor((ConstValues.HPLoss_Exp*100).ToString()));
             break;
           case EffectType.SanityLoss:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12) + " "
-+ string.Format("{0}%", WNCText.PositiveColor(ConstValues.SanityLoss_Exp.ToString()));
++ string.Format("{0}%", WNCText.PositiveColor((ConstValues.SanityLoss_Exp*100).ToString()));
             break;
           case EffectType.GoldGen:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12) + " "
-+ string.Format("{0}%", WNCText.PositiveColor(ConstValues.GoldGen_Exp.ToString()));
++ string.Format("{0}%", WNCText.PositiveColor((ConstValues.GoldGen_Exp*100).ToString()));
             break;
         }
         _str += _temp;

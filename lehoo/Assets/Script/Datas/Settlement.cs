@@ -423,6 +423,7 @@ public class MapData
     }
     if(!_data.EnvirList.Contains(_centerbottomenvir))_data.EnvirList.Add(_centerbottomenvir);
     if (!_data.EnvirList.Contains(_centertopenvir)) _data.EnvirList.Add(_centertopenvir);
+    /*
 
     foreach(var tile_1 in _tiles_1)
     {
@@ -445,7 +446,6 @@ public class MapData
       if (!_data.EnvirList.Contains(_range1bottomenvir)) _data.EnvirList.Add(_range1bottomenvir);
       if (!_data.EnvirList.Contains(_range1topenvir)) _data.EnvirList.Add(_range1topenvir);
     }
-
     foreach (var tile_2 in _tiles_2)
     {
       EnvironmentType _range2bottomenvir = EnvironmentType.NULL;
@@ -463,7 +463,7 @@ public class MapData
       if (!_data.EnvirList.Contains(_range2bottomenvir)) _data.EnvirList.Add(_range2bottomenvir);
       if (!_data.EnvirList.Contains(_range2topenvir)) _data.EnvirList.Add(_range2topenvir);
     }
-
+    */
 
     return _data;
   }//월드 기준 타일 1개 좌표 하나 받아서 그 주위 2칸의 산 바다, 나머지 1타일

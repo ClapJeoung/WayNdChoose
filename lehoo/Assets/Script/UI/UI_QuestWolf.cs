@@ -38,7 +38,7 @@ public class UI_QuestWolf : UI_default
     float _time = 0.0f;
     while (PrologueScrollbar.value > 0.001f && _time < ConstValues.ScrollTime)
     {
-      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f, 0.013f);
+      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f, ConstValues.ScrollSpeed);
       _time += Time.deltaTime;
       yield return null;
 
@@ -223,6 +223,7 @@ public class UI_QuestWolf : UI_default
 
     if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
     {
+      DeActiveSetNextButton();
       MoveRectForButton(0);
       UIManager.Instance.MapButton.Open(1, this);
     }
