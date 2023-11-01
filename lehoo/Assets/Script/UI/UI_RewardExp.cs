@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.CompilerServices;
 
 public class UI_RewardExp : UI_default
 {
@@ -11,15 +12,17 @@ public class UI_RewardExp : UI_default
   [SerializeField] private Image LongExpIllust = null;
   [SerializeField] private GameObject LongExpTurn_Obj = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn_Text = null;
-  [SerializeField] private PreviewInteractive LongExpPreview = null;
+ // [SerializeField] private PreviewInteractive LongExpPreview = null;
   [SerializeField] private Onpointer_highlight LongExpHighight = null;
+  [SerializeField] private TextMeshProUGUI LongExp_Effect = null;
 
   [SerializeField] private TextMeshProUGUI[] ShortExpName_Text = new TextMeshProUGUI[2];
 //  [SerializeField] private Image[] ShortExpCap = new Image[2];
   [SerializeField] private Image[] ShortExpIllust = new Image[2];
   [SerializeField] private GameObject[] ShortExpTurn_Obj = new GameObject[2];
   [SerializeField] private TextMeshProUGUI[] ShortExpTurn_Text = new TextMeshProUGUI[2];
-  [SerializeField] private PreviewInteractive[] ShortExpPreview = new PreviewInteractive[2];
+  // [SerializeField] private PreviewInteractive[] ShortExpPreview = new PreviewInteractive[2];
+  [SerializeField] private TextMeshProUGUI[] ShortExp_Effect = null;
 
   [SerializeField] private GameObject ExpQuitButton = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
@@ -35,71 +38,102 @@ public class UI_RewardExp : UI_default
     ExpDescription.text = GameManager.Instance.GetTextData("SAVETHEEXP_NAME");
     CurrentExp = rewardexp;
 
-    SetupCurrentExps();
+    SetupCurrentExps(0,GameManager.Instance.MyGameData.LongExp);
+    SetupCurrentExps(1,GameManager.Instance.MyGameData.ShortExp_A);
+    SetupCurrentExps(2,GameManager.Instance.MyGameData.ShortExp_B);
 
     UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
   }
-  public void OpenUI_Penalty(Experience badexp)
+  public void SetupCurrentExps(int index,Experience exp)
   {
-    if (IsOpen) return;
-    IsOpen = true;
-
-   // ExpIllustIcon.GetComponent<Image>().sprite = badexp.Illust;
-  //  ExpIllustIcon.SetActive(true);
-    if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
-    ExpDescription.text = GameManager.Instance.GetTextData("SAVEBADEXP_NAME");
-
-    CurrentExp = badexp;
-
-    SetupCurrentExps();
-
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
-  }
-
-  public void SetupCurrentExps()
-  {
-    LongExpHighight.SetInfo(HighlightEffectEnum.Sanity, ConstValues.LongTermChangeCost);
-    if (GameManager.Instance.MyGameData.LongExp != null)
+    switch (index)
     {
-      LongExpName_Text.text = GameManager.Instance.MyGameData.LongExp.Name;
-    //  if (LongExpCap.enabled == true) LongExpCap.enabled = false;
-      LongExpIllust.sprite = GameManager.Instance.MyGameData.LongExp.Illust;
-      if (LongExpTurn_Obj.activeInHierarchy == false) LongExpTurn_Obj.SetActive(true);
+      case 0:
+        LongExpHighight.SetInfo(HighlightEffectEnum.Sanity, ConstValues.LongTermChangeCost);
 
-      LongExpTurn_Text.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
+        if(exp != null)
+        {
+          LongExpName_Text.text = exp.Name;
+          LongExpIllust.sprite = exp.Illust;
+          if (LongExpTurn_Obj.activeInHierarchy == false) LongExpTurn_Obj.SetActive(true);
 
-      LongExpPreview.MyEXP = GameManager.Instance.MyGameData.LongExp;
+          LongExpTurn_Text.text = exp.Duration==0?ConstValues.LongTermStartTurn.ToString():exp.Duration.ToString();
+          LongExp_Effect.text = exp.EffectString;
+        }
+        else
+        {
+          LongExpName_Text.text = "";
+          LongExpIllust.sprite = GameManager.Instance.ImageHolder.Transparent;
+          LongExp_Effect.text = "";
+          LongExpTurn_Obj.SetActive(false);
+        }
+        break;
+        case 1:
+        if (exp != null)
+        {
+          ShortExpName_Text[0].text = exp.Name;
+          ShortExpIllust[0].sprite = exp.Illust;
+          if (ShortExpTurn_Obj[0].activeInHierarchy == false) ShortExpTurn_Obj[0].SetActive(true);
+
+          ShortExpTurn_Text[0].text = exp.Duration == 0 ? ConstValues.ShortTermStartTurn.ToString() : exp.Duration.ToString();
+          ShortExp_Effect[0].text = exp.EffectString;
+        }
+        else
+        {
+          ShortExpName_Text[0].text = "";
+          ShortExp_Effect[0].text = "";
+          ShortExpIllust[0].sprite = GameManager.Instance.ImageHolder.Transparent;
+          ShortExpTurn_Obj[0].SetActive(false);
+        }
+        break;
+        case 2:
+        if (exp != null)
+        {
+          ShortExpName_Text[1].text = exp.Name;
+          ShortExpIllust[1].sprite = exp.Illust;
+          if (ShortExpTurn_Obj[1].activeInHierarchy == false) ShortExpTurn_Obj[1].SetActive(true);
+
+          ShortExpTurn_Text[1].text = exp.Duration == 0 ? ConstValues.ShortTermStartTurn.ToString() : exp.Duration.ToString();
+          ShortExp_Effect[1].text = exp.EffectString;
+        }
+        else
+        {
+          ShortExpName_Text[1].text = "";
+          ShortExp_Effect[1].text = "";
+          ShortExpIllust[1].sprite = GameManager.Instance.ImageHolder.Transparent;
+          ShortExpTurn_Obj[1].SetActive(false);
+        }
+        break;
+    }
+
+  }
+  public void OnpointerExp(int index)
+  {
+    if (index==0)
+    {
+      ExpDescription.text = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
     }
     else
     {
-      LongExpName_Text.text = "";
-      LongExpIllust.sprite = GameManager.Instance.ImageHolder.Transparent;
-   //   LongExpCap.enabled = true;
-      LongExpTurn_Obj.SetActive(false);
+      ExpDescription.text = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
     }
+    SetupCurrentExps(index, CurrentExp);
+  }
+  public void ExitPointerExp(int index)
+  {
+    ExpDescription.text = GameManager.Instance.GetTextData("SAVETHEEXP_NAME");
 
-    for (int i = 0; i < 2; i++)
+    switch (index)
     {
-      Experience _shortexp =i==0? GameManager.Instance.MyGameData.ShortExp_A:GameManager.Instance.MyGameData.ShortExp_B;
-
-      if (_shortexp != null)
-      {
-        ShortExpName_Text[i].text = _shortexp.Name;
-     //   if (ShortExpCap[i].enabled == true) ShortExpCap[i].enabled = false;
-        ShortExpIllust[i].sprite = _shortexp.Illust;
-        if (ShortExpTurn_Obj[i].activeInHierarchy == false) ShortExpTurn_Obj[i].SetActive(true);
-
-        ShortExpTurn_Text[i].text = _shortexp.Duration.ToString();
-        ShortExpPreview[i].MyEXP = _shortexp;
-      }
-      else
-      {
-        ShortExpName_Text[i].text = "";
-        ShortExpIllust[i].sprite = GameManager.Instance.ImageHolder.Transparent;
-       // ShortExpCap[i].enabled = true;
-        ShortExpTurn_Obj[i].SetActive(false);
-      }
-
+      case 0:
+        SetupCurrentExps(0, GameManager.Instance.MyGameData.LongExp);
+        break;
+        case 1:
+        SetupCurrentExps(1, GameManager.Instance.MyGameData.ShortExp_A);
+        break;
+        case 2:
+        SetupCurrentExps(2, GameManager.Instance.MyGameData.ShortExp_B);
+        break;
     }
   }
   public  void CloseUI()
@@ -137,4 +171,24 @@ public class UI_RewardExp : UI_default
     }
     CloseUI();
   }
+
+  /*
+public void OpenUI_Penalty(Experience badexp)
+{
+  if (IsOpen) return;
+  IsOpen = true;
+
+ // ExpIllustIcon.GetComponent<Image>().sprite = badexp.Illust;
+//  ExpIllustIcon.SetActive(true);
+  if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
+  ExpDescription.text = GameManager.Instance.GetTextData("SAVEBADEXP_NAME");
+
+  CurrentExp = badexp;
+
+  SetupCurrentExps();
+
+  UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
+}
+*/
+
 }

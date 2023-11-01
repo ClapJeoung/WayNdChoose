@@ -871,10 +871,6 @@ public class UI_dialogue : UI_default
         RemainReward = false;
       }
     }
-    else if (CurrentFailData != null)
-    {
-      RewardExpUI.OpenUI_Penalty(GameManager.Instance.ExpDic[CurrentFailData.ExpID]);
-    }
   }
   private int PenaltyValue = 0;
   public void ExpAcquired()
@@ -1049,13 +1045,12 @@ SettlementNameText.text = CurrentSettlement.Name;
     {
       case SectorTypeEnum.Residence:
         _effect = string.Format(_effect,
-          WNCText.GetMovepointColor(ConstValues.SectorEffect_residence_movepoint),
-          WNCText.GetDiscomfortColor(ConstValues.SectorEffect_residence_discomfort));
+          WNCText.PositiveColor(ConstValues.SectorEffect_residence_discomfort.ToString()));
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue = _discomfort_default + ConstValues.SectorEffect_residence_discomfort;
-        MovePointValue = ConstValues.Rest_MovePoint + ConstValues.SectorEffect_residence_movepoint;
+        DiscomfortValue= _discomfort_default > 1 ? _discomfort_default - ConstValues.SectorEffect_residence_discomfort : 0;
+        MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Temple:
         _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
@@ -1157,13 +1152,12 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     {
       case SectorTypeEnum.Residence:
         _effect = string.Format(_effect,
-          WNCText.GetMovepointColor(ConstValues.SectorEffect_residence_movepoint),
-          WNCText.GetDiscomfortColor(ConstValues.SectorEffect_residence_discomfort));
+          WNCText.PositiveColor(ConstValues.SectorEffect_residence_discomfort.ToString()));
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue = _discomfort_default + ConstValues.SectorEffect_residence_discomfort;
-        MovePointValue = ConstValues.Rest_MovePoint + ConstValues.SectorEffect_residence_movepoint;
+        DiscomfortValue = _discomfort_default>1? _discomfort_default - ConstValues.SectorEffect_residence_discomfort:0;
+        MovePointValue = ConstValues.Rest_MovePoint ;
         break;
       case SectorTypeEnum.Temple:
         _effect = string.Format(_effect, ConstValues.SectorEffect_temple);

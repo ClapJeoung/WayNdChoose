@@ -696,6 +696,9 @@ public class GameManager : MonoBehaviour
     }
 
     IsPlaying = true;
+
+    if (MyGameData.Sanity <= 0) UIManager.Instance.MadUI.OpenUI();
+
     yield return null;
   }
   public void CreateNewMap() => StartCoroutine(createnewmap());

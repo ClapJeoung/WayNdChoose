@@ -134,8 +134,14 @@ public class UI_Mad : UI_default
   {
     if (open)
     {
-      DefaultGroup.interactable = true;
-      DefaultGroup.blocksRaycasts = true;
+      DefaultGroup.interactable = false;
+      DefaultGroup.blocksRaycasts = false;
+    }
+    else if (!open)
+    {
+      DefaultGroup.interactable = false;
+      DefaultGroup.blocksRaycasts = false;
+
     }
     float _time = 0.0f, _targettime = open ? OpenTime : CloseTime;
     float _startalpha = open ? 0.0f : 1.0f;
@@ -147,11 +153,11 @@ public class UI_Mad : UI_default
       yield return null;
     }
     DefaultGroup.alpha = _endalpha;
-    if (!open)
-    {
-      DefaultGroup.interactable = false;
-      DefaultGroup.blocksRaycasts = false;
 
+    if (open)
+    {
+      DefaultGroup.interactable = true;
+      DefaultGroup.blocksRaycasts = true;
     }
   }
 }

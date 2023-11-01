@@ -44,8 +44,10 @@ public class UI_Ending : UI_default
     QuitButtonText.text = GameManager.Instance.GetTextData("QUITTOMAIN");
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(QuitButtonGroup.transform as RectTransform);
+    QuitButtonGroup.alpha = 1.0f;
+    QuitButtonGroup.interactable = true;
     IsDead = true;
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 2.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 2.0f));
   }
 
   public void OpenUI_Ending(EndingDatas endingdata)
@@ -66,7 +68,7 @@ public class UI_Ending : UI_default
     NextButtonGroup.alpha = 1.0f;
     NextButtonGroup.interactable=true;
 
-    UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 2.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 2.0f));
   }
   public void QuitGame()
   {

@@ -1055,7 +1055,9 @@ public class UIManager : MonoBehaviour
   public void OpenDead(Sprite illust,string description)
   {
     StopAllCoroutines();
-  StartCoroutine(opendead(illust,description));
+    UIAnimationQueue.Clear();
+    IsWorking = false;
+    StartCoroutine(opendead(illust,description));
   }
   private IEnumerator opendead(Sprite illsut,string description)
   {
@@ -1065,6 +1067,8 @@ public class UIManager : MonoBehaviour
   public void OpenEnding(EndingDatas data)
   {
     StopAllCoroutines();
+    UIAnimationQueue.Clear();
+    IsWorking = false;
     StartCoroutine(openending(data));
   }
   private IEnumerator openending(EndingDatas data)

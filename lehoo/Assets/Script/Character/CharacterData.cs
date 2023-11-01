@@ -42,12 +42,13 @@ public static class ConstValues
   public const float Move_Default = 0.5f, Move_LengthRatio = 0.15f;
   public const float LackMPAmplifiedValue_Idle = 3.0f;
 
-  public const int EventPer_Envir = 5, EventPer_NoEnvir = 2,
-                   EventPer_Sector = 3, EventPer_NoSector = 1,
-                   EventPer_Quest = 1, EventPer_Follow = 3, EventPer_Normal = 1;
+
+  public const int EventPer_Envir = 5, EventPer_NoEnvir = 1,
+                   EventPer_Sector = 4, EventPer_NoSector = 1,
+                   EventPer_Quest = 1, EventPer_Follow = 5, EventPer_Normal = 1;
+
 
   public const int MapSize = 21;
-
   public const int MinRiverCount = 5;
   public const float Ratio_highland = 0.2f;
   public const float Ratio_forest = 0.2f;
@@ -57,9 +58,7 @@ public static class ConstValues
 
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
-  public const int TownSectorCount = 1, CitySectorCount = 2, CastleSectorCount = 3;
-
-  public const int StartGold = 15;
+  public const int StartGold = 10;
   public const float HPLoss_Exp = 0.15f;
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.2f;
@@ -89,18 +88,19 @@ public static class ConstValues
   //스킬 체크, 지불 체크 최대~최소
   public const int MaxTime = 20;
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 1, CheckSkill_single_max = 8;
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 14;
+  public const int CheckSkill_single_min = 1, CheckSkill_single_max = 6;
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
 
+  public const float Difficult = 1.5f;
   public const int PayHP_min = 6, PayHP_max = 15;      
   public const int PaySanity_min = 12, PaySanity_max = 30;
   public const int PayGold_min = 9, PayGold_max = 22; 
   public const int FailHP_min = 9, FailHP_max = 15;   
   public const int FailSanity_min = 18, FailSanity_max = 30;
   public const int FailGold_min = 13, FailGold_max = 22;  
-  public const int RewardHP_min = 0, RewardHP_max = 0;  
-  public const int RewardSanity_min = 10, RewardSanity_max = 15;
-  public const int RewardGold_min=10, RewardGold_max=15; 
+  public const int RewardHP_min = 0, RewardHP_max = 0;
+  public const int RewardSanity = 6;
+  public const int RewardGold = 6;
 
   public const int ShortTermStartTurn = 6;
   public const int LongTermStartTurn =  12;
@@ -110,7 +110,7 @@ public static class ConstValues
 
   public const int DiscomfortDownValue = 1;
     public const int SectorEffectMaxTurn = 3;
-  public const int SectorEffect_residence_movepoint = 1, SectorEffect_residence_discomfort = 2;
+  public const int SectorEffect_residence_movepoint = 1, SectorEffect_residence_discomfort = 1;
     public const int SectorEffect_marketSector = 40;
     public const int SectorEffect_temple = 2;
   public const int SectorEffect_Library = 2;
@@ -149,7 +149,7 @@ public class GameData    //게임 진행도 데이터
     switch (placetype)
     {
       case SectorTypeEnum.Residence:
-        break;//거주지 - 휴식 시 추가 이동력 회복
+        break;//거주지 - 휴식 시 불쾌 1 적게 증가
 
       case SectorTypeEnum.Temple:
         DownAllDiscomfort(ConstValues.SectorEffect_temple);
@@ -254,7 +254,7 @@ public class GameData    //게임 진행도 데이터
   #region #턴에 비례한 성공 확률들#
   public float LerpByTurn
   {
-    get { return UnityEngine.Mathf.Lerp(0.0f, 1.0f, (Year * 4 + turn) / ConstValues.MaxTime); }
+    get { return UnityEngine.Mathf.Lerp(0.0f, 1.0f, (Year * 4 + turn) / (float)ConstValues.MaxTime); }
   }
   public float MinSuccesPer
   {
@@ -273,7 +273,7 @@ public class GameData    //게임 진행도 데이터
   {
   //  Debug.Log($"{_current} {_target}");
     if (_current >= _target) return 1;
-    return 101-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/_target));
+    return 101-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/(float)_target));
   }//origin : 대상 레벨   target : 목표 레벨
   /// <summary>
   /// 최소 ~ 100
@@ -282,7 +282,7 @@ public class GameData    //게임 진행도 데이터
   /// <returns></returns>
   public int CheckPercent_money(int _target)
   {
-    float _per = Gold / _target;
+    float _per = Gold / (float)_target;
     //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
     return 101-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer, 101, _per));
     //좌상향 곡선 ~ 우상향 곡선
@@ -340,9 +340,9 @@ public class GameData    //게임 진행도 데이터
     public int RewardHPValue
     { get { return 0; } }
     public int RewardSanityValue
-    { get { return (int)(Mathf.Lerp(ConstValues.RewardSanity_min, ConstValues.RewardSanity_max,LerpByTurn) ); } }
+    { get { return (int)ConstValues.RewardSanity; } }
     public int RewardGoldValue
-    { get { return (int)(Mathf.Lerp(ConstValues.RewardGold_min, ConstValues.RewardGold_max,LerpByTurn) * GetGoldGenModify(true)); } }
+    { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int length,int movepoint)
   {
     int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max,LerpByTurn)
@@ -878,7 +878,7 @@ public class Skill
   {
     get
     {
-      return LevelByDefault + LevelByExp + LevelByTendency;
+      return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByExp + LevelByTendency,0, LevelByDefault + LevelByExp + LevelByTendency);
     }
   }
   public int LevelByExp

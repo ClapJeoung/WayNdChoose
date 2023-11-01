@@ -281,8 +281,6 @@ public class UI_map : UI_default
 
     SelectedTile = selectedtiledata;
 
-    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"), Length.Count);
-
     TilePreviewRect.anchoredPosition = TilePreviewDownPos;
     TilePreviewGroup.alpha = TilePreviewStartAlpha;
     TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
@@ -344,6 +342,8 @@ public class UI_map : UI_default
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1*MovePointCost);
     GoldbuttonGroup.alpha = _goldable?1.0f:0.4f;
 
+    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"), Length.Count, MovePointCost);
+
   }
 
   private int MovePointCost = 0;
@@ -376,7 +376,7 @@ public class UI_map : UI_default
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), SanityCost);
 
-        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
+        if (GameManager.Instance.MyGameData.MovePoint <= 0)
           _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
             WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%")
             +(GameManager.Instance.MyGameData.Tendency_Head.Level==-2?"<sprite=92>":""));
@@ -390,7 +390,7 @@ public class UI_map : UI_default
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), GoldCost);
 
-        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
+        if (GameManager.Instance.MyGameData.MovePoint <= 0)
           _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
             WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
         break;

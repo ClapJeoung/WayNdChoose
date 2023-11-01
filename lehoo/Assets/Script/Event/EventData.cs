@@ -414,6 +414,8 @@ public class EventHolder
           switch (_event.FollowType)
           {
             case FollowTypeEnum.Event:  //이벤트 연계일 경우 
+              if (_event.ID == "EV_Wheat")
+                Debug.Log("레후");
               List<List<string>> _checktarget = new List<List<string>>();
               switch (_event.FollowTargetSuccess)
               {
@@ -432,7 +434,7 @@ public class EventHolder
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
                   }
                   break;
-                case 2:
+                case 1:
                   switch (_event.FollowTendency)
                   {
                     case 0:
@@ -447,7 +449,7 @@ public class EventHolder
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
                   }
                   break;
-                case 3:
+                case 2:
                   switch (_event.FollowTendency)
                   {
                     case 0:
@@ -470,7 +472,7 @@ public class EventHolder
                   break;
               }
               foreach (var _list in _checktarget)
-                if (_list.Contains(_event.ID))
+                if (_list.Contains(_event.FollowTarget))
                 {
                   if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
                   else { _ableevents.Add(_event); }
@@ -591,7 +593,7 @@ public class EventHolder
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_All); break;
                   }
                   break;
-                case 2:
+                case 1:
                   switch (_event.FollowTendency)
                   {
                     case 0:
@@ -606,7 +608,7 @@ public class EventHolder
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_All); break;
                   }
                   break;
-                case 3:
+                case 2:
                   switch (_event.FollowTendency)
                   {
                     case 0:
@@ -629,17 +631,12 @@ public class EventHolder
                   break;
               }
               foreach (var _list in _checktarget)
-                if (_list.Contains(_event.ID))
+                if (_list.Contains(_event.FollowTarget))
                 {
                   if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
                   else { _ableevents.Add(_event); }
                   break;
                 }
-              break;
-              /*    case FollowTypeEnum.EXP://경험 연계일 경우 현재 보유한 경험 ID랑 맞는지 확인
-                    if (_follow.FollowTarget.Equals(GameManager.Instance.MyGameData.LongTermEXP.ID)) _allevents.Add(_follow);
-                    foreach (var _data in GameManager.Instance.MyGameData.ShortTermEXP)
-                      if (_follow.FollowTarget.Equals(_data.ID)) _allevents.Add(_follow);*/
               break;
             case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
               int _targetlevel = 0;
