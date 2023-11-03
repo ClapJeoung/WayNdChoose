@@ -7,8 +7,14 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const float StatusLossMinSacle = 1.15f, StatusLossMaxScale = 1.4f;
+  public const float StatusLoss_HP_Min = 6, StatusLoss_HP_Max = 30;
+  public const float StatusLoss_Sanity_Min = 6, StatusLoss_Sanity_Max = 30;
+  public const float StatusLoss_Gold_Min = 6, StatusLoss_Gold_Max = 30;
+  public const float StatusLoss_MP_Min = 6, StatusLoss_MP_Max = 30;
+
   public const float ScrollSpeed = 0.015f;
-  public const float ScrollTime = 2.0f;
+  public const float ScrollTime = 1.5f;
 
   public const int ExpSkillLevel = 2;
 
@@ -27,24 +33,24 @@ public static class ConstValues
   public const int MadnessHPCost_HP = 40;
   public const int MadnessSanityGen_HP = 70;
 
-  public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
-    Quest_Cult_Progress_Sabbat = 7,Quest_Cult_Progress_Ritual = 7;
-  public const int Qeust_Cult_EventProgress_Clear_Less60 = 3, Quest_Cult_EventProgress_Clear_Over60 = 2;
-  public const int Quest_Cult_EventProgress_Fail_Less60 = 3, Quest_Cult_EventProgress_Fail_Over60 = 2;
+  public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=7,
+    Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
+  public const int Qeust_Cult_EventProgress_Clear_Less60 = 2, Quest_Cult_EventProgress_Clear_Over60 = 1;
+  public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 1;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
   public const int Quest_Cult_CoolDown = 4;
 
   public const int Rest_MovePoint = 1;
   public const int Rest_Discomfort = 3;
-  public const int MoveRest_Sanity_min = 10, MoveRest_Sanity_max = 20;
-  public const int MoveRest_Gold_min = 7, MoveRest_Gold_max = 15;
-  public const float Rest_Deafult = 0.8f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.5f, Move_LengthRatio = 0.15f;
-  public const float LackMPAmplifiedValue_Idle = 3.0f;
+  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f*1.2f;
+  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 15.0f*1.2f;
+  public const float Rest_Deafult = 0.9f, Rest_DiscomfortRatio = 0.15f;
+  public const float Move_Default = 0.6f, Move_LengthRatio = 0.2f;
+  public const float LackMPAmplifiedValue_Idle = 2.5f;
 
 
-  public const int EventPer_Envir = 5, EventPer_NoEnvir = 1,
-                   EventPer_Sector = 4, EventPer_NoSector = 1,
+  public const int EventPer_Envir = 3, EventPer_NoEnvir = 1,
+                   EventPer_Sector = 3, EventPer_NoSector = 1,
                    EventPer_Quest = 1, EventPer_Follow = 5, EventPer_Normal = 1;
 
 
@@ -82,22 +88,22 @@ public static class ConstValues
   //육체적 2: 격투+3 생존+3 화술-1 학식-1
 
   //성향 진행도 따라 긍정,부정 값
-  public const float minsuccesper_max = 50;
-  public const float minsuccesper_min = 15;
+  public const float minsuccesper_max = 40;
+  public const float minsuccesper_min = 10;
   public const float MoneyCheck_min = 2.5f, MoneyCheck_max = 0.25f; //골드 지불 범위 벗어날 시 지불 실패 금액에 제곱비례
   //스킬 체크, 지불 체크 최대~최소
-  public const int MaxTime = 20;
+  public const int MaxTime = 30;
   //보정치 최대 년도
   public const int CheckSkill_single_min = 1, CheckSkill_single_max = 6;
   public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
 
-  public const float Difficult = 1.5f;
-  public const int PayHP_min = 6, PayHP_max = 15;      
-  public const int PaySanity_min = 12, PaySanity_max = 30;
-  public const int PayGold_min = 9, PayGold_max = 22; 
-  public const int FailHP_min = 9, FailHP_max = 15;   
-  public const int FailSanity_min = 18, FailSanity_max = 30;
-  public const int FailGold_min = 13, FailGold_max = 22;  
+  public const float Difficult = 1.0f;
+  public const float PayHP_min = 6, PayHP_max = 12;      
+  public const float PaySanity_min = 8, PaySanity_max = 16;
+  public const float PayGold_min = 6, PayGold_max = 12; 
+  public const float FailHP_min = 9, FailHP_max = 15;   
+  public const float FailSanity_min = 12, FailSanity_max = 20;
+  public const float FailGold_min = 8, FailGold_max = 14;
   public const int RewardHP_min = 0, RewardHP_max = 0;
   public const int RewardSanity = 6;
   public const int RewardGold = 6;
@@ -111,7 +117,7 @@ public static class ConstValues
   public const int DiscomfortDownValue = 1;
     public const int SectorEffectMaxTurn = 3;
   public const int SectorEffect_residence_movepoint = 1, SectorEffect_residence_discomfort = 1;
-    public const int SectorEffect_marketSector = 40;
+    public const int SectorEffect_marketSector = 30;
     public const int SectorEffect_temple = 2;
   public const int SectorEffect_Library = 2;
     public const int SectorEffect_theater = 3;
@@ -254,7 +260,7 @@ public class GameData    //게임 진행도 데이터
   #region #턴에 비례한 성공 확률들#
   public float LerpByTurn
   {
-    get { return UnityEngine.Mathf.Lerp(0.0f, 1.0f, (Year * 4 + turn) / (float)ConstValues.MaxTime); }
+    get { return Mathf.Lerp(0.0f, 1.0f, (Year * 4 + turn) / (float)ConstValues.MaxTime); }
   }
   public float MinSuccesPer
   {

@@ -89,7 +89,7 @@ public class UI_dialogue : UI_default
     if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
     DialogueRect.sizeDelta = EventDialogueSize;
 
-    UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+    if(CurrentEvent.AppearSpace==EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
   
     EndingButtonGroup.alpha = 0.0f;
     EndingButtonGroup.interactable = false;
@@ -129,7 +129,7 @@ public class UI_dialogue : UI_default
     if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
     DialogueRect.sizeDelta = EventDialogueSize;
 
-    UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+    if (CurrentEvent.AppearSpace == EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
 
     EndingButtonGroup.alpha = 0.0f;
     EndingButtonGroup.interactable = false;
@@ -801,7 +801,6 @@ public class UI_dialogue : UI_default
     CurrentSuccessData = null;
     CurrentFailData = null;
     
-    UIManager.Instance.OffBackground();
     UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
 
 
@@ -947,6 +946,7 @@ public class UI_dialogue : UI_default
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
 
     UIManager.Instance.AudioManager.PlaySFX(14);
+    UIManager.Instance.OffBackground();
 
     DefaultGroup.interactable = false;
 

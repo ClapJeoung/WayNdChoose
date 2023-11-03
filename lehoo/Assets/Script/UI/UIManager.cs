@@ -60,10 +60,7 @@ public class UIManager : MonoBehaviour
   public HighlightEffects HighlightManager = null;
   public bool IsWorking = false;
   public PreviewManager PreviewManager = null;
-  [SerializeField] private Image EnvirBackground = null;
-  [SerializeField] private CanvasGroup EnvirGroup = null;
-  [SerializeField] private float EnvirOpenTime = 2.0f;
-  [SerializeField] private float EnvirCloseTime = 3.0f;
+  [SerializeField] private ImageSwapScript EnvirBackground = null;
   [SerializeField] private DebugScript DebugUI = null;
   public MapButton MapButton = null;
   public SettleButton SettleButton = null;
@@ -71,14 +68,11 @@ public class UIManager : MonoBehaviour
   public void UpdateBackground(EnvironmentType envir)
   {
     Sprite _newbackground = GameManager.Instance.ImageHolder.GetEnvirBackground(envir);
-    EnvirBackground.sprite = _newbackground;
-    StartCoroutine(ChangeAlpha(EnvirGroup,1.0f, EnvirOpenTime));
+    EnvirBackground.Next( _newbackground,1.0f);
   }
   public void OffBackground()
   {
-  //  EnvirBackground.sprite = GameManager.Instance.ImageHolder.Transparent;
-  if(EnvirGroup.alpha!=0.0f)
-    StartCoroutine(ChangeAlpha(EnvirGroup, 0.0f, EnvirCloseTime));
+    EnvirBackground.Next(GameManager.Instance.ImageHolder.Transparent, 1.0f);
   }
   [Space(10)]
   [SerializeField] private TextMeshProUGUI YearText = null;
@@ -106,7 +100,6 @@ public class UIManager : MonoBehaviour
   [SerializeField] private float StatusGainTime = 0.8f;
   [SerializeField] private float StatusGainSize = 1.4f;
   [SerializeField] private float StatusLossTime = 0.8f;
-  [SerializeField] private float StatusLossSize = 1.5f;
   [SerializeField] private AnimationCurve StatusGainCurve=new AnimationCurve();
   [SerializeField] private AnimationCurve StatusLossCurve=new AnimationCurve();
   private IEnumerator statusgainanimation(List<RectTransform> rectlist)
@@ -125,13 +118,13 @@ public class UIManager : MonoBehaviour
     foreach (var rect in rectlist)
       rect.localScale = Vector3.one;
   }
-  private IEnumerator statuslossanimation(List<RectTransform> rectlist)
+  private IEnumerator statuslossanimation(List<RectTransform> rectlist,float losssscalesize)
   {
     float _time = 0.0f;
-    Vector3 _currentscale = Vector3.one * StatusLossSize;
+    Vector3 _currentscale = Vector3.one * losssscalesize;
     while (_time < StatusLossTime)
     {
-      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * StatusLossSize, StatusLossCurve.Evaluate(_time / StatusLossTime));
+      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * losssscalesize, StatusLossCurve.Evaluate(_time / StatusLossTime));
       foreach (var rect in rectlist)
         rect.localScale = _currentscale;
       _time += Time.deltaTime;
@@ -154,13 +147,13 @@ public class UIManager : MonoBehaviour
     }
       rect.localScale = Vector3.one;
   }
-  private IEnumerator statuslossanimation(RectTransform rect)
+  private IEnumerator statuslossanimation(RectTransform rect,float losssscalesize)
   {
     float _time = 0.0f;
-    Vector3 _currentscale = Vector3.one * StatusLossSize;
+    Vector3 _currentscale = Vector3.one * losssscalesize;
     while (_time < StatusLossTime)
     {
-      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * StatusLossSize, StatusLossCurve.Evaluate(_time / StatusLossTime));
+      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * losssscalesize, StatusLossCurve.Evaluate(_time / StatusLossTime));
         rect.localScale = _currentscale;
       _time += Time.deltaTime;
       yield return null;
@@ -180,7 +173,8 @@ public class UIManager : MonoBehaviour
       if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
       else
       {
-        StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
+        StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform },
+          Mathf.Lerp(ConstValues.StatusLossMinSacle,ConstValues.StatusLossMaxScale,(Mathf.Abs(_changedvalue)-ConstValues.StatusLoss_HP_Min)/ConstValues.StatusLoss_HP_Max)));
         UIManager.Instance.AudioManager.PlaySFX(15);
       }
 
@@ -212,7 +206,8 @@ public class UIManager : MonoBehaviour
       }
       else
       {
-        StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
+        StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform },
+          Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Sanity_Min) / ConstValues.StatusLoss_Sanity_Max)));
         UIManager.Instance.AudioManager.PlaySFX(17);
       }
 
@@ -243,7 +238,8 @@ public class UIManager : MonoBehaviour
       }
       else
       {
-        StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
+        StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform },
+          Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Gold_Min) / ConstValues.StatusLoss_Gold_Max)));
       }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
@@ -266,7 +262,8 @@ public class UIManager : MonoBehaviour
    //   if (_changedvalue != 0)
     //    StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
       if (lastmovepoint < GameManager.Instance.MyGameData.MovePoint) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
-      else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform}));
+      else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform},
+        Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_MP_Min) / ConstValues.StatusLoss_MP_Max)));
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
     }
@@ -804,7 +801,7 @@ public class UIManager : MonoBehaviour
       }
       else
       {
-        StartCoroutine(statuslossanimation(LongExpTurn.rectTransform));
+        StartCoroutine(statuslossanimation(LongExpTurn.rectTransform,1.2f));
       }
       LongExpActive = true;
     }
@@ -834,7 +831,7 @@ public class UIManager : MonoBehaviour
       }
       else
       {
-        StartCoroutine(statuslossanimation(ShortExpTurn_A.rectTransform));
+        StartCoroutine(statuslossanimation(ShortExpTurn_A.rectTransform,1.2f));
       }
         ShortExpAActive = true;
     }
@@ -864,7 +861,7 @@ public class UIManager : MonoBehaviour
       }
       else
       {
-        StartCoroutine(statuslossanimation(ShortExpTurn_B.rectTransform));
+        StartCoroutine(statuslossanimation(ShortExpTurn_B.rectTransform,1.2f));
       }
       ShortExpBActive = true;
     }

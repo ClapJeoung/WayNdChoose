@@ -324,6 +324,24 @@ public class UI_map : UI_default
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
     
+    switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Cult:
+        switch (QuestInfo)
+        {
+          case 0:
+            MovePointCost = 1;
+            break;
+          case 1:
+            MovePointCost = 1 + ConstValues.Quest_Cult_RitualMovepoint;
+            break;
+          case 2:
+            MovePointCost = 1;
+            break;
+        }
+        break;
+    }
+
     SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Length.Count, MovePointCost);
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Length.Count, MovePointCost);
 
@@ -332,18 +350,18 @@ public class UI_map : UI_default
 
     SanitybuttonGroup.interactable = true;
     SanityButton_Highlight.Interactive = true;
-    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity, -1*SanityCost);
-    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint,-1* MovePointCost);
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity, -1 * SanityCost);
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1 * MovePointCost);
 
     bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
     GoldbuttonGroup.interactable = _goldable;
     GoldButton_Highlight.Interactive = _goldable;
-    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold, -1*GoldCost);
-    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1*MovePointCost);
-    GoldbuttonGroup.alpha = _goldable?1.0f:0.4f;
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold, -1 * GoldCost);
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1 * MovePointCost);
+    GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
-    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"), Length.Count, MovePointCost);
 
+    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"), Length.Count,MovePointCost,GameManager.Instance.MyGameData.MovePoint);
   }
 
   private int MovePointCost = 0;
@@ -356,27 +374,10 @@ public class UI_map : UI_default
         SelectedCostType = StatusTypeEnum.Sanity;
     //    SanitybuttonGroup.alpha = 1.0f;
      //   GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
-        switch (GameManager.Instance.MyGameData.QuestType)
-        {
-          case QuestType.Cult:
-            switch (QuestInfo)
-            {
-              case 0:
-                MovePointCost = 1;
-                break;
-              case 1:
-                MovePointCost = 1 + ConstValues.Quest_Cult_RitualMovepoint;
-                break;
-              case 2:
-                MovePointCost = 1;
-                break;
-            }
-            break;
-        }
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), SanityCost);
 
-        if (GameManager.Instance.MyGameData.MovePoint <= 0)
+        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
           _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
             WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%")
             +(GameManager.Instance.MyGameData.Tendency_Head.Level==-2?"<sprite=92>":""));
@@ -390,7 +391,7 @@ public class UI_map : UI_default
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), GoldCost);
 
-        if (GameManager.Instance.MyGameData.MovePoint <= 0)
+        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
           _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
             WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
         break;
@@ -456,7 +457,7 @@ public class UI_map : UI_default
     switch (SelectedCostType)
     {
       case StatusTypeEnum.Sanity:
-        if (GameManager.Instance.MyGameData.MovePoint >= 0)
+        if (GameManager.Instance.MyGameData.MovePoint > 0)
         {
        //   StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
           yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
@@ -467,7 +468,7 @@ public class UI_map : UI_default
         }
         break;
       case StatusTypeEnum.Gold:
-        if (GameManager.Instance.MyGameData.MovePoint >= 0)
+        if (GameManager.Instance.MyGameData.MovePoint > 0)
         {
         //  StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
           yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
@@ -482,6 +483,12 @@ public class UI_map : UI_default
     yield return StartCoroutine(UIManager.Instance.statusgainanimation(PlayerRect));
 
     IsRitual = SelectedTile.Landmark == LandmarkType.Ritual;
+
+    bool _iswalking = false;
+    if (GameManager.Instance.MyGameData.MovePoint >= MovePointCost)
+      _iswalking = true;
+    else _iswalking = false;
+
 
     GameManager.Instance.MyGameData.MovePoint -= MovePointCost;
     switch (SelectedCostType)
@@ -505,8 +512,11 @@ public class UI_map : UI_default
       _currenttile = _map.GetNextTile(_currenttile, Length[i]);
       _path.Add(_currenttile.ButtonScript.Rect.anchoredPosition);
     }
+    if(_iswalking)
+      UIManager.Instance.AudioManager.PlayWalking();
+    else UIManager.Instance.AudioManager.PlaySFX(29);
 
-    UIManager.Instance.AudioManager.PlayWalking();
+
     float _time = 0.0f;             //x
     int _pathcount = _path.Count-1; //길 개수-1 (마지막 좌표는 current가 되면 안되니까)   n
     int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)

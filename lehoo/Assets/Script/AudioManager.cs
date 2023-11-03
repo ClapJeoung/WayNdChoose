@@ -33,7 +33,8 @@ PaySFX,
 SuccessSFX,
 FailSFX,
 MadnessSFX,
-CultSFX}
+CultSFX,
+Hungry}
 public class AudioManager : MonoBehaviour
 {
   public AudioMixer AudioMixer = null;
@@ -65,12 +66,12 @@ public class AudioManager : MonoBehaviour
   private IEnumerator bgm()
   {
     Debug.Log("배경 시작");
-    AudioClip _lastclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
-    BGMAudio.clip = _lastclip;
+    AudioClip _currentclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
+    BGMAudio.clip = _currentclip;
     BGMAudio.Play();
     yield return StartCoroutine(setvolume(BGMAudio, 0.0f, 1.0f));
 
-    AudioClip _currentclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
+    AudioClip _lastclip = _currentclip;
     while (true)
     {
       Debug.Log($"현재 트랙 {BGMAudio.clip.name} {BGMAudio.clip.length}초");
@@ -231,9 +232,12 @@ public class AudioManager : MonoBehaviour
   }
   public void StopWalking()
   {
-    StopAllCoroutines();
-    CurrentWalkingChanel.Audio.Stop();
-    CurrentWalkingChanel = null;
+    if (CurrentWalkingChanel != null)
+    {
+      StopAllCoroutines();
+      CurrentWalkingChanel.Audio.Stop();
+      CurrentWalkingChanel = null;
+    }
   }
 }
 public class AudioChanel

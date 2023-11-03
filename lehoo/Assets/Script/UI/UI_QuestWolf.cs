@@ -373,6 +373,7 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
   {
     IsProgressWorking = true;
     ProgressBackgroundButton.SetActive(true);
+    UIManager.Instance.AudioManager.PlaySFX(28);
     UIManager.Instance.SidePanelCultUI.UpdateUI();
      yield return StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressEventGroup, 1.0f,UIMoveInTime));
     IsProgressWorking = false;

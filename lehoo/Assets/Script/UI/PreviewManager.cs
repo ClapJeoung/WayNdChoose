@@ -20,10 +20,7 @@ public class PreviewManager : MonoBehaviour
   private int EffectFontSize = 20;
   private int SubdescriptionSize = 16;
   private Vector2 TurnPivot = new Vector2(0.5f, 1.1f);
-  private Vector2 HPPivot= new Vector2(1.1f, 1.1f);
-  private Vector2 SanityPivot= new Vector2(1.1f, 1.1f);
-  private Vector2 GoldPivot= new Vector2(1.1f, 1.1f);
-  private Vector2 MovePointPivot= new Vector2(1.1f, 1.1f);
+  private Vector2 StatusPivot= new Vector2(1.05f, 1.05f);
   private Vector2 MapPivot= new Vector2(0.5f, 1.1f);
   private Vector2 TendencyPivot = new Vector2(1.1f, -0.1f);
   private Vector2 DiscomfortPivot = new Vector2(0.5f, 1.3f);
@@ -206,7 +203,7 @@ public class PreviewManager : MonoBehaviour
         + string.Format("{0}%", WNCText.PositiveColor("+" + (100 - _modifyvalue).ToString()));
     }
 
-    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.HPIcon, _description, HPPivot,true,rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.HPIcon, _description, StatusPivot, true,rect);
   }//체력 설명, 증감량 표기 후 열기
   public void OpenSanityPreview(RectTransform rect)
   {
@@ -225,7 +222,7 @@ public class PreviewManager : MonoBehaviour
         + string.Format("{0}%", WNCText.PositiveColor("+" + (100- _modifyvalue).ToString()));
     }
 
-    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.SanityIcon, _description, SanityPivot,true, rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.SanityIcon, _description, StatusPivot, true, rect);
   }//정신력 설명,증감량 표기 후 열기
   public void OpenGoldPreview( RectTransform rect)
   {
@@ -244,7 +241,7 @@ public class PreviewManager : MonoBehaviour
         + string.Format("{0}%", WNCText.PositiveColor("+" + (_modifyvalue-100).ToString()));
     }
 
-    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.GoldIcon, _description, GoldPivot,true, rect);
+    OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.GoldIcon, _description, StatusPivot, true, rect);
   }//골드 설명,증감량 표기 후 열기
   public void OpenMovePointPreview( RectTransform rect)
   {
@@ -252,7 +249,7 @@ public class PreviewManager : MonoBehaviour
     string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION");
 
 
-    OpenIconAndDescriptionPanel(_icon, _description, MovePointPivot, true, rect);
+    OpenIconAndDescriptionPanel(_icon, _description, StatusPivot, true, rect);
   }
   public void OpenMapPreview()
   {
