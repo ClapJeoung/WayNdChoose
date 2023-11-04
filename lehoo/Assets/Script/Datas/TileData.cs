@@ -47,4 +47,20 @@ public class TileData
       return true;
     }
   }
+  public int MovePoint
+  {
+    get
+    {
+      int _movepoint = 0;
+      if (BottomEnvir == BottomEnvirType.Sea) _movepoint = ConstValues.MovePoint_Sea;
+      else if (TopEnvir == TopEnvirType.Mountain) _movepoint = ConstValues.MovePoint_Moutain;
+      else if (TopEnvir == TopEnvirType.Forest) _movepoint = ConstValues.MovePoint_Forest;
+      else if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _movepoint = ConstValues.MovePoint_River;
+      else _movepoint = ConstValues.MovePoint_Default;
+
+      if (Landmark == LandmarkType.Ritual) _movepoint += ConstValues.Quest_Cult_RitualMovepoint;
+
+      return _movepoint;
+    }
+  }
 }

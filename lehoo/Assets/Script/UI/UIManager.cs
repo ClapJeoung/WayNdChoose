@@ -1167,7 +1167,7 @@ public static class WNCText
   }
   public static string NegativeColor(string str)
   {
-    return "<#FF4000>" + str + "</color>";
+    return "<#5A0809>" + str + "</color>";
   }
   public static string NeutralColor(string str)
   {

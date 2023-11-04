@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel,SettlementTile}
+CultSidePanel,TileInfo}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -21,7 +21,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public Experience MyEXP = null;
   public SectorTypeEnum MyPlaceType = SectorTypeEnum.NULL;
   public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
-  public Settlement MySettleMent = null;
+  public TileData MyTileData = null;
   public bool IsCultSidePanel = false;
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -151,8 +151,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         }
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo, IsCultSidePanel?new Vector2(1.05f,0.5f):new Vector2(0.5f,1.05f),OtherRect==null?transform as RectTransform : OtherRect);
         break;
-      case PreviewPanelType.SettlementTile:
-        UIManager.Instance.PreviewManager.OpenSettlementPanel(MySettleMent, OtherRect==null?transform as RectTransform : OtherRect);
+      case PreviewPanelType.TileInfo:
+        UIManager.Instance.PreviewManager.OpenTileInfoPreveiew(MyTileData, OtherRect==null?transform as RectTransform : OtherRect);
         break;
 
     }

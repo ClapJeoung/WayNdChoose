@@ -1086,22 +1086,32 @@ public class maptext : MonoBehaviour
         Vector3Int _coordinate = new Vector3Int(j, i, 0);
 
         Vector3 _pos = Tilemap_bottom.CellToWorld(_coordinate);
-        int _rotate = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].Rotation;
+        TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i];
+        int _rotate = _currenttile.Rotation;
 
         string _bottomname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).BottomEnvir}";
-        Sprite _bottomspr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].BottomEnvirSprite);
+        Sprite _bottomspr = MyTiles.GetTile(_currenttile.BottomEnvirSprite);
         GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        _bottomtile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, -60.0f * _rotate));
         _bottomtile.transform.SetParent(TileHolder_bottomenvir);
         _bottomtile.AddComponent<Onpointer_tileoutline>().MyMapUI = MapUIScript;
         _bottomtile.GetComponent<Onpointer_tileoutline>().MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
-        Image _bottomimage = _bottomtile.GetComponent<Image>();
-        _bottomimage.sprite = _bottomspr;
+        _bottomtile.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.Transparent;
         RectTransform _bottomrect = _bottomtile.GetComponent<RectTransform>();
         _bottomrect.sizeDelta = _cellsize;
         _bottomrect.position = new Vector3(_pos.x, _pos.y, _bottomrect.position.z);
         _bottomrect.transform.localScale = Vector3.one;
         _bottomrect.anchoredPosition3D = new Vector3(_bottomrect.anchoredPosition3D.x, _bottomrect.anchoredPosition3D.y, 0.0f);
+
+        GameObject _bottomimageobj = new GameObject("_image", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        Image _bottomimage = _bottomimageobj.GetComponent<Image>();
+        _bottomimageobj.transform.SetParent(_bottomtile.transform);
+        _bottomimage.transform.rotation = Quaternion.Euler(new Vector3(0, 0, -60.0f * _rotate));
+        _bottomimage.sprite = _bottomspr;
+        _bottomimage.raycastTarget = false;
+        RectTransform _bottomimagerect = _bottomimageobj.GetComponent<RectTransform>();
+        _bottomimagerect.sizeDelta = _cellsize;
+        _bottomimagerect.anchoredPosition = Vector3.zero;
+        _bottomimagerect.transform.localScale = Vector3.one;
     //    Outline _bottomoutline = _bottomtile.AddComponent<Outline>();
     //    _bottomoutline.effectColor = Color.black;
     //    _bottomoutline.effectDistance = Vector2.one * 2.0f;
@@ -1111,14 +1121,14 @@ public class maptext : MonoBehaviour
         _button.navigation = _nav;
     //    _bottomoutline.enabled = false;
         _bottomtile.AddComponent(typeof(TileButtonScript));
-        _bottomimage.raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
+        _bottomtile.GetComponent<Image>().raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
         _button.interactable = false;
         var _buttoncolor = _button.colors;
         _buttoncolor.disabledColor = Color.white;
         _button.colors = _buttoncolor;
 
         string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
-        Sprite _topespr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].TopEnvirSprite);
+        Sprite _topespr = MyTiles.GetTile(_currenttile.TopEnvirSprite);
         GameObject _toptile = new GameObject(_topname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _toptile.transform.SetParent(TileHolder_topenvir);
         RectTransform _toprect = _toptile.GetComponent<RectTransform>();
@@ -1131,7 +1141,7 @@ public class maptext : MonoBehaviour
         _topimage.sprite = _topespr;
 
         string _landmarkname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Landmark}";
-        Sprite _landmarkspr = MyTiles.GetTile(GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i].landmarkSprite);
+        Sprite _landmarkspr = MyTiles.GetTile(_currenttile.landmarkSprite);
         GameObject _landmarktile= new GameObject(_landmarkname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _landmarktile.transform.SetParent(TileHolder_landmark);
         RectTransform _landmarkrect = _landmarktile.GetComponent<RectTransform>();
@@ -1157,6 +1167,16 @@ public class maptext : MonoBehaviour
         _buttonscript.LandmarkImage= _landmarkimage;
         _buttonscript.OnPointer = _bottomtile.GetComponent<Onpointer_tileoutline>();
         _button.onClick.AddListener(() => _buttonscript.Clicked());
+        PreviewInteractive _tilepreview = _buttonscript.Rect.transform.AddComponent<PreviewInteractive>();
+        _tilepreview.PanelType = PreviewPanelType.TileInfo;
+        _tilepreview.MyTileData = _currenttile;
+        _buttonscript.Preview= _tilepreview;
+        _tilepreview.enabled = false;
+        GameObject _previewpos = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+        _tilepreview.OtherRect = _previewpos.GetComponent<RectTransform>();
+        _previewpos.transform.localScale = Vector3.zero;
+        _previewpos.transform.parent = _bottomtile.transform;
+        _previewpos.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f,-_cellsize.y / 2.0f);
 
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _buttonscript;
       }
@@ -1180,11 +1200,6 @@ public class maptext : MonoBehaviour
 
       _village.Tile.ButtonScript.LandmarkImage.transform.SetParent(_villageholder.transform);
       _village.Tile.ButtonScript.Rect.localScale = Vector3.one;
-      PreviewInteractive _villagepreview = _village.Tile.ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
-      _villagepreview.PanelType = PreviewPanelType.SettlementTile;
-      _villagepreview.MySettleMent = _village;
-      _village.Tile.ButtonScript.Preview = _villagepreview;
-      _villagepreview.enabled = false;
 
       MapUIScript.VillageIcons.Add(_villageholder);
     }
@@ -1207,11 +1222,6 @@ public class maptext : MonoBehaviour
       {
         _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_townholder.transform);
       _town.Tile.ButtonScript.Rect.localScale = Vector3.one;
-      PreviewInteractive _townpreview = _town.Tile.ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
-      _townpreview.PanelType = PreviewPanelType.SettlementTile;
-      _townpreview.MySettleMent = _town;
-      _town.Tile.ButtonScript.Preview = _townpreview;
-      _townpreview.enabled = false;
     }
     MapUIScript.TownIcon=(_townholder);
 
@@ -1233,11 +1243,6 @@ public class maptext : MonoBehaviour
     {
       _settlementrectlist[j].ButtonScript.LandmarkImage.transform.SetParent(_cityholder.transform);
       _city.Tile.ButtonScript.Rect.localScale = Vector3.one;
-      PreviewInteractive _settlementpreview = _city.Tile.ButtonScript.Rect.transform.AddComponent<PreviewInteractive>();
-      _settlementpreview.PanelType = PreviewPanelType.SettlementTile;
-      _settlementpreview.MySettleMent = _city;
-      _city.Tile.ButtonScript.Preview = _settlementpreview;
-      _settlementpreview.enabled = false;
     }
     MapUIScript.CityIcon=_cityholder;
 
@@ -1504,7 +1509,7 @@ public class HexGrid
         }
       }
 
-      Debug.Log(_str);
+   //   Debug.Log(_str);
       return _list;
 
       //최소단위 받아서 계산

@@ -13,7 +13,6 @@ public class UI_map : UI_default
   [SerializeField] private Image Outline_Idle = null;
   [SerializeField] private Image Outline_Select = null;
   [SerializeField] private float MoveTime = 0.8f;
-  private TileData SelectedTile = null;
   public maptext MapCreater = null;
   [HideInInspector] public GameObject CityIcon = null;
   [HideInInspector] public GameObject TownIcon = null;
@@ -54,7 +53,6 @@ public class UI_map : UI_default
   public float UICloseTime_Fold = 0.6f;
   public float UICloseTime_Move = 0.4f;
 
-  [SerializeField] private AnimationCurve ZoomInCurve = null;
   [SerializeField] private RectTransform HolderRect = null;
   // [SerializeField] private RectTransform ScaleRect = null;
   // private Vector3 IdleScale = Vector3.one;
@@ -80,7 +78,6 @@ public class UI_map : UI_default
  // private float MoveButtonDisableAlpha = 0.2f;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private TextMeshProUGUI MoveCostText = null;
-  [SerializeField] private TextMeshProUGUI ProgressText = null;
   private bool IsRitual = false;
 
   private List<TileData> ActiveTileData = new List<TileData>();
@@ -212,7 +209,6 @@ public class UI_map : UI_default
     TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
     MoveLengthText.text = "";
     MoveCostText.text = "";
-    ProgressText.text = "";
     MovecostButtonGroup.alpha = 0.0f;
     MovecostButtonGroup.interactable = false;
     MovecostButtonGroup.blocksRaycasts = false;
@@ -263,21 +259,189 @@ public class UI_map : UI_default
     DefaultGroup.blocksRaycasts = true;
 
   }
-  private Vector2 TilePreviewDownPos = new Vector2(-200.0f, -20.0f);
+  [SerializeField] private Vector2 TilePreviewDownPos = new Vector2(-235.0f, 23.0f);
   private float TilePreviewStartAlpha = 0.5f;
-  public List<HexDir> Length=new List<HexDir>();
+  private List<TileData> Route_Tile = new List<TileData>();
+  private int MovePointCost
+  {
+    get
+    {
+      int _count = 0;
+      foreach (TileData _tile in Route_Tile)
+        _count += _tile.MovePoint;
+      return _count;
+    }
+  }
+  private TileData SelectedTile = null;
+  public List<HexDir> Route_Dir=new List<HexDir>();
   public int SanityCost = 0, GoldCost = 0;
   [HideInInspector] public int QuestInfo = 0;
   public void SelectTile(TileData selectedtiledata)
   {
+    Debug.Log("레후");
     //동일한 좌표면 호출되지 않게 이미 거름
-    if (selectedtiledata.Coordinate==GameManager.Instance.MyGameData.Coordinate||( SelectedTile != null && selectedtiledata == SelectedTile)) return;
+    if (selectedtiledata.Coordinate == GameManager.Instance.MyGameData.Coordinate || (SelectedTile != null && selectedtiledata == SelectedTile)) return;
 
+    Debug.Log("테챠");
     UIManager.Instance.AudioManager.PlaySFX(5);
     SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
 
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
-    Length = GameManager.Instance.GetLength(_currenttile, selectedtiledata);
+    List<HexDir> _dirtemp = GameManager.Instance.GetLength(_currenttile, selectedtiledata);
+
+    int _loopcount = 0;
+    #region 이동 루트 배열 생성
+    List<List<int>> _results = new List<List<int>>();
+    if (_dirtemp.Count == 1) { _results.Add(new List<int> { 0 }); }
+    else
+    {
+      int _elementindex = -1, _inputindex = 0;// _failcount = 0;
+      int _maxcount = _dirtemp.Count;
+      List<int> _elements = new List<int>();
+      for (int i = 0; i < _dirtemp.Count; i++) _elements.Add(i);
+      Dictionary<int, List<int>> _disableindex = new Dictionary<int, List<int>>();
+      List<int> _current = null;
+
+      _loopcount = 0;
+      _results.Add(new List<int>());
+      while (true)
+      {
+        _loopcount++; if (_loopcount > 1000) { Debug.Log("테챠아"); return; }
+
+        if (_disableindex.ContainsKey(0) && _disableindex[0].Count == _maxcount) break;
+        _elementindex++;
+
+        _current = _results[_results.Count - 1];
+
+        int _temp = _elements[_elementindex];
+        if (_current.Contains(_temp) || (_disableindex.ContainsKey(_inputindex) && _disableindex[_inputindex].Contains(_temp)))
+        {
+          AddBan(_inputindex, _temp);
+
+          if (_disableindex[_inputindex].Count == _maxcount)
+          {
+            _disableindex[_inputindex].Clear();
+            _inputindex = _inputindex > 0 ? _inputindex - 1 : 0;
+            _elementindex = -1;
+            AddBan(_inputindex, _current[_current.Count - 1]);
+            if (_current.Count > 0) _current.RemoveAt(_current.Count - 1);
+          }
+          continue;
+        }
+        _current.Add(_temp);
+
+        if (_inputindex == _maxcount - 1)
+        {
+          bool _isokay = true;
+          for (int i = 0; i < _results.Count - 1; i++)
+          {
+            List<bool> _colaspeelement = new List<bool>();
+            for (int j = 0; j < _current.Count; j++)
+            {
+              if (_current[j] == _results[i][j]) { _colaspeelement.Add(true); }
+              else _colaspeelement.Add(false);
+            }
+            if (!_colaspeelement.Contains(false)) { _isokay = false; break; }
+          }
+          if (_isokay)
+          {
+            _inputindex = -1;
+            _disableindex.Clear();
+
+            _results.Add(new List<int>());
+          }
+          else
+          {
+            AddBan(_inputindex, _temp);
+            _current.RemoveAt(_current.Count - 1);
+
+            if (_disableindex[_inputindex].Count == _maxcount)
+            {
+              _disableindex[_inputindex].Clear();
+              _inputindex = _inputindex > 0 ? _inputindex - 1 : 0;
+              _elementindex = -1;
+              AddBan(_inputindex, _current[_current.Count - 1]);
+              if (_current.Count > 0) _current.RemoveAt(_current.Count - 1);
+              continue;
+            }
+            else
+            {
+              continue;
+            }
+          }
+        }
+        _inputindex++;
+        _elementindex = -1;
+      }
+      if (_results[_results.Count - 1].Count == 0) _results.RemoveAt(_results.Count - 1);
+
+      void AddBan(int inputindex, int value)
+      {
+        int _index = inputindex > 0 ? inputindex : 0;
+        if (!_disableindex.ContainsKey(_index))
+        {
+          int _banindex = _index;
+          _disableindex.Add(_banindex, new List<int>());
+        }
+        if (!_disableindex[_index].Contains(value)) _disableindex[_index].Add(value);
+      }
+    }
+    #endregion
+
+    List<List<HexDir>> _routedirs = new List<List<HexDir>>();
+    foreach (var _list in _results)
+    {
+      List<HexDir> _dirs = new List<HexDir>();
+      foreach (var _value in _list) _dirs.Add(_dirtemp[_value]);
+      _routedirs.Add(_dirs);
+    }
+
+    _loopcount = 0;
+    bool _iscollaspe = true;
+    while (_iscollaspe == true)
+    {
+      _loopcount++;if (_loopcount > 1000) { Debug.Log("데샤봇"); return; }
+      if (_routedirs.Count == 1) break;
+
+      for (int i = 0; i < _routedirs.Count; i++)
+      {
+        for (int j = i+1; j < _routedirs.Count; j++)
+        {
+          _iscollaspe = true;
+          for (int k = 0; k < _routedirs[i].Count; k++)
+            if (_routedirs[i][k] != _routedirs[j][k]) { _iscollaspe = false; break; }
+
+          if (_iscollaspe)
+          {
+            _routedirs.RemoveAt(j);
+            break;
+          }
+        }
+        if (_iscollaspe) break;
+      }
+      if (_iscollaspe) continue;
+    }
+
+    List<List<TileData>> _routes=new List<List<TileData>>();
+    foreach(var _dirlist in _routedirs)
+    {
+      List<TileData> _newroute=new List<TileData>();
+      _newroute.Add(GameManager.Instance.MyGameData.CurrentTile);
+      for (int i = 0; i < _dirlist.Count; i++)
+        _newroute.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(_newroute[_newroute.Count - 1], _dirlist[i]));
+      _routes.Add(_newroute);
+    }
+
+    int _minMP = 100, _targetindex = 0;
+    for(int i=0;i< _routes.Count;i++)
+    {
+      int _MP = 0;
+      foreach (TileData _tile in _routes[i])
+        _MP += _tile.MovePoint;
+      if (_MP < _minMP) { _targetindex = i; _minMP = _MP; }
+    }
+
+    Route_Tile = _routes[_targetindex];
 
     SelectedTile = selectedtiledata;
 
@@ -288,7 +452,7 @@ public class UI_map : UI_default
     TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
     TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
     StopAllCoroutines();
-    StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-200.0f,0.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
+    StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-235.0f,57.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
 
     if (SelectedTile.TileSettle != null)
@@ -316,7 +480,7 @@ public class UI_map : UI_default
             UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
             break;
         }
-        ProgressText.text = _progresstext;
+        TileInfoText.text += _progresstext;
         break;
     }
 
@@ -324,26 +488,8 @@ public class UI_map : UI_default
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
     
-    switch (GameManager.Instance.MyGameData.QuestType)
-    {
-      case QuestType.Cult:
-        switch (QuestInfo)
-        {
-          case 0:
-            MovePointCost = 1;
-            break;
-          case 1:
-            MovePointCost = 1 + ConstValues.Quest_Cult_RitualMovepoint;
-            break;
-          case 2:
-            MovePointCost = 1;
-            break;
-        }
-        break;
-    }
-
-    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Length.Count, MovePointCost);
-    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Length.Count, MovePointCost);
+    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Dir.Count, MovePointCost);
+    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Dir.Count, MovePointCost);
 
     SelectedCostType = StatusTypeEnum.HP;
     MoveCostText.text = "";
@@ -360,11 +506,14 @@ public class UI_map : UI_default
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1 * MovePointCost);
     GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
-
-    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"), Length.Count,MovePointCost,GameManager.Instance.MyGameData.MovePoint);
+    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"),MovePointCost,GameManager.Instance.MyGameData.MovePoint,
+      MovePointCost<=GameManager.Instance.MyGameData.MovePoint?"":
+     string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
+     MovePointCost- GameManager.Instance.MyGameData.MovePoint,
+     WNCText.NegativeColor($"+{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)* (MovePointCost - GameManager.Instance.MyGameData.MovePoint)}%")
+            + (GameManager.Instance.MyGameData.Tendency_Head.Level == -2 ? "<sprite=92>" : "")));
   }
 
-  private int MovePointCost = 0;
   public void EnterPointerStatus(StatusTypeEnum type)
   {
     string _costtext = "";
@@ -376,24 +525,13 @@ public class UI_map : UI_default
      //   GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), SanityCost);
-
-        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
-          _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
-            WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%")
-            +(GameManager.Instance.MyGameData.Tendency_Head.Level==-2?"<sprite=92>":""));
         break;
       case StatusTypeEnum.Gold:
         if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
         SelectedCostType = StatusTypeEnum.Gold;
-      //  SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
-      //  GoldbuttonGroup.alpha = 1.0f;
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), GoldCost);
-
-        if (GameManager.Instance.MyGameData.MovePoint < MovePointCost)
-          _costtext += string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
-            WNCText.NegativeColor("+" + $"{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100) - 100}%"));
         break;
     }
     MoveCostText.text = _costtext;
@@ -423,8 +561,6 @@ public class UI_map : UI_default
   public AnimationCurve MoveAnimationCurve = new AnimationCurve();
   private IEnumerator movemap()
   {
-    GameManager.Instance.MyGameData.Turn++;
-
     if (GameManager.Instance.MyGameData.Madness_Wild == true && Random.Range(0, 100) < ConstValues.MadnessEffect_Wild)
     {
       List<TileData> _availabletiles = new List<TileData>();
@@ -451,7 +587,7 @@ public class UI_map : UI_default
       Debug.Log("자연 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
 
-      Length = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
+      Route_Dir = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
     }
 
     switch (SelectedCostType)
@@ -501,16 +637,14 @@ public class UI_map : UI_default
         break;
     }
 
-    Debug.Log($"시작 타일 {GameManager.Instance.MyGameData.Coordinate} 목표 타일 {SelectedTile.Coordinate}");
+ //   Debug.Log($"시작 타일 {GameManager.Instance.MyGameData.Coordinate} 목표 타일 {SelectedTile.Coordinate}");
 
     List<Vector2> _path= new List<Vector2>();
     _path.Add(PlayerRect.anchoredPosition);
     MapData _map = GameManager.Instance.MyGameData.MyMapData;
-    TileData _currenttile = GameManager.Instance.MyGameData.CurrentTile;
-    for(int i = 0; i < Length.Count; i++)
+    for(int i = 0; i < Route_Tile.Count; i++)
     {
-      _currenttile = _map.GetNextTile(_currenttile, Length[i]);
-      _path.Add(_currenttile.ButtonScript.Rect.anchoredPosition);
+      _path.Add(Route_Tile[i].ButtonScript.Rect.anchoredPosition);
     }
     if(_iswalking)
       UIManager.Instance.AudioManager.PlayWalking();
@@ -545,7 +679,7 @@ public class UI_map : UI_default
     PlayerRect.anchoredPosition = _path[_path.Count-1];
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
-    GameManager.Instance.MyGameData.Coordinate = _currenttile.Coordinate;
+    GameManager.Instance.MyGameData.Coordinate = SelectedTile.Coordinate;
 
  //   StartCoroutine(zoominview());
 
@@ -590,6 +724,7 @@ public class UI_map : UI_default
       case LandmarkType.Village:
       case LandmarkType.Town:
       case LandmarkType.City:
+        GameManager.Instance.MyGameData.Turn++;
         GameManager.Instance.MyGameData.FirstRest = true;
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;

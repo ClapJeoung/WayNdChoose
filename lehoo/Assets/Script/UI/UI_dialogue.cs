@@ -374,6 +374,7 @@ public class UI_dialogue : UI_default
             yield return StartCoroutine(updatescrollbar());
 
             if (CurrentSuccessData != null) SetRewardButton();
+            GameManager.Instance.MyGameData.Turn++;
             OpenReturnButton();
           }
           break;
@@ -396,6 +397,7 @@ public class UI_dialogue : UI_default
             yield return StartCoroutine(updatescrollbar());
 
             if (CurrentSuccessData != null) SetRewardButton();
+            GameManager.Instance.MyGameData.Turn++;
             OpenReturnButton();
           }
           break;
@@ -1348,7 +1350,6 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     UIManager.Instance.AudioManager.PlaySFX(14);
 
     yield return StartCoroutine(closeui_all(true));
-    GameManager.Instance.MyGameData.Turn++;
 
     EventManager.Instance.SetSettlementEvent(SelectedSector);
 

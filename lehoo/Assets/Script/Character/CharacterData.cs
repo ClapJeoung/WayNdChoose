@@ -7,6 +7,12 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int StartMovePoint = 5;
+  public const int MovePoint_Sea = 5;
+  public const int MovePoint_Moutain = 3;
+  public const int MovePoint_River = 2, MovePoint_Forest = 2;
+  public const int MovePoint_Default = 1;
+
   public const float StatusLossMinSacle = 1.15f, StatusLossMaxScale = 1.4f;
   public const float StatusLoss_HP_Min = 6, StatusLoss_HP_Max = 30;
   public const float StatusLoss_Sanity_Min = 6, StatusLoss_Sanity_Max = 30;
@@ -40,13 +46,13 @@ public static class ConstValues
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
   public const int Quest_Cult_CoolDown = 4;
 
-  public const int Rest_MovePoint = 1;
+  public const int Rest_MovePoint = 5;
   public const int Rest_Discomfort = 3;
   public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f*1.2f;
   public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 15.0f*1.2f;
   public const float Rest_Deafult = 0.9f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.6f, Move_LengthRatio = 0.2f;
-  public const float LackMPAmplifiedValue_Idle = 2.5f;
+  public const float Move_Default = 0.2f, Move_LengthRatio = 0.4f;
+  public const float LackMPAmplifiedValue_Idle = 0.75f;
 
 
   public const int EventPer_Envir = 3, EventPer_NoEnvir = 1,
@@ -69,7 +75,7 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.2f;
 
-  public const float Tendency_Head_m2 = 1.5f;
+  public const float Tendency_Head_m2 = 0.2f;
   public const int Tendency_Head_m1 = 1;
   public const int Tendency_Head_p1 = 0;
   public const int Tendency_Head_p2 = 2;
@@ -355,7 +361,7 @@ public class GameData    //게임 진행도 데이터
       * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
     return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
-      (int)(_value * MovePointAmplified);
+      (int)(_value * (1.0f+MovePointAmplified*(movepoint-MovePoint)));
   }
   public int GetMoveGoldCost(int length,int movepoint)
   {
@@ -363,7 +369,7 @@ public class GameData    //게임 진행도 데이터
       * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
     return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
-      (int)(_value * MovePointAmplified);
+      (int)(_value * (1.0f + MovePointAmplified * (movepoint - MovePoint)));
   }
   public float MovePointAmplified
   {
@@ -694,7 +700,7 @@ public class GameData    //게임 진행도 데이터
   {
     turn = 0;
     hp = 100;
-    movepoint = 2;
+    movepoint = ConstValues.StartMovePoint;
     sanity = 100;
     gold = ConstValues.StartGold ;
     QuestType=questtype;

@@ -121,11 +121,14 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
   [Space(10)]
+  [SerializeField] private GameObject TileInfoPanel = null;
+  [SerializeField] private TextMeshProUGUI TileInfoMovePointText = null;
+  [Space(10)]
   [SerializeField] private GameObject SettlementInfoPanel = null;
   [SerializeField] private Image SettlementInfoIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
-  [SerializeField] private TextMeshProUGUI SettlementInfoDescription = null;
+  [SerializeField] private TextMeshProUGUI SettlementMovePointText = null;
 
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
@@ -922,20 +925,29 @@ public class PreviewManager : MonoBehaviour
   public void OpenEnvirPanel(EnvironmentType envir)
   {
   }
-  public void OpenSettlementPanel(Settlement settlement,RectTransform tilerect)
+  public void OpenTileInfoPreveiew(TileData tileData, RectTransform tilerect)
   {
-    switch (settlement.SettlementType)
+    if (tileData.TileSettle == null)
     {
-      case SettlementType.Village: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_white; break;
-      case SettlementType.Town:  SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_white; break;
-      case SettlementType.City:SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_white; break;
+      TileInfoMovePointText.text = tileData.MovePoint.ToString();
+
+      OpenPreviewPanel(TileInfoPanel, tilerect);
     }
+    else
+    {
+      switch (tileData.TileSettle.SettlementType)
+      {
+        case SettlementType.Village: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_white; break;
+        case SettlementType.Town: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_white; break;
+        case SettlementType.City: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_white; break;
+      }
 
-    SettlementInfoName.text = settlement.Name;
-    SettlementInfoDiscomfort.text = settlement.Discomfort.ToString();
-    SettlementInfoDescription.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),GameManager.Instance.MyGameData.GetDiscomfortValue(settlement.Discomfort)*100);
+      SettlementInfoName.text = tileData.TileSettle.Name;
+      SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
+      SettlementMovePointText.text = tileData.MovePoint.ToString();
 
-    OpenPreviewPanel(SettlementInfoPanel, tilerect);
+      OpenPreviewPanel(SettlementInfoPanel, tilerect);
+    }
   }
 
   private Vector2 Newpos = Vector2.zero;
