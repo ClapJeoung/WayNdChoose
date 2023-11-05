@@ -12,6 +12,7 @@ public class UI_map : UI_default
   [SerializeField] private RectTransform PlayerRect = null;
   [SerializeField] private Image Outline_Idle = null;
   [SerializeField] private Image Outline_Select = null;
+  [SerializeField] private List<Image> Outline_Routes = new List<Image>();
   [SerializeField] private float MoveTime = 0.8f;
   public maptext MapCreater = null;
   [HideInInspector] public GameObject CityIcon = null;
@@ -78,7 +79,6 @@ public class UI_map : UI_default
  // private float MoveButtonDisableAlpha = 0.2f;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private TextMeshProUGUI MoveCostText = null;
-  private bool IsRitual = false;
 
   private List<TileData> ActiveTileData = new List<TileData>();
 
@@ -101,64 +101,6 @@ public class UI_map : UI_default
       _tile.ButtonScript.Button.interactable = true;
       if (_tile.ButtonScript.Preview != null) _tile.ButtonScript.Preview.enabled = true;
       ActiveTileData.Add(_tile);
-    }
-
-    switch (GameManager.Instance.MyGameData.QuestType)
-    {
-      case QuestType.Cult:
-        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-        {
-          case 0:
-            break;
-          case 1:
-            SetRitualTile();
-            break;
-          case 2:
-            if (GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown == 0) SetRitualTile();
-            break;
-        }
-        break;
-    }
-    void SetRitualTile()
-    {
-      if (GameManager.Instance.MyGameData.Cult_RitualTile != null)
-      {
-        GameManager.Instance.MyGameData.Cult_RitualTile.Landmark = LandmarkType.Outer;
-        GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.sprite = GameManager.Instance.ImageHolder.Transparent;
-        GameManager.Instance.MyGameData.Cult_RitualTile = null;
-      }
-
-      int _mincount = 10;
-      List<TileData> _availabletiles=new List<TileData>();
-      foreach (var _tile in _currents)
-      {
-        if (_tile.Interactable == false) continue;
-        if (_tile.Landmark != LandmarkType.Outer) continue;
-        if (_tile.Coordinate == GameManager.Instance.MyGameData.Coordinate) continue;
-
-        int _count = 0;
-        foreach (var _aroundtile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_tile, 2))
-        {
-          if (_aroundtile.TileSettle != null) _count++;
-        }
-        if (_count < _mincount)
-        {
-          _mincount = _count;
-          _availabletiles.Clear();
-
-          _availabletiles.Add(_tile);
-        }
-        else
-        {
-          _availabletiles.Add(_tile);
-        }
-      }
-
-      GameManager.Instance.MyGameData.Cult_RitualTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
-      GameManager.Instance.MyGameData.Cult_RitualTile.Landmark = LandmarkType.Ritual;
-      GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
-        UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
-
     }
   }
   public void SetOutline_Idle(TileData tile)
@@ -201,10 +143,18 @@ public class UI_map : UI_default
 
     ResetEnableTiles();
 
+    if (Route_Tile.Count > 0)
+    {
+      for (int i = 0; i < Route_Tile.Count; i++)
+      {
+        DisableOutline(Outline_Routes[i]);
+      }
+    }
+
     DisableOutline(Outline_Idle);
     DisableOutline(Outline_Select);
 
-    IsRitual = false;
+    QuestInfo = false;
    // GuidRect.anchoredPosition = GuidPos_Tile;
     TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
     MoveLengthText.text = "";
@@ -267,22 +217,28 @@ public class UI_map : UI_default
     get
     {
       int _count = 0;
-      foreach (TileData _tile in Route_Tile)
-        _count += _tile.MovePoint;
+      for (int i = 1; i < Route_Tile.Count; i++)
+        _count += Route_Tile[i].MovePoint;
       return _count;
     }
   }
   private TileData SelectedTile = null;
   public List<HexDir> Route_Dir=new List<HexDir>();
   public int SanityCost = 0, GoldCost = 0;
-  [HideInInspector] public int QuestInfo = 0;
+  [HideInInspector] public bool QuestInfo = false;
   public void SelectTile(TileData selectedtiledata)
   {
-    Debug.Log("레후");
     //동일한 좌표면 호출되지 않게 이미 거름
     if (selectedtiledata.Coordinate == GameManager.Instance.MyGameData.Coordinate || (SelectedTile != null && selectedtiledata == SelectedTile)) return;
 
-    Debug.Log("테챠");
+    if (Route_Tile.Count > 0)
+    {
+      for(int i=0;i< Route_Tile.Count;i++)
+      {
+        DisableOutline(Outline_Routes[i]);
+      }
+    }
+
     UIManager.Instance.AudioManager.PlaySFX(5);
     SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
 
@@ -438,10 +394,19 @@ public class UI_map : UI_default
       int _MP = 0;
       foreach (TileData _tile in _routes[i])
         _MP += _tile.MovePoint;
-      if (_MP < _minMP) { _targetindex = i; _minMP = _MP; }
+      if (_MP < _minMP) 
+      {
+        int _tempindex = i;
+        _targetindex = _tempindex;
+        _minMP = _MP; 
+      }
     }
 
     Route_Tile = _routes[_targetindex];
+    for(int i=0;i<Route_Tile.Count;i++)
+    {
+      SetOutline(Outline_Routes[i], Route_Tile[i].ButtonScript.Rect);
+    }
 
     SelectedTile = selectedtiledata;
 
@@ -468,15 +433,15 @@ public class UI_map : UI_default
     {
       case QuestType.Cult:
         string _progresstext = "";
-        QuestInfo = GameManager.Instance.MyGameData.Cult_IsRitual(SelectedTile);
+        QuestInfo = CheckRitual;
         switch (QuestInfo)
         {
-          case 0:
+          case false:
             _progresstext = "";
             UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
             break;
-          case 1:
-            _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_RitualMovepoint, ConstValues.Quest_Cult_Progress_Ritual);
+          case true:
+            _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect") ,ConstValues.Quest_Cult_Progress_Ritual);
             UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
             break;
         }
@@ -488,8 +453,8 @@ public class UI_map : UI_default
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
     
-    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Dir.Count, MovePointCost);
-    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Dir.Count, MovePointCost);
+    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Tile.Count, MovePointCost);
+    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
 
     SelectedCostType = StatusTypeEnum.HP;
     MoveCostText.text = "";
@@ -513,7 +478,15 @@ public class UI_map : UI_default
      WNCText.NegativeColor($"+{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)* (MovePointCost - GameManager.Instance.MyGameData.MovePoint)}%")
             + (GameManager.Instance.MyGameData.Tendency_Head.Level == -2 ? "<sprite=92>" : "")));
   }
-
+  private bool CheckRitual
+  {
+    get
+    {
+      foreach (var _tile in Route_Tile)
+        if (_tile.Landmark == LandmarkType.Ritual) return true;
+      return false;
+    }
+  }
   public void EnterPointerStatus(StatusTypeEnum type)
   {
     string _costtext = "";
@@ -588,37 +561,32 @@ public class UI_map : UI_default
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
 
       Route_Dir = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
+      Route_Tile = new List<TileData>();
+      Route_Tile.Add(GameManager.Instance.MyGameData.CurrentTile);
+      for (int i = 0; i < Route_Dir.Count; i++)
+      {
+        Route_Tile.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(Route_Tile[i], Route_Dir[i]));
+      }
+      QuestInfo = CheckRitual;
     }
-
-    switch (SelectedCostType)
+    Dictionary<TileData, int> _movepointicondata = new Dictionary<TileData, int>();
+    int _totalmp = 0;
+    for(int i = 1; i < Route_Tile.Count; i++)
     {
-      case StatusTypeEnum.Sanity:
-        if (GameManager.Instance.MyGameData.MovePoint > 0)
-        {
-       //   StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
-        }
-        else
-        {
-        //  yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Sanity, PlayerRect));
-        }
-        break;
-      case StatusTypeEnum.Gold:
-        if (GameManager.Instance.MyGameData.MovePoint > 0)
-        {
-        //  StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
-          yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint(true, MovePointCost, PlayerRect));
-        }
-        else
-        {
-       //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(true, StatusTypeEnum.Gold, PlayerRect));
-        }
-        break;
+      int _mp = Route_Tile[i].MovePoint;
+      _totalmp += _mp;
+      if (GameManager.Instance.MyGameData.MovePoint >= _totalmp)
+      {
+        _movepointicondata.Add(Route_Tile[i],_mp);
+      }
+      else
+      {
+        _movepointicondata.Add(Route_Tile[i],Mathf.Clamp(GameManager.Instance.MyGameData.MovePoint - (_totalmp - _mp),0,100));
+      }
     }
+    yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint_using(_movepointicondata,SelectedCostType));
 
-    yield return StartCoroutine(UIManager.Instance.statusgainanimation(PlayerRect));
-
-    IsRitual = SelectedTile.Landmark == LandmarkType.Ritual;
+ //   yield return StartCoroutine(UIManager.Instance.statusgainanimation(PlayerRect));
 
     bool _iswalking = false;
     if (GameManager.Instance.MyGameData.MovePoint >= MovePointCost)
@@ -710,9 +678,11 @@ public class UI_map : UI_default
     yield return new WaitForSeconds(0.2f);
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, Left_InsidePos,Left_OutsidePos , UIOpenTime_Move, UIManager.Instance.UIPanelCLoseCurve));
 
+    GameManager.Instance.MyGameData.Turn++;
     switch (SelectedTile.Landmark)
     {
       case LandmarkType.Outer:
+      case LandmarkType.Ritual:
         if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult && GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
           GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
 
@@ -724,20 +694,11 @@ public class UI_map : UI_default
       case LandmarkType.Village:
       case LandmarkType.Town:
       case LandmarkType.City:
-        GameManager.Instance.MyGameData.Turn++;
         GameManager.Instance.MyGameData.FirstRest = true;
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;
-      case LandmarkType.Ritual:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
-
-        GameManager.Instance.MyGameData.CurrentSettlement = null;
-        EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
-
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2) GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown = ConstValues.Quest_Cult_CoolDown;
-        break;
     }
-    if (IsRitual) UIManager.Instance.CultUI.AddProgress(4);
+    if (QuestInfo) UIManager.Instance.CultUI.AddProgress(4);
     IsOpen = false;
     SelectedTile = null;
     Debug.Log("이동 코루틴이 끝난 레후~");

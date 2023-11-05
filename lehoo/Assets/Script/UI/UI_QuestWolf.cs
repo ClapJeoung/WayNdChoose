@@ -280,27 +280,21 @@ public class UI_QuestWolf : UI_default
     if (DefaultRect.anchoredPosition != Vector2.zero) DefaultRect.anchoredPosition = Vector2.zero;
 
     int _eventtype = 0;
-    //0:없음 1:페이즈 증가 2:정착지 3:집회 4:의식
+    //0:없음 1:없음 2:정착지 3:집회 4:의식
 
-    int _lastphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-    int _currentphase = 0;
     switch (progresstype)
     {
       case 0:
         GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.Quest_Cult_Phase < 2 ?
-              ConstValues.Qeust_Cult_EventProgress_Clear_Less60 : ConstValues.Quest_Cult_EventProgress_Clear_Over60;
-
-        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-        if (_lastphase < _currentphase) _eventtype = 1;
+              ConstValues.Qeust_Cult_EventProgress_Clear : ConstValues.Qeust_Cult_EventProgress_Clear;
         break;
       case 1:
         GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.Quest_Cult_Phase < 2 ?
-ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventProgress_Fail_Over60;
-
-        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-        if (_lastphase < _currentphase) _eventtype = 1;
+ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress_Fail;
         break;
       case 2:
+        GameManager.Instance.MyGameData.Quest_Cult_Phase++;
+
         switch (GameManager.Instance.MyGameData.CurrentSettlement.SettlementType)
         {
           case SettlementType.Village:
@@ -311,26 +305,20 @@ ConstValues.Quest_Cult_EventProgress_Fail_Less60 : ConstValues.Quest_Cult_EventP
             break;
           case SettlementType.City:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_City;
+            GameManager.Instance.MyGameData.SetSabbat();
             break;
         }
         _eventtype = 2;
-
-        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-        if (_lastphase < _currentphase) _eventtype = 1;
         break;
       case 3:
+        GameManager.Instance.MyGameData.SetRitual();
         GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sabbat;
         _eventtype = 3;
-      
-        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-        if (_lastphase < _currentphase) _eventtype = 1;
         break;
       case 4:
+        GameManager.Instance.MyGameData.SetSabbat();
         GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
         _eventtype = 4;
-       
-        _currentphase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-        if (_lastphase < _currentphase) _eventtype = 1;
         break;
       default:
         Debug.Log("아니이게머임???");

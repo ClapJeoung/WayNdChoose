@@ -662,38 +662,42 @@ public class GameManager : MonoBehaviour
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
 
-    string _eventid = MyGameData.CurrentEvent.ID;
+    string _eventid = MyGameData.CurrentEvent==null?null: MyGameData.CurrentEvent.ID;
 
-    if (MyGameData.CurrentEventSequence == EventSequence.Progress)
+    if (_eventid != null)
     {
-      UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.OpenEventUI(false));
+      if (MyGameData.CurrentEventSequence == EventSequence.Progress)
+      {
+        UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.OpenEventUI(false));
+      }
+      else
+      {
+        bool _issuccess = false;
+        bool _isleft = false;
+        if (MyGameData.SuccessEvent_Rational.Contains(_eventid) || MyGameData.SuccessEvent_Mental.Contains(_eventid) || MyGameData.SuccessEvent_None.Contains(_eventid))
+        {
+          _issuccess = true;
+          _isleft = true;
+        }
+        else if (MyGameData.SuccessEvent_Physical.Contains(_eventid) || MyGameData.SuccessEvent_Material.Contains(_eventid))
+        {
+          _issuccess = true;
+          _isleft = false;
+        }
+        else if (MyGameData.FailEvent_Rational.Contains(_eventid) || MyGameData.FailEvent_Mental.Contains(_eventid) || MyGameData.FailEvent_None.Contains(_eventid))
+        {
+          _issuccess = false;
+          _isleft = true;
+        }
+        else if (MyGameData.FailEvent_Physical.Contains(_eventid) || MyGameData.FailEvent_Material.Contains(_eventid))
+        {
+          _issuccess = false;
+          _isleft = false;
+        }
+        UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.OpenEventUI(_issuccess, _isleft, false));
+      }
     }
-    else
-    {
-      bool _issuccess = false;
-      bool _isleft = false;
-      if (MyGameData.SuccessEvent_Rational.Contains(_eventid) || MyGameData.SuccessEvent_Mental.Contains(_eventid)||MyGameData.SuccessEvent_None.Contains(_eventid))
-      {
-        _issuccess = true;
-        _isleft = true;
-      }
-      else if (MyGameData.SuccessEvent_Physical.Contains(_eventid) || MyGameData.SuccessEvent_Material.Contains(_eventid))
-      {
-        _issuccess = true;
-        _isleft = false;
-      }
-      else if (MyGameData.FailEvent_Rational.Contains(_eventid) || MyGameData.FailEvent_Mental.Contains(_eventid) || MyGameData.FailEvent_None.Contains(_eventid))
-      {
-        _issuccess = false;
-        _isleft = true;
-      }
-      else if (MyGameData.FailEvent_Physical.Contains(_eventid) || MyGameData.FailEvent_Material.Contains(_eventid))
-      {
-        _issuccess = false;
-        _isleft = false;
-      }
-      UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.OpenEventUI(_issuccess, _isleft,false));
-    }
+    else UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(true));
 
     IsPlaying = true;
 
@@ -722,6 +726,7 @@ public class GameManager : MonoBehaviour
   }
   public void EnterSettlement(Settlement targetsettlement)
   {
+    MyGameData.CurrentEvent = null;
     MyGameData.CurrentSettlement=targetsettlement;
 
     switch (MyGameData.QuestType)
@@ -730,24 +735,19 @@ public class GameManager : MonoBehaviour
         switch (MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            if (!MyGameData.Cult_SettlementTypes.Contains(targetsettlement.SettlementType))
-            {
-              MyGameData.Cult_SettlementTypes.Add(targetsettlement.SettlementType);
-              UIManager.Instance.CultUI.AddProgress(2);
-            }
+            if(targetsettlement.SettlementType==SettlementType.Village) UIManager.Instance.CultUI.AddProgress(2);
             break;
           case 1:
-            MyGameData.Cult_SabbatSector = targetsettlement.Sectors[UnityEngine.Random.Range(0, targetsettlement.Sectors.Count)];
+            if (targetsettlement.SettlementType == SettlementType.Town) UIManager.Instance.CultUI.AddProgress(2);
             break;
           case 2:
-            if (MyGameData.Cult_SabbatSector_CoolDown == 0)
-              MyGameData.Cult_SabbatSector = targetsettlement.Sectors[UnityEngine.Random.Range(0, targetsettlement.Sectors.Count)];
-            else MyGameData.Cult_SabbatSector = SectorTypeEnum.NULL;
-
+            if (targetsettlement.SettlementType == SettlementType.City) UIManager.Instance.CultUI.AddProgress(2);
             break;
         }
         break;
     }
+
+    SaveData();
 
     UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(false));
   }

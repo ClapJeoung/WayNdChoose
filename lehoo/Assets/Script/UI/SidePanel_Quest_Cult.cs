@@ -6,124 +6,102 @@ using TMPro;
 
 public class SidePanel_Quest_Cult : MonoBehaviour
 {
-  [SerializeField] private GameObject Before30 = null;
-  public Image VillageIcon = null;
-  public CanvasGroup VillageIconEffect = null;
-  public Image TownIcon = null;
-  public CanvasGroup TownIconEffect = null;
-  public Image CityIcon = null;
-  public CanvasGroup CityIconEffect = null;
-  public TextMeshProUGUI VillageProgress = null;
-  public TextMeshProUGUI TownProgress = null;
-  public TextMeshProUGUI CityProgress = null;
-  [SerializeField] private GameObject After30 = null;
-  [SerializeField] private Image Sabbat_Icon = null;
-  [SerializeField] private Outline Sabbat_Effect = null;
-  [SerializeField] private TextMeshProUGUI Sabbat_Progress = null;
-  [SerializeField] private TextMeshProUGUI Sabbat_CoolDown = null;
-  [SerializeField] private Image Ritual_Icon = null;
-  [SerializeField] private Outline Ritual_Effect = null;
-  [SerializeField] private TextMeshProUGUI Ritual_Progress = null;
-  [SerializeField] private TextMeshProUGUI Ritual_CoolDown = null;
   [SerializeField] private Slider ProgressSlider = null;
+  public TextMeshProUGUI DescriptionText = null;
+  public TextMeshProUGUI ValueText = null;
+  [Space(20)]
+  public CanvasGroup Village_Group = null;
+  public CanvasGroup VillageIconEffect = null;
+  [Space(5)]
+  public CanvasGroup Town_Group = null;
+  public CanvasGroup TownIconEffect = null;
+  [Space(5)]
+  public CanvasGroup City_Group = null;
+  public CanvasGroup CityIconEffect = null;
+  [Space(5)]
+  public CanvasGroup Sabbat_Group = null;
+  [SerializeField] private Image Sabbat_SectorIcon = null;
+  [SerializeField] private Outline Sabbat_Effect = null;
+  [Space(5)]
+  public CanvasGroup Ritual_Group = null;
+  [SerializeField] private Image Ritual_Bottom = null;
+  [SerializeField] private Image Ritual_Top = null;
+  [SerializeField] private Outline Ritual_Effect = null;
+  private void TurnOnGroup(CanvasGroup group)
+  {
+    if (Village_Group.alpha == 1.0f) Village_Group.alpha = 0.0f;
+    if (Town_Group.alpha == 1.0f) Town_Group.alpha = 0.0f;
+    if (City_Group.alpha == 1.0f) City_Group.alpha = 0.0f;
+    if (Sabbat_Group.alpha == 1.0f) Sabbat_Group.alpha = 0.0f;
+    if (Ritual_Group.alpha == 1.0f) Ritual_Group.alpha = 0.0f;
+
+    group.alpha = 1.0f;
+  }
   private int LastPhase = -1;
   private int LastProgress = -1;
-  private bool VillageOff = false;
-  private bool LastVillage = false;
-  private bool TownOff = false;
-  private bool LastTown = false;
-  private bool CityOff = false;
-  private bool LastCity = false;
   public void UpdateUI()
   {
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
     {
       case 0:
-        if (Before30.activeInHierarchy == false) Before30.SetActive(true);
-        if (After30.activeInHierarchy == true) After30.SetActive(false);
-
-        if (VillageOff == false)
+        TurnOnGroup(Village_Group);
+        if (LastPhase != 0)
         {
-          if (GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.Village))
-          {
-            VillageIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_black;
-            VillageProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
-            VillageOff = true;
-            StartCoroutine(UIManager.Instance.ChangeAlpha(VillageIconEffect, 0.0f, 1.5f));
-          }
-          else
-          {
-            if (LastVillage == false)
-            {
-              VillageIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_white;
-              VillageProgress.text= string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Village);
-              LastVillage = true;
-            }
-          }
+          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Village"));
+          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("Village"),
+            ConstValues.Quest_Cult_Progress_Village);
         }
-        if (TownOff == false)
-        {
-          if (GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.Town))
-          {
-            TownIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_black;
-            TownProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
-            TownOff = true;
-            StartCoroutine(UIManager.Instance.ChangeAlpha(TownIconEffect, 0.0f, 1.5f));
-          }
-          else
-          {
-            if (LastTown == false)
-            {
-              TownIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_white;
-              TownProgress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Town);
-              LastTown = true;
-            }
-          }
-        }
-        if (CityOff == false)
-        {
-          if (GameManager.Instance.MyGameData.Cult_SettlementTypes.Contains(SettlementType.City))
-          {
-            CityIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_black;
-            CityProgress.text = GameManager.Instance.GetTextData("Cult_Checked");
-            CityOff = true;
-            StartCoroutine(UIManager.Instance.ChangeAlpha(CityIconEffect, 0.0f, 1.5f));
-          }
-          else
-          {
-            if (LastCity == false)
-            {
-              CityIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_white;
-              CityProgress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_City);
-              LastCity = true;
-            }
-          }
-        }
-
         break;
       case 1:
-        if (Before30.activeInHierarchy == true) Before30.SetActive(false);
-        if (After30.activeInHierarchy == false) After30.SetActive(true);
+        TurnOnGroup(Town_Group);
         if (LastPhase != 1)
         {
-          Sabbat_Progress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Sabbat);
-          Ritual_Progress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Ritual);
+          VillageIconEffect.alpha = 1.0f;
+          StartCoroutine(UIManager.Instance.ChangeAlpha(Village_Group, 0.0f, 1.5f));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(Town_Group, 1.0f, 2.0f));
+
+          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Town"));
+          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("Town"),
+            ConstValues.Quest_Cult_Progress_Town);
         }
         break;
       case 2:
-        if (Before30.activeInHierarchy == true) Before30.SetActive(false);
-        if (After30.activeInHierarchy == false) After30.SetActive(true);
+        TurnOnGroup(Village_Group);
         if (LastPhase != 2)
         {
-          Sabbat_Progress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Sabbat);
-          Ritual_Progress.text = string.Format("<#A2A6B4>+{0}%</color>", ConstValues.Quest_Cult_Progress_Ritual);
+          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Village"));
+          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("Village"),
+            ConstValues.Quest_Cult_Progress_Village);
+         
+          StartCoroutine(UIManager.Instance.ChangeAlpha(City_Group, 1.0f, 2.0f));
+          TownIconEffect.alpha = 1.0f;
+          StartCoroutine(UIManager.Instance.ChangeAlpha(Town_Group, 0.0f, 1.5f));
         }
+        break;
+      case 3:
+        TurnOnGroup(Sabbat_Group);
 
-        Sabbat_Icon.fillAmount = 1.0f - 0.25f * GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown;
-        Sabbat_CoolDown.text = GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown == 0 ? "" : GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown.ToString();
-        Ritual_Icon.fillAmount = 1.0f - 0.25f * GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown;
-        Ritual_CoolDown.text = GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown == 0 ? "" : GameManager.Instance.MyGameData.Cult_RitualTile_CoolDown.ToString();
+        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Sabbat"),
+          GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector, 0));
+        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_SNR_Value"),
+          GameManager.Instance.MyGameData.Cult_CoolTime, ConstValues.Quest_Cult_Progress_Sabbat);
+        if (LastPhase != 3)
+        {
+          Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector);
+        }
+        break;
+      case 4:
+        TurnOnGroup(Ritual_Group);
 
+        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Ritual"));
+        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_SNR_Value"),
+          GameManager.Instance.MyGameData.Cult_CoolTime, ConstValues.Quest_Cult_Progress_Ritual);
+        if (LastPhase != 4)
+        {
+          Ritual_Bottom.sprite = GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.BottomImage.sprite;
+          Ritual_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * GameManager.Instance.MyGameData.Cult_RitualTile.Rotation));
+          Ritual_Top.sprite = GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.TopImage.sprite;
+        }
         break;
     }
 

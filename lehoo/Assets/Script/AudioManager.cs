@@ -226,7 +226,7 @@ public class AudioManager : MonoBehaviour
       _clip = WalkingSFXs[Random.Range(0, WalkingSFXs.Count)];
       CurrentWalkingChanel.Audio.clip = _clip;
       CurrentWalkingChanel.Audio.Play();
-      yield return new WaitForSeconds(0.2f);
+      yield return new WaitForSeconds(0.25f);
       yield return null;
     }
   }

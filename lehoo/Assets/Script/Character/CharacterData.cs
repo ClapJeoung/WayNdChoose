@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro.SpriteAssetUtilities;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public static class ConstValues
 {
   public const int StartMovePoint = 5;
-  public const int MovePoint_Sea = 5;
-  public const int MovePoint_Moutain = 3;
-  public const int MovePoint_River = 2, MovePoint_Forest = 2;
+  public const int MovePoint_Sea = 4;
+  public const int MovePoint_Moutain = 2;
+  public const int MovePoint_River = 1, MovePoint_Forest = 1;
   public const int MovePoint_Default = 1;
 
   public const float StatusLossMinSacle = 1.15f, StatusLossMaxScale = 1.4f;
@@ -40,19 +41,22 @@ public static class ConstValues
   public const int MadnessSanityGen_HP = 70;
 
   public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=7,
-    Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 5;
-  public const int Qeust_Cult_EventProgress_Clear_Less60 = 2, Quest_Cult_EventProgress_Clear_Over60 = 1;
-  public const int Quest_Cult_EventProgress_Fail_Less60 = 2, Quest_Cult_EventProgress_Fail_Over60 = 1;
-  public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 2;
-  public const int Quest_Cult_CoolDown = 4;
+    Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 3;
+  public const int Qeust_Cult_EventProgress_Clear = 2;
+  public const int Quest_Cult_EventProgress_Fail = 2;
+  public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 4;
+  public const int Quest_Cult_MovepointAsSanity = 7;
+  public const int Quest_Cult_CoolTime_Sabbat = 5;
+  public const int Quest_Cult_CoolTime_Ritual = 3;
 
-  public const int Rest_MovePoint = 5;
+
+  public const int Rest_MovePoint = 4;
   public const int Rest_Discomfort = 3;
   public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f*1.2f;
   public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 15.0f*1.2f;
   public const float Rest_Deafult = 0.9f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.2f, Move_LengthRatio = 0.4f;
-  public const float LackMPAmplifiedValue_Idle = 0.75f;
+  public const float Move_Default = 0.3f, Move_LengthRatio = 0.3f;
+  public const float LackMPAmplifiedValue_Idle = 0.5f;
 
 
   public const int EventPer_Envir = 3, EventPer_NoEnvir = 1,
@@ -249,10 +253,29 @@ public class GameData    //게임 진행도 데이터
         {
           case QuestType.Cult:
             UIManager.Instance.SidePanelCultUI.UpdateUI();
-            if (Quest_Cult_Phase == 2)
+            if (Quest_Cult_Phase > 2)
             {
-              if (Cult_SabbatSector_CoolDown > 0) Cult_SabbatSector_CoolDown--;
-              if (Cult_RitualTile_CoolDown > 0) Cult_RitualTile_CoolDown--;
+              Cult_CoolTime--;
+              if (Cult_CoolTime > 0)
+              {
+                switch (Quest_Cult_Phase)
+                {
+                  case 3:
+                    for (int i = 0; i < MyMapData.AllSettles.Count; i++)
+                      MyMapData.AllSettles[i].Discomfort += ConstValues.Quest_Cult_SabbatDiscomfort;
+
+                    SetRitual();
+                    break;
+                  case 4:
+                    if (MovePoint < ConstValues.Quest_Cult_RitualMovepoint)
+                      Sanity -= (ConstValues.Quest_Cult_RitualMovepoint - MovePoint) * ConstValues.Quest_Cult_MovepointAsSanity;
+
+                    MovePoint -= ConstValues.Quest_Cult_RitualMovepoint;
+
+                    SetSabbat();
+                    break;
+                }
+              }
             }
             break;
         }
@@ -522,18 +545,9 @@ public class GameData    //게임 진행도 데이터
     get { return GameManager.Instance.EventHolder.GetQuest(QuestType); }
   }
   /// <summary>
-  /// 0(0~30),1(30~60),2(60~100)
+  /// 0(촌락) -> 1(마을) -> 2(도시) -> 3(의식) <-> 4(집회)
   /// </summary>
-  public int Quest_Cult_Phase
-  {
-    get
-    {
-      if (Quest_Cult_Progress < 30) return 0;
-      else if (Quest_Cult_Progress < 60) return 1;
-      else if (Quest_Cult_Progress < 100) return 2;
-      return 3;
-    }
-  }
+  public int Quest_Cult_Phase = 0;
   private int quest_cult_progress =0;
   public int Quest_Cult_Progress
   {
@@ -542,75 +556,56 @@ public class GameData    //게임 진행도 데이터
     {
       if (value >= 100) UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.CultEndingData);
 
-      switch (Quest_Cult_Phase)
-      {
-        case 0:
-          quest_cult_progress = Mathf.Clamp(value, 0, 100);
-          break;
-        case 1:
-          quest_cult_progress = Mathf.Clamp(value, 30, 100);
-          break;
-        case 2:
-          quest_cult_progress = Mathf.Clamp(value, 60, 100);
-          break;
-      }
+      quest_cult_progress = value < 0 ? 0 : value;
 
       UIManager.Instance.SidePanelCultUI.UpdateUI();
     }
   }
-  public List<SettlementType> Cult_SettlementTypes=new List<SettlementType>();
+  public bool Cult_VillageDone { get { return Quest_Cult_Phase > 0; } }
+  public bool Cult_TownDone { get { return Quest_Cult_Phase > 1; } }
+  public bool Cult_CityDone { get { return Quest_Cult_Phase > 2; } }
 
   public SectorTypeEnum Cult_SabbatSector = SectorTypeEnum.NULL;
-  public int Cult_SabbatSector_CoolDown = 0;
-  public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
+  public void SetSabbat()
+  {
+    Quest_Cult_Phase = 3;
+    Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Sabbat;
+    Cult_SabbatSector = (SectorTypeEnum)UnityEngine.Random.Range(1, 5);
 
+    if (Cult_RitualTile != null)
+    {
+      Cult_RitualTile.Landmark = LandmarkType.Outer;
+      Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
+                UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
+      Cult_RitualTile = null;
+    }
+  }
   public TileData Cult_RitualTile = null;
-  public int Cult_RitualTile_CoolDown = 0;
+  public void SetRitual()
+  {
+    Quest_Cult_Phase = 4;
+    Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Ritual;
+    List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 3);
+    if(_tiles.Contains(CurrentTile))_tiles.Remove(CurrentTile);
+    List<int> _tileasindex= new List<int>();
+    for(int i=0;i<_tiles.Count;i++)
+    {
+      for(int j = 0; j < _tiles[i].MovePoint; j++)
+      {
+        _tileasindex.Add(i);
+      }
+    }
+    Cult_RitualTile = _tiles[_tileasindex[UnityEngine.Random.Range(0, _tileasindex.Count)]];
+       Cult_RitualTile.Landmark = LandmarkType.Ritual;
+    Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
+              UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
+
+    if (Cult_SabbatSector != SectorTypeEnum.NULL) Cult_SabbatSector = SectorTypeEnum.NULL;
+  }
+  public int Cult_CoolTime = 0;
+
+  public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
   public List<int> Cult_Progress_RitualEventIndex = new List<int>();
-  /// <summary>
-  /// 0:아님 1:맞음
-  /// </summary>
-  /// <param name="sector"></param>
-  /// <returns></returns>
-  public int Cult_IsSabbat(SectorTypeEnum sector)
-  {
-    switch (Quest_Cult_Phase)
-    {
-      case 0:return 0;
-      case 1:
-        if (Cult_SabbatSector == sector) return 1;
-        else return 0;
-      case 2:
-        if (Cult_SabbatSector == sector && Cult_SabbatSector_CoolDown == 0) return 1;
-        else
-        {
-           return 0;
-        }
-    }
-    return 0;
-  }
-  /// <summary>
-  /// 0:아님 1:맞음
-  /// </summary>
-  /// <param name="sector"></param>
-  /// <returns></returns>
-  public int Cult_IsRitual(TileData tile)
-  {
-    switch (Quest_Cult_Phase)
-    {
-      case 0: return 0;
-      case 1:
-        if (tile.Landmark == LandmarkType.Ritual) return 1;
-        else return 0;
-      case 2:
-        if (tile.Landmark == LandmarkType.Ritual && Cult_RitualTile_CoolDown == 0) return 1;
-        else
-        {
- return 0;
-        }
-    }
-    return 0;
-  }
   #endregion
 
   #region #각종 보정치 가져오기#
@@ -829,7 +824,7 @@ public class GameData    //게임 진행도 데이터
       ShortExp_B.Duration = jsondata.ShortExpB_Turn;
     }
 
-    CurrentEvent = GameManager.Instance.EventHolder.GetEvent(jsondata.CurrentEventID);
+    CurrentEvent = jsondata.CurrentEventID==""?null: GameManager.Instance.EventHolder.GetEvent(jsondata.CurrentEventID);
     CurrentEventSequence = jsondata.CurrentEventSequence ? EventSequence.Progress : EventSequence.Clear;
 
     SuccessEvent_None = jsondata.SuccessEvent_None;
@@ -851,13 +846,11 @@ public class GameData    //게임 진행도 데이터
     {
       case QuestType.Cult:
         quest_cult_progress = jsondata.Cult_Progress;
-        foreach(var settlement in jsondata.Cult_SettlementTypes)
-          Cult_SettlementTypes.Add((SettlementType)settlement);
+        Quest_Cult_Phase = jsondata.Cult_Phase;
         Cult_SabbatSector = (SectorTypeEnum)jsondata.Cult_SabbatSector;
-        Cult_SabbatSector_CoolDown = jsondata.Cult_SabbatCoolDown;
-        Cult_Progress_SabbatEventIndex = jsondata.Cult_Progress_SabbatEventIndex;
         Cult_RitualTile = MyMapData.Tile(jsondata.Cult_RitualTile);
-        Cult_RitualTile_CoolDown = jsondata.Cult_RitualCoolDown;
+        Cult_CoolTime = jsondata.Cult_CoolTime;
+        Cult_Progress_SabbatEventIndex = jsondata.Cult_Progress_SabbatEventIndex;
         Cult_Progress_RitualEventIndex = jsondata.Cult_Progress_RitualEventIndex;
         break;
     }

@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
 using System.Reflection;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 
 public class UIManager : MonoBehaviour
 {
@@ -490,46 +491,49 @@ public class UIManager : MonoBehaviour
   /// <param name="dir"></param>
   /// <param name="rect"></param>
   /// <returns></returns>
-  public IEnumerator SetIconEffect_movepoint(bool isusing, int count, RectTransform playerrect)
+  public IEnumerator SetIconEffect_movepoint_using(Dictionary<TileData,int> rectNcount,StatusTypeEnum status)
   {
-    Vector2 _startpos = isusing ? MovepointIconRect.position : playerrect.position, _endpos = isusing ? playerrect.position : MovepointIconRect.position;
-    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
-
-    for (int j = 0; j < count; j++)
+    foreach(var _data in rectNcount)
     {
-      int _index = 0;
-      RectTransform _targetrect = null;
-      for (int i = 0; i < IconRectList.Count; i++)
-      {
-        _index = i;
-        if (ActiveIconIndexList.Contains(i)) continue;
+      Vector2 _startpos = MovepointIconRect.position, _endpos = _data.Key.ButtonScript.Rect.position;
+      Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
 
-        _targetrect = IconRectList[_index];
-        _targetrect.GetComponent<Image>().sprite = _icon;
-        _targetrect.localScale = Vector3.one;
-        ActiveIconIndexList.Add(_index);
-        break;
-      }
-      if (j != count - 1)
+      for (int j = 0; j < _data.Key.MovePoint; j++)
       {
-        StartCoroutine(iconmove_movepoint(isusing, _index, _targetrect, _startpos, _endpos, isusing? IconUsingCurve: IconGainCurve));
-        yield return new WaitForSeconds(0.1f);
+        int _index = 0;
+        _icon = j< _data.Value? GameManager.Instance.ImageHolder.MovePointIcon_Enable:
+          status==StatusTypeEnum.Sanity?GameManager.Instance.ImageHolder.SanityIcon:GameManager.Instance.ImageHolder.GoldIcon;
+        _startpos = j < _data.Value ? MovepointIconRect.position:
+          status==StatusTypeEnum.Sanity?SanityIconRect.position:GoldIconRect.position;
+        RectTransform _targetrect = null;
+        for (int i = 0; i < IconRectList.Count; i++)
+        {
+          _index = i;
+          if (ActiveIconIndexList.Contains(i)) continue;
+
+          _targetrect = IconRectList[_index];
+          _targetrect.GetComponent<Image>().sprite = _icon;
+          _targetrect.localScale = Vector3.one;
+          ActiveIconIndexList.Add(_index);
+          break;
+        }
+
+        StartCoroutine(iconmove_movepoint(_index, _targetrect, _startpos, _endpos, IconUsingCurve));
+        yield return new WaitForSeconds(0.08f);
       }
-      else
-      {
-        yield return StartCoroutine(iconmove_movepoint(isusing, _index, _targetrect, _startpos, _endpos, isusing? IconUsingCurve : IconGainCurve));
-      }
+      yield return new WaitForSeconds(0.1f);
     }
   }
-  private IEnumerator iconmove_movepoint(bool isusing, int index,RectTransform rect ,Vector2 startpos,Vector2 endpos,AnimationCurve curve)
+  private IEnumerator iconmove_movepoint(int index,RectTransform rect ,Vector2 startpos,Vector2 endpos,AnimationCurve curve)
   {
+    AudioManager.PlaySFX(30);
     float _time = 0.0f;
-    float _targettime = isusing ? IconMoveTime_using : IconMoveTime_gain;
+    float _targettime =  IconMoveTime_using;
     while (_time < _targettime)
     {
       rect.position = Vector3.Lerp(startpos, endpos, curve.Evaluate(_time / _targettime));
       rect.anchoredPosition3D = new Vector3(rect.anchoredPosition3D.x, rect.anchoredPosition3D.y, 0.0f);
-      if (isusing) rect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / _targettime));
+      rect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / _targettime));
 
       _time += Time.deltaTime;
       yield return null;

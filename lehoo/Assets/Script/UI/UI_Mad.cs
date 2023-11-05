@@ -17,9 +17,7 @@ public class UI_Mad : UI_default
   public TextMeshProUGUI Description = null;
 
   public void OpenUI()
-  {
-    IsOpen = true;
-    UIManager.Instance.AudioManager.PlaySFX(27);
+  {    UIManager.Instance.AudioManager.PlaySFX(27);
     if (GameManager.Instance.MyGameData.Madness_Conversation)
     {
       Button_Conversation.interactable = false;
@@ -126,9 +124,7 @@ public class UI_Mad : UI_default
         GameManager.Instance.MyGameData.Sanity += ConstValues.MadnessSanityGen_HP;
         break;
     }
-
-    IsOpen = false;
-    UIManager.Instance.AddUIQueue(changealpha(false));
+    StartCoroutine(changealpha(false));
   }
   private IEnumerator changealpha(bool open)
   {
@@ -141,7 +137,7 @@ public class UI_Mad : UI_default
     {
       DefaultGroup.interactable = false;
       DefaultGroup.blocksRaycasts = false;
-
+      IsOpen = false;
     }
     float _time = 0.0f, _targettime = open ? OpenTime : CloseTime;
     float _startalpha = open ? 0.0f : 1.0f;
@@ -156,6 +152,7 @@ public class UI_Mad : UI_default
 
     if (open)
     {
+      IsOpen = true;
       DefaultGroup.interactable = true;
       DefaultGroup.blocksRaycasts = true;
     }

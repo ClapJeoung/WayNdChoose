@@ -15,10 +15,9 @@ public class PlaceIconScript : MonoBehaviour
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        if (GameManager.Instance.MyGameData.Quest_Cult_Phase > 0 )
+        if (GameManager.Instance.MyGameData.Quest_Cult_Phase ==3 )
         {
-          if (GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown==0&&
-            GameManager.Instance.MyGameData.Cult_SabbatSector==MyType)
+          if ( GameManager.Instance.MyGameData.Cult_SabbatSector==MyType)
           {
             MyImage.color = BlockedColor;
             if (SabbatImage.enabled == false) SabbatImage.enabled = true;

@@ -10,7 +10,7 @@ public class Onpointer_madnessbuttons : MonoBehaviour,IPointerEnterHandler
   public int Index = 0;
     public void OnPointerEnter(PointerEventData data)
   {
-    if (UIManager.Instance.IsWorking) return;
+    if (!MadnessUI.IsOpen) return;
     switch (Index)
     {
       case 0:

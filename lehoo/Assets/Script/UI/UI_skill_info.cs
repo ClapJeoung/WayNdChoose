@@ -139,13 +139,12 @@ public class GameJsonData
   public List<string> FailEvent_All = new List<string>();
 
   public int QuestType = 0;
+  public int Cult_Phase = 0;
   public int Cult_Progress = 0;
-  public List<int> Cult_SettlementTypes= new List<int>();
   public int Cult_SabbatSector = 0;
-  public int Cult_SabbatCoolDown = 0;
+  public Vector2 Cult_RitualTile = new Vector2();
+  public int Cult_CoolTime = 0;
   public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
-  public Vector2 Cult_RitualTile= new Vector2();
-  public int Cult_RitualCoolDown = 0;
   public List<int> Cult_Progress_RitualEventIndex = new List<int>();
 
   public GameJsonData(GameData data)
@@ -219,7 +218,7 @@ public class GameJsonData
     ShortExpB_Id = data.ShortExp_B == null ? "" : data.ShortExp_B.ID;
     ShortExpB_Turn = data.ShortExp_B == null ? 0 : data.ShortExp_B.Duration;
 
-    CurrentEventID = data.CurrentEvent.ID;
+    CurrentEventID = data.CurrentEvent==null?"":data.CurrentEvent.ID;
     CurrentEventSequence = (int)data.CurrentEventSequence == 0 ? true : false;
 
     SuccessEvent_None = data.SuccessEvent_None;
@@ -243,13 +242,11 @@ public class GameJsonData
       case global::QuestType.Cult:
 
         Cult_Progress = data.Quest_Cult_Progress;
-        foreach(var settlement in data.Cult_SettlementTypes)
-        Cult_SettlementTypes.Add((int)settlement);
+        Cult_Phase= data.Quest_Cult_Phase;
         Cult_SabbatSector = (int)data.Cult_SabbatSector;
-        Cult_SabbatCoolDown = data.Cult_SabbatSector_CoolDown;
+        Cult_RitualTile = data.Cult_RitualTile != null ? data.Cult_RitualTile.Coordinate : Vector2.zero;
+        Cult_CoolTime = data.Cult_CoolTime;
         Cult_Progress_SabbatEventIndex = data.Cult_Progress_SabbatEventIndex;
-        Cult_RitualTile = data.Cult_RitualTile!=null? data.Cult_RitualTile.Coordinate:Vector2.zero;
-        Cult_RitualCoolDown = data.Cult_RitualTile_CoolDown;
         Cult_Progress_RitualEventIndex = data.Cult_Progress_RitualEventIndex;
 
         break;

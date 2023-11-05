@@ -132,21 +132,32 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.CultSidePanel:
         string _cultinfo = string.Format(GameManager.Instance.GetTextData("Cult_Preview_progress"), GameManager.Instance.MyGameData.Quest_Cult_Progress);
+        string _sametext = "";
         switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            _cultinfo += GameManager.Instance.GetTextData("Cult_Preview_Phase0");
+            _sametext = GameManager.Instance.GetTextData("Village");
+            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
+              _sametext, _sametext, ConstValues.Quest_Cult_Progress_Village);
             break;
           case 1:
-            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Phase1"),
-              ConstValues.Quest_Cult_Progress_Sabbat,
-              ConstValues.Quest_Cult_Progress_Ritual,
-              ConstValues.Quest_Cult_SabbatDiscomfort,
-              ConstValues.Quest_Cult_RitualMovepoint);
+            _sametext = GameManager.Instance.GetTextData("Town");
+            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
+             _sametext, _sametext, ConstValues.Quest_Cult_Progress_Town);
             break;
           case 2:
-            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Phase2"),
-              ConstValues.Quest_Cult_CoolDown);
+            _sametext = GameManager.Instance.GetTextData("City");
+            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
+            _sametext, _sametext, ConstValues.Quest_Cult_Progress_City);
+            break;
+          case 3:
+            _sametext = GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector,0);
+            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Sabbat"),
+           _sametext, _sametext,ConstValues.Quest_Cult_Progress_Sabbat,GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_SabbatDiscomfort);
+            break;
+          case 4:
+            _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Ritual"),
+            ConstValues.Quest_Cult_Progress_Ritual, GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_RitualMovepoint);
             break;
         }
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo, IsCultSidePanel?new Vector2(1.05f,0.5f):new Vector2(0.5f,1.05f),OtherRect==null?transform as RectTransform : OtherRect);

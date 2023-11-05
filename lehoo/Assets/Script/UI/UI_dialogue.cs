@@ -374,7 +374,6 @@ public class UI_dialogue : UI_default
             yield return StartCoroutine(updatescrollbar());
 
             if (CurrentSuccessData != null) SetRewardButton();
-            GameManager.Instance.MyGameData.Turn++;
             OpenReturnButton();
           }
           break;
@@ -397,7 +396,6 @@ public class UI_dialogue : UI_default
             yield return StartCoroutine(updatescrollbar());
 
             if (CurrentSuccessData != null) SetRewardButton();
-            GameManager.Instance.MyGameData.Turn++;
             OpenReturnButton();
           }
           break;
@@ -945,10 +943,18 @@ public class UI_dialogue : UI_default
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
   public IEnumerator openui_settlement(bool dir)
   {
+    if (GameManager.Instance.MyGameData.CurrentEvent != null)
+    {
+      GameManager.Instance.MyGameData.Turn++;
+      GameManager.Instance.MyGameData.CurrentEvent = null;
+      GameManager.Instance.SaveData();
+    }
+
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
 
     UIManager.Instance.AudioManager.PlaySFX(14);
     UIManager.Instance.OffBackground();
+
 
     DefaultGroup.interactable = false;
 
@@ -959,7 +965,7 @@ public class UI_dialogue : UI_default
     DialogueRect.sizeDelta = SettlementDialogueSize;
 
     IsSelectSector = false;
-    QuestSectorInfo = 0;
+    QuestSectorInfo = false;
     SelectedSector = SectorTypeEnum.NULL;
     CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
     Illust.Setup(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
@@ -1025,7 +1031,7 @@ SettlementNameText.text = CurrentSettlement.Name;
   /// <summary>
   /// 0:일반 1:집회 2:페널티만
   /// </summary>
-  [HideInInspector] public int QuestSectorInfo = 0;
+  [HideInInspector] public bool QuestSectorInfo = false;
   [HideInInspector] public int GoldCost = 0;
   [HideInInspector] public int SanityCost = 0;
   [HideInInspector] public int DiscomfortValue = 0;
@@ -1036,7 +1042,7 @@ SettlementNameText.text = CurrentSettlement.Name;
   {
     if (IsSelectSector == true) return;
 
-    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(sector);
+    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector == sector;
 
     SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(sector);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
@@ -1093,13 +1099,12 @@ SettlementNameText.text = CurrentSettlement.Name;
     string _sabbatdescription = "";
     switch (QuestSectorInfo)
     {
-      case 0:
+      case false:
         SectorEffect.text = _effect;
         break;
-      case 1:
-        DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
+      case true:
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
-ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
+        ConstValues.Quest_Cult_Progress_Sabbat);
         SectorEffect.text = _effect + _sabbatdescription;
         break;
     }
@@ -1143,7 +1148,7 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
 
     Illust.Setup(GameManager.Instance.ImageHolder.GetSectorIllust(CurrentSettlement.SettlementType, SelectedSector, GameManager.Instance.MyGameData.Turn));
 
-    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_IsSabbat(SelectedSector);
+    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector;
 
     SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
@@ -1200,14 +1205,14 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
     string _sabbatdescription = "";
     switch (QuestSectorInfo)
     {
-      case 0:
+      case false:
         SectorEffect.text = _effect;
         UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
         break;
-      case 1:
+      case true:
         DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
-ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat);
+        ConstValues.Quest_Cult_Progress_Sabbat);
         SectorEffect.text = _effect + _sabbatdescription;
         UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
         break;
@@ -1283,12 +1288,10 @@ ConstValues.Quest_Cult_SabbatDiscomfort, ConstValues.Quest_Cult_Progress_Sabbat)
       case QuestType.Cult:
         switch (QuestSectorInfo)
         {
-          case 0:
+          case false:
             break;
-          case 1:
+          case true:
             UIManager.Instance.CultUI.AddProgress(3);
-
-            if (GameManager.Instance.MyGameData.Quest_Cult_Phase == 2) GameManager.Instance.MyGameData.Cult_SabbatSector_CoolDown = ConstValues.Quest_Cult_CoolDown;
             break;
         }
         break;

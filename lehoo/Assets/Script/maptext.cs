@@ -873,7 +873,7 @@ public class maptext : MonoBehaviour
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
 
-      Vector2Int _starcoor = _citycreatetiles[Random.Range(3, _citycreatetiles.Count - 2)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _starcoor = _citycreatetiles[Random.Range(4, _citycreatetiles.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
      
       _citytile = _NewMapData.TileDatas[_starcoor.x, _starcoor.y];
       if (cityCheck(_citytile) == false) continue;
@@ -912,7 +912,7 @@ public class maptext : MonoBehaviour
       if (LoopCount > 1000) { Debug.Log("마을 생성 중 무한루프"); return null; }
       int _index = 0;
 
-      Vector2Int _selectcoor = _enablelines[_index][Random.Range(3, _enablelines.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _enablelines[_index][Random.Range(4, _enablelines.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
       _towntile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
       if(towncheck(_towntile) ==false)continue;
 
@@ -951,7 +951,7 @@ public class maptext : MonoBehaviour
       HexDir _villagedir = _villagetiles.Count == 0 ? _firstvillagedir : RotateDir(_firstvillagedir, 3);
       List <TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedir);
 
-      Vector2Int _selectcoor = _lines[Random.Range(2, _lines.Count-1)].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _lines[Random.Range(4, _lines.Count-1)].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
       TileData _villagetile = _NewMapData.Tile(_selectcoor);
 
       if (_villagetile.TopEnvir == TopEnvirType.Mountain) continue;
