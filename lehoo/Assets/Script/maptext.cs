@@ -1009,8 +1009,8 @@ public class maptext : MonoBehaviour
         newsettles[i].IsRiver = CheckEnvir(_aroundtiles_1, BottomEnvirType.River) ||
           CheckEnvir(_aroundtiles_1, BottomEnvirType.Source) ||
           CheckEnvir(_aroundtiles_1, BottomEnvirType.RiverBeach);
-        newsettles[i].IsMountain = CheckEnvir(_aroundtiles_2, TopEnvirType.Mountain);
-        newsettles[i].IsSea = CheckEnvir(_aroundtiles_2, BottomEnvirType.Sea) || CheckEnvir(_aroundtiles_2, BottomEnvirType.Beach) || CheckEnvir(_aroundtiles_2, BottomEnvirType.RiverBeach);
+        newsettles[i].IsMountain = CheckEnvir(_aroundtiles_1, TopEnvirType.Mountain);
+        newsettles[i].IsSea = CheckEnvir(_aroundtiles_1, BottomEnvirType.Sea) || CheckEnvir(_aroundtiles_1, BottomEnvirType.Beach) || CheckEnvir(_aroundtiles_2, BottomEnvirType.RiverBeach);
     //    newsettles[i].IsHighland = CheckEnvir(_aroundtiles_1, TopEnvirType.Highland);
         newsettles[i].IsForest = CheckEnvir(_aroundtiles_1, TopEnvirType.Forest);
 

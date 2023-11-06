@@ -218,7 +218,7 @@ public class UIManager : MonoBehaviour
     SanityIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.Sanity / 100.0f);
     SanityText_current.text = GameManager.Instance.MyGameData.Sanity.ToString();
    // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
-    Debug.Log("정신력, 최대 정신력 수치 업데이트");
+ //   Debug.Log("정신력, 최대 정신력 수치 업데이트");
 
 
     lastsanity = GameManager.Instance.MyGameData.Sanity;
@@ -247,7 +247,7 @@ public class UIManager : MonoBehaviour
     }
 
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
-    Debug.Log("골드 수치 업데이트");
+  //  Debug.Log("골드 수치 업데이트");
 
 
     lastgold = GameManager.Instance.MyGameData.Gold;
@@ -271,7 +271,7 @@ public class UIManager : MonoBehaviour
 
     MovePoint_Icon.sprite = GameManager.Instance.MyGameData.MovePoint >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
 
-    Debug.Log("이동력 수치 업데이트");
+  //  Debug.Log("이동력 수치 업데이트");
     if (lastmovepoint == 0 && GameManager.Instance.MyGameData.MovePoint == 0) return;
 
     MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
@@ -483,6 +483,30 @@ public class UIManager : MonoBehaviour
     }
     _iconrect.anchoredPosition = Vector2.one * 3000.0f;
     ActiveIconIndexList.Remove(_index);
+  }
+  public IEnumerator SetIconEffect_movepoint_gain(RectTransform startrect,int count)
+  {
+    Vector2 _startpos = startrect.position;
+    Vector2 _endpos = MovepointIconRect.position;
+    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+    for(int i=0;i< count;i++)
+    {
+      int _index = 0;
+      RectTransform _rect = null;
+      for(int j=0;j<IconRectList.Count;j++)
+      {
+        _index = j;
+        if (ActiveIconIndexList.Contains(j)) continue;
+
+        _rect = IconRectList[_index];
+        _rect.GetComponent<Image>().sprite = _icon;
+        _rect.localScale = Vector3.one;
+        ActiveIconIndexList.Add(_index);
+        break;
+      }
+      StartCoroutine(iconmove_movepoint(_index, _rect, _startpos, _endpos, IconUsingCurve));
+      yield return new WaitForSeconds(0.08f);
+    }
   }
   /// <summary>
   /// 이동력

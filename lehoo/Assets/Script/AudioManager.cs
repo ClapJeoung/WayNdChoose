@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UIElements;
 
 public enum SFXEnum { 
   ButtonEnter_Preview,
@@ -58,7 +60,7 @@ public class AudioManager : MonoBehaviour
   [SerializeField] private List<AudioClip> BackgroundMusics = new List<AudioClip>();
   [SerializeField] private List<AudioClip> SFXs = new List<AudioClip>();
   [SerializeField] private List<AudioClip> WalkingSFXs= new List<AudioClip>();
-
+  private List<AudioClip> PlayedList = new List<AudioClip>();
   public void PlayBGM()
   {
     StartCoroutine(bgm());
@@ -66,29 +68,31 @@ public class AudioManager : MonoBehaviour
   private IEnumerator bgm()
   {
     Debug.Log("배경 시작");
-    AudioClip _currentclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
-    BGMAudio.clip = _currentclip;
+    AudioClip _nextclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
+    BGMAudio.clip = _nextclip;
+    PlayedList.Add(_nextclip);
     BGMAudio.Play();
     yield return StartCoroutine(setvolume(BGMAudio, 0.0f, 1.0f));
 
-    AudioClip _lastclip = _currentclip;
     while (true)
     {
-      Debug.Log($"현재 트랙 {BGMAudio.clip.name} {BGMAudio.clip.length}초");
-  //    yield return new WaitForSeconds(_lastclip.length);
 
       yield return new WaitUntil(() => { return !BGMAudio.isPlaying||Input.GetKeyDown(KeyCode.N); });
 
-      yield return new WaitForSeconds(1.0f);
-
-      while (_currentclip == _lastclip)
+      _nextclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
+      while (PlayedList.Contains(_nextclip))
       {
-        _currentclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
+        _nextclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
         yield return null;
       }
-      _lastclip = BGMAudio.clip;
-      BGMAudio.clip = _currentclip;
+      PlayedList.Add(_nextclip);
+      BGMAudio.clip = _nextclip;
       BGMAudio.Play();
+      if(PlayedList.Count== BackgroundMusics.Count)
+      {
+        PlayedList.Clear();
+        PlayedList.Add(_nextclip);
+      }
       yield return null;
     }
   }
@@ -204,12 +208,15 @@ public class AudioManager : MonoBehaviour
     }
   }
   private AudioChanel CurrentWalkingChanel = null;
+  private bool Walking = true;
   public void PlayWalking()
   {
     StartCoroutine(playwalking());
   }
   private IEnumerator playwalking()
   {
+    yield return new WaitForSeconds(0.5f);
+    Walking = true;
     foreach (var audio in SFXAudios)
     {
       if (audio.Audio.isPlaying) continue;
@@ -222,6 +229,7 @@ public class AudioManager : MonoBehaviour
     CurrentWalkingChanel.Audio.Play();
     while (true)
     {
+      if (!Walking) break;
       yield return new WaitUntil(() => { return !CurrentWalkingChanel.Audio.isPlaying; });
       _clip = WalkingSFXs[Random.Range(0, WalkingSFXs.Count)];
       CurrentWalkingChanel.Audio.clip = _clip;
@@ -234,7 +242,7 @@ public class AudioManager : MonoBehaviour
   {
     if (CurrentWalkingChanel != null)
     {
-      StopAllCoroutines();
+      Walking = false;
       CurrentWalkingChanel.Audio.Stop();
       CurrentWalkingChanel = null;
     }

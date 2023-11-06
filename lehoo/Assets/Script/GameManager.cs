@@ -361,8 +361,8 @@ public class GameManager : MonoBehaviour
       case SectorTypeEnum.Temple: _str += "TEMPLE"; break;
       case SectorTypeEnum.Marketplace: _str += "MARKETPLACE"; break;
       case SectorTypeEnum.Library: _str += "LIBRARY"; break;
-      case SectorTypeEnum.Theater: _str += "THEATER"; break;
-      case SectorTypeEnum.Academy: _str += "ACADEMY"; break;
+     // case SectorTypeEnum.Theater: _str += "THEATER"; break;
+    //  case SectorTypeEnum.Academy: _str += "ACADEMY"; break;
     }
     _str += "_";
     switch (texttype)
@@ -601,7 +601,7 @@ public class GameManager : MonoBehaviour
           break;
         case 1:
           _illust = ImageHolder.GameOver_Force;
-          _description = GetTextData("GameOver_GameOver_Mad");
+          _description = GetTextData("GameOver_Force");
           break;
         case 2:
           _illust = ImageHolder.GameOver_Wild;

@@ -624,7 +624,7 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator checkanimation(Image image,float successvalue)
   {
-    Debug.Log(successvalue);
+  //  Debug.Log(successvalue);
     float _time = 0.0f;
     while(_time< SelectionEffectTime_check * successvalue)
     {
@@ -941,6 +941,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private UnityEngine.UI.Button Cost_Gold = null;
   private Settlement CurrentSettlement = null;
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
+  private bool IsMad = false;
   public IEnumerator openui_settlement(bool dir)
   {
     if (GameManager.Instance.MyGameData.CurrentEvent != null)
@@ -952,7 +953,18 @@ public class UI_dialogue : UI_default
 
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
 
-    UIManager.Instance.AudioManager.PlaySFX(14);
+    if (GameManager.Instance.MyGameData.Madness_Force && (GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force == ConstValues.MadnessEffect_Force-1))
+    {
+      Debug.Log("무력 광기 발동");
+      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Force);
+      UIManager.Instance.AudioManager.PlaySFX(27, 3);
+      IsMad = true;
+    }
+    else
+    {
+      UIManager.Instance.AudioManager.PlaySFX(14, 3);
+      IsMad = false;
+    }
     UIManager.Instance.OffBackground();
 
 
@@ -1003,7 +1015,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
     SettlementIcon.sprite = _settlementicon;
     SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
-    SectorName.text = GameManager.Instance.GetTextData("SELECTPLACE");
+    SectorName.text =IsMad?"": GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
 
     RestResult.text = "";
@@ -1044,7 +1056,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector == sector;
 
-    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(sector);
+    SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
@@ -1052,16 +1064,16 @@ SettlementNameText.text = CurrentSettlement.Name;
     switch (sector)
     {
       case SectorTypeEnum.Residence:
-        _effect = string.Format(_effect,
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect,
           WNCText.PositiveColor(ConstValues.SectorEffect_residence_discomfort.ToString()));
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue= _discomfort_default > 1 ? _discomfort_default - ConstValues.SectorEffect_residence_discomfort : 0;
+        DiscomfortValue=IsMad? _discomfort_default: _discomfort_default > 1 ? _discomfort_default - ConstValues.SectorEffect_residence_discomfort : 0;
         MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Temple:
-        _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
@@ -1069,30 +1081,20 @@ SettlementNameText.text = CurrentSettlement.Name;
         MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Marketplace:
-        _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
 
-        GoldCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
-        SanityCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        GoldCost =IsMad? GameManager.Instance.MyGameData.RestCost_Gold: Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
         MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Library:
-        _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
         MovePointValue = ConstValues.Rest_MovePoint;
-        break;
-      case SectorTypeEnum.Theater:
-        //서비스 종료다...!
-        break;
-      case SectorTypeEnum.Academy:
-        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
-        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue = ConstValues.Rest_Discomfort;
-        MovePointValue = ConstValues.Rest_MovePoint;
-        //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
         break;
     }
 
@@ -1150,7 +1152,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector;
 
-    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
+    SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
@@ -1158,16 +1160,16 @@ SettlementNameText.text = CurrentSettlement.Name;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
-        _effect = string.Format(_effect,
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect,
           WNCText.PositiveColor(ConstValues.SectorEffect_residence_discomfort.ToString()));
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue = _discomfort_default>1? _discomfort_default - ConstValues.SectorEffect_residence_discomfort:0;
-        MovePointValue = ConstValues.Rest_MovePoint ;
+        DiscomfortValue = IsMad ? _discomfort_default : _discomfort_default > 1 ? _discomfort_default - ConstValues.SectorEffect_residence_discomfort : 0;
+        MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Temple:
-        _effect = string.Format(_effect, ConstValues.SectorEffect_temple);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
@@ -1175,30 +1177,20 @@ SettlementNameText.text = CurrentSettlement.Name;
         MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Marketplace:
-        _effect = string.Format(_effect, ConstValues.SectorEffect_marketSector);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
 
-        GoldCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
-        SanityCost = Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        GoldCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Gold : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
+        SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
         MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Library:
-        _effect = string.Format(_effect, ConstValues.SectorEffect_Library);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
         MovePointValue = ConstValues.Rest_MovePoint;
-        break;
-      case SectorTypeEnum.Theater:
-        //서비스 종료다...!
-        break;
-      case SectorTypeEnum.Academy:
-        GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
-        SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue = ConstValues.Rest_Discomfort;
-        MovePointValue = ConstValues.Rest_MovePoint;
-        //    _effect = string.Format(_effect, ConstValues.SectorDuration, ConstValues.SectorEffect_acardemy);
         break;
     }
 
@@ -1281,6 +1273,10 @@ SettlementNameText.text = CurrentSettlement.Name;
     IsOpen = false;
 
     GameManager.Instance.MyGameData.FirstRest = false;
+    if (GameManager.Instance.MyGameData.Madness_Force)
+    {
+      GameManager.Instance.MyGameData.TotalRestCount++;
+    }
 
     int _discomfortvalue = DiscomfortValue;
     switch (GameManager.Instance.MyGameData.QuestType)
@@ -1297,8 +1293,6 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
     }
 
-    bool _madness_force = GameManager.Instance.MyGameData.Madness_Force == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Force;
-
     switch (statustype)
     {
       case StatusTypeEnum.Sanity:
@@ -1308,18 +1302,6 @@ SettlementNameText.text = CurrentSettlement.Name;
         if (DiscomfortValue > 0)
         {
           yield return StartCoroutine(discomfortscale());
-        }
-
-        if (_madness_force)
-        {
-          Debug.Log("무력 광기 발동");
-          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
-          //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
-        }
-        else
-        {
-          GameManager.Instance.MyGameData.MovePoint += MovePointValue;
-          GameManager.Instance.MyGameData.ApplySectorEffect(SelectedSector);
         }
         break;
       case StatusTypeEnum.Gold:
@@ -1331,20 +1313,11 @@ SettlementNameText.text = CurrentSettlement.Name;
         {
           yield return StartCoroutine(discomfortscale());
         }
-
-        if (_madness_force)
-        {
-          Debug.Log("무력 광기 발동");
-          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
-          //무력 광기가 있으면 확률적으로 이동력, 장소 효과 못받음
-        }
-        else
-        {
-          GameManager.Instance.MyGameData.MovePoint += MovePointValue;
-          GameManager.Instance.MyGameData.ApplySectorEffect(SelectedSector);
-        }
         break;
     }
+    GameManager.Instance.MyGameData.MovePoint += MovePointValue;
+    yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint_gain(SettlementIcon.rectTransform, MovePointValue));
+    GameManager.Instance.MyGameData.ApplySectorEffect(IsMad? SectorTypeEnum.NULL: SelectedSector);
 
     UIManager.Instance.AudioManager.PlaySFX(2);
 

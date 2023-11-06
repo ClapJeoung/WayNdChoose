@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
 using System.IO;
+using UnityEngine.WSA;
 
 public class UI_map : UI_default
 {
@@ -113,6 +114,18 @@ public class UI_map : UI_default
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
       TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
       TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
+      switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+      {
+        case 0:
+          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Village, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Village);
+          break;
+        case 1:
+          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Town, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Town);
+          break;
+        case 2:
+          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.City, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.City);
+          break;
+      }
     }
   }
   public void DisableOutline_Idle() => DisableOutline(Outline_Idle);
@@ -126,6 +139,7 @@ public class UI_map : UI_default
   {
     outline.enabled = false;
   }
+  private bool IsMad = false;
   /// <summary>
   /// true:왼쪽에서 등장 false:오른쪽에서 등장
   /// </summary>
@@ -140,12 +154,20 @@ public class UI_map : UI_default
   {
     if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
 
+    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild-1))
+    {
+      Debug.Log("자연 광기 발동");
+      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
+      UIManager.Instance.AudioManager.PlaySFX(27, 3);
+      IsMad = true;
+    }
+    else IsMad = false;
 
     ResetEnableTiles();
 
     if (Route_Tile.Count > 0)
     {
-      for (int i = 0; i < Route_Tile.Count; i++)
+      for (int i = 1; i < Route_Tile.Count; i++)
       {
         DisableOutline(Outline_Routes[i]);
       }
@@ -156,7 +178,7 @@ public class UI_map : UI_default
 
     QuestInfo = false;
    // GuidRect.anchoredPosition = GuidPos_Tile;
-    TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+    TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
     MoveLengthText.text = "";
     MoveCostText.text = "";
     MovecostButtonGroup.alpha = 0.0f;
@@ -403,7 +425,7 @@ public class UI_map : UI_default
     }
 
     Route_Tile = _routes[_targetindex];
-    for(int i=0;i<Route_Tile.Count;i++)
+    for(int i=1;i<Route_Tile.Count;i++)
     {
       SetOutline(Outline_Routes[i], Route_Tile[i].ButtonScript.Rect);
     }
@@ -422,11 +444,11 @@ public class UI_map : UI_default
 
     if (SelectedTile.TileSettle != null)
     {
-      TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Settlement");
+      TileInfoText.text = IsMad ? GameManager.Instance.GetTextData("Madness_Wild_Description") : GameManager.Instance.GetTextData("MoveDescription_Settlement");
     }
     else
     {
-      TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Outer");
+      TileInfoText.text = IsMad ? GameManager.Instance.GetTextData("Madness_Wild_Description") : GameManager.Instance.GetTextData("MoveDescription_Outer");
     }
 
     switch (GameManager.Instance.MyGameData.QuestType)
@@ -446,6 +468,19 @@ public class UI_map : UI_default
             break;
         }
         TileInfoText.text += _progresstext;
+        break;
+    }
+
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    {
+      case 0:
+          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Village, SelectedTile.TileSettle==null?false: SelectedTile.TileSettle.SettlementType == SettlementType.Village);
+        break;
+      case 1:
+        UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Town, SelectedTile.TileSettle == null ? false : SelectedTile.TileSettle.SettlementType == SettlementType.Town);
+        break;
+      case 2:
+        UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.City, SelectedTile.TileSettle == null ? false : SelectedTile.TileSettle.SettlementType == SettlementType.City);
         break;
     }
 
@@ -534,41 +569,45 @@ public class UI_map : UI_default
   public AnimationCurve MoveAnimationCurve = new AnimationCurve();
   private IEnumerator movemap()
   {
-    if (GameManager.Instance.MyGameData.Madness_Wild == true && Random.Range(0, 100) < ConstValues.MadnessEffect_Wild)
+    if (GameManager.Instance.MyGameData.Madness_Wild)
     {
-      List<TileData> _availabletiles = new List<TileData>();
-      foreach(var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 1))
+      if (IsMad)
       {
-        if (_tile == SelectedTile) continue;
-        if(_tile.Interactable == false) continue;
-        if (!ActiveTileData.Contains(_tile)) continue;
-        _availabletiles.Add(_tile);
-      }
-      if (_availabletiles.Count == 0)
-      {
-        _availabletiles = new List<TileData>();
-        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 2))
+        List<TileData> _availabletiles = new List<TileData>();
+        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 1))
         {
           if (_tile == SelectedTile) continue;
+          if (_tile == GameManager.Instance.MyGameData.CurrentTile) continue;
           if (_tile.Interactable == false) continue;
           if (!ActiveTileData.Contains(_tile)) continue;
           _availabletiles.Add(_tile);
         }
-      }
-      SelectedTile = _availabletiles[Random.Range(0,_availabletiles.Count)];
+        if (_availabletiles.Count == 0)
+        {
+          _availabletiles = new List<TileData>();
+          foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 2))
+          {
+            if (_tile == SelectedTile) continue;
+            if (_tile == GameManager.Instance.MyGameData.CurrentTile) continue;
+            if (_tile.Interactable == false) continue;
+            if (!ActiveTileData.Contains(_tile)) continue;
+            _availabletiles.Add(_tile);
+          }
+        }
+        SelectedTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
 
-      Debug.Log("자연 광기 발동");
-      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
-
-      Route_Dir = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
-      Route_Tile = new List<TileData>();
-      Route_Tile.Add(GameManager.Instance.MyGameData.CurrentTile);
-      for (int i = 0; i < Route_Dir.Count; i++)
-      {
-        Route_Tile.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(Route_Tile[i], Route_Dir[i]));
+        Route_Dir = GameManager.Instance.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
+        Route_Tile = new List<TileData>();
+        Route_Tile.Add(GameManager.Instance.MyGameData.CurrentTile);
+        for (int i = 0; i < Route_Dir.Count; i++)
+        {
+          Route_Tile.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(Route_Tile[i], Route_Dir[i]));
+        }
+        QuestInfo = CheckRitual;
       }
-      QuestInfo = CheckRitual;
+      GameManager.Instance.MyGameData.TotalMoveCount++;
     }
+
     Dictionary<TileData, int> _movepointicondata = new Dictionary<TileData, int>();
     int _totalmp = 0;
     for(int i = 1; i < Route_Tile.Count; i++)
@@ -619,6 +658,7 @@ public class UI_map : UI_default
     else UIManager.Instance.AudioManager.PlaySFX(29);
 
 
+    bool _enterritual = false;
     float _time = 0.0f;             //x
     int _pathcount = _path.Count-1; //길 개수-1 (마지막 좌표는 current가 되면 안되니까)   n
     int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)
@@ -639,6 +679,12 @@ public class UI_map : UI_default
 
       PlayerRect.anchoredPosition = Vector3.Lerp(_current,_next,_currentvalue);
       HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
+
+      if (!_enterritual && Route_Tile[_currentindex].Landmark == LandmarkType.Ritual)
+      {
+        UIManager.Instance.CultUI.AddProgress(4);
+        _enterritual = true;
+      }
       _time += Time.deltaTime;
       yield return null;
     }
@@ -698,10 +744,9 @@ public class UI_map : UI_default
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
         break;
     }
-    if (QuestInfo) UIManager.Instance.CultUI.AddProgress(4);
     IsOpen = false;
     SelectedTile = null;
-    Debug.Log("이동 코루틴이 끝난 레후~");
+    //Debug.Log("이동 코루틴이 끝난 레후~");
   }
   public void SetPlayerPos(Vector2 coordinate)
   {

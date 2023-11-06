@@ -687,8 +687,6 @@ public class ImageHolder : ScriptableObject
   public Sprite QuestIcon_Ritual_Finish = null;
   public Sprite Quest_Cult_MainIllust = null;
   public List<Sprite> Cult_Prologue = new List<Sprite>();          //컬트-프롤로그
-  public List<Sprite> Cult_ToPhase1 = new List<Sprite>();
-  public List<Sprite> Cult_ToPhase2 = new List<Sprite>();
   public Sprite Cult_Settlement_village = null;
   public Sprite Cult_Settlement_town = null;
   public Sprite Cult_Settlement_city = null;

@@ -98,6 +98,7 @@ public class GameJsonData
   public string CurrentSettlementName = "";
   public bool FirstRest = false;
 
+  public int TotalMoveCount = 0, TotalRestCount = 0;
   public int Year = 0;
   public int Turn = 0;
   public int HP = 0;
@@ -188,6 +189,8 @@ public class GameJsonData
     CurrentSettlementName = data.CurrentSettlement == null ? "" : data.CurrentSettlement.OriginName;
     FirstRest = data.FirstRest;
 
+    TotalMoveCount= data.TotalMoveCount;
+    TotalRestCount = data.TotalRestCount;
     Year = data.Year;
     Turn = data.Turn;
     HP = data.HP;

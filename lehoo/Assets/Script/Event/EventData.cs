@@ -414,8 +414,8 @@ public class EventHolder
           switch (_event.FollowType)
           {
             case FollowTypeEnum.Event:  //이벤트 연계일 경우 
-              if (_event.ID == "EV_Wheat")
-                Debug.Log("레후");
+            //  if (_event.ID == "EV_Wheat")
+             //   Debug.Log("레후");
               List<List<string>> _checktarget = new List<List<string>>();
               switch (_event.FollowTargetSuccess)
               {
@@ -706,7 +706,8 @@ public class TileInfoData
 public enum FollowTypeEnum { Event,Skill}
 public enum SettlementType {Village,Town,City,Outer}
 public enum EventAppearType { Outer, Village, Town, City, Settlement}
-public enum SectorTypeEnum {NULL, Residence, Temple,Marketplace, Library,Theater,Academy}
+public enum SectorTypeEnum {NULL, Residence, Temple,Marketplace, Library}
+//,Theater,Academy
 public enum EnvironmentType { NULL, River,Forest,Mountain,Sea,Beach,Land,RiverBeach, Highland }
 public enum SelectionTypeEnum { Single,Body, Head,Tendency,Experience }// (Vertical)Body : 좌 이성 우 육체    (Horizontal)Head : 좌 정신 우 물질    
 public enum PenaltyTarget { None,Status,EXP }
@@ -1111,29 +1112,6 @@ public class QuestHolder_Cult:Quest
       return new Tuple<Sprite, string>(
         _illust,
         WNCText.GetSeasonText(GameManager.Instance.GetTextData(_filename + "_description")));
-    }
-  }
-  public Tuple<Sprite,string> GetPhaseUpgradeData
-  {
-    get
-    {
-      List<Sprite> _list = new List<Sprite>();
-      string _description = "";
-      switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-      {
-        case 1:
-          _list = GameManager.Instance.ImageHolder.Cult_ToPhase1;
-          _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_30");
-          break;
-        case 2:
-          _list = GameManager.Instance.ImageHolder.Cult_ToPhase2;
-          _description = GameManager.Instance.GetTextData("Cult_ProgressUpgrade_60");
-          break;
-        case 3:
-          break;
-      }
-      int _index = UnityEngine.Random.Range(0, _list.Count);
-      return new Tuple<Sprite, string>(_list[_index], _description.Split('@')[UnityEngine.Random.Range(0, _list.Count)]);
     }
   }
 }

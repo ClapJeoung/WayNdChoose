@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const int StartMovePoint = 5;
+  public const int StartMovePoint = 15;
   public const int MovePoint_Sea = 4;
   public const int MovePoint_Moutain = 2;
   public const int MovePoint_River = 1, MovePoint_Forest = 1;
@@ -30,9 +30,8 @@ public static class ConstValues
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
 
   public const int MadnessEffect_Conversation = 5;
-  public const int MadnessEffect_Force = 35;
-  public const int MadnessEffect_Wild = 25;
-  public const int MadnessEffect_Intelligence = 40;
+  public const int MadnessEffect_Force = 3;
+  public const int MadnessEffect_Wild = 4;
   public const int MadnessEffect_Intelligence_Value = 2;
 
   public const int MadnessHPCost_Skill = 30;
@@ -52,10 +51,10 @@ public static class ConstValues
 
   public const int Rest_MovePoint = 4;
   public const int Rest_Discomfort = 3;
-  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f*1.2f;
-  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 15.0f*1.2f;
-  public const float Rest_Deafult = 0.9f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.3f, Move_LengthRatio = 0.3f;
+  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
+  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 12.0f;
+  public const float Rest_Deafult = 0.8f, Rest_DiscomfortRatio = 0.15f;
+  public const float Move_Default = 0.1f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 0.5f;
 
 
@@ -104,7 +103,7 @@ public static class ConstValues
   //스킬 체크, 지불 체크 최대~최소
   public const int MaxTime = 30;
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 1, CheckSkill_single_max = 6;
+  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 6;
   public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
 
   public const float Difficult = 1.0f;
@@ -185,8 +184,11 @@ public class GameData    //게임 진행도 데이터
         if (ShortExp_B != null) ShortExp_B.Duration =
                 ShortExp_B.Duration + _addvalue > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortExp_B.Duration + _addvalue;
         UIManager.Instance.UpdateExpPael();
-        break;//도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
-
+        break;
+      case SectorTypeEnum.NULL:
+        break;
+        //도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
+/*
       case SectorTypeEnum.Theater:
 
 
@@ -194,10 +196,12 @@ public class GameData    //게임 진행도 데이터
 
       case SectorTypeEnum.Academy:
         break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
+*/
     }
   }
   #endregion
 
+  public int TotalMoveCount = 0, TotalRestCount = 0;
   public int Year = 1;//년도
   private int turn = -1;
   /// <summary>
@@ -218,30 +222,41 @@ public class GameData    //게임 진행도 데이터
         { 
           turn = 0; Year++; 
           if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateYearText();
-
-          if (Madness_Conversation == true)
-          {
-            switch (QuestType)
-            {
-              case QuestType.Cult:
-                Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
-                Debug.Log("대화 광기 발동");
-                UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
-                break;
-            }
-          }
-          if (GameManager.Instance.MyGameData.Tendency_Head.Level == 2) DownAllDiscomfort(ConstValues.Tendency_Head_p2);
         }
         else turn = value;
 
-        int _expvalue = 0;
-        if (Madness_Intelligence == true && UnityEngine.Random.Range(0, 100) < ConstValues.MadnessEffect_Intelligence)
+        int _expvalue = 1;
+        switch (turn)
         {
-          _expvalue = ConstValues.MadnessEffect_Intelligence_Value;
-          Debug.Log("지성 광기 발동");
-          UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness);
+          case 0:
+            if (Madness_Conversation == true)
+            {
+              switch (QuestType)
+              {
+                case QuestType.Cult:
+                  Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
+                  Debug.Log("대화 광기 발동");
+                  UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Conversation);
+                  UIManager.Instance.AudioManager.PlaySFX(27, 3);
+                  break;
+              }
+            }
+            if (GameManager.Instance.MyGameData.Tendency_Head.Level == 2) DownAllDiscomfort(ConstValues.Tendency_Head_p2);
+            break;
+          case 1:
+            break;
+          case 2:
+            if (Madness_Intelligence == true)
+            {
+              _expvalue = ConstValues.MadnessEffect_Intelligence_Value;
+              Debug.Log("지성 광기 발동");
+              UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Intelligence);
+              UIManager.Instance.AudioManager.PlaySFX(27, 3);
+            }
+            break;
+          case 3:
+            break;
         }
-        else _expvalue = 1;
         if (LongExp != null) LongExp.Duration -= _expvalue;
         if (ShortExp_A != null) ShortExp_A.Duration -= _expvalue;
         if (ShortExp_B != null) ShortExp_B.Duration -= _expvalue;
@@ -256,7 +271,7 @@ public class GameData    //게임 진행도 데이터
             if (Quest_Cult_Phase > 2)
             {
               Cult_CoolTime--;
-              if (Cult_CoolTime > 0)
+              if (Cult_CoolTime <= 0)
               {
                 switch (Quest_Cult_Phase)
                 {
@@ -590,6 +605,7 @@ public class GameData    //게임 진행도 데이터
     List<int> _tileasindex= new List<int>();
     for(int i=0;i<_tiles.Count;i++)
     {
+      if (!_tiles[i].Interactable) continue;
       for(int j = 0; j < _tiles[i].MovePoint; j++)
       {
         _tileasindex.Add(i);
@@ -787,7 +803,8 @@ public class GameData    //게임 진행도 데이터
     }
     FirstRest= jsondata.FirstRest;
 
-
+    TotalMoveCount = jsondata.TotalMoveCount;
+    TotalRestCount = jsondata.TotalRestCount;
     Year = jsondata.Year;
     turn = jsondata.Turn;
     hp = jsondata.HP;
@@ -861,7 +878,7 @@ public class GameData    //게임 진행도 데이터
   public string DEBUG_NEXTEVENTID = "";
 
 }
-public enum SkillTypeEnum { Conversation, Force, Wild, Intelligence }
+public enum SkillTypeEnum { Conversation, Force, Wild, Intelligence,Null }
 public class Skill
 {
   public Skill(SkillTypeEnum type)

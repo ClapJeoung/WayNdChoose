@@ -277,7 +277,7 @@ public class PreviewManager : MonoBehaviour
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
-          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Info"), ConstValues.MadnessEffect_Conversation);
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Preview"), ConstValues.MadnessEffect_Conversation);
           _leveltext = WNCText.GetMadnessSkillColor(_level);
         }
         else
@@ -290,7 +290,8 @@ public class PreviewManager : MonoBehaviour
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
-          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Force_Info"), ConstValues.MadnessEffect_Force);
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Force_Preview"),
+            GameManager.Instance.MyGameData.TotalRestCount%ConstValues.MadnessEffect_Force+1, ConstValues.MadnessEffect_Force);
           _leveltext = WNCText.GetMadnessSkillColor(_level);
         }
         else
@@ -303,7 +304,8 @@ public class PreviewManager : MonoBehaviour
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
-          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Wild_Info"), ConstValues.MadnessEffect_Wild);
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Wild_Preview"),
+            GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild+1, ConstValues.MadnessEffect_Wild);
           _leveltext = WNCText.GetMadnessSkillColor(_level);
         }
         else
@@ -316,7 +318,7 @@ public class PreviewManager : MonoBehaviour
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
-          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Info"), ConstValues.MadnessEffect_Intelligence);
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Preview"), ConstValues.MadnessEffect_Intelligence_Value);
           _leveltext = WNCText.GetMadnessSkillColor(_level);
         }
         else

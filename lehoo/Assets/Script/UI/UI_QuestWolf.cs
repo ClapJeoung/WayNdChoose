@@ -304,8 +304,8 @@ ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town;
             break;
           case SettlementType.City:
-            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_City;
             GameManager.Instance.MyGameData.SetSabbat();
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_City;
             break;
         }
         _eventtype = 2;
@@ -331,11 +331,6 @@ ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress
     string _description = "";
     switch (_eventtype)
     {
-      case 1:
-        var _tuple = QuestHolder.GetPhaseUpgradeData;
-        _illust = _tuple.Item1;
-        _description = _tuple.Item2;
-        break;
       case 2:
         var _tuple_0 = QuestHolder.GetSettlementData(GameManager.Instance.MyGameData.CurrentSettlement.SettlementType);
         _illust = _tuple_0.Item1;
@@ -382,9 +377,9 @@ ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress
   #endregion
   public void CloseUI_Auto()
   {
-    if (CurrentPrologueIndex == 8)
+    if (CurrentPrologueIndex >0)
     {
-      CloseUI_Prologue();
+       CloseUI_Prologue();
       CurrentPrologueIndex = -1;
     }
   }

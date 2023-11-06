@@ -45,7 +45,7 @@ public class HighlightEffects : MonoBehaviour
     {
       if (info.CallType == HighlightEffectEnum.Skill)
       {
-        GetHighlight(info.CallType).SetEffect(info.Skilltype);
+        GetHighlight(info.CallType).SetEffect_Skill(info.Skilltype);
       }
       else
       {
@@ -64,6 +64,18 @@ public class HighlightEffects : MonoBehaviour
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(GetHighlight(type).Group, 0.0f, EffectTime));
   }
+  /// <summary>
+  /// 광기 하이라이트
+  /// </summary>
+  /// <param name="type"></param>
+  /// <param name="skilltype"></param>
+  public void HighlightAnimation(HighlightEffectEnum type,SkillTypeEnum skilltype)
+  {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(GetHighlight(type).Group, 0.0f, EffectTime));
+    CanvasGroup _group = GetHighlight(type).GetSkillGroup_Madness(skilltype);
+    if(_group!=null) StartCoroutine(UIManager.Instance.ChangeAlpha(_group, 0.0f, EffectTime));
+  }
+
 }
 [System.Serializable]
 public class HighlightHolder
@@ -85,7 +97,7 @@ public class HighlightHolder
     string _valuetext =OriginValue+ value > 0 ? $"+{value}" : $"{value}";
     Text.text = _valuetext;
   }
-  public void SetEffect(List<SkillTypeEnum> skill)
+  public void SetEffect_Skill(List<SkillTypeEnum> skill)
   {
     Sprite _spr = null;
     foreach(var type in skill)
@@ -107,6 +119,26 @@ public class HighlightHolder
           break;
       }
     }
+  }
+  public CanvasGroup GetSkillGroup_Madness(SkillTypeEnum skilltype)
+  {
+    CanvasGroup _group = null;
+    switch (skilltype)
+    {
+      case SkillTypeEnum.Conversation:
+        _group = ConversationEffect;
+        break;
+      case SkillTypeEnum.Force:
+        _group = ForceEffect;
+        break;
+      case SkillTypeEnum.Wild:
+        _group = WildEffect;
+        break;
+      case SkillTypeEnum.Intelligence:
+        _group = IntelligenceEffect;
+        break;
+    }
+    return _group;
   }
   public void Reset()
   {

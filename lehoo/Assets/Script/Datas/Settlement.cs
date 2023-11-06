@@ -9,10 +9,10 @@ public class Settlement
 {
   public int Index = -1;
   public int Discomfort = 0;
-  public bool IsForest = false;//주변 2칸에 숲 여부
-  public bool IsRiver = false;//주변 2칸에 강 여부
+  public bool IsForest = false;//주변 1칸에 숲 여부
+  public bool IsRiver = false;//주변 1칸에 강 여부
   public bool IsHighland = false;  //주변 1칸에 언덕 여부
-  public bool IsMountain = false;//주변 2칸에 산 여부
+  public bool IsMountain = false;//주변 1칸에 산 여부
   public bool IsSea = false;    //주변 1칸에 바다 여부
 
   public TileData Tile = null;

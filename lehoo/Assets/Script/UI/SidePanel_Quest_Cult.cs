@@ -66,12 +66,12 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         }
         break;
       case 2:
-        TurnOnGroup(Village_Group);
+        TurnOnGroup(City_Group);
         if (LastPhase != 2)
         {
-          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Village"));
-          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("Village"),
-            ConstValues.Quest_Cult_Progress_Village);
+          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("City"));
+          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("City"),
+            ConstValues.Quest_Cult_Progress_City);
          
           StartCoroutine(UIManager.Instance.ChangeAlpha(City_Group, 1.0f, 2.0f));
           TownIconEffect.alpha = 1.0f;
@@ -138,5 +138,20 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   public void SetRitualEffect(bool enable)
   {
     if(Ritual_Effect.enabled!=enable) Ritual_Effect.enabled = enable;
+  }
+  public void SetSettlementEffect(SettlementType type,bool enable)
+  {
+    switch (type)
+    {
+      case SettlementType.Village:
+        VillageIconEffect.alpha = enable?1.0f:0.0f;
+        break;
+      case SettlementType.Town:
+        TownIconEffect.alpha = enable ? 1.0f : 0.0f;
+        break;
+      case SettlementType.City:
+        CityIconEffect.alpha = enable ? 1.0f : 0.0f;
+        break;
+    }
   }
 }
