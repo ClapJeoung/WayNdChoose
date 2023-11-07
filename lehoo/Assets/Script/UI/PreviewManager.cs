@@ -695,7 +695,7 @@ public class PreviewManager : MonoBehaviour
           PayNoGold_Text.text = string.Format(GameManager.Instance.GetTextData("Nogold_Text"),
             GameManager.Instance.MyGameData.Gold,
             _sanitypayvalue,
-            _percent);
+            WNCText.PercentageColor(_percent,100.0f));
         }//지불 골드 값이 보유 값에 비해 높을 때
         else
         {
@@ -755,7 +755,7 @@ public class PreviewManager : MonoBehaviour
     }
 
     _percentage =101- GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel);
-    _percentage_int = WNCText.PercentageColor(_percentage);
+    _percentage_int = WNCText.PercentageColor(_percentage,100.0f)+"%";
 
   //  SelectionCheckIcons[0].sprite = _icons[0];
   //  SelectionCheckIcons[1].sprite=_icons[1];
@@ -843,7 +843,8 @@ public class PreviewManager : MonoBehaviour
     _turn=islong?ConstValues.LongTermStartTurn.ToString():ConstValues.ShortTermStartTurn.ToString();
     if (islong)
     {
-      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
+      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn,
+        (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true)));
     }
     else
     {

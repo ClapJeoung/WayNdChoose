@@ -72,6 +72,7 @@ public class UI_Ending : UI_default
   }
   public void QuitGame()
   {
+    GameManager.Instance.DeleteSaveData();
     UIManager.Instance.ResetGame(IsDead?"":GameManager.Instance.GetTextData("ThanksForPlaying"), true);
   }
   public void Next()

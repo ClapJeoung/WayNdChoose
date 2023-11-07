@@ -193,11 +193,13 @@ public class UI_QuestWolf : UI_default
     Prologue_Description.text += "<br><br>" + _description;
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.parent.transform as RectTransform);
+    if (CurrentPrologueIndex == 8) Prologue_Nextbutton_Group.gameObject.SetActive(false);
     yield return StartCoroutine(updatescrollbar());
 
     if (_buttontext_a == "")
     {
-      ActiveSetNextButton();
+    if(CurrentPrologueIndex<8)  ActiveSetNextButton();
+
     }
     else
     {
@@ -223,7 +225,6 @@ public class UI_QuestWolf : UI_default
 
     if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
     {
-      DeActiveSetNextButton();
       MoveRectForButton(0);
       UIManager.Instance.MapButton.Open(1, this);
     }

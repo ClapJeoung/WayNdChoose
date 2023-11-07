@@ -5,12 +5,20 @@ using UnityEngine.UI;
 using System.Text;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
-using static UnityEditor.Progress;
 
 public class TestScript:MonoBehaviour
 {
-  [ContextMenu("Test")]
-  public void Text()
+  public Color Color_A = new Color();
+  public Color Color_B = new Color();
+  public Color Color_Result = new Color();
+  public string Result_Text = "";
+
+  public float A = 0;
+  public float B = 1;
+
+  private void lehu()
   {
+    Color_Result = Color.Lerp(Color_A, Color_B, A / B);
+    Result_Text = ColorUtility.ToHtmlStringRGB(Color.Lerp(Color_A, Color_B, A / B));
   }
 }

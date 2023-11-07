@@ -7,7 +7,6 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
 using System.Reflection;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 
 public class UIManager : MonoBehaviour
 {
@@ -176,7 +175,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform },
           Mathf.Lerp(ConstValues.StatusLossMinSacle,ConstValues.StatusLossMaxScale,(Mathf.Abs(_changedvalue)-ConstValues.StatusLoss_HP_Min)/ConstValues.StatusLoss_HP_Max)));
-        UIManager.Instance.AudioManager.PlaySFX(15);
+        AudioManager.PlaySFX(15,4);
       }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
@@ -203,13 +202,13 @@ public class UIManager : MonoBehaviour
       if (lastsanity < GameManager.Instance.MyGameData.Sanity)
       {
         StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
-        UIManager.Instance.AudioManager.PlaySFX(16);
+        AudioManager.PlaySFX(16,4);
       }
       else
       {
         StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform },
           Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Sanity_Min) / ConstValues.StatusLoss_Sanity_Max)));
-        UIManager.Instance.AudioManager.PlaySFX(17);
+        AudioManager.PlaySFX(17,4);
       }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
@@ -235,7 +234,7 @@ public class UIManager : MonoBehaviour
       if (lastgold < GameManager.Instance.MyGameData.Gold)
       {
         StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
-        UIManager.Instance.AudioManager.PlaySFX(18);
+        AudioManager.PlaySFX(18,4);
       }
       else
       {
@@ -915,6 +914,7 @@ public class UIManager : MonoBehaviour
   }
   private void Update()
   {
+#if UNITY_EDITOR
     if (Input.GetKeyDown(KeyCode.F12))
     {
       if(DebugUI.gameObject.activeInHierarchy==true)DebugUI.gameObject.SetActive(false);
@@ -924,6 +924,7 @@ public class UIManager : MonoBehaviour
         DebugUI.UpdateValues();
       }
     }
+#endif
   }
     private Queue<IEnumerator> UIAnimationQueue = new Queue<IEnumerator>();
     public void AddUIQueue(IEnumerator _anim)
@@ -1182,12 +1183,24 @@ public static class WNCText
   {
     return $"<#AD9D63>{value.ToString()}</color>";
   }
-  private static Color SuccessColor = new Color(0.8867924f, 5621194f, 0.3471876f, 1.0f);
-  private static Color FailColor = new Color(0.5648571f, 0.8862745f, 0.3490196f, 1.0f);
-  public static string PercentageColor(int percent)
+  private static Color SuccessColor = new Color(0.4f, 1.0f, 0.45f, 1.0f);
+  private static Color FailColor = new Color(1.0f, 0.4f, 0.45f, 1.0f);
+  public static string PercentageColor(float value,float max)
   {
-    string _html = ColorUtility.ToHtmlStringRGB(Color.Lerp(FailColor, SuccessColor, percent / 100.0f));
-    return $"<#{_html}>{percent}%</color>";
+    float _glength = MathF.Abs(SuccessColor.g - FailColor.g);
+    float _rlength = MathF.Abs(SuccessColor.r - FailColor.r);
+
+    float _ratio =Mathf.Clamp(value / max,0.0f,1.0f);
+    float _r_ratio = _rlength/(_rlength + _glength);
+    float _g_ratio = _glength / (_rlength + _glength);
+    Color _color =new Color(
+      _ratio<_g_ratio?FailColor.r:Mathf.Lerp(FailColor.r,SuccessColor.r,(_ratio-_g_ratio)/_r_ratio),
+      _ratio<_g_ratio?Mathf.Lerp(FailColor.g,SuccessColor.g,_ratio/_g_ratio):SuccessColor.g,
+      SuccessColor.b,1.0f);
+
+    string _html = ColorUtility.ToHtmlStringRGB(_color);
+ //   Debug.Log($"{value}/{max} = {value / max} -> {_html}");
+    return $"<#{_html}>{(int)value}</color>";
   }
   public static string PositiveColor(string str)
   {

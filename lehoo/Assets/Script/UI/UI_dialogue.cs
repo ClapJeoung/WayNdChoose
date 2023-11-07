@@ -18,7 +18,6 @@ public class UI_dialogue : UI_default
   public Vector2 CenterPos_Event = new Vector2(0.0f, 0.0f);
   public Vector2 CenterPos_Settlement = new Vector2(125.0f, 0.0f);
   public Vector2 RightPos = new Vector2(1250.0f, 0.0f);
-
   [Header("이벤트")]
   #region 이벤트
   public GameObject EventObjectHolder = null;
@@ -83,6 +82,7 @@ public class UI_dialogue : UI_default
   }
   public IEnumerator OpenEventUI(bool dir)
   {
+    if (MadenssEffect.enabled) MadenssEffect.enabled = false;
     IsOpen = true;
 
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
@@ -124,6 +124,7 @@ public class UI_dialogue : UI_default
   }
   public IEnumerator OpenEventUI(bool issuccess,bool isleft,bool dir)
   {
+    if (MadenssEffect.enabled) MadenssEffect.enabled = false;
     IsOpen = true;
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
     if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
@@ -469,7 +470,7 @@ public class UI_dialogue : UI_default
     SelectionData _selectiondata = _selection.MySelectionData;
     int _payvalue = 0;
     int _currentvalue = 0, _checkvalue = 0;    //기술 체크에만 사용
-    int _percentvalue = UnityEngine.Random.Range(1,101);
+    int _percentvalue = UnityEngine.Random.Range(0,101);
     int _requirevalue = 0;                   //성공 확률(골드 혹은 기술 체크) 
     bool _issuccess = false;  
                                                
@@ -915,6 +916,7 @@ public class UI_dialogue : UI_default
   [Header("정착지")]
   #region 정착지
   public GameObject SettlementObjectHolder = null;
+  public Image MadenssEffect = null;
   [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementNameText = null;
   [SerializeField] private RectTransform DiscomfortIcon = null;
@@ -958,11 +960,13 @@ public class UI_dialogue : UI_default
       Debug.Log("무력 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Force);
       UIManager.Instance.AudioManager.PlaySFX(27, 3);
+      if (!MadenssEffect.enabled) MadenssEffect.enabled = true;
       IsMad = true;
     }
     else
     {
       UIManager.Instance.AudioManager.PlaySFX(14, 3);
+      if (MadenssEffect.enabled) MadenssEffect.enabled = false;
       IsMad = false;
     }
     UIManager.Instance.OffBackground();

@@ -24,7 +24,8 @@ public class UI_Selection : MonoBehaviour
   public GameObject CheckHolder = null;
   public Image SkillIcon_A = null;
   public Image SkillIcon_B = null;
-  public TextMeshProUGUI SkillInfo = null;
+  public TextMeshProUGUI SkillInfo_require = null;
+  public TextMeshProUGUI SkillInfo_current = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
   public Onpointer_highlight HighlightEffect = null;
   public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
@@ -53,7 +54,8 @@ public class UI_Selection : MonoBehaviour
     }
     MyGroup.interactable = true;
     MyGroup.blocksRaycasts = true;
-
+    int _requirevalue = 0, _currentvalue = 0;
+    
     switch (MySelectionData.ThisSelectionType)
     {
       case SelectionTargetType.None:
@@ -67,18 +69,27 @@ public class UI_Selection : MonoBehaviour
         switch (MySelectionData.SelectionPayTarget)
         {
           case StatusTypeEnum.HP:PayIcon.sprite = GameManager.Instance.ImageHolder.HPDecreaseIcon;
-            PayInfo.text = (GameManager.Instance.MyGameData.PayHPValue * -1).ToString();
+            _requirevalue = GameManager.Instance.MyGameData.PayHPValue * -1;
+            PayInfo.text = _requirevalue.ToString();
             HighlightEffect.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.PayHPValue*-1);
             break;
           case StatusTypeEnum.Sanity: PayIcon.sprite = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
-            PayInfo.text = (GameManager.Instance.MyGameData.PaySanityValue * -1).ToString();
+            _requirevalue = GameManager.Instance.MyGameData.PaySanityValue * -1;
+            PayInfo.text = _requirevalue.ToString();
             HighlightEffect.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.PaySanityValue*-1);
             break;
           case StatusTypeEnum.Gold: PayIcon.sprite=GameManager.Instance.ImageHolder.GoldDecreaseIcon;
-            PayInfo.text = (GameManager.Instance.MyGameData.PayGoldValue * -1).ToString();
+            _requirevalue = GameManager.Instance.MyGameData.PayGoldValue * -1;
             HighlightEffect.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.PayGoldValue*-1);
             if (GameManager.Instance.MyGameData.Gold < GameManager.Instance.MyGameData.PayGoldValue)
-              HighlightEffect.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.PayOverSanityValue*-1);
+            {
+              HighlightEffect.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.PayOverSanityValue * -1);
+              PayInfo.text = WNCText.PercentageColor(_requirevalue,_requirevalue*_requirevalue/ GameManager.Instance.MyGameData.Gold*-1);
+            }
+            else
+            {
+              PayInfo.text = _requirevalue.ToString();
+            }
             break;
         }
         break;
@@ -89,7 +100,10 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_A.fillAmount = 1.0f;
 
         SkillIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0],false);
-        SkillInfo.text = $"{GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level}/{GameManager.Instance.MyGameData.CheckSkillSingleValue}";
+        _requirevalue = GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level;
+        _currentvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
+        SkillInfo_require.text = WNCText.PercentageColor((float)_requirevalue, (float)_currentvalue);
+        SkillInfo_current.text = _currentvalue.ToString();
         HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] });
 
         break;
@@ -105,8 +119,10 @@ public class UI_Selection : MonoBehaviour
         _sprs[1] = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[1], false);
         SkillIcon_A.sprite = _sprs[0];
         SkillIcon_B.sprite = _sprs[1];
-        SkillInfo.text = $"{GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level+GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[1]).Level}" +
-          $"/{GameManager.Instance.MyGameData.CheckSkillMultyValue}";
+        _requirevalue = GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level + GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[1]).Level;
+        _currentvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
+        SkillInfo_require.text = WNCText.PercentageColor((float)_requirevalue, (float)_currentvalue);
+        SkillInfo_current.text = _currentvalue.ToString();
         HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] , MySelectionData.SelectionCheckSkill[1] });
 
         break;

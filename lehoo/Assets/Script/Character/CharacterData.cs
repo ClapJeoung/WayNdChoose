@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int GoldPerMovepoint = 2;
   public const int StartMovePoint = 15;
   public const int MovePoint_Sea = 4;
   public const int MovePoint_Moutain = 2;
@@ -20,8 +21,8 @@ public static class ConstValues
   public const float StatusLoss_Gold_Min = 6, StatusLoss_Gold_Max = 30;
   public const float StatusLoss_MP_Min = 6, StatusLoss_MP_Max = 30;
 
-  public const float ScrollSpeed = 0.015f;
-  public const float ScrollTime = 1.5f;
+  public const float ScrollSpeed = 0.08f;
+  public const float ScrollTime = 1.25f;
 
   public const int ExpSkillLevel = 2;
 
@@ -29,13 +30,14 @@ public static class ConstValues
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
 
-  public const int MadnessEffect_Conversation = 5;
+  public const int MadnessEffect_Conversation = 8;
   public const int MadnessEffect_Force = 3;
   public const int MadnessEffect_Wild = 4;
   public const int MadnessEffect_Intelligence_Value = 2;
 
   public const int MadnessHPCost_Skill = 30;
   public const int MadnessSanityGen_Skill = 50;
+  public const int MadnessSkillLevel = 2;
   public const int MadnessHPCost_HP = 40;
   public const int MadnessSanityGen_HP = 70;
 
@@ -53,7 +55,7 @@ public static class ConstValues
   public const int Rest_Discomfort = 3;
   public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
   public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 12.0f;
-  public const float Rest_Deafult = 0.8f, Rest_DiscomfortRatio = 0.15f;
+  public const float Rest_Deafult = 0.7f, Rest_DiscomfortRatio = 0.15f;
   public const float Move_Default = 0.1f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 0.5f;
 
@@ -97,8 +99,8 @@ public static class ConstValues
   //육체적 2: 격투+3 생존+3 화술-1 학식-1
 
   //성향 진행도 따라 긍정,부정 값
-  public const float minsuccesper_max = 40;
-  public const float minsuccesper_min = 10;
+  public const float minsuccesper_max = 15;
+  public const float minsuccesper_min = 5;
   public const float MoneyCheck_min = 2.5f, MoneyCheck_max = 0.25f; //골드 지불 범위 벗어날 시 지불 실패 금액에 제곱비례
   //스킬 체크, 지불 체크 최대~최소
   public const int MaxTime = 30;
@@ -314,7 +316,7 @@ public class GameData    //게임 진행도 데이터
     }
   }//스킬 체크, 지불 체크 최소 성공확률
   /// <summary>
-  /// 최소 ~ 100
+  /// 성공 요구 수치 (
   /// </summary>
   /// <param name="_current"></param>
   /// <param name="_target"></param>
@@ -323,8 +325,8 @@ public class GameData    //게임 진행도 데이터
   {
   //  Debug.Log($"{_current} {_target}");
     if (_current >= _target) return 1;
-    return 101-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/(float)_target));
-  }//origin : 대상 레벨   target : 목표 레벨
+    return 100-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/(float)_target));
+  }
   /// <summary>
   /// 최소 ~ 100
   /// </summary>
@@ -334,12 +336,16 @@ public class GameData    //게임 진행도 데이터
   {
     float _per = Gold / (float)_target;
     //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
-    return 101-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer, 101, _per));
+    return 100-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer, 100, _per));
     //좌상향 곡선 ~ 우상향 곡선
   }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
   #endregion
 
   #region #값 프로퍼티#
+  public int MadnessHPLoss_Skill { get { return (int)(ConstValues.MadnessHPCost_Skill * GetHPLossModify(true)); } }
+  public int MadnessHPLoss_HP { get { return (int)(ConstValues.MadnessHPCost_HP * GetHPLossModify(true)); } }
+  public int MadnessSanityGen_Skill { get { return (int)(ConstValues.MadnessSanityGen_Skill); } }
+  public int MadnessSanityGen_HP { get { return (int)(ConstValues.MadnessSanityGen_HP); } }
   public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, LerpByTurn); } }
   public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, LerpByTurn); } }
     public int RestCost_Sanity
@@ -891,6 +897,24 @@ public class Skill
     levelbydefault = startlevel;
   }
   public SkillTypeEnum MySkillType;
+  private int LevelByMadness
+  {
+    get
+    {
+      switch (MySkillType)
+      {
+        case SkillTypeEnum.Conversation:
+          return GameManager.Instance.MyGameData.Madness_Conversation ? ConstValues.MadnessSkillLevel : 0;
+        case SkillTypeEnum.Force:
+          return GameManager.Instance.MyGameData.Madness_Force ? ConstValues.MadnessSkillLevel : 0;
+        case SkillTypeEnum.Wild:
+          return GameManager.Instance.MyGameData.Madness_Wild ? ConstValues.MadnessSkillLevel : 0;
+        case SkillTypeEnum.Intelligence:
+          return GameManager.Instance.MyGameData.Madness_Intelligence ? ConstValues.MadnessSkillLevel : 0;
+      }
+      return 0;
+    }
+  }
   private int levelbydefault = 0;
   public int LevelByDefault
   {
@@ -900,7 +924,7 @@ public class Skill
   {
     get
     {
-      return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByExp + LevelByTendency,0, LevelByDefault + LevelByExp + LevelByTendency);
+      return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByExp + LevelByTendency,0, LevelByDefault + LevelByExp + LevelByTendency+ LevelByMadness);
     }
   }
   public int LevelByExp

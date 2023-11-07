@@ -130,7 +130,7 @@ public class GameManager : MonoBehaviour
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
 
   public GameJsonData GameSaveData = null;
-  [HideInInspector] public const string GameDataName = "WNCGameData.json";
+  public const string GameDataName = "WNCGameData.json";
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
 
   public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
@@ -558,6 +558,7 @@ public class GameManager : MonoBehaviour
 
   private void Update()
   {
+#if UNITY_EDITOR
     if (Input.GetKeyDown(KeyCode.Backspace))
     {
       MyGameData = new GameData(QuestType.Cult);
@@ -565,6 +566,7 @@ public class GameManager : MonoBehaviour
 
     }
     if (Input.GetKeyDown(KeyCode.T)) UIManager.Instance.AudioManager.PlayBGM();
+#endif
   }
   public void GameOver()
   {
@@ -613,8 +615,12 @@ public class GameManager : MonoBehaviour
           break;
       }
     }
-
+    DeleteSaveData();
     UIManager.Instance.OpenDead(_illust, _description);
+  }
+  public void DeleteSaveData()
+  {
+    if(System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName)) System.IO.File.Delete(Application.persistentDataPath + "/" + GameDataName);
   }
   public void SubEnding(EndingDatas endingdata)
   {

@@ -6,7 +6,6 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
 using System.IO;
-using UnityEngine.WSA;
 
 public class UI_map : UI_default
 {
@@ -71,6 +70,7 @@ public class UI_map : UI_default
   [SerializeField] private Image TilePreview_Top = null;
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
+  [SerializeField] private TextMeshProUGUI BonusGoldText = null;
   [SerializeField] private TextMeshProUGUI MoveLengthText = null;
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
@@ -80,7 +80,7 @@ public class UI_map : UI_default
  // private float MoveButtonDisableAlpha = 0.2f;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private TextMeshProUGUI MoveCostText = null;
-
+  public Image MadnessEffect = null;
   private List<TileData> ActiveTileData = new List<TileData>();
 
   /// <summary>
@@ -110,10 +110,13 @@ public class UI_map : UI_default
 
     if (SelectedTile == null)
     {
-      TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
-      TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
-      TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
-      TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
+      if (!IsMad)
+      {
+        TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
+        TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
+        TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
+        TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
+      }
       switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
       {
         case 0:
@@ -154,14 +157,27 @@ public class UI_map : UI_default
   {
     if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
 
-    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild-1))
+    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild - 1))
     {
       Debug.Log("자연 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
       UIManager.Instance.AudioManager.PlaySFX(27, 3);
+      if (!MadnessEffect.enabled) MadnessEffect.enabled = true;
       IsMad = true;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
+      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
+      TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+      TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
-    else IsMad = false;
+    else
+    {
+      if (MadnessEffect.enabled) MadnessEffect.enabled = false;
+      IsMad = false;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
+      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.UnknownTile;
+      TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+      TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
+    }
 
     ResetEnableTiles();
 
@@ -179,6 +195,8 @@ public class UI_map : UI_default
     QuestInfo = false;
    // GuidRect.anchoredPosition = GuidPos_Tile;
     TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+    BonusGold = 0;
+    BonusGoldText.text = "";
     MoveLengthText.text = "";
     MoveCostText.text = "";
     MovecostButtonGroup.alpha = 0.0f;
@@ -186,9 +204,6 @@ public class UI_map : UI_default
     MovecostButtonGroup.blocksRaycasts = false;
 
     SelectedCostType = StatusTypeEnum.HP;
-
- //   ScaleRect.localScale = IdleScale;
- //   ScaleRect.anchoredPosition = Vector2.zero;
 
     DefaultGroup.interactable = false;
     DefaultGroup.blocksRaycasts = false;
@@ -246,7 +261,7 @@ public class UI_map : UI_default
   }
   private TileData SelectedTile = null;
   public List<HexDir> Route_Dir=new List<HexDir>();
-  public int SanityCost = 0, GoldCost = 0;
+  public int SanityCost = 0, GoldCost = 0, BonusGold = 0;
   [HideInInspector] public bool QuestInfo = false;
   public void SelectTile(TileData selectedtiledata)
   {
@@ -434,10 +449,13 @@ public class UI_map : UI_default
 
     TilePreviewRect.anchoredPosition = TilePreviewDownPos;
     TilePreviewGroup.alpha = TilePreviewStartAlpha;
-    TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
-    TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
-    TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
-    TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
+    if (!IsMad)
+    {
+      TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
+      TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
+      TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
+    }
     StopAllCoroutines();
     StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-235.0f,57.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
@@ -490,6 +508,8 @@ public class UI_map : UI_default
     
     SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Tile.Count, MovePointCost);
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
+    BonusGold = SelectedTile.MovePoint > 1 ? SelectedTile.MovePoint * ConstValues.GoldPerMovepoint : 1;
+    BonusGold =(int)(BonusGold* GameManager.Instance.MyGameData.GetGoldGenModify(true));
 
     SelectedCostType = StatusTypeEnum.HP;
     MoveCostText.text = "";
@@ -506,7 +526,26 @@ public class UI_map : UI_default
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1 * MovePointCost);
     GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
-    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"),MovePointCost,GameManager.Instance.MyGameData.MovePoint,
+    string[] _bonusgoldtext = null;
+    switch (SelectedTile.MovePoint)
+    {
+      case 1:
+        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_1").Split('@');
+        break;
+      case 2:
+        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_2").Split('@');
+        break;
+      case 3:
+        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_3").Split('@');
+        break;
+      default:
+        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_over").Split('@');
+        break;
+    }
+    BonusGoldText.text = _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + "+" + BonusGold.ToString();
+    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"),
+      WNCText.PercentageColor(MovePointCost,GameManager.Instance.MyGameData.MovePoint>= MovePointCost? MovePointCost: GameManager.Instance.MyGameData.MovePoint), 
+      GameManager.Instance.MyGameData.MovePoint,
       MovePointCost<=GameManager.Instance.MyGameData.MovePoint?"":
      string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
      MovePointCost- GameManager.Instance.MyGameData.MovePoint,
@@ -688,6 +727,7 @@ public class UI_map : UI_default
       _time += Time.deltaTime;
       yield return null;
     }
+    GameManager.Instance.MyGameData.Gold += BonusGold;
     UIManager.Instance.AudioManager.StopWalking();
 
     PlayerRect.anchoredPosition = _path[_path.Count-1];
