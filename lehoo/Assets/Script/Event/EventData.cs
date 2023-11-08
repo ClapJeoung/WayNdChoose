@@ -37,7 +37,6 @@ public class EventHolder
         EventJsonData _json = new EventJsonData();
         _json.ID = "Event_NoMoreEventOuter";
         _json.PlaceInfo = "0@0@0";
-        _json.Season = "";
         _json.Selection_Type = "1";
         _json.Selection_Target = "2@3";
         _json.Selection_Info = "2@1,3";
@@ -59,7 +58,6 @@ public class EventHolder
         EventJsonData _json = new EventJsonData();
         _json.ID = "Event_NoMoreEventSettlement";
         _json.PlaceInfo = "4@0@0";
-        _json.Season = "";
         _json.Selection_Type = "2";
         _json.Selection_Target = "0@1";
         _json.Selection_Info = "1@2";
@@ -84,12 +82,6 @@ public class EventHolder
   {
     EventData Data=new EventData();
     Data.ID = _data.ID;
-
-    if (_data.Season != "")
-    {
-      string[] _seasons = _data.Season.Split('@');
-      for (int i = 0; i < _seasons.Length; i++) Data.EnableSeasons.Add(int.Parse(_seasons[i]));
-    }
 
     string[] _placeinfos = _data.PlaceInfo.Split('@');
     Data.AppearSpace = (EventAppearType)int.Parse(_placeinfos[0]);
@@ -218,13 +210,12 @@ public class EventHolder
     EventData Data = ReturnEventDataDefault(_data);
     Data.EventType = EventTypeEnum.Follow;
 
-    int _temp = 0;
     string[] _followdatas = _data.EventInfo.Split('@');
-    FollowTypeEnum _followtype = int.TryParse(_followdatas[1], out _temp) == true ? FollowTypeEnum.Skill : FollowTypeEnum.Event;
+    FollowTypeEnum _followtype = _followdatas.Length<3 ? FollowTypeEnum.Exp : FollowTypeEnum.Event;
     string _followtarget = _followdatas[1];
 
     Data.FollowType = _followtype; //선행 대상 이벤트/기술
-    Data.FollowTarget = _followtarget;         //선행 대상- 이벤트 Id   기술 0,1,2,3
+    Data.FollowID = _followtarget;         //선행 대상- 이벤트 Id   기술 0,1,2,3
 
     switch (Data.FollowType)
     {
@@ -232,8 +223,7 @@ public class EventHolder
         Data.FollowTendency = int.Parse(_followdatas[2]);
         Data.FollowTargetSuccess = int.Parse(_followdatas[3]);
         break;
-      case FollowTypeEnum.Skill:
-        Data.FollowTargetLevel = int.Parse(_followdatas[2]);
+      case FollowTypeEnum.Exp:
         break;
     }
     Data.EndingID = _data.EndingID;
@@ -390,7 +380,6 @@ public class EventHolder
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
           if (_questevent.AppearSpace != EventAppearType.Outer) continue;
-          if (_questevent.IsRightSeason == false) continue;
           if (_questevent.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_questevent.EnvironmentType)) continue;
 
           if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
@@ -400,7 +389,6 @@ public class EventHolder
     }
     foreach (var _event in AllEvent)
     {
-      if (_event.IsRightSeason == false) continue;
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
       if (_event.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_event.EnvironmentType)) continue;
 
@@ -472,29 +460,17 @@ public class EventHolder
                   break;
               }
               foreach (var _list in _checktarget)
-                if (_list.Contains(_event.FollowTarget))
+                if (_list.Contains(_event.FollowID))
                 {
                   if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
                   else { _ableevents.Add(_event); }
                   break;
                 }
               break;
-            case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
-              int _targetlevel = 0;
-              SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
-              switch (_event.FollowTarget)
-              {
-                case "0"://대화 테마
-                  _type = SkillTypeEnum.Conversation; break;
-                case "1"://무력 테마
-                  _type = SkillTypeEnum.Force; break;
-                case "2"://생존 테마
-                  _type = SkillTypeEnum.Wild; break;
-                case "3"://학식 테마
-                  _type = SkillTypeEnum.Intelligence; break;
-              }
-              _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
-              if (_event.FollowTargetLevel <= _targetlevel)
+            case FollowTypeEnum.Exp://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+              if ((GameManager.Instance.MyGameData.LongExp!=null&&GameManager.Instance.MyGameData.LongExp.ID==_event.FollowID)
+                || (GameManager.Instance.MyGameData.ShortExp_A != null && GameManager.Instance.MyGameData.ShortExp_A.ID == _event.FollowID)
+                || (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.ID == _event.FollowID))
                 if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
                 else { _ableevents.Add(_event); }
               break;
@@ -513,7 +489,7 @@ public class EventHolder
       switch(_event.EventType)
       {
         case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal;break;
-        case EventTypeEnum.Follow: _count += ConstValues.EventPer_Follow;break;
+        case EventTypeEnum.Follow: _count += _event.FollowType==FollowTypeEnum.Event?ConstValues.EventPer_Follow_Ev:ConstValues.EventPer_Follow_Ex;break;
         case EventTypeEnum.Cult: _count += ConstValues.EventPer_Quest;break;
       }
 
@@ -550,7 +526,6 @@ public class EventHolder
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
           if (_questevent.RightSpace(settletype,_questevent.Sector) == false) continue;
-          if (_questevent.IsRightSeason == false) continue;
           if (_questevent.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_questevent.EnvironmentType)) continue;
 
           if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
@@ -561,7 +536,6 @@ public class EventHolder
     foreach (var _event in AllEvent)
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
-      if (_event.IsRightSeason == false) continue;
       if (_event.RightSpace(settletype, _event.Sector) == false) continue;
       if (_event.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_event.EnvironmentType)) continue;
 
@@ -631,29 +605,17 @@ public class EventHolder
                   break;
               }
               foreach (var _list in _checktarget)
-                if (_list.Contains(_event.FollowTarget))
+                if (_list.Contains(_event.FollowID))
                 {
                   if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
                   else { _ableevents.Add(_event); }
                   break;
                 }
               break;
-            case FollowTypeEnum.Skill://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
-              int _targetlevel = 0;
-              SkillTypeEnum _type = SkillTypeEnum.Conversation; ;
-              switch (_event.FollowTarget)
-              {
-                case "0"://대화 테마
-                  _type = SkillTypeEnum.Conversation; break;
-                case "1"://무력 테마
-                  _type = SkillTypeEnum.Force; break;
-                case "2"://생존 테마
-                  _type = SkillTypeEnum.Wild; break;
-                case "3"://학식 테마
-                  _type = SkillTypeEnum.Intelligence; break;
-              }
-              _targetlevel = GameManager.Instance.MyGameData.GetSkill(_type).Level;
-              if (_event.FollowTargetLevel <= _targetlevel)
+            case FollowTypeEnum.Exp://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+              if ((GameManager.Instance.MyGameData.LongExp != null && GameManager.Instance.MyGameData.LongExp.ID == _event.FollowID)
+                || (GameManager.Instance.MyGameData.ShortExp_A != null && GameManager.Instance.MyGameData.ShortExp_A.ID == _event.FollowID)
+                || (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.ID == _event.FollowID))
                 if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID) == false) { _disableevents.Add(_event); }
                 else { _ableevents.Add(_event); }
               break;
@@ -673,7 +635,7 @@ public class EventHolder
       switch (_event.EventType)
       {
         case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal; break;
-        case EventTypeEnum.Follow: _count += ConstValues.EventPer_Follow; break;
+        case EventTypeEnum.Follow: _count += _event.FollowType == FollowTypeEnum.Event ? ConstValues.EventPer_Follow_Ev : ConstValues.EventPer_Follow_Ex; break;
         case EventTypeEnum.Cult: _count += ConstValues.EventPer_Quest; break;
       }
 
@@ -703,7 +665,7 @@ public class TileInfoData
   
 }
 #region 이벤트 정보에 쓰는 배열들
-public enum FollowTypeEnum { Event,Skill}
+public enum FollowTypeEnum { Event,Exp}
 public enum SettlementType {Village,Town,City,Outer}
 public enum EventAppearType { Outer, Village, Town, City, Settlement}
 public enum SectorTypeEnum {NULL, Residence, Temple,Marketplace, Library}
@@ -720,8 +682,7 @@ public class EventData
   public EventTypeEnum EventType = EventTypeEnum.Default;
 
   public FollowTypeEnum FollowType = 0;
-  public string FollowTarget = "";
-  public int FollowTargetLevel = 0;
+  public string FollowID = "";
   /// <summary>
   /// 0:성공 1:실패 2:노상관
   /// </summary>
@@ -775,19 +736,6 @@ public class EventData
         }
       }
       return beginningdescriptions;
-    }
-  }
-  public List<int> EnableSeasons = new List<int>();  //0개면 사계절 분화 없음
-  public bool IsRightSeason
-  {
-    get
-    {
-      if (EnableSeasons.Count == 0) return true;
-      else
-      {
-        if (EnableSeasons.Contains(GameManager.Instance.MyGameData.Turn)) return true;
-      }
-      return false;
     }
   }
   public EventAppearType AppearSpace;
@@ -1129,7 +1077,6 @@ public class EventJsonData
 
   //2:퀘스트                                                2@(퀘스트번호)@(0/1)
   public string PlaceInfo = "";          //0,1,2,3
-  public string Season ;              //전역,봄,여름,가을,겨울
 
   public string Selection_Type;           //0.단일 1.이성+육체 2.정신+물질 
   public string Selection_Target;           //0.지불 1.기술(1) 2.기술(2)

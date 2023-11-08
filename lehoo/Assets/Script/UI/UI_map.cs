@@ -7,6 +7,7 @@ using TMPro;
 using System.Linq;
 using System.IO;
 
+
 public class UI_map : UI_default
 {
   [SerializeField] private RectTransform PlayerRect = null;
@@ -527,6 +528,7 @@ public class UI_map : UI_default
     GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
     string[] _bonusgoldtext = null;
+    if (!IsMad)
     switch (SelectedTile.MovePoint)
     {
       case 1:
@@ -542,11 +544,12 @@ public class UI_map : UI_default
         _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_over").Split('@');
         break;
     }
-    BonusGoldText.text = _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + "+" + BonusGold.ToString();
-    MoveLengthText.text = string.Format(GameManager.Instance.GetTextData("MoveLength"),
-      WNCText.PercentageColor(MovePointCost,GameManager.Instance.MyGameData.MovePoint>= MovePointCost? MovePointCost: GameManager.Instance.MyGameData.MovePoint), 
+    BonusGoldText.text =IsMad? GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + " +?": _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
+    MoveLengthText.text = IsMad?"<sprite=100> ?":
+      string.Format(GameManager.Instance.GetTextData("MoveLength"),
       GameManager.Instance.MyGameData.MovePoint,
-      MovePointCost<=GameManager.Instance.MyGameData.MovePoint?"":
+      WNCText.PercentageColor(MovePointCost.ToString(),MovePointCost<=GameManager.Instance.MyGameData.MovePoint?1.0f:0.0f),
+      MovePointCost <=GameManager.Instance.MyGameData.MovePoint?"":
      string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
      MovePointCost- GameManager.Instance.MyGameData.MovePoint,
      WNCText.NegativeColor($"+{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)* (MovePointCost - GameManager.Instance.MyGameData.MovePoint)}%")

@@ -282,10 +282,7 @@ public class UI_dialogue : UI_default
         }
         else                                 //다음 버튼 눌러서 보상에 도달할때
         {
-          if (CurrentSuccessData != null)
-          {
-            _phasetype = 2;
-          }
+          _phasetype = 2;
         }
       }
       else                                                                 //다음 내용으로 진행
@@ -470,7 +467,7 @@ public class UI_dialogue : UI_default
     SelectionData _selectiondata = _selection.MySelectionData;
     int _payvalue = 0;
     int _currentvalue = 0, _checkvalue = 0;    //기술 체크에만 사용
-    int _percentvalue = UnityEngine.Random.Range(0,101);
+    int _percentvalue = UnityEngine.Random.Range(1,101);
     int _requirevalue = 0;                   //성공 확률(골드 혹은 기술 체크) 
     bool _issuccess = false;  
                                                
@@ -505,7 +502,7 @@ public class UI_dialogue : UI_default
         else        //돈 지불일 경우 돈 적을 때 실행하는 뭔가 있어야 함
         {
           _payvalue = GameManager.Instance.MyGameData.PayGoldValue;
-          int _goldsuccesspercent = GameManager.Instance.MyGameData.Gold >= _payvalue ? 100 : GameManager.Instance.MyGameData.CheckPercent_money(_payvalue);
+          int _goldsuccesspercent = GameManager.Instance.MyGameData.Gold >= _payvalue ? 100 : GameManager.Instance.MyGameData.RequireValue_Money(_payvalue);
 
           if (GameManager.Instance.MyGameData.Gold >= _payvalue)
           {
@@ -518,7 +515,7 @@ public class UI_dialogue : UI_default
           }
           else
           {
-            if (_percentvalue > _goldsuccesspercent)
+            if (_percentvalue >= _goldsuccesspercent)
             {
               int _elsevalue = GameManager.Instance.MyGameData.PayGoldValue - GameManager.Instance.MyGameData.Gold;
 
@@ -548,7 +545,7 @@ public class UI_dialogue : UI_default
 
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
-        _requirevalue = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
+        _requirevalue = GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentvalue, _checkvalue);
         if (_percentvalue >= _requirevalue)
         {
           _issuccess = true;
@@ -569,7 +566,7 @@ public class UI_dialogue : UI_default
         _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level +
           GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
         _checkvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
-        _requirevalue = GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentvalue, _checkvalue);
+        _requirevalue = GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentvalue, _checkvalue);
         if (_percentvalue >= _requirevalue)
         {
           _issuccess = true;

@@ -84,7 +84,7 @@ public class UI_Selection : MonoBehaviour
             if (GameManager.Instance.MyGameData.Gold < GameManager.Instance.MyGameData.PayGoldValue)
             {
               HighlightEffect.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.PayOverSanityValue * -1);
-              PayInfo.text = WNCText.PercentageColor(_requirevalue,_requirevalue*_requirevalue/ GameManager.Instance.MyGameData.Gold*-1);
+              PayInfo.text = WNCText.PercentageColor(_requirevalue.ToString(), _requirevalue/(_requirevalue*_requirevalue/ GameManager.Instance.MyGameData.Gold*-1));
             }
             else
             {
@@ -102,7 +102,7 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_A.sprite=GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0],false);
         _requirevalue = GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level;
         _currentvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
-        SkillInfo_require.text = WNCText.PercentageColor((float)_requirevalue, (float)_currentvalue);
+        SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue/ (float)_currentvalue);
         SkillInfo_current.text = _currentvalue.ToString();
         HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] });
 
@@ -121,7 +121,7 @@ public class UI_Selection : MonoBehaviour
         SkillIcon_B.sprite = _sprs[1];
         _requirevalue = GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[0]).Level + GameManager.Instance.MyGameData.GetSkill(MySelectionData.SelectionCheckSkill[1]).Level;
         _currentvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
-        SkillInfo_require.text = WNCText.PercentageColor((float)_requirevalue, (float)_currentvalue);
+        SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(),(float)_requirevalue/(float)_currentvalue);
         SkillInfo_current.text = _currentvalue.ToString();
         HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0] , MySelectionData.SelectionCheckSkill[1] });
 

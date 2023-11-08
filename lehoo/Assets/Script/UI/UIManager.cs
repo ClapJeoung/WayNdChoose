@@ -1185,12 +1185,12 @@ public static class WNCText
   }
   private static Color SuccessColor = new Color(0.4f, 1.0f, 0.45f, 1.0f);
   private static Color FailColor = new Color(1.0f, 0.4f, 0.45f, 1.0f);
-  public static string PercentageColor(float value,float max)
+  public static string PercentageColor(string origin,float percent)
   {
     float _glength = MathF.Abs(SuccessColor.g - FailColor.g);
     float _rlength = MathF.Abs(SuccessColor.r - FailColor.r);
 
-    float _ratio =Mathf.Clamp(value / max,0.0f,1.0f);
+    float _ratio =Mathf.Clamp(percent, 0.0f,1.0f);
     float _r_ratio = _rlength/(_rlength + _glength);
     float _g_ratio = _glength / (_rlength + _glength);
     Color _color =new Color(
@@ -1200,7 +1200,7 @@ public static class WNCText
 
     string _html = ColorUtility.ToHtmlStringRGB(_color);
  //   Debug.Log($"{value}/{max} = {value / max} -> {_html}");
-    return $"<#{_html}>{(int)value}</color>";
+    return $"<#{_html}>{origin}</color>";
   }
   public static string PositiveColor(string str)
   {

@@ -61,19 +61,18 @@ public class GameManager : MonoBehaviour
 
       _json.EventInfo = _data[0];
       _json.PlaceInfo = _data[2];
-      _json.Season= _data[3];
 
-      _json.Selection_Type= _data[4];
-      _json.Selection_Target= _data[5];
-      _json.Selection_Info= _data[6];
+      _json.Selection_Type= _data[3];
+      _json.Selection_Target= _data[4];
+      _json.Selection_Info= _data[5];
 
-      _json.Failure_Penalty= _data[7];
-      _json.Failure_Penalty_info= _data[8];
+      _json.Failure_Penalty= _data[6];
+      _json.Failure_Penalty_info= _data[7];
 
-      _json.Reward_Target= _data[9];
-      _json.Reward_Info= _data[10];
+      _json.Reward_Target= _data[8];
+      _json.Reward_Info= _data[9];
 
-      _json.EndingID = _data[11];
+      _json.EndingID = _data[10];
       EventJsonDataList.Add(_json);
     }
     print("이벤트 데이터 업데이트 완료");

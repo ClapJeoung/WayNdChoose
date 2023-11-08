@@ -53,8 +53,8 @@ public static class ConstValues
 
   public const int Rest_MovePoint = 4;
   public const int Rest_Discomfort = 3;
-  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
-  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 12.0f;
+  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 25.0f;
+  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 15.0f;
   public const float Rest_Deafult = 0.7f, Rest_DiscomfortRatio = 0.15f;
   public const float Move_Default = 0.1f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 0.5f;
@@ -62,7 +62,7 @@ public static class ConstValues
 
   public const int EventPer_Envir = 3, EventPer_NoEnvir = 1,
                    EventPer_Sector = 3, EventPer_NoSector = 1,
-                   EventPer_Quest = 1, EventPer_Follow = 5, EventPer_Normal = 1;
+                   EventPer_Quest = 1, EventPer_Follow_Ev = 4, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
 
   public const int MapSize = 21;
@@ -76,12 +76,12 @@ public static class ConstValues
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
   public const int StartGold = 10;
-  public const float HPLoss_Exp = 0.15f;
-  public const float GoldGen_Exp = 0.25f;
+  public const float HPLoss_Exp = 0.3f;
+  public const float GoldGen_Exp = 0.4f;
   public const float  SanityLoss_Exp = 0.2f;
 
   public const float Tendency_Head_m2 = 0.2f;
-  public const int Tendency_Head_m1 = 1;
+  public const int Tendency_Head_m1 = 2;
   public const int Tendency_Head_p1 = 0;
   public const int Tendency_Head_p2 = 2;
   //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
@@ -127,9 +127,9 @@ public static class ConstValues
 
   public const int DiscomfortDownValue = 1;
     public const int SectorEffectMaxTurn = 3;
-  public const int SectorEffect_residence_movepoint = 1, SectorEffect_residence_discomfort = 1;
-    public const int SectorEffect_marketSector = 30;
-    public const int SectorEffect_temple = 2;
+  public const int SectorEffect_residence_discomfort = 1;
+    public const int SectorEffect_marketSector = 25;
+    public const int SectorEffect_temple = 1;
   public const int SectorEffect_Library = 2;
     public const int SectorEffect_theater = 3;
     public const int SectorEffect_acardemy = 10;
@@ -316,28 +316,27 @@ public class GameData    //게임 진행도 데이터
     }
   }//스킬 체크, 지불 체크 최소 성공확률
   /// <summary>
-  /// 성공 요구 수치 (
+  /// 성공 요구 수치 (최소~100)
   /// </summary>
   /// <param name="_current"></param>
   /// <param name="_target"></param>
   /// <returns></returns>
-  public int CheckPercent_themeorskill(int _current, int _target)
+  public int RequireValue_SkillCheck(int _current, int _target)
   {
   //  Debug.Log($"{_current} {_target}");
-    if (_current >= _target) return 1;
-    return 100-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer,100,_current/(float)_target));
+    if (_current >= _target) return 0;
+    float _value =1.0f- _current / (float)_target;
+    return Mathf.RoundToInt(Mathf.Clamp(_value*100.0f,0, 100-MinSuccesPer));
   }
   /// <summary>
   /// 최소 ~ 100
   /// </summary>
   /// <param name="_target"></param>
   /// <returns></returns>
-  public int CheckPercent_money(int _target)
+  public int RequireValue_Money(int _target)
   {
-    float _per = Gold / (float)_target;
-    //현재 돈 < 지불 금액 일 때 부족한 금액 %로 계산(100% 부족: 0%성공 ~ 0% 부족 : 100%성공)
-    return 100-Mathf.RoundToInt(Mathf.Lerp(MinSuccesPer, 100, _per));
-    //좌상향 곡선 ~ 우상향 곡선
+    float _per =1.0f- Gold / (float)_target;
+    return Mathf.RoundToInt(Mathf.Clamp(_per*100.0f,0, 100- MinSuccesPer));
   }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
   #endregion
 

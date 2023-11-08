@@ -62,17 +62,17 @@ public class UI_Mad : UI_default
       case 1:
         _str = GameManager.Instance.GetTextData("Madness_Force")
    + string.Format(GameManager.Instance.GetTextData("Madness_Result"),
-   GameManager.Instance.GetTextData((SkillTypeEnum)index, 1) + "+" + GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
+   GameManager.Instance.GetTextData((SkillTypeEnum)index, 1) + "+" + ConstValues.MadnessSkillLevel, GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 2:
         _str = GameManager.Instance.GetTextData("Madness_Wild")
   + string.Format(GameManager.Instance.GetTextData("Madness_Result"),
-  GameManager.Instance.GetTextData((SkillTypeEnum)index, 1) + "+" + GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
+  GameManager.Instance.GetTextData((SkillTypeEnum)index, 1) + "+" + ConstValues.MadnessSkillLevel, GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 3:
         _str = GameManager.Instance.GetTextData("Madness_Intelligence")
  + string.Format(GameManager.Instance.GetTextData("Madness_Result"),
- GameManager.Instance.GetTextData((SkillTypeEnum)index, 1) + "+" + GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
+ GameManager.Instance.GetTextData((SkillTypeEnum)index, 1) + "+" + ConstValues.MadnessSkillLevel, GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 4:
         _str = GameManager.Instance.GetTextData("Madness_HP")

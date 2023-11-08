@@ -688,14 +688,14 @@ public class PreviewManager : MonoBehaviour
         _payvalue = GameManager.Instance.MyGameData.PayGoldValue;
         if (_payvalue > GameManager.Instance.MyGameData.Gold)
         {
-          _percent = 101 - GameManager.Instance.MyGameData.CheckPercent_money(_payvalue);
+          _percent = GameManager.Instance.MyGameData.RequireValue_Money(_payvalue);
           int _sanitypayvalue = GameManager.Instance.MyGameData.PayOverSanityValue;
 
           if (PayNoGold_Text.gameObject.activeInHierarchy == false) PayNoGold_Text.gameObject.SetActive(true);
           PayNoGold_Text.text = string.Format(GameManager.Instance.GetTextData("Nogold_Text"),
             GameManager.Instance.MyGameData.Gold,
             _sanitypayvalue,
-            WNCText.PercentageColor(_percent,100.0f));
+            WNCText.PercentageColor((100 - _percent).ToString(), (100 -_percent)/100.0f));
         }//지불 골드 값이 보유 값에 비해 높을 때
         else
         {
@@ -754,8 +754,8 @@ public class PreviewManager : MonoBehaviour
      // if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
     }
 
-    _percentage =101- GameManager.Instance.MyGameData.CheckPercent_themeorskill(_currentlevel, _requirelevel);
-    _percentage_int = WNCText.PercentageColor(_percentage,100.0f)+"%";
+    _percentage =GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentlevel, _requirelevel);
+    _percentage_int = WNCText.PercentageColor((100 - _percentage).ToString(), (100 - _percentage)/100.0f)+"%";
 
   //  SelectionCheckIcons[0].sprite = _icons[0];
   //  SelectionCheckIcons[1].sprite=_icons[1];
