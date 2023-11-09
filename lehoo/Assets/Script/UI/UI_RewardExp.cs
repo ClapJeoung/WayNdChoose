@@ -8,31 +8,39 @@ using System.Runtime.CompilerServices;
 public class UI_RewardExp : UI_default
 {
   [SerializeField] private TextMeshProUGUI LongExpName_Text = null;
- // [SerializeField] private Image LongExpCap = null;
   [SerializeField] private Image LongExpIllust = null;
   [SerializeField] private GameObject LongExpTurn_Obj = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn_Text = null;
- // [SerializeField] private PreviewInteractive LongExpPreview = null;
   [SerializeField] private Onpointer_highlight LongExpHighight = null;
   [SerializeField] private TextMeshProUGUI LongExp_Effect = null;
 
   [SerializeField] private TextMeshProUGUI[] ShortExpName_Text = new TextMeshProUGUI[2];
-//  [SerializeField] private Image[] ShortExpCap = new Image[2];
   [SerializeField] private Image[] ShortExpIllust = new Image[2];
   [SerializeField] private GameObject[] ShortExpTurn_Obj = new GameObject[2];
   [SerializeField] private TextMeshProUGUI[] ShortExpTurn_Text = new TextMeshProUGUI[2];
-  // [SerializeField] private PreviewInteractive[] ShortExpPreview = new PreviewInteractive[2];
   [SerializeField] private TextMeshProUGUI[] ShortExp_Effect = null;
 
   [SerializeField] private GameObject ExpQuitButton = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
-  //[SerializeField] private GameObject ExpIllustIcon = null;
+
+  public bool AskedForChange = false;
+  public GameObject ChangeAskObject = null;
+  public TextMeshProUGUI ChangeAskText = null;
+  public TextMeshProUGUI ChangeText_Yes = null;
+  public TextMeshProUGUI ChangeText_No = null;
   public Experience CurrentExp = null;
   public void OpenUI_RewardExp(Experience rewardexp)
   {
     if (IsOpen) return;
     IsOpen = true;
 
+    if (ChangeText_Yes.text == "")
+    {
+      ChangeText_Yes.text = GameManager.Instance.GetTextData("YES");
+      ChangeText_No.text = GameManager.Instance.GetTextData("NO");
+    }
+    if (ChangeAskObject.activeInHierarchy) ChangeAskObject.SetActive(false);
+    AskedForChange = false;
     if (ExpQuitButton.activeInHierarchy == false) ExpQuitButton.SetActive(true);
 
     ExpDescription.text = GameManager.Instance.GetTextData("SAVETHEEXP_NAME");
@@ -148,48 +156,107 @@ public class UI_RewardExp : UI_default
     if (UIManager.Instance.IsWorking) return;
 
     Experience _selectexp = GameManager.Instance.MyGameData.LongExp;
-
-    GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true));
-
-    GameManager.Instance.AddExp_Long(CurrentExp);
-    if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
+    if (_selectexp != null)
     {
-      UIManager.Instance.DialogueUI.ExpAcquired();
-    }
-    CloseUI();
+      if (AskedForChange)
+      {
+        GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true));
 
+        GameManager.Instance.AddExp_Long(CurrentExp);
+        if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
+        {
+          UIManager.Instance.DialogueUI.ExpAcquired();
+        }
+        CloseUI();
+      }
+      else
+      {
+        OpenAsk(0);
+      }
+    }
+    else
+    {
+      GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true));
+
+      GameManager.Instance.AddExp_Long(CurrentExp);
+      if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
+      {
+        UIManager.Instance.DialogueUI.ExpAcquired();
+      }
+      CloseUI();
+    }
   }
   public void GetExp_Short(bool index)
   {
     if (UIManager.Instance.IsWorking) return;
 
     Experience _selectexp =index==true? GameManager.Instance.MyGameData.ShortExp_A:GameManager.Instance.MyGameData.ShortExp_B;
-
-    GameManager.Instance.AddExp_Short(CurrentExp, index);
-    if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
+    if (_selectexp != null)
     {
-      UIManager.Instance.DialogueUI.ExpAcquired();
+      if (AskedForChange)
+      {
+        GameManager.Instance.AddExp_Short(CurrentExp, index);
+        if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
+        {
+          UIManager.Instance.DialogueUI.ExpAcquired();
+        }
+        CloseUI();
+      }
+      else
+      {
+        OpenAsk(index ? 1 : 2);
+      }
     }
-    CloseUI();
+    else
+    {
+      GameManager.Instance.AddExp_Short(CurrentExp, index);
+      if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
+      {
+        UIManager.Instance.DialogueUI.ExpAcquired();
+      }
+      CloseUI();
+    }
   }
-
-  /*
-public void OpenUI_Penalty(Experience badexp)
-{
-  if (IsOpen) return;
-  IsOpen = true;
-
- // ExpIllustIcon.GetComponent<Image>().sprite = badexp.Illust;
-//  ExpIllustIcon.SetActive(true);
-  if (ExpQuitButton.activeInHierarchy == true) ExpQuitButton.SetActive(false);
-  ExpDescription.text = GameManager.Instance.GetTextData("SAVEBADEXP_NAME");
-
-  CurrentExp = badexp;
-
-  SetupCurrentExps();
-
-  UIManager.Instance.AddUIQueue(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.35f));
-}
-*/
-
+  public int ChangeTargetExpIndex = 0;
+  private Experience ChangeTargetExp
+  {
+    get
+    {
+      switch (ChangeTargetExpIndex)
+      {
+        case 0:return GameManager.Instance.MyGameData.LongExp;
+        case 1: return GameManager.Instance.MyGameData.ShortExp_A;
+        case 2:return GameManager.Instance.MyGameData.ShortExp_B;
+        default:return null;
+      }
+    }
+  }
+  private void OpenAsk(int index)
+  {
+    ChangeTargetExpIndex=index;
+    ChangeAskText.text = string.Format(GameManager.Instance.GetTextData("ChangeExp_Ask"), ChangeTargetExp.Name, CurrentExp.Name);
+    ChangeAskObject.SetActive(true);
+  }
+  public void ChangeAsk_Yex()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    AskedForChange = true;
+    switch (ChangeTargetExpIndex)
+    {
+      case 0:
+        GetExp_Long();
+        break;
+      case 1:
+        GetExp_Short(true);
+        break;
+      case 2:
+        GetExp_Short(false);
+        break;
+    }
+  }
+  public void ChangeAsk_No()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    ChangeAskObject.SetActive(false);
+  }
 }

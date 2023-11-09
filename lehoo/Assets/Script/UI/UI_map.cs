@@ -162,7 +162,7 @@ public class UI_map : UI_default
     {
       Debug.Log("자연 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
-      UIManager.Instance.AudioManager.PlaySFX(27, 3);
+      UIManager.Instance.AudioManager.PlaySFX(27, 5);
       if (!MadnessEffect.enabled) MadnessEffect.enabled = true;
       IsMad = true;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
@@ -553,7 +553,7 @@ public class UI_map : UI_default
      string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
      MovePointCost- GameManager.Instance.MyGameData.MovePoint,
      WNCText.NegativeColor($"+{(int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)* (MovePointCost - GameManager.Instance.MyGameData.MovePoint)}%")
-            + (GameManager.Instance.MyGameData.Tendency_Head.Level == -2 ? "<sprite=92>" : "")));
+            + (GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? "<sprite=92>" : "")));
   }
   private bool CheckRitual
   {
@@ -574,14 +574,14 @@ public class UI_map : UI_default
     //    SanitybuttonGroup.alpha = 1.0f;
      //   GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
 
-        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), SanityCost);
+        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"),!IsMad?SanityCost:"?");
         break;
       case StatusTypeEnum.Gold:
         if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
 
         SelectedCostType = StatusTypeEnum.Gold;
 
-        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), GoldCost);
+        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"),!IsMad?GoldCost:"?");
         break;
     }
     MoveCostText.text = _costtext;

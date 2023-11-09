@@ -39,6 +39,11 @@ CultSFX,
 Hungry}
 public class AudioManager : MonoBehaviour
 {
+  private void Start()
+  {
+    AudioMixer.SetFloat("BGM", PlayerPrefs.GetFloat("BGMVolume",0) < -40 ? -80 : PlayerPrefs.GetFloat("BGMVolume", 0));
+    AudioMixer.SetFloat("SFX", PlayerPrefs.GetFloat("SFXVolume", 0) < -40 ? -80 : PlayerPrefs.GetFloat("SFXVolume", 0));
+  }
   public AudioMixer AudioMixer = null;
   private List<AudioChanel> sfxaudios = new List<AudioChanel>();
   private List<AudioChanel> SFXAudios

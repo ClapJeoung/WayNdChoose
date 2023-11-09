@@ -8,19 +8,12 @@ public class MapButton : ReturnButton
   {
     base.Clicked();
 
-    if (GameManager.Instance.MyGameData.CurrentSettlement != null && GameManager.Instance.MyGameData.Tendency_Head.Level < 0)
-      GameManager.Instance.MyGameData.MovePoint++;
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null && GameManager.Instance.MyGameData.Tendency_Head.Level == -2)
+      GameManager.Instance.MyGameData.MovePoint += ConstValues.Tendency_Head_m2;
 
       if (CurrentUI as UI_dialogue != null)
     {
       UI_dialogue _dialogue = CurrentUI as UI_dialogue;
- /*     if (_dialogue.RemainReward == true && Warned == false)
-      {
-        WarningDescription.text = GameManager.Instance.GetTextData("NOREWARD");
-        SetWarningButton();
-        return;
-      }
-      else*/
       {
         UIManager.Instance.DialogueUI.CloseUI(false);
       }
@@ -29,21 +22,15 @@ public class MapButton : ReturnButton
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+        if (UIManager.Instance.CultUI.IsOpen)
         {
-          case 0:
-            if (UIManager.Instance.CultUI.IsOpen) UIManager.Instance.CultUI.CloseUI_Auto();
-            break;
-          case 1:
-            break;
-          case 2:
-            break;
+          UIManager.Instance.CultUI.CloseUI_Auto();
+          UIManager.Instance.MapUI.OpenUI(false);
+          return;
         }
         break;
     }
 
-    UIManager.Instance.MapUI.OpenUI(Dir == 0 );
-
-    Close();
+    UIManager.Instance.MapUI.OpenUI(true);
   }
 }

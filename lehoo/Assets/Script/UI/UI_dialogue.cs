@@ -9,15 +9,14 @@ public class UI_dialogue : UI_default
 {
   public float OpenTime = 1.5f;
   public float CloseTime = 1.0f;
-  private float MoveForButtonTime = 0.5f;
   public RectTransform DialogueRect = null;
 
   public Vector2 EventDialogueSize = new Vector2(475.0f, 480.0f);
   public Vector2 SettlementDialogueSize = new Vector2(475.0f, 780.0f);
   public Vector2 LeftPos = new Vector2(-1350.0f, 0.0f);
-  public Vector2 CenterPos_Event = new Vector2(0.0f, 0.0f);
-  public Vector2 CenterPos_Settlement = new Vector2(125.0f, 0.0f);
+  public Vector2 CenterPos = Vector2.zero;
   public Vector2 RightPos = new Vector2(1250.0f, 0.0f);
+  public Image SettlementBackground = null;
   [Header("이벤트")]
   #region 이벤트
   public GameObject EventObjectHolder = null;
@@ -62,6 +61,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private Image RewardIcon = null;
   [SerializeField] private TextMeshProUGUI RewardDescription = null;
   [SerializeField] private UI_RewardExp RewardExpUI = null;
+  [SerializeField] private RectTransform MapbuttonPos_Event = null;
   [SerializeField] private CanvasGroup EndingButtonGroup = null;
   [SerializeField] private TextMeshProUGUI EndingButtonText = null;
   [SerializeField] private CanvasGroup EndingRefuseGroup = null;
@@ -85,8 +85,11 @@ public class UI_dialogue : UI_default
     if (MadenssEffect.enabled) MadenssEffect.enabled = false;
     IsOpen = true;
 
+    UIManager.Instance.SettleButton.DeActive();
+    UIManager.Instance.MapButton.DeActive();
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
     if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
+    if(SettlementBackground.enabled==true) SettlementBackground.enabled = false;
     DialogueRect.sizeDelta = EventDialogueSize;
 
     if(CurrentEvent.AppearSpace==EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
@@ -117,7 +120,7 @@ public class UI_dialogue : UI_default
     StartCoroutine(displaynextindex(true));
 
     Vector2 _startpos = dir ? LeftPos : RightPos;
-    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos_Event, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
 
     DefaultGroup.interactable = true;
     yield return null;
@@ -128,6 +131,8 @@ public class UI_dialogue : UI_default
     IsOpen = true;
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
     if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
+    if (SettlementBackground.enabled == true) SettlementBackground.enabled = false;
+    UIManager.Instance.SettleButton.DeActive();
     DialogueRect.sizeDelta = EventDialogueSize;
 
     if (CurrentEvent.AppearSpace == EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
@@ -188,7 +193,7 @@ public class UI_dialogue : UI_default
     StartCoroutine(displaynextindex(true));
 
     Vector2 _startpos = dir ? LeftPos : RightPos;
-    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos_Event, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
 
     DefaultGroup.interactable = true;
     yield return null;
@@ -549,12 +554,10 @@ public class UI_dialogue : UI_default
         if (_percentvalue >= _requirevalue)
         {
           _issuccess = true;
-          UIManager.Instance.AudioManager.PlaySFX(25);
         }
         else
         {
           _issuccess = false;
-          UIManager.Instance.AudioManager.PlaySFX(26);
         }
 
         yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_percentvalue / (float)_requirevalue, 0.0f, 1.0f)));
@@ -629,7 +632,8 @@ public class UI_dialogue : UI_default
       image.fillAmount=Mathf.Lerp(1.0f,0.0f, SelectionCheckCurve.Evaluate(_time/ SelectionEffectTime_check));
       _time += Time.deltaTime;yield return null;
     }
-    // image.fillAmount = SelectionCheckCurve.Evaluate(_time / SelectionEffectTime);
+    if (successvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25); }
+    else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
     yield return new WaitForSeconds(0.5f);
   }
@@ -652,7 +656,7 @@ public class UI_dialogue : UI_default
       image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime;yield return null;
     }
-    if (_firstvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25);  }
+    if (_secondvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25);  }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
     yield return new WaitForSeconds(0.5f);
@@ -753,7 +757,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private float IllustRotateDegree = 2.5f;
   private IEnumerator shakeillust()
   {
-    Vector2 _originpos = new Vector2(-300.0f, 0.0f);
+    Vector2 _originpos = IllustRect.anchoredPosition;
     float _time = 0.0f;
     while (_time < IllustShakeTime)
     {
@@ -774,14 +778,13 @@ public class UI_dialogue : UI_default
   }
   public void OpenReturnButton()
   {
-    MoveRectForButton(1);
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)
     {
-      UIManager.Instance.SettleButton.Open(0, this);
+      UIManager.Instance.SettleButton.SetCurrentUI(this, MapbuttonPos_Event,0.0f);
     }//정착지에서 이벤트를 끝낸 경우 정착지로 돌아가는 버튼 활성화
     else
     {
-      UIManager.Instance.MapButton.Open(0, this);
+      UIManager.Instance.MapButton.SetCurrentUI(this, MapbuttonPos_Event,0.0f);
     }//야외에서 이벤트를 끝낸 경우 야외로 돌아가는 버튼 활성화
   }
   /// <summary>
@@ -802,8 +805,6 @@ public class UI_dialogue : UI_default
     UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
 
 
-    if (UIManager.Instance.MapButton.IsOpen) UIManager.Instance.MapButton.Close();
-    if (UIManager.Instance.SettleButton.IsOpen) UIManager.Instance.SettleButton.Close();
     if (RewardButtonGroup.alpha==1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
 
     if (dir == true)
@@ -914,6 +915,7 @@ public class UI_dialogue : UI_default
   #region 정착지
   public GameObject SettlementObjectHolder = null;
   public Image MadenssEffect = null;
+  [SerializeField] private RectTransform MapbuttonPos_Settlemtn = null;
   [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementNameText = null;
   [SerializeField] private RectTransform DiscomfortIcon = null;
@@ -956,7 +958,7 @@ public class UI_dialogue : UI_default
     {
       Debug.Log("무력 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Force);
-      UIManager.Instance.AudioManager.PlaySFX(27, 3);
+      UIManager.Instance.AudioManager.PlaySFX(27, 5);
       if (!MadenssEffect.enabled) MadenssEffect.enabled = true;
       IsMad = true;
     }
@@ -975,6 +977,7 @@ public class UI_dialogue : UI_default
 
     if (EventObjectHolder.activeInHierarchy == true) EventObjectHolder.SetActive(false);
     if (SettlementObjectHolder.activeInHierarchy == false) SettlementObjectHolder.SetActive(true);
+    if (SettlementBackground.enabled == false) SettlementBackground.enabled = true;
     DialogueRect.sizeDelta = SettlementDialogueSize;
 
     IsSelectSector = false;
@@ -1022,22 +1025,11 @@ SettlementNameText.text = CurrentSettlement.Name;
     RestResult.text = "";
     CostText.text = "";
 
-    Vector2 _startpos_panel = Vector2.zero, _endpos_panel = Vector2.zero;
-    if (dir == true)
-    {
-      _startpos_panel = LeftPos;
-      _endpos_panel = CenterPos_Settlement;
-
-    }
-    else
-    {
-      _startpos_panel = RightPos;
-      _endpos_panel = CenterPos_Settlement;
-    }
+    Vector2 _startpos_panel = dir?LeftPos:RightPos, _endpos_panel = CenterPos;
+    UIManager.Instance.MapButton.SetCurrentUI(this, MapbuttonPos_Settlemtn, 1.0f);
 
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos_panel, _endpos_panel, OpenTime, UIManager.Instance.UIPanelOpenCurve));
 
-    UIManager.Instance.MapButton.Open(0, this);
 
     DefaultGroup.interactable = true;
   }
@@ -1060,8 +1052,8 @@ SettlementNameText.text = CurrentSettlement.Name;
     SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
-    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
-      ConstValues.Tendency_Head_p1 : ConstValues.Rest_Discomfort;
+    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==2) == true ?
+      ConstValues.Tendency_Head_p2 : ConstValues.Rest_Discomfort;
     switch (sector)
     {
       case SectorTypeEnum.Residence:
@@ -1112,7 +1104,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"),
-      GameManager.Instance.MyGameData.Tendency_Head.Level == +1 && GameManager.Instance.MyGameData.FirstRest ? "<sprite=95>" : ""
+      GameManager.Instance.MyGameData.Tendency_Head.Level == +1 && GameManager.Instance.MyGameData.FirstRest ? "(<sprite=95>)" : ""
       ,DiscomfortValue, MovePointValue);
 
   }
@@ -1156,8 +1148,8 @@ SettlementNameText.text = CurrentSettlement.Name;
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level > 0) == true ?
-      ConstValues.Tendency_Head_p1 : ConstValues.Rest_Discomfort;
+    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==2) == true ?
+      ConstValues.Tendency_Head_p2 : ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
@@ -1211,7 +1203,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), 
-      GameManager.Instance.MyGameData.Tendency_Head.Level==1&&GameManager.Instance.MyGameData.FirstRest ? "<sprite=95>":"",
+      GameManager.Instance.MyGameData.Tendency_Head.Level==1&&GameManager.Instance.MyGameData.FirstRest ? "(<sprite=95>)":"",
       DiscomfortValue, MovePointValue);
 
     CostText.text = "";

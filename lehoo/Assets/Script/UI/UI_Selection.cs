@@ -84,7 +84,7 @@ public class UI_Selection : MonoBehaviour
             if (GameManager.Instance.MyGameData.Gold < GameManager.Instance.MyGameData.PayGoldValue)
             {
               HighlightEffect.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.PayOverSanityValue * -1);
-              PayInfo.text = WNCText.PercentageColor(_requirevalue.ToString(), _requirevalue/(_requirevalue*_requirevalue/ GameManager.Instance.MyGameData.Gold*-1));
+              PayInfo.text = WNCText.PercentageColor(_requirevalue.ToString(),  GameManager.Instance.MyGameData.Gold/_requirevalue*-1);
             }
             else
             {

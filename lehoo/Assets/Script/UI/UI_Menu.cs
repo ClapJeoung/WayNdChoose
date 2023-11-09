@@ -37,10 +37,12 @@ public class UI_Menu : UI_default
   public void SetBGMMixer()
   {
     UIManager.Instance.AudioManager.AudioMixer.SetFloat("BGM",BGMSlider.value<-40?-80:BGMSlider.value);
+    PlayerPrefs.SetFloat("BGMVolume", BGMSlider.value);
   }
   public void SetSFMMixer()
   {
     UIManager.Instance.AudioManager.AudioMixer.SetFloat("SFX", SFXSlider.value < -40 ? -80 : SFXSlider.value);
+    PlayerPrefs.SetFloat("SFXVolume", BGMSlider.value);
   }
   private IEnumerator openui()
   {

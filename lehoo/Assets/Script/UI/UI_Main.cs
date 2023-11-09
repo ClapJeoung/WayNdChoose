@@ -196,8 +196,6 @@ public class UI_Main : UI_default
   }
   private IEnumerator openmain()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
-
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, MainUIOpenTime));
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, MainUIOpenTime));
@@ -209,7 +207,7 @@ public class UI_Main : UI_default
     yield return Wait;
     if (LoadInfoText.text != "")
     {
-      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup,1.0f,1.0f));
+      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup,1.0f, MainUIOpenTime));
     }
     if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement") == 1)
     {
@@ -219,12 +217,12 @@ public class UI_Main : UI_default
     {
       TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOff");
     }
-    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, MainUIOpenTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
     yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
   }
   private IEnumerator closemain()
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 0.0f  , MainUICloseTime));
     if (MusicLicensePanel.activeInHierarchy==true) MusicLicensePanel.SetActive(false);
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, MainUICloseTime));
@@ -233,9 +231,10 @@ public class UI_Main : UI_default
 
     if (LoadInfoText.text != "")
     {
-      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup, 0.0f, 1.0f));
+      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup, 0.0f, MainUICloseTime));
     }
-    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 0.0f, 1.0f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 0.0f, MainUICloseTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 0.0f, MainUICloseTime));
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("newgame").Rect, GetPanelRect("newgame").InsidePos, GetPanelRect("newgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;

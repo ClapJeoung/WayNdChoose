@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int StartSkillLevel = 1;
+
   public const int GoldPerMovepoint = 2;
   public const int StartMovePoint = 15;
   public const int MovePoint_Sea = 4;
@@ -30,16 +32,16 @@ public static class ConstValues
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
 
-  public const int MadnessEffect_Conversation = 8;
+  public const int MadnessEffect_Conversation = 5;
   public const int MadnessEffect_Force = 3;
   public const int MadnessEffect_Wild = 4;
   public const int MadnessEffect_Intelligence_Value = 2;
 
-  public const int MadnessHPCost_Skill = 30;
-  public const int MadnessSanityGen_Skill = 50;
+  public const int MadnessHPCost_Skill = 25;
+  public const int MadnessSanityGen_Skill = 75;
   public const int MadnessSkillLevel = 2;
-  public const int MadnessHPCost_HP = 40;
-  public const int MadnessSanityGen_HP = 70;
+  public const int MadnessHPCost_HP = 30;
+  public const int MadnessSanityGen_HP = 100;
 
   public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=7,
     Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 3;
@@ -51,18 +53,18 @@ public static class ConstValues
   public const int Quest_Cult_CoolTime_Ritual = 3;
 
 
-  public const int Rest_MovePoint = 4;
+  public const int Rest_MovePoint = 8;
   public const int Rest_Discomfort = 3;
-  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 25.0f;
-  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 15.0f;
-  public const float Rest_Deafult = 0.7f, Rest_DiscomfortRatio = 0.15f;
+  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 15.0f;
+  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 10.0f;
+  public const float Rest_Deafult = 0.7f, Rest_DiscomfortRatio = 0.2f;
   public const float Move_Default = 0.1f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 0.5f;
 
 
-  public const int EventPer_Envir = 3, EventPer_NoEnvir = 1,
-                   EventPer_Sector = 3, EventPer_NoSector = 1,
-                   EventPer_Quest = 1, EventPer_Follow_Ev = 4, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
+  public const int EventPer_Envir = 5, EventPer_NoEnvir = 1,
+                   EventPer_Sector = 4, EventPer_NoSector = 1,
+                   EventPer_Quest = 1, EventPer_Follow_Ev = 8, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
 
   public const int MapSize = 21;
@@ -80,47 +82,46 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.4f;
   public const float  SanityLoss_Exp = 0.2f;
 
-  public const float Tendency_Head_m2 = 0.2f;
-  public const int Tendency_Head_m1 = 2;
-  public const int Tendency_Head_p1 = 0;
-  public const int Tendency_Head_p2 = 2;
+  public const int Tendency_Head_m2 = 4;
+  public const float Tendency_Head_m1 = 0.2f;
+  public const int Tendency_Head_p1 =2;
+  public const int Tendency_Head_p2 = 0;
   //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
   //정신적 1: 정착지 출발할때마다 공짜 이동력 1
   //물질적 1: 정착지 출발할때마다 현재 정착지 불쾌 -2
   //물질적 2: 매년 봄 모든 정착지에 불쾌 -2
 
-  public const int ConversationByTendency_m2 = 3, ConversationByTendency_m1 = 1, ConversationByTendency_p2 = -1,
-    IntelligenceByTendency_m2 = 3, IntelligenceByTendency_m1 = 1, IntelligenceByTendency_p2 = -1,
-    ForceByTendency_m2 = -1, ForceByTendency_p1 = 1, ForceByTendency_p2 = 3,
-    WildByTendency_m2 = -1, WildByTendency_p1 = 1, WildByTendency_p2 = 3;
+  public const int ConversationByTendency_m2 = 3, ConversationByTendency_m1 = 1,
+    IntelligenceByTendency_m2 = 3, IntelligenceByTendency_m1 = 1,
+    ForceByTendency_p1 = 1, ForceByTendency_p2 = 3,
+     WildByTendency_p1 = 1, WildByTendency_p2 = 3;
   //논리적 2: 화술+3 학식+3 격투-1 생존-1
   //논리적 1: 화술+1 학식+1
   //육체적 1: 격투+1 생존+1
   //육체적 2: 격투+3 생존+3 화술-1 학식-1
 
   //성향 진행도 따라 긍정,부정 값
-  public const float minsuccesper_max = 15;
+  public const float minsuccesper_max = 45;
   public const float minsuccesper_min = 5;
-  public const float MoneyCheck_min = 2.5f, MoneyCheck_max = 0.25f; //골드 지불 범위 벗어날 시 지불 실패 금액에 제곱비례
   //스킬 체크, 지불 체크 최대~최소
-  public const int MaxTime = 30;
+  public const int MaxTime = 40;
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 6;
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
+  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 4;
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 6;
 
   public const float Difficult = 1.0f;
-  public const float PayHP_min = 6, PayHP_max = 12;      
+  public const float PayHP_min = 4, PayHP_max = 8;      
   public const float PaySanity_min = 8, PaySanity_max = 16;
   public const float PayGold_min = 6, PayGold_max = 12; 
-  public const float FailHP_min = 9, FailHP_max = 15;   
+  public const float FailHP_min = 6, FailHP_max = 12;   
   public const float FailSanity_min = 12, FailSanity_max = 20;
   public const float FailGold_min = 8, FailGold_max = 14;
   public const int RewardHP_min = 0, RewardHP_max = 0;
   public const int RewardSanity = 6;
   public const int RewardGold = 6;
 
-  public const int ShortTermStartTurn = 6;
-  public const int LongTermStartTurn =  12;
+  public const int ShortTermStartTurn = 9;
+  public const int LongTermStartTurn =  15;
 
   public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
@@ -239,11 +240,11 @@ public class GameData    //게임 진행도 데이터
                   Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
                   Debug.Log("대화 광기 발동");
                   UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Conversation);
-                  UIManager.Instance.AudioManager.PlaySFX(27, 3);
+                  UIManager.Instance.AudioManager.PlaySFX(27, 5);
                   break;
               }
             }
-            if (GameManager.Instance.MyGameData.Tendency_Head.Level == 2) DownAllDiscomfort(ConstValues.Tendency_Head_p2);
+            if (GameManager.Instance.MyGameData.Tendency_Head.Level == 1) DownAllDiscomfort(ConstValues.Tendency_Head_p1);
             break;
           case 1:
             break;
@@ -253,7 +254,7 @@ public class GameData    //게임 진행도 데이터
               _expvalue = ConstValues.MadnessEffect_Intelligence_Value;
               Debug.Log("지성 광기 발동");
               UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Intelligence);
-              UIManager.Instance.AudioManager.PlaySFX(27, 3);
+              UIManager.Instance.AudioManager.PlaySFX(27, 5);
             }
             break;
           case 3:
@@ -418,7 +419,7 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      if (Tendency_Head.Level == -2) return ConstValues.Tendency_Head_m2;
+      if (Tendency_Head.Level == -1) return ConstValues.Tendency_Head_m1;
       return ConstValues.LackMPAmplifiedValue_Idle;
     }
   }
@@ -722,10 +723,10 @@ public class GameData    //게임 진행도 데이터
     QuestType=questtype;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
-    Skill_Conversation = new Skill(SkillTypeEnum.Conversation);
-    Skill_Force = new Skill(SkillTypeEnum.Force);
-    Skill_Wild= new Skill(SkillTypeEnum.Wild);
-    Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence);
+    Skill_Conversation = new Skill(SkillTypeEnum.Conversation,ConstValues.StartSkillLevel);
+    Skill_Force = new Skill(SkillTypeEnum.Force, ConstValues.StartSkillLevel);
+    Skill_Wild= new Skill(SkillTypeEnum.Wild, ConstValues.StartSkillLevel);
+    Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence, ConstValues.StartSkillLevel);
   }
   /// <summary>
   /// 불러오기
@@ -965,13 +966,11 @@ public class Skill
       {
         if (_tendencylevel.Equals(-2)) return ConstValues.ConversationByTendency_m2;
         else if (_tendencylevel.Equals(-1)) return ConstValues.ConversationByTendency_m1;
-        else if (_tendencylevel.Equals(2)) return ConstValues.ConversationByTendency_p2;
       }
       else
       {
         if (_tendencylevel.Equals(2)) return ConstValues.ForceByTendency_p2;
         else if (_tendencylevel.Equals(1)) return ConstValues.ForceByTendency_p1;
-        else if (_tendencylevel.Equals(-2)) return ConstValues.ForceByTendency_m2;
       }
       return 0;
     }
@@ -1063,11 +1062,9 @@ public class Tendency
               _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
               _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
               _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
-              _result = string.Format("{0}, {1}\n{2}, {3}",
+              _result = string.Format("{0}, {1}",
                 string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m2),
-                string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m2),
-                string.Format(_downtext, _force, ConstValues.ForceByTendency_m2),
-                string.Format(_downtext, _wild, ConstValues.WildByTendency_m2));
+                string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m2));
               break;
             case -1:
               _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
@@ -1088,11 +1085,9 @@ public class Tendency
               _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
               _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
               _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
-              _result = string.Format("{0}, {1}\n{2}, {3}",
+              _result = string.Format("{0}, {1}",
                 string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
-                string.Format(_uptext, _wild, ConstValues.WildByTendency_p2),
-                string.Format(_downtext, _conver, ConstValues.ConversationByTendency_p2),
-                string.Format(_downtext, _intel, ConstValues.IntelligenceByTendency_p2));
+                string.Format(_uptext, _wild, ConstValues.WildByTendency_p2));
               break;
           }
           break;
@@ -1101,11 +1096,11 @@ public class Tendency
           {
             case -2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
-                ConstValues.LackMPAmplifiedValue_Idle, ConstValues.Tendency_Head_m2);
+                      WNCText.GetMovepointColor(ConstValues.Tendency_Head_m2));
               break;
             case -1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-              WNCText.GetMovepointColor(ConstValues.Tendency_Head_m1));
+                       ConstValues.LackMPAmplifiedValue_Idle, ConstValues.Tendency_Head_m1);
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),

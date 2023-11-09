@@ -184,8 +184,7 @@ public class UIManager : MonoBehaviour
 
     HPIconRect.sizeDelta = Vector2.one * Mathf.Lerp( ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.HP / 100.0f);
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
-    Debug.Log("체력 수치 업데이트");
-
+  //  Debug.Log("체력 수치 업데이트");
 
     lasthp = GameManager.Instance.MyGameData.HP;
   }

@@ -52,6 +52,7 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private TextMeshProUGUI Prologue_ButtonText_Right = null;
   [SerializeField] private CanvasGroup Prologue_Nextbutton_Group = null;
   [SerializeField] private float PrologueFadetime = 0.7f;
+  [SerializeField] private RectTransform MapbuttonPos = null;
   private void ActiveSetNextButton()
   {
     if (Prologue_TendencyGroup.gameObject.activeInHierarchy == true) Prologue_TendencyGroup.gameObject.SetActive(false);
@@ -226,7 +227,7 @@ public class UI_QuestWolf : UI_default
     if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
     {
       MoveRectForButton(0);
-      UIManager.Instance.MapButton.Open(1, this);
+      UIManager.Instance.MapButton.SetCurrentUI(this,MapbuttonPos,0.0f);
     }
 
   }
