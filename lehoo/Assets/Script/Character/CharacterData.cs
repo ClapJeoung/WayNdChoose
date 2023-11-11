@@ -11,7 +11,7 @@ public static class ConstValues
   public const int StartSkillLevel = 1;
 
   public const int GoldPerMovepoint = 2;
-  public const int StartMovePoint = 15;
+  public const int StartMovePoint = 10;
   public const int MovePoint_Sea = 4;
   public const int MovePoint_Moutain = 2;
   public const int MovePoint_River = 1, MovePoint_Forest = 1;
@@ -26,13 +26,13 @@ public static class ConstValues
   public const float ScrollSpeed = 0.08f;
   public const float ScrollTime = 1.25f;
 
-  public const int ExpSkillLevel = 2;
+  public const int ExpSkillLevel = 1;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
 
-  public const int MadnessEffect_Conversation = 5;
+  public const int MadnessEffect_Conversation = 7;
   public const int MadnessEffect_Force = 3;
   public const int MadnessEffect_Wild = 4;
   public const int MadnessEffect_Intelligence_Value = 2;
@@ -45,26 +45,26 @@ public static class ConstValues
 
   public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=7,
     Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 3;
-  public const int Qeust_Cult_EventProgress_Clear = 2;
-  public const int Quest_Cult_EventProgress_Fail = 2;
+  public const float Qeust_Cult_EventProgress_Clear = 1.5f;
+  public const float Quest_Cult_EventProgress_Fail = 1.0f;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 4;
   public const int Quest_Cult_MovepointAsSanity = 7;
-  public const int Quest_Cult_CoolTime_Sabbat = 5;
+  public const int Quest_Cult_CoolTime_Sabbat = 7;
   public const int Quest_Cult_CoolTime_Ritual = 3;
 
 
-  public const int Rest_MovePoint = 8;
-  public const int Rest_Discomfort = 3;
-  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 15.0f;
-  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 10.0f;
-  public const float Rest_Deafult = 0.7f, Rest_DiscomfortRatio = 0.2f;
+  public const int Rest_MovePoint = 4;
+  public const int Rest_Discomfort = 4;
+  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
+  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 14.0f;
+  public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.2f;
   public const float Move_Default = 0.1f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 0.5f;
 
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 1,
                    EventPer_Sector = 4, EventPer_NoSector = 1,
-                   EventPer_Quest = 1, EventPer_Follow_Ev = 8, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
+                   EventPer_Quest = 1, EventPer_Follow_Ev = 10, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
 
   public const int MapSize = 21;
@@ -79,22 +79,22 @@ public static class ConstValues
 
   public const int StartGold = 10;
   public const float HPLoss_Exp = 0.3f;
-  public const float GoldGen_Exp = 0.4f;
+  public const float GoldGen_Exp = 0.3f;
   public const float  SanityLoss_Exp = 0.2f;
 
   public const int Tendency_Head_m2 = 4;
   public const float Tendency_Head_m1 = 0.2f;
-  public const int Tendency_Head_p1 =2;
+  public const int Tendency_Head_p1 =1;
   public const int Tendency_Head_p2 = 0;
   //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
   //정신적 1: 정착지 출발할때마다 공짜 이동력 1
   //물질적 1: 정착지 출발할때마다 현재 정착지 불쾌 -2
   //물질적 2: 매년 봄 모든 정착지에 불쾌 -2
 
-  public const int ConversationByTendency_m2 = 3, ConversationByTendency_m1 = 1,
-    IntelligenceByTendency_m2 = 3, IntelligenceByTendency_m1 = 1,
-    ForceByTendency_p1 = 1, ForceByTendency_p2 = 3,
-     WildByTendency_p1 = 1, WildByTendency_p2 = 3;
+  public const int ConversationByTendency_m2 = 2, ConversationByTendency_m1 = 1,
+    IntelligenceByTendency_m2 = 2, IntelligenceByTendency_m1 = 1,
+    ForceByTendency_p1 = 1, ForceByTendency_p2 = 2,
+     WildByTendency_p1 = 1, WildByTendency_p2 = 2;
   //논리적 2: 화술+3 학식+3 격투-1 생존-1
   //논리적 1: 화술+1 학식+1
   //육체적 1: 격투+1 생존+1
@@ -104,10 +104,10 @@ public static class ConstValues
   public const float minsuccesper_max = 45;
   public const float minsuccesper_min = 5;
   //스킬 체크, 지불 체크 최대~최소
-  public const int MaxTime = 40;
+  public const int MaxTime = 30;
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 4;
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 6;
+  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 6;
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
 
   public const float Difficult = 1.0f;
   public const float PayHP_min = 4, PayHP_max = 8;      
@@ -244,7 +244,6 @@ public class GameData    //게임 진행도 데이터
                   break;
               }
             }
-            if (GameManager.Instance.MyGameData.Tendency_Head.Level == 1) DownAllDiscomfort(ConstValues.Tendency_Head_p1);
             break;
           case 1:
             break;
@@ -270,7 +269,6 @@ public class GameData    //게임 진행도 데이터
         switch (QuestType)
         {
           case QuestType.Cult:
-            UIManager.Instance.SidePanelCultUI.UpdateUI();
             if (Quest_Cult_Phase > 2)
             {
               Cult_CoolTime--;
@@ -294,6 +292,7 @@ public class GameData    //게임 진행도 데이터
                     break;
                 }
               }
+              UIManager.Instance.SidePanelCultUI.UpdateUI();
             }
             break;
         }
@@ -569,8 +568,8 @@ public class GameData    //게임 진행도 데이터
   /// 0(촌락) -> 1(마을) -> 2(도시) -> 3(의식) <-> 4(집회)
   /// </summary>
   public int Quest_Cult_Phase = 0;
-  private int quest_cult_progress =0;
-  public int Quest_Cult_Progress
+  private float quest_cult_progress =0;
+  public float Quest_Cult_Progress
   {
     get { return quest_cult_progress; }
     set 
@@ -591,7 +590,43 @@ public class GameData    //게임 진행도 데이터
   {
     Quest_Cult_Phase = 3;
     Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Sabbat;
-    Cult_SabbatSector = (SectorTypeEnum)UnityEngine.Random.Range(1, 5);
+    if (CurrentSettlement == null)
+    {
+      Dictionary<int,int> _settlements= new Dictionary<int,int>();
+      _settlements.Add(0, GameManager.Instance.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count);
+      _settlements.Add(1, GameManager.Instance.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count);
+      _settlements.Add(2, GameManager.Instance.GetLength(CurrentTile, MyMapData.Town.Tile).Count);
+      _settlements.Add(3, GameManager.Instance.GetLength(CurrentTile, MyMapData.City.Tile).Count);
+    List<int> _indexes= new List<int>();
+      foreach (var _data in _settlements) for (int i = 0; i < _data.Value; i++) _indexes.Add(_data.Key);
+      switch(_indexes[UnityEngine.Random.Range(0, _indexes.Count)])
+      {
+        case 0: case 1:
+          Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
+          break;
+        case 2:
+          Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Temple : SectorTypeEnum.Marketplace;
+          break;
+        case 3:
+          Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
+          break;
+      }
+    }
+    else
+    {
+      switch (CurrentSettlement.SettlementType)
+      {
+        case SettlementType.Village:
+          Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
+          break;
+        case SettlementType.Town:
+          Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Library;
+          break;
+        case SettlementType.City:
+          Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
+          break;
+      }
+    }
 
     if (Cult_RitualTile != null)
     {
@@ -924,7 +959,7 @@ public class Skill
   {
     get
     {
-      return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByExp + LevelByTendency,0, LevelByDefault + LevelByExp + LevelByTendency+ LevelByMadness);
+      return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByExp + LevelByTendency + LevelByMadness, 0,100);
     }
   }
   public int LevelByExp
@@ -1104,7 +1139,7 @@ public class Tendency
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-               WNCText.GetDiscomfortColor(ConstValues.Tendency_Head_p1));
+               WNCText.GetGoldColor(ConstValues.Tendency_Head_p1));
               break;
             case 2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),

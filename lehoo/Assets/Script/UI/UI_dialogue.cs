@@ -1062,7 +1062,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue=IsMad? _discomfort_default: _discomfort_default > 1 ? _discomfort_default - ConstValues.SectorEffect_residence_discomfort : 0;
+        DiscomfortValue=IsMad? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
         MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Temple:
@@ -1104,7 +1104,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"),
-      GameManager.Instance.MyGameData.Tendency_Head.Level == +1 && GameManager.Instance.MyGameData.FirstRest ? "(<sprite=95>)" : ""
+      GameManager.Instance.MyGameData.Tendency_Head.Level == 2 && GameManager.Instance.MyGameData.FirstRest ? "<sprite=105>" : ""
       ,DiscomfortValue, MovePointValue);
 
   }
@@ -1148,7 +1148,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==2) == true ?
+    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==2)?
       ConstValues.Tendency_Head_p2 : ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
@@ -1158,7 +1158,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue = IsMad ? _discomfort_default : _discomfort_default > 1 ? _discomfort_default - ConstValues.SectorEffect_residence_discomfort : 0;
+        DiscomfortValue = IsMad ? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
         MovePointValue = ConstValues.Rest_MovePoint;
         break;
       case SectorTypeEnum.Temple:
@@ -1195,7 +1195,6 @@ SettlementNameText.text = CurrentSettlement.Name;
         UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
         break;
       case true:
-        DiscomfortValue += ConstValues.Quest_Cult_SabbatDiscomfort;
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
         ConstValues.Quest_Cult_Progress_Sabbat);
         SectorEffect.text = _effect + _sabbatdescription;
@@ -1203,7 +1202,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), 
-      GameManager.Instance.MyGameData.Tendency_Head.Level==1&&GameManager.Instance.MyGameData.FirstRest ? "(<sprite=95>)":"",
+      GameManager.Instance.MyGameData.Tendency_Head.Level==2&&GameManager.Instance.MyGameData.FirstRest ? "<sprite=105>":"",
       DiscomfortValue, MovePointValue);
 
     CostText.text = "";

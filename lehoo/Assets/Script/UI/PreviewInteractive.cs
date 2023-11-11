@@ -131,7 +131,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NOGOLD_TEXT"), OtherRect==null?transform as RectTransform : OtherRect);
         break;
       case PreviewPanelType.CultSidePanel:
-        string _cultinfo = string.Format(GameManager.Instance.GetTextData("Cult_Preview_progress"), GameManager.Instance.MyGameData.Quest_Cult_Progress);
+        string _cultinfo = string.Format(GameManager.Instance.GetTextData("Cult_Preview_progress"),Mathf.FloorToInt(GameManager.Instance.MyGameData.Quest_Cult_Progress));
         string _sametext = "";
         switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {

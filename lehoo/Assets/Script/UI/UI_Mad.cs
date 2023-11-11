@@ -51,6 +51,7 @@ public class UI_Mad : UI_default
   /// <param name="index"></param>
   public void OnEnterMadness(int index)
   {
+    if (!IsOpen) return;
     string _str = "";
     switch(index)
     {
@@ -87,10 +88,7 @@ public class UI_Mad : UI_default
   public void SelectMadness(int index)
   {
 
-    Debug.Log("·¹ÈÄ");
-    if (UIManager.Instance.IsWorking|| IsOpen==false) return;
-
-    Debug.Log("Å×Ã­");
+    if ( IsOpen==false) return;
 
     switch (index)
     {

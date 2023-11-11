@@ -141,7 +141,7 @@ public class GameJsonData
 
   public int QuestType = 0;
   public int Cult_Phase = 0;
-  public int Cult_Progress = 0;
+  public float Cult_Progress = 0;
   public int Cult_SabbatSector = 0;
   public Vector2 Cult_RitualTile = new Vector2();
   public int Cult_CoolTime = 0;

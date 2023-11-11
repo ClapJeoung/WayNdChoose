@@ -2258,6 +2258,90 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: StatusTextImages_102
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 2800
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe5ec6757d6406a4ea7098337a9f3907
+      internalID: 701292645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StatusTextImages_103
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 2800
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1c1d4db784be3841adedd6b03f12a62
+      internalID: -1254414767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StatusTextImages_104
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 2800
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14b68781cfb1287449011106031d1e38
+      internalID: -1205634843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StatusTextImages_105
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 2800
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32dc702daff06c347a2805ddb8b213fc
+      internalID: -2139842003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -2274,8 +2358,28 @@ TextureImporter:
       StatusTextImages_10: -1668315858
       StatusTextImages_100: 148485028
       StatusTextImages_101: -91796237
+      StatusTextImages_102: 701292645
+      StatusTextImages_103: -1254414767
+      StatusTextImages_104: -1205634843
+      StatusTextImages_105: -2139842003
+      StatusTextImages_106: -1090710593
+      StatusTextImages_107: -2021119628
+      StatusTextImages_108: -235387107
+      StatusTextImages_109: -287025254
       StatusTextImages_11: -1833854203
+      StatusTextImages_110: 1499190337
+      StatusTextImages_111: -287960062
+      StatusTextImages_112: 904147897
+      StatusTextImages_113: 1401796964
+      StatusTextImages_114: -957576456
+      StatusTextImages_115: -1107254142
+      StatusTextImages_116: -1661817815
+      StatusTextImages_117: 1222094096
+      StatusTextImages_118: 652150680
+      StatusTextImages_119: 1268282599
       StatusTextImages_12: -1776737468
+      StatusTextImages_120: -1140508261
+      StatusTextImages_121: -345549032
       StatusTextImages_13: 1092754953
       StatusTextImages_14: 830329846
       StatusTextImages_15: -237304368

@@ -11,6 +11,28 @@ using System;
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
+  [ContextMenu("텍스트 체크")]
+  public void TextCheck()
+  {
+    List<string> _errortexts= new List<string>();
+    foreach(var _event in EventHolder.AllEvent)
+    {
+      if(_event.Name==NullText)_errortexts.Add(_event.ID+".Name");
+      foreach(var _string in _event.BeginningDescriptions)
+      if (_string == NullText) _errortexts.Add(_event.ID + ".BeginningDescriptioins");
+      for(int i=0;i<_event.SelectionDatas.Length;i++) 
+      {
+        if (_event.SelectionDatas[i].Name == NullText) _errortexts.Add(_event.ID + $"Selection[{i}].Name");
+        foreach (var _string in _event.SelectionDatas[i].SuccessData.Descriptions)
+          if (_string == NullText) _errortexts.Add(_event.ID + $".{i}SuccessDescription");
+        if(_event.SelectionDatas[i].FailData!=null)
+          foreach (var _string in _event.SelectionDatas[i].FailData.Descriptions)
+            if (_string == NullText) _errortexts.Add(_event.ID + $".{i}FailDescription");
+
+      }
+    }
+    foreach (var _dat in _errortexts) Debug.Log(_dat);
+  }
   [ContextMenu("데이터 업데이트")]
   public void UpdateSpreadsheetData()
   {
@@ -30,9 +52,7 @@ public class GameManager : MonoBehaviour
   private IEnumerator updatedatas()
   {
 #if UNITY_EDITOR
-    yield return StartCoroutine(textdataupdate());
-    yield return StartCoroutine(expdataupdate());
-    yield return StartCoroutine(eventdataupdate());
+    yield return StartCoroutine(updatesheet());
 #endif
     if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName))
     {
@@ -40,7 +60,7 @@ public class GameManager : MonoBehaviour
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
-    yield return StartCoroutine((loadspreadsheetdatas()));
+    yield return StartCoroutine((ConvertSheetDatas()));
  //   Debug.Log(GetTextData("ProgressInfo"));
     UIManager.Instance.MainUi.SetupMain();
   }
@@ -139,11 +159,9 @@ public class GameManager : MonoBehaviour
   private const string SeetURL_Text = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=1628546529";
   public List<EventJsonData> EventJsonDataList= new List<EventJsonData>();
   public List<ExperienceJsonData> ExpJsonDataList= new List<ExperienceJsonData>();
-  private IEnumerator loadspreadsheetdatas()
+  private IEnumerator ConvertSheetDatas()
   {
-
     if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Cult", QuestType.Cult);
-
     foreach (var _data in EventJsonDataList)
     {
       string _eventinfo = _data.EventInfo.Split('@')[0];
@@ -535,10 +553,10 @@ public class GameManager : MonoBehaviour
   }
   private void Awake()
   {
-    if(instance == null)
+    if (instance == null)
     {
       instance = this;
-      if(PlayerPrefs.GetInt("LanguageIndex", -1) == -1)
+      if (PlayerPrefs.GetInt("LanguageIndex", -1) == -1)
       {
         SystemLanguage _lang = Application.systemLanguage;
         PlayerPrefs.SetInt("LanguageIndex", (int)_lang);
@@ -721,7 +739,16 @@ public class GameManager : MonoBehaviour
 
     yield return new WaitUntil(()=>MyGameData.MyMapData != null);
 
-    List<TileData> _randomstartlands = MyGameData.MyMapData.GetEnvirTiles(new List<BottomEnvirType> { BottomEnvirType.Land }, new List<TopEnvirType> { TopEnvirType.Mountain }, 1);
+    List<TileData> _randomstartlands = new List<TileData>();
+    TileData _villagetile = MyGameData.MyMapData.Villages[UnityEngine.Random.Range(0, MyGameData.MyMapData.Villages.Count)].Tile;
+    _randomstartlands = MyGameData.MyMapData.GetAroundTile(_villagetile, 2);
+    List<TileData> _disabletiles=new List<TileData>();
+    foreach (var _tile in _randomstartlands)
+    {
+      if (!_tile.Interactable) { _disabletiles.Add(_tile); }
+      if (_tile.TileSettle != null) { _disabletiles.Add(_tile); }
+    }
+    foreach(var _deletetile in _disabletiles)_randomstartlands.Remove(_deletetile);
 
     MyGameData.Coordinate = _randomstartlands[UnityEngine.Random.Range(0, _randomstartlands.Count)].Coordinate;
 

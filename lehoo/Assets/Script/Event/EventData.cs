@@ -527,6 +527,24 @@ public class EventHolder
         {
           if (_questevent.RightSpace(settletype,_questevent.Sector) == false) continue;
           if (_questevent.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_questevent.EnvironmentType)) continue;
+          if (_questevent.Sector != SectorTypeEnum.NULL)
+          {
+            switch (_questevent.Sector)
+            {
+              case SectorTypeEnum.Residence:
+                if (settletype != SettlementType.Village) continue;
+                break;
+              case SectorTypeEnum.Temple:
+                if(settletype==SettlementType.City) continue;
+                break;
+              case SectorTypeEnum.Marketplace:
+                if (settletype == SettlementType.Village) continue;
+                break;
+              case SectorTypeEnum.Library:
+                if (settletype != SettlementType.City) continue;
+                break;
+            }
+          }
 
           if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
           else { _ableevents.Add(_questevent); }
@@ -538,6 +556,24 @@ public class EventHolder
       if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
       if (_event.RightSpace(settletype, _event.Sector) == false) continue;
       if (_event.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_event.EnvironmentType)) continue;
+      if (_event.Sector != SectorTypeEnum.NULL)
+      {
+        switch (_event.Sector)
+        {
+          case SectorTypeEnum.Residence:
+            if (settletype != SettlementType.Village) continue;
+            break;
+          case SectorTypeEnum.Temple:
+            if (settletype == SettlementType.City) continue;
+            break;
+          case SectorTypeEnum.Marketplace:
+            if (settletype == SettlementType.Village) continue;
+            break;
+          case SectorTypeEnum.Library:
+            if (settletype != SettlementType.City) continue;
+            break;
+        }
+      }
 
       switch (_event.EventType)
       {

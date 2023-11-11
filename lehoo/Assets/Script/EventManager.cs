@@ -82,11 +82,4 @@ public class EventManager : MonoBehaviour
     GameManager.Instance.SetEvent(_event);
 
   }
-  /// <summary>
-  /// ¥¡¥Î_≈ΩπÆ ¿Ã∫•∆Æ
-  /// </summary>
-  public void SetWolfEvent_Starting()
-  {
-    int _index = GameManager.Instance.MyGameData.Quest_Cult_Progress;
-  }
 }
