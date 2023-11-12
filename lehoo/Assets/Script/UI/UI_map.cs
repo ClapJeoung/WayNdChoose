@@ -511,7 +511,7 @@ public class UI_map : UI_default
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
     BonusGold = SelectedTile.MovePoint > 1 ? SelectedTile.MovePoint * ConstValues.GoldPerMovepoint : 1;
     BonusGold =(int)(BonusGold* GameManager.Instance.MyGameData.GetGoldGenModify(true));
-    BonusGold += GameManager.Instance.MyGameData.Tendency_Head.Level == 1 ? ConstValues.Tendency_Head_p1 : 0;
+    BonusGold += (SelectedTile.MovePoint > 1&&GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? ConstValues.Tendency_Head_p1 : 0;
 
     SelectedCostType = StatusTypeEnum.HP;
     MoveCostText.text = "";
@@ -545,7 +545,7 @@ public class UI_map : UI_default
         _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_over").Split('@');
         break;
     }
-    BonusGoldText.text =IsMad? GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + " +?":(GameManager.Instance.MyGameData.Tendency_Head.Level==1? "<sprite=104>":"") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
+    BonusGoldText.text =IsMad? GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + " +?":((SelectedTile.MovePoint > 1 && GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? "<sprite=104>":"") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
     MoveLengthText.text = IsMad?"<sprite=100> ?":
       string.Format(GameManager.Instance.GetTextData("MoveLength"),
       GameManager.Instance.MyGameData.MovePoint,

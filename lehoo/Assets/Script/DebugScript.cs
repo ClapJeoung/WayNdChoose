@@ -141,7 +141,7 @@ public class DebugScript : MonoBehaviour
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
       GameManager.Instance.MyGameData.Quest_Cult_Phase = int.Parse(Cult_Phase.text);
-      GameManager.Instance.MyGameData.Quest_Cult_Progress = int.Parse(Cult_Progress.text);
+      GameManager.Instance.MyGameData.Quest_Cult_Progress = float.Parse(Cult_Progress.text);
 
       UIManager.Instance.SidePanelCultUI.UpdateUI();
     }

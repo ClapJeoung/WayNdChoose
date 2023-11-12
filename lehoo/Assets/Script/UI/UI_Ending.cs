@@ -39,6 +39,8 @@ public class UI_Ending : UI_default
   {
     UIManager.Instance.PreviewManager.ClosePreview();
 
+    GameManager.Instance.DeleteSaveData();
+
     Illust.Setup(illust, 0.5f);
     Description.text = description;
     QuitButtonText.text = GameManager.Instance.GetTextData("QUITTOMAIN");
@@ -53,6 +55,8 @@ public class UI_Ending : UI_default
   public void OpenUI_Ending(EndingDatas endingdata)
   {
     UIManager.Instance.PreviewManager.ClosePreview();
+
+    GameManager.Instance.DeleteSaveData();
 
     Illusts = endingdata.Illusts; 
     Descriptions = endingdata.Descriptions; 
@@ -72,7 +76,6 @@ public class UI_Ending : UI_default
   }
   public void QuitGame()
   {
-    GameManager.Instance.DeleteSaveData();
     UIManager.Instance.ResetGame(IsDead?"":GameManager.Instance.GetTextData("ThanksForPlaying"), true);
   }
   public void Next()

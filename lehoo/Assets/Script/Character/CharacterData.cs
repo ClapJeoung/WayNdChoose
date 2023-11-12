@@ -37,23 +37,23 @@ public static class ConstValues
   public const int MadnessEffect_Wild = 4;
   public const int MadnessEffect_Intelligence_Value = 2;
 
-  public const int MadnessHPCost_Skill = 25;
+  public const int MadnessHPCost_Skill = 30;
   public const int MadnessSanityGen_Skill = 75;
   public const int MadnessSkillLevel = 2;
-  public const int MadnessHPCost_HP = 30;
+  public const int MadnessHPCost_HP = 40;
   public const int MadnessSanityGen_HP = 100;
 
   public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=7,
     Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 3;
-  public const float Qeust_Cult_EventProgress_Clear = 1.5f;
-  public const float Quest_Cult_EventProgress_Fail = 1.0f;
+  public const float Qeust_Cult_EventProgress_Clear = 1.0f;
+  public const float Quest_Cult_EventProgress_Fail = 0.75f;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 4;
   public const int Quest_Cult_MovepointAsSanity = 7;
   public const int Quest_Cult_CoolTime_Sabbat = 7;
   public const int Quest_Cult_CoolTime_Ritual = 3;
 
 
-  public const int Rest_MovePoint = 4;
+  public const int Rest_MovePoint = 5;
   public const int Rest_Discomfort = 4;
   public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
   public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 14.0f;
@@ -80,7 +80,7 @@ public static class ConstValues
   public const int StartGold = 10;
   public const float HPLoss_Exp = 0.3f;
   public const float GoldGen_Exp = 0.3f;
-  public const float  SanityLoss_Exp = 0.2f;
+  public const float  SanityLoss_Exp = 0.15f;
 
   public const int Tendency_Head_m2 = 4;
   public const float Tendency_Head_m1 = 0.2f;
@@ -103,22 +103,23 @@ public static class ConstValues
   //성향 진행도 따라 긍정,부정 값
   public const float minsuccesper_max = 45;
   public const float minsuccesper_min = 5;
+  public const float MaxSuccessPer = 95;
   //스킬 체크, 지불 체크 최대~최소
-  public const int MaxTime = 30;
+  public const int MaxTime = 60;
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 6;
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
+  public const int CheckSkill_single_min = 3, CheckSkill_single_max = 12;
+  public const int CheckSkill_multy_min = 4, CheckSkill_multy_max = 20;
 
   public const float Difficult = 1.0f;
-  public const float PayHP_min = 4, PayHP_max = 8;      
-  public const float PaySanity_min = 8, PaySanity_max = 16;
-  public const float PayGold_min = 6, PayGold_max = 12; 
-  public const float FailHP_min = 6, FailHP_max = 12;   
-  public const float FailSanity_min = 12, FailSanity_max = 20;
-  public const float FailGold_min = 8, FailGold_max = 14;
+  public const float PayHP_min = 4, PayHP_max = 12;      
+  public const float PaySanity_min = 8, PaySanity_max = 24;
+  public const float PayGold_min = 6, PayGold_max = 18; 
+  public const float FailHP_min = 6, FailHP_max = 18;   
+  public const float FailSanity_min = 12, FailSanity_max = 36;
+  public const float FailGold_min = 8, FailGold_max = 24;
   public const int RewardHP_min = 0, RewardHP_max = 0;
-  public const int RewardSanity = 6;
-  public const int RewardGold = 6;
+  public const int RewardSanity = 10;
+  public const int RewardGold = 10;
 
   public const int ShortTermStartTurn = 9;
   public const int LongTermStartTurn =  15;
@@ -324,9 +325,9 @@ public class GameData    //게임 진행도 데이터
   public int RequireValue_SkillCheck(int _current, int _target)
   {
   //  Debug.Log($"{_current} {_target}");
-    if (_current >= _target) return 0;
+    if (_current >= _target) return Mathf.FloorToInt(100 - ConstValues.MaxSuccessPer);
     float _value =1.0f- _current / (float)_target;
-    return Mathf.RoundToInt(Mathf.Clamp(_value*100.0f,0, 100-MinSuccesPer));
+    return Mathf.RoundToInt(Mathf.Clamp(_value*100.0f,100-ConstValues.MaxSuccessPer, 100-MinSuccesPer));
   }
   /// <summary>
   /// 최소 ~ 100
@@ -336,7 +337,7 @@ public class GameData    //게임 진행도 데이터
   public int RequireValue_Money(int _target)
   {
     float _per =1.0f- Gold / (float)_target;
-    return Mathf.RoundToInt(Mathf.Clamp(_per*100.0f,0, 100- MinSuccesPer));
+    return Mathf.RoundToInt(Mathf.Clamp(_per*100.0f, 100 - ConstValues.MaxSuccessPer, 100- MinSuccesPer));
   }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
   #endregion
 

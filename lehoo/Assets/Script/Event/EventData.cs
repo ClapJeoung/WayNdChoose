@@ -380,7 +380,19 @@ public class EventHolder
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
           if (_questevent.AppearSpace != EventAppearType.Outer) continue;
-          if (_questevent.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_questevent.EnvironmentType)) continue;
+          if (_questevent.EnvironmentType != EnvironmentType.NULL)
+          {
+            switch (_questevent.EnvironmentType)
+            {
+              case EnvironmentType.Sea:
+                if (!envirs.Contains(EnvironmentType.Beach) &&
+                  !envirs.Contains(EnvironmentType.RiverBeach)) continue;
+                break;
+              default:
+                if (!envirs.Contains(_questevent.EnvironmentType)) continue;
+                break;
+            }
+          }
 
           if (GameManager.Instance.MyGameData.IsAbleEvent(_questevent.ID) == false) { _disableevents.Add(_questevent); }
           else { _ableevents.Add(_questevent); }
@@ -390,7 +402,19 @@ public class EventHolder
     foreach (var _event in AllEvent)
     {
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
-      if (_event.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_event.EnvironmentType)) continue;
+      if (_event.EnvironmentType != EnvironmentType.NULL)
+      {
+        switch (_event.EnvironmentType)
+        {
+          case EnvironmentType.Sea:
+            if (!envirs.Contains(EnvironmentType.Beach) &&
+              !envirs.Contains(EnvironmentType.RiverBeach)) continue;
+            break;
+          default:
+            if (!envirs.Contains(_event.EnvironmentType)) continue;
+            break;
+        }
+      }
 
       switch (_event.EventType)
       {
@@ -526,7 +550,19 @@ public class EventHolder
         foreach (var _questevent in Quest_Cult.GetAvailableEvents())
         {
           if (_questevent.RightSpace(settletype,_questevent.Sector) == false) continue;
-          if (_questevent.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_questevent.EnvironmentType)) continue;
+          if (_questevent.EnvironmentType != EnvironmentType.NULL)
+          {
+            switch (_questevent.EnvironmentType)
+            {
+              case EnvironmentType.Sea:
+                if (!envirs.Contains(EnvironmentType.Beach) &&
+                  !envirs.Contains(EnvironmentType.RiverBeach)) continue;
+                break;
+              default:
+                if(!envirs.Contains(_questevent.EnvironmentType)) continue; 
+                break;
+            }
+          }
           if (_questevent.Sector != SectorTypeEnum.NULL)
           {
             switch (_questevent.Sector)
@@ -555,7 +591,19 @@ public class EventHolder
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
       if (_event.RightSpace(settletype, _event.Sector) == false) continue;
-      if (_event.EnvironmentType != EnvironmentType.NULL && !envirs.Contains(_event.EnvironmentType)) continue;
+      if (_event.EnvironmentType != EnvironmentType.NULL)
+      {
+        switch (_event.EnvironmentType)
+        {
+          case EnvironmentType.Sea:
+            if (!envirs.Contains(EnvironmentType.Beach) &&
+              !envirs.Contains(EnvironmentType.RiverBeach)) continue;
+            break;
+          default:
+            if (!envirs.Contains(_event.EnvironmentType)) continue;
+            break;
+        }
+      }
       if (_event.Sector != SectorTypeEnum.NULL)
       {
         switch (_event.Sector)
