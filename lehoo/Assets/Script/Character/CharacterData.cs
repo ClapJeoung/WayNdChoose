@@ -10,7 +10,8 @@ public static class ConstValues
 {
   public const int StartSkillLevel = 1;
 
-  public const int GoldPerMovepoint = 2;
+  public const int DefaultBonusGold = 0;
+  public const int GoldPerMovepoint = 1;
   public const int StartMovePoint = 10;
   public const int MovePoint_Sea = 4;
   public const int MovePoint_Moutain = 2;
@@ -58,7 +59,7 @@ public static class ConstValues
   public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
   public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 14.0f;
   public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.2f;
-  public const float Move_Default = 0.1f, Move_LengthRatio = 0.2f;
+  public const float Move_Default = 0.3f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 0.5f;
 
 
@@ -78,8 +79,8 @@ public static class ConstValues
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
   public const int StartGold = 10;
-  public const float HPLoss_Exp = 0.3f;
-  public const float GoldGen_Exp = 0.3f;
+  public const float HPLoss_Exp = 0.2f;
+  public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.15f;
 
   public const int Tendency_Head_m2 = 4;

@@ -509,7 +509,7 @@ public class UI_map : UI_default
     
     SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Tile.Count, MovePointCost);
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
-    BonusGold = SelectedTile.MovePoint > 1 ? SelectedTile.MovePoint * ConstValues.GoldPerMovepoint : 1;
+    BonusGold = SelectedTile.MovePoint > 1 ? SelectedTile.MovePoint * ConstValues.GoldPerMovepoint : ConstValues.DefaultBonusGold;
     BonusGold =(int)(BonusGold* GameManager.Instance.MyGameData.GetGoldGenModify(true));
     BonusGold += (SelectedTile.MovePoint > 1&&GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? ConstValues.Tendency_Head_p1 : 0;
 

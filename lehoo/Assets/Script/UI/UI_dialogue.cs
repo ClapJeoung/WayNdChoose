@@ -116,6 +116,8 @@ public class UI_dialogue : UI_default
     NameText.text = CurrentEvent.Name;
     DescriptionText.text = "";
 
+    UpdateSelections();
+
     DefaultGroup.interactable = false;
     StartCoroutine(displaynextindex(true));
 
@@ -210,6 +212,26 @@ public class UI_dialogue : UI_default
 
     UIManager.Instance.AddUIQueue(displaynextindex(true));
   }
+  public void UpdateSelections()
+  {
+    switch (CurrentEvent.Selection_type)
+    {
+      case SelectionTypeEnum.Single:
+        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
+        if (Selection_B.gameObject.activeInHierarchy == true) Selection_B.gameObject.SetActive(false);
+        break;
+      case SelectionTypeEnum.Body:
+        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
+        if (Selection_B.gameObject.activeInHierarchy == false) Selection_B.gameObject.SetActive(true);
+        Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
+        break;
+      case SelectionTypeEnum.Head:
+        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
+        if (Selection_B.gameObject.activeInHierarchy == false) Selection_B.gameObject.SetActive(true);
+        Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
+        break;
+    }
+  }
   private IEnumerator displaynextindex(bool dir)
   {
     SetNextButtonDisable();
@@ -265,12 +287,12 @@ public class UI_dialogue : UI_default
         case 2:
           if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
-          StartCoroutine(setupselections());
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
           yield return StartCoroutine(updatescrollbar());
 
           break;
         case 3:
-          StartCoroutine(setupselections());
+          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
           yield return StartCoroutine(updatescrollbar());
 
           break;
@@ -423,32 +445,6 @@ public class UI_dialogue : UI_default
 
     SetRewardButton();
     OpenReturnButton();
-  }
-  private IEnumerator setupselections()
-  {
-    SelectionGroup.alpha = 0.0f;
-
-    NextButtonGroup.interactable = false;
-
-    switch (CurrentEvent.Selection_type)
-    {
-      case SelectionTypeEnum.Single:
-        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
-        if (Selection_B.gameObject.activeInHierarchy==true) Selection_B.gameObject.SetActive(false);
-        break;
-      case SelectionTypeEnum.Body:
-        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
-        if (Selection_B.gameObject.activeInHierarchy==false) Selection_B.gameObject.SetActive(true);
-        Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
-        break;
-      case SelectionTypeEnum.Head:
-        Selection_A.Setup(CurrentEvent.SelectionDatas[0]);
-        if (Selection_B.gameObject.activeInHierarchy == false) Selection_B.gameObject.SetActive(true);
-        Selection_B.Setup(CurrentEvent.SelectionDatas[1]);
-        break;
-    }
-
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup,1.0f,FadeTime));
   }
   private UI_Selection CurrentUISelection = null;
   /// <summary>
@@ -621,7 +617,7 @@ public class UI_dialogue : UI_default
     }
     _str = targetvalue.ToString();
     tmp.text= _str;
-    yield return new WaitForSeconds(0.5f);
+    yield return new WaitForSeconds(0.25f);
   }
   private IEnumerator checkanimation(Image image,float successvalue)
   {
@@ -635,7 +631,7 @@ public class UI_dialogue : UI_default
     if (successvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25); }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
-    yield return new WaitForSeconds(0.5f);
+    yield return new WaitForSeconds(0.25f);
   }
   private IEnumerator checkanimation(Image image_L,Image image_R,float successvalue)
   {
@@ -648,7 +644,7 @@ public class UI_dialogue : UI_default
       _time += Time.deltaTime; yield return null;
     }
     if (_firstvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
-    else { UIManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.5f); yield break; }
+    else { UIManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.25f); yield break; }
 
 
     while (_time < (SelectionEffectTime_check / 2) *_secondvalue)
@@ -659,7 +655,7 @@ public class UI_dialogue : UI_default
     if (_secondvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25);  }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
-    yield return new WaitForSeconds(0.5f);
+    yield return new WaitForSeconds(0.25f);
   }
   private SuccessData CurrentSuccessData = null;
   public bool RemainReward = false;
@@ -1113,7 +1109,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     if (IsSelectSector == true) return;
 
     SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
-    SectorName.text = "";
+    SectorName.text = GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
     RestResult.text = "";
   }

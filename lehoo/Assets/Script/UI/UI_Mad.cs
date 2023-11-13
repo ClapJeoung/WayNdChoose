@@ -136,6 +136,10 @@ public class UI_Mad : UI_default
       DefaultGroup.interactable = false;
       DefaultGroup.blocksRaycasts = false;
       IsOpen = false;
+      if (GameManager.Instance.MyGameData.CurrentEvent != null&&GameManager.Instance.MyGameData.CurrentEventSequence==EventSequence.Progress)
+      {
+        UIManager.Instance.DialogueUI.UpdateSelections();
+      }
     }
     float _time = 0.0f, _targettime = open ? OpenTime : CloseTime;
     float _startalpha = open ? 0.0f : 1.0f;

@@ -133,17 +133,12 @@ public class UI_Selection : MonoBehaviour
 
     MyTendencyType = MySelectionData.Tendencytype;
     MyPreviewInteractive.MySelectionTendency = MyTendencyType;
-  //  Sprite _selectionimage = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
     if (MyTendencyType == TendencyTypeEnum.None)
     {
-  //    if (TendencyIconObj.activeInHierarchy == true) TendencyIconObj.SetActive(false);
       if (TendencyHolder.activeInHierarchy == true) TendencyHolder.SetActive(false);
-    //  LayoutGroup.padding.top = LayoutSizeTop_NoTendency;
     }
     else
     {
- //     if (TendencyIconObj.activeInHierarchy == false) TendencyIconObj.SetActive(true);
-     // LayoutGroup.padding.top = LayoutSizeTop_Tendency;
       MyPreviewInteractive.MySelectionTendencyDir = IsLeft;
 
       Tendency _targettendency = GameManager.Instance.MyGameData.GetTendency(MyTendencyType);
@@ -277,14 +272,12 @@ public class UI_Selection : MonoBehaviour
         }
 
       }
-  //    TendencyIcon.sprite = _tendencyicon;
     }
 
     MyButton.transition = Selectable.Transition.SpriteSwap;
     MyButton.spriteState = GameManager.Instance.ImageHolder.GetSelectionButtonBackground(MyTendencyType, IsLeft);
     MyImage.sprite = MyButton.spriteState.selectedSprite;
     MyDescription.text = _data.Name;
-
   }
   private IEnumerator arroweffect(CanvasGroup group)
   {

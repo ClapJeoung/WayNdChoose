@@ -87,7 +87,7 @@ public class UI_Main : UI_default
           LoadInfoText.text = string.Format(GameManager.Instance.GetTextData("ProgressInfo"),
        GameManager.Instance.GameSaveData.Year,
        _turnname,
-       GameManager.Instance.GameSaveData.Cult_Progress,
+       Mathf.FloorToInt(GameManager.Instance.GameSaveData.Cult_Progress),
      GameManager.Instance.GameSaveData.CurrentEventID==""?
      GameManager.Instance.GetTextData(GameManager.Instance.GameSaveData.CurrentSettlementName):
      GameManager.Instance.EventHolder.GetEvent(GameManager.Instance.GameSaveData.CurrentEventID).Name,

@@ -578,8 +578,8 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
     if (Input.GetKeyDown(KeyCode.Backspace))
     {
-      MyGameData = new GameData(QuestType.Cult);
-      CreateNewMap();
+   //   MyGameData = new GameData(QuestType.Cult);
+    //  CreateNewMap();
 
     }
     if (Input.GetKeyDown(KeyCode.T)) UIManager.Instance.AudioManager.PlayBGM();
