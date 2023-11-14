@@ -6,7 +6,8 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
 using System.IO;
-
+using System.Drawing.Text;
+using UnityEngine.Rendering;
 
 public class UI_map : UI_default
 {
@@ -14,6 +15,7 @@ public class UI_map : UI_default
   [SerializeField] private Image Outline_Idle = null;
   [SerializeField] private Image Outline_Select = null;
   [SerializeField] private List<Image> Outline_Routes = new List<Image>();
+  [SerializeField] private List<Image> Outline_Routes_temps= new List<Image>();
   [SerializeField] private float MoveTime = 0.8f;
   public maptext MapCreater = null;
   [HideInInspector] public GameObject CityIcon = null;
@@ -56,15 +58,6 @@ public class UI_map : UI_default
   public float UICloseTime_Move = 0.4f;
 
   [SerializeField] private RectTransform HolderRect = null;
-  // [SerializeField] private RectTransform ScaleRect = null;
-  // private Vector3 IdleScale = Vector3.one;
-  // [SerializeField] private Vector3 ZoomInScale = Vector3.one* 1.5f;
-  //[SerializeField] private float ZoomInTime = 1.2f;
-
-  // [SerializeField] private TextMeshProUGUI GuidText = null;
-  // [SerializeField] private RectTransform GuidRect = null;
-  //  [SerializeField] private Vector2 GuidPos_Tile = new Vector2(316.0f, 647.0f);
-  //  [SerializeField] private Vector2 GuidPos_Cost = new Vector2(316.0f, 391.0f);
   [SerializeField] private RectTransform TilePreviewRect = null;
   [SerializeField] private CanvasGroup TilePreviewGroup = null;
   [SerializeField] private Image TilePreview_Bottom = null;
@@ -78,7 +71,6 @@ public class UI_map : UI_default
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
   [SerializeField] private Onpointer_highlight GoldButton_Highlight = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
- // private float MoveButtonDisableAlpha = 0.2f;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private TextMeshProUGUI MoveCostText = null;
   public Image MadnessEffect = null;
@@ -105,186 +97,20 @@ public class UI_map : UI_default
       ActiveTileData.Add(_tile);
     }
   }
-  public void SetOutline_Idle(TileData tile)
+  public List<TileData> SetRouteTemp(TileData tile)
   {
-    SetOutline(Outline_Idle, tile.ButtonScript.Rect);
-
-    if (SelectedTile == null)
+    if (Route_Temp.Count > 0)
     {
-      if (!IsMad)
+      for (int i = 1; i < Route_Temp.Count; i++)
       {
-        TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
-        TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
-        TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
-        TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
-      }
-      switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-      {
-        case 0:
-          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Village, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Village);
-          break;
-        case 1:
-          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Town, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Town);
-          break;
-        case 2:
-          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.City, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.City);
-          break;
-      }
-    }
-  }
-  public void DisableOutline_Idle() => DisableOutline(Outline_Idle);
-  public void SetOutline(Image outline, RectTransform tilerect)
-  {
-    if (outline.enabled == false) outline.enabled = true;
-    outline.rectTransform.position = tilerect.position;
-    outline.rectTransform.anchoredPosition3D = new Vector3(outline.rectTransform.anchoredPosition3D.x, outline.rectTransform.anchoredPosition3D.y, 0.0f);
-  }
-  public void DisableOutline(Image outline)
-  {
-    outline.enabled = false;
-  }
-  private bool IsMad = false;
-  /// <summary>
-  /// true:왼쪽에서 등장 false:오른쪽에서 등장
-  /// </summary>
-  /// <param name="dir"></param>
-  public void OpenUI(bool dir)
-  {
-    IsOpen = true;
-    UIManager.Instance.AddUIQueue(openui(dir));
-  }
-  
-  private IEnumerator openui(bool dir)
-  {
-    if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
-
-    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild - 1))
-    {
-      Debug.Log("자연 광기 발동");
-      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
-      UIManager.Instance.AudioManager.PlaySFX(27, 5);
-      if (!MadnessEffect.enabled) MadnessEffect.enabled = true;
-      IsMad = true;
-      TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
-      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
-      TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-      TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
-    }
-    else
-    {
-      if (MadnessEffect.enabled) MadnessEffect.enabled = false;
-      IsMad = false;
-      TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
-      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.UnknownTile;
-      TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-      TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
-    }
-
-    ResetEnableTiles();
-
-    if (Route_Tile.Count > 0)
-    {
-      for (int i = 1; i < Route_Tile.Count; i++)
-      {
-        DisableOutline(Outline_Routes[i]);
+        DisableOutline(Outline_Routes_temps[i]);
       }
     }
 
-    DisableOutline(Outline_Idle);
-    DisableOutline(Outline_Select);
-
-    QuestInfo = false;
-   // GuidRect.anchoredPosition = GuidPos_Tile;
-    TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
-    BonusGold = 0;
-    BonusGoldText.text = "";
-    MoveLengthText.text = "";
-    MoveCostText.text = "";
-    MovecostButtonGroup.alpha = 0.0f;
-    MovecostButtonGroup.interactable = false;
-    MovecostButtonGroup.blocksRaycasts = false;
-
-    SelectedCostType = StatusTypeEnum.HP;
-
-    DefaultGroup.interactable = false;
-    DefaultGroup.blocksRaycasts = false;
-    Vector2 _startpos= Vector2.zero,_endpos= Vector2.zero;
-    if (dir == true)
-    {
-      DefaultRect.pivot = Left_Pivot;
-      PanelLastHolder.anchorMin = Left_Anchor;
-      PanelLastHolder.anchorMax= Left_Anchor;
-      PanelLastHolder.anchoredPosition = Left_LastHolderPos;
-      _startpos = Left_OutsidePos;
-      _endpos = Left_InsidePos;
-    }
-    else
-    {
-      DefaultRect.pivot = Right_Pivot;
-      PanelLastHolder.anchorMin = Right_Anchor;
-      PanelLastHolder.anchorMax = Right_Anchor;
-      PanelLastHolder.anchoredPosition = Right_LastHolderPos;
-      _startpos = Right_OutsidePos;
-      _endpos = Right_InsidePos;
-    }
-    DefaultRect.sizeDelta = CloseSize;
-    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, _endpos, UIOpenTime_Move,UIManager.Instance.UIPanelOpenCurve));
-    yield return new WaitForSeconds(0.1f);
-
-    UIManager.Instance.AudioManager.PlaySFX(3);
-    float _time = 0.0f;
-    Vector2 _rect = DefaultRect.rect.size;
-    while (_time < UIOpenTime_Fold)
-    {
-      _rect = Vector2.Lerp(CloseSize, OpenSize, OpenFoldCurve.Evaluate(_time / UIOpenTime_Fold));
-      DefaultRect.sizeDelta = _rect;
-
-      _time+= Time.deltaTime;
-      yield return null;
-    }
-    DefaultRect.sizeDelta = OpenSize;
-    DefaultGroup.interactable = true;
-    DefaultGroup.blocksRaycasts = true;
-
-  }
-  [SerializeField] private Vector2 TilePreviewDownPos = new Vector2(-235.0f, 23.0f);
-  private float TilePreviewStartAlpha = 0.5f;
-  private List<TileData> Route_Tile = new List<TileData>();
-  private int MovePointCost
-  {
-    get
-    {
-      int _count = 0;
-      for (int i = 1; i < Route_Tile.Count; i++)
-        _count += Route_Tile[i].MovePoint;
-      return _count;
-    }
-  }
-  private TileData SelectedTile = null;
-  public List<HexDir> Route_Dir=new List<HexDir>();
-  public int SanityCost = 0, GoldCost = 0, BonusGold = 0;
-  [HideInInspector] public bool QuestInfo = false;
-  public void SelectTile(TileData selectedtiledata)
-  {
-    //동일한 좌표면 호출되지 않게 이미 거름
-    if (selectedtiledata.Coordinate == GameManager.Instance.MyGameData.Coordinate || (SelectedTile != null && selectedtiledata == SelectedTile)) return;
-
-    if (Route_Tile.Count > 0)
-    {
-      for(int i=0;i< Route_Tile.Count;i++)
-      {
-        DisableOutline(Outline_Routes[i]);
-      }
-    }
-
-    UIManager.Instance.AudioManager.PlaySFX(5);
-    SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
-
+    //GetLength로 방향들 산출
     TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
-    List<HexDir> _dirtemp = GameManager.Instance.GetLength(_currenttile, selectedtiledata);
-
-    int _loopcount = 0;
-    #region 이동 루트 배열 생성
+    List<HexDir> _dirtemp = GameManager.Instance.GetLength(_currenttile, tile);
+    //배열들 만들기
     List<List<int>> _results = new List<List<int>>();
     if (_dirtemp.Count == 1) { _results.Add(new List<int> { 0 }); }
     else
@@ -296,18 +122,24 @@ public class UI_map : UI_default
       Dictionary<int, List<int>> _disableindex = new Dictionary<int, List<int>>();
       List<int> _current = null;
 
-      _loopcount = 0;
       _results.Add(new List<int>());
       while (true)
       {
-        _loopcount++; if (_loopcount > 1000) { Debug.Log("테챠아"); return; }
 
         if (_disableindex.ContainsKey(0) && _disableindex[0].Count == _maxcount) break;
         _elementindex++;
 
         _current = _results[_results.Count - 1];
 
-        int _temp = _elements[_elementindex];
+        int _temp = 0;
+        try
+        {
+          _temp = _elements[_elementindex];
+        }
+        catch (System.Exception)
+        {
+          throw;
+        }
         if (_current.Contains(_temp) || (_disableindex.ContainsKey(_inputindex) && _disableindex[_inputindex].Contains(_temp)))
         {
           AddBan(_inputindex, _temp);
@@ -380,8 +212,7 @@ public class UI_map : UI_default
         if (!_disableindex[_index].Contains(value)) _disableindex[_index].Add(value);
       }
     }
-    #endregion
-
+    //배열대로 집어넣은 HexDir들
     List<List<HexDir>> _routedirs = new List<List<HexDir>>();
     foreach (var _list in _results)
     {
@@ -389,17 +220,15 @@ public class UI_map : UI_default
       foreach (var _value in _list) _dirs.Add(_dirtemp[_value]);
       _routedirs.Add(_dirs);
     }
-
-    _loopcount = 0;
+    //겹치는게 있으면 제거
     bool _iscollaspe = true;
     while (_iscollaspe == true)
     {
-      _loopcount++;if (_loopcount > 1000) { Debug.Log("데샤봇"); return; }
       if (_routedirs.Count == 1) break;
 
       for (int i = 0; i < _routedirs.Count; i++)
       {
-        for (int j = i+1; j < _routedirs.Count; j++)
+        for (int j = i + 1; j < _routedirs.Count; j++)
         {
           _iscollaspe = true;
           for (int k = 0; k < _routedirs[i].Count; k++)
@@ -415,32 +244,335 @@ public class UI_map : UI_default
       }
       if (_iscollaspe) continue;
     }
-
-    List<List<TileData>> _routes=new List<List<TileData>>();
-    foreach(var _dirlist in _routedirs)
+    //Tile로 변환
+    List<List<TileData>> _routes = new List<List<TileData>>();
+    foreach (var _dirlist in _routedirs)
     {
-      List<TileData> _newroute=new List<TileData>();
+      List<TileData> _newroute = new List<TileData>();
       _newroute.Add(GameManager.Instance.MyGameData.CurrentTile);
       for (int i = 0; i < _dirlist.Count; i++)
         _newroute.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(_newroute[_newroute.Count - 1], _dirlist[i]));
       _routes.Add(_newroute);
     }
-
+    //제일 짧은 거리 산출
     int _minMP = 100, _targetindex = 0;
-    for(int i=0;i< _routes.Count;i++)
+    for (int i = 0; i < _routes.Count; i++)
     {
       int _MP = 0;
       foreach (TileData _tile in _routes[i])
         _MP += _tile.MovePoint;
-      if (_MP < _minMP) 
+      if (_MP < _minMP)
       {
         int _tempindex = i;
         _targetindex = _tempindex;
-        _minMP = _MP; 
+        _minMP = _MP;
+      }
+    }
+    //Temp에 넣음
+    Route_Temp = _routes[_targetindex];
+
+    for (int i = 1; i < Route_Temp.Count; i++)
+    {
+      SetOutline(Outline_Routes_temps[i], Route_Temp[i].ButtonScript.Rect);
+    }
+
+    return Route_Temp;
+  }
+  public void EnterTile(TileData tile)
+  {
+    SetOutline(Outline_Idle, tile.ButtonScript.Rect);
+    if (Route_Temp.Count > 0)
+    {
+      for (int i = 1; i < Route_Temp.Count; i++)
+      {
+        DisableOutline(Outline_Routes_temps[i]);
       }
     }
 
-    Route_Tile = _routes[_targetindex];
+    if (SelectedTile == null)
+    {
+      if (!IsMad)
+      {
+        TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
+        TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
+        TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
+        TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
+      }
+      switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+      {
+        case 0:
+          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Village, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Village);
+          break;
+        case 1:
+          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Town, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Town);
+          break;
+        case 2:
+          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.City, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.City);
+          break;
+      }
+    }
+  }
+  public void ExitTile()
+  {
+    if (Route_Temp.Count > 0)
+    {
+      for (int i = 1; i < Route_Temp.Count; i++)
+      {
+        DisableOutline(Outline_Routes_temps[i]);
+      }
+    }
+    DisableOutline(Outline_Idle); }
+
+  public void SetOutline(Image outline, RectTransform tilerect)
+  {
+    if (outline.enabled == false) outline.enabled = true;
+    outline.rectTransform.position = tilerect.position;
+    outline.rectTransform.anchoredPosition3D = new Vector3(outline.rectTransform.anchoredPosition3D.x, outline.rectTransform.anchoredPosition3D.y, 0.0f);
+  }
+  public void DisableOutline(Image outline) => outline.enabled = false;
+
+  private bool IsMad = false;
+  /// <summary>
+  /// true:왼쪽에서 등장 false:오른쪽에서 등장
+  /// </summary>
+  /// <param name="dir"></param>
+  public void OpenUI(bool dir)
+  {
+    IsOpen = true;
+    UIManager.Instance.AddUIQueue(openui(dir));
+  }
+  
+  private IEnumerator openui(bool dir)
+  {
+    if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
+
+    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild - 1))
+    {
+      Debug.Log("자연 광기 발동");
+      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
+      UIManager.Instance.AudioManager.PlaySFX(27, 5);
+      if (!MadnessEffect.enabled) MadnessEffect.enabled = true;
+      IsMad = true;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
+      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
+      TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+      TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
+    }
+    else
+    {
+      if (MadnessEffect.enabled) MadnessEffect.enabled = false;
+      IsMad = false;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
+      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.UnknownTile;
+      TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+      TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
+    }
+
+    ResetEnableTiles();
+
+    if (Route_Tile.Count > 0)
+    {
+      for (int i = 1; i < Route_Tile.Count; i++)
+      {
+        DisableOutline(Outline_Routes[i]);
+      }
+    }
+    if (Route_Temp.Count > 0)
+    {
+      for (int i = 1; i < Route_Temp.Count; i++)
+      {
+        DisableOutline(Outline_Routes_temps[i]);
+      }
+    }
+
+    DisableOutline(Outline_Idle);
+    DisableOutline(Outline_Select);
+
+    QuestInfo = false;
+   // GuidRect.anchoredPosition = GuidPos_Tile;
+    TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+    BonusGold = 0;
+    BonusGoldText.text = "";
+    MoveLengthText.text = "";
+    MoveCostText.text = "";
+    MovecostButtonGroup.alpha = 0.0f;
+    MovecostButtonGroup.interactable = false;
+    MovecostButtonGroup.blocksRaycasts = false;
+
+    SelectedCostType = StatusTypeEnum.HP;
+
+    DefaultGroup.interactable = false;
+    DefaultGroup.blocksRaycasts = false;
+    Vector2 _startpos= Vector2.zero,_endpos= Vector2.zero;
+    if (dir == true)
+    {
+      DefaultRect.pivot = Left_Pivot;
+      PanelLastHolder.anchorMin = Left_Anchor;
+      PanelLastHolder.anchorMax= Left_Anchor;
+      PanelLastHolder.anchoredPosition = Left_LastHolderPos;
+      _startpos = Left_OutsidePos;
+      _endpos = Left_InsidePos;
+    }
+    else
+    {
+      DefaultRect.pivot = Right_Pivot;
+      PanelLastHolder.anchorMin = Right_Anchor;
+      PanelLastHolder.anchorMax = Right_Anchor;
+      PanelLastHolder.anchoredPosition = Right_LastHolderPos;
+      _startpos = Right_OutsidePos;
+      _endpos = Right_InsidePos;
+    }
+    DefaultRect.sizeDelta = CloseSize;
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, _endpos, UIOpenTime_Move,UIManager.Instance.UIPanelOpenCurve));
+    yield return new WaitForSeconds(0.1f);
+
+    UIManager.Instance.AudioManager.PlaySFX(3);
+    float _time = 0.0f;
+    Vector2 _rect = DefaultRect.rect.size;
+    while (_time < UIOpenTime_Fold)
+    {
+      _rect = Vector2.Lerp(CloseSize, OpenSize, OpenFoldCurve.Evaluate(_time / UIOpenTime_Fold));
+      DefaultRect.sizeDelta = _rect;
+
+      _time+= Time.deltaTime;
+      yield return null;
+    }
+    DefaultRect.sizeDelta = OpenSize;
+
+    List<RectTransform> _highlightlist=new List<RectTransform>();
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    {
+      case 0:
+        _highlightlist.Add(VillageIcons[0].GetComponent<RectTransform>() );
+        _highlightlist.Add(VillageIcons[1].GetComponent<RectTransform>() );
+        break;
+      case 1:
+        _highlightlist.Add(TownIcon.GetComponent<RectTransform>());
+        break;
+      case 2:
+        _highlightlist.Add(CityIcon.GetComponent<RectTransform>());
+        break;
+      case 3:
+        switch (GameManager.Instance.MyGameData.Cult_SabbatSector)
+        {
+          case SectorTypeEnum.Residence:
+            _highlightlist.Add(VillageIcons[0].GetComponent<RectTransform>());
+            _highlightlist.Add(VillageIcons[1].GetComponent<RectTransform>());
+            break;
+          case SectorTypeEnum.Temple:
+            _highlightlist.Add(VillageIcons[0].GetComponent<RectTransform>());
+            _highlightlist.Add(VillageIcons[1].GetComponent<RectTransform>());
+            _highlightlist.Add(TownIcon.GetComponent<RectTransform>());
+            break;
+          case SectorTypeEnum.Marketplace:
+            _highlightlist.Add(TownIcon.GetComponent<RectTransform>());
+            _highlightlist.Add(CityIcon.GetComponent<RectTransform>());
+            break;
+          case SectorTypeEnum.Library:
+            _highlightlist.Add(CityIcon.GetComponent<RectTransform>());
+            break;
+        }
+        break;
+      case 4:
+        _highlightlist.Add(GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.rectTransform);
+        break;
+    }
+    Vector3 _pos = Vector2.zero;
+    float _targettime = 0.0f;
+    for (int i = 0; i < _highlightlist.Count ; i++)
+    {
+      _time = 0.0f;
+      _pos = Vector2.zero; 
+      _startpos = HolderRect.anchoredPosition;
+      _endpos = _highlightlist[i].anchoredPosition * -1.0f;
+      _targettime = FirstHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+      while (_time < _targettime)
+      {
+        _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+        HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+        _time += Time.deltaTime;
+        yield return null;
+      }
+      HolderRect.anchoredPosition3D = _endpos;
+
+      _time = 0.0f;
+      _targettime = FirstHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
+      Vector3 _highlightscale = FirstHighlight ? HighlightSize_First : HighlightSize_Second;
+      while (_time < _targettime)
+      {
+        _highlightlist[i].localScale = Vector3.Lerp(Vector3.one, _highlightscale, SettlementIconCurve.Evaluate(_time / _targettime));
+        _time += Time.deltaTime;
+        yield return null;
+      }
+      _highlightlist[i].localScale = Vector3.one;
+    }
+
+    _time = 0.0f;
+    _pos = Vector2.zero;
+    _startpos = HolderRect.anchoredPosition;
+    _endpos = PlayerRect.anchoredPosition * -1.0f;
+    _targettime = FirstHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+    while (_time < _targettime)
+    {
+      _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+      HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    HolderRect.anchoredPosition3D = _endpos;
+
+
+    FirstHighlight = false;
+    DefaultGroup.interactable = true;
+    DefaultGroup.blocksRaycasts = true;
+
+  }
+  public float HighlightMovetime_First = 1.5f;
+  public float HighlightMovetime_Else = 0.8f;
+  public Vector3 HighlightSize_First = new Vector3(1.5f, 1.5f, 1.5f);
+  public Vector3 HighlightSize_Second = new Vector3(1.3f, 1.3f, 1.3f);
+  public float HighlightSizeTime_First = 1.25f;
+  public float HighlightSizeTime_Else = 1.25f;
+  public bool FirstHighlight = true;
+  public AnimationCurve SettlementAnimationCurve = new AnimationCurve();
+  public AnimationCurve SettlementIconCurve = new AnimationCurve();
+  [SerializeField] private Vector2 TilePreviewDownPos = new Vector2(-235.0f, 23.0f);
+  private float TilePreviewStartAlpha = 0.5f;
+  private List<TileData> Route_Tile = new List<TileData>();
+  private List<TileData> Route_Temp= new List<TileData>();
+  private int MovePointCost
+  {
+    get
+    {
+      int _count = 0;
+      for (int i = 1; i < Route_Tile.Count; i++)
+        _count += Route_Tile[i].MovePoint;
+      return _count;
+    }
+  }
+  private TileData SelectedTile = null;
+  public List<HexDir> Route_Dir=new List<HexDir>();
+  public int SanityCost = 0, GoldCost = 0, BonusGold = 0;
+  [HideInInspector] public bool QuestInfo = false;
+  public void SelectTile(TileData selectedtiledata)
+  {
+    //동일한 좌표면 호출되지 않게 이미 거름
+    if (selectedtiledata.Coordinate == GameManager.Instance.MyGameData.Coordinate || (SelectedTile != null && selectedtiledata == SelectedTile)) return;
+
+    if (Route_Tile.Count > 0)
+    {
+      for(int i=0;i< Route_Tile.Count;i++)
+      {
+        DisableOutline(Outline_Routes[i]);
+      }
+    }
+
+    UIManager.Instance.AudioManager.PlaySFX(5);
+    SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
+
+
+    Route_Tile.Clear();
+    foreach (var _tile in Route_Temp) Route_Tile.Add(_tile);
     for(int i=1;i<Route_Tile.Count;i++)
     {
       SetOutline(Outline_Routes[i], Route_Tile[i].ButtonScript.Rect);
@@ -509,7 +641,7 @@ public class UI_map : UI_default
     
     SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Tile.Count, MovePointCost);
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
-    BonusGold = SelectedTile.MovePoint > 1 ? SelectedTile.MovePoint * ConstValues.GoldPerMovepoint : ConstValues.DefaultBonusGold;
+    BonusGold = SelectedTile.MovePoint > 1 ? (SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint : ConstValues.DefaultBonusGold;
     BonusGold =(int)(BonusGold* GameManager.Instance.MyGameData.GetGoldGenModify(true));
     BonusGold += (SelectedTile.MovePoint > 1&&GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? ConstValues.Tendency_Head_p1 : 0;
 

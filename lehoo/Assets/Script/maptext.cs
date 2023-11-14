@@ -1205,11 +1205,9 @@ public class maptext : MonoBehaviour
     }
 
     _settlementrectlist.Clear();
-    _settlementpos = Vector2.zero;
       Settlement _town = GameManager.Instance.MyGameData.MyMapData.Town;
     _settlementrectlist.Add(_town.Tile);
-    _settlementpos += _town.Tile.ButtonScript.Rect.anchoredPosition;
-    _settlementpos /= 2.0f;
+    _settlementpos = _town.Tile.ButtonScript.Rect.anchoredPosition;
 
       string _townname = _town.OriginName;
       GameObject _townholder = new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(CanvasGroup) });
@@ -1226,11 +1224,9 @@ public class maptext : MonoBehaviour
     MapUIScript.TownIcon=(_townholder);
 
     _settlementrectlist.Clear();
-    _settlementpos = Vector2.zero;
     Settlement _city = GameManager.Instance.MyGameData.MyMapData.City;
     _settlementrectlist.Add(_city.Tile);
-    _settlementpos += _city.Tile.ButtonScript.Rect.anchoredPosition;
-    _settlementpos /= 3.0f;
+    _settlementpos = _city.Tile.ButtonScript.Rect.anchoredPosition;
 
     string _cityname = _city.OriginName;
     GameObject _cityholder = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });

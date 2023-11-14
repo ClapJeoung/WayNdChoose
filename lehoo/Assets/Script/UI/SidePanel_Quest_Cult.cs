@@ -7,6 +7,7 @@ using TMPro;
 public class SidePanel_Quest_Cult : MonoBehaviour
 {
   [SerializeField] private Slider ProgressSlider = null;
+  public CanvasGroup DefaultGroup = null;
   public TextMeshProUGUI DescriptionText = null;
   public TextMeshProUGUI ValueText = null;
   public Vector2 IconHidePos = new Vector2(-250.0f, 0.0f);
@@ -51,37 +52,43 @@ public class SidePanel_Quest_Cult : MonoBehaviour
       case 0:
         if (LastPhase != 0)
         {
-          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Village"));
-          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("Village"),
-            ConstValues.Quest_Cult_Progress_Village);
           StartCoroutine(OpenGroup(Village_Group, 0.0f));
         }
+        if(GameManager.Instance.MyGameData.Tendency_Body.Level!=0&& DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Village"));
+        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.MyGameData.Cult_CoolTime,
+          GameManager.Instance.GetTextData("Village"),
+          ConstValues.Quest_Cult_Progress_Village);
         break;
       case 1:
+        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+
+        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Town"));
+        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.MyGameData.Cult_CoolTime,
+          GameManager.Instance.GetTextData("Town"),
+          ConstValues.Quest_Cult_Progress_Town);
         if (LastPhase != 1)
         {
          if(LastPhase!=-1) StartCoroutine(CloseGroup(Village_Group,0.0f));
-
-          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Town"));
-          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("Town"),
-            ConstValues.Quest_Cult_Progress_Town);
-
           StartCoroutine(OpenGroup(Town_Group, LastPhase != -1?CloseTime +WaitTime:0.0f));;
         }
         break;
       case 2:
+        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+
+        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("City"));
+        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.MyGameData.Cult_CoolTime,
+          GameManager.Instance.GetTextData("City"),
+          ConstValues.Quest_Cult_Progress_City);
+
         if (LastPhase != 2)
         {
-          if(LastPhase!=-1) StartCoroutine(CloseGroup(Town_Group,0.0f));
-
-          DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("City"));
-          ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.GetTextData("City"),
-            ConstValues.Quest_Cult_Progress_City);
-
+          if (LastPhase!=-1) StartCoroutine(CloseGroup(Town_Group,0.0f));
           StartCoroutine(OpenGroup(City_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f));
         }
         break;
       case 3:
+        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
 
         DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Sabbat"),
           GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector, 0));
@@ -98,6 +105,8 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         }
         break;
       case 4:
+        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+
         DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Ritual"));
         ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_SNR_Value"),
           GameManager.Instance.MyGameData.Cult_CoolTime, ConstValues.Quest_Cult_Progress_Ritual);

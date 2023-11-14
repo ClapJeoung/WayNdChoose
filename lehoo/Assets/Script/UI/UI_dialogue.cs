@@ -1029,9 +1029,6 @@ SettlementNameText.text = CurrentSettlement.Name;
 
     DefaultGroup.interactable = true;
   }
-  /// <summary>
-  /// 0:일반 1:집회 2:페널티만
-  /// </summary>
   [HideInInspector] public bool QuestSectorInfo = false;
   [HideInInspector] public int GoldCost = 0;
   [HideInInspector] public int SanityCost = 0;
@@ -1303,7 +1300,8 @@ SettlementNameText.text = CurrentSettlement.Name;
         }
         break;
     }
-    GameManager.Instance.MyGameData.MovePoint += MovePointValue;
+   if(GameManager.Instance.MyGameData.MovePoint < 0) GameManager.Instance.MyGameData.MovePoint = MovePointValue;
+   else GameManager.Instance.MyGameData.MovePoint += MovePointValue;
     yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint_gain(SettlementIcon.rectTransform, MovePointValue));
     GameManager.Instance.MyGameData.ApplySectorEffect(IsMad? SectorTypeEnum.NULL: SelectedSector);
 

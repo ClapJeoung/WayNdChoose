@@ -38,29 +38,33 @@ public static class ConstValues
   public const int MadnessEffect_Wild = 4;
   public const int MadnessEffect_Intelligence_Value = 2;
 
-  public const int MadnessHPCost_Skill = 30;
-  public const int MadnessSanityGen_Skill = 75;
+  public const int MadnessHPCost_Skill = 25;
+  public const int MadnessSanityGen_Skill = 80;
   public const int MadnessSkillLevel = 2;
   public const int MadnessHPCost_HP = 40;
   public const int MadnessSanityGen_HP = 100;
 
   public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=7,
     Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 3;
-  public const float Qeust_Cult_EventProgress_Clear = 1.0f;
-  public const float Quest_Cult_EventProgress_Fail = 0.75f;
+  public const float Qeust_Cult_EventProgress_Clear = 1.5f;
+  public const float Quest_Cult_EventProgress_Fail = 1.0f;
   public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 4;
+  public const int Quest_Cult_Penalty_Village = 30, Quest_Cult_Penalty_Town = 40, Quest_Cult_Penalty_City = 50;
   public const int Quest_Cult_MovepointAsSanity = 7;
+  public const int Quest_Cult_CoolTime_Village = 5;
+  public const int Quest_Cult_CoolTime_Town = 8;
+  public const int Quest_Cult_CoolTime_City = 7;
   public const int Quest_Cult_CoolTime_Sabbat = 7;
-  public const int Quest_Cult_CoolTime_Ritual = 3;
+  public const int Quest_Cult_CoolTime_Ritual = 5;
 
 
-  public const int Rest_MovePoint = 5;
+  public const int Rest_MovePoint = 7;
   public const int Rest_Discomfort = 4;
   public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
   public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 14.0f;
   public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.2f;
-  public const float Move_Default = 0.3f, Move_LengthRatio = 0.2f;
-  public const float LackMPAmplifiedValue_Idle = 0.5f;
+  public const float Move_Default = 0.2f, Move_LengthRatio = 0.2f;
+  public const float LackMPAmplifiedValue_Idle = 0.4f;
 
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 1,
@@ -84,7 +88,7 @@ public static class ConstValues
   public const float  SanityLoss_Exp = 0.15f;
 
   public const int Tendency_Head_m2 = 4;
-  public const float Tendency_Head_m1 = 0.2f;
+  public const float Tendency_Head_m1 = 0.25f;
   public const int Tendency_Head_p1 =1;
   public const int Tendency_Head_p2 = 0;
   //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
@@ -108,8 +112,8 @@ public static class ConstValues
   //스킬 체크, 지불 체크 최대~최소
   public const int MaxTime = 60;
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 3, CheckSkill_single_max = 12;
-  public const int CheckSkill_multy_min = 4, CheckSkill_multy_max = 20;
+  public const int CheckSkill_single_min = 3, CheckSkill_single_max = 15;
+  public const int CheckSkill_multy_min = 4, CheckSkill_multy_max = 24;
 
   public const float Difficult = 1.0f;
   public const float PayHP_min = 4, PayHP_max = 12;      
@@ -271,31 +275,47 @@ public class GameData    //게임 진행도 데이터
         switch (QuestType)
         {
           case QuestType.Cult:
-            if (Quest_Cult_Phase > 2)
+            Cult_CoolTime--;
+            if (Cult_CoolTime <= 0)
             {
-              Cult_CoolTime--;
-              if (Cult_CoolTime <= 0)
+              switch (Quest_Cult_Phase)
               {
-                switch (Quest_Cult_Phase)
-                {
-                  case 3:
-                    for (int i = 0; i < MyMapData.AllSettles.Count; i++)
-                      MyMapData.AllSettles[i].Discomfort += ConstValues.Quest_Cult_SabbatDiscomfort;
+                case 0:
+                  Sanity -= ConstValues.Quest_Cult_Penalty_Village;
 
-                    SetRitual();
-                    break;
-                  case 4:
-                    if (MovePoint < ConstValues.Quest_Cult_RitualMovepoint)
-                      Sanity -= (ConstValues.Quest_Cult_RitualMovepoint - MovePoint) * ConstValues.Quest_Cult_MovepointAsSanity;
+                  Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Town;
+                  Quest_Cult_Phase = 1;
+                  UIManager.Instance.MapUI.FirstHighlight = true;
+                  break;
+                case 1:
+                  Sanity -= ConstValues.Quest_Cult_Penalty_Town;
 
-                    MovePoint -= ConstValues.Quest_Cult_RitualMovepoint;
+                  Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_City;
+                  Quest_Cult_Phase = 2;
+                  UIManager.Instance.MapUI.FirstHighlight = true;
+                  break;
+                case 2:
+                  Sanity -= ConstValues.Quest_Cult_Penalty_City;
 
-                    SetSabbat();
-                    break;
-                }
+                  SetSabbat();
+                  break;
+                case 3:
+                  for (int i = 0; i < MyMapData.AllSettles.Count; i++)
+                    MyMapData.AllSettles[i].Discomfort += ConstValues.Quest_Cult_SabbatDiscomfort;
+
+                  SetRitual();
+                  break;
+                case 4:
+                  if (MovePoint < ConstValues.Quest_Cult_RitualMovepoint)
+                    Sanity -= (ConstValues.Quest_Cult_RitualMovepoint - MovePoint) * ConstValues.Quest_Cult_MovepointAsSanity;
+
+                  MovePoint -= ConstValues.Quest_Cult_RitualMovepoint;
+
+                  SetSabbat();
+                  break;
               }
-              UIManager.Instance.SidePanelCultUI.UpdateUI();
             }
+            UIManager.Instance.SidePanelCultUI.UpdateUI();
             break;
         }
       }
@@ -405,16 +425,16 @@ public class GameData    //게임 진행도 데이터
     int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max,LerpByTurn)
       * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
-    return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
-      (int)(_value * (1.0f+MovePointAmplified*(movepoint-MovePoint)));
+    return (GameManager.Instance.MyGameData.movepoint- movepoint)>=0 ? _value :
+      (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(MovePoint- movepoint))));
   }
   public int GetMoveGoldCost(int length,int movepoint)
   {
     int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max,LerpByTurn)
       * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
 
-    return GameManager.Instance.MyGameData.movepoint >= movepoint ? _value :
-      (int)(_value * (1.0f + MovePointAmplified * (movepoint - MovePoint)));
+    return (GameManager.Instance.MyGameData.movepoint - movepoint) >= 0 ? _value :
+      (int)(_value * (1.0f + MovePointAmplified * (Mathf.Abs(MovePoint - movepoint))));
   }
   public float MovePointAmplified
   {
@@ -473,7 +493,7 @@ public class GameData    //게임 진행도 데이터
     get { return movepoint; }
     set
     {
-      movepoint = value>0?value:0;
+      movepoint = value;
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateMovePointText();
     }
   }
@@ -643,7 +663,7 @@ public class GameData    //게임 진행도 데이터
   {
     Quest_Cult_Phase = 4;
     Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Ritual;
-    List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 3);
+    List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 5);
     if(_tiles.Contains(CurrentTile))_tiles.Remove(CurrentTile);
     List<int> _tileasindex= new List<int>();
     for(int i=0;i<_tiles.Count;i++)
@@ -758,6 +778,7 @@ public class GameData    //게임 진행도 데이터
     sanity = 100;
     gold = ConstValues.StartGold ;
     QuestType=questtype;
+    Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Village;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
     Skill_Conversation = new Skill(SkillTypeEnum.Conversation,ConstValues.StartSkillLevel);
@@ -1137,7 +1158,7 @@ public class Tendency
               break;
             case -1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       ConstValues.LackMPAmplifiedValue_Idle, ConstValues.Tendency_Head_m1);
+                       ConstValues.LackMPAmplifiedValue_Idle*100, ConstValues.Tendency_Head_m1*100);
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),

@@ -443,6 +443,18 @@ public class GameManager : MonoBehaviour
     _typecode += icontype;
     return GetTextData(type, _typecode);
   }
+  public string GetTextData(SettlementType type)
+  {
+    switch (type)
+    {
+      case SettlementType.Village:return GetTextData("Village");
+      case SettlementType.Town: return GetTextData("Town");
+      case SettlementType.City: return GetTextData("City");
+    }
+
+    return NullText;
+  }
+
   public void SaveData()
   {
     GameJsonData _newjsondata=new GameJsonData(MyGameData);

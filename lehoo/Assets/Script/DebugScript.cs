@@ -30,7 +30,7 @@ public class DebugScript : MonoBehaviour
   public TMP_InputField EXP_Short_1_Turn = null;
   [Space(10)]
   public TMP_InputField Cult_Phase = null;
- // public TMP_InputField Cult_Type = null;
+  public TMP_InputField Cult_Cooltime = null;
   public TMP_InputField Cult_Progress = null;
   [Space(10)]
   public TMP_InputField NextEventId = null;
@@ -63,6 +63,7 @@ public class DebugScript : MonoBehaviour
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
       Cult_Phase.text = GameManager.Instance.MyGameData.Quest_Cult_Phase.ToString();
+      Cult_Cooltime.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
       Cult_Progress.text = GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString();
     }
 
@@ -141,6 +142,7 @@ public class DebugScript : MonoBehaviour
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
       GameManager.Instance.MyGameData.Quest_Cult_Phase = int.Parse(Cult_Phase.text);
+      GameManager.Instance.MyGameData.Cult_CoolTime = int.Parse(Cult_Cooltime.text);
       GameManager.Instance.MyGameData.Quest_Cult_Progress = float.Parse(Cult_Progress.text);
 
       UIManager.Instance.SidePanelCultUI.UpdateUI();

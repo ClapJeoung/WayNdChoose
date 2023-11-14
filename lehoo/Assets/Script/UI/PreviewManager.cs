@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PreviewManager : MonoBehaviour
 {
@@ -250,6 +251,7 @@ public class PreviewManager : MonoBehaviour
   {
     Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
     string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION");
+    if (GameManager.Instance.MyGameData.MovePoint < 0) _description += GameManager.Instance.GetTextData("Movepoint_NoSupplies");
 
 
     OpenIconAndDescriptionPanel(_icon, _description, StatusPivot, true, rect);
@@ -930,9 +932,27 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenTileInfoPreveiew(TileData tileData, RectTransform tilerect)
   {
+    if (tileData == GameManager.Instance.MyGameData.CurrentTile) return;
+    string _movepointstring = "";
     if (tileData.TileSettle == null)
     {
-      TileInfoMovePointText.text = tileData.MovePoint.ToString();
+      List<TileData> _tiles = UIManager.Instance.MapUI.SetRouteTemp(tileData);
+      for(int i=1;i< _tiles.Count; i++)
+      {
+        if (i == 1)
+        {
+          if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
+          else _movepointstring += _tiles[i].MovePoint;
+        }
+        else
+        {
+          if (i == _tiles.Count - 1) _movepointstring +=$" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
+          else _movepointstring +=$" + {_tiles[i].MovePoint}";
+        }
+      }
+      TileInfoMovePointText.text = _movepointstring;
+
+      LayoutRebuilder.ForceRebuildLayoutImmediate(TileInfoMovePointText.transform.parent.transform as RectTransform);
 
       OpenPreviewPanel(TileInfoPanel, tilerect);
     }
@@ -945,10 +965,27 @@ public class PreviewManager : MonoBehaviour
         case SettlementType.City: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_white; break;
       }
 
-      SettlementInfoName.text = tileData.TileSettle.Name;
-      SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
-      SettlementMovePointText.text = tileData.MovePoint.ToString();
+      SettlementInfoName.text =string.Format(GameManager.Instance.GetTextData("SettlementInfoNames"),
+        GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType), tileData.TileSettle.Name);
 
+      SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
+      List<TileData> _tiles = UIManager.Instance.MapUI.SetRouteTemp(tileData);
+      for (int i = 1; i < _tiles.Count; i++)
+      {
+        if (i == 1)
+        {
+          if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
+          else _movepointstring += _tiles[i].MovePoint;
+        }
+        else
+        {
+          if (i == _tiles.Count - 1) _movepointstring += $" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
+          else _movepointstring += $" + {_tiles[i].MovePoint}";
+        }
+      }
+      SettlementMovePointText.text = _movepointstring;
+
+      LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementMovePointText.transform.parent.transform as RectTransform);
       OpenPreviewPanel(SettlementInfoPanel, tilerect);
     }
   }

@@ -228,6 +228,7 @@ public class UI_QuestWolf : UI_default
     {
       MoveRectForButton(0);
       UIManager.Instance.MapButton.SetCurrentUI(this,MapbuttonPos,0.0f);
+      StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.5f));
     }
 
   }
@@ -301,9 +302,13 @@ ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress
         {
           case SettlementType.Village:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Village;
+            GameManager.Instance.MyGameData.Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Town;
+            UIManager.Instance.MapUI.FirstHighlight = true;
             break;
           case SettlementType.Town:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town;
+            GameManager.Instance.MyGameData.Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_City;
+            UIManager.Instance.MapUI.FirstHighlight = true;
             break;
           case SettlementType.City:
             GameManager.Instance.MyGameData.SetSabbat();
