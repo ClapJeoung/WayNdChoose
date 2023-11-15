@@ -590,6 +590,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 71a7fb53d88b4f94b9006f1f52ff7f3b, type: 3}
   - {fileID: 21300000, guid: b58488e1e4c31c4468b708ecc39097ef, type: 3}
   - {fileID: 21300000, guid: 95345bbe38a4dc44381ebf7dcebad01e, type: 3}
+  UnknownSectorIcon: {fileID: 21300000, guid: e67e5fa9e99a31e40a2455e43916ec84, type: 3}
   ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
   MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
   TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}

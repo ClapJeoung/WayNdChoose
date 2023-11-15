@@ -147,6 +147,24 @@ public class Settlement
 }
 public class MapData
 {
+  public static List<HexDir> GetLength(TileData start, TileData end)
+  {
+
+    HexGrid _current = new HexGrid(start.Coordinate);
+    HexGrid _end = new HexGrid(end.Coordinate);
+
+    HexGrid _distance = _end - _current;
+
+    return _distance.GetDir;
+  }
+  public List<HexDir> GetLength(Vector2 start, Vector2 end)
+  {
+    return MapData.GetLength(Tile(start),Tile(end));
+  }
+  public List<HexDir> GetLength(Vector2Int start, Vector2Int end)
+  {
+    return MapData.GetLength(Tile(start),Tile(end));
+  }
   public int CircleHexCount(int range)
   {
     List<Vector2Int> _center=new List<Vector2Int>();

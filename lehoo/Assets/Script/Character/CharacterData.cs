@@ -10,7 +10,7 @@ public static class ConstValues
 {
   public const int StartSkillLevel = 1;
 
-  public const int DefaultBonusGold = 0;
+  public const int DefaultBonusGold = 1;
   public const int GoldPerMovepoint = 1;
   public const int StartMovePoint = 10;
   public const int MovePoint_Sea = 4;
@@ -30,8 +30,10 @@ public static class ConstValues
   public const int ExpSkillLevel = 1;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
+  public const float MaxDiscomfort = 15;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
+  public const int MovePointMin = -8, MovePointMax = 15;
 
   public const int MadnessEffect_Conversation = 7;
   public const int MadnessEffect_Force = 3;
@@ -52,17 +54,18 @@ public static class ConstValues
   public const int Quest_Cult_Penalty_Village = 30, Quest_Cult_Penalty_Town = 40, Quest_Cult_Penalty_City = 50;
   public const int Quest_Cult_MovepointAsSanity = 7;
   public const int Quest_Cult_CoolTime_Village = 5;
-  public const int Quest_Cult_CoolTime_Town = 8;
-  public const int Quest_Cult_CoolTime_City = 7;
-  public const int Quest_Cult_CoolTime_Sabbat = 7;
-  public const int Quest_Cult_CoolTime_Ritual = 5;
+  public const int Quest_Cult_CoolTime_Town = 3;
+  public const int Quest_Cult_CoolTime_City = 4;
+  public const int Quest_Cult_CoolTime_Sabbat = 4;
+  public const int Quest_Cult_CoolTime_Ritual = 3;
+  public const float Quest_Cult_LengthValue = 2.5f;
 
 
   public const int Rest_MovePoint = 7;
-  public const int Rest_Discomfort = 4;
+  public const int Rest_Discomfort = 5;
   public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
   public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 14.0f;
-  public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.2f;
+  public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.15f;
   public const float Move_Default = 0.2f, Move_LengthRatio = 0.2f;
   public const float LackMPAmplifiedValue_Idle = 0.4f;
 
@@ -75,7 +78,7 @@ public static class ConstValues
   public const int MapSize = 21;
   public const int MinRiverCount = 5;
   public const float Ratio_highland = 0.2f;
-  public const float Ratio_forest = 0.2f;
+  public const float Ratio_forest = 0.25f;
   public const int Count_mountain = 3;
   public const int LandRadius = 6;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
@@ -283,14 +286,14 @@ public class GameData    //게임 진행도 데이터
                 case 0:
                   Sanity -= ConstValues.Quest_Cult_Penalty_Village;
 
-                  Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Town;
+                  Cult_CoolTime = (int)(MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
                   Quest_Cult_Phase = 1;
                   UIManager.Instance.MapUI.FirstHighlight = true;
                   break;
                 case 1:
                   Sanity -= ConstValues.Quest_Cult_Penalty_Town;
 
-                  Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_City;
+                  Cult_CoolTime = (int)(MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
                   Quest_Cult_Phase = 2;
                   UIManager.Instance.MapUI.FirstHighlight = true;
                   break;
@@ -466,6 +469,7 @@ public class GameData    //게임 진행도 데이터
     get { return sanity; }
     set
     {
+      if (sanity <= 0 && value < 0) return;
       sanity = Mathf.Clamp(value, 0, 100);
 
       UIManager.Instance.UpdateSanityText();
@@ -611,26 +615,33 @@ public class GameData    //게임 진행도 데이터
   public void SetSabbat()
   {
     Quest_Cult_Phase = 3;
-    Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Sabbat;
+    int _village_0 = 0, _village_1 = 0, _town = 0, _city = 0;
     if (CurrentSettlement == null)
     {
       Dictionary<int,int> _settlements= new Dictionary<int,int>();
-      _settlements.Add(0, GameManager.Instance.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count);
-      _settlements.Add(1, GameManager.Instance.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count);
-      _settlements.Add(2, GameManager.Instance.GetLength(CurrentTile, MyMapData.Town.Tile).Count);
-      _settlements.Add(3, GameManager.Instance.GetLength(CurrentTile, MyMapData.City.Tile).Count);
+      _village_0 = MapData.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count;
+      _village_1 = MapData.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count;
+      _town = MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count;
+      _city = MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count;
+      _settlements.Add(0, _village_0);
+      _settlements.Add(1,_village_1);
+      _settlements.Add(2,_town);
+      _settlements.Add(3,_city);
     List<int> _indexes= new List<int>();
       foreach (var _data in _settlements) for (int i = 0; i < _data.Value; i++) _indexes.Add(_data.Key);
       switch(_indexes[UnityEngine.Random.Range(0, _indexes.Count)])
       {
         case 0: case 1:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
+          Cult_CoolTime = (int)((_village_0 < _village_1 ? _village_0 :_village_1)/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
         case 2:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Temple : SectorTypeEnum.Marketplace;
+          Cult_CoolTime=(int)(_town/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
         case 3:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
+          Cult_CoolTime = (int)(_city / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
       }
     }
@@ -640,12 +651,23 @@ public class GameData    //게임 진행도 데이터
       {
         case SettlementType.Village:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
+          _town = MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count;
+          _city = MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count;
+          Cult_CoolTime =(int)( (_town < _city ? _town : _city) / ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.Town:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Library;
+          _village_0 = MapData.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count;
+          _village_1 = MapData.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count;
+          _city = MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count;
+          Cult_CoolTime = (int)((_village_0 < _village_1 ? _village_0 : _village_1 < _city ? _village_1 : _city) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.City:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
+          _village_0 = MapData.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count;
+          _village_1 = MapData.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count;
+          _town = MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count;
+          Cult_CoolTime = (int)((_village_0 < _village_1 ? _village_0 : _village_1 < _town ? _village_1 : _town) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
       }
     }
@@ -662,7 +684,6 @@ public class GameData    //게임 진행도 데이터
   public void SetRitual()
   {
     Quest_Cult_Phase = 4;
-    Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Ritual;
     List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 5);
     if(_tiles.Contains(CurrentTile))_tiles.Remove(CurrentTile);
     List<int> _tileasindex= new List<int>();
@@ -678,6 +699,8 @@ public class GameData    //게임 진행도 데이터
        Cult_RitualTile.Landmark = LandmarkType.Ritual;
     Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
               UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
+
+    Cult_CoolTime = (int)(MapData.GetLength(CurrentTile,Cult_RitualTile).Count/ ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Ritual;
 
     if (Cult_SabbatSector != SectorTypeEnum.NULL) Cult_SabbatSector = SectorTypeEnum.NULL;
   }

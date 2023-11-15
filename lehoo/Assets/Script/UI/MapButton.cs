@@ -7,9 +7,17 @@ public class MapButton : ReturnButton
   public override void Clicked()
   {
     base.Clicked();
+    if (UIManager.Instance.IsWorking) return;
 
-    if (GameManager.Instance.MyGameData.CurrentSettlement != null && GameManager.Instance.MyGameData.Tendency_Head.Level == -2)
-      GameManager.Instance.MyGameData.MovePoint += ConstValues.Tendency_Head_m2;
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
+    {
+      if (GameManager.Instance.MyGameData.FirstRest)
+      {
+        UIManager.Instance.DialogueUI.OpenQuitAsk();
+        return;
+      }
+     if(GameManager.Instance.MyGameData.Tendency_Head.Level == -2) GameManager.Instance.MyGameData.MovePoint += ConstValues.Tendency_Head_m2;
+    }
 
       if (CurrentUI as UI_dialogue != null)
     {

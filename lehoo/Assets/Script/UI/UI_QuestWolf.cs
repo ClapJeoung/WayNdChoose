@@ -302,12 +302,12 @@ ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress
         {
           case SettlementType.Village:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Village;
-            GameManager.Instance.MyGameData.Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Town;
+            GameManager.Instance.MyGameData.Cult_CoolTime =(int)( MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile,GameManager.Instance.MyGameData.MyMapData.Town.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
             UIManager.Instance.MapUI.FirstHighlight = true;
             break;
           case SettlementType.Town:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town;
-            GameManager.Instance.MyGameData.Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_City;
+            GameManager.Instance.MyGameData.Cult_CoolTime =(int)( MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.City.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
             UIManager.Instance.MapUI.FirstHighlight = true;
             break;
           case SettlementType.City:

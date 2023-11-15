@@ -373,6 +373,7 @@ public class ImageHolder : ScriptableObject
   }
   */
   [Space(10)]
+  public Sprite UnknownSectorIcon = null;
   public Sprite ResidenceIcon = null;
   public Sprite MarketPlaceIcon = null;
   public Sprite TempleIcon = null;

@@ -83,6 +83,8 @@ public class UI_dialogue : UI_default
   public IEnumerator OpenEventUI(bool dir)
   {
     if (MadenssEffect.enabled) MadenssEffect.enabled = false;
+    if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
+    if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     IsOpen = true;
 
     UIManager.Instance.SettleButton.DeActive();
@@ -130,10 +132,12 @@ public class UI_dialogue : UI_default
   public IEnumerator OpenEventUI(bool issuccess,bool isleft,bool dir)
   {
     if (MadenssEffect.enabled) MadenssEffect.enabled = false;
+    if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
     IsOpen = true;
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
     if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
     if (SettlementBackground.enabled == true) SettlementBackground.enabled = false;
+    if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     UIManager.Instance.SettleButton.DeActive();
     DialogueRect.sizeDelta = EventDialogueSize;
 
@@ -287,12 +291,12 @@ public class UI_dialogue : UI_default
         case 2:
           if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
-          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
           yield return StartCoroutine(updatescrollbar());
 
           break;
         case 3:
-          yield return StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
           yield return StartCoroutine(updatescrollbar());
 
           break;
@@ -939,6 +943,20 @@ public class UI_dialogue : UI_default
   private Settlement CurrentSettlement = null;
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
   private bool IsMad = false;
+  public GameObject QuitAskObject = null;
+  public TextMeshProUGUI QuitAskText = null;
+  public TextMeshProUGUI QuitText_Yes = null;
+  public TextMeshProUGUI QuitText_No = null;
+  public void OpenQuitAsk() => QuitAskObject.SetActive(true);
+  public void QuitAskClick_Yes() 
+  { 
+    GameManager.Instance.MyGameData.FirstRest = false;
+    UIManager.Instance.MapButton.Clicked();
+  }
+  public void QuitAskClick_No()
+  {
+    QuitAskObject.SetActive(false);
+  }
   public IEnumerator openui_settlement(bool dir)
   {
     if (GameManager.Instance.MyGameData.CurrentEvent != null)
@@ -947,9 +965,17 @@ public class UI_dialogue : UI_default
       GameManager.Instance.MyGameData.CurrentEvent = null;
       GameManager.Instance.SaveData();
     }
+    if (QuitAskText.text == "")
+    {
+      QuitAskText.text = GameManager.Instance.GetTextData("NoRestQuit");
+      QuitText_Yes.text = GameManager.Instance.GetTextData("YES");
+      QuitText_No.text = GameManager.Instance.GetTextData("NO");
+    }
+    if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
 
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
 
+    if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
     if (GameManager.Instance.MyGameData.Madness_Force && (GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force == ConstValues.MadnessEffect_Force-1))
     {
       Debug.Log("무력 광기 발동");
@@ -985,9 +1011,9 @@ public class UI_dialogue : UI_default
 
 SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-      Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+      Mathf.Clamp(CurrentSettlement.Discomfort /ConstValues.MaxDiscomfort, 0.0f, 1.0f));
     DiscomfortText.fontSize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfort, 0.0f, 1.0f));
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
@@ -1014,7 +1040,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     }
 
     SettlementIcon.sprite = _settlementicon;
-    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.UnknownSectorIcon;
     SectorName.text =IsMad?"": GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
 
@@ -1105,7 +1131,7 @@ SettlementNameText.text = CurrentSettlement.Name;
   {
     if (IsSelectSector == true) return;
 
-    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.Transparent;
+    SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.UnknownSectorIcon;
     SectorName.text = GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
     RestResult.text = "";
@@ -1255,6 +1281,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
   private IEnumerator restinsector(StatusTypeEnum statustype)
   {
+    DefaultGroup.interactable = false;
     IsOpen = false;
 
     GameManager.Instance.MyGameData.FirstRest = false;
@@ -1323,11 +1350,12 @@ SettlementNameText.text = CurrentSettlement.Name;
     float _time = 0.0f;
     float _startsize = DiscomfortIcon.sizeDelta.x,
       _endsize = Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-  Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
+  Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfort, 0.0f, 1.0f));
     float _fontstartsize = DiscomfortText.fontSize;
     float _fontendsize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort * 0.1f, 0.0f, 1.0f));
-
+          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfort, 0.0f, 1.0f));
+    RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
+     (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
     while (_time < DiscomfortScaleEffectTime)
     {
       DiscomfortIcon.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 1.5f, DiscomfortAnimationCurve.Evaluate(_time / DiscomfortScaleEffectTime));

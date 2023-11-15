@@ -251,7 +251,7 @@ public class PreviewManager : MonoBehaviour
   {
     Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
     string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION");
-    if (GameManager.Instance.MyGameData.MovePoint < 0) _description += GameManager.Instance.GetTextData("Movepoint_NoSupplies");
+    if (GameManager.Instance.MyGameData.MovePoint < 0) _description +="<br>"+ GameManager.Instance.GetTextData("Movepoint_NoSupplies");
 
 
     OpenIconAndDescriptionPanel(_icon, _description, StatusPivot, true, rect);
@@ -933,28 +933,37 @@ public class PreviewManager : MonoBehaviour
   public void OpenTileInfoPreveiew(TileData tileData, RectTransform tilerect)
   {
     if (tileData == GameManager.Instance.MyGameData.CurrentTile) return;
+
+    Vector2 _pivot = new Vector2(0.5f,tileData.Coordinate.y<=GameManager.Instance.MyGameData.Coordinate.y?1.05f:-0.05f);
     string _movepointstring = "";
     if (tileData.TileSettle == null)
     {
       List<TileData> _tiles = UIManager.Instance.MapUI.SetRouteTemp(tileData);
-      for(int i=1;i< _tiles.Count; i++)
+      if (UIManager.Instance.MapUI.IsMad)
       {
-        if (i == 1)
+        _movepointstring += "?";
+      }
+      else
+      {
+        for (int i = 1; i < _tiles.Count; i++)
         {
-          if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
-          else _movepointstring += _tiles[i].MovePoint;
-        }
-        else
-        {
-          if (i == _tiles.Count - 1) _movepointstring +=$" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
-          else _movepointstring +=$" + {_tiles[i].MovePoint}";
+          if (i == 1)
+          {
+            if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
+            else _movepointstring += _tiles[i].MovePoint;
+          }
+          else
+          {
+            if (i == _tiles.Count - 1) _movepointstring += $" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
+            else _movepointstring += $" + {_tiles[i].MovePoint}";
+          }
         }
       }
       TileInfoMovePointText.text = _movepointstring;
 
       LayoutRebuilder.ForceRebuildLayoutImmediate(TileInfoMovePointText.transform.parent.transform as RectTransform);
 
-      OpenPreviewPanel(TileInfoPanel, tilerect);
+      OpenPreviewPanel(TileInfoPanel, _pivot, tilerect);
     }
     else
     {
@@ -970,23 +979,30 @@ public class PreviewManager : MonoBehaviour
 
       SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
       List<TileData> _tiles = UIManager.Instance.MapUI.SetRouteTemp(tileData);
-      for (int i = 1; i < _tiles.Count; i++)
+      if (UIManager.Instance.MapUI.IsMad)
       {
-        if (i == 1)
+        _movepointstring += "?";
+      }
+      else
+      {
+        for (int i = 1; i < _tiles.Count; i++)
         {
-          if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
-          else _movepointstring += _tiles[i].MovePoint;
-        }
-        else
-        {
-          if (i == _tiles.Count - 1) _movepointstring += $" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
-          else _movepointstring += $" + {_tiles[i].MovePoint}";
+          if (i == 1)
+          {
+            if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
+            else _movepointstring += _tiles[i].MovePoint;
+          }
+          else
+          {
+            if (i == _tiles.Count - 1) _movepointstring += $" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
+            else _movepointstring += $" + {_tiles[i].MovePoint}";
+          }
         }
       }
       SettlementMovePointText.text = _movepointstring;
 
       LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementMovePointText.transform.parent.transform as RectTransform);
-      OpenPreviewPanel(SettlementInfoPanel, tilerect);
+      OpenPreviewPanel(SettlementInfoPanel, _pivot, tilerect);
     }
   }
 

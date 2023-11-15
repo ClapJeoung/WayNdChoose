@@ -11,7 +11,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
   public RectTransform OtherRect = null;
-    [Space(15)]
+  public RectTransform OtherRect_other = null;
+  [Space(15)]
     public TendencyTypeEnum MyTendency = TendencyTypeEnum.None;
   public TendencyTypeEnum MySelectionTendency= TendencyTypeEnum.None;
   public bool MySelectionTendencyDir = false;
@@ -163,7 +164,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo, IsCultSidePanel?new Vector2(1.05f,0.5f):new Vector2(0.5f,1.05f),OtherRect==null?transform as RectTransform : OtherRect);
         break;
       case PreviewPanelType.TileInfo:
-        UIManager.Instance.PreviewManager.OpenTileInfoPreveiew(MyTileData, OtherRect==null?transform as RectTransform : OtherRect);
+        UIManager.Instance.PreviewManager.OpenTileInfoPreveiew(MyTileData,MyTileData.Coordinate.y <= GameManager.Instance.MyGameData.Coordinate.y ? OtherRect:OtherRect_other);
         break;
 
     }

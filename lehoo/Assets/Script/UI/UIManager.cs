@@ -272,6 +272,8 @@ public class UIManager : MonoBehaviour
   //  Debug.Log("이동력 수치 업데이트");
     if (lastmovepoint == 0 && GameManager.Instance.MyGameData.MovePoint == 0) return;
 
+    MovepointIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max,
+      (GameManager.Instance.MyGameData.MovePoint - ConstValues.MovePointMin) / (float)(ConstValues.MovePointMax-ConstValues.MovePointMin));
     MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
 
     lastmovepoint = GameManager.Instance.MyGameData.MovePoint;

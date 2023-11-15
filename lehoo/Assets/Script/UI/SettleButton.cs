@@ -9,6 +9,7 @@ public class SettleButton : ReturnButton
   public override void Clicked()
   {
     base.Clicked();
+    if (UIManager.Instance.IsWorking) return;
 
     if (CurrentUI as UI_dialogue != null)
     {

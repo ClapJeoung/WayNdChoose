@@ -770,6 +770,7 @@ public class GameManager : MonoBehaviour
   }
   public void EnterSettlement(Settlement targetsettlement)
   {
+    if (MyGameData.MovePoint < 0) MyGameData.MovePoint = 0;
     MyGameData.CurrentEvent = null;
     MyGameData.CurrentSettlement=targetsettlement;
 
@@ -794,26 +795,6 @@ public class GameManager : MonoBehaviour
     SaveData();
 
     UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(false));
-  }
-  public List<HexDir> GetLength(TileData start, TileData end)
-  {
-
-    HexGrid _current = new HexGrid(start.Coordinate);
-    HexGrid _end=new HexGrid(end.Coordinate);
-
-    HexGrid _distance = _end - _current;
-
-    return _distance.GetDir;
-  }
-  public List<HexDir> GetLength(Vector2 start, Vector2 end)
-  {
-    return GetLength(MyGameData.MyMapData.Tile(start),
-      MyGameData.MyMapData.Tile(end));
-  }
-  public List<HexDir> GetLength(Vector2Int start, Vector2Int end)
-  {
-    return GetLength(MyGameData.MyMapData.Tile(start),
-      MyGameData.MyMapData.Tile(end));
   }
 
   [System.Serializable]
