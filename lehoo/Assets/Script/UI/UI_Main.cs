@@ -164,16 +164,18 @@ public class UI_Main : UI_default
   }
   public void TutorialButton()
   {
-    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement",0) == 1)
+    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement",0) == 1&&PlayerPrefs.GetInt("Tutorial_Event",0)==1)
     {
       PlayerPrefs.SetInt("Tutorial_Map", 0);
       PlayerPrefs.SetInt("Tutorial_Settlement", 0);
+      PlayerPrefs.SetInt("Tutorial_Event", 0);
       TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOff");
     }
     else
     {
       PlayerPrefs.SetInt("Tutorial_Map", 1);
       PlayerPrefs.SetInt("Tutorial_Settlement", 1);
+      PlayerPrefs.SetInt("Tutorial_Event", 1);
       TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOn");
     }
   }

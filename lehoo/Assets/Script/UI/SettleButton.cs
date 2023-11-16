@@ -11,6 +11,12 @@ public class SettleButton : ReturnButton
     base.Clicked();
     if (UIManager.Instance.IsWorking) return;
 
+    if (UIManager.Instance.DialogueUI.RemainReward)
+    {
+      UIManager.Instance.DialogueUI.OpenRewardAsk(this);
+      return;
+    }
+
     if (CurrentUI as UI_dialogue != null)
     {
       UI_dialogue _dialogue = CurrentUI as UI_dialogue;

@@ -18,6 +18,14 @@ public class MapButton : ReturnButton
       }
      if(GameManager.Instance.MyGameData.Tendency_Head.Level == -2) GameManager.Instance.MyGameData.MovePoint += ConstValues.Tendency_Head_m2;
     }
+    else
+    {
+      if (UIManager.Instance.DialogueUI.RemainReward)
+      {
+        UIManager.Instance.DialogueUI.OpenRewardAsk(this);
+        return;
+      }
+    }
 
       if (CurrentUI as UI_dialogue != null)
     {

@@ -69,6 +69,25 @@ public class UI_dialogue : UI_default
   [SerializeField] private CanvasGroup SelectionGroup = null;
   [SerializeField] private UI_Selection Selection_A = null;
   [SerializeField] private UI_Selection Selection_B = null;
+  public GameObject RewardAskObject = null;
+  public TextMeshProUGUI RewardAskText = null;
+  public TextMeshProUGUI RewardText_Yes = null;
+  public TextMeshProUGUI RewardText_No = null;
+  private ReturnButton CurrentReturnButton = null;
+  public void OpenRewardAsk(ReturnButton currentreturnbutton)
+  {
+    CurrentReturnButton=currentreturnbutton;
+    RewardAskObject.SetActive(true);
+  }
+  public void RewardAskClick_Yes()
+  {
+    RemainReward = false;
+    CurrentReturnButton.Clicked();
+  }
+  public void RewardAskClick_No()
+  {
+    RewardAskObject.SetActive(false);
+  }
 
   private EventData CurrentEvent
   {
@@ -82,8 +101,11 @@ public class UI_dialogue : UI_default
   }
   public IEnumerator OpenEventUI(bool dir)
   {
+    if (PlayerPrefs.GetInt("Tutorial_Event") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Event();
+
     if (MadenssEffect.enabled) MadenssEffect.enabled = false;
     if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
+    if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
     if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     IsOpen = true;
 
@@ -95,7 +117,15 @@ public class UI_dialogue : UI_default
     DialogueRect.sizeDelta = EventDialogueSize;
 
     if(CurrentEvent.AppearSpace==EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
-  
+
+    if (RewardAskText.text == "")
+    {
+      RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
+      RewardText_No.text = GameManager.Instance.GetTextData("NO");
+    }
+    RewardAskText.text = string.Format(GameManager.Instance.GetTextData("NOREWARD"),
+      GameManager.Instance.MyGameData.CurrentSettlement == null ? GameManager.Instance.GetTextData("Map") : GameManager.Instance.GetTextData("Settlement"));
+
     EndingButtonGroup.alpha = 0.0f;
     EndingButtonGroup.interactable = false;
     EndingButtonGroup.blocksRaycasts = false;
@@ -134,14 +164,23 @@ public class UI_dialogue : UI_default
     if (MadenssEffect.enabled) MadenssEffect.enabled = false;
     if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
     IsOpen = true;
+    if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
+    if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
     if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
     if (SettlementBackground.enabled == true) SettlementBackground.enabled = false;
-    if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     UIManager.Instance.SettleButton.DeActive();
     DialogueRect.sizeDelta = EventDialogueSize;
 
     if (CurrentEvent.AppearSpace == EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+   
+    if (RewardAskText.text == "")
+    {
+      RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
+      RewardText_No.text = GameManager.Instance.GetTextData("NO");
+    }
+    RewardAskText.text = string.Format(GameManager.Instance.GetTextData("NOREWARD"),
+      GameManager.Instance.MyGameData.CurrentSettlement == null ? GameManager.Instance.GetTextData("Map") : GameManager.Instance.GetTextData("Settlement"));
 
     EndingButtonGroup.alpha = 0.0f;
     EndingButtonGroup.interactable = false;
@@ -269,7 +308,7 @@ public class UI_dialogue : UI_default
       if(CurrentEventPhaseIndex==0) Illust.Setup(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, 0.1f);
       else Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
       yield return new WaitForSeconds(FadeTime);
-      DescriptionText.text += "<br><br>" + CurrentEventDescriptions[CurrentEventPhaseIndex];
+      DescriptionText.text += (CurrentEventPhaseIndex == 0?"": "<br><br>" )+ CurrentEventDescriptions[CurrentEventPhaseIndex];
       LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
 
       switch (_phasetype)
@@ -733,7 +772,6 @@ public class UI_dialogue : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.3f));
   }
   private FailData CurrentFailData = null;
-  public UnityEngine.UI.Button CurrentReturnButton = null;
   public void SetFail(FailData _fail)
   {
     CurrentFailData = _fail;
@@ -771,11 +809,6 @@ public class UI_dialogue : UI_default
     IllustRect.anchoredPosition = _originpos;
     IllustRect.rotation = Quaternion.Euler(Vector3.zero);
   }
-  private void Update()
-  {
-    if(Input.GetKeyDown(KeyCode.KeypadPlus)) StartCoroutine(shakeillust());
-
-  }
   public void OpenReturnButton()
   {
     if (GameManager.Instance.MyGameData.CurrentSettlement != null)
@@ -797,6 +830,7 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator closeui_all(bool dir)
   {
+    DefaultGroup.interactable = false;
     IsOpen = false;
 
     CurrentSuccessData = null;
@@ -971,6 +1005,7 @@ public class UI_dialogue : UI_default
       QuitText_Yes.text = GameManager.Instance.GetTextData("YES");
       QuitText_No.text = GameManager.Instance.GetTextData("NO");
     }
+    if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
     if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
 
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
