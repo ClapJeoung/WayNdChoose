@@ -560,10 +560,13 @@ MonoBehaviour:
   MovePointIcon_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
   VillageIcon_black: {fileID: 21300000, guid: a4e91d81e0dd57b45888a932340e1161, type: 3}
   VillageIcon_white: {fileID: 21300000, guid: 3f20511af86d5a545964d57952d19432, type: 3}
+  VillageIcon_outline: {fileID: 21300000, guid: 127cb467c90829745b4f29864550c219, type: 3}
   TownIcon_black: {fileID: 21300000, guid: 072f841cd5022f243b1d8773d1fab94e, type: 3}
   TownIcon_white: {fileID: 21300000, guid: fe46ae87ac098644081abe4d9693bef1, type: 3}
+  TownIcon_outline: {fileID: 21300000, guid: 334f624269fe4804fab64513f85cb587, type: 3}
   CityIcon_black: {fileID: 21300000, guid: 9b091495955a09844988bd6ffa5c8a78, type: 3}
   CityIcon_white: {fileID: 21300000, guid: 964452aecc598b2418822a2971a5cf39, type: 3}
+  CityIcon_outline: {fileID: 21300000, guid: 448774f0fbb28004ea136c421031bb73, type: 3}
   SkillIcon_Conversation_b: {fileID: 21300000, guid: 5953298e872babc449ad69c31219b06d, type: 3}
   SkillIcon_Force_b: {fileID: 21300000, guid: 146e0d6cd03064945ad1385fcb241d65, type: 3}
   SkillIcon_Wild_b: {fileID: 21300000, guid: ada1f95262e66f4408a56950f4ab3dbe, type: 3}

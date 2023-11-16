@@ -14,6 +14,7 @@ public class TileButtonScript : MonoBehaviour
   public Image LandmarkImage = null;
   public Onpointer_tileoutline OnPointer = null;
   public PreviewInteractive Preview = null;
+  public CanvasGroup DiscomfortOutline = null;
   public void Clicked()
   {
     if (UIManager.Instance.IsWorking) return;

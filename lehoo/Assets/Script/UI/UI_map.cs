@@ -330,7 +330,7 @@ public class UI_map : UI_default
     outline.rectTransform.position = tilerect.position;
     outline.rectTransform.anchoredPosition3D = new Vector3(outline.rectTransform.anchoredPosition3D.x, outline.rectTransform.anchoredPosition3D.y, 0.0f);
   }
-  public void DisableOutline(Image outline) => outline.enabled = false;
+  public void DisableOutline(Image outline) { if(outline.enabled) outline.enabled = false; }
 
   public bool IsMad = false;
   /// <summary>
@@ -373,14 +373,14 @@ public class UI_map : UI_default
 
     if (Route_Tile.Count > 0)
     {
-      for (int i = 1; i < Route_Tile.Count; i++)
+      for (int i = 1; i < 10; i++)
       {
         DisableOutline(Outline_Routes[i]);
       }
     }
     if (Route_Temp.Count > 0)
     {
-      for (int i = 1; i < Route_Temp.Count; i++)
+      for (int i = 1; i < 10; i++)
       {
         DisableOutline(Outline_Routes_temps[i]);
       }
@@ -389,8 +389,12 @@ public class UI_map : UI_default
     DisableOutline(Outline_Idle);
     DisableOutline(Outline_Select);
 
-    QuestInfo = false;
-   // GuidRect.anchoredPosition = GuidPos_Tile;
+    for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
+    {
+      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Tile.ButtonScript.DiscomfortOutline.alpha =
+        Mathf.Lerp(0.0f, 1.0f, GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort / ConstValues.MaxDiscomfortForOutline);
+    }
+
     TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
     BonusGold = 0;
     BonusGoldText.text = "";
@@ -555,7 +559,6 @@ public class UI_map : UI_default
   private TileData SelectedTile = null;
   public List<HexDir> Route_Dir=new List<HexDir>();
   public int SanityCost = 0, GoldCost = 0, BonusGold = 0;
-  [HideInInspector] public bool QuestInfo = false;
   public void SelectTile(TileData selectedtiledata)
   {
     //동일한 좌표면 호출되지 않게 이미 거름
@@ -607,20 +610,48 @@ public class UI_map : UI_default
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
-        string _progresstext = "";
-        QuestInfo = CheckRitual;
-        switch (QuestInfo)
+        if (!IsMad)
         {
-          case false:
-            _progresstext = "";
-            UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
-            break;
-          case true:
-            _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect") ,ConstValues.Quest_Cult_Progress_Ritual);
-            UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
-            break;
+          string _progresstext = "";
+          switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+          {
+            case 0:
+              if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
+              {
+                _progresstext +=string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"),ConstValues.Quest_Cult_Progress_Village);
+              }
+              else _progresstext = "";
+              break;
+            case 1:
+              if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
+              {
+                _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town);
+              }
+              else _progresstext = "";
+              break;
+            case 2:
+              if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
+              {
+                _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City);
+              }
+              else _progresstext = "";
+              break;
+            case 4:
+              if (CheckRitual)
+              {
+                _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual);
+                UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
+              }
+              else
+              {
+                _progresstext = "";
+                UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
+              }
+              break;
+
+          }
+          TileInfoText.text += _progresstext;
         }
-        TileInfoText.text += _progresstext;
         break;
     }
 
@@ -643,11 +674,11 @@ public class UI_map : UI_default
     
     SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Tile.Count, MovePointCost);
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
-    BonusGold = (SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint;
-   // BonusGold = SelectedTile.MovePoint > 1 ? (SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint+1 : ConstValues.DefaultBonusGold;
-    BonusGold =(int)(BonusGold* GameManager.Instance.MyGameData.GetGoldGenModify(true));
-    BonusGold += (Route_Tile.Count>2&&GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? ConstValues.Tendency_Head_p1 : 0;
-
+    if (SelectedTile.TileSettle == null)
+    {
+      BonusGold = (int)((SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint * GameManager.Instance.MyGameData.GetGoldGenModify(true));
+      BonusGold += (Route_Tile.Count > 2 && GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? ConstValues.Tendency_Head_p1 : 0;
+    }
     SelectedCostType = StatusTypeEnum.HP;
     MoveCostText.text = "";
 
@@ -681,7 +712,10 @@ public class UI_map : UI_default
         break;
     }
     BonusGoldText.text =IsMad? GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + " +?":
-      ((Route_Tile.Count>2 && GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? "<sprite=104>":"") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
+      SelectedTile.TileSettle!=null?"":
+      ((Route_Tile.Count>2 && GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? 
+      "<sprite=104>":
+      "") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
     MoveLengthText.text = IsMad ? "<sprite=100> ?" :
       string.Format(GameManager.Instance.GetTextData("MoveLength"),
       GameManager.Instance.MyGameData.MovePoint,
@@ -790,7 +824,6 @@ public class UI_map : UI_default
         {
           Route_Tile.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(Route_Tile[i], Route_Dir[i]));
         }
-        QuestInfo = CheckRitual;
       }
       GameManager.Instance.MyGameData.TotalMoveCount++;
     }
@@ -869,13 +902,13 @@ public class UI_map : UI_default
 
       if (!_enterritual && Route_Tile[_currentindex].Landmark == LandmarkType.Ritual)
       {
-        UIManager.Instance.CultUI.AddProgress(4);
+        UIManager.Instance.CultUI.AddProgress(4,null);
         _enterritual = true;
       }
       _time += Time.deltaTime;
       yield return null;
     }
-    GameManager.Instance.MyGameData.Gold += BonusGold;
+    if(SelectedTile.TileSettle==null) GameManager.Instance.MyGameData.Gold += BonusGold;
     UIManager.Instance.AudioManager.StopWalking();
 
     PlayerRect.anchoredPosition = _path[_path.Count-1];
@@ -917,9 +950,6 @@ public class UI_map : UI_default
       case LandmarkType.Outer:
       case LandmarkType.Ritual:
         GameManager.Instance.MyGameData.Turn++;
-
-        if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult && GameManager.Instance.MyGameData.Quest_Cult_Phase > 0)
-          GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
         GameManager.Instance.MyGameData.DownAllDiscomfort(ConstValues.DiscomfortDownValue);

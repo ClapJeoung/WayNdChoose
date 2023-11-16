@@ -1046,9 +1046,9 @@ public class UI_dialogue : UI_default
 
 SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-      Mathf.Clamp(CurrentSettlement.Discomfort /ConstValues.MaxDiscomfort, 0.0f, 1.0f));
+      Mathf.Clamp(CurrentSettlement.Discomfort /ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
     DiscomfortText.fontSize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfort, 0.0f, 1.0f));
+          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
@@ -1106,8 +1106,8 @@ SettlementNameText.text = CurrentSettlement.Name;
     SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
-    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==2) == true ?
-      ConstValues.Tendency_Head_p2 : ConstValues.Rest_Discomfort;
+    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==-2) == true ?
+      ConstValues.Tendency_Head_m2 : ConstValues.Rest_Discomfort;
     switch (sector)
     {
       case SectorTypeEnum.Residence:
@@ -1158,7 +1158,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"),
-      GameManager.Instance.MyGameData.Tendency_Head.Level == 2 && GameManager.Instance.MyGameData.FirstRest ? "<sprite=105>" : ""
+      GameManager.Instance.MyGameData.Tendency_Head.Level == -2 && GameManager.Instance.MyGameData.FirstRest ? "<sprite=102>" : ""
       ,DiscomfortValue, MovePointValue);
 
   }
@@ -1202,8 +1202,8 @@ SettlementNameText.text = CurrentSettlement.Name;
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==2)?
-      ConstValues.Tendency_Head_p2 : ConstValues.Rest_Discomfort;
+    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==-2)?
+      ConstValues.Tendency_Head_m2 : ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
@@ -1256,7 +1256,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
     }
     RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), 
-      GameManager.Instance.MyGameData.Tendency_Head.Level==2&&GameManager.Instance.MyGameData.FirstRest ? "<sprite=105>":"",
+      GameManager.Instance.MyGameData.Tendency_Head.Level==-2&&GameManager.Instance.MyGameData.FirstRest ? "<sprite=102>":"",
       DiscomfortValue, MovePointValue);
 
     CostText.text = "";
@@ -1334,7 +1334,7 @@ SettlementNameText.text = CurrentSettlement.Name;
           case false:
             break;
           case true:
-            UIManager.Instance.CultUI.AddProgress(3);
+            UIManager.Instance.CultUI.AddProgress(3,GetSectorIconScript(SelectedSector).transform as RectTransform);
             break;
         }
         break;
@@ -1385,10 +1385,10 @@ SettlementNameText.text = CurrentSettlement.Name;
     float _time = 0.0f;
     float _startsize = DiscomfortIcon.sizeDelta.x,
       _endsize = Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-  Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfort, 0.0f, 1.0f));
+  Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
     float _fontstartsize = DiscomfortText.fontSize;
     float _fontendsize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfort, 0.0f, 1.0f));
+          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
     while (_time < DiscomfortScaleEffectTime)

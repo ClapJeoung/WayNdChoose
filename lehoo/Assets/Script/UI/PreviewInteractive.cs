@@ -139,17 +139,17 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           case 0:
             _sametext = GameManager.Instance.GetTextData("Village");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-              _sametext, _sametext, ConstValues.Quest_Cult_Progress_Village, GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_Penalty_Village);
+              _sametext, _sametext, ConstValues.Quest_Cult_Progress_Village, GameManager.Instance.MyGameData.Cult_CoolTime);
             break;
           case 1:
             _sametext = GameManager.Instance.GetTextData("Town");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-             _sametext, _sametext, ConstValues.Quest_Cult_Progress_Town, GameManager.Instance.MyGameData.Cult_CoolTime, ConstValues.Quest_Cult_Penalty_Town);
+             _sametext, _sametext, ConstValues.Quest_Cult_Progress_Town, GameManager.Instance.MyGameData.Cult_CoolTime);
             break;
           case 2:
             _sametext = GameManager.Instance.GetTextData("City");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-            _sametext, _sametext, ConstValues.Quest_Cult_Progress_City, GameManager.Instance.MyGameData.Cult_CoolTime, ConstValues.Quest_Cult_Penalty_City);
+            _sametext, _sametext, ConstValues.Quest_Cult_Progress_City, GameManager.Instance.MyGameData.Cult_CoolTime);
             break;
           case 3:
             _sametext = GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector,0);

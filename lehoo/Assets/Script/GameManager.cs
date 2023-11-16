@@ -487,7 +487,7 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        UIManager.Instance.CultUI.AddProgress(0);
+        UIManager.Instance.CultUI.AddProgress(0, null);
         break;
     }
   }
@@ -515,7 +515,7 @@ public class GameManager : MonoBehaviour
     switch (MyGameData.QuestType)
     {
       case QuestType.Cult:
-        UIManager.Instance.CultUI.AddProgress(1);
+        UIManager.Instance.CultUI.AddProgress(1, null);
 
         break;
     }
@@ -780,13 +780,13 @@ public class GameManager : MonoBehaviour
         switch (MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            if(targetsettlement.SettlementType==SettlementType.Village) UIManager.Instance.CultUI.AddProgress(2);
+            if(targetsettlement.SettlementType==SettlementType.Village) UIManager.Instance.CultUI.AddProgress(2, null);
             break;
           case 1:
-            if (targetsettlement.SettlementType == SettlementType.Town) UIManager.Instance.CultUI.AddProgress(2);
+            if (targetsettlement.SettlementType == SettlementType.Town) UIManager.Instance.CultUI.AddProgress(2, null);
             break;
           case 2:
-            if (targetsettlement.SettlementType == SettlementType.City) UIManager.Instance.CultUI.AddProgress(2);
+            if (targetsettlement.SettlementType == SettlementType.City) UIManager.Instance.CultUI.AddProgress(2, null);
             break;
         }
         break;

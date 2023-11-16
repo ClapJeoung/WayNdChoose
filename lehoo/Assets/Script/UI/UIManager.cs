@@ -7,6 +7,8 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
 using System.Reflection;
+using OpenCvSharp.Flann;
+using OpenCvSharp;
 
 public class UIManager : MonoBehaviour
 {
@@ -289,11 +291,12 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform SanityIconRect = null;
   [SerializeField] private RectTransform GoldIconRect = null;
   [SerializeField] private RectTransform MovepointIconRect = null;
-  [SerializeField] private RectTransform ConversationIconRect = null;
+  public RectTransform ConversationIconRect = null;
   [SerializeField] private RectTransform ForceIconRect = null;
   [SerializeField] private RectTransform WildIconRect = null;
   [SerializeField] private RectTransform IntelligenceIconRect = null;
   private List<int> ActiveIconIndexList= new List<int>();
+  [SerializeField] private RectTransform CultSidepanelOpenpos = null;
   /// <summary>
   /// Ã¼,Á¤,°ñ
   /// </summary>
@@ -408,7 +411,7 @@ public class UIManager : MonoBehaviour
 
       _iconrect.position = Vector3.Lerp(_startpos, _endpos, _curve.Evaluate(_time / _targettime));
       _iconrect.anchoredPosition3D = new Vector3(_iconrect.anchoredPosition3D.x, _iconrect.anchoredPosition3D.y, 0.0f);
-      if (isusing) _iconrect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / _targettime));
+     _iconrect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / _targettime));
 
       _time += Time.deltaTime;
       yield return null;
@@ -548,6 +551,35 @@ public class UIManager : MonoBehaviour
       yield return new WaitForSeconds(0.1f);
     }
   }
+  public void SetRitualFail()
+  {
+    StartCoroutine(SetIconEffect_movepoint_ritualfail(CultSidepanelOpenpos,ConstValues.Quest_Cult_RitualMovepoint));
+  }
+  public IEnumerator SetIconEffect_movepoint_ritualfail(RectTransform endrect,int count)
+  {
+    Vector2 _startpos = MovepointIconRect.position, _endpos = endrect.position;
+    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+
+    for (int j = 0; j < count; j++)
+    {
+      int _index = 0;
+      RectTransform _targetrect = null;
+      for (int i = 0; i < IconRectList.Count; i++)
+      {
+        _index = i;
+        if (ActiveIconIndexList.Contains(i)) continue;
+
+        _targetrect = IconRectList[_index];
+        _targetrect.GetComponent<Image>().sprite = _icon;
+        _targetrect.localScale = Vector3.one;
+        ActiveIconIndexList.Add(_index);
+        break;
+      }
+
+      StartCoroutine(iconmove_movepoint(_index, _targetrect, _startpos, _endpos, IconUsingCurve));
+      yield return new WaitForSeconds(0.15f);
+    }
+  }
   private IEnumerator iconmove_movepoint(int index,RectTransform rect ,Vector2 startpos,Vector2 endpos,AnimationCurve curve)
   {
     AudioManager.PlaySFX(30);
@@ -620,7 +652,40 @@ public class UIManager : MonoBehaviour
     ActiveIconIndexList.Remove(index);
 
   }
+  [SerializeField] private RectTransform SliderIconRect = null;
 
+  public void CultEventProgressIconMove(Sprite icon, RectTransform startrect) => StartCoroutine(culteventprogressiconmove(icon, startrect));
+  private IEnumerator culteventprogressiconmove(Sprite icon,RectTransform startrect)
+  {
+    int _index = 0;
+    RectTransform _targetrect = null;
+    for (int i = 0; i < IconRectList.Count; i++)
+    {
+      _index = i;
+      if (ActiveIconIndexList.Contains(i)) continue;
+
+      _targetrect = IconRectList[_index];
+      _targetrect.GetComponent<Image>().sprite = icon;
+      _targetrect.localScale = Vector3.one;
+      ActiveIconIndexList.Add(_index);
+      break;
+    }
+    float _time = 0.0f;
+    AnimationCurve _curve = IconUsingCurve;
+    Vector2 _startpos = startrect.position, _endpos = SliderIconRect.position;
+    while (_time < IconMoveTime_using)
+    {
+      _targetrect.position = Vector3.Lerp(_startpos, _endpos, _curve.Evaluate(_time / IconMoveTime_using));
+      _targetrect.anchoredPosition3D = new Vector3(_targetrect.anchoredPosition3D.x, _targetrect.anchoredPosition3D.y, 0.0f);
+      _targetrect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / IconMoveTime_using));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _targetrect.anchoredPosition = Vector2.one * 3000.0f;
+    ActiveIconIndexList.Remove(_index);
+
+    SidePanelCultUI.UpdateProgressValue();
+  }
 
   [Space(10)]
   [SerializeField] private float StatusTextMovetime = 1.0f;
@@ -789,17 +854,26 @@ public class UIManager : MonoBehaviour
   }
   [SerializeField] private RectTransform LongExpCover = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn = null;
+  [SerializeField] private CanvasGroup LongMad = null;
   private bool LongExpActive = false;
- // [SerializeField] private TextMeshProUGUI LongExpEffect = null;
   [SerializeField] private RectTransform ShortExpCover_A = null;
   [SerializeField] private TextMeshProUGUI ShortExpTurn_A= null;
+  [SerializeField] private CanvasGroup ShortMad_A = null;
   private bool ShortExpAActive = false;
-  //[SerializeField] private TextMeshProUGUI ShortExpEffect_A = null;
   [SerializeField] private RectTransform ShortExpCover_B = null;
   [SerializeField] private TextMeshProUGUI ShortExpTurn_B = null;
+  [SerializeField] private CanvasGroup ShortMad_B = null;
   private bool ShortExpBActive = false;
   public Vector2 ExpCoverUpPos = new Vector2(0.0f, 81.6f);
- // [SerializeField] private TextMeshProUGUI ShortExpEffect_B = null;
+  public void UpdateExpMad()
+  {
+    if (GameManager.Instance.MyGameData.LongExp != null && GameManager.Instance.MyGameData.LongExp.Duration > 1)
+      StartCoroutine(ChangeAlpha(LongMad, 0.0f, 1.0f));
+    if (GameManager.Instance.MyGameData.ShortExp_A != null && GameManager.Instance.MyGameData.ShortExp_A.Duration > 1)
+      StartCoroutine(ChangeAlpha(ShortMad_A, 0.0f, 1.0f));
+    if (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.Duration > 1)
+      StartCoroutine(ChangeAlpha(ShortMad_B, 0.0f, 1.0f));
+  }
   public void UpdateExpPael()
   {
     bool _starteffect = false;
@@ -812,7 +886,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(LongExpCover, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
-        UIManager.Instance.AudioManager.PlaySFX(21);
+        AudioManager.PlaySFX(21);
       }
       LongExpActive = false;
     }
@@ -910,6 +984,7 @@ public class UIManager : MonoBehaviour
     {
       case QuestType.Cult:
         SidePanelCultUI.UpdateUI();
+        SidePanelCultUI.UpdateProgressValue();
         break;
     }
   }
@@ -1021,6 +1096,33 @@ public class UIManager : MonoBehaviour
       _group.blocksRaycasts = true;
     }
   }
+  public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, float targettime,AnimationCurve curve)
+  {
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);
+
+    float _startalpha = _targetalpha == 1.0f ? 0.0f : 1.0f;
+    float _endalpha = _targetalpha == 1.0f ? 1.0f : 0.0f;
+    float _time = 0.0f;
+    float _targettime = targettime;
+    float _alpha = _startalpha;
+    _group.alpha = _alpha;
+    _group.interactable = false;
+    _group.blocksRaycasts = false;
+    while (_time < _targettime)
+    {
+      _alpha = Mathf.Lerp(_startalpha, _endalpha, curve.Evaluate(_time / _targettime));
+      _group.alpha = _alpha;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _alpha = _endalpha;
+    _group.alpha = _alpha;
+    if (_targetalpha.Equals(1.0f))
+    {
+      _group.interactable = true;
+      _group.blocksRaycasts = true;
+    }
+  }
   public void UpdateMap_SetPlayerPos(Vector2 coordinate)=>MapUI.SetPlayerPos(coordinate);
   public void UpdateMap_SetPlayerPos() => MapUI.SetPlayerPos(GameManager.Instance.MyGameData.Coordinate);
   public void OpenDialogue_Event(bool dir)
@@ -1088,12 +1190,15 @@ public class UIManager : MonoBehaviour
   }
   private IEnumerator opendead(Sprite illsut,string description)
   {
+    AudioManager.StopWalking();
+
     yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
     EndingUI.OpenUI_Dead(illsut,description);
   }
   public void OpenEnding(EndingDatas data)
   {
     StopAllCoroutines();
+    AudioManager.StopWalking();
     UIAnimationQueue.Clear();
     IsWorking = false;
     StartCoroutine(openending(data));

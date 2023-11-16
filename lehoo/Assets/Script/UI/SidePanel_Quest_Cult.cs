@@ -28,9 +28,32 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   public CanvasGroup Sabbat_Group = null;
   [SerializeField] private Image Sabbat_SectorIcon = null;
   [SerializeField] private Outline Sabbat_Effect = null;
+  [SerializeField] private CanvasGroup SabbatFailGroup = null;
+  [SerializeField] private TextMeshProUGUI SabbatFailText = null;
+  [SerializeField] private RectTransform SabbatFailRect = null;
+  [SerializeField] private AnimationCurve SabbatFailScaleCurve = null;
+  [SerializeField] private float SabbatFailDisappearTime = 2.0f;
+  [SerializeField] private AnimationCurve SabbatFailDisappearCurve = null;
+  public void SetSabbatFail()
+  {
+    SabbatFailText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), ConstValues.Quest_Cult_SabbatDiscomfort);
+    StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatFailGroup, 0.0f, SabbatFailDisappearTime, SabbatFailDisappearCurve));
+    StartCoroutine(sabbatscale());
+  }
+  private IEnumerator sabbatscale()
+  {
+    float _time = 0.0f;
+    while (_time < SabbatFailDisappearTime)
+    {
+      SabbatFailRect.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, SabbatFailScaleCurve.Evaluate(_time / SabbatFailDisappearTime));
+      _time+= Time.deltaTime;
+      yield return null;
+    }
+    SabbatFailRect.localScale = Vector3.zero;
+  }
   [Space(5)]
   public CanvasGroup Ritual_Group = null;
-  [SerializeField] private Image Ritual_Bottom = null;
+  public Image Ritual_Bottom = null;
   [SerializeField] private Image Ritual_Top = null;
   [SerializeField] private Outline Ritual_Effect = null;
   private IEnumerator OpenGroup(CanvasGroup group,float waittime)
@@ -125,6 +148,9 @@ public class SidePanel_Quest_Cult : MonoBehaviour
 
     LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
 
+  }
+  public void UpdateProgressValue()
+  {
     if (LastProgress != GameManager.Instance.MyGameData.Quest_Cult_Progress)
     {
       StartCoroutine(changeslidervalue());

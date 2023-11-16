@@ -304,16 +304,13 @@ public class ImageHolder : ScriptableObject
   public Sprite MovePointIcon_Lack = null;
   public Sprite VillageIcon_black = null;
   public Sprite VillageIcon_white = null;
- // public List<Sprite> VillageIllust=new List<Sprite>();                 //마을 일러스트
+  public Sprite VillageIcon_outline = null;
   public Sprite TownIcon_black = null;
   public Sprite TownIcon_white = null;
- // public List<Sprite> TownIllust=new List<Sprite>();                 //도시 일러스트
+  public Sprite TownIcon_outline = null;
   public Sprite CityIcon_black = null;
   public Sprite CityIcon_white = null;
-  //public List<Sprite> CityIllust=new List<Sprite>();               //성채 일러스트
- // [Space(10)]
-//  public Sprite SkillIllust_Conversation = null;
-//  public Sprite SkillIllust_Force = null, SkillIllust_Wild = null, SkillIllust_Intelligence = null;
+  public Sprite CityIcon_outline = null;
   [Space(5)]
   public Sprite SkillIcon_Conversation_b = null;
   public Sprite SkillIcon_Force_b = null;

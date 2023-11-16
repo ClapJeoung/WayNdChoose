@@ -8,11 +8,13 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const float MaxDiscomfortForOutline = 14;
+
   public const int StartSkillLevel = 1;
 
   public const int DefaultBonusGold = 1;
   public const int GoldPerMovepoint = 1;
-  public const int StartMovePoint = 10;
+  public const int StartMovePoint = 5;
   public const int MovePoint_Sea = 4;
   public const int MovePoint_Moutain = 2;
   public const int MovePoint_River = 1, MovePoint_Forest = 1;
@@ -30,7 +32,7 @@ public static class ConstValues
   public const int ExpSkillLevel = 1;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
-  public const float MaxDiscomfort = 15;
+  public const float MaxDiscomfortForIconScale = 15;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
   public const int MovePointMin = -8, MovePointMax = 15;
@@ -46,18 +48,17 @@ public static class ConstValues
   public const int MadnessHPCost_HP = 40;
   public const int MadnessSanityGen_HP = 100;
 
-  public const int Quest_Cult_Progress_Village=5,Quest_Cult_Progress_Town=6,Quest_Cult_Progress_City=7,
-    Quest_Cult_Progress_Sabbat = 5,Quest_Cult_Progress_Ritual = 3;
-  public const float Qeust_Cult_EventProgress_Clear = 1.5f;
-  public const float Quest_Cult_EventProgress_Fail = 1.0f;
-  public const int Quest_Cult_SabbatDiscomfort = 2, Quest_Cult_RitualMovepoint = 4;
-  public const int Quest_Cult_Penalty_Village = 30, Quest_Cult_Penalty_Town = 40, Quest_Cult_Penalty_City = 50;
+  public const int Quest_Cult_Progress_Village=7,Quest_Cult_Progress_Town=8,Quest_Cult_Progress_City=9,
+    Quest_Cult_Progress_Sabbat = 7,Quest_Cult_Progress_Ritual = 6;
+  public const float Qeust_Cult_EventProgress_Clear = 2f;
+  public const float Quest_Cult_EventProgress_Fail = 1.5f;
+  public const int Quest_Cult_SabbatDiscomfort = 3, Quest_Cult_RitualMovepoint = 4;
   public const int Quest_Cult_MovepointAsSanity = 7;
   public const int Quest_Cult_CoolTime_Village = 5;
-  public const int Quest_Cult_CoolTime_Town = 3;
-  public const int Quest_Cult_CoolTime_City = 4;
-  public const int Quest_Cult_CoolTime_Sabbat = 4;
-  public const int Quest_Cult_CoolTime_Ritual = 3;
+  public const int Quest_Cult_CoolTime_Town = 4;
+  public const int Quest_Cult_CoolTime_City = 5;
+  public const int Quest_Cult_CoolTime_Sabbat = 5;
+  public const int Quest_Cult_CoolTime_Ritual = 4;
   public const float Quest_Cult_LengthValue = 2.5f;
 
 
@@ -90,10 +91,10 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.15f;
 
-  public const int Tendency_Head_m2 = 4;
+  public const int Tendency_Head_m2 = 0;
   public const float Tendency_Head_m1 = 0.25f;
   public const int Tendency_Head_p1 =1;
-  public const int Tendency_Head_p2 = 0;
+  public const int Tendency_Head_p2 = 4;
   //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
   //정신적 1: 정착지 출발할때마다 공짜 이동력 1
   //물질적 1: 정착지 출발할때마다 현재 정착지 불쾌 -2
@@ -126,7 +127,7 @@ public static class ConstValues
   public const float FailSanity_min = 12, FailSanity_max = 36;
   public const float FailGold_min = 8, FailGold_max = 24;
   public const int RewardHP_min = 0, RewardHP_max = 0;
-  public const int RewardSanity = 10;
+  public const int RewardSanity = 25;
   public const int RewardGold = 10;
 
   public const int ShortTermStartTurn = 9;
@@ -250,6 +251,8 @@ public class GameData    //게임 진행도 데이터
                   Debug.Log("대화 광기 발동");
                   UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Conversation);
                   UIManager.Instance.AudioManager.PlaySFX(27, 5);
+                  UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.MadnessActive,
+                    UIManager.Instance.ConversationIconRect);
                   break;
               }
             }
@@ -263,6 +266,7 @@ public class GameData    //게임 진행도 데이터
               Debug.Log("지성 광기 발동");
               UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Intelligence);
               UIManager.Instance.AudioManager.PlaySFX(27, 5);
+              UIManager.Instance.UpdateExpMad();
             }
             break;
           case 3:
@@ -284,35 +288,27 @@ public class GameData    //게임 진행도 데이터
               switch (Quest_Cult_Phase)
               {
                 case 0:
-                  Sanity -= ConstValues.Quest_Cult_Penalty_Village;
-
                   Cult_CoolTime = (int)(MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
                   Quest_Cult_Phase = 1;
                   UIManager.Instance.MapUI.FirstHighlight = true;
                   break;
                 case 1:
-                  Sanity -= ConstValues.Quest_Cult_Penalty_Town;
-
                   Cult_CoolTime = (int)(MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
                   Quest_Cult_Phase = 2;
                   UIManager.Instance.MapUI.FirstHighlight = true;
                   break;
                 case 2:
-                  Sanity -= ConstValues.Quest_Cult_Penalty_City;
-
                   SetSabbat();
                   break;
                 case 3:
                   for (int i = 0; i < MyMapData.AllSettles.Count; i++)
                     MyMapData.AllSettles[i].Discomfort += ConstValues.Quest_Cult_SabbatDiscomfort;
-
+                  UIManager.Instance.SidePanelCultUI.SetSabbatFail();
                   SetRitual();
                   break;
                 case 4:
-                  if (MovePoint < ConstValues.Quest_Cult_RitualMovepoint)
-                    Sanity -= (ConstValues.Quest_Cult_RitualMovepoint - MovePoint) * ConstValues.Quest_Cult_MovepointAsSanity;
-
                   MovePoint -= ConstValues.Quest_Cult_RitualMovepoint;
+                  UIManager.Instance.SetRitualFail();
 
                   SetSabbat();
                   break;

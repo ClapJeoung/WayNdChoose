@@ -909,7 +909,7 @@ public class maptext : MonoBehaviour
       LoopCount++;
       if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
 
-      Vector2Int _starcoor = _citycreatetiles[Random.Range(4, _citycreatetiles.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _starcoor = _citycreatetiles[Random.Range(3, _citycreatetiles.Count - 2)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
      
       _citytile = _NewMapData.TileDatas[_starcoor.x, _starcoor.y];
       if (cityCheck(_citytile) == false) continue;
@@ -948,7 +948,7 @@ public class maptext : MonoBehaviour
       if (LoopCount > 1000) { Debug.Log("마을 생성 중 무한루프"); return null; }
       int _index = 0;
 
-      Vector2Int _selectcoor = _enablelines[_index][Random.Range(4, _enablelines.Count - 1)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _enablelines[_index][Random.Range(3, _enablelines.Count - 2)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
       _towntile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
       if(towncheck(_towntile) ==false)continue;
 
@@ -987,7 +987,7 @@ public class maptext : MonoBehaviour
       HexDir _villagedir = _villagetiles.Count == 0 ? _firstvillagedir : RotateDir(_firstvillagedir, 3);
       List <TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedir);
 
-      Vector2Int _selectcoor = _lines[Random.Range(4, _lines.Count-1)].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
+      Vector2Int _selectcoor = _lines[Random.Range(3, _lines.Count-2)].Coordinate + new Vector2Int(Random.Range(-2, 3), Random.Range(-1, 2));
       TileData _villagetile = _NewMapData.Tile(_selectcoor);
 
       if (_villagetile.TopEnvir == TopEnvirType.Mountain) continue;
@@ -1226,8 +1226,9 @@ public class maptext : MonoBehaviour
 
     List<TileData> _settlementrectlist= new List<TileData>();
     Vector2 _settlementpos = Vector2.zero;
-
-    for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
+    Vector2 _outlinesize = Vector2.one * 120.0f;
+    Color _outlinecolor = new Color(0.5f, 0.0f, 1.0f, 1.0f);
+    for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
     {
       Settlement _village = GameManager.Instance.MyGameData.MyMapData.Villages[i];
       _settlementpos = _village.Tile.ButtonScript.Rect.anchoredPosition;
@@ -1243,6 +1244,22 @@ public class maptext : MonoBehaviour
       _village.Tile.ButtonScript.Rect.localScale = Vector3.one;
 
       MapUIScript.VillageIcons.Add(_villageholder);
+
+      GameObject _villageoutline=new GameObject(_villagename+"_outline",new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup) });
+      Image _villageoutlineimage = _villageoutline.GetComponent<Image>();
+      _villageoutlineimage.sprite = GameManager.Instance.ImageHolder.VillageIcon_outline;
+      _villageoutlineimage.raycastTarget = false;
+      _villageoutlineimage.color = _outlinecolor;
+      CanvasGroup _villageoutlinegroup = _villageoutline.GetComponent<CanvasGroup>();
+      _villageoutlinegroup.alpha = 0.0f;
+      _villageoutlinegroup.interactable = false;
+      _villageoutlinegroup.blocksRaycasts = false;
+      _villageoutline.transform.SetParent(_villageholder.transform);
+      _villageoutline.transform.SetAsFirstSibling();
+      _villageoutline.GetComponent<RectTransform>().sizeDelta = _outlinesize;
+      _villageoutlineimage.rectTransform.anchoredPosition = Vector3.zero;
+      _villageoutline.transform.localScale= Vector3.one;
+      _village.Tile.ButtonScript.DiscomfortOutline = _villageoutlinegroup;
     }
 
     _settlementrectlist.Clear();
@@ -1263,6 +1280,21 @@ public class maptext : MonoBehaviour
       _town.Tile.ButtonScript.Rect.localScale = Vector3.one;
     }
     MapUIScript.TownIcon=(_townholder);
+    GameObject _townoutline = new GameObject(_townname + "_outline", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup) });
+    Image _townoutlineimage = _townoutline.GetComponent<Image>();
+    _townoutlineimage.sprite = GameManager.Instance.ImageHolder.TownIcon_outline;
+    _townoutlineimage.raycastTarget = false;
+    _townoutlineimage.color = _outlinecolor;
+    CanvasGroup _townoutlinegroup = _townoutline.GetComponent<CanvasGroup>();
+    _townoutlinegroup.alpha = 0.0f;
+    _townoutlinegroup.interactable = false;
+    _townoutlinegroup.blocksRaycasts = false;
+    _townoutline.transform.SetParent(_townholder.transform);
+    _townoutline.transform.SetAsFirstSibling();
+    _townoutline.GetComponent<RectTransform>().sizeDelta = _outlinesize;
+    _townoutlineimage.rectTransform.anchoredPosition = Vector3.zero;
+    _townoutline.transform.localScale = Vector3.one;
+    _town.Tile.ButtonScript.DiscomfortOutline = _townoutlinegroup;
 
     _settlementrectlist.Clear();
     Settlement _city = GameManager.Instance.MyGameData.MyMapData.City;
@@ -1282,6 +1314,22 @@ public class maptext : MonoBehaviour
       _city.Tile.ButtonScript.Rect.localScale = Vector3.one;
     }
     MapUIScript.CityIcon=_cityholder;
+
+    GameObject _cityoutline = new GameObject(_cityname + "_outline", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup) });
+    Image _cityoutlineimage = _cityoutline.GetComponent<Image>();
+    _cityoutlineimage.sprite = GameManager.Instance.ImageHolder.CityIcon_outline;
+    _cityoutlineimage.raycastTarget = false;
+    _cityoutlineimage.color = _outlinecolor;
+    CanvasGroup _cityoutlinegroup = _cityoutline.GetComponent<CanvasGroup>();
+    _cityoutlinegroup.alpha = 0.0f;
+    _cityoutlinegroup.interactable = false;
+    _cityoutlinegroup.blocksRaycasts = false;
+    _cityoutline.transform.SetParent(_cityholder.transform);
+    _cityoutline.transform.SetAsFirstSibling();
+    _cityoutline.GetComponent<RectTransform>().sizeDelta = _outlinesize;
+    _cityoutlineimage.rectTransform.anchoredPosition= Vector3.zero;
+    _cityoutline.transform.localScale = Vector3.one;
+    _city.Tile.ButtonScript.DiscomfortOutline = _cityoutlinegroup;
 
     yield return null;
   }

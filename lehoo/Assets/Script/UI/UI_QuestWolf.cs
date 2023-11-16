@@ -75,7 +75,7 @@ public class UI_QuestWolf : UI_default
     if (Prologue_TendencyGroup.gameObject.activeInHierarchy == false) Prologue_TendencyGroup.gameObject.SetActive(true);
     if (Prologue_Nextbutton_Group.gameObject.activeInHierarchy == true) Prologue_Nextbutton_Group.gameObject.SetActive(false);
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_TendencyGroup, 1.0f, 0.5f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_TendencyGroup, 1.0f, 0.4f));
   }
   public int CurrentPrologueIndex = 0;
   public void OpenUI_Prologue(QuestHolder_Cult wolf)
@@ -228,7 +228,7 @@ public class UI_QuestWolf : UI_default
     {
       MoveRectForButton(0);
       UIManager.Instance.MapButton.SetCurrentUI(this,MapbuttonPos,0.0f);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.5f));
+      StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.4f));
     }
 
   }
@@ -262,7 +262,7 @@ public class UI_QuestWolf : UI_default
         break;//(감정적+자연)선택 , (물질적+지성)선택
     }
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_TendencyGroup, 0.0f, 0.5f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Prologue_TendencyGroup, 0.0f, 0.4f));
 
     UIManager.Instance.AddUIQueue(next());
   }
@@ -275,10 +275,10 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private TextMeshProUGUI ProgressEventDescription = null;
   private bool IsProgressWorking=false;
   /// <summary>
-  /// 0:성공 1:실패 2:정착지 3:집회 4:의식
+  /// 0:성공 1:실패 2:정착지 3:집회 4:의식 5:감소
   /// </summary>
   /// <param name="progresstype"></param>
-  public void AddProgress(int progresstype)
+  public void AddProgress(int progresstype,RectTransform sectorrect)
   {
     if (DefaultRect.anchoredPosition != Vector2.zero) DefaultRect.anchoredPosition = Vector2.zero;
 
@@ -288,12 +288,12 @@ public class UI_QuestWolf : UI_default
     switch (progresstype)
     {
       case 0:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.Quest_Cult_Phase < 2 ?
-              ConstValues.Qeust_Cult_EventProgress_Clear : ConstValues.Qeust_Cult_EventProgress_Clear;
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Qeust_Cult_EventProgress_Clear;
+        UIManager.Instance.SidePanelCultUI.UpdateProgressValue();
         break;
       case 1:
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.Quest_Cult_Phase < 2 ?
-ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress_Fail;
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_EventProgress_Fail;
+        UIManager.Instance.SidePanelCultUI.UpdateProgressValue();
         break;
       case 2:
         GameManager.Instance.MyGameData.Quest_Cult_Phase++;
@@ -304,25 +304,34 @@ ConstValues.Quest_Cult_EventProgress_Fail : ConstValues.Quest_Cult_EventProgress
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Village;
             GameManager.Instance.MyGameData.Cult_CoolTime =(int)( MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile,GameManager.Instance.MyGameData.MyMapData.Town.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
             UIManager.Instance.MapUI.FirstHighlight = true;
+            UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
+              UIManager.Instance.SidePanelCultUI.VillageIconEffect.transform as RectTransform);
             break;
           case SettlementType.Town:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town;
             GameManager.Instance.MyGameData.Cult_CoolTime =(int)( MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.City.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
             UIManager.Instance.MapUI.FirstHighlight = true;
+            UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
+       UIManager.Instance.SidePanelCultUI.TownIconEffect.transform as RectTransform);
             break;
           case SettlementType.City:
             GameManager.Instance.MyGameData.SetSabbat();
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_City;
+            UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
+    UIManager.Instance.SidePanelCultUI.CityIconEffect.transform as RectTransform);
             break;
         }
         _eventtype = 2;
         break;
       case 3:
+        UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult, sectorrect);
         GameManager.Instance.MyGameData.SetRitual();
         GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sabbat;
         _eventtype = 3;
         break;
       case 4:
+        UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
+        GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.Rect);
         GameManager.Instance.MyGameData.SetSabbat();
         GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
         _eventtype = 4;
