@@ -791,9 +791,6 @@ public class GameManager : MonoBehaviour
         }
         break;
     }
-
-    SaveData();
-
     UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(false));
   }
 

@@ -164,7 +164,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo, IsCultSidePanel?new Vector2(1.05f,0.5f):new Vector2(0.5f,1.05f),OtherRect==null?transform as RectTransform : OtherRect);
         break;
       case PreviewPanelType.TileInfo:
-        UIManager.Instance.PreviewManager.OpenTileInfoPreveiew(MyTileData,MyTileData.Coordinate.y <= GameManager.Instance.MyGameData.Coordinate.y ? OtherRect:OtherRect_other);
+        UIManager.Instance.PreviewManager.OpenTileInfoPreveiew( MyTileData,
+          MyTileData.TileSettle != null && (MyTileData.Coordinate.y - GameManager.Instance.MyGameData.Coordinate.y == -3) ? OtherRect_other : MyTileData.Coordinate.y <= GameManager.Instance.MyGameData.Coordinate.y ? OtherRect:OtherRect_other);
         break;
 
     }

@@ -963,6 +963,7 @@ public class UI_map : UI_default
         GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
 
         GameManager.Instance.MyGameData.Turn++;
+        GameManager.Instance.SaveData();
         break;
     }
     IsOpen = false;

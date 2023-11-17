@@ -967,6 +967,7 @@ public class PreviewManager : MonoBehaviour
     }
     else
     {
+      if (tileData.Coordinate.y - GameManager.Instance.MyGameData.Coordinate.y == -3) _pivot.y = -0.05f;
       switch (tileData.TileSettle.SettlementType)
       {
         case SettlementType.Village: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_white; break;

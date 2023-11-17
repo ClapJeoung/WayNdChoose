@@ -8,17 +8,14 @@ using UnityEngine.Networking;
 
 public class TestScript:MonoBehaviour
 {
-  public Color Color_A = new Color();
-  public Color Color_B = new Color();
-  public Color Color_Result = new Color();
-  public string Result_Text = "";
+  public RectTransform TestRect = null;
 
-  public float A = 0;
-  public float B = 1;
-
-  private void lehu()
+  private void Update()
   {
-    Color_Result = Color.Lerp(Color_A, Color_B, A / B);
-    Result_Text = ColorUtility.ToHtmlStringRGB(Color.Lerp(Color_A, Color_B, A / B));
+    if (Input.GetKey(KeyCode.End))
+    {
+      Debug.Log(TestRect.name);
+      Debug.Log(TestRect.GetComponent<CanvasRenderer>().cull);
+    }
   }
 }

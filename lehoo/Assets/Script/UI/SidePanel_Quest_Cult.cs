@@ -45,11 +45,11 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     float _time = 0.0f;
     while (_time < SabbatFailDisappearTime)
     {
-      SabbatFailRect.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, SabbatFailScaleCurve.Evaluate(_time / SabbatFailDisappearTime));
+      SabbatFailRect.localScale = Vector3.Lerp(Vector3.one, Vector3.one*1.3f, SabbatFailScaleCurve.Evaluate(_time / SabbatFailDisappearTime));
       _time+= Time.deltaTime;
       yield return null;
     }
-    SabbatFailRect.localScale = Vector3.zero;
+    SabbatFailRect.localScale = Vector3.one;
   }
   [Space(5)]
   public CanvasGroup Ritual_Group = null;

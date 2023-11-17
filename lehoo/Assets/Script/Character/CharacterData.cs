@@ -48,10 +48,10 @@ public static class ConstValues
   public const int MadnessHPCost_HP = 40;
   public const int MadnessSanityGen_HP = 100;
 
-  public const int Quest_Cult_Progress_Village=7,Quest_Cult_Progress_Town=8,Quest_Cult_Progress_City=9,
+  public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
     Quest_Cult_Progress_Sabbat = 7,Quest_Cult_Progress_Ritual = 6;
-  public const float Qeust_Cult_EventProgress_Clear = 2f;
-  public const float Quest_Cult_EventProgress_Fail = 1.5f;
+  public const float Qeust_Cult_EventProgress_Clear = 1.5f;
+  public const float Quest_Cult_EventProgress_Fail = 1.0f;
   public const int Quest_Cult_SabbatDiscomfort = 3, Quest_Cult_RitualMovepoint = 4;
   public const int Quest_Cult_MovepointAsSanity = 7;
   public const int Quest_Cult_CoolTime_Village = 5;
@@ -114,10 +114,10 @@ public static class ConstValues
   public const float minsuccesper_min = 5;
   public const float MaxSuccessPer = 95;
   //스킬 체크, 지불 체크 최대~최소
-  public const int MaxTime = 60;
+  public const int MaxTime = 60;  //15*4
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 3, CheckSkill_single_max = 15;
-  public const int CheckSkill_multy_min = 4, CheckSkill_multy_max = 24;
+  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 15;
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 20;
 
   public const float Difficult = 1.0f;
   public const float PayHP_min = 4, PayHP_max = 12;      
