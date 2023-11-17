@@ -8,13 +8,13 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const float MaxDiscomfortForOutline = 14;
+  public const float MaxDiscomfortForOutline = 15;
 
   public const int StartSkillLevel = 1;
 
   public const int DefaultBonusGold = 1;
   public const int GoldPerMovepoint = 1;
-  public const int StartMovePoint = 5;
+  public const int StartMovePoint = 4;
   public const int MovePoint_Sea = 4;
   public const int MovePoint_Moutain = 2;
   public const int MovePoint_River = 1, MovePoint_Forest = 1;
@@ -32,27 +32,27 @@ public static class ConstValues
   public const int ExpSkillLevel = 1;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
-  public const float MaxDiscomfortForIconScale = 15;
+  public const float MaxDiscomfortForIconScale = 20;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
   public const int MovePointMin = -8, MovePointMax = 15;
 
-  public const int MadnessEffect_Conversation = 7;
+  public const int MadnessEffect_Conversation = 5;
   public const int MadnessEffect_Force = 3;
   public const int MadnessEffect_Wild = 4;
   public const int MadnessEffect_Intelligence_Value = 2;
 
   public const int MadnessHPCost_Skill = 25;
-  public const int MadnessSanityGen_Skill = 80;
+  public const int MadnessSanityGen_Skill = 100;
   public const int MadnessSkillLevel = 2;
   public const int MadnessHPCost_HP = 40;
-  public const int MadnessSanityGen_HP = 100;
+  public const int MadnessSanityGen_HP = 150;
 
   public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
-    Quest_Cult_Progress_Sabbat = 7,Quest_Cult_Progress_Ritual = 6;
+    Quest_Cult_Progress_Sabbat = 8,Quest_Cult_Progress_Ritual = 7;
   public const float Qeust_Cult_EventProgress_Clear = 1.5f;
   public const float Quest_Cult_EventProgress_Fail = 1.0f;
-  public const int Quest_Cult_SabbatDiscomfort = 3, Quest_Cult_RitualMovepoint = 4;
+  public const int Quest_Cult_SabbatDiscomfort = 5, Quest_Cult_RitualMovepoint = 4;
   public const int Quest_Cult_MovepointAsSanity = 7;
   public const int Quest_Cult_CoolTime_Village = 5;
   public const int Quest_Cult_CoolTime_Town = 4;
@@ -63,11 +63,11 @@ public static class ConstValues
 
 
   public const int Rest_MovePoint = 7;
-  public const int Rest_Discomfort = 5;
-  public const float MoveRest_Sanity_min = 10.0f, MoveRest_Sanity_max = 20.0f;
-  public const float MoveRest_Gold_min = 7.0f, MoveRest_Gold_max = 14.0f;
-  public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.15f;
-  public const float Move_Default = 0.2f, Move_LengthRatio = 0.2f;
+  public const int Rest_Discomfort = 6;
+  public const float MoveRestCost_Default_Min = 9, MoveRestCost_Default_Max = 25;
+  public const float Movecost_GoldValue = 0.6f;
+  public const int RestSanityRestore = 20;
+  public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.1f;
   public const float LackMPAmplifiedValue_Idle = 0.4f;
 
 
@@ -92,9 +92,9 @@ public static class ConstValues
   public const float  SanityLoss_Exp = 0.15f;
 
   public const int Tendency_Head_m2 = 0;
-  public const float Tendency_Head_m1 = 0.25f;
-  public const int Tendency_Head_p1 =1;
-  public const int Tendency_Head_p2 = 4;
+  public const float Tendency_Head_m1 = 0.2f;
+  public const int Tendency_Head_p1 =2;
+  public const int Tendency_Head_p2 = 5;
   //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
   //정신적 1: 정착지 출발할때마다 공짜 이동력 1
   //물질적 1: 정착지 출발할때마다 현재 정착지 불쾌 -2
@@ -127,8 +127,8 @@ public static class ConstValues
   public const float FailSanity_min = 12, FailSanity_max = 36;
   public const float FailGold_min = 8, FailGold_max = 24;
   public const int RewardHP_min = 0, RewardHP_max = 0;
-  public const int RewardSanity = 25;
-  public const int RewardGold = 10;
+  public const int RewardSanity = 20;
+  public const int RewardGold = 15;
 
   public const int ShortTermStartTurn = 9;
   public const int LongTermStartTurn =  15;
@@ -140,21 +140,15 @@ public static class ConstValues
     public const int SectorEffectMaxTurn = 3;
   public const int SectorEffect_residence_discomfort = 1;
     public const int SectorEffect_marketSector = 25;
-    public const int SectorEffect_temple = 1;
+    public const int SectorEffect_temple = 2;
   public const int SectorEffect_Library = 2;
-    public const int SectorEffect_theater = 3;
-    public const int SectorEffect_acardemy = 10;
-  public const int SectorDuration = 5;
-
-  public const int AmplifiedLengthMin = 6;
-  public const float LengthAmplifiedValue = 1.2f;
+  //  public const int SectorEffect_theater = 3;
+  //  public const int SectorEffect_acardemy = 10;
 
   public const int LongTermChangeCost = 15;
 
-  public const int DoubleValue = 40;
   public const int MaxTendencyLevel = 2;
 
-  public const int SkillAssemble_min=1,SkillAssemble_max=2;
   public const float GoldSanityPayAmplifiedValue = 1.2f;
 }
 public class GameData    //게임 진행도 데이터
@@ -168,8 +162,11 @@ public class GameData    //게임 진행도 데이터
   public void DownAllDiscomfort(int value)
   {
     for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
-      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort< value ?
-        0 :  GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - value;
+    {
+      if (CurrentSettlement != null && GameManager.Instance.MyGameData.MyMapData.AllSettles[i] == CurrentSettlement) continue;
+      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort < value ?
+          0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - value;
+    }
   }
 
   public void ApplySectorEffect(SectorTypeEnum placetype)
@@ -181,7 +178,7 @@ public class GameData    //게임 진행도 데이터
 
       case SectorTypeEnum.Temple:
         DownAllDiscomfort(ConstValues.SectorEffect_temple);
-        break;//사원- 모든 불쾌 1 감소
+        break;//사원- 모든 불쾌 2 감소
 
       case SectorTypeEnum.Marketplace:
         break;//시장- 휴식 비용 감소
@@ -372,7 +369,7 @@ public class GameData    //게임 진행도 데이터
     { 
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max, LerpByTurn);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true));
@@ -382,7 +379,7 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max, LerpByTurn);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value );
@@ -421,16 +418,16 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int length,int movepoint)
   {
-    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Sanity_min, ConstValues.MoveRest_Sanity_max,LerpByTurn)
-      * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
+    int _value = (int)(Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn)
+      * GetSanityLossModify(true));
 
     return (GameManager.Instance.MyGameData.movepoint- movepoint)>=0 ? _value :
       (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(MovePoint- movepoint))));
   }
   public int GetMoveGoldCost(int length,int movepoint)
   {
-    int _value = (int)(Mathf.Lerp(ConstValues.MoveRest_Gold_min, ConstValues.MoveRest_Gold_max,LerpByTurn)
-      * GetSanityLossModify(true) * (ConstValues.Move_Default + ConstValues.Move_LengthRatio * length));
+    int _value = (int)(Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn)
+       * (ConstValues.Movecost_GoldValue));
 
     return (GameManager.Instance.MyGameData.movepoint - movepoint) >= 0 ? _value :
       (int)(_value * (1.0f + MovePointAmplified * (Mathf.Abs(MovePoint - movepoint))));
@@ -439,7 +436,7 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      if (Tendency_Head.Level == -1) return ConstValues.Tendency_Head_m1;
+      if (Tendency_Head.Level <= -1) return ConstValues.Tendency_Head_m1;
       return ConstValues.LackMPAmplifiedValue_Idle;
     }
   }
@@ -466,8 +463,9 @@ public class GameData    //게임 진행도 데이터
     set
     {
       if (sanity <= 0 && value < 0) return;
-      sanity = Mathf.Clamp(value, 0, 100);
 
+      if (sanity > 100) sanity = value > sanity ? sanity : value < 0 ? 0 : value; 
+      else sanity = Mathf.Clamp(value, 0, 100);
       UIManager.Instance.UpdateSanityText();
 
       if (value<=0)
@@ -475,6 +473,11 @@ public class GameData    //게임 진행도 데이터
         UIManager.Instance.GetMad();
       }
     }
+  }
+  public void SetSanityOver100(int value)
+  {
+    sanity = value;
+    UIManager.Instance.UpdateSanityText();
   }
   private int gold = 0;
   public int Gold
@@ -1172,7 +1175,8 @@ public class Tendency
           switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
           {
             case -2:
-              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
+              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
+                       ConstValues.LackMPAmplifiedValue_Idle * 100, ConstValues.Tendency_Head_m1 * 100)+"<br><br>"+ string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
                       WNCText.GetMovepointColor(ConstValues.Tendency_Head_m2));
               break;
             case -1:
@@ -1184,7 +1188,8 @@ public class Tendency
                WNCText.GetGoldColor(ConstValues.Tendency_Head_p1));
               break;
             case 2:
-              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
+              _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
+               WNCText.GetGoldColor(ConstValues.Tendency_Head_p1))+"<br><br>"+ string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
                WNCText.GetDiscomfortColor(ConstValues.Tendency_Head_p2));
               break;
           }

@@ -388,13 +388,13 @@ public class UI_dialogue : UI_default
               switch (CurrentFailData.StatusType)
               {
                 case StatusTypeEnum.HP:
-                  DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {-1 * PenaltyValue}");
+                  DescriptionText.text += WNCText.SetSize(30, $"<br>{GameManager.Instance.GetTextData(StatusTypeEnum.HP, 2)} {-1 * PenaltyValue}");
                   break;
                 case StatusTypeEnum.Sanity:
-                  DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {-1 * PenaltyValue}");
+                  DescriptionText.text += WNCText.SetSize(30, $"<br>{GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2)} {-1 * PenaltyValue}");
                   break;
                 case StatusTypeEnum.Gold:
-                  DescriptionText.text += WNCText.SetSize(30, $"<br><br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {-1 * PenaltyValue}");
+                  DescriptionText.text += WNCText.SetSize(30, $"<br>{GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)} {-1 * PenaltyValue}");
                   break;
               }
               break;
@@ -671,7 +671,7 @@ public class UI_dialogue : UI_default
       image.fillAmount=Mathf.Lerp(1.0f,0.0f, SelectionCheckCurve.Evaluate(_time/ SelectionEffectTime_check));
       _time += Time.deltaTime;yield return null;
     }
-    if (successvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25); }
+    if (successvalue == 1.0f) { image.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25); }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
     yield return new WaitForSeconds(0.25f);
@@ -686,7 +686,7 @@ public class UI_dialogue : UI_default
       image_L.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime; yield return null;
     }
-    if (_firstvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
+    if (_firstvalue == 1.0f) { image_L.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
     else { UIManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.25f); yield break; }
 
 
@@ -695,7 +695,7 @@ public class UI_dialogue : UI_default
       image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime;yield return null;
     }
-    if (_secondvalue == 1.0f) { UIManager.Instance.AudioManager.PlaySFX(25);  }
+    if (_secondvalue == 1.0f) { image_R.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25);  }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
     yield return new WaitForSeconds(0.25f);
@@ -873,6 +873,7 @@ public class UI_dialogue : UI_default
       }
       else
       {
+        RewardButtonGroup.interactable = false;
         switch (CurrentSuccessData.Reward_Type)
         {
           case RewardTypeEnum.Status:
@@ -1286,7 +1287,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         break;
       case StatusTypeEnum.Gold:
 
-        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"), GoldCost);
+        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"), GoldCost,ConstValues.RestSanityRestore);
         break;
 
     }
@@ -1323,6 +1324,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     if (GameManager.Instance.MyGameData.Madness_Force)
     {
       GameManager.Instance.MyGameData.TotalRestCount++;
+      UIManager.Instance.SetForceMadCount();
     }
 
     int _discomfortvalue = DiscomfortValue;
@@ -1354,6 +1356,7 @@ SettlementNameText.text = CurrentSettlement.Name;
       case StatusTypeEnum.Gold:
 
         GameManager.Instance.MyGameData.Gold -= GoldCost;
+        GameManager.Instance.MyGameData.Sanity += ConstValues.RestSanityRestore;
         CurrentSettlement.Discomfort += _discomfortvalue;
         DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
         if (DiscomfortValue > 0)

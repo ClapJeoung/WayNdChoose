@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
-using static UnityEngine.Rendering.DebugUI;
 
 public class PreviewManager : MonoBehaviour
 {
@@ -213,7 +211,8 @@ public class PreviewManager : MonoBehaviour
   {
     StatusTypeEnum _currenttype = StatusTypeEnum.Sanity;
 
-    string _description = GameManager.Instance.GetTextData(_currenttype, 3);
+    string _description = GameManager.Instance.GetTextData(_currenttype, 3)+
+      (GameManager.Instance.MyGameData.Sanity>100?string.Format(GameManager.Instance.GetTextData("Sanity_Over100"),WNCText.GetMaxSanityColor(100)):"");
 
     int  _modifyvalue= (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
     if (_modifyvalue == 100)
@@ -280,7 +279,7 @@ public class PreviewManager : MonoBehaviour
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Preview"), ConstValues.MadnessEffect_Conversation);
-          _leveltext = WNCText.GetMadnessSkillColor(_level);
+          _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
         {
@@ -294,7 +293,7 @@ public class PreviewManager : MonoBehaviour
 
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Force_Preview"),
             GameManager.Instance.MyGameData.TotalRestCount%ConstValues.MadnessEffect_Force+1, ConstValues.MadnessEffect_Force);
-          _leveltext = WNCText.GetMadnessSkillColor(_level);
+          _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
         {
@@ -308,7 +307,7 @@ public class PreviewManager : MonoBehaviour
 
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Wild_Preview"),
             GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild+1, ConstValues.MadnessEffect_Wild);
-          _leveltext = WNCText.GetMadnessSkillColor(_level);
+          _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
         {
@@ -321,7 +320,7 @@ public class PreviewManager : MonoBehaviour
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Preview"), ConstValues.MadnessEffect_Intelligence_Value);
-          _leveltext = WNCText.GetMadnessSkillColor(_level);
+          _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
         {

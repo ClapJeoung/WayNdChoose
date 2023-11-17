@@ -77,7 +77,8 @@ public class UI_Mad : UI_default
         break;
       case 4:
         _str = GameManager.Instance.GetTextData("Madness_HP")
-     +string.Format(GameManager.Instance.GetTextData("Madness_Result"),"", GameManager.Instance.MyGameData.MadnessHPLoss_HP, GameManager.Instance.MyGameData.MadnessSanityGen_HP);
+     +string.Format(GameManager.Instance.GetTextData("Madness_Result"),"", GameManager.Instance.MyGameData.MadnessHPLoss_HP,
+     WNCText.GetMaxSanityColor(GameManager.Instance.MyGameData.MadnessSanityGen_HP));
         break;
     }
 
@@ -119,7 +120,7 @@ public class UI_Mad : UI_default
 
         case 4:
         GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.MadnessHPLoss_HP;
-        GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.MadnessSanityGen_HP;
+        GameManager.Instance.MyGameData.SetSanityOver100(GameManager.Instance.MyGameData.MadnessSanityGen_HP);
         break;
     }
     StartCoroutine(changealpha(false));

@@ -677,7 +677,7 @@ public class UI_map : UI_default
     if (SelectedTile.TileSettle == null)
     {
       BonusGold = (int)((SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint * GameManager.Instance.MyGameData.GetGoldGenModify(true));
-      BonusGold += (Route_Tile.Count > 2 && GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? ConstValues.Tendency_Head_p1 : 0;
+      BonusGold += (Route_Tile.Count > 2 && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? ConstValues.Tendency_Head_p1 : 0;
     }
     SelectedCostType = StatusTypeEnum.HP;
     MoveCostText.text = "";
@@ -713,7 +713,7 @@ public class UI_map : UI_default
     }
     BonusGoldText.text =IsMad? GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + " +?":
       SelectedTile.TileSettle!=null?"":
-      ((Route_Tile.Count>2 && GameManager.Instance.MyGameData.Tendency_Head.Level == 1) ? 
+      ((Route_Tile.Count>2 && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? 
       "<sprite=104>":
       "") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
     MoveLengthText.text = IsMad ? "<sprite=100> ?" :
@@ -724,11 +724,13 @@ public class UI_map : UI_default
     {
       MoveLengthCostText.text = GameManager.Instance.GetTextData("Movepoint_NoSupplies");
     }
-    else if(MovePointCost > GameManager.Instance.MyGameData.MovePoint)
+    else if (MovePointCost > GameManager.Instance.MyGameData.MovePoint)
     {
       MoveLengthCostText.text = string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
      MovePointCost - GameManager.Instance.MyGameData.MovePoint);
     }
+    else MoveLengthCostText.text = "";
+
   }
   private bool CheckRitual
   {
@@ -749,7 +751,7 @@ public class UI_map : UI_default
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"),
           MovePointCost <= GameManager.Instance.MyGameData.MovePoint?"" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
-        MovePointCost - GameManager.Instance.MyGameData.MovePoint, (GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
+        MovePointCost - GameManager.Instance.MyGameData.MovePoint, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
         !IsMad ?SanityCost:"?");
         break;
       case StatusTypeEnum.Gold:
@@ -759,7 +761,7 @@ public class UI_map : UI_default
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"),
                     MovePointCost <= GameManager.Instance.MyGameData.MovePoint ? "" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
-        MovePointCost - GameManager.Instance.MyGameData.MovePoint, (GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
+        MovePointCost - GameManager.Instance.MyGameData.MovePoint, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
 !IsMad ?GoldCost:"?");
         break;
     }
@@ -826,6 +828,7 @@ public class UI_map : UI_default
         }
       }
       GameManager.Instance.MyGameData.TotalMoveCount++;
+      UIManager.Instance.SetWildMadCount();
     }
 
     Dictionary<TileData, int> _movepointicondata = new Dictionary<TileData, int>();

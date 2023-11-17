@@ -1226,7 +1226,7 @@ public class maptext : MonoBehaviour
 
     List<TileData> _settlementrectlist= new List<TileData>();
     Vector2 _settlementpos = Vector2.zero;
-    Vector2 _outlinesize = Vector2.one * 120.0f;
+    Vector2 _outlinesize = Vector2.one * 135.0f;
     Color _outlinecolor = new Color(0.5f, 0.0f, 1.0f, 1.0f);
     for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
     {

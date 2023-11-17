@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +37,7 @@ public class UI_Tutorial : MonoBehaviour
   {
     var _text = GameManager.Instance.GetTextData("Tutorial_Settlement").Split('@');
     Settlement_Hello.text = _text[0];
-    Settlement_Effect.text = _text[1];
+    Settlement_Effect.text = string.Format(_text[1],ConstValues.RestSanityRestore);
     Settlement_Discomfort.text = _text[2];
     StartCoroutine(UIManager.Instance.ChangeAlpha(Tutorial_Settlement, 1.0f, 0.5f));
   }

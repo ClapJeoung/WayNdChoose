@@ -216,7 +216,8 @@ public class UIManager : MonoBehaviour
     }
 
     SanityIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.Sanity / 100.0f);
-    SanityText_current.text = GameManager.Instance.MyGameData.Sanity.ToString();
+    SanityText_current.text = GameManager.Instance.MyGameData.Sanity>100?
+      WNCText.GetMaxSanityColor(GameManager.Instance.MyGameData.Sanity.ToString()): GameManager.Instance.MyGameData.Sanity.ToString();
    // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
  //   Debug.Log("정신력, 최대 정신력 수치 업데이트");
 
@@ -295,6 +296,46 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform ForceIconRect = null;
   [SerializeField] private RectTransform WildIconRect = null;
   [SerializeField] private RectTransform IntelligenceIconRect = null;
+  [SerializeField] private TextMeshProUGUI ForceMadCountText = null;
+  [SerializeField] private TextMeshProUGUI WildMadCountText = null;
+  [SerializeField] private float MadCountOpenTime = 0.5f;
+  [SerializeField] private float MadCountWaitTime= 1.5f;
+  [SerializeField] private float MadCountCloseTime = 0.5f;
+  [SerializeField] private AnimationCurve MadCountAnimationCurve = null;
+  public void SetForceMadCount()
+  {
+    ForceMadCountText.text =
+      GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force == ConstValues.MadnessEffect_Force - 1 ?
+      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force + 1).ToString() + "/" + ConstValues.MadnessEffect_Force.ToString()) :
+      ((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force + 1).ToString() + "/" + ConstValues.MadnessEffect_Force.ToString());
+    StartCoroutine(madcounttext(ForceMadCountText.rectTransform));
+  }
+  public void SetWildMadCount()
+  {
+    WildMadCountText.text =
+      GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild - 1 ?
+      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild.ToString()) :
+      ((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild.ToString());
+    StartCoroutine(madcounttext(WildMadCountText.rectTransform));
+  }
+  private IEnumerator madcounttext(RectTransform rect)
+  {
+    float _time = 0.0f, _targettime = MadCountOpenTime;
+    while (_time < _targettime)
+    {
+      rect.localScale = Vector3.one * MadCountAnimationCurve.Evaluate(_time / _targettime);
+      _time += Time.deltaTime; yield return null;
+    }
+    rect.localScale = Vector3.one;
+    yield return new WaitForSeconds(MadCountWaitTime);
+    _time = 0.0f; _targettime = MadCountCloseTime;
+    while (_time < _targettime)
+    {
+      rect.localScale = Vector3.one *(1.0f- MadCountAnimationCurve.Evaluate(_time / _targettime));
+      _time += Time.deltaTime; yield return null;
+    }
+    rect.localScale = Vector3.zero;
+  }
   private List<int> ActiveIconIndexList= new List<int>();
   [SerializeField] private RectTransform CultSidepanelOpenpos = null;
   /// <summary>
@@ -733,7 +774,7 @@ public class UIManager : MonoBehaviour
   public void UpdateSkillLevel()
   {
     ConversationLevel.text = GameManager.Instance.MyGameData.Madness_Conversation ?
-      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Conversation.Level) :
+      WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Conversation.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Conversation.Level);
     ConversationIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Conversation ?
       MadnessColor : IdleColor;
@@ -749,7 +790,7 @@ public class UIManager : MonoBehaviour
     }
 
     ForceLevel.text = GameManager.Instance.MyGameData.Madness_Force ?
-      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Force.Level) :
+      WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Force.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Force.Level);
     ForceIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Force ?
    MadnessColor : IdleColor;
@@ -764,7 +805,7 @@ public class UIManager : MonoBehaviour
     }
 
     WildLevel.text = GameManager.Instance.MyGameData.Madness_Wild ?
-      WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Wild.Level) :
+      WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Wild.Level) :
       WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Wild.Level);
     WildIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Wild ?
     MadnessColor : IdleColor;
@@ -779,7 +820,7 @@ public class UIManager : MonoBehaviour
     }
 
     IntelligenceLevel.text = GameManager.Instance.MyGameData.Madness_Intelligence ?
-     WNCText.GetMadnessSkillColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level) :
+     WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level) :
      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level);
     IntelligenceIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Intelligence ?
     MadnessColor : IdleColor;
@@ -797,7 +838,9 @@ public class UIManager : MonoBehaviour
   [Space(5)]
   [SerializeField] private RectTransform TendencyBodyRect = null;
   [SerializeField] private Image TendencyBodyIcon = null;
+  [SerializeField] private CanvasGroup TendencyBodyBackground = null;
   [SerializeField] private RectTransform TendencyHeadRect = null;
+  [SerializeField] private CanvasGroup TendencyHeadBackbround = null;
   [SerializeField] private Image TendencyHeadIcon = null;
   [SerializeField] private RectTransform TendencyPos_body_m2 = null;
   [SerializeField] private RectTransform TendencyPos_body_m1 = null;
@@ -820,8 +863,14 @@ public class UIManager : MonoBehaviour
   }
   public void UpdateTendencyIcon()
   {
-    if (GameManager.Instance.MyGameData.Tendency_Body.Level!=0&&TendencyBodyIcon.gameObject.activeInHierarchy == false) TendencyBodyIcon.gameObject.SetActive(true);
-    if (GameManager.Instance.MyGameData.Tendency_Head.Level!=0&&TendencyHeadIcon.gameObject.activeInHierarchy == false) TendencyHeadIcon.gameObject.SetActive(true);
+    if (GameManager.Instance.MyGameData.Tendency_Body.Level != 0 && TendencyBodyBackground.alpha==0.0f)
+    {
+      StartCoroutine(ChangeAlpha(TendencyBodyBackground, 1.0f, 0.5f));
+    }
+    if (GameManager.Instance.MyGameData.Tendency_Head.Level != 0 && TendencyHeadBackbround.alpha == 0.0f)
+    {
+      StartCoroutine(ChangeAlpha(TendencyHeadBackbround, 1.0f, 0.5f));
+    }
 
     Vector2 _bodypos = GameManager.Instance.MyGameData.Tendency_Body.Level != 0 ?
       GetTendencyRectPos(TendencyTypeEnum.Body, GameManager.Instance.MyGameData.Tendency_Body.Level).anchoredPosition :
@@ -1220,9 +1269,13 @@ public static class WNCText
   {
     return $"<#D4D4D4>{str}</color>";
   }
-  public static string GetMadnessSkillColor(int value)
+  public static string GetMadnessColor(int value)
   {
     return $"<#A959B0>{value}</color>";
+  }
+  public static string GetMadnessColor(string str)
+  {
+    return $"<#A959B0>{str}</color>";
   }
   public static string GetSomethingColor(string str)
   {
