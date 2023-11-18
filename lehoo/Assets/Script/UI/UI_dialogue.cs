@@ -858,7 +858,9 @@ public class UI_dialogue : UI_default
   public void GetReward()
   {
     if (UIManager.Instance.IsWorking) return;
-    UIManager.Instance.AddUIQueue(getreward());
+    if (CurrentSuccessData != null && CurrentSuccessData.Reward_Type == RewardTypeEnum.Experience)
+      UIManager.Instance.AddUIQueue(getreward());
+    else StartCoroutine(getreward());
   }
   private IEnumerator getreward()
   {
@@ -975,7 +977,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private UnityEngine.UI.Button Cost_Sanity = null;
   [SerializeField] private Onpointer_highlight CostHighlight_Gold = null;
   [SerializeField] private UnityEngine.UI.Button Cost_Gold = null;
-  private Settlement CurrentSettlement = null;
+  private Settlement CurrentSettlement{ get { return GameManager.Instance.MyGameData.CurrentSettlement; } }
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
   private bool IsMad = false;
   public GameObject QuitAskObject = null;
@@ -1041,7 +1043,6 @@ public class UI_dialogue : UI_default
     IsSelectSector = false;
     QuestSectorInfo = false;
     SelectedSector = SectorTypeEnum.NULL;
-    CurrentSettlement = GameManager.Instance.MyGameData.CurrentSettlement;
     Illust.Setup(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
 
 
@@ -1283,7 +1284,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     {
       case StatusTypeEnum.Sanity:
 
-        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"), SanityCost);
+        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),SanityCost,(int)(CurrentSettlement.RestGold*GameManager.Instance.MyGameData.GetGoldGenModify(true)));
         break;
       case StatusTypeEnum.Gold:
 
@@ -1346,6 +1347,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     {
       case StatusTypeEnum.Sanity:
         GameManager.Instance.MyGameData.Sanity -= SanityCost;
+        GameManager.Instance.MyGameData.Gold +=(int)(CurrentSettlement.RestGold* GameManager.Instance.MyGameData.GetGoldGenModify(true));
         CurrentSettlement.Discomfort += _discomfortvalue;
         DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
         if (DiscomfortValue > 0)

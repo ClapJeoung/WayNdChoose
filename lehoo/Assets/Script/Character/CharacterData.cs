@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const float MaxDiscomfortForOutline = 15;
+  public const float MaxDiscomfortForOutline = 18;
 
   public const int StartSkillLevel = 1;
 
@@ -49,7 +49,7 @@ public static class ConstValues
   public const int MadnessSanityGen_HP = 150;
 
   public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
-    Quest_Cult_Progress_Sabbat = 8,Quest_Cult_Progress_Ritual = 7;
+    Quest_Cult_Progress_Sabbat =7,Quest_Cult_Progress_Ritual = 6;
   public const float Qeust_Cult_EventProgress_Clear = 1.5f;
   public const float Quest_Cult_EventProgress_Fail = 1.0f;
   public const int Quest_Cult_SabbatDiscomfort = 5, Quest_Cult_RitualMovepoint = 4;
@@ -65,7 +65,7 @@ public static class ConstValues
   public const int Rest_MovePoint = 7;
   public const int Rest_Discomfort = 6;
   public const float MoveRestCost_Default_Min = 9, MoveRestCost_Default_Max = 25;
-  public const float Movecost_GoldValue = 0.6f;
+  public const float Movecost_GoldValue = 0.5f;
   public const int RestSanityRestore = 20;
   public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.1f;
   public const float LackMPAmplifiedValue_Idle = 0.4f;
@@ -86,7 +86,7 @@ public static class ConstValues
 
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
-  public const int StartGold = 10;
+  public const int StartGold = 15;
   public const float HPLoss_Exp = 0.2f;
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.15f;
@@ -120,12 +120,12 @@ public static class ConstValues
   public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 20;
 
   public const float Difficult = 1.0f;
-  public const float PayHP_min = 4, PayHP_max = 12;      
+  public const float PayHP_min = 3, PayHP_max = 9;      
   public const float PaySanity_min = 8, PaySanity_max = 24;
   public const float PayGold_min = 6, PayGold_max = 18; 
   public const float FailHP_min = 6, FailHP_max = 18;   
-  public const float FailSanity_min = 12, FailSanity_max = 36;
-  public const float FailGold_min = 8, FailGold_max = 24;
+  public const float FailSanity_min = 14, FailSanity_max = 36;
+  public const float FailGold_min = 6, FailGold_max = 18;
   public const int RewardHP_min = 0, RewardHP_max = 0;
   public const int RewardSanity = 20;
   public const int RewardGold = 15;
@@ -138,7 +138,7 @@ public static class ConstValues
 
   public const int DiscomfortDownValue = 1;
     public const int SectorEffectMaxTurn = 3;
-  public const int SectorEffect_residence_discomfort = 1;
+  public const int SectorEffect_residence_discomfort = 3;
     public const int SectorEffect_marketSector = 25;
     public const int SectorEffect_temple = 2;
   public const int SectorEffect_Library = 2;
@@ -164,7 +164,7 @@ public class GameData    //게임 진행도 데이터
     for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
     {
       if (CurrentSettlement != null && GameManager.Instance.MyGameData.MyMapData.AllSettles[i] == CurrentSettlement) continue;
-      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort < value ?
+      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort- value <0  ?
           0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - value;
     }
   }

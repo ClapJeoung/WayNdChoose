@@ -19,8 +19,8 @@ public class UI_Tutorial : MonoBehaviour
     Map_Hello.text = _text[0];
     Map_Progress.text = _text[1];
     Map_CultInfo.text= _text[2];
-    Map_MoveCost.text = _text[3];
- //   Map_Settlement.text = _text[4];
+    Map_MoveCost.text = string.Format(_text[3],ConstValues.Movecost_GoldValue*100);
+    Map_Settlement.text = _text[4];
     StartCoroutine(UIManager.Instance.ChangeAlpha(Tutorial_Map, 1.0f, 0.5f));
   }
   public void CloseTutorial_Map()

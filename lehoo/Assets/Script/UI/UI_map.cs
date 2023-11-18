@@ -676,7 +676,7 @@ public class UI_map : UI_default
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
     if (SelectedTile.TileSettle == null)
     {
-      BonusGold = (int)((SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint * GameManager.Instance.MyGameData.GetGoldGenModify(true));
+      BonusGold = SelectedTile.MovePoint>1?(int)((SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
       BonusGold += (Route_Tile.Count > 2 && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? ConstValues.Tendency_Head_p1 : 0;
     }
     SelectedCostType = StatusTypeEnum.HP;
@@ -698,14 +698,14 @@ public class UI_map : UI_default
     if (!IsMad)
     switch (SelectedTile.MovePoint)
     {
-      case 1:
-        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_1").Split('@');
+      case 0:
+        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_0").Split('@');
         break;
-      case 2:
+        case 1: case 2:
         _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_2").Split('@');
         break;
-      case 3:
-        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_3").Split('@');
+      case 3: case 4:
+        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_4").Split('@');
         break;
       default:
         _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_over").Split('@');
@@ -715,7 +715,7 @@ public class UI_map : UI_default
       SelectedTile.TileSettle!=null?"":
       ((Route_Tile.Count>2 && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? 
       "<sprite=104>":
-      "") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length-1)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
+      "") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
     MoveLengthText.text = IsMad ? "<sprite=100> ?" :
       string.Format(GameManager.Instance.GetTextData("MoveLength"),
       GameManager.Instance.MyGameData.MovePoint,
