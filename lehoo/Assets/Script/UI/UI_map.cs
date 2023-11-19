@@ -672,8 +672,8 @@ public class UI_map : UI_default
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
     
-    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(Route_Tile.Count, MovePointCost);
-    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(Route_Tile.Count, MovePointCost);
+    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(MovePointCost);
+    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(MovePointCost);
     if (SelectedTile.TileSettle == null)
     {
       BonusGold = SelectedTile.MovePoint>1?(int)((SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
@@ -696,7 +696,7 @@ public class UI_map : UI_default
 
     string[] _bonusgoldtext = null;
     if (!IsMad)
-    switch (SelectedTile.MovePoint)
+    switch (BonusGold)
     {
       case 0:
         _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_0").Split('@');
@@ -792,12 +792,21 @@ public class UI_map : UI_default
   public AnimationCurve MoveAnimationCurve = new AnimationCurve();
   private IEnumerator movemap()
   {
-    if (GameManager.Instance.MyGameData.Madness_Wild)
+    if (IsMad)
     {
-      if (IsMad)
+      List<TileData> _availabletiles = new List<TileData>();
+      foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 1))
       {
-        List<TileData> _availabletiles = new List<TileData>();
-        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 1))
+        if (_tile == SelectedTile) continue;
+        if (_tile == GameManager.Instance.MyGameData.CurrentTile) continue;
+        if (_tile.Interactable == false) continue;
+        if (!ActiveTileData.Contains(_tile)) continue;
+        _availabletiles.Add(_tile);
+      }
+      if (_availabletiles.Count == 0)
+      {
+        _availabletiles = new List<TileData>();
+        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 2))
         {
           if (_tile == SelectedTile) continue;
           if (_tile == GameManager.Instance.MyGameData.CurrentTile) continue;
@@ -805,31 +814,29 @@ public class UI_map : UI_default
           if (!ActiveTileData.Contains(_tile)) continue;
           _availabletiles.Add(_tile);
         }
-        if (_availabletiles.Count == 0)
-        {
-          _availabletiles = new List<TileData>();
-          foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 2))
-          {
-            if (_tile == SelectedTile) continue;
-            if (_tile == GameManager.Instance.MyGameData.CurrentTile) continue;
-            if (_tile.Interactable == false) continue;
-            if (!ActiveTileData.Contains(_tile)) continue;
-            _availabletiles.Add(_tile);
-          }
-        }
-        SelectedTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
-
-        Route_Dir = MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
-        Route_Tile = new List<TileData>();
-        Route_Tile.Add(GameManager.Instance.MyGameData.CurrentTile);
-        for (int i = 0; i < Route_Dir.Count; i++)
-        {
-          Route_Tile.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(Route_Tile[i], Route_Dir[i]));
-        }
       }
+      SelectedTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
+
+      Route_Dir = MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
+      Route_Tile = new List<TileData>();
+      Route_Tile.Add(GameManager.Instance.MyGameData.CurrentTile);
+      for (int i = 0; i < Route_Dir.Count; i++)
+      {
+        Route_Tile.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(Route_Tile[i], Route_Dir[i]));
+      }
+
+      SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(MovePointCost);
+      GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(MovePointCost);
+
       GameManager.Instance.MyGameData.TotalMoveCount++;
       UIManager.Instance.SetWildMadCount();
     }
+    if (SelectedCostType == StatusTypeEnum.Sanity && GameManager.Instance.MyGameData.Sanity < SanityCost && !GameManager.Instance.MyGameData.MadnessSafe)
+    {
+      GameManager.Instance.GameOver();
+      yield break;
+    }
+
 
     Dictionary<TileData, int> _movepointicondata = new Dictionary<TileData, int>();
     int _totalmp = 0;

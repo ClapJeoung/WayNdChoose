@@ -594,12 +594,14 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b58488e1e4c31c4468b708ecc39097ef, type: 3}
   - {fileID: 21300000, guid: 95345bbe38a4dc44381ebf7dcebad01e, type: 3}
   UnknownSectorIcon: {fileID: 21300000, guid: e67e5fa9e99a31e40a2455e43916ec84, type: 3}
-  ResidenceIcon: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
-  MarketPlaceIcon: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
-  TempleIcon: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
-  LibraryIcon: {fileID: 21300000, guid: 9c71aa13cdd3beb42b347760c03a7b9d, type: 3}
-  TheaterIcon: {fileID: 21300000, guid: e0a1aff2efc28ba49bf9fea542b9288a, type: 3}
-  AcademyIcon: {fileID: 21300000, guid: b2ed8b7c7cf8da349b1685bebb032fbb, type: 3}
+  ResidenceIcon_b: {fileID: 21300000, guid: c94b60ee8e558194d9f4a40048a07a9b, type: 3}
+  ResidenceIcon_w: {fileID: 21300000, guid: a32ee0bf70b9b6243acb60baa93d75d1, type: 3}
+  MarketPlaceIcon_b: {fileID: 21300000, guid: 217d232375b7f6443806ed7fd2b343f4, type: 3}
+  MarketPlaceIcon_w: {fileID: 21300000, guid: 6a0fbe8d6d1cb75448ae5336ea3197ce, type: 3}
+  TempleIcon_b: {fileID: 21300000, guid: c4a952867d01e7d40923161064789601, type: 3}
+  TempleIcon_w: {fileID: 21300000, guid: ad6132c09e1029e47a8e019dfd732562, type: 3}
+  LibraryIcon_b: {fileID: 21300000, guid: a60b8b2f67ba11c48a10ee3ef8fb1048, type: 3}
+  LibraryIcon_w: {fileID: 21300000, guid: 9c71aa13cdd3beb42b347760c03a7b9d, type: 3}
   DefaultIllust: {fileID: 21300000, guid: 05a87a754e340fb4d933a04dd808c5b7, type: 3}
   DefaultIcon: {fileID: 21300000, guid: cb7eb39fb98915341bc56ef99025cecf, type: 3}
   NoGoldIllust: {fileID: 21300000, guid: 38c0406432c7ff742b7d87091ef90b31, type: 3}
@@ -615,6 +617,7 @@ MonoBehaviour:
   HPIcon: {fileID: 21300000, guid: 129c86f1e6e975a4b8c82a05cc851a81, type: 3}
   HPIncreaseIcon: {fileID: 789177023, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   HPDecreaseIcon: {fileID: -765305855, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  HPBroken: {fileID: 21300000, guid: bd79f63e3cfa3d4438dfcc2b828c3f22, type: 3}
   SanityIcon: {fileID: 21300000, guid: a53d7ae234547b34b9414626b5c33560, type: 3}
   SanityIncreaseIcon: {fileID: -1776737468, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   SanityDecreaseIcon: {fileID: 902524600, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}

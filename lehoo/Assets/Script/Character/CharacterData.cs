@@ -41,10 +41,10 @@ public static class ConstValues
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
   public const int MovePointMin = -8, MovePointMax = 15;
 
-  public const int MadnessEffect_Conversation = 5;
-  public const int MadnessEffect_Force = 3;
-  public const int MadnessEffect_Wild = 4;
-  public const int MadnessEffect_Intelligence_Value = 2;
+  public const int MadnessEffect_Conversation = 4;
+  public const int MadnessEffect_Force = 4;
+  public const int MadnessEffect_Wild = 5;
+  public const int MadnessEffect_Intelligence = 2;
 
   public const int MadnessHPCost_Skill = 25;
   public const int MadnessSanityGen_Skill = 100;
@@ -56,7 +56,7 @@ public static class ConstValues
     Quest_Cult_Progress_Sabbat =7,Quest_Cult_Progress_Ritual = 6;
   public const float Qeust_Cult_EventProgress_Clear = 1.5f;
   public const float Quest_Cult_EventProgress_Fail = 1.0f;
-  public const int Quest_Cult_SabbatDiscomfort = 5, Quest_Cult_RitualMovepoint = 4;
+  public const int Quest_Cult_SabbatDiscomfort = 4, Quest_Cult_RitualMovepoint = 3;
   public const int Quest_Cult_MovepointAsSanity = 7;
   public const int Quest_Cult_CoolTime_Village = 5;
   public const int Quest_Cult_CoolTime_Town = 4;
@@ -263,7 +263,7 @@ public class GameData    //게임 진행도 데이터
           case 2:
             if (Madness_Intelligence == true)
             {
-              _expvalue = ConstValues.MadnessEffect_Intelligence_Value;
+              _expvalue = ConstValues.MadnessEffect_Intelligence;
               Debug.Log("지성 광기 발동");
               UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Intelligence);
               UIManager.Instance.AudioManager.PlaySFX(27, 5);
@@ -420,7 +420,7 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)ConstValues.RewardSanity; } }
     public int RewardGoldValue
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
-  public int GetMoveSanityCost(int length,int movepoint)
+  public int GetMoveSanityCost(int movepoint)
   {
     float _mppenalty= 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit)>0? MovePoint / ConstValues.MPPenaltyUnit:0);
     int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn)
@@ -429,7 +429,7 @@ public class GameData    //게임 진행도 데이터
     return (GameManager.Instance.MyGameData.movepoint- movepoint)>=0 ? _value :
       (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(MovePoint- movepoint))));
   }
-  public int GetMoveGoldCost(int length,int movepoint)
+  public int GetMoveGoldCost(int movepoint)
   {
     float _mppenalty = 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit) > 0 ? MovePoint / ConstValues.MPPenaltyUnit : 0);
     int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn)
@@ -449,6 +449,33 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #수치#
+  public int MinMadnessHP
+  {
+    get
+    {
+      if (Madness_Conversation &&
+      Madness_Force &&
+      Madness_Wild &&
+      Madness_Intelligence)
+      {
+        return MadnessHPLoss_HP;
+      }
+      else
+      {
+        return MadnessHPLoss_Skill;
+      }
+    }
+  }
+  /// <summary>
+  /// 광기에 걸려도 안전한지
+  /// </summary>
+  public bool MadnessSafe
+  {
+    get
+    {
+      return hp > MinMadnessHP;
+    }
+  }
   private int hp = 0;
   public int HP
   {
@@ -605,7 +632,7 @@ public class GameData    //게임 진행도 데이터
     get { return quest_cult_progress; }
     set 
     {
-      if (value >= 100) UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.CultEndingData);
+      if (value >= 100&&!UIManager.Instance.EndingUI.IsDead) UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.CultEndingData);
 
       quest_cult_progress = value < 0 ? 0 : value;
 
@@ -1142,7 +1169,6 @@ public class Tendency
       {
         case TendencyTypeEnum.Body:
           string _uptext = GameManager.Instance.GetTextData("SKILLLEVELUP_TEXT");
-          string _downtext = GameManager.Instance.GetTextData("SKILLLEVELDOWN_TEXT");
           switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
           {
             case -2:

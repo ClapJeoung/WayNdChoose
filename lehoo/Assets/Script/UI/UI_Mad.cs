@@ -17,7 +17,14 @@ public class UI_Mad : UI_default
   public TextMeshProUGUI Description = null;
 
   public void OpenUI()
-  {    UIManager.Instance.AudioManager.PlaySFX(27);
+  {
+    if (!GameManager.Instance.MyGameData.MadnessSafe)
+    {
+      GameManager.Instance.GameOver();
+      return;
+    }
+
+    UIManager.Instance.AudioManager.PlaySFX(27);
     if (GameManager.Instance.MyGameData.Madness_Conversation)
     {
       Button_Conversation.interactable = false;

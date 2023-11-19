@@ -625,18 +625,14 @@ public class UI_dialogue : UI_default
     if (_issuccess) //성공하면 성공
     {
       Debug.Log("성공함");
-      SetSuccess(CurrentEvent.SelectionDatas[_selection.Index].SuccessData);
-      GameManager.Instance.SuccessCurrentEvent(_selection.MyTendencyType, _selection.IsLeft);
+      StartCoroutine(SetSuccess(CurrentEvent.SelectionDatas[_selection.Index].SuccessData,_selection.MyTendencyType,_selection.IsLeft));
     }
     else            //실패하면 실패
     {
       Debug.Log("실패함");
-      SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailData);
-      GameManager.Instance.FailCurrentEvent(_selection.MyTendencyType, _selection.IsLeft);
+      StartCoroutine(SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailData, _selection.MyTendencyType, _selection.IsLeft));
     }
     _selection.DeActive();
-
-    GameManager.Instance.SaveData();
 
     yield return null;
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
@@ -703,7 +699,7 @@ public class UI_dialogue : UI_default
   private SuccessData CurrentSuccessData = null;
   public bool RemainReward = false;
   [SerializeField] private float ResultEffectTime = 2.0f;
-  public void SetSuccess(SuccessData _success)
+  public IEnumerator SetSuccess(SuccessData _success,TendencyTypeEnum tendencytype,bool isleft)
   {
     CurrentSuccessData = _success;
 
@@ -718,6 +714,10 @@ public class UI_dialogue : UI_default
 
       UIManager.Instance.AddUIQueue(displaynextindex(true));
 
+    GameManager.Instance.SuccessCurrentEvent(tendencytype, isleft);
+    GameManager.Instance.SaveData();
+
+    yield return null;
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
   }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체, 퀘스트 이벤트일 경우 진행도 ++
   public EndingDatas CurrentEndingData = null;
@@ -772,9 +772,25 @@ public class UI_dialogue : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.3f));
   }
   private FailData CurrentFailData = null;
-  public void SetFail(FailData _fail)
+  public IEnumerator SetFail(FailData _fail, TendencyTypeEnum tendencytype, bool isleft)
   {
     CurrentFailData = _fail;
+
+    if (_fail.Penelty_target == PenaltyTarget.Status)
+    {
+      if (_fail.StatusType == StatusTypeEnum.HP && GameManager.Instance.MyGameData.HP <= GameManager.Instance.MyGameData.FailHPValue)
+      {
+        GameManager.Instance.GameOver();
+        yield break;
+      }
+      else if(_fail.StatusType==StatusTypeEnum.Sanity&&
+        GameManager.Instance.MyGameData.Sanity<=GameManager.Instance.MyGameData.FailSanityValue&&
+        !GameManager.Instance.MyGameData.MadnessSafe)
+      {
+        GameManager.Instance.GameOver();
+        yield break;
+      }
+    }
 
     IsBeginning = false;
     CurrentEventPhaseMaxIndex = CurrentFailData.Descriptions.Count;
@@ -788,6 +804,11 @@ public class UI_dialogue : UI_default
     StartCoroutine((UIManager.Instance.ChangeAlpha(IllustEffect_Group, 0.0f, ResultEffectTime)));
 
     UIManager.Instance.AddUIQueue(displaynextindex(true));
+
+    GameManager.Instance.FailCurrentEvent(tendencytype, isleft);
+
+    GameManager.Instance.SaveData();
+    yield return null;
   }//실패할 경우 패널티를 부과하고 텍스트를 실패 설명으로 교체
   [SerializeField] private float IllustShakeDegree = 10;
   [SerializeField] private float IllustShakeTime = 0.7f;
@@ -894,16 +915,15 @@ public class UI_dialogue : UI_default
                 GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue;
                 break;
             }
+            RemainReward = false;
             break;
           case RewardTypeEnum.Skill:
+            RemainReward = false;
             yield return StartCoroutine(UIManager.Instance.SetIconEffect(false,CurrentSuccessData.Reward_SkillType,RewardIcon.transform as RectTransform));
-            GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
-            UIManager.Instance.AudioManager.PlaySFX(19);
             break;
         }
 
         StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.6f));
-        RemainReward = false;
       }
     }
   }
@@ -1105,7 +1125,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector == sector;
 
-    SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector);
+    SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector,false);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==-2) == true ?
@@ -1201,7 +1221,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector;
 
-    SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector);
+    SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector, false);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
     int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==-2)?
@@ -1320,6 +1340,13 @@ SettlementNameText.text = CurrentSettlement.Name;
   {
     DefaultGroup.interactable = false;
     IsOpen = false;
+
+    if (statustype == StatusTypeEnum.Sanity && GameManager.Instance.MyGameData.Sanity < SanityCost && !GameManager.Instance.MyGameData.MadnessSafe)
+    {
+      GameManager.Instance.GameOver();
+      yield break;
+    }
+
 
     GameManager.Instance.MyGameData.FirstRest = false;
     if (GameManager.Instance.MyGameData.Madness_Force)

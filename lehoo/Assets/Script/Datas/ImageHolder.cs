@@ -371,20 +371,20 @@ public class ImageHolder : ScriptableObject
   */
   [Space(10)]
   public Sprite UnknownSectorIcon = null;
-  public Sprite ResidenceIcon = null;
-  public Sprite MarketPlaceIcon = null;
-  public Sprite TempleIcon = null;
-  public Sprite LibraryIcon = null;
-  public Sprite TheaterIcon = null;
-  public Sprite AcademyIcon = null;
-  public Sprite GetSectorIcon(SectorTypeEnum placetype)
+  public Sprite ResidenceIcon_b = null, ResidenceIcon_w = null;
+  public Sprite MarketPlaceIcon_b = null, MarketPlaceIcon_w = null;
+  public Sprite TempleIcon_b = null, TempleIcon_w = null;
+  public Sprite LibraryIcon_b = null, LibraryIcon_w = null;
+  //public Sprite TheaterIcon = null;
+  // public Sprite AcademyIcon = null;
+  public Sprite GetSectorIcon(SectorTypeEnum placetype,bool isblack)
   {
     switch (placetype)
     {
-      case SectorTypeEnum.Residence:return ResidenceIcon;
-      case SectorTypeEnum.Temple: return TempleIcon;
-      case SectorTypeEnum.Marketplace:return MarketPlaceIcon;
-      case SectorTypeEnum.Library:return LibraryIcon;
+      case SectorTypeEnum.Residence:return isblack? ResidenceIcon_b: ResidenceIcon_w;
+      case SectorTypeEnum.Temple: return isblack?TempleIcon_b: TempleIcon_w;
+      case SectorTypeEnum.Marketplace:return isblack?MarketPlaceIcon_b: MarketPlaceIcon_w;
+      case SectorTypeEnum.Library:return isblack?LibraryIcon_b: LibraryIcon_w;
   //    case SectorType.Theater:return TheaterIcon;
     //  default:return AcademyIcon;
     }
@@ -407,6 +407,7 @@ public class ImageHolder : ScriptableObject
   public Sprite HPIcon = null;
   public Sprite HPIncreaseIcon = null;
   public Sprite HPDecreaseIcon = null;
+  public Sprite HPBroken = null;
   public Sprite SanityIcon = null;
   public Sprite SanityIncreaseIcon = null;
   public Sprite SanityDecreaseIcon = null;

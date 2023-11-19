@@ -34,13 +34,10 @@ public class UI_Ending : UI_default
   private int CurrentIndex = 0;
   private int Length { get {  return Illusts.Count; } }
 
-  private bool IsDead = false;
+  public bool IsDead = false;
   public void OpenUI_Dead(Sprite illust,string description)
   {
     UIManager.Instance.PreviewManager.ClosePreview();
-
-    GameManager.Instance.DeleteSaveData();
-
     Illust.Setup(illust, 0.5f);
     Description.text = description;
     QuitButtonText.text = GameManager.Instance.GetTextData("QUITTOMAIN");
@@ -48,15 +45,12 @@ public class UI_Ending : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(QuitButtonGroup.transform as RectTransform);
     QuitButtonGroup.alpha = 1.0f;
     QuitButtonGroup.interactable = true;
-    IsDead = true;
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 2.0f));
   }
 
   public void OpenUI_Ending(EndingDatas endingdata)
   {
     UIManager.Instance.PreviewManager.ClosePreview();
-
-    GameManager.Instance.DeleteSaveData();
 
     Illusts = endingdata.Illusts; 
     Descriptions = endingdata.Descriptions; 

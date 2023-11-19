@@ -193,7 +193,9 @@ public class PreviewManager : MonoBehaviour
   {
     StatusTypeEnum _currenttype = StatusTypeEnum.HP;
 
-    string _description = GameManager.Instance.GetTextData(_currenttype, 3);
+    string _description =string.Format(GameManager.Instance.GetTextData(_currenttype, 3),GameManager.Instance.MyGameData.MadnessSafe?
+      GameManager.Instance.GetTextData("HP_MadnessSafe"):
+      string.Format(GameManager.Instance.GetTextData("HP_MadnessDanger"),WNCText.GetHPColor(GameManager.Instance.MyGameData.MinMadnessHP+1)));
 
     int _modifyvalue = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
     if (_modifyvalue == 100)
@@ -321,7 +323,7 @@ public class PreviewManager : MonoBehaviour
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
-          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Preview"), ConstValues.MadnessEffect_Intelligence_Value);
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Preview"), ConstValues.MadnessEffect_Intelligence);
           _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
@@ -979,7 +981,7 @@ public class PreviewManager : MonoBehaviour
       SettlementInfoName.text =string.Format(GameManager.Instance.GetTextData("SettlementInfoNames"),
         GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType), tileData.TileSettle.Name);
 
-      SettlementDiscomfortIcon.sizeDelta=Vector2.one* Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
+      SettlementDiscomfortIcon.sizeDelta=Vector2.one* Mathf.Lerp(ConstValues.SettlementPreviewDiscomfortIconSize_min, ConstValues.SettlementPreviewDiscomfortIconSize_max,
         Mathf.Clamp(tileData.TileSettle.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
       SettlementInfoDiscomfort.fontSize = Mathf.Lerp(ConstValues.SettlementPreviewDiscomfortFont_min, ConstValues.SettlementPreviewDiscomfortFont_max,
         Mathf.Clamp(tileData.TileSettle.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));

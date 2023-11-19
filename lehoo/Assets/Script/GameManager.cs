@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
 using System.Linq;
 using System;
+using Unity.VisualScripting;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
@@ -135,7 +136,7 @@ public class GameManager : MonoBehaviour
       if (_data.Length == 0 || _data[0] == "") continue;
       Textdata _textdata = new Textdata();
       _textdata.ID = _data[0];
-      _textdata.kor = _data[1];
+      _textdata.kor = _data[1].Contains("\r")?_data[1].Replace("\r",""):_data[1];
       TextDatas.Add(_textdata);
     }
     print($"텍스트 딕셔너리 업데이트 완료\n{_previewcount}개 -> {TextDatas.Count}개");
@@ -206,9 +207,9 @@ public class GameManager : MonoBehaviour
   {
     foreach(var _data in TextDatas)
     {
-      if (string.Compare(_id, _data.ID, true) == 0) return _data.Text;
+      if (string.Compare(_id, _data.ID, true) == 0)
+        return _data.Text;
     }
-    
     Debug.Log($"{_id} 없음"); 
     return NullText;
   }
@@ -736,7 +737,7 @@ public class GameManager : MonoBehaviour
 
     IsPlaying = true;
 
-    if (MyGameData.Sanity <= 0) UIManager.Instance.MadUI.OpenUI();
+    if (MyGameData.Sanity <= 0) UIManager.Instance.GetMad();
 
     yield return null;
   }

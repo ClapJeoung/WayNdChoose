@@ -71,6 +71,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   }
   private int LastPhase = -1;
   private float LastProgress = -1;
+  private int LastTurn = -1;
   public void UpdateUI()
   {
     int _progressvalue = 0;
@@ -111,7 +112,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         _progressvalue = ConstValues.Quest_Cult_Progress_Sabbat;
         if (LastPhase != 3)
         {
-          Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector);
+          Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector,true);
 
           if (LastPhase == 2) StartCoroutine(CloseGroup(City_Group, 0.0f));
           else if (LastPhase == 4) StartCoroutine(CloseGroup(Ritual_Group, 0.0f));
@@ -139,14 +140,20 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
     ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_ProgressValue"), _progressvalue);
     TurnText.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
-    StartCoroutine(spinturntitle());
+    if (LastTurn != -1 && LastTurn != GameManager.Instance.MyGameData.Cult_CoolTime)
+    {
+      StartCoroutine(spinturntitle());
+    }
+    LastTurn = GameManager.Instance.MyGameData.Cult_CoolTime;
   }
   private IEnumerator spinturntitle()
   {
     float _time = 0.0f;
-    while (_time < TurnTitleMoveTime)
+    float _rotatevalue = (LastTurn - GameManager.Instance.MyGameData.Cult_CoolTime) * 360.0f;
+    float _endtime = _rotatevalue == 360.0f ? TurnTitleMoveTime : Mathf.Abs(1.0f * (LastTurn - GameManager.Instance.MyGameData.Cult_CoolTime));
+    while (_time < _endtime)
     {
-      TurnTitleRect.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Mathf.Lerp(0.0f, 360.0f, TurnTileAnimationCurve.Evaluate(_time / TurnTitleMoveTime))));
+      TurnTitleRect.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Mathf.Lerp(0.0f, _rotatevalue, TurnTileAnimationCurve.Evaluate(_time / TurnTitleMoveTime))));
       _time += Time.deltaTime; yield return null;
     }
     TurnTitleRect.rotation = Quaternion.Euler(Vector3.zero);

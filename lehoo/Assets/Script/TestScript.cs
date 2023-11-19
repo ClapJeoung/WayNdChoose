@@ -5,17 +5,22 @@ using UnityEngine.UI;
 using System.Text;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
+using TMPro;
 
-public class TestScript:MonoBehaviour
+public class TestScript : MonoBehaviour
 {
-  public RectTransform TestRect = null;
+  public TextMeshProUGUI TestTExt = null;
+  public List<string> ASDF= new List<string>();
 
   private void Update()
   {
-    if (Input.GetKey(KeyCode.End))
+    if (Input.GetKeyDown(KeyCode.End))
     {
-      Debug.Log(TestRect.name);
-      Debug.Log(TestRect.GetComponent<CanvasRenderer>().cull);
+      TestTExt.text=string.Format("{0} {1} {2} {3}", ASDF[0], ASDF[1], ASDF[2], ASDF[3]);
+    }
+    if (Input.GetKeyDown(KeyCode.Delete))
+    {
+      TestTExt.text = string.Format(GameManager.Instance.GetTextData("TestText"), ASDF[0], ASDF[1], ASDF[2], ASDF[3]);
     }
   }
 }

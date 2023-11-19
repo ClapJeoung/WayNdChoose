@@ -172,10 +172,10 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
       // if(_changedvalue!=0)
       // StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
-      if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform }));
+      if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform }));
       else
       {
-        StartCoroutine(statuslossanimation(new List<RectTransform> { HPIconRect, HPText.rectTransform },
+        StartCoroutine(statuslossanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform },
           Mathf.Lerp(ConstValues.StatusLossMinSacle,ConstValues.StatusLossMaxScale,(Mathf.Abs(_changedvalue)-ConstValues.StatusLoss_HP_Min)/ConstValues.StatusLoss_HP_Max)));
         AudioManager.PlaySFX(15,4);
       }
@@ -184,11 +184,17 @@ public class UIManager : MonoBehaviour
     }
 
 
-    HPIconRect.sizeDelta = Vector2.one * Mathf.Lerp( ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.HP / 100.0f);
+    HPIcon.rectTransform.sizeDelta = Vector2.one * Mathf.Lerp( ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.HP / 100.0f);
     HPText.text = GameManager.Instance.MyGameData.HP.ToString();
   //  Debug.Log("체력 수치 업데이트");
 
     lasthp = GameManager.Instance.MyGameData.HP;
+    UpdateHPIcon();
+  }
+  public void UpdateHPIcon()
+  {
+    HPIcon.sprite = GameManager.Instance.MyGameData.MadnessSafe ?
+      GameManager.Instance.ImageHolder.HPIcon : GameManager.Instance.ImageHolder.HPBroken;
   }
   [SerializeField] private TextMeshProUGUI SanityText_current = null;
  // [SerializeField] private TextMeshProUGUI SanityText_max = null;
@@ -288,7 +294,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private AnimationCurve IconGainCurve=new AnimationCurve();
   [SerializeField] private AnimationCurve IconUsingScaleCurve=new AnimationCurve();
   [SerializeField] private List<RectTransform> IconRectList= new List<RectTransform>();
-  [SerializeField] private RectTransform HPIconRect = null;
+  [SerializeField] private Image HPIcon = null;
   [SerializeField] private RectTransform SanityIconRect = null;
   [SerializeField] private RectTransform GoldIconRect = null;
   [SerializeField] private RectTransform MovepointIconRect = null;
@@ -352,8 +358,8 @@ public class UIManager : MonoBehaviour
     {
       case StatusTypeEnum.HP: 
         _icon = isusing ? GameManager.Instance.ImageHolder.HPDecreaseIcon : GameManager.Instance.ImageHolder.HPIcon;
-        _startpos = isusing ? HPIconRect.position : rect.position;
-        _endpos=isusing?rect.position : HPIconRect.position;
+        _startpos = isusing ? HPIcon.rectTransform.position : rect.position;
+        _endpos=isusing?rect.position : HPIcon.rectTransform.position;
         break;
       case StatusTypeEnum.Sanity:
         _icon = isusing ? GameManager.Instance.ImageHolder.SanityDecreaseIcon : GameManager.Instance.ImageHolder.SanityIcon;
@@ -459,6 +465,9 @@ public class UIManager : MonoBehaviour
     }
     _iconrect.anchoredPosition = Vector2.one * 3000.0f;
     ActiveIconIndexList.Remove(_index);
+
+    GameManager.Instance.MyGameData.GetSkill(skilltype).LevelByDefault++;
+    UIManager.Instance.AudioManager.PlaySFX(19);
   }
   /// <summary>
   /// 성향
@@ -916,11 +925,11 @@ public class UIManager : MonoBehaviour
   public Vector2 ExpCoverUpPos = new Vector2(0.0f, 81.6f);
   public void UpdateExpMad()
   {
-    if (GameManager.Instance.MyGameData.LongExp != null && GameManager.Instance.MyGameData.LongExp.Duration > 1)
+    if (GameManager.Instance.MyGameData.LongExp != null && GameManager.Instance.MyGameData.LongExp.Duration > (ConstValues.MadnessEffect_Intelligence-1))
       StartCoroutine(ChangeAlpha(LongMad, 0.0f, 1.0f));
-    if (GameManager.Instance.MyGameData.ShortExp_A != null && GameManager.Instance.MyGameData.ShortExp_A.Duration > 1)
+    if (GameManager.Instance.MyGameData.ShortExp_A != null && GameManager.Instance.MyGameData.ShortExp_A.Duration > (ConstValues.MadnessEffect_Intelligence - 1))
       StartCoroutine(ChangeAlpha(ShortMad_A, 0.0f, 1.0f));
-    if (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.Duration > 1)
+    if (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.Duration > (ConstValues.MadnessEffect_Intelligence - 1))
       StartCoroutine(ChangeAlpha(ShortMad_B, 0.0f, 1.0f));
   }
   public void UpdateExpPael()
@@ -1017,6 +1026,8 @@ public class UIManager : MonoBehaviour
       ShortExpBActive = true;
     }
     if (_starteffect) HighlightManager.HighlightAnimation(HighlightEffectEnum.Exp);
+
+    UpdateHPIcon();
   }
   public void UpdateAllUI()
   {
@@ -1240,6 +1251,8 @@ public class UIManager : MonoBehaviour
   private IEnumerator opendead(Sprite illsut,string description)
   {
     AudioManager.StopWalking();
+    GameManager.Instance.DeleteSaveData();
+    EndingUI.IsDead = true;
 
     yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
     EndingUI.OpenUI_Dead(illsut,description);
@@ -1247,6 +1260,7 @@ public class UIManager : MonoBehaviour
   public void OpenEnding(EndingDatas data)
   {
     StopAllCoroutines();
+    GameManager.Instance.DeleteSaveData();
     AudioManager.StopWalking();
     UIAnimationQueue.Clear();
     IsWorking = false;
