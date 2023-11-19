@@ -1048,9 +1048,9 @@ public class UI_dialogue : UI_default
 
 SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-      Mathf.Clamp(CurrentSettlement.Discomfort /ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
+      Mathf.Clamp(CurrentSettlement.Discomfort /ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
     DiscomfortText.fontSize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
+          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
@@ -1284,7 +1284,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     {
       case StatusTypeEnum.Sanity:
 
-        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),SanityCost,(int)(CurrentSettlement.RestGold*GameManager.Instance.MyGameData.GetGoldGenModify(true)));
+        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),SanityCost);
         break;
       case StatusTypeEnum.Gold:
 
@@ -1347,7 +1347,6 @@ SettlementNameText.text = CurrentSettlement.Name;
     {
       case StatusTypeEnum.Sanity:
         GameManager.Instance.MyGameData.Sanity -= SanityCost;
-        GameManager.Instance.MyGameData.Gold +=(int)(CurrentSettlement.RestGold* GameManager.Instance.MyGameData.GetGoldGenModify(true));
         CurrentSettlement.Discomfort += _discomfortvalue;
         DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
         if (DiscomfortValue > 0)
@@ -1390,10 +1389,10 @@ SettlementNameText.text = CurrentSettlement.Name;
     float _time = 0.0f;
     float _startsize = DiscomfortIcon.sizeDelta.x,
       _endsize = Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-  Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
+  Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
     float _fontstartsize = DiscomfortText.fontSize;
     float _fontendsize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForIconScale, 0.0f, 1.0f));
+          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
     while (_time < DiscomfortScaleEffectTime)

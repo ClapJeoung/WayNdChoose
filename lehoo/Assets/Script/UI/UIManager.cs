@@ -894,7 +894,7 @@ public class UIManager : MonoBehaviour
 
     while (_time < _targettime)
     {
-      titlerect.anchoredPosition = Vector2.Lerp(_originpos_title, _targetpos_title, _time / _targettime);
+      titlerect.anchoredPosition = Vector2.Lerp(_originpos_title, _targetpos_title,IconGainCurve.Evaluate(_time / _targettime));
 
       _time += Time.deltaTime; yield return null;
     }

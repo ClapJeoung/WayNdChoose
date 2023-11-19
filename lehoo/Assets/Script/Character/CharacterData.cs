@@ -8,7 +8,11 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const float MaxDiscomfortForOutline = 18;
+  public const float SettlementPreviewDiscomfortIconSize_min = 35, SettlementPreviewDiscomfortIconSize_max = 90;
+  public const float SettlementPreviewDiscomfortFont_min = 35, SettlementPreviewDiscomfortFont_max = 50;
+
+  public const int MPPenaltyUnit = 10;
+  public const float MPPenaltyValue = 0.1f;
 
   public const int StartSkillLevel = 1;
 
@@ -32,7 +36,7 @@ public static class ConstValues
   public const int ExpSkillLevel = 1;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
-  public const float MaxDiscomfortForIconScale = 20;
+  public const float MaxDiscomfortForUI = 20;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
   public const int MovePointMin = -8, MovePointMax = 15;
@@ -66,7 +70,7 @@ public static class ConstValues
   public const int Rest_Discomfort = 6;
   public const float MoveRestCost_Default_Min = 9, MoveRestCost_Default_Max = 25;
   public const float Movecost_GoldValue = 0.5f;
-  public const int RestSanityRestore = 20;
+  public const int RestSanityRestore = 15;
   public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.1f;
   public const float LackMPAmplifiedValue_Idle = 0.4f;
 
@@ -127,8 +131,8 @@ public static class ConstValues
   public const float FailSanity_min = 14, FailSanity_max = 36;
   public const float FailGold_min = 6, FailGold_max = 18;
   public const int RewardHP_min = 0, RewardHP_max = 0;
-  public const int RewardSanity = 20;
-  public const int RewardGold = 15;
+  public const int RewardSanity = 15;
+  public const int RewardGold = 10;
 
   public const int ShortTermStartTurn = 9;
   public const int LongTermStartTurn =  15;
@@ -138,8 +142,8 @@ public static class ConstValues
 
   public const int DiscomfortDownValue = 1;
     public const int SectorEffectMaxTurn = 3;
-  public const int SectorEffect_residence_discomfort = 3;
-    public const int SectorEffect_marketSector = 25;
+  public const int SectorEffect_residence_discomfort = 2;
+    public const int SectorEffect_marketSector = 20;
     public const int SectorEffect_temple = 2;
   public const int SectorEffect_Library = 2;
   //  public const int SectorEffect_theater = 3;
@@ -418,16 +422,18 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int length,int movepoint)
   {
-    int _value = (int)(Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn)
-      * GetSanityLossModify(true));
+    float _mppenalty= 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit)>0? MovePoint / ConstValues.MPPenaltyUnit:0);
+    int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn)
+      * GetSanityLossModify(true))* _mppenalty);
 
     return (GameManager.Instance.MyGameData.movepoint- movepoint)>=0 ? _value :
       (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(MovePoint- movepoint))));
   }
   public int GetMoveGoldCost(int length,int movepoint)
   {
-    int _value = (int)(Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn)
-       * (ConstValues.Movecost_GoldValue));
+    float _mppenalty = 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit) > 0 ? MovePoint / ConstValues.MPPenaltyUnit : 0);
+    int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn)
+       * (ConstValues.Movecost_GoldValue)) * _mppenalty);
 
     return (GameManager.Instance.MyGameData.movepoint - movepoint) >= 0 ? _value :
       (int)(_value * (1.0f + MovePointAmplified * (Mathf.Abs(MovePoint - movepoint))));
@@ -689,6 +695,8 @@ public class GameData    //게임 진행도 데이터
     for(int i=0;i<_tiles.Count;i++)
     {
       if (!_tiles[i].Interactable) continue;
+      if (_tiles[i].TileSettle != null) continue;
+
       for(int j = 0; j < _tiles[i].MovePoint; j++)
       {
         _tileasindex.Add(i);

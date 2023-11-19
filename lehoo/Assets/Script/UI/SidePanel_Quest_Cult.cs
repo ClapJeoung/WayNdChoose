@@ -8,8 +8,11 @@ public class SidePanel_Quest_Cult : MonoBehaviour
 {
   [SerializeField] private Slider ProgressSlider = null;
   public CanvasGroup DefaultGroup = null;
-  public TextMeshProUGUI DescriptionText = null;
-  public TextMeshProUGUI ValueText = null;
+  [SerializeField] private TextMeshProUGUI TurnText = null;
+  [SerializeField] private float TurnTitleMoveTime = 1.5f;
+  [SerializeField] private AnimationCurve TurnTileAnimationCurve = new AnimationCurve();
+  [SerializeField] private RectTransform TurnTitleRect = null;
+  [SerializeField] private TextMeshProUGUI ValueText = null;
   public Vector2 IconHidePos = new Vector2(-250.0f, 0.0f);
   public Vector2 IconOpenPos = new Vector2(-90.0f, 0.0f);
   public float OpenTime = 1.0f;
@@ -70,6 +73,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   private float LastProgress = -1;
   public void UpdateUI()
   {
+    int _progressvalue = 0;
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
     {
       case 0:
@@ -77,52 +81,40 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         {
           StartCoroutine(OpenGroup(Village_Group, 0.0f));
         }
-        if(GameManager.Instance.MyGameData.Tendency_Body.Level!=0&& DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
-        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Village"));
-        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.MyGameData.Cult_CoolTime,
-          GameManager.Instance.GetTextData("Village"),
-          ConstValues.Quest_Cult_Progress_Village);
+        if (GameManager.Instance.MyGameData.Tendency_Body.Level != 0 && DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+        _progressvalue = ConstValues.Quest_Cult_Progress_Village;
         break;
       case 1:
         if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
 
-        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("Town"));
-        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.MyGameData.Cult_CoolTime,
-          GameManager.Instance.GetTextData("Town"),
-          ConstValues.Quest_Cult_Progress_Town);
+        _progressvalue = ConstValues.Quest_Cult_Progress_Town;
         if (LastPhase != 1)
         {
-         if(LastPhase!=-1) StartCoroutine(CloseGroup(Village_Group,0.0f));
-          StartCoroutine(OpenGroup(Town_Group, LastPhase != -1?CloseTime +WaitTime:0.0f));;
+          if (LastPhase != -1) StartCoroutine(CloseGroup(Village_Group, 0.0f));
+          StartCoroutine(OpenGroup(Town_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f)); ;
         }
         break;
       case 2:
         if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
 
-        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement"), GameManager.Instance.GetTextData("City"));
-        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Settlement_Value"), GameManager.Instance.MyGameData.Cult_CoolTime,
-          GameManager.Instance.GetTextData("City"),
-          ConstValues.Quest_Cult_Progress_City);
+        _progressvalue = ConstValues.Quest_Cult_Progress_City;
 
         if (LastPhase != 2)
         {
-          if (LastPhase!=-1) StartCoroutine(CloseGroup(Town_Group,0.0f));
+          if (LastPhase != -1) StartCoroutine(CloseGroup(Town_Group, 0.0f));
           StartCoroutine(OpenGroup(City_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f));
         }
         break;
       case 3:
         if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
 
-        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Sabbat"),
-          GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector, 0));
-        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_SNR_Value"),
-          GameManager.Instance.MyGameData.Cult_CoolTime, ConstValues.Quest_Cult_Progress_Sabbat);
+        _progressvalue = ConstValues.Quest_Cult_Progress_Sabbat;
         if (LastPhase != 3)
         {
           Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector);
 
           if (LastPhase == 2) StartCoroutine(CloseGroup(City_Group, 0.0f));
-          else if(LastPhase==4)StartCoroutine(CloseGroup(Ritual_Group, 0.0f));
+          else if (LastPhase == 4) StartCoroutine(CloseGroup(Ritual_Group, 0.0f));
 
           StartCoroutine(OpenGroup(Sabbat_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f));
         }
@@ -130,9 +122,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
       case 4:
         if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
 
-        DescriptionText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_Ritual"));
-        ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_SNR_Value"),
-          GameManager.Instance.MyGameData.Cult_CoolTime, ConstValues.Quest_Cult_Progress_Ritual);
+        _progressvalue = ConstValues.Quest_Cult_Progress_Ritual;
         if (LastPhase != 4)
         {
           if (LastPhase != -1) StartCoroutine(CloseGroup(Sabbat_Group, 0.0f));
@@ -147,7 +137,20 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     }
 
     LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-
+    ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_ProgressValue"), _progressvalue);
+    TurnText.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
+    StartCoroutine(spinturntitle());
+  }
+  private IEnumerator spinturntitle()
+  {
+    float _time = 0.0f;
+    while (_time < TurnTitleMoveTime)
+    {
+      TurnTitleRect.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Mathf.Lerp(0.0f, 360.0f, TurnTileAnimationCurve.Evaluate(_time / TurnTitleMoveTime))));
+      _time += Time.deltaTime; yield return null;
+    }
+    TurnTitleRect.rotation = Quaternion.Euler(Vector3.zero);
+    yield return null;
   }
   public void UpdateProgressValue()
   {

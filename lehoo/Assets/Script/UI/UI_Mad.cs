@@ -59,8 +59,8 @@ public class UI_Mad : UI_default
         _str = GameManager.Instance.GetTextData("Madness_Conversation")+
            string.Format( GameManager.Instance.GetTextData("Madness_Result"),
            GameManager.Instance.MyGameData.MovePoint<0?GameManager.Instance.GetTextData("Madness_ResetMP"):"",
-           string.Format(GameManager.Instance.GetTextData("Madness_Skillvalue"), GameManager.Instance.GetTextData((SkillTypeEnum)index,1),
-           ConstValues.MadnessSkillLevel), GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
+           string.Format(GameManager.Instance.GetTextData("Madness_Skillvalue"), GameManager.Instance.GetTextData((SkillTypeEnum)index,1),ConstValues.MadnessSkillLevel),
+           GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 1:
         _str = GameManager.Instance.GetTextData("Madness_Force")
@@ -85,9 +85,11 @@ public class UI_Mad : UI_default
         break;
       case 4:
         _str = GameManager.Instance.GetTextData("Madness_HP")
-     +string.Format(GameManager.Instance.GetTextData("Madness_Result"),"", GameManager.Instance.MyGameData.MadnessHPLoss_HP,
-              GameManager.Instance.MyGameData.MovePoint < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
-  WNCText.GetMaxSanityColor(GameManager.Instance.MyGameData.MadnessSanityGen_HP));
+     +string.Format(GameManager.Instance.GetTextData("Madness_Result"),
+                 GameManager.Instance.MyGameData.MovePoint < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
+                 "",
+                 GameManager.Instance.MyGameData.MadnessHPLoss_HP,
+                 WNCText.GetMaxSanityColor(GameManager.Instance.MyGameData.MadnessSanityGen_HP));
         break;
     }
 

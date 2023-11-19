@@ -126,6 +126,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private GameObject SettlementInfoPanel = null;
   [SerializeField] private Image SettlementInfoIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
+  [SerializeField] private RectTransform SettlementDiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
   [SerializeField] private TextMeshProUGUI SettlementMovePointText = null;
 
@@ -249,7 +250,8 @@ public class PreviewManager : MonoBehaviour
   public void OpenMovePointPreview( RectTransform rect)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
-    string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION");
+    string _description =string.Format(GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION"),WNCText.GetMovepointColor(ConstValues.MPPenaltyUnit),
+      (int)(ConstValues.MPPenaltyValue*100));
     if (GameManager.Instance.MyGameData.MovePoint < 0) _description +="<br>"+ GameManager.Instance.GetTextData("Movepoint_NoSupplies");
 
 
@@ -977,7 +979,13 @@ public class PreviewManager : MonoBehaviour
       SettlementInfoName.text =string.Format(GameManager.Instance.GetTextData("SettlementInfoNames"),
         GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType), tileData.TileSettle.Name);
 
+      SettlementDiscomfortIcon.sizeDelta=Vector2.one* Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
+        Mathf.Clamp(tileData.TileSettle.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
+      SettlementInfoDiscomfort.fontSize = Mathf.Lerp(ConstValues.SettlementPreviewDiscomfortFont_min, ConstValues.SettlementPreviewDiscomfortFont_max,
+        Mathf.Clamp(tileData.TileSettle.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
+
       SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
+      LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementInfoDiscomfort.transform.parent.transform as RectTransform);
       List<TileData> _tiles = UIManager.Instance.MapUI.SetRouteTemp(tileData);
       if (UIManager.Instance.MapUI.IsMad)
       {

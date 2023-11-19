@@ -15,17 +15,6 @@ public class Settlement
   public bool IsMountain = false;//주변 1칸에 산 여부
   public bool IsSea = false;    //주변 1칸에 바다 여부
 
-  public int RestGold
-  {
-    get
-    {
-      int _gold = 2;
-      if (TileInfoData.EnvirList.Contains(EnvironmentType.River)) _gold++;
-      if (TileInfoData.EnvirList.Contains(EnvironmentType.Forest)) _gold++;
-      if (TileInfoData.EnvirList.Contains(EnvironmentType.Mountain)) _gold+=2;
-      return _gold;
-    }
-  }
   public TileData Tile = null;
 
   public Settlement(SettlementType settletype)
