@@ -677,7 +677,7 @@ public class UI_map : UI_default
     if (SelectedTile.TileSettle == null)
     {
       BonusGold = SelectedTile.MovePoint>1?(int)((SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
-      BonusGold += (Route_Tile.Count > 2 && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? ConstValues.Tendency_Head_p1 : 0;
+      BonusGold += (Route_Tile.Count > ConstValues.Tendency_Head_p1_length && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? ConstValues.Tendency_Head_p1_value : 0;
     }
     SelectedCostType = StatusTypeEnum.HP;
     MoveCostText.text = "";

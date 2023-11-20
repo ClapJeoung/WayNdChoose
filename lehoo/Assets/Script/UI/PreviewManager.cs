@@ -252,8 +252,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenMovePointPreview( RectTransform rect)
   {
     Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
-    string _description =string.Format(GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION"),WNCText.GetMovepointColor(ConstValues.MPPenaltyUnit),
-      (int)(ConstValues.MPPenaltyValue*100));
+    string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION");
     if (GameManager.Instance.MyGameData.MovePoint < 0) _description +="<br>"+ GameManager.Instance.GetTextData("Movepoint_NoSupplies");
 
 
@@ -698,8 +697,8 @@ public class PreviewManager : MonoBehaviour
 
           if (PayNoGold_Text.gameObject.activeInHierarchy == false) PayNoGold_Text.gameObject.SetActive(true);
           PayNoGold_Text.text = string.Format(GameManager.Instance.GetTextData("Nogold_Text"),
-            GameManager.Instance.MyGameData.Gold,
-            _sanitypayvalue,
+             _sanitypayvalue,
+             GameManager.Instance.MyGameData.Gold,
             WNCText.PercentageColor((100 - _percent).ToString(), (100 -_percent)/100.0f));
         }//지불 골드 값이 보유 값에 비해 높을 때
         else

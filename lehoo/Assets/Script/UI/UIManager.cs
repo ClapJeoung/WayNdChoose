@@ -54,9 +54,6 @@ public class UIManager : MonoBehaviour
   public UI_Mad MadUI = null;
   public SidePanel_Quest_Cult SidePanelCultUI = null;
   public UI_map MapUI = null;
-  public UI_Tendency MyTendencyPanelUI = null;
-  public UI_skill_info MySkillUIPanelUI = null;
-  public UI_Expereince_info MyExpPanelUI = null;
   public UI_Ending EndingUI = null;
   public UI_Tutorial TutorialUI = null;
   public HighlightEffects HighlightManager = null;
@@ -1085,24 +1082,6 @@ public class UIManager : MonoBehaviour
         IsWorking = false;
         yield return null;
     }
-  public void CloseOtherStatusPanels(UI_default currentui)
-  {
-    if(currentui as UI_skill_info != null)
-    {
-      if (MyExpPanelUI.IsOpen) MyExpPanelUI.CloseUI();
-      if (MyTendencyPanelUI.IsOpen) MyTendencyPanelUI.CloseUI();
-    }
-    else if(currentui as UI_Expereince_info != null)
-    {
-      if (MySkillUIPanelUI.IsOpen) MySkillUIPanelUI.CloseUI();
-      if (MyTendencyPanelUI.IsOpen) MyTendencyPanelUI.CloseUI();
-    }
-    else if(currentui as UI_Tendency != null)
-    {
-      if (MyExpPanelUI.IsOpen) MyExpPanelUI.CloseUI();
-      if (MySkillUIPanelUI.IsOpen) MySkillUIPanelUI.CloseUI();
-    }
-  }
   public IEnumerator ChangeAlpha(CanvasGroup _group, float _targetalpha, float targettime)
   {
     LayoutRebuilder.ForceRebuildLayoutImmediate(_group.transform as RectTransform);

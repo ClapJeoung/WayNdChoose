@@ -66,16 +66,16 @@ public class UI_Main : UI_default
       switch (GameManager.Instance.GameSaveData.Turn)
       {
         case 0:
-          _turnname = GameManager.Instance.GetTextData("SPRING_NAME");
+          _turnname = GameManager.Instance.GetTextData("Spring");
           break;
         case 1:
-          _turnname = GameManager.Instance.GetTextData("SUMMER_NAME");
+          _turnname = GameManager.Instance.GetTextData("Summer");
           break;
         case 2:
-          _turnname = GameManager.Instance.GetTextData("AUTUMN_NAME");
+          _turnname = GameManager.Instance.GetTextData("Autumn");
           break;
         case 3:
-          _turnname = GameManager.Instance.GetTextData("WINTER_NAME");
+          _turnname = GameManager.Instance.GetTextData("Winter");
           break;
       }
 

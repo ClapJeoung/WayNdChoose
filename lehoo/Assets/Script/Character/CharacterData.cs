@@ -11,9 +11,6 @@ public static class ConstValues
   public const float SettlementPreviewDiscomfortIconSize_min = 35, SettlementPreviewDiscomfortIconSize_max = 90;
   public const float SettlementPreviewDiscomfortFont_min = 35, SettlementPreviewDiscomfortFont_max = 50;
 
-  public const int MPPenaltyUnit = 10;
-  public const float MPPenaltyValue = 0.1f;
-
   public const int StartSkillLevel = 1;
 
   public const int DefaultBonusGold = 1;
@@ -53,9 +50,9 @@ public static class ConstValues
   public const int MadnessSanityGen_HP = 150;
 
   public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
-    Quest_Cult_Progress_Sabbat =7,Quest_Cult_Progress_Ritual = 6;
-  public const float Qeust_Cult_EventProgress_Clear = 1.5f;
-  public const float Quest_Cult_EventProgress_Fail = 1.0f;
+    Quest_Cult_Progress_Sabbat =8,Quest_Cult_Progress_Ritual = 7;
+  public const float Qeust_Cult_EventProgress_Clear = 1.75f;
+  public const float Quest_Cult_EventProgress_Fail = 1.25f;
   public const int Quest_Cult_SabbatDiscomfort = 4, Quest_Cult_RitualMovepoint = 3;
   public const int Quest_Cult_MovepointAsSanity = 7;
   public const int Quest_Cult_CoolTime_Village = 5;
@@ -97,7 +94,7 @@ public static class ConstValues
 
   public const int Tendency_Head_m2 = 0;
   public const float Tendency_Head_m1 = 0.2f;
-  public const int Tendency_Head_p1 =2;
+  public const int Tendency_Head_p1_length =2,Tendency_Head_p1_value=2;
   public const int Tendency_Head_p2 = 5;
   //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
   //정신적 1: 정착지 출발할때마다 공짜 이동력 1
@@ -145,7 +142,7 @@ public static class ConstValues
   public const int SectorEffect_residence_discomfort = 2;
     public const int SectorEffect_marketSector = 20;
     public const int SectorEffect_temple = 2;
-  public const int SectorEffect_Library = 2;
+  public const int SectorEffect_Library = 4;
   //  public const int SectorEffect_theater = 3;
   //  public const int SectorEffect_acardemy = 10;
 
@@ -422,18 +419,17 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int movepoint)
   {
-    float _mppenalty= 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit)>0? MovePoint / ConstValues.MPPenaltyUnit:0);
+   // float _mppenalty= 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit)>0? MovePoint / ConstValues.MPPenaltyUnit:0);
     int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn)
-      * GetSanityLossModify(true))* _mppenalty);
+      * GetSanityLossModify(true)));
 
     return (GameManager.Instance.MyGameData.movepoint- movepoint)>=0 ? _value :
       (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(MovePoint- movepoint))));
   }
   public int GetMoveGoldCost(int movepoint)
   {
-    float _mppenalty = 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit) > 0 ? MovePoint / ConstValues.MPPenaltyUnit : 0);
     int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn)
-       * (ConstValues.Movecost_GoldValue)) * _mppenalty);
+       * (ConstValues.Movecost_GoldValue)));
 
     return (GameManager.Instance.MyGameData.movepoint - movepoint) >= 0 ? _value :
       (int)(_value * (1.0f + MovePointAmplified * (Mathf.Abs(MovePoint - movepoint))));
@@ -1219,11 +1215,11 @@ public class Tendency
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-               WNCText.GetGoldColor(ConstValues.Tendency_Head_p1));
+               ConstValues.Tendency_Head_p1_length, WNCText.GetGoldColor(ConstValues.Tendency_Head_p1_value));
               break;
             case 2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-               WNCText.GetGoldColor(ConstValues.Tendency_Head_p1))+"<br><br>"+ string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
+              ConstValues.Tendency_Head_p1_length, WNCText.GetGoldColor(ConstValues.Tendency_Head_p1_value)) +"<br><br>"+ string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
                WNCText.GetDiscomfortColor(ConstValues.Tendency_Head_p2));
               break;
           }
@@ -1325,4 +1321,202 @@ public class Tendency
 public class ProgressData
 {
 }//게임 외부 진척도 데이터
+public class GameJsonData
+{
+
+  public List<int> Tiledata_Rotation = new List<int>();
+  public List<int> Tiledata_BottomEnvir = new List<int>();
+  public List<int> Tiledata_TopEnvir = new List<int>();
+  public List<int> Tiledata_Landmark = new List<int>();
+  public List<int> Tiledata_BottomEnvirSprite = new List<int>();
+  public List<int> Tiledata_TopEnvirSprite = new List<int>();
+
+  public List<int> Village_Id = new List<int>();
+  public List<int> Village_Discomfort = new List<int>();
+  public List<bool> Village_Forest = new List<bool>();
+  public List<bool> Village_River = new List<bool>();
+  public List<bool> Village_Mountain = new List<bool>();
+  public List<bool> Village_Sea = new List<bool>();
+  public List<Vector2Int> Village_Tiles = new List<Vector2Int>();
+
+  public int Town_Id = 0;
+  public int Town_Discomfort = 0;
+  public bool Town_Forest = false;
+  public bool Town_River = false;
+  public bool Town_Mountain = false;
+  public bool Town_Sea = false;
+  public Vector2Int Town_Tile = new Vector2Int();
+
+  public int City_Id = 0;
+  public int City_Discomfort = 0;
+  public bool City_Forest = false;
+  public bool City_River = false;
+  public bool City_Mountain = false;
+  public bool City_Sea = false;
+  public Vector2Int City_Tile = new Vector2Int();
+
+  public Vector2 Coordinate = new Vector2();
+  public string CurrentSettlementName = "";
+  public bool FirstRest = false;
+
+  public int TotalMoveCount = 0, TotalRestCount = 0;
+  public int Year = 0;
+  public int Turn = 0;
+  public int HP = 0;
+  public int Sanity = 0;
+  public int Gold = 0;
+  public int Movepoint = 0;
+
+  public bool Madness_Conversation = false;
+  public bool Madness_Force = false;
+  public bool Madness_Wild = false;
+  public bool Madness_Intelligence = false;
+
+  public int Conversation_Level = 0;
+  public int Force_Level = 0;
+  public int Wild_Level = 0;
+  public int Intelligence_Level = 0;
+
+  public int Body_Level = 0, Body_Progress = 0;
+  public int Head_Level = 0, Head_Progress = 0;
+
+  public string LongExp_Id = "", ShortExpA_ID = "", ShortExpB_Id = "";
+  public int LongExp_Turn = 0, ShortExpA_Turn = 0, ShortExpB_Turn = 0;
+
+  public string CurrentEventID = "";
+  public bool CurrentEventSequence;
+
+  public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_All = new List<string>();
+
+  public List<string> FailEvent_None = new List<string>();//단일,성향,경험,기술 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Rational = new List<string>();//이성 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Physical = new List<string>();  //육체 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Mental = new List<string>(); //정신 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_All = new List<string>();
+
+  public int QuestType = 0;
+  public int Cult_Phase = 0;
+  public float Cult_Progress = 0;
+  public int Cult_SabbatSector = 0;
+  public Vector2 Cult_RitualTile = new Vector2();
+  public int Cult_CoolTime = 0;
+  public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
+  public List<int> Cult_Progress_RitualEventIndex = new List<int>();
+
+  public GameJsonData(GameData data)
+  {
+    foreach (var _tile in data.MyMapData.TileDatas)
+    {
+      Tiledata_Rotation.Add(_tile.Rotation);
+      Tiledata_BottomEnvir.Add((int)_tile.BottomEnvir);
+      Tiledata_TopEnvir.Add((int)_tile.TopEnvir);
+      Tiledata_Landmark.Add((int)_tile.Landmark);
+      Tiledata_BottomEnvirSprite.Add((int)_tile.BottomEnvirSprite);
+      Tiledata_TopEnvirSprite.Add((int)_tile.TopEnvirSprite);
+    }
+    foreach (var _village in data.MyMapData.Villages)
+    {
+      Village_Id.Add(_village.Index);
+      Village_Discomfort.Add(_village.Discomfort);
+      Village_Forest.Add(_village.IsForest);
+      Village_River.Add(_village.IsRiver);
+      Village_Mountain.Add(_village.IsMountain);
+      Village_Sea.Add(_village.IsSea);
+      Village_Tiles.Add(_village.Tile.Coordinate);
+    }
+
+    Town_Id = data.MyMapData.Town.Index;
+    Town_Discomfort = data.MyMapData.Town.Discomfort;
+    Town_Forest = data.MyMapData.Town.IsForest;
+    Town_River = data.MyMapData.Town.IsRiver;
+    Town_Mountain = data.MyMapData.Town.IsMountain;
+    Town_Sea = data.MyMapData.Town.IsSea;
+    Town_Tile = data.MyMapData.Town.Tile.Coordinate;
+
+    City_Id = data.MyMapData.City.Index;
+    City_Discomfort = data.MyMapData.City.Discomfort;
+    City_Forest = data.MyMapData.City.IsForest;
+    City_River = data.MyMapData.City.IsRiver;
+    City_Mountain = data.MyMapData.City.IsMountain;
+    City_Sea = data.MyMapData.City.IsSea;
+    City_Tile = data.MyMapData.City.Tile.Coordinate;
+
+    Coordinate = data.Coordinate;
+    CurrentSettlementName = data.CurrentSettlement == null ? "" : data.CurrentSettlement.OriginName;
+    FirstRest = data.FirstRest;
+
+    TotalMoveCount = data.TotalMoveCount;
+    TotalRestCount = data.TotalRestCount;
+    Year = data.Year;
+    Turn = data.Turn;
+    HP = data.HP;
+    Sanity = data.Sanity;
+    Gold = data.Gold;
+    Movepoint = data.MovePoint;
+
+    Madness_Conversation = data.Madness_Conversation;
+    Madness_Force = data.Madness_Force;
+    Madness_Wild = data.Madness_Wild;
+    Madness_Intelligence = data.Madness_Intelligence;
+
+    Conversation_Level = data.Skill_Conversation.LevelByDefault;
+    Force_Level = data.Skill_Force.LevelByDefault;
+    Wild_Level = data.Skill_Wild.LevelByDefault;
+    Intelligence_Level = data.Skill_Intelligence.LevelByDefault;
+
+    Body_Level = data.Tendency_Body.Level;
+    Body_Progress = data.Tendency_Body.Progress;
+    Head_Level = data.Tendency_Head.Level;
+    Head_Progress = data.Tendency_Head.Progress;
+
+
+    LongExp_Id = data.LongExp == null ? "" : data.LongExp.ID;
+    LongExp_Turn = data.LongExp == null ? 0 : data.LongExp.Duration;
+    ShortExpA_ID = data.ShortExp_A == null ? "" : data.ShortExp_A.ID;
+    ShortExpA_Turn = data.ShortExp_A == null ? 0 : data.ShortExp_A.Duration;
+    ShortExpB_Id = data.ShortExp_B == null ? "" : data.ShortExp_B.ID;
+    ShortExpB_Turn = data.ShortExp_B == null ? 0 : data.ShortExp_B.Duration;
+
+    CurrentEventID = data.CurrentEvent == null ? "" : data.CurrentEvent.ID;
+    CurrentEventSequence = (int)data.CurrentEventSequence == 0 ? true : false;
+
+    SuccessEvent_None = data.SuccessEvent_None;
+    SuccessEvent_Rational = data.SuccessEvent_Rational;
+    SuccessEvent_Physical = data.SuccessEvent_Physical;
+    SuccessEvent_Mental = data.SuccessEvent_Mental;
+    SuccessEvent_Material = data.SuccessEvent_Material;
+    SuccessEvent_All = data.SuccessEvent_All;
+
+    FailEvent_None = data.FailEvent_None;
+    FailEvent_Rational = data.FailEvent_Rational;
+    FailEvent_Physical = data.FailEvent_Physical;
+    FailEvent_Mental = data.FailEvent_Mental;
+    FailEvent_Material = data.FailEvent_Material;
+    FailEvent_All = data.FailEvent_All;
+
+
+    QuestType = (int)data.QuestType;
+    switch (data.QuestType)
+    {
+      case global::QuestType.Cult:
+
+        Cult_Progress = data.Quest_Cult_Progress;
+        Cult_Phase = data.Quest_Cult_Phase;
+        Cult_SabbatSector = (int)data.Cult_SabbatSector;
+        Cult_RitualTile = data.Cult_RitualTile != null ? data.Cult_RitualTile.Coordinate : Vector2.zero;
+        Cult_CoolTime = data.Cult_CoolTime;
+        Cult_Progress_SabbatEventIndex = data.Cult_Progress_SabbatEventIndex;
+        Cult_Progress_RitualEventIndex = data.Cult_Progress_RitualEventIndex;
+
+        break;
+    }
+  }
+}
+
 
