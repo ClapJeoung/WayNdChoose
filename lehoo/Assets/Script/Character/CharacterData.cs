@@ -248,7 +248,7 @@ public class GameData    //게임 진행도 데이터
                   Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
                   Debug.Log("대화 광기 발동");
                   UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Conversation);
-                  UIManager.Instance.AudioManager.PlaySFX(27, 5);
+                  UIManager.Instance.AudioManager.PlaySFX(27, "madness");
                   UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.MadnessActive,
                     UIManager.Instance.ConversationIconRect);
                   break;
@@ -263,7 +263,7 @@ public class GameData    //게임 진행도 데이터
               _expvalue = ConstValues.MadnessEffect_Intelligence;
               Debug.Log("지성 광기 발동");
               UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Intelligence);
-              UIManager.Instance.AudioManager.PlaySFX(27, 5);
+              UIManager.Instance.AudioManager.PlaySFX(27, "madness");
               UIManager.Instance.UpdateExpMad();
             }
             break;

@@ -645,7 +645,7 @@ public class UI_dialogue : UI_default
     float _time = 0.0f;
     string _str = "";
     float _stoptime = SelectionEffectTime_pay * (1.0f - targetvalue / (float)payvalue);
-
+    UIManager.Instance.AudioManager.PlaySFX(31, "payanimation");
     while (_time< _stoptime)
     {
       image.fillAmount = 1.0f - _time / SelectionEffectTime_pay;
@@ -656,17 +656,20 @@ public class UI_dialogue : UI_default
     }
     _str = targetvalue.ToString();
     tmp.text= _str;
+    UIManager.Instance.AudioManager.StopSFX("payanimation");
     yield return new WaitForSeconds(0.25f);
   }
   private IEnumerator checkanimation(Image image,float successvalue)
   {
   //  Debug.Log(successvalue);
     float _time = 0.0f;
-    while(_time< SelectionEffectTime_check * successvalue)
+    UIManager.Instance.AudioManager.PlaySFX(32, "checkanimation");
+    while (_time< SelectionEffectTime_check * successvalue)
     {
       image.fillAmount=Mathf.Lerp(1.0f,0.0f, SelectionCheckCurve.Evaluate(_time/ SelectionEffectTime_check));
       _time += Time.deltaTime;yield return null;
     }
+    UIManager.Instance.AudioManager.StopSFX("checkanimation");
     if (successvalue == 1.0f) { image.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25); }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
@@ -677,20 +680,24 @@ public class UI_dialogue : UI_default
     float _time = 0.0f;
     float _firstvalue = Mathf.Clamp(successvalue * 2.0f, 0.0f, 1.0f), _secondvalue = (successvalue - 0.5f) * 2.0f;
 
+    UIManager.Instance.AudioManager.PlaySFX(32, "checkanimation");
     while (_time < (SelectionEffectTime_check/2)* _firstvalue)
     {
       image_L.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime; yield return null;
     }
+    UIManager.Instance.AudioManager.StopSFX("checkanimation");
     if (_firstvalue == 1.0f) { image_L.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
     else { UIManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.25f); yield break; }
 
 
+    UIManager.Instance.AudioManager.PlaySFX(32, "checkanimation");
     while (_time < (SelectionEffectTime_check / 2) *_secondvalue)
     {
       image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
       _time += Time.deltaTime;yield return null;
     }
+    UIManager.Instance.AudioManager.StopSFX("checkanimation");
     if (_secondvalue == 1.0f) { image_R.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25);  }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
@@ -1038,13 +1045,13 @@ public class UI_dialogue : UI_default
     {
       Debug.Log("무력 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Force);
-      UIManager.Instance.AudioManager.PlaySFX(27, 5);
+      UIManager.Instance.AudioManager.PlaySFX(27, "madness");
       if (!MadenssEffect.enabled) MadenssEffect.enabled = true;
       IsMad = true;
     }
     else
     {
-      UIManager.Instance.AudioManager.PlaySFX(14, 3);
+      UIManager.Instance.AudioManager.PlaySFX(14, "preview");
       if (MadenssEffect.enabled) MadenssEffect.enabled = false;
       IsMad = false;
     }
@@ -1204,16 +1211,16 @@ SettlementNameText.text = CurrentSettlement.Name;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
-        UIManager.Instance.AudioManager.PlaySFX(10,1);
+        UIManager.Instance.AudioManager.PlaySFX(10,"sector");
         break;
       case SectorTypeEnum.Temple:
-        UIManager.Instance.AudioManager.PlaySFX(11,1);
+        UIManager.Instance.AudioManager.PlaySFX(11,"sector");
         break;
       case SectorTypeEnum.Marketplace:
-        UIManager.Instance.AudioManager.PlaySFX(12,1);
+        UIManager.Instance.AudioManager.PlaySFX(12,"sector");
         break;
       case SectorTypeEnum.Library:
-        UIManager.Instance.AudioManager.PlaySFX(13,1);
+        UIManager.Instance.AudioManager.PlaySFX(13,"sector");
         break;
     }
 

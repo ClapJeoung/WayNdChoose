@@ -11,11 +11,11 @@ public class ButtonSoundScript :MonoBehaviour, IPointerEnterHandler,IPointerClic
   {
     if (EnterSound == null) return;
 
-    UIManager.Instance.AudioManager.PlaySFX(EnterSound, 2);
+    UIManager.Instance.AudioManager.PlaySFX(EnterSound, "button");
   }
   public void OnPointerClick(PointerEventData eventData)
   {
     if(ClickSound == null) return;
-    UIManager.Instance.AudioManager.PlaySFX(ClickSound, 2);
+    UIManager.Instance.AudioManager.PlaySFX(ClickSound, "button");
   }
 }

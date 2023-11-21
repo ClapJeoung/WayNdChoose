@@ -351,7 +351,7 @@ public class UI_map : UI_default
     {
       Debug.Log("자연 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
-      UIManager.Instance.AudioManager.PlaySFX(27, 5);
+      UIManager.Instance.AudioManager.PlaySFX(27, "madness");
       if (!MadnessEffect.enabled) MadnessEffect.enabled = true;
       IsMad = true;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);

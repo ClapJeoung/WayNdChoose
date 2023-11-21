@@ -174,7 +174,7 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(statuslossanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform },
           Mathf.Lerp(ConstValues.StatusLossMinSacle,ConstValues.StatusLossMaxScale,(Mathf.Abs(_changedvalue)-ConstValues.StatusLoss_HP_Min)/ConstValues.StatusLoss_HP_Max)));
-        AudioManager.PlaySFX(15,4);
+        AudioManager.PlaySFX(15,"status");
       }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
@@ -206,13 +206,13 @@ public class UIManager : MonoBehaviour
       if (lastsanity < GameManager.Instance.MyGameData.Sanity)
       {
         StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
-        AudioManager.PlaySFX(16,4);
+        AudioManager.PlaySFX(16, "status");
       }
       else
       {
         StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform },
           Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Sanity_Min) / ConstValues.StatusLoss_Sanity_Max)));
-        AudioManager.PlaySFX(17,4);
+        AudioManager.PlaySFX(17, "status");
       }
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
@@ -239,7 +239,7 @@ public class UIManager : MonoBehaviour
       if (lastgold < GameManager.Instance.MyGameData.Gold)
       {
         StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
-        AudioManager.PlaySFX(18,4);
+        AudioManager.PlaySFX(18,"status");
       }
       else
       {

@@ -143,7 +143,7 @@ public class PreviewManager : MonoBehaviour
   
     CurrentPreview.GetComponent<CanvasGroup>().alpha = 1.0f;
 
-    UIManager.Instance.AudioManager.PlaySFX(0, 3);
+    UIManager.Instance.AudioManager.PlaySFX(0, "preview");
   }
   private void OpenPreviewPanel(GameObject panel,RectTransform rect)
   {
@@ -156,7 +156,7 @@ public class PreviewManager : MonoBehaviour
 
     CurrentPreview.GetComponent<CanvasGroup>().alpha = 1.0f;
   
-    UIManager.Instance.AudioManager.PlaySFX(0,3);
+    UIManager.Instance.AudioManager.PlaySFX(0,"preview");
   }
   public void OpenTurnPreview(RectTransform rect)
   {

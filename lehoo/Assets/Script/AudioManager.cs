@@ -36,7 +36,11 @@ SuccessSFX,
 FailSFX,
 MadnessSFX,
 CultSFX,
-Hungry}
+Hungry,
+Movement,
+PaysanimationSFX,
+CheckAnimationSFX
+}
 public class AudioManager : MonoBehaviour
 {
   private void Start()
@@ -54,7 +58,7 @@ public class AudioManager : MonoBehaviour
       {
         var _sources = SFXAudio.GetComponents<AudioSource>().ToList();
         for (int i = 0; i < _sources.Count; i++)
-          sfxaudios.Add(new AudioChanel(_sources[i], i));
+          sfxaudios.Add(new AudioChanel(_sources[i], ""));
       }
       return sfxaudios;
     }
@@ -122,7 +126,7 @@ public class AudioManager : MonoBehaviour
       if (audio.Audio.isPlaying) continue;
       audio.Audio.clip = SFXs[index];
       audio.Audio.Play();
-      audio.Channel = 0;
+      audio.Channel = "";
       break;
     }
   }
@@ -131,7 +135,7 @@ public class AudioManager : MonoBehaviour
   /// </summary>
   /// <param name="index"></param>
   /// <param name="chanel"></param>
-  public void PlaySFX(int index,int chanel)
+  public void PlaySFX(int index,string chanel)
   {
     foreach (var audio in SFXAudios)
     {
@@ -171,7 +175,7 @@ public class AudioManager : MonoBehaviour
       if (audio.Audio.isPlaying) continue;
       audio.Audio.clip = clip;
       audio.Audio.Play();
-      audio.Channel = 0;
+      audio.Channel = "";
       break;
     }
   }
@@ -180,7 +184,7 @@ public class AudioManager : MonoBehaviour
   /// </summary>
   /// <param name="index"></param>
   /// <param name="chanel"></param>
-  public void PlaySFX(AudioClip clip, int chanel)
+  public void PlaySFX(AudioClip clip, string chanel)
   {
     foreach (var audio in SFXAudios)
     {
@@ -212,6 +216,17 @@ public class AudioManager : MonoBehaviour
       }
     }
   }
+  public void StopSFX(string chanel)
+  {
+    foreach (var audio in SFXAudios)
+    {
+      if (audio.Audio.isPlaying && audio.Channel == chanel)
+      {
+        audio.Audio.Stop();
+        return;
+      }
+    }
+  }
   private AudioChanel CurrentWalkingChanel = null;
   private bool Walking = true;
   public void PlayWalking()
@@ -229,7 +244,7 @@ public class AudioManager : MonoBehaviour
       CurrentWalkingChanel=audio;
     }
     AudioClip _clip= WalkingSFXs[Random.Range(0, WalkingSFXs.Count)];
-    CurrentWalkingChanel.Channel = 0;
+    CurrentWalkingChanel.Channel = "walking";
     CurrentWalkingChanel.Audio.clip= _clip;
     CurrentWalkingChanel.Audio.Play();
     while (true)
@@ -256,8 +271,8 @@ public class AudioManager : MonoBehaviour
 public class AudioChanel
 {
   public AudioSource Audio = null;
-  public int Channel = 0;
-  public AudioChanel(AudioSource audio,int chanel)
+  public string Channel = "";
+  public AudioChanel(AudioSource audio,string chanel)
   {
     Audio = audio;
     Channel = chanel;
