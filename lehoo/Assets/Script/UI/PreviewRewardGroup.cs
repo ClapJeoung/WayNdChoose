@@ -83,6 +83,8 @@ public class PreviewRewardGroup : MonoBehaviour
       }
     }
 
+    LayoutRebuilder.ForceRebuildLayoutImmediate(RewardObj.transform.parent.transform as RectTransform);
+
     return _reward  || _penalty ;
 
   }

@@ -226,6 +226,7 @@ public class UI_QuestWolf : UI_default
 
     if (CurrentPrologueIndex == 8)                  //프롤로그 종료할 때 - A 비활성화
     {
+      if (PlayerPrefs.GetInt("Tutorial_Cult") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Cult();
       MoveRectForButton(0);
       UIManager.Instance.MapButton.SetCurrentUI(this,MapbuttonPos,0.0f);
       StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.4f));

@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.IO;
+using System.Numerics;
+using UnityEngine.SceneManagement;
 
 public class UI_Main : UI_default
 {
@@ -51,6 +53,14 @@ public class UI_Main : UI_default
   public float MainUICloseTime = 0.2f;
   private WaitForSeconds LittleWait = new WaitForSeconds(0.2f);
   private WaitForSeconds Wait = new WaitForSeconds(0.3f);
+  [SerializeField] private CanvasGroup LanguageGroup = null;
+  public void SetLanguage(int index)
+  {
+    if (PlayerPrefs.GetInt("LanguageIndex") == index) return;
+
+    PlayerPrefs.SetInt("LanguageIndex", index);
+    UnityEngine.SceneManagement.SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+  }
   public void SetupMain()
   {
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
@@ -164,11 +174,15 @@ public class UI_Main : UI_default
   }
   public void TutorialButton()
   {
-    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement",0) == 1&&PlayerPrefs.GetInt("Tutorial_Event",0)==1)
+    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && 
+      PlayerPrefs.GetInt("Tutorial_Settlement",0) == 1&&
+      PlayerPrefs.GetInt("Tutorial_Event",0)==1&&
+      PlayerPrefs.GetInt("Tutorial_Cult", 0)==1)
     {
       PlayerPrefs.SetInt("Tutorial_Map", 0);
       PlayerPrefs.SetInt("Tutorial_Settlement", 0);
       PlayerPrefs.SetInt("Tutorial_Event", 0);
+      PlayerPrefs.SetInt("Tutorial_Cult", 0);
       TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOff");
     }
     else
@@ -176,6 +190,7 @@ public class UI_Main : UI_default
       PlayerPrefs.SetInt("Tutorial_Map", 1);
       PlayerPrefs.SetInt("Tutorial_Settlement", 1);
       PlayerPrefs.SetInt("Tutorial_Event", 1);
+      PlayerPrefs.SetInt("Tutorial_Cult", 1);
       TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOn");
     }
   }
@@ -221,6 +236,7 @@ public class UI_Main : UI_default
     }
     StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(LanguageGroup,1.0f, MainUIOpenTime));
     yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
   }
   private IEnumerator closemain()
@@ -237,6 +253,7 @@ public class UI_Main : UI_default
     }
     StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 0.0f, MainUICloseTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(LanguageGroup, 0.0f, MainUICloseTime));
 
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("newgame").Rect, GetPanelRect("newgame").InsidePos, GetPanelRect("newgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;

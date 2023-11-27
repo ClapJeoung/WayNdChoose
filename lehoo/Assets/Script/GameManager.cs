@@ -137,6 +137,7 @@ public class GameManager : MonoBehaviour
       Textdata _textdata = new Textdata();
       _textdata.ID = _data[0];
       _textdata.kor = _data[1].Contains("\r")?_data[1].Replace("\r",""):_data[1];
+      _textdata.en = _data[2].Contains("\r") ? _data[2].Replace("\r", "") : _data[2];
       TextDatas.Add(_textdata);
     }
     print($"텍스트 딕셔너리 업데이트 완료\n{_previewcount}개 -> {TextDatas.Count}개");
@@ -800,11 +801,12 @@ public class GameManager : MonoBehaviour
   {
     public string ID = "";
     public string kor = "";
+    public string en = "";
       public string Text
     {
       get
       {
-        int _languagecode = PlayerPrefs.GetInt("LanguageINdex");
+        int _languagecode = PlayerPrefs.GetInt("LanguageIndex");
         switch ((SystemLanguage)_languagecode)
         {
           case SystemLanguage.Afrikaans:
@@ -828,7 +830,7 @@ public class GameManager : MonoBehaviour
           case SystemLanguage.Dutch:
             break;
           case SystemLanguage.English:
-            break;
+            return en;
           case SystemLanguage.Estonian:
             break;
           case SystemLanguage.Faroese:

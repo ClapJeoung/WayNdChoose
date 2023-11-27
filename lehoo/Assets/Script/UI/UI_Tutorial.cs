@@ -7,20 +7,36 @@ using UnityEngine.UI;
 
 public class UI_Tutorial : MonoBehaviour
 {
+  public CanvasGroup Tutorial_Cult = null;
+  public TextMeshProUGUI Cult_Hello = null;
+  public TextMeshProUGUI Cult_Progress = null;
+  public TextMeshProUGUI Cult_Info = null;
+  public TextMeshProUGUI Cult_Phase = null;
+  public void OpenTutorial_Cult()
+  {
+    var _text = GameManager.Instance.GetTextData("Tutorial_Cult").Split('@');
+    Cult_Hello.text = _text[0];
+    Cult_Progress.text = _text[1];
+    Cult_Info.text = _text[2];
+    Cult_Phase.text = _text[3];
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Tutorial_Cult, 1.0f, 0.5f));
+  }
+  public void CloseTutorial_Cult()
+  {
+    StartCoroutine(UIManager.Instance.ChangeAlpha(Tutorial_Cult, 0.0f, 0.3f));
+    PlayerPrefs.SetInt("Tutorial_Cult", 1);
+  }
+  [Space(10)]
   public CanvasGroup Tutorial_Map = null;
   public TextMeshProUGUI Map_Hello = null;
-  public TextMeshProUGUI Map_Progress = null;
-  public TextMeshProUGUI Map_CultInfo = null;
   public TextMeshProUGUI Map_MoveCost = null;
   public TextMeshProUGUI Map_Settlement=null;
   public void OpenTutorial_Map()
   {
     var _text = GameManager.Instance.GetTextData("Tutorial_Map").Split('@');
     Map_Hello.text = _text[0];
-    Map_Progress.text = _text[1];
-    Map_CultInfo.text= _text[2];
-    Map_MoveCost.text = string.Format(_text[3],ConstValues.Movecost_GoldValue*100);
-    Map_Settlement.text = _text[4];
+    Map_MoveCost.text = string.Format(_text[1],ConstValues.Movecost_GoldValue*100);
+    Map_Settlement.text = _text[2];
     StartCoroutine(UIManager.Instance.ChangeAlpha(Tutorial_Map, 1.0f, 0.5f));
   }
   public void CloseTutorial_Map()
