@@ -147,6 +147,26 @@ public class Settlement
 }
 public class MapData
 {
+  public static int GetMinLength(TileData starttile, List<Settlement> settlements)
+  {
+    int _min = 100;
+    foreach (var settlement in settlements)
+    {
+      int _length= GetLength(starttile, settlement.Tile).Count;
+      if(_length<_min) _min = _length;
+    }
+    return _min;
+  }
+  public static int GetMaxLength(TileData starttile, List<Settlement> settlements)
+  {
+    int _max = -1;
+    foreach (var settlement in settlements)
+    {
+      int _length = GetLength(starttile, settlement.Tile).Count;
+      if (_length > _max) _max = _length;
+    }
+    return _max;
+  }
   public static List<HexDir> GetLength(TileData start, TileData end)
   {
 
@@ -157,22 +177,11 @@ public class MapData
 
     return _distance.GetDir;
   }
-  public List<HexDir> GetLength(Vector2 start, Vector2 end)
-  {
-    return MapData.GetLength(Tile(start),Tile(end));
-  }
   public List<HexDir> GetLength(Vector2Int start, Vector2Int end)
   {
     return MapData.GetLength(Tile(start),Tile(end));
   }
-  public int CircleHexCount(int range)
-  {
-    List<Vector2Int> _center=new List<Vector2Int>();
-    _center.Add(Vector2Int.zero);
-    var _coors = GetAroundCoor(_center, range);
-    return _coors.Count;
-  }
-  public Vector2Int GetNextCoor(Vector2Int coor,HexDir dir)
+  public Vector2Int GetNextCoor(Vector2Int coor,HexDir dir,bool limitgrid)
   {
     int  _y=coor.y%2;
     Vector2Int _mod = Vector2Int.zero;
@@ -213,29 +222,39 @@ public class MapData
       }
     }
     Vector2Int _temp = coor + _mod;
+    if (!limitgrid) return _temp;
+
     if (_temp.x < 0) _temp.x = 0;
     if(_temp.y < 0) _temp.y = 0;
     if (_temp.x >= ConstValues.MapSize) _temp.x = ConstValues.MapSize - 1;
     if(_temp.y>=ConstValues.MapSize)_temp.y=ConstValues.MapSize - 1;
     return _temp;
   }
-  public Vector2Int GetNextCoor(TileData tile, HexDir dir)
+  public Vector2Int GetNextCoor(TileData tile, HexDir dir,bool limitgrid)
   {
-    return GetNextCoor(tile.Coordinate, dir);
+    return GetNextCoor(tile.Coordinate, dir, limitgrid);
   }
   public TileData GetNextTile(Vector2Int coor,HexDir dir)
   {
-    var _coor=GetNextCoor(coor,dir);
+    var _coor=GetNextCoor(coor,dir,true);
     return TileDatas[_coor.x,_coor.y];
   }
   public TileData GetNextTile(TileData tile, HexDir dir)
   {
-    var _coor = GetNextCoor(tile.Coordinate, dir);
+    var _coor = GetNextCoor(tile.Coordinate, dir,true);
     return TileDatas[_coor.x, _coor.y];
   }
   public List<TileData> GetAroundTile(TileData tile, int range)
   {
-    List<Vector2Int> _coors = GetAroundCoor(tile.Coordinate, range);
+    List<Vector2Int> _coors=new List<Vector2Int>();
+    try
+    {
+     _coors   = GetAroundCoor(tile.Coordinate, range);
+    }
+    catch(System.Exception e)
+    {
+      Debug.Log(tile+" "+ range);
+    }
     List<TileData> _tiles = new List<TileData>();
     foreach (var _coor in _coors) _tiles.Add(TileDatas[_coor.x, _coor.y]);
     return _tiles;
@@ -254,13 +273,6 @@ public class MapData
     foreach (var _coor in _coors) _tiles.Add(TileDatas[_coor.x, _coor.y]);
     return _tiles;
   }
-  public List<TileData> GetAroundTile(List<Vector2Int> coors,int range)
-  {
-    List<Vector2Int> _coors = GetAroundCoor(coors, range);
-    List<TileData> _tiles = new List<TileData>();
-    foreach(var _coor in _coors)_tiles.Add(TileDatas[_coor.x,_coor.y]);
-    return _tiles;
-  }
   public List<TileData> GetAroundTile(List<TileData> tiles, int range)
   {
     List<Vector2Int> _coors = new List<Vector2Int>();
@@ -270,38 +282,72 @@ public class MapData
     foreach (var _coor in _aroundcoors) _tiles.Add(TileDatas[_coor.x, _coor.y]);
     return _tiles;
   }
+  private Dictionary<int, List<Vector2Int>> AroundCoors = new Dictionary<int, List<Vector2Int>>();
   public List<Vector2Int> GetAroundCoor(Vector2Int coor, int range)
   {
-    List<Vector2Int> _targetcoors =new List<Vector2Int> { coor };
-
-    for (int i = 0; i < range; i++)
+    if (!AroundCoors.ContainsKey(range))
     {
-      List<Vector2Int> _temp = new List<Vector2Int>();
+      List<Vector2Int> _newrange = new List<Vector2Int> { Vector2Int.zero };
 
-      foreach (var _coor in _targetcoors)
-        for (int j = 0; j < 6; j++) _temp.Add(GetNextCoor(_coor, (HexDir)j));
+      for (int i = 0; i < range; i++)
+      {
+        List<Vector2Int> _templist = new List<Vector2Int>();
 
-      foreach (var _coor in _temp)
-        if (!_targetcoors.Contains(_coor)) _targetcoors.Add(_coor);
+        foreach (var _coor in _newrange)
+          for (int j = 0; j < 6; j++) _templist.Add(GetNextCoor(_coor, (HexDir)j,false));
+
+        foreach (var _coor in _templist)
+          if (!_newrange.Contains(_coor)) _newrange.Add(_coor);
+      }
+      AroundCoors.Add(range,_newrange);
     }
-    return _targetcoors;
+
+    Vector2Int _temp = Vector2Int.zero;
+    List<Vector2Int> _coors= new List<Vector2Int>();
+    foreach (var _offset in AroundCoors[range])
+    {
+      _temp = coor + _offset;
+      if (_temp.x < 0|| _temp.y < 0|| _temp.x >= ConstValues.MapSize|| _temp.y >= ConstValues.MapSize) continue;
+
+      _coors.Add(_temp);
+    }
+    return _coors;
   }
-  public List<Vector2Int> GetAroundCoor(List<Vector2Int> coor,int range)
+  public List<Vector2Int> GetAroundCoor(List<Vector2Int> coors,int range)
   {
-    List<Vector2Int> _targetcoors = new List<Vector2Int>();
-    foreach (var _coor in coor) _targetcoors.Add(_coor);
-
-    for (int i = 0; i < range; i++)
+    if (!AroundCoors.ContainsKey(range))
     {
-      List<Vector2Int> _temp = new List<Vector2Int>();
+      List<Vector2Int> _newrange = new List<Vector2Int> { Vector2Int.zero };
 
-      foreach (var _coor in _targetcoors)
-        for (int j = 0; j < 6; j++) _temp.Add(GetNextCoor(_coor, (HexDir)j));
+      for (int i = 0; i < range; i++)
+      {
+        List<Vector2Int> _templist = new List<Vector2Int>();
 
-      foreach (var _coor in _temp)
-        if (!_targetcoors.Contains(_coor)) _targetcoors.Add(_coor);
+        foreach (var _coor in _newrange)
+          for (int j = 0; j < 6; j++) _templist.Add(GetNextCoor(_coor, (HexDir)j, false));
+
+        foreach (var _coor in _templist)
+          if (!_newrange.Contains(_coor)) _newrange.Add(_coor);
+      }
+      AroundCoors.Add(range, _newrange);
     }
-    return _targetcoors;
+
+
+    List<Vector2Int> _result = new List<Vector2Int>();
+    Vector2Int _temp = Vector2Int.zero;
+
+    foreach (var _coordinate in coors)
+    {
+      foreach (var _offset in AroundCoors[range])
+      {
+        _temp = _coordinate + _offset;
+        if (_temp.x < 0 || _temp.y < 0 || _temp.x >= ConstValues.MapSize || _temp.y >= ConstValues.MapSize) continue;
+
+        if (!_result.Contains(_temp)) _result.Add(_temp);
+      }
+    }
+
+    return _result;
   }
   public TileData Tile(Vector2Int coor) { return TileDatas[coor.x,coor.y]; }
   public TileData Tile(Vector3 coor) { return TileDatas[(int)coor.x, (int)coor.y]; }
@@ -356,11 +402,9 @@ public class MapData
     while (true)
     {
       TileData _next = GetNextTile(_lines[_lines.Count - 1], dir);
+      if (_lines.Count > 3 && (_next.BottomEnvir==BottomEnvirType.Sea)) break;
+
       _lines.Add(_next);
-      if (_lines.Count>3&&( _next.BottomEnvir == BottomEnvirType.Beach || _next.BottomEnvir == BottomEnvirType.RiverBeach))
-      {
-        break;
-      }
     }
 
     return _lines;
@@ -489,8 +533,8 @@ public class MapData
 
   public TileData[,] TileDatas;
   public List<Settlement> Villages = new List<Settlement>();
-  public Settlement Town = null;
-  public Settlement City = null;
+  public List<Settlement> Towns = new List<Settlement>();
+  public List<Settlement> Citys = new List<Settlement>();
   public List<Settlement> AllSettles = new List<Settlement>();
 
 }//게임 상에서 꺼내 쓰기 편리하게 변환한 지도 데이터

@@ -263,26 +263,26 @@ public class UIManager : MonoBehaviour
   {
     if (lastmovepoint != -1)
     {
-      int _changedvalue = GameManager.Instance.MyGameData.MovePoint - lastmovepoint;
+      int _changedvalue = GameManager.Instance.MyGameData.Supply - lastmovepoint;
    //   if (_changedvalue != 0)
     //    StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
-      if (lastmovepoint < GameManager.Instance.MyGameData.MovePoint) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
+      if (lastmovepoint < GameManager.Instance.MyGameData.Supply) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
       else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform},
         Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_MP_Min) / ConstValues.StatusLoss_MP_Max)));
 
       HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
     }
 
-    MovePoint_Icon.sprite = GameManager.Instance.MyGameData.MovePoint >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
+    MovePoint_Icon.sprite = GameManager.Instance.MyGameData.Supply >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
 
   //  Debug.Log("이동력 수치 업데이트");
-    if (lastmovepoint == 0 && GameManager.Instance.MyGameData.MovePoint == 0) return;
+    if (lastmovepoint == 0 && GameManager.Instance.MyGameData.Supply == 0) return;
 
     MovepointIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max,
-      (GameManager.Instance.MyGameData.MovePoint - ConstValues.MovePointMin) / (float)(ConstValues.MovePointMax-ConstValues.MovePointMin));
-    MovePointText.text = GameManager.Instance.MyGameData.MovePoint.ToString();
+      (GameManager.Instance.MyGameData.Supply - ConstValues.SupplyIconMinCount) / (float)(ConstValues.SupplyIconMaxCount-ConstValues.SupplyIconMinCount));
+    MovePointText.text = GameManager.Instance.MyGameData.Supply.ToString();
 
-    lastmovepoint = GameManager.Instance.MyGameData.MovePoint;
+    lastmovepoint = GameManager.Instance.MyGameData.Supply;
   }
   [Space(10)]
   [SerializeField] private float IconMoveTime_using = 1.0f;
@@ -600,7 +600,7 @@ public class UIManager : MonoBehaviour
   }
   public void SetRitualFail()
   {
-    StartCoroutine(SetIconEffect_movepoint_ritualfail(CultSidepanelOpenpos,ConstValues.Quest_Cult_RitualMovepoint));
+    StartCoroutine(SetIconEffect_movepoint_ritualfail(CultSidepanelOpenpos,ConstValues.Quest_Cult_Ritual_PenaltySupply));
   }
   public IEnumerator SetIconEffect_movepoint_ritualfail(RectTransform endrect,int count)
   {

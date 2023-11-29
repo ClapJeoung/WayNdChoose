@@ -39,7 +39,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   [SerializeField] private AnimationCurve SabbatFailDisappearCurve = null;
   public void SetSabbatFail()
   {
-    SabbatFailText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), ConstValues.Quest_Cult_SabbatDiscomfort);
+    SabbatFailText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort);
     StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatFailGroup, 0.0f, SabbatFailDisappearTime, SabbatFailDisappearCurve));
     StartCoroutine(sabbatscale());
   }

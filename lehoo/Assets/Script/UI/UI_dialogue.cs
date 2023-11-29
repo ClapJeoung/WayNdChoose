@@ -1146,7 +1146,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue=IsMad? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Temple:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
@@ -1154,7 +1154,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Marketplace:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
@@ -1162,7 +1162,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost =IsMad? GameManager.Instance.MyGameData.RestCost_Gold: Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Library:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
@@ -1170,7 +1170,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
     }
 
@@ -1242,7 +1242,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = IsMad ? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Temple:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
@@ -1250,7 +1250,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Marketplace:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
@@ -1258,7 +1258,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Gold : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Library:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
@@ -1266,7 +1266,7 @@ SettlementNameText.text = CurrentSettlement.Name;
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_MovePoint;
+        MovePointValue = ConstValues.Rest_Supply;
         break;
     }
 
@@ -1400,8 +1400,8 @@ SettlementNameText.text = CurrentSettlement.Name;
         }
         break;
     }
-   if(GameManager.Instance.MyGameData.MovePoint < 0) GameManager.Instance.MyGameData.MovePoint = MovePointValue;
-   else GameManager.Instance.MyGameData.MovePoint += MovePointValue;
+   if(GameManager.Instance.MyGameData.Supply < 0) GameManager.Instance.MyGameData.Supply = MovePointValue;
+   else GameManager.Instance.MyGameData.Supply += MovePointValue;
     yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint_gain(SettlementIcon.rectTransform, MovePointValue));
     GameManager.Instance.MyGameData.ApplySectorEffect(IsMad? SectorTypeEnum.NULL: SelectedSector);
 

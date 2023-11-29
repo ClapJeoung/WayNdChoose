@@ -58,6 +58,14 @@ public class GameManager : MonoBehaviour
     if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName))
     {
       GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
+      try
+      {
+        MyGameData = new GameData(GameSaveData);
+      }
+      catch (Exception e)
+      {
+        if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName)) System.IO.File.Delete(Application.persistentDataPath + "/" + GameDataName);
+      }
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
@@ -592,9 +600,9 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
     if (Input.GetKeyDown(KeyCode.Backspace))
     {
-   //   MyGameData = new GameData(QuestType.Cult);
-    //  CreateNewMap();
-
+      //   MyGameData = new GameData(QuestType.Cult);
+      //  CreateNewMap();
+      Debug.Log(MyGameData.CurrentEvent != null);
     }
     if (Input.GetKeyDown(KeyCode.T)) UIManager.Instance.AudioManager.PlayBGM();
 #endif
@@ -688,10 +696,9 @@ public class GameManager : MonoBehaviour
   }
   private IEnumerator loadgame()
   {
-    MyGameData = new GameData(GameSaveData);
-
     //    Debug.Log(JsonUtility.ToJson(GameSaveData));
     //    Debug.Log(JsonUtility.ToJson(new GameJsonData(new GameData(new GameJsonData(MyGameData)))));
+    MyGameData = new GameData(GameSaveData);
 
     yield return StartCoroutine(UIManager.Instance.MapUI.MapCreater.MakeTilemap());
     UIManager.Instance.UpdateMap_SetPlayerPos();
@@ -772,7 +779,7 @@ public class GameManager : MonoBehaviour
   }
   public void EnterSettlement(Settlement targetsettlement)
   {
-    if (MyGameData.MovePoint < 0) MyGameData.MovePoint = 0;
+    if (MyGameData.Supply < 0) MyGameData.Supply = 0;
     MyGameData.CurrentEvent = null;
     MyGameData.CurrentSettlement=targetsettlement;
 

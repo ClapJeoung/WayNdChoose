@@ -8,18 +8,22 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.6f;
+  public const float FogAlphaChangeTime = 0.2f;
+  public const float FogScaleChangeTime = 0.4f;
+
   public const float SettlementPreviewDiscomfortIconSize_min = 35, SettlementPreviewDiscomfortIconSize_max = 90;
   public const float SettlementPreviewDiscomfortFont_min = 35, SettlementPreviewDiscomfortFont_max = 50;
 
   public const int StartSkillLevel = 1;
 
   public const int DefaultBonusGold = 1;
-  public const int GoldPerMovepoint = 1;
-  public const int StartMovePoint = 4;
-  public const int MovePoint_Sea = 4;
-  public const int MovePoint_Moutain = 2;
-  public const int MovePoint_River = 1, MovePoint_Forest = 1;
-  public const int MovePoint_Default = 1;
+  public const int GoldPerSupplies = 1;
+  public const int StartSupplies = 4;
+  public const int Supply_Sea = 4;
+  public const int Supply_Moutain = 2;
+  public const int Supply_River = 1, Supply_Forest = 1;
+  public const int Supply_Default = 1;
 
   public const float StatusLossMinSacle = 1.15f, StatusLossMaxScale = 1.4f;
   public const float StatusLoss_HP_Min = 6, StatusLoss_HP_Max = 30;
@@ -36,7 +40,7 @@ public static class ConstValues
   public const float MaxDiscomfortForUI = 20;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
-  public const int MovePointMin = -8, MovePointMax = 15;
+  public const int SupplyIconMinCount = -8, SupplyIconMaxCount = 30;
 
   public const int MadnessEffect_Conversation = 4;
   public const int MadnessEffect_Force = 4;
@@ -53,18 +57,18 @@ public static class ConstValues
     Quest_Cult_Progress_Sabbat =8,Quest_Cult_Progress_Ritual = 7;
   public const float Qeust_Cult_EventProgress_Clear = 1.75f;
   public const float Quest_Cult_EventProgress_Fail = 1.25f;
-  public const int Quest_Cult_SabbatDiscomfort = 4, Quest_Cult_RitualMovepoint = 3;
-  public const int Quest_Cult_MovepointAsSanity = 7;
-  public const int Quest_Cult_CoolTime_Village = 5;
-  public const int Quest_Cult_CoolTime_Town = 4;
-  public const int Quest_Cult_CoolTime_City = 5;
-  public const int Quest_Cult_CoolTime_Sabbat = 5;
-  public const int Quest_Cult_CoolTime_Ritual = 4;
-  public const float Quest_Cult_LengthValue = 2.5f;
+  public const int Quest_Cult_Sabbat_PenaltyDiscomfort = 4, Quest_Cult_Ritual_PenaltySupply = 3;
+  public const int Quest_Cult_SupplyAsSanity = 7;
+  public const int Quest_Cult_CoolTime_Village =7;
+  public const int Quest_Cult_CoolTime_Town = 6;
+  public const int Quest_Cult_CoolTime_City = 7;
+  public const int Quest_Cult_CoolTime_Sabbat = 7;
+  public const int Quest_Cult_CoolTime_Ritual = 6;
+  public const float Quest_Cult_LengthValue = 3.5f;
 
 
-  public const int Rest_MovePoint = 7;
-  public const int Rest_Discomfort = 6;
+  public const int Rest_Supply = 12;
+  public const int Rest_Discomfort = 10;
   public const float MoveRestCost_Default_Min = 9, MoveRestCost_Default_Max = 25;
   public const float Movecost_GoldValue = 0.5f;
   public const int RestSanityRestore = 15;
@@ -76,14 +80,18 @@ public static class ConstValues
                    EventPer_Sector = 4, EventPer_NoSector = 1,
                    EventPer_Quest = 1, EventPer_Follow_Ev = 10, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
-
-  public const int MapSize = 21;
+  public const int ViewRange = 3;
+  public const int MapSize = 30;
+  public const int LandRadius = 10;
   public const int MinRiverCount = 5;
-  public const float Ratio_highland = 0.2f;
-  public const float Ratio_forest = 0.25f;
+//  public const float Ratio_highland = 0.2f;
+  public const float Ratio_forest = 0.2f;
   public const int Count_mountain = 3;
-  public const int LandRadius = 6;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
+  public const float SettlementLength_min = 0.3f;
+  public const float SettlementLength_Village = 0.5f;
+  public const float SettlementLength_Town = 0.7f;
+  public const float SettlementLength_City = 1.0f;
 
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
@@ -96,10 +104,10 @@ public static class ConstValues
   public const float Tendency_Head_m1 = 0.2f;
   public const int Tendency_Head_p1_length =2,Tendency_Head_p1_value=2;
   public const int Tendency_Head_p2 = 5;
-  //정신적 2: 이동력 오링났을때 배율 3.0 -> 1.5
-  //정신적 1: 정착지 출발할때마다 공짜 이동력 1
-  //물질적 1: 정착지 출발할때마다 현재 정착지 불쾌 -2
-  //물질적 2: 매년 봄 모든 정착지에 불쾌 -2
+  //정신적 2: 첫 휴식 불쾌 0
+  //정신적 1: 불쾌 페널티 값 감소
+  //물질적 1: length칸 이동 시 value골드 추가
+  //물질적 2: 정착지에서 떠나면 보급 줌
 
   public const int ConversationByTendency_m2 = 2, ConversationByTendency_m1 = 1,
     IntelligenceByTendency_m2 = 2, IntelligenceByTendency_m1 = 1,
@@ -286,26 +294,28 @@ public class GameData    //게임 진행도 데이터
               switch (Quest_Cult_Phase)
               {
                 case 0:
-                  Cult_CoolTime = (int)(MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
+                  Cult_CoolTime = (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns) +
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns))) / 2 / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
                   Quest_Cult_Phase = 1;
-                  UIManager.Instance.MapUI.FirstHighlight = true;
+                  UIManager.Instance.MapUI.DoHighlight = true;
                   break;
                 case 1:
-                  Cult_CoolTime = (int)(MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
+                  Cult_CoolTime = (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys) +
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
                   Quest_Cult_Phase = 2;
-                  UIManager.Instance.MapUI.FirstHighlight = true;
+                  UIManager.Instance.MapUI.DoHighlight = true;
                   break;
                 case 2:
                   SetSabbat();
                   break;
                 case 3:
                   for (int i = 0; i < MyMapData.AllSettles.Count; i++)
-                    MyMapData.AllSettles[i].Discomfort += ConstValues.Quest_Cult_SabbatDiscomfort;
+                    MyMapData.AllSettles[i].Discomfort += ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort;
                   UIManager.Instance.SidePanelCultUI.SetSabbatFail();
                   SetRitual();
                   break;
                 case 4:
-                  MovePoint -= ConstValues.Quest_Cult_RitualMovepoint;
+                  Supply -= ConstValues.Quest_Cult_Ritual_PenaltySupply;
                   UIManager.Instance.SetRitualFail();
 
                   SetSabbat();
@@ -423,16 +433,16 @@ public class GameData    //게임 진행도 데이터
     int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn)
       * GetSanityLossModify(true)));
 
-    return (GameManager.Instance.MyGameData.movepoint- movepoint)>=0 ? _value :
-      (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(MovePoint- movepoint))));
+    return (GameManager.Instance.MyGameData.supply- movepoint)>=0 ? _value :
+      (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(Supply- movepoint))));
   }
   public int GetMoveGoldCost(int movepoint)
   {
     int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn)
        * (ConstValues.Movecost_GoldValue)));
 
-    return (GameManager.Instance.MyGameData.movepoint - movepoint) >= 0 ? _value :
-      (int)(_value * (1.0f + MovePointAmplified * (Mathf.Abs(MovePoint - movepoint))));
+    return (GameManager.Instance.MyGameData.supply - movepoint) >= 0 ? _value :
+      (int)(_value * (1.0f + MovePointAmplified * (Mathf.Abs(Supply - movepoint))));
   }
   public float MovePointAmplified
   {
@@ -519,13 +529,13 @@ public class GameData    //게임 진행도 데이터
     }
   }
 
-  private int movepoint = 0;
-  public int MovePoint
+  private int supply = 0;
+  public int Supply
   {
-    get { return movepoint; }
+    get { return supply; }
     set
     {
-      movepoint = value;
+      supply = value;
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateMovePointText();
     }
   }
@@ -643,31 +653,29 @@ public class GameData    //게임 진행도 데이터
   public void SetSabbat()
   {
     Quest_Cult_Phase = 3;
-    int _village_0 = 0, _village_1 = 0, _town = 0, _city = 0;
+    int _village = 0, _town = 0, _city = 0;
     if (CurrentSettlement == null)
     {
       Dictionary<int,int> _settlements= new Dictionary<int,int>();
-      _village_0 = MapData.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count;
-      _village_1 = MapData.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count;
-      _town = MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count;
-      _city = MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count;
-      _settlements.Add(0, _village_0);
-      _settlements.Add(1,_village_1);
-      _settlements.Add(2,_town);
-      _settlements.Add(3,_city);
+      _village = (MapData.GetMinLength(CurrentTile, MyMapData.Villages)+MapData.GetMaxLength(CurrentTile,MyMapData.Villages))/2;
+      _town = (MapData.GetMinLength(CurrentTile, MyMapData.Towns)+ MapData.GetMaxLength(CurrentTile, MyMapData.Towns))/2;
+      _city = (MapData.GetMinLength(CurrentTile, MyMapData.Citys)+ MapData.GetMaxLength(CurrentTile, MyMapData.Citys))/2;
+      _settlements.Add(0, _village);
+      _settlements.Add(1,_town);
+      _settlements.Add(2,_city);
     List<int> _indexes= new List<int>();
       foreach (var _data in _settlements) for (int i = 0; i < _data.Value; i++) _indexes.Add(_data.Key);
       switch(_indexes[UnityEngine.Random.Range(0, _indexes.Count)])
       {
-        case 0: case 1:
+        case 0: 
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
-          Cult_CoolTime = (int)((_village_0 < _village_1 ? _village_0 :_village_1)/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)(_village / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
-        case 2:
+        case 1:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Temple : SectorTypeEnum.Marketplace;
           Cult_CoolTime=(int)(_town/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
-        case 3:
+        case 2:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
           Cult_CoolTime = (int)(_city / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
@@ -679,23 +687,15 @@ public class GameData    //게임 진행도 데이터
       {
         case SettlementType.Village:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
-          _town = MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count;
-          _city = MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count;
-          Cult_CoolTime =(int)( (_town < _city ? _town : _city) / ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)( (_town>_city?_city:_town) / ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.Town:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Library;
-          _village_0 = MapData.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count;
-          _village_1 = MapData.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count;
-          _city = MapData.GetLength(CurrentTile, MyMapData.City.Tile).Count;
-          Cult_CoolTime = (int)((_village_0 < _village_1 ? _village_0 : _village_1 < _city ? _village_1 : _city) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)((Cult_SabbatSector== SectorTypeEnum.Residence?_village:_city) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.City:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
-          _village_0 = MapData.GetLength(CurrentTile, MyMapData.Villages[0].Tile).Count;
-          _village_1 = MapData.GetLength(CurrentTile, MyMapData.Villages[1].Tile).Count;
-          _town = MapData.GetLength(CurrentTile, MyMapData.Town.Tile).Count;
-          Cult_CoolTime = (int)((_village_0 < _village_1 ? _village_0 : _village_1 < _town ? _village_1 : _town) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)((_village>_town?_town:_village) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
           break;
       }
     }
@@ -827,7 +827,7 @@ public class GameData    //게임 진행도 데이터
   {
     turn = 0;
     hp = 100;
-    movepoint = ConstValues.StartMovePoint;
+    supply = ConstValues.StartSupplies;
     sanity = 100;
     gold = ConstValues.StartGold ;
     QuestType=questtype;
@@ -862,11 +862,11 @@ public class GameData    //게임 진행도 데이터
         _tiledata.Landmark = (LandmarkType)jsondata.Tiledata_Landmark[_index];
         _tiledata.TopEnvirSprite = (TileSpriteType)jsondata.Tiledata_TopEnvirSprite[_index];
         _tiledata.BottomEnvirSprite = (TileSpriteType)jsondata.Tiledata_BottomEnvirSprite[_index];
-       
+        _tiledata.Fogstate = jsondata.Tiledata_Fogstate[_index];
+
         MyMapData.TileDatas[j, i] = _tiledata;
       }
     }
-    
     
     for(int i = 0; i < jsondata.Village_Id.Count; i++)
     {
@@ -884,29 +884,37 @@ public class GameData    //게임 진행도 데이터
       MyMapData.Villages.Add(_village);
     }
 
-    Settlement _Town = new Settlement(SettlementType.Town);
-    _Town.Index = jsondata.Town_Id;
-    _Town.Discomfort = jsondata.Town_Discomfort;
-    _Town.IsForest = jsondata.Town_Forest;
-    _Town.IsRiver = jsondata.Town_River;
-    _Town.IsMountain = jsondata.Town_Mountain;
-    _Town.IsSea = jsondata.Town_Sea;
-    _Town.Tile = MyMapData.Tile(jsondata.Town_Tile);
-    MyMapData.Tile(jsondata.Town_Tile).TileSettle = _Town;
-    MyMapData.AllSettles.Add(_Town);
-    MyMapData.Town = _Town;
+    for (int i = 0; i < jsondata.Town_Id.Count; i++)
+    {
+      Settlement _town = new Settlement(SettlementType.Town);
+      _town.Index = jsondata.Town_Id[i];
+      _town.Discomfort = jsondata.Town_Discomfort[i];
+      _town.IsForest = jsondata.Town_Forest[i];
+      _town.IsRiver = jsondata.Town_River[i];
+      _town.IsMountain = jsondata.Town_Mountain[i];
+      _town.IsSea = jsondata.Town_Sea[i];
+      _town.Tile = MyMapData.Tile(jsondata.Town_Tile[i]);
+      MyMapData.Tile(jsondata.Town_Tile[i]).TileSettle = _town;
 
-    Settlement _City = new Settlement(SettlementType.City);
-    _City.Index = jsondata.City_Id;
-    _City.Discomfort = jsondata.City_Discomfort;
-    _City.IsForest = jsondata.City_Forest;
-    _City.IsRiver = jsondata.City_River;
-    _City.IsMountain = jsondata.City_Mountain;
-    _City.IsSea = jsondata.City_Sea;
-    _City.Tile=MyMapData.Tile(jsondata.City_Tile);
-    MyMapData.Tile(jsondata.City_Tile).TileSettle = _City;
-    MyMapData.AllSettles.Add(_City);
-    MyMapData.City= _City;
+      MyMapData.AllSettles.Add(_town);
+      MyMapData.Towns.Add(_town);
+    }
+
+    for (int i = 0; i < jsondata.City_Id.Count; i++)
+    {
+      Settlement _city = new Settlement(SettlementType.City);
+      _city.Index = jsondata.City_Id[i];
+      _city.Discomfort = jsondata.City_Discomfort[i];
+      _city.IsForest = jsondata.City_Forest[i];
+      _city.IsRiver = jsondata.City_River[i];
+      _city.IsMountain = jsondata.City_Mountain[i];
+      _city.IsSea = jsondata.City_Sea[i];
+      _city.Tile = MyMapData.Tile(jsondata.City_Tile[i]);
+      MyMapData.Tile(jsondata.City_Tile[i]).TileSettle = _city;
+
+      MyMapData.AllSettles.Add(_city);
+      MyMapData.Citys.Add(_city);
+    }
 
     Coordinate = jsondata.Coordinate;
     if(jsondata.CurrentSettlementName!="")
@@ -927,7 +935,7 @@ public class GameData    //게임 진행도 데이터
     hp = jsondata.HP;
     sanity = jsondata.Sanity;
     gold = jsondata.Gold;
-    movepoint= jsondata.Movepoint;
+    supply= jsondata.Movepoint;
 
     Madness_Conversation = jsondata.Madness_Conversation;
     Madness_Force = jsondata.Madness_Force;
@@ -1330,6 +1338,7 @@ public class GameJsonData
   public List<int> Tiledata_Landmark = new List<int>();
   public List<int> Tiledata_BottomEnvirSprite = new List<int>();
   public List<int> Tiledata_TopEnvirSprite = new List<int>();
+  public List<int> Tiledata_Fogstate = new List<int>();
 
   public List<int> Village_Id = new List<int>();
   public List<int> Village_Discomfort = new List<int>();
@@ -1339,21 +1348,21 @@ public class GameJsonData
   public List<bool> Village_Sea = new List<bool>();
   public List<Vector2Int> Village_Tiles = new List<Vector2Int>();
 
-  public int Town_Id = 0;
-  public int Town_Discomfort = 0;
-  public bool Town_Forest = false;
-  public bool Town_River = false;
-  public bool Town_Mountain = false;
-  public bool Town_Sea = false;
-  public Vector2Int Town_Tile = new Vector2Int();
+  public List<int> Town_Id = new List<int>();
+  public List<int> Town_Discomfort = new List<int>();
+  public List<bool> Town_Forest = new List<bool>();
+  public List<bool> Town_River = new List<bool>();
+  public List<bool> Town_Mountain = new List<bool>();
+  public List<bool> Town_Sea = new List<bool>();
+  public List<Vector2Int> Town_Tile = new List<Vector2Int>();
 
-  public int City_Id = 0;
-  public int City_Discomfort = 0;
-  public bool City_Forest = false;
-  public bool City_River = false;
-  public bool City_Mountain = false;
-  public bool City_Sea = false;
-  public Vector2Int City_Tile = new Vector2Int();
+  public List<int> City_Id = new List<int>();
+  public List<int> City_Discomfort = new List<int>();
+  public List<bool> City_Forest = new List<bool>();
+  public List<bool> City_River = new List<bool>();
+  public List<bool> City_Mountain = new List<bool>();
+  public List<bool> City_Sea = new List<bool>();
+  public List<Vector2Int> City_Tile = new List<Vector2Int>();
 
   public Vector2 Coordinate = new Vector2();
   public string CurrentSettlementName = "";
@@ -1419,7 +1428,9 @@ public class GameJsonData
       Tiledata_Landmark.Add((int)_tile.Landmark);
       Tiledata_BottomEnvirSprite.Add((int)_tile.BottomEnvirSprite);
       Tiledata_TopEnvirSprite.Add((int)_tile.TopEnvirSprite);
+      Tiledata_Fogstate.Add(_tile.Fogstate);
     }
+
     foreach (var _village in data.MyMapData.Villages)
     {
       Village_Id.Add(_village.Index);
@@ -1431,21 +1442,27 @@ public class GameJsonData
       Village_Tiles.Add(_village.Tile.Coordinate);
     }
 
-    Town_Id = data.MyMapData.Town.Index;
-    Town_Discomfort = data.MyMapData.Town.Discomfort;
-    Town_Forest = data.MyMapData.Town.IsForest;
-    Town_River = data.MyMapData.Town.IsRiver;
-    Town_Mountain = data.MyMapData.Town.IsMountain;
-    Town_Sea = data.MyMapData.Town.IsSea;
-    Town_Tile = data.MyMapData.Town.Tile.Coordinate;
+    foreach (var _town in data.MyMapData.Towns)
+    {
+      Town_Id.Add(_town.Index);
+      Town_Discomfort.Add(_town.Discomfort);
+      Town_Forest.Add(_town.IsForest);
+      Town_River.Add(_town.IsRiver);
+      Town_Mountain.Add(_town.IsMountain);
+      Town_Sea.Add(_town.IsSea);
+      Town_Tile.Add(_town.Tile.Coordinate);
+    }
 
-    City_Id = data.MyMapData.City.Index;
-    City_Discomfort = data.MyMapData.City.Discomfort;
-    City_Forest = data.MyMapData.City.IsForest;
-    City_River = data.MyMapData.City.IsRiver;
-    City_Mountain = data.MyMapData.City.IsMountain;
-    City_Sea = data.MyMapData.City.IsSea;
-    City_Tile = data.MyMapData.City.Tile.Coordinate;
+    foreach (var _city in data.MyMapData.Citys)
+    {
+      City_Id.Add(_city.Index);
+      City_Discomfort.Add(_city.Discomfort);
+      City_Forest.Add(_city.IsForest);
+      City_River.Add(_city.IsRiver);
+      City_Mountain.Add(_city.IsMountain);
+      City_Sea.Add(_city.IsSea);
+      City_Tile.Add(_city.Tile.Coordinate);
+    }
 
     Coordinate = data.Coordinate;
     CurrentSettlementName = data.CurrentSettlement == null ? "" : data.CurrentSettlement.OriginName;
@@ -1458,7 +1475,7 @@ public class GameJsonData
     HP = data.HP;
     Sanity = data.Sanity;
     Gold = data.Gold;
-    Movepoint = data.MovePoint;
+    Movepoint = data.Supply;
 
     Madness_Conversation = data.Madness_Conversation;
     Madness_Force = data.Madness_Force;

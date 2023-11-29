@@ -43,7 +43,7 @@ public class DebugScript : MonoBehaviour
     Sanity.text=GameManager.Instance.MyGameData.Sanity.ToString();
   //  MaxSanity.text=GameManager.Instance.MyGameData.MaxSanity.ToString();
     Gold.text=GameManager.Instance.MyGameData.Gold.ToString();
-    Movepoint.text=GameManager.Instance.MyGameData.MovePoint.ToString();
+    Movepoint.text=GameManager.Instance.MyGameData.Supply.ToString();
 
     Skill_Conversation.text=GameManager.Instance.MyGameData.Skill_Conversation.LevelByDefault.ToString();
     Skill_Force.text = GameManager.Instance.MyGameData.Skill_Force.LevelByDefault.ToString();
@@ -79,7 +79,7 @@ public class DebugScript : MonoBehaviour
     GameManager.Instance.MyGameData.Sanity=int.Parse(Sanity.text);
  //   GameManager.Instance.MyGameData.MaxSanity= int.Parse(MaxSanity.text);
     GameManager.Instance.MyGameData.Gold= int.Parse(Gold.text);
-    GameManager.Instance.MyGameData.MovePoint = int.Parse(Movepoint.text);
+    GameManager.Instance.MyGameData.Supply = int.Parse(Movepoint.text);
 
     GameManager.Instance.MyGameData.Skill_Conversation.LevelByDefault = int.Parse(Skill_Conversation.text);
     GameManager.Instance.MyGameData.Skill_Force.LevelByDefault = int.Parse(Skill_Force.text);

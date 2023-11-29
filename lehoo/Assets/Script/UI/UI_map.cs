@@ -8,6 +8,7 @@ using System.Linq;
 using System.IO;
 using System.Drawing.Text;
 using UnityEngine.Rendering;
+using UnityEngine.WSA;
 
 public class UI_map : UI_default
 {
@@ -18,17 +19,23 @@ public class UI_map : UI_default
   [SerializeField] private List<Image> Outline_Routes_temps= new List<Image>();
   [SerializeField] private float MoveTime = 0.8f;
   public maptext MapCreater = null;
-  [HideInInspector] public GameObject CityIcon = null;
-  [HideInInspector] public GameObject TownIcon = null;
+  [HideInInspector] public List<GameObject> CityIcons = new List<GameObject>();
+  [HideInInspector] public List<GameObject> TownIcons = new List<GameObject>();
   [HideInInspector] public List<GameObject> VillageIcons = new List<GameObject>();
   public GameObject GetSettleIcon(Settlement settlement)
   {
     string _originname = settlement.OriginName;
     switch (settlement.SettlementType)
     {
-      case SettlementType.City:return CityIcon;
+      case SettlementType.City:
+        foreach (GameObject village in CityIcons)
+          if (village.name.Contains(_originname)) return village;
+        return null;
+
       case SettlementType.Town:
-        return TownIcon;
+        foreach (GameObject village in TownIcons)
+          if (village.name.Contains(_originname)) return village;
+        return null;
       case SettlementType.Village:
         foreach(GameObject village in VillageIcons)
           if(village.name.Contains(_originname)) return village;
@@ -87,15 +94,17 @@ public class UI_map : UI_default
     {
       tile.ButtonScript.Button.interactable = false;
       if (tile.ButtonScript.Preview != null) tile.ButtonScript.Preview.enabled = false;
+      if (tile.Fogstate != 2) tile.SetFog(2);
     }
     ActiveTileData.Clear();
 
-    List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 3);
-    foreach (TileData _tile in _currents) //새로운 주위 2칸 타일 전부 가져오기
+    List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, ConstValues.ViewRange);
+    foreach (TileData _tile in _currents) //새로운 주위 타일 전부 가져오기
     {
       _tile.ButtonScript.Button.interactable = true;
       if (_tile.ButtonScript.Preview != null) _tile.ButtonScript.Preview.enabled = true;
       ActiveTileData.Add(_tile);
+      _tile.SetFog(2);
     }
   }
   public List<TileData> SetRouteTemp(TileData tile)
@@ -445,53 +454,116 @@ public class UI_map : UI_default
     }
     DefaultRect.sizeDelta = OpenSize;
 
-    List<RectTransform> _highlightlist=new List<RectTransform>();
-    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    if (DoHighlight)
     {
-      case 0:
-        _highlightlist.Add(VillageIcons[0].GetComponent<RectTransform>() );
-        _highlightlist.Add(VillageIcons[1].GetComponent<RectTransform>() );
-        break;
-      case 1:
-        _highlightlist.Add(TownIcon.GetComponent<RectTransform>());
-        break;
-      case 2:
-        _highlightlist.Add(CityIcon.GetComponent<RectTransform>());
-        break;
-      case 3:
-        switch (GameManager.Instance.MyGameData.Cult_SabbatSector)
+      List<RectTransform> _highlightlist = new List<RectTransform>();
+      List<TileData> _targettiles= new List<TileData>();
+      switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+      {
+        case 0:
+          for (int i = 0; i < VillageIcons.Count; i++)
+          {
+            _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
+            _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
+          }
+          break;
+        case 1:
+          for (int i = 0; i < TownIcons.Count; i++)
+          {
+            _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
+            _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
+          }
+          break;
+        case 2:
+          for (int i = 0; i < CityIcons.Count; i++)
+          {
+            _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
+            _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
+          }
+          break;
+        case 3:
+          switch (GameManager.Instance.MyGameData.Cult_SabbatSector)
+          {
+            case SectorTypeEnum.Residence:
+              for (int i = 0; i < VillageIcons.Count; i++)
+              {
+                _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
+                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
+              }
+              break;
+            case SectorTypeEnum.Temple:
+              for (int i = 0; i < VillageIcons.Count; i++)
+              {
+                _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
+                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
+              }
+              for (int i = 0; i < TownIcons.Count; i++)
+              {
+                _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
+                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
+              }
+              break;
+            case SectorTypeEnum.Marketplace:
+              for (int i = 0; i < TownIcons.Count; i++)
+              {
+                _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
+                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
+              }
+              for (int i = 0; i < CityIcons.Count; i++)
+              {
+                _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
+                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
+              }
+              break;
+            case SectorTypeEnum.Library:
+              for (int i = 0; i < CityIcons.Count; i++)
+              {
+                _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
+                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
+              }
+              break;
+          }
+          break;
+        case 4:
+          _highlightlist.Add(GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.rectTransform);
+          break;
+      }
+      Vector3 _pos = Vector2.zero;
+      float _targettime = 0.0f;
+      for (int i = 0; i < _highlightlist.Count; i++)
+      {
+        if (_targettiles[i].Fogstate == 0) _targettiles[i].SetFog(1);
+        _time = 0.0f;
+        _pos = Vector2.zero;
+        _startpos = HolderRect.anchoredPosition;
+        _endpos = _highlightlist[i].anchoredPosition * -1.0f;
+        _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+        while (_time < _targettime)
         {
-          case SectorTypeEnum.Residence:
-            _highlightlist.Add(VillageIcons[0].GetComponent<RectTransform>());
-            _highlightlist.Add(VillageIcons[1].GetComponent<RectTransform>());
-            break;
-          case SectorTypeEnum.Temple:
-            _highlightlist.Add(VillageIcons[0].GetComponent<RectTransform>());
-            _highlightlist.Add(VillageIcons[1].GetComponent<RectTransform>());
-            _highlightlist.Add(TownIcon.GetComponent<RectTransform>());
-            break;
-          case SectorTypeEnum.Marketplace:
-            _highlightlist.Add(TownIcon.GetComponent<RectTransform>());
-            _highlightlist.Add(CityIcon.GetComponent<RectTransform>());
-            break;
-          case SectorTypeEnum.Library:
-            _highlightlist.Add(CityIcon.GetComponent<RectTransform>());
-            break;
+          _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+          HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+          _time += Time.deltaTime;
+          yield return null;
         }
-        break;
-      case 4:
-        _highlightlist.Add(GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.rectTransform);
-        break;
-    }
-    Vector3 _pos = Vector2.zero;
-    float _targettime = 0.0f;
-    for (int i = 0; i < _highlightlist.Count ; i++)
-    {
+        HolderRect.anchoredPosition3D = _endpos;
+
+        _time = 0.0f;
+        _targettime = DoHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
+        Vector3 _highlightscale = DoHighlight ? HighlightSize_First : HighlightSize_Second;
+        while (_time < _targettime)
+        {
+          _highlightlist[i].localScale = Vector3.Lerp(Vector3.one, _highlightscale, SettlementIconCurve.Evaluate(_time / _targettime));
+          _time += Time.deltaTime;
+          yield return null;
+        }
+        _highlightlist[i].localScale = Vector3.one;
+      }
+
       _time = 0.0f;
-      _pos = Vector2.zero; 
+      _pos = Vector2.zero;
       _startpos = HolderRect.anchoredPosition;
-      _endpos = _highlightlist[i].anchoredPosition * -1.0f;
-      _targettime = FirstHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+      _endpos = PlayerRect.anchoredPosition * -1.0f;
+      _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
       while (_time < _targettime)
       {
         _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
@@ -500,35 +572,9 @@ public class UI_map : UI_default
         yield return null;
       }
       HolderRect.anchoredPosition3D = _endpos;
-
-      _time = 0.0f;
-      _targettime = FirstHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
-      Vector3 _highlightscale = FirstHighlight ? HighlightSize_First : HighlightSize_Second;
-      while (_time < _targettime)
-      {
-        _highlightlist[i].localScale = Vector3.Lerp(Vector3.one, _highlightscale, SettlementIconCurve.Evaluate(_time / _targettime));
-        _time += Time.deltaTime;
-        yield return null;
-      }
-      _highlightlist[i].localScale = Vector3.one;
+      DoHighlight = false;
     }
 
-    _time = 0.0f;
-    _pos = Vector2.zero;
-    _startpos = HolderRect.anchoredPosition;
-    _endpos = PlayerRect.anchoredPosition * -1.0f;
-    _targettime = FirstHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
-    while (_time < _targettime)
-    {
-      _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
-      HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    HolderRect.anchoredPosition3D = _endpos;
-
-
-    FirstHighlight = false;
     DefaultGroup.interactable = true;
     DefaultGroup.blocksRaycasts = true;
 
@@ -539,7 +585,7 @@ public class UI_map : UI_default
   public Vector3 HighlightSize_Second = new Vector3(1.3f, 1.3f, 1.3f);
   public float HighlightSizeTime_First = 1.25f;
   public float HighlightSizeTime_Else = 1.25f;
-  public bool FirstHighlight = true;
+  public bool DoHighlight = true;
   public AnimationCurve SettlementAnimationCurve = new AnimationCurve();
   public AnimationCurve SettlementIconCurve = new AnimationCurve();
   [SerializeField] private Vector2 TilePreviewDownPos = new Vector2(-235.0f, 23.0f);
@@ -676,7 +722,7 @@ public class UI_map : UI_default
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(MovePointCost);
     if (SelectedTile.TileSettle == null)
     {
-      BonusGold = SelectedTile.MovePoint>1?(int)((SelectedTile.MovePoint) * ConstValues.GoldPerMovepoint * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
+      BonusGold = SelectedTile.MovePoint>1?(int)((SelectedTile.MovePoint) * ConstValues.GoldPerSupplies * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
       BonusGold += (Route_Tile.Count > ConstValues.Tendency_Head_p1_length && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? ConstValues.Tendency_Head_p1_value : 0;
     }
     SelectedCostType = StatusTypeEnum.HP;
@@ -718,16 +764,16 @@ public class UI_map : UI_default
       "") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
     MoveLengthText.text = IsMad ? "<sprite=100> ?" :
       string.Format(GameManager.Instance.GetTextData("MoveLength"),
-      GameManager.Instance.MyGameData.MovePoint,
-      WNCText.PercentageColor(MovePointCost.ToString(), MovePointCost <= GameManager.Instance.MyGameData.MovePoint ? 1.0f : 0.0f));
-    if (GameManager.Instance.MyGameData.MovePoint < 0)
+      GameManager.Instance.MyGameData.Supply,
+      WNCText.PercentageColor(MovePointCost.ToString(), MovePointCost <= GameManager.Instance.MyGameData.Supply ? 1.0f : 0.0f));
+    if (GameManager.Instance.MyGameData.Supply < 0)
     {
       MoveLengthCostText.text = GameManager.Instance.GetTextData("Movepoint_NoSupplies");
     }
-    else if (MovePointCost > GameManager.Instance.MyGameData.MovePoint)
+    else if (MovePointCost > GameManager.Instance.MyGameData.Supply)
     {
       MoveLengthCostText.text = string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
-     MovePointCost - GameManager.Instance.MyGameData.MovePoint);
+     MovePointCost - GameManager.Instance.MyGameData.Supply);
     }
     else MoveLengthCostText.text = "";
 
@@ -750,8 +796,8 @@ public class UI_map : UI_default
         SelectedCostType = StatusTypeEnum.Sanity;
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"),
-          MovePointCost <= GameManager.Instance.MyGameData.MovePoint?"" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
-        MovePointCost - GameManager.Instance.MyGameData.MovePoint, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
+          MovePointCost <= GameManager.Instance.MyGameData.Supply?"" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
+        MovePointCost - GameManager.Instance.MyGameData.Supply, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
         !IsMad ?SanityCost:"?");
         break;
       case StatusTypeEnum.Gold:
@@ -760,8 +806,8 @@ public class UI_map : UI_default
         SelectedCostType = StatusTypeEnum.Gold;
 
         _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"),
-                    MovePointCost <= GameManager.Instance.MyGameData.MovePoint ? "" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
-        MovePointCost - GameManager.Instance.MyGameData.MovePoint, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
+                    MovePointCost <= GameManager.Instance.MyGameData.Supply ? "" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
+        MovePointCost - GameManager.Instance.MyGameData.Supply, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
 !IsMad ?GoldCost:"?");
         break;
     }
@@ -844,13 +890,13 @@ public class UI_map : UI_default
     {
       int _mp = Route_Tile[i].MovePoint;
       _totalmp += _mp;
-      if (GameManager.Instance.MyGameData.MovePoint >= _totalmp)
+      if (GameManager.Instance.MyGameData.Supply >= _totalmp)
       {
         _movepointicondata.Add(Route_Tile[i],_mp);
       }
       else
       {
-        _movepointicondata.Add(Route_Tile[i],Mathf.Clamp(GameManager.Instance.MyGameData.MovePoint - (_totalmp - _mp),0,100));
+        _movepointicondata.Add(Route_Tile[i],Mathf.Clamp(GameManager.Instance.MyGameData.Supply - (_totalmp - _mp),0,100));
       }
     }
     yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint_using(_movepointicondata,SelectedCostType));
@@ -858,12 +904,12 @@ public class UI_map : UI_default
  //   yield return StartCoroutine(UIManager.Instance.statusgainanimation(PlayerRect));
 
     bool _iswalking = false;
-    if (GameManager.Instance.MyGameData.MovePoint >= MovePointCost)
+    if (GameManager.Instance.MyGameData.Supply >= MovePointCost)
       _iswalking = true;
     else _iswalking = false;
 
 
-    GameManager.Instance.MyGameData.MovePoint -= MovePointCost;
+    GameManager.Instance.MyGameData.Supply -= MovePointCost;
     switch (SelectedCostType)
     {
       case StatusTypeEnum.Sanity:
@@ -888,10 +934,10 @@ public class UI_map : UI_default
     else UIManager.Instance.AudioManager.PlaySFX(29);
 
 
-    bool _enterritual = false;
     float _time = 0.0f;             //x
     int _pathcount = _path.Count-1; //길 개수-1 (마지막 좌표는 current가 되면 안되니까)   n
     int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)
+    int _lastindex = 0;
     float _value = 0.0f;            //커브에 따른 이동 값(y)                              0.0f ~ 1.0f
     float _valuedegree = 1.0f / _pathcount;
     float _currentvalue = 0.0f;     //
@@ -910,11 +956,27 @@ public class UI_map : UI_default
       PlayerRect.anchoredPosition = Vector3.Lerp(_current,_next,_currentvalue);
       HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
-      if (!_enterritual && Route_Tile[_currentindex].Landmark == LandmarkType.Ritual)
+      if (_lastindex!=_currentindex)
       {
-        UIManager.Instance.CultUI.AddProgress(4,null);
-        _enterritual = true;
+        if(Route_Tile[_currentindex].Landmark == LandmarkType.Ritual)
+          UIManager.Instance.CultUI.AddProgress(4, null);
+
+        List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, ConstValues.ViewRange);
+        foreach(var _oldtile in ActiveTileData)
+        {
+          if (_newarounds.Contains(_oldtile)) continue;
+          _oldtile.SetFog(1);
+        }
+        ActiveTileData.Clear();
+        foreach(var _newtile in _newarounds)
+        {
+          ActiveTileData.Add(_newtile);
+          _newtile.SetFog(2);
+        }
+
+        _lastindex = _currentindex;
       }
+
       _time += Time.deltaTime;
       yield return null;
     }

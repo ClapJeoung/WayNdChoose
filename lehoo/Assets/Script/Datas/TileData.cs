@@ -34,10 +34,22 @@ public class TileData
       return TileSpriteType.NULL;
     }
   }
+  /// <summary>
+  /// 0:가려짐 1:본적있음 2:현재 시야
+  /// </summary>
+  public int Fogstate = 0;
+  public void SetFog(int value)
+  {
+    if (Fogstate == value) return;
+
+    Fogstate = value;
+    if (value == 2) ButtonScript.SetReveal();
+    else if (value == 1) ButtonScript.SetVisible();
+  }
 
   public Settlement TileSettle = null;
 
-  public TileButtonScript ButtonScript = null;
+  public TileObjScript ButtonScript = null;
 
   public bool Interactable
   {
@@ -51,11 +63,11 @@ public class TileData
   {
     get
     {
-      int _movepoint = ConstValues.MovePoint_Default;
-      if (BottomEnvir == BottomEnvirType.Sea) _movepoint += ConstValues.MovePoint_Sea;
-      if (TopEnvir == TopEnvirType.Mountain) _movepoint += ConstValues.MovePoint_Moutain;
-      if (TopEnvir == TopEnvirType.Forest) _movepoint += ConstValues.MovePoint_Forest;
-      if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _movepoint += ConstValues.MovePoint_River;
+      int _movepoint = ConstValues.Supply_Default;
+      if (BottomEnvir == BottomEnvirType.Sea) _movepoint += ConstValues.Supply_Sea;
+      if (TopEnvir == TopEnvirType.Mountain) _movepoint += ConstValues.Supply_Moutain;
+      if (TopEnvir == TopEnvirType.Forest) _movepoint += ConstValues.Supply_Forest;
+      if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _movepoint += ConstValues.Supply_River;
 
       return _movepoint;
     }

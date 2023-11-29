@@ -303,15 +303,20 @@ public class UI_QuestWolf : UI_default
         {
           case SettlementType.Village:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Village;
-            GameManager.Instance.MyGameData.Cult_CoolTime =(int)( MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile,GameManager.Instance.MyGameData.MyMapData.Town.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
-            UIManager.Instance.MapUI.FirstHighlight = true;
+            GameManager.Instance.MyGameData.Cult_CoolTime =
+              (int)( 
+              ((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile,GameManager.Instance.MyGameData.MyMapData.Towns)+
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns) )/2)/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
+            UIManager.Instance.MapUI.DoHighlight = true;
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
               UIManager.Instance.SidePanelCultUI.VillageIconEffect.transform as RectTransform);
             break;
           case SettlementType.Town:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town;
-            GameManager.Instance.MyGameData.Cult_CoolTime =(int)( MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.City.Tile).Count / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
-            UIManager.Instance.MapUI.FirstHighlight = true;
+            GameManager.Instance.MyGameData.Cult_CoolTime =
+             (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys) +
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
+            UIManager.Instance.MapUI.DoHighlight = true;
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
        UIManager.Instance.SidePanelCultUI.TownIconEffect.transform as RectTransform);
             break;

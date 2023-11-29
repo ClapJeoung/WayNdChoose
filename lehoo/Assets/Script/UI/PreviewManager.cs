@@ -253,7 +253,7 @@ public class PreviewManager : MonoBehaviour
   {
     Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
     string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION");
-    if (GameManager.Instance.MyGameData.MovePoint < 0) _description +="<br>"+ GameManager.Instance.GetTextData("Movepoint_NoSupplies");
+    if (GameManager.Instance.MyGameData.Supply < 0) _description +="<br>"+ GameManager.Instance.GetTextData("Movepoint_NoSupplies");
 
 
     OpenIconAndDescriptionPanel(_icon, _description, StatusPivot, true, rect);

@@ -83,6 +83,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6b691ea0a54a6c34e956caba01a8e504, type: 3}
   RB_3_4:
   - {fileID: 21300000, guid: 8c886fe1af077954cacc963e0bc8af7e, type: 3}
+  Fog: {fileID: 21300000, guid: c51aade58ee62c7469ad6a791c6f714d, type: 3}
   Village:
   - {fileID: 21300000, guid: 0b974e1e0650c354fa7fb50e37247d7e, type: 3}
   Town:

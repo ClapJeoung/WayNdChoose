@@ -154,11 +154,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           case 3:
             _sametext = GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector,0);
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Sabbat"),
-           _sametext, _sametext,ConstValues.Quest_Cult_Progress_Sabbat,GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_SabbatDiscomfort);
+           _sametext, _sametext,ConstValues.Quest_Cult_Progress_Sabbat,GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort);
             break;
           case 4:
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Ritual"),
-            ConstValues.Quest_Cult_Progress_Ritual, GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_RitualMovepoint);
+            ConstValues.Quest_Cult_Progress_Ritual, GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_Ritual_PenaltySupply);
             break;
         }
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo, IsCultSidePanel?new Vector2(1.05f,0.5f):new Vector2(0.5f,1.05f),OtherRect==null?transform as RectTransform : OtherRect);

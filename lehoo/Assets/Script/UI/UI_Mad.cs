@@ -65,35 +65,35 @@ public class UI_Mad : UI_default
       case 0:
         _str = GameManager.Instance.GetTextData("Madness_Conversation")+
            string.Format( GameManager.Instance.GetTextData("Madness_Result"),
-           GameManager.Instance.MyGameData.MovePoint<0?GameManager.Instance.GetTextData("Madness_ResetMP"):"",
+           GameManager.Instance.MyGameData.Supply<0?GameManager.Instance.GetTextData("Madness_ResetMP"):"",
            string.Format(GameManager.Instance.GetTextData("Madness_Skillvalue"), GameManager.Instance.GetTextData((SkillTypeEnum)index,1),ConstValues.MadnessSkillLevel),
            GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 1:
         _str = GameManager.Instance.GetTextData("Madness_Force")
    + string.Format(GameManager.Instance.GetTextData("Madness_Result"),
-            GameManager.Instance.MyGameData.MovePoint < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
+            GameManager.Instance.MyGameData.Supply < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
            string.Format(GameManager.Instance.GetTextData("Madness_Skillvalue"), GameManager.Instance.GetTextData((SkillTypeEnum)index, 1),
            ConstValues.MadnessSkillLevel), GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 2:
         _str = GameManager.Instance.GetTextData("Madness_Wild")
   + string.Format(GameManager.Instance.GetTextData("Madness_Result"),
-            GameManager.Instance.MyGameData.MovePoint < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
+            GameManager.Instance.MyGameData.Supply < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
            string.Format(GameManager.Instance.GetTextData("Madness_Skillvalue"), GameManager.Instance.GetTextData((SkillTypeEnum)index, 1),
            ConstValues.MadnessSkillLevel), GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 3:
         _str = GameManager.Instance.GetTextData("Madness_Intelligence")
  + string.Format(GameManager.Instance.GetTextData("Madness_Result"),
-            GameManager.Instance.MyGameData.MovePoint < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
+            GameManager.Instance.MyGameData.Supply < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
            string.Format(GameManager.Instance.GetTextData("Madness_Skillvalue"), GameManager.Instance.GetTextData((SkillTypeEnum)index, 1),
            ConstValues.MadnessSkillLevel), GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
       case 4:
         _str = GameManager.Instance.GetTextData("Madness_HP")
      +string.Format(GameManager.Instance.GetTextData("Madness_Result"),
-                 GameManager.Instance.MyGameData.MovePoint < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
+                 GameManager.Instance.MyGameData.Supply < 0 ? GameManager.Instance.GetTextData("Madness_ResetMP") : "",
                  "",
                  GameManager.Instance.MyGameData.MadnessHPLoss_HP,
                  WNCText.GetMaxSanityColor(GameManager.Instance.MyGameData.MadnessSanityGen_HP));
@@ -141,7 +141,7 @@ public class UI_Mad : UI_default
         GameManager.Instance.MyGameData.SetSanityOver100(GameManager.Instance.MyGameData.MadnessSanityGen_HP);
         break;
     }
-    if (GameManager.Instance.MyGameData.MovePoint < 0) GameManager.Instance.MyGameData.MovePoint = 0;
+    if (GameManager.Instance.MyGameData.Supply < 0) GameManager.Instance.MyGameData.Supply = 0;
     StartCoroutine(changealpha(false));
   }
   private IEnumerator changealpha(bool open)

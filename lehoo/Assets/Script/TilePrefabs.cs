@@ -17,6 +17,7 @@ public class TilePrefabs : ScriptableObject
     public Sprite[] RB_1_2, RB_1_3, RB_1_4;
     public Sprite[] RB_2_3, RB_2_4;
     public Sprite[] RB_3_4;
+  public Sprite Fog = null;
 
     [Space(10)]
     public Sprite[] Village;
