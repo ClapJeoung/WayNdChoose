@@ -282,31 +282,61 @@ public class MapData
     foreach (var _coor in _aroundcoors) _tiles.Add(TileDatas[_coor.x, _coor.y]);
     return _tiles;
   }
-  private Dictionary<int, List<Vector2Int>> AroundCoors = new Dictionary<int, List<Vector2Int>>();
+  private Dictionary<int, List<List<HexDir>>> AroundCoors = new Dictionary<int, List<List<HexDir>>>();
   public List<Vector2Int> GetAroundCoor(Vector2Int coor, int range)
   {
     if (!AroundCoors.ContainsKey(range))
     {
-      List<Vector2Int> _newrange = new List<Vector2Int> { Vector2Int.zero };
-
+      List<HexGrid> _totalranges = new List<HexGrid> { new HexGrid(Vector2Int.zero) };
+      List<HexGrid> _newgrids= new List<HexGrid> { new HexGrid(Vector2Int.zero) };
       for (int i = 0; i < range; i++)
       {
-        List<Vector2Int> _templist = new List<Vector2Int>();
+        List<HexGrid> _aroundgrids = new List<HexGrid>();
+        bool _able = true;
+        HexGrid _targethexgrid = null;
 
-        foreach (var _coor in _newrange)
-          for (int j = 0; j < 6; j++) _templist.Add(GetNextCoor(_coor, (HexDir)j,false));
+        foreach (var _hexgrid in _newgrids)
+          for (int j = 0; j < 6; j++)
+          {
+            _able = true;
+            _targethexgrid = _hexgrid.AddHexdir((HexDir)j);
+            foreach (var _existgrids in _aroundgrids)
+            {
+              if (_existgrids == _targethexgrid) { _able = false; break; }
+            }
+            if (!_able) continue;
+            _aroundgrids.Add(_targethexgrid);
+          }
 
-        foreach (var _coor in _templist)
-          if (!_newrange.Contains(_coor)) _newrange.Add(_coor);
+        _newgrids.Clear();
+        foreach (var _hexgrid in _aroundgrids)
+        {
+          _able = true;
+          foreach(var _existgrids in _totalranges)
+          {
+            if (_existgrids == _hexgrid) { _able = false; break; }
+          }
+          if (!_able) continue;
+
+          _totalranges.Add(_hexgrid);
+          _newgrids.Add(_hexgrid);
+        }
       }
-      AroundCoors.Add(range,_newrange);
+      List<List<HexDir>> _alldirs = new List<List<HexDir>>();
+      foreach (var _hexdir in _totalranges)
+        _alldirs.Add(_hexdir.GetDir);
+      AroundCoors.Add(range, _alldirs);
     }
 
-    Vector2Int _temp = Vector2Int.zero;
-    List<Vector2Int> _coors= new List<Vector2Int>();
+    Vector2Int _temp = coor;
+    List<Vector2Int> _coors = new List<Vector2Int>() { coor };
     foreach (var _offset in AroundCoors[range])
     {
-      _temp = coor + _offset;
+      _temp = coor; 
+
+      foreach (var _dir in _offset)
+        _temp = GetNextCoor(_temp, _dir, true);
+
       if (_temp.x < 0|| _temp.y < 0|| _temp.x >= ConstValues.MapSize|| _temp.y >= ConstValues.MapSize) continue;
 
       _coors.Add(_temp);
@@ -317,19 +347,45 @@ public class MapData
   {
     if (!AroundCoors.ContainsKey(range))
     {
-      List<Vector2Int> _newrange = new List<Vector2Int> { Vector2Int.zero };
-
+      List<HexGrid> _totalranges = new List<HexGrid> { new HexGrid(Vector2Int.zero) };
+      List<HexGrid> _newgrids = new List<HexGrid> { new HexGrid(Vector2Int.zero) };
       for (int i = 0; i < range; i++)
       {
-        List<Vector2Int> _templist = new List<Vector2Int>();
+        List<HexGrid> _aroundgrids = new List<HexGrid>();
+        bool _able = true;
+        HexGrid _targethexgrid = null;
 
-        foreach (var _coor in _newrange)
-          for (int j = 0; j < 6; j++) _templist.Add(GetNextCoor(_coor, (HexDir)j, false));
+        foreach (var _hexgrid in _newgrids)
+          for (int j = 0; j < 6; j++)
+          {
+            _able = true;
+            _targethexgrid = _hexgrid.AddHexdir((HexDir)j);
+            foreach (var _existgrids in _aroundgrids)
+            {
+              if (_existgrids == _targethexgrid) { _able = false; break; }
+            }
+            if (!_able) continue;
+            _aroundgrids.Add(_targethexgrid);
+          }
 
-        foreach (var _coor in _templist)
-          if (!_newrange.Contains(_coor)) _newrange.Add(_coor);
+        _newgrids.Clear();
+        foreach (var _hexgrid in _aroundgrids)
+        {
+          _able = true;
+          foreach (var _existgrids in _totalranges)
+          {
+            if (_existgrids == _hexgrid) { _able = false; break; }
+          }
+          if (!_able) continue;
+
+          _totalranges.Add(_hexgrid);
+          _newgrids.Add(_hexgrid);
+        }
       }
-      AroundCoors.Add(range, _newrange);
+      List<List<HexDir>> _alldirs = new List<List<HexDir>>();
+      foreach (var _hexdir in _totalranges)
+        _alldirs.Add(_hexdir.GetDir);
+      AroundCoors.Add(range, _alldirs);
     }
 
 
@@ -338,9 +394,11 @@ public class MapData
 
     foreach (var _coordinate in coors)
     {
-      foreach (var _offset in AroundCoors[range])
+      foreach (var _dirs in AroundCoors[range])
       {
-        _temp = _coordinate + _offset;
+        _temp = _coordinate;
+        foreach (var _dir in _dirs) _temp = GetNextCoor(_temp, _dir, true);
+
         if (_temp.x < 0 || _temp.y < 0 || _temp.x >= ConstValues.MapSize || _temp.y >= ConstValues.MapSize) continue;
 
         if (!_result.Contains(_temp)) _result.Add(_temp);
@@ -402,7 +460,9 @@ public class MapData
     while (true)
     {
       TileData _next = GetNextTile(_lines[_lines.Count - 1], dir);
-      if (_lines.Count > 3 && (_next.BottomEnvir==BottomEnvirType.Sea)) break;
+      if (_lines.Count > 2 && 
+        ((_next.BottomEnvir==BottomEnvirType.Sea)||
+        _next.Coordinate.x==0||_next.Coordinate.y==0||_next.Coordinate.x==ConstValues.MapSize-1|| _next.Coordinate.y == ConstValues.MapSize - 1)) break;
 
       _lines.Add(_next);
     }

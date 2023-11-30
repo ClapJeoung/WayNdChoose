@@ -13,6 +13,15 @@ public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
 public class TileData
 {
   public Vector2Int Coordinate = Vector2Int.zero;
+  private HexGrid hexgrid = null;
+  public HexGrid HexGrid
+  {
+    get 
+    {
+      if (hexgrid == null) hexgrid = new HexGrid(Coordinate);
+      return hexgrid;
+    }
+  }
   public int Rotation = 0;
   public BottomEnvirType BottomEnvir = BottomEnvirType.NULL;
   public TopEnvirType TopEnvir = TopEnvirType.NULL;

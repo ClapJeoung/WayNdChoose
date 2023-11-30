@@ -600,11 +600,11 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
     if (Input.GetKeyDown(KeyCode.Backspace))
     {
-      //   MyGameData = new GameData(QuestType.Cult);
-      //  CreateNewMap();
-      Debug.Log(MyGameData.CurrentEvent != null);
+         MyGameData = new GameData(QuestType.Cult);
+      FindObjectOfType<maptext>().GetComponent<maptext>().CreateMap();
+   //   CreatMapForDebug();
+    //  Debug.Log(MyGameData.CurrentEvent != null);
     }
-    if (Input.GetKeyDown(KeyCode.T)) UIManager.Instance.AudioManager.PlayBGM();
 #endif
   }
   public void GameOver()
@@ -674,7 +674,7 @@ public class GameManager : MonoBehaviour
   {
     MyGameData = new GameData(newquest);//새로운 게임 데이터 생성
 
-    yield return StartCoroutine(createnewmap());//새 맵 만들기
+    yield return StartCoroutine(createnewmap(true));//새 맵 만들기
 
     switch (MyGameData.QuestType)
     {
@@ -749,14 +749,14 @@ public class GameManager : MonoBehaviour
 
     yield return null;
   }
-  public void CreateNewMap() => StartCoroutine(createnewmap());
+  public void CreatMapForDebug() => StartCoroutine(createnewmap(false));
 
-  private IEnumerator createnewmap()
+  private IEnumerator createnewmap(bool realperfect)
   {
 
     maptext _map = FindObjectOfType<maptext>().GetComponent<maptext>();
 
-    _map.MakePerfectMap();
+    yield return StartCoroutine(_map.makeperfectmap(realperfect));
 
     yield return new WaitUntil(()=>MyGameData.MyMapData != null);
 

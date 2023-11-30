@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.WSA;
 
 public class maptext : MonoBehaviour
 {
@@ -60,46 +59,50 @@ public class maptext : MonoBehaviour
     return _rnd;
   }
 
-  public void MakePerfectMap()
-  {
-    StartCoroutine(makeperfectmap());
-  }
-  private IEnumerator makeperfectmap()
+  public IEnumerator makeperfectmap(bool realperfect)
   {
     int _index = 0;
     while (true)
     {
       _index++;
+      if (_index > 100)
+      {
+        Debug.Log("테챠아");
+        yield break;
+      }
       MapData _map = CreateMap();
       if (_map == null) continue;
-      bool _anyriver = false, _anyforest = false, _anymountain = false;
-
-      foreach (var _village in _map.Villages)
+      yield return null;
+      if (realperfect)
       {
-        if (!_anyriver&& _village.IsRiver) _anyriver = true;
-        if (!_anyforest && _village.IsForest) _anyforest = true;
-        if (!_anymountain && _village.IsMountain) _anymountain = true;
+        bool _anyriver = false, _anyforest = false, _anymountain = false;
+
+        foreach (var _village in _map.Villages)
+        {
+          if (!_anyriver && _village.IsRiver) _anyriver = true;
+          if (!_anyforest && _village.IsForest) _anyforest = true;
+          if (!_anymountain && _village.IsMountain) _anymountain = true;
+        }
+
+        foreach (var _town in _map.Towns)
+        {
+          if (!_anyriver && _town.IsRiver) _anyriver = true;
+          if (!_anyforest && _town.IsForest) _anyforest = true;
+          if (!_anymountain && _town.IsMountain) _anymountain = true;
+        }
+
+        foreach (var _city in _map.Citys)
+        {
+          if (!_anyriver && _city.IsRiver) _anyriver = true;
+          if (!_anyforest && _city.IsForest) _anyforest = true;
+          if (!_anymountain && _city.IsMountain) _anymountain = true;
+        }
+
+        if (!_anyforest) { Debug.Log(_index + "번 맵 숲 하나도 없음"); continue; }
+        if (!_anymountain) { Debug.Log(_index + "번 맵 산 하나도 없음"); continue; }
+        if (!_anyriver) { Debug.Log(_index + "번 맵 강 하나도 없음"); continue; }
+        if (_map.Villages.Count < 3 || _map.Towns.Count < 3 || _map.Citys.Count < 2) { yield return null; continue; }
       }
-
-      foreach (var _town in _map.Towns)
-      {
-        if (!_anyriver && _town.IsRiver) _anyriver = true;
-        if (!_anyforest && _town.IsForest) _anyforest = true;
-        if (!_anymountain && _town.IsMountain) _anymountain = true;
-      }
-
-      foreach (var _city in _map.Citys)
-      {
-        if (!_anyriver && _city.IsRiver) _anyriver = true;
-        if (!_anyforest && _city.IsForest) _anyforest = true;
-        if (!_anymountain && _city.IsMountain) _anymountain = true;
-      }
-
-      if (!_anyforest) { Debug.Log(_index+"번 맵 숲 하나도 없음"); continue; }
-      if (!_anymountain) { Debug.Log(_index + "번 맵 산 하나도 없음"); continue; }
-      if (!_anyriver) { Debug.Log(_index + "번 맵 강 하나도 없음"); continue; }
-      if (_map.Villages.Count <3|| _map.Towns.Count<3|| _map.Citys.Count<2) { yield return null; continue; }
-
       Debug.Log($"{_index}번째 맵 성공\n");
       GameManager.Instance.MyGameData.MyMapData = _map;
       break;
@@ -133,7 +136,6 @@ public class maptext : MonoBehaviour
       _NewMapData.Tile(_landcoor).BottomEnvirSprite = TileSpriteType.Land;
     }
     #endregion
-
     #region 바다,해안선
     List<TileData> _seatiles = _NewMapData.GetEnvirTiles(new List<BottomEnvirType> { BottomEnvirType.Sea });
     List<TileData> _outerbeachtiles = new List<TileData>();
@@ -532,58 +534,71 @@ public class maptext : MonoBehaviour
     #region 산
     LoopCount = 0;
 
-    List<Vector2Int> _newmountain = new List<Vector2Int>(); //산 위치 리스트
-    int[] _mountaindirs = Random.Range(0, 2) == 0 ? new int[3] { 1, 3, 5 } : new int[3] { 0, 2, 4 };
-
-    while (_newmountain.Count != 9)
+    bool _mountaindone = false;
+    List<TileData> _newmountain = new List<TileData>(); //산 위치 리스트
+    System.Random _random = new System.Random();
+    int[] _mountaindirs = new int[6] { 0, 1, 2, 3, 4, 5 };
+    for(int i = 0; i < _mountaindirs.Length; i++)
     {
-      LoopCount++;
-      if (LoopCount > 1000) { 
-        Debug.Log("산 생성 중 무한루프 " + _newmountain.Count); 
-        return null; }
+      _mountaindone = false;
 
-      int _index = _newmountain.Count / 3;
-      List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, (HexDir)_mountaindirs[_index]);
-      int _mintileindex = 1, _maxtileindex = _lines.Count - 3;
-      Vector2Int _mountain_0 = Vector2Int.zero, _mountain_1 = Vector2Int.zero, _mountain_2 = Vector2Int.zero;
-      int _mountaindir_1 = 0, _mountaindir_2 = 0;
-      while (true)
+      List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, (HexDir)_mountaindirs[i]);
+      int _tilecount = Random.Range(Mathf.FloorToInt(_lines.Count * ConstValues.Mountain_length_min), Mathf.FloorToInt(_lines.Count * ConstValues.Mountain_length_max));
+      Vector2Int _startcoordinate = _lines[_tilecount].Coordinate;
+      for (int j = 0; j < _tilecount / 2; j++)
+        _startcoordinate = _NewMapData.GetNextCoor(_startcoordinate, (HexDir)RotateDir(_mountaindirs[i], 2), true);
+      List<TileData> _templist = _NewMapData.GetAroundTile(_startcoordinate, 1);
+      List<TileData> _mountainstartlist = new List<TileData>(); //목표 중심 주위의 1칸 타일들
+      foreach (var _tile in _templist)
       {
-        LoopCount++;
-        if (LoopCount > 1000) { 
-          Debug.Log("산 생성 중 무한루프"); 
-          return null; }
-
-        _mountain_0 = _lines[Random.Range(_mintileindex, _maxtileindex)].Coordinate
-          + new Vector2Int(Random.Range(-1, 2), Random.Range(-1, 2));
-        _mountaindir_1 = Random.Range(0, 6);
-        _mountaindir_2 = RotateDir(_mountaindir_1, Random.Range(-1, 2));
-        _mountain_1 = _NewMapData.GetNextTile(_mountain_0, (HexDir)_mountaindir_1).Coordinate;
-        _mountain_2 = _NewMapData.GetNextTile(_mountain_1, (HexDir)_mountaindir_2).Coordinate;
-
-        List<TileData> _mountaintemps = _NewMapData.GetAroundTile(new List<TileData> { _NewMapData.Tile(_mountain_0), _NewMapData.Tile(_mountain_1), _NewMapData.Tile(_mountain_2) }, 1);
-
-        bool _enable = true;
-        foreach (var _tile in _mountaintemps)
-        {
-          if (_newmountain.Contains(_tile.Coordinate)) { _enable = false; break; }
-          if (_tile.BottomEnvir == BottomEnvirType.Sea) { _enable = false; break; }
-        }
-        if (!_enable) continue;
-
-        break;
+        if (_tile.BottomEnvir != BottomEnvirType.Land) continue;
+        _mountainstartlist.Add(_tile);
       }
+      _mountainstartlist = _mountainstartlist.OrderBy(_ => _random.Next()).ToList();
 
-      _newmountain.Add(_mountain_0);
-      _newmountain.Add(_mountain_1);
-      _newmountain.Add(_mountain_2);
+      for (int j = 0; j < _mountainstartlist.Count; j++)
+      {
+        List<int> _currentmountaindirs = _mountaindirs.OrderBy(_ => _random.Next()).ToList(); //0~5 무작위로 배열
+        for(int k = 0; k < _currentmountaindirs.Count; k++)
+        {
+          List<List<TileData>> _mountaintilelists = new List<List<TileData>> { new List<TileData> { _mountainstartlist[0] } };
+          for(int l = 0; l < ConstValues.Mountain_Count_max; l++)
+          {
+            List<TileData> _currentlinetiles= new List<TileData>();
+            TileData _previewtile = _mountaintilelists[0][0];
+            for (int n = 0; n < _mountaintilelists.Count; n++) _previewtile = _NewMapData.GetNextTile(_previewtile,(HexDir)_currentmountaindirs[k]);
+            for(int n = -1; n < 2; n++)
+            {
+              TileData _targettile = _NewMapData.GetNextTile(_previewtile, (HexDir)RotateDir(_currentmountaindirs[k], n));
+              if (_targettile.BottomEnvir != BottomEnvirType.Land || _newmountain.Contains(_targettile)) continue;
+              _currentlinetiles.Add(_targettile);
+            }
+            _mountaintilelists.Add(_currentlinetiles);
+          }
+          int _ablecount = 0;
+          foreach (var _list in _mountaintilelists) if (_list.Count > 0) _ablecount++;
 
+          _mountaindone = _ablecount >= ConstValues.Mountain_Count_min;
+
+          if (_mountaindone)
+          {
+            foreach (var _list in _mountaintilelists)
+            {
+              if (_list.Count == 0) continue;
+              _newmountain.Add(_list[Random.Range(0, _list.Count)]);
+            }
+            break;
+          }
+        }
+        if (_mountaindone) break;
+      }
     }
-    foreach (var _coor in _newmountain)
+    for(int i=0;i< _newmountain.Count;i++)
     {
-      _NewMapData.Tile(_coor).TopEnvir = TopEnvirType.Mountain;
-      _NewMapData.Tile(_coor).TopEnvirSprite = TileSpriteType.Mountain;
+      _newmountain[i].TopEnvir = TopEnvirType.Mountain;
+      _newmountain[i].TopEnvirSprite = TileSpriteType.Mountain;
     }
+
     #endregion
     //     Debug.Log("산 생성 완료");
 
@@ -655,7 +670,7 @@ public class maptext : MonoBehaviour
     while (_settlementcompeleteeindex < 2)
     {
       LoopCount++;
-      if (LoopCount > 1000) { Debug.Log("도시 생성 중 무한루프"); return null; }
+      if (LoopCount > 100) { Debug.Log("도시 생성 중 무한루프"); return null; }
       int _index = _settlementcompeleteeindex;
 
       int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_Town);
@@ -702,7 +717,7 @@ public class maptext : MonoBehaviour
     while (_settlementcompeleteeindex < 3)
     {
       LoopCount++;
-      if (LoopCount > 1000) { Debug.Log("마을 생성 중 무한루프"); return null; }
+      if (LoopCount > 100) { Debug.Log("마을 생성 중 무한루프"); return null; }
       int _index = _settlementcompeleteeindex;
 
       int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_Village);
@@ -746,7 +761,7 @@ public class maptext : MonoBehaviour
     while (_settlementcompeleteeindex < 3)
     {
       LoopCount++;
-      if (LoopCount > 1000) { Debug.Log("촌락 생성 중 무한루프"); return null; }
+      if (LoopCount > 100) { Debug.Log("촌락 생성 중 무한루프"); return null; }
       int _index = _settlementcompeleteeindex;
 
       int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_min);
@@ -894,6 +909,7 @@ public class maptext : MonoBehaviour
         string _bottomname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).BottomEnvir}";
         Sprite _bottomspr = MyTiles.GetTile(_currenttile.BottomEnvirSprite);
         GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        _bottomtile.tag = "Tile";
         _bottomtile.transform.SetParent(TileHolder_bottomenvir);
         _bottomtile.AddComponent<Onpointer_tileoutline>().MyMapUI = MapUIScript;
         _bottomtile.GetComponent<Onpointer_tileoutline>().MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
@@ -989,6 +1005,7 @@ public class maptext : MonoBehaviour
         _previewpos_top.transform.SetParent(_bottomtile.transform);
         _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
         _tilescript.FogGroup = _fogtile.GetComponent<CanvasGroup>();
+        _tilescript.FogGroup.alpha = _currenttile.Fogstate == 0 ? 1.0f : _currenttile.Fogstate == 1 ? ConstValues.FogAlpha_visible : 0.0f;
 
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _tilescript;
       }
@@ -996,7 +1013,7 @@ public class maptext : MonoBehaviour
     //이 밑은 정착지를 버튼으로 만드는거
 
     Vector2 _settlementpos = Vector2.zero;
-    Vector2 _outlinesize = Vector2.one * 135.0f;
+    Vector2 _outlinesize = _cellsize * 1.2f;
     Color _outlinecolor = new Color(0.5f, 0.0f, 1.0f, 1.0f);
     for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.Villages.Count; i++)
     {
@@ -1176,6 +1193,14 @@ public class HexGrid
     }
     return null;
   }
+  public override int GetHashCode()
+  {
+    return base.GetHashCode();
+  }
+  public override bool Equals(object obj)
+  {
+    return base.Equals(obj);
+  }
   public static HexGrid operator +(HexGrid h0, HexGrid h1)
   {
     return new HexGrid(h0.q + h1.q, h0.r + h1.r, h0.s + h1.s);
@@ -1183,6 +1208,14 @@ public class HexGrid
   public static HexGrid operator -(HexGrid h0, HexGrid h1)
   {
     return new HexGrid(h0.q - h1.q, h0.r - h1.r, h0.s - h1.s);
+  }
+  public static bool operator ==(HexGrid h0, HexGrid h1)
+  {
+    return h0.q.Equals(h1.q) && h0.r.Equals(h1.r) && h0.s.Equals(h1.s);
+  }
+  public static bool operator !=(HexGrid h0, HexGrid h1)
+  {
+    return h0.q.Equals(h1.q) || h0.r.Equals(h1.r) || h0.s.Equals(h1.s);
   }
   public List<HexDir> GetDir
   {

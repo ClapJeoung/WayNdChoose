@@ -229,9 +229,11 @@ public class AudioManager : MonoBehaviour
   }
   private AudioChanel CurrentWalkingChanel = null;
   private bool Walking = true;
+  private IEnumerator WalkingCoroiutine = null;
   public void PlayWalking()
   {
-    StartCoroutine(playwalking());
+    if (WalkingCoroiutine == null) WalkingCoroiutine = playwalking();
+    StartCoroutine(WalkingCoroiutine);
   }
   private IEnumerator playwalking()
   {
@@ -262,6 +264,7 @@ public class AudioManager : MonoBehaviour
   {
     if (CurrentWalkingChanel != null)
     {
+      StopCoroutine(WalkingCoroiutine);
       Walking = false;
       CurrentWalkingChanel.Audio.Stop();
       CurrentWalkingChanel = null;

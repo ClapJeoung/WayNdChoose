@@ -8,9 +8,9 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.6f;
-  public const float FogAlphaChangeTime = 0.2f;
-  public const float FogScaleChangeTime = 0.4f;
+  public const float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.4f;
+  public const float FogAlphaChangeTime = 0.4f;
+  public const float FogScaleChangeTime = 0.6f;
 
   public const float SettlementPreviewDiscomfortIconSize_min = 35, SettlementPreviewDiscomfortIconSize_max = 90;
   public const float SettlementPreviewDiscomfortFont_min = 35, SettlementPreviewDiscomfortFont_max = 50;
@@ -19,7 +19,7 @@ public static class ConstValues
 
   public const int DefaultBonusGold = 1;
   public const int GoldPerSupplies = 1;
-  public const int StartSupplies = 4;
+  public const int StartSupplies = 10;
   public const int Supply_Sea = 4;
   public const int Supply_Moutain = 2;
   public const int Supply_River = 1, Supply_Forest = 1;
@@ -37,7 +37,7 @@ public static class ConstValues
   public const int ExpSkillLevel = 1;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
-  public const float MaxDiscomfortForUI = 20;
+  public const float MaxDiscomfortForUI = 25;
   public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
   public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
   public const int SupplyIconMinCount = -8, SupplyIconMaxCount = 30;
@@ -81,12 +81,13 @@ public static class ConstValues
                    EventPer_Quest = 1, EventPer_Follow_Ev = 10, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
   public const int ViewRange = 3;
-  public const int MapSize = 30;
-  public const int LandRadius = 10;
+  public const int MapSize = 32;
+  public const int LandRadius = 12;
   public const int MinRiverCount = 5;
 //  public const float Ratio_highland = 0.2f;
-  public const float Ratio_forest = 0.2f;
-  public const int Count_mountain = 3;
+  public const float Ratio_forest = 0.12f;
+  public const int Mountain_Count_min = 3, Mountain_Count_max = 5;
+  public const float Mountain_length_min = 0.4f, Mountain_length_max = 0.6f;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
   public const float SettlementLength_min = 0.3f;
   public const float SettlementLength_Village = 0.5f;
@@ -147,7 +148,7 @@ public static class ConstValues
 
   public const int DiscomfortDownValue = 1;
     public const int SectorEffectMaxTurn = 3;
-  public const int SectorEffect_residence_discomfort = 2;
+  public const int SectorEffect_residence_discomfort = 4;
     public const int SectorEffect_marketSector = 20;
     public const int SectorEffect_temple = 2;
   public const int SectorEffect_Library = 4;
@@ -712,13 +713,16 @@ public class GameData    //게임 진행도 데이터
   public void SetRitual()
   {
     Quest_Cult_Phase = 4;
-    List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 5);
+    List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 6);
+    List<TileData> _closetiles = MyMapData.GetAroundTile(CurrentTile, 3);
     if(_tiles.Contains(CurrentTile))_tiles.Remove(CurrentTile);
     List<int> _tileasindex= new List<int>();
     for(int i=0;i<_tiles.Count;i++)
     {
+      if (_closetiles.Contains(_tiles[i])) continue;
       if (!_tiles[i].Interactable) continue;
       if (_tiles[i].TileSettle != null) continue;
+
 
       for(int j = 0; j < _tiles[i].MovePoint; j++)
       {

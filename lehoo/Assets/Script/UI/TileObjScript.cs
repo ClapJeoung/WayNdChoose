@@ -56,7 +56,7 @@ public class TileObjScript : MonoBehaviour
     while (_time < ConstValues.FogScaleChangeTime)
     {
       if (_time > ConstValues.FogAlphaChangeTime)
-        FogGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, (_time- ConstValues.FogScaleChangeTime) /  ConstValues.FogAlphaChangeTime);
+        FogGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, (_time- (ConstValues.FogScaleChangeTime-ConstValues.FogAlphaChangeTime)) /  ConstValues.FogAlphaChangeTime);
       FogGroup.transform.localScale = Vector3.Lerp(_startscale, _endscale, _time / ConstValues.FogScaleChangeTime);
 
       _time += Time.deltaTime; yield return null;

@@ -8,7 +8,6 @@ using System.Linq;
 using System.IO;
 using System.Drawing.Text;
 using UnityEngine.Rendering;
-using UnityEngine.WSA;
 
 public class UI_map : UI_default
 {
@@ -65,6 +64,25 @@ public class UI_map : UI_default
   public float UICloseTime_Move = 0.4f;
 
   [SerializeField] private RectTransform HolderRect = null;
+  private bool IsMoved=false;
+  private IEnumerator resetholderpos()
+  {
+    float _time = 0.0f, _targettime = 0.8f;
+    Vector2 _originpos=HolderRect.anchoredPosition,_playerpos=PlayerRect.anchoredPosition;
+    while(_time < _targettime)
+    {
+      HolderRect.anchoredPosition=Vector2.Lerp(_originpos,_playerpos,MoveAnimationCurve.Evaluate(_time/_targettime));
+      _time+= Time.deltaTime; yield return null;
+    }
+    HolderRect.anchoredPosition = _playerpos;
+    yield return null;
+  }
+  public void MoveHolderRect(Vector2 rawvector)
+  {
+    if (rawvector.sqrMagnitude <= 2.5f) return;
+    IsMoved = true;
+    HolderRect.anchoredPosition += rawvector;
+  }
   [SerializeField] private RectTransform TilePreviewRect = null;
   [SerializeField] private CanvasGroup TilePreviewGroup = null;
   [SerializeField] private Image TilePreview_Bottom = null;
@@ -454,6 +472,17 @@ public class UI_map : UI_default
     }
     DefaultRect.sizeDelta = OpenSize;
 
+    if (IsMoved)
+    {
+      yield return StartCoroutine(resetholderpos());
+      IsMoved = false;
+    }
+
+    foreach(var _tile in ActiveTileData)
+    {
+      _tile.SetFog(2);
+    }
+
     if (DoHighlight)
     {
       List<RectTransform> _highlightlist = new List<RectTransform>();
@@ -532,7 +561,8 @@ public class UI_map : UI_default
       float _targettime = 0.0f;
       for (int i = 0; i < _highlightlist.Count; i++)
       {
-        if (_targettiles[i].Fogstate == 0) _targettiles[i].SetFog(1);
+        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_targettiles[i], 1))
+          if (_tile.Fogstate == 0) _tile.SetFog(1);
         _time = 0.0f;
         _pos = Vector2.zero;
         _startpos = HolderRect.anchoredPosition;
@@ -883,6 +913,11 @@ public class UI_map : UI_default
       yield break;
     }
 
+    if (IsMoved)
+    {
+      yield return StartCoroutine(resetholderpos());
+      IsMoved = false;
+    }
 
     Dictionary<TileData, int> _movepointicondata = new Dictionary<TileData, int>();
     int _totalmp = 0;
@@ -943,6 +978,7 @@ public class UI_map : UI_default
     float _currentvalue = 0.0f;     //
     Vector2 _current = Vector2.zero,_next= Vector2.zero;
     float _movetime = MoveTime * _pathcount;
+    List<TileData> _endaroundtiles = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, ConstValues.ViewRange);
     while (_time < _movetime)
     {
       _value = MoveAnimationCurve.Evaluate(_time / _movetime);
@@ -961,17 +997,21 @@ public class UI_map : UI_default
         if(Route_Tile[_currentindex].Landmark == LandmarkType.Ritual)
           UIManager.Instance.CultUI.AddProgress(4, null);
 
-        List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, ConstValues.ViewRange);
+        List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(Route_Tile[_currentindex], ConstValues.ViewRange);
         foreach(var _oldtile in ActiveTileData)
         {
-          if (_newarounds.Contains(_oldtile)) continue;
-          _oldtile.SetFog(1);
+          if (!_newarounds.Contains(_oldtile))
+          {
+            _oldtile.SetFog(1);
+            _oldtile.ButtonScript.Button.interactable = false;
+            if (_oldtile.ButtonScript.Preview != null) _oldtile.ButtonScript.Preview.enabled = false;
+          }
         }
         ActiveTileData.Clear();
-        foreach(var _newtile in _newarounds)
+        foreach (var _tile in _newarounds)
         {
-          ActiveTileData.Add(_newtile);
-          _newtile.SetFog(2);
+          ActiveTileData.Add(_tile);
+          _tile.SetFog(2);
         }
 
         _lastindex = _currentindex;

@@ -129,7 +129,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private RectTransform SettlementDiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
   [SerializeField] private TextMeshProUGUI SettlementMovePointText = null;
-
+  [SerializeField] private MouseScript CurrentMouse = null;
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
   {
@@ -725,7 +725,7 @@ public class PreviewManager : MonoBehaviour
     //  Sprite[] _icons = new Sprite[2];
     Skill[] _skills= new Skill[2];
     int _requirelevel = 0, _currentlevel = 0, _percentage = 0;
-    string _requiretext = "",  _percentage_text = "", _percentage_int = "";//, _subdescription = "";
+    string  _percentage_text = "", _percentage_int = "";//, _subdescription = "";
 
   //  _subdescription= _selection.SubDescription;
     _percentage_text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
@@ -737,7 +737,6 @@ public class PreviewManager : MonoBehaviour
       _skills[0] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[0]);
    //   _icons[0]=GameManager.Instance.ImageHolder.GetSkillIcon(_skills[0].MySkillType);
       _currentlevel = _skills[0].Level;
-      _requiretext = string.Format(GameManager.Instance.GetTextData("LevelCheck_Text"),GameManager.Instance.GetTextData(_skills[0].MySkillType,2), _requirelevel);
 
     //  if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(true)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(false);
     }
@@ -751,9 +750,6 @@ public class PreviewManager : MonoBehaviour
      //   _icons[i] = GameManager.Instance.ImageHolder.GetSkillIcon(_skills[i].MySkillType);
         _currentlevel += _skills[i].Level;
       }
-      _requiretext = string.Format(GameManager.Instance.GetTextData("LevelCheck_Text"), 
-        GameManager.Instance.GetTextData(_skills[0].MySkillType, 2)+"+"+ GameManager.Instance.GetTextData(_skills[1].MySkillType, 2),
-        _requirelevel);
 
      // if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
     }
@@ -935,6 +931,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenTileInfoPreveiew(TileData tileData, RectTransform tilerect)
   {
     if (tileData == GameManager.Instance.MyGameData.CurrentTile) return;
+    if (CurrentMouse.MouseState == MouseStateEnum.DragMap) return;
 
     Vector2 _pivot = new Vector2(0.5f,tileData.Coordinate.y<=GameManager.Instance.MyGameData.Coordinate.y?1.05f:-0.05f);
     string _movepointstring = "";
