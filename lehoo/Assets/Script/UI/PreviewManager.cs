@@ -622,29 +622,11 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(TendencyPreview, rect);
   }
-  private Vector2 SelectionPivot = new Vector2(0.5f, -0.8f);
   public void OpenSelectionNonePreview(SelectionData _selection,TendencyTypeEnum tendencytype,bool dir, RectTransform toprect)
   {
     if (SelectionNoneReward.Setup(_selection) == false) return;
 
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
-
-    //  SelectionNoneText.text = _selection.SubDescription;
-
-    
-    /*
-    switch (tendencytype)
-    {
-      case TendencyTypeEnum.None:
-        break;
-      case TendencyTypeEnum.Body:
-        _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
-        break;
-      case TendencyTypeEnum.Head:
-        _pivot = dir == true ? new Vector2(1.1f, 0.5f) : new Vector2(-0.1f, 0.5f);
-        break;
-    }
-    */
     
     OpenPreviewPanel(SelectionNonePanel, toprect);
   }

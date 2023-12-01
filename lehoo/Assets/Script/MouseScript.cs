@@ -71,7 +71,7 @@ public class MouseScript : MonoBehaviour
           Vector2 _newpos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
           Offset = _newpos - LastPos;
           LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-          UIManager.Instance.MapUI.MoveHolderRect(Offset * MapMoveDegree);
+          UIManager.Instance.MapUI.MoveHolderRect_mouse(Offset * MapMoveDegree);
         }
         else
         {
@@ -79,5 +79,6 @@ public class MouseScript : MonoBehaviour
         }
       }
     }
+    if (Input.GetMouseButtonUp(1)) MouseState = MouseStateEnum.Idle;
   }
 }

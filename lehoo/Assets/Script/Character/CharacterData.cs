@@ -81,18 +81,18 @@ public static class ConstValues
                    EventPer_Quest = 1, EventPer_Follow_Ev = 10, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
   public const int ViewRange = 3;
-  public const int MapSize = 32;
-  public const int LandRadius = 12;
+  public const int MapSize = 30;
+  public const int LandRadius = 10;
   public const int MinRiverCount = 5;
 //  public const float Ratio_highland = 0.2f;
   public const float Ratio_forest = 0.12f;
-  public const int Mountain_Count_min = 3, Mountain_Count_max = 5;
-  public const float Mountain_length_min = 0.4f, Mountain_length_max = 0.6f;
+  public const int Mountain_Count_min = 3, Mountain_Count_max = 4;
+  public const float Mountain_length_min = 0.3f, Mountain_length_max = 0.7f;
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
   public const float SettlementLength_min = 0.3f;
   public const float SettlementLength_Village = 0.5f;
   public const float SettlementLength_Town = 0.7f;
-  public const float SettlementLength_City = 1.0f;
+  public const float SettlementLength_City = 0.9f;
 
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 

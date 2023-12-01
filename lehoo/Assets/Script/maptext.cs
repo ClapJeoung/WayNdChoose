@@ -754,9 +754,9 @@ public class maptext : MonoBehaviour
     _enablelines.Clear();
 
     List<Settlement> Villages = new List<Settlement> {  new Settlement(SettlementType.Village), new Settlement(SettlementType.Village), new Settlement(SettlementType.Village) };
-    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _towndir[0]));
-    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _towndir[1]));
-    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _towndir[2]));
+    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedirs[0]));
+    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedirs[1]));
+    _enablelines.Add(_NewMapData.GetDirLines(_NewMapData.CenterTile, _villagedirs[2]));
 
     while (_settlementcompeleteeindex < 3)
     {

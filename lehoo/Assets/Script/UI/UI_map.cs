@@ -12,6 +12,16 @@ using UnityEngine.Rendering;
 public class UI_map : UI_default
 {
   [SerializeField] private RectTransform PlayerRect = null;
+  [SerializeField] private TextMeshProUGUI DragDescription = null;
+  [SerializeField] private Button CameraResetButton = null;
+  public void CameraResetButtonClicked()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    if (!IsMoved) return;
+    UIManager.Instance.AddUIQueue(resetholderpos());
+    IsMoved = false;
+    CameraResetButton.interactable = false;
+  }
   [SerializeField] private Image Outline_Idle = null;
   [SerializeField] private Image Outline_Select = null;
   [SerializeField] private List<Image> Outline_Routes = new List<Image>();
@@ -64,24 +74,33 @@ public class UI_map : UI_default
   public float UICloseTime_Move = 0.4f;
 
   [SerializeField] private RectTransform HolderRect = null;
+  private float HolderPos_Min_x = 0.0f;
+  private float HolderPos_Min_y = 0.0f;
+  private float HolderPos_Max_x = 0.0f;
+  private float HolderPos_Max_y = 0.0f;
   private bool IsMoved=false;
   private IEnumerator resetholderpos()
   {
     float _time = 0.0f, _targettime = 0.8f;
-    Vector2 _originpos=HolderRect.anchoredPosition,_playerpos=PlayerRect.anchoredPosition;
+    Vector2 _originpos=HolderRect.anchoredPosition,_playerpos=PlayerRect.anchoredPosition*-1.0f;
     while(_time < _targettime)
     {
-      HolderRect.anchoredPosition=Vector2.Lerp(_originpos,_playerpos,MoveAnimationCurve.Evaluate(_time/_targettime));
+      Vector2 _newpos = Vector2.Lerp(_originpos, _playerpos, MoveAnimationCurve.Evaluate(_time / _targettime));
+      _newpos = new Vector2(Mathf.Clamp(_newpos.x, HolderPos_Min_x, HolderPos_Max_x), Mathf.Clamp(_newpos.y, HolderPos_Min_y, HolderPos_Max_y));
+      HolderRect.anchoredPosition = _newpos;
       _time+= Time.deltaTime; yield return null;
-    }
+    }Vector2.Lerp(_originpos,_playerpos,MoveAnimationCurve.Evaluate(_time/_targettime));
     HolderRect.anchoredPosition = _playerpos;
     yield return null;
   }
-  public void MoveHolderRect(Vector2 rawvector)
+  public void MoveHolderRect_mouse(Vector2 rawvector)
   {
     if (rawvector.sqrMagnitude <= 2.5f) return;
     IsMoved = true;
-    HolderRect.anchoredPosition += rawvector;
+    CameraResetButton.interactable = true;
+    Vector2 _newpos= HolderRect.anchoredPosition + rawvector;
+    _newpos=new Vector2(Mathf.Clamp(_newpos.x,HolderPos_Min_x,HolderPos_Max_x),Mathf.Clamp(_newpos.y,HolderPos_Min_y,HolderPos_Max_y));
+    HolderRect.anchoredPosition = _newpos;
   }
   [SerializeField] private RectTransform TilePreviewRect = null;
   [SerializeField] private CanvasGroup TilePreviewGroup = null;
@@ -366,6 +385,18 @@ public class UI_map : UI_default
   /// <param name="dir"></param>
   public void OpenUI(bool dir)
   {
+    if (HolderPos_Min_x == 0.0f)
+    {
+      float _size = GameManager.Instance.MyGameData.MyMapData.TileDatas[0, 0].ButtonScript.Rect.sizeDelta.x;
+      float _length = 2.5f;
+      Vector2 _mintile = GameManager.Instance.MyGameData.MyMapData.TileDatas[0, 0].ButtonScript.Rect.anchoredPosition;
+      HolderPos_Max_x = -1.0f*_mintile.x- _size* _length;
+      HolderPos_Max_y = -1.0f * _mintile.y - _size * _length;
+      Vector2 _maxtile = GameManager.Instance.MyGameData.MyMapData.TileDatas[ConstValues.MapSize-1, ConstValues.MapSize - 1].ButtonScript.Rect.anchoredPosition;
+      HolderPos_Min_x = -1.0f * _maxtile.x + _size * _length;
+      HolderPos_Min_y = -1.0f * _maxtile.y + _size * _length;
+    }
+
     IsOpen = true;
     UIManager.Instance.AddUIQueue(openui(dir));
   }
@@ -373,7 +404,8 @@ public class UI_map : UI_default
   private IEnumerator openui(bool dir)
   {
     if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
-
+    if (DragDescription.text == "") DragDescription.text = GameManager.Instance.GetTextData("MapDragDescription");
+    CameraResetButton.interactable = false;
     if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild - 1))
     {
       Debug.Log("자연 광기 발동");
@@ -474,8 +506,9 @@ public class UI_map : UI_default
 
     if (IsMoved)
     {
-      yield return StartCoroutine(resetholderpos());
+      CameraResetButton.interactable = false;
       IsMoved = false;
+      yield return StartCoroutine(resetholderpos());
     }
 
     foreach(var _tile in ActiveTileData)
@@ -915,8 +948,9 @@ public class UI_map : UI_default
 
     if (IsMoved)
     {
-      yield return StartCoroutine(resetholderpos());
       IsMoved = false;
+      CameraResetButton.interactable = false;
+      yield return StartCoroutine(resetholderpos());
     }
 
     Dictionary<TileData, int> _movepointicondata = new Dictionary<TileData, int>();
