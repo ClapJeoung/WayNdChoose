@@ -130,10 +130,10 @@ public static class ConstValues
   public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 20;
 
   public const float Difficult = 1.0f;
-  public const float PayHP_min = 3, PayHP_max = 9;      
+  public const float PayHP_min = 2, PayHP_max = 6;      
   public const float PaySanity_min = 8, PaySanity_max = 24;
   public const float PayGold_min = 6, PayGold_max = 18; 
-  public const float FailHP_min = 6, FailHP_max = 18;   
+  public const float FailHP_min = 4, FailHP_max = 12;   
   public const float FailSanity_min = 14, FailSanity_max = 36;
   public const float FailGold_min = 6, FailGold_max = 18;
   public const int RewardHP_min = 0, RewardHP_max = 0;
@@ -653,6 +653,7 @@ public class GameData    //게임 진행도 데이터
   public SectorTypeEnum Cult_SabbatSector = SectorTypeEnum.NULL;
   public void SetSabbat()
   {
+    UIManager.Instance.MapUI.DoHighlight = true;
     Quest_Cult_Phase = 3;
     int _village = 0, _town = 0, _city = 0;
     if (CurrentSettlement == null)
@@ -712,6 +713,7 @@ public class GameData    //게임 진행도 데이터
   public TileData Cult_RitualTile = null;
   public void SetRitual()
   {
+    UIManager.Instance.MapUI.DoHighlight = true;
     Quest_Cult_Phase = 4;
     List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 6);
     List<TileData> _closetiles = MyMapData.GetAroundTile(CurrentTile, 3);

@@ -365,6 +365,11 @@ public class PreviewManager : MonoBehaviour
         _arrowsprite_right = GameManager.Instance.ImageHolder.Arrow_Active_physical;
         break;
     }
+    string _targetselectionname = _targettendency.Type == TendencyTypeEnum.Body ?
+      _targettendency.Level < 0 ? GameManager.Instance.GetTextData("Selection_logic") : GameManager.Instance.GetTextData("Selection_physical") :
+      _targettendency.Level < 0 ? GameManager.Instance.GetTextData("Selection_mental") : GameManager.Instance.GetTextData("Selection_material");
+    string _targetpenaltynames = Mathf.Abs(_targettendency.Level) == 1 ? GameManager.Instance.GetTextData("Fail") :
+      GameManager.Instance.GetTextData("Success") + "," + GameManager.Instance.GetTextData("Fail");
     Sprite _icon = _targettendency.CurrentIcon;
     Sprite _icon_left=_targettendency.GetNextIcon(true), _icon_right=_targettendency.GetNextIcon(false);
     int _progress =_targettendency.Progress;
@@ -612,8 +617,9 @@ public class PreviewManager : MonoBehaviour
     TendencyIcon_Current.sprite = _icon;
 
     string _name = _targettendency.Name;
-    string _description = WNCText.SetSize(EffectFontSize, _targettendency.GetTendencyEffectString) +
-      "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
+    string _description = WNCText.SetSize(EffectFontSize, _targettendency.GetTendencyEffectString) + "<br><br>"+
+    string.Format(GameManager.Instance.GetTextData("TendencyPenalty"), _targetselectionname, _targetpenaltynames);
+  //    "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
     TendencyName.text = _name;
     TendencyDescription.text = _description;

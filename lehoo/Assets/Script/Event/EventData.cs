@@ -873,7 +873,7 @@ public class SelectionData
   /// <summary>
   /// 0,1
   /// </summary>
-  private int Index = 0;
+  public int Index = 0;
   /// <summary>
   /// 성향 없는 경우
   /// </summary>

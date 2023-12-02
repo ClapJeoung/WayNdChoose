@@ -84,75 +84,117 @@ public class PreviewRewardGroup : MonoBehaviour
   public bool Setup(SelectionData selection)
   {
     bool _reward = false, _penalty = false;
-
-    SuccessData _success = selection.SuccessData;
-    if (_success.Reward_Type == RewardTypeEnum.None)
+    bool _hidereward=false, _hidepenalty = false;
+    switch(selection.Tendencytype)
     {
-      if(RewardObj.activeInHierarchy==true)RewardObj.SetActive(false);
+      case TendencyTypeEnum.Body:
+        _hidepenalty = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Body.Level < 0 : GameManager.Instance.MyGameData.Tendency_Body.Level > 0;
+        _hidereward = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Body.Level < -1 : GameManager.Instance.MyGameData.Tendency_Body.Level > 1;
+        break;
+      case TendencyTypeEnum.Head:
+        _hidepenalty = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Head.Level < 0 : GameManager.Instance.MyGameData.Tendency_Head.Level > 0;
+        _hidereward = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Head.Level < -1 : GameManager.Instance.MyGameData.Tendency_Head.Level > 1;
+        break;
+    }
+
+    if (RewardText.text == "") RewardText.text = GameManager.Instance.GetTextData("Success")+" :";
+    if (PenaltyText.text == "") PenaltyText.text = GameManager.Instance.GetTextData("Fail") + " :";
+
+    if (!_hidereward)
+    {
+      SuccessData _success = selection.SuccessData;
+      if (_success.Reward_Type == RewardTypeEnum.None)
+      {
+        if (RewardObj.activeInHierarchy == true) RewardObj.SetActive(false);
+      }
+      else
+      {
+        if (RewardObj.activeInHierarchy == false) RewardObj.SetActive(true);
+
+        Sprite _rewardicon = null;
+        switch (_success.Reward_Type)
+        {
+          case RewardTypeEnum.Status:
+            if (!RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(true);
+            if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
+            switch (_success.Reward_StatusType)
+            {
+              case StatusTypeEnum.HP: _rewardicon = GameManager.Instance.ImageHolder.HPIcon; break;
+              case StatusTypeEnum.Sanity: _rewardicon = GameManager.Instance.ImageHolder.SanityIcon; break;
+              case StatusTypeEnum.Gold: _rewardicon = GameManager.Instance.ImageHolder.GoldIcon; break;
+            }
+            RewardIcon.sprite = _rewardicon;
+            break;
+          case RewardTypeEnum.Experience:
+            if (RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(false);
+            if (!ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(true);
+            SetExpEffectIcon(GameManager.Instance.ExpDic[_success.Reward_EXPID].Effects);
+            break;
+          case RewardTypeEnum.Skill:
+            if (!RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(true);
+            if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
+            _rewardicon = GameManager.Instance.ImageHolder.GetSkillIcon(_success.Reward_SkillType, false);
+            RewardIcon.sprite = _rewardicon;
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(RewardIcon.transform.parent.transform as RectTransform);
+        _reward = true;
+      }
     }
     else
     {
       if (RewardObj.activeInHierarchy == false) RewardObj.SetActive(true);
-      if (RewardText.text=="")RewardText.text = GameManager.Instance.GetTextData("SuccessReward");
-
-      Sprite _rewardicon = null;
-      switch (_success.Reward_Type)
-      {
-        case RewardTypeEnum.Status:
-          if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
-          switch (_success.Reward_StatusType)
-          {
-            case StatusTypeEnum.HP: _rewardicon = GameManager.Instance.ImageHolder.HPIcon; break;
-            case StatusTypeEnum.Sanity: _rewardicon = GameManager.Instance.ImageHolder.SanityIcon; break;
-            case StatusTypeEnum.Gold: _rewardicon = GameManager.Instance.ImageHolder.GoldIcon; break;
-          }
-          break;
-        case RewardTypeEnum.Experience:
-          if (!ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(true);
-          _rewardicon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
-          SetExpEffectIcon(GameManager.Instance.ExpDic[_success.Reward_EXPID].Effects);
-          break;
-        case RewardTypeEnum.Skill:
-          if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
-          _rewardicon = GameManager.Instance.ImageHolder.GetSkillIcon(_success.Reward_SkillType, false);
-          break;
-      }
-      RewardIcon.sprite = _rewardicon;
-      LayoutRebuilder.ForceRebuildLayoutImmediate(RewardIcon.transform.parent.transform as RectTransform);
+      if (!RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(true);
+      if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
+      RewardIcon.sprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
       _reward = true;
     }
 
-    FailData _faildata = selection.FailData;
-    if (_faildata == null||selection.ThisSelectionType==SelectionTargetType.Pay)
+    if (!_hidepenalty)
     {
-      if (PenaltyObj.activeInHierarchy == true) PenaltyObj.SetActive(false);
-    }
-    else
-    {
-      if (_faildata.Penelty_target == PenaltyTarget.None)
+      FailData _faildata = selection.FailData;
+      if (_faildata == null || selection.ThisSelectionType == SelectionTargetType.Pay)
       {
         if (PenaltyObj.activeInHierarchy == true) PenaltyObj.SetActive(false);
       }
       else
       {
-
-        if (PenaltyObj.activeInHierarchy == false) PenaltyObj.SetActive(true);
-        Sprite _penaltyicon = null;
-        switch (_faildata.Penelty_target)
+        if (_faildata.Penelty_target == PenaltyTarget.None)
         {
-          case PenaltyTarget.Status:
-            switch (_faildata.StatusType)
-            {
-              case StatusTypeEnum.HP: _penaltyicon = GameManager.Instance.ImageHolder.HPDecreaseIcon; break;
-              case StatusTypeEnum.Sanity: _penaltyicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon; break;
-              case StatusTypeEnum.Gold: _penaltyicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon; break;
-            }
-            break;
+          if (PenaltyObj.activeInHierarchy == true) PenaltyObj.SetActive(false);
         }
-        if(PenaltyText.text=="") PenaltyText.text = GameManager.Instance.GetTextData("FailPenalty");
-        PenaltyIcon.sprite = _penaltyicon;
+        else
+        {
 
-        _penalty = true;
+          if (PenaltyObj.activeInHierarchy == false) PenaltyObj.SetActive(true);
+          Sprite _penaltyicon = null;
+          switch (_faildata.Penelty_target)
+          {
+            case PenaltyTarget.Status:
+              switch (_faildata.StatusType)
+              {
+                case StatusTypeEnum.HP: _penaltyicon = GameManager.Instance.ImageHolder.HPDecreaseIcon; break;
+                case StatusTypeEnum.Sanity: _penaltyicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon; break;
+                case StatusTypeEnum.Gold: _penaltyicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon; break;
+              }
+              break;
+          }
+          PenaltyIcon.sprite = _penaltyicon;
+
+          _penalty = true;
+        }
+      }
+    }
+    else
+    {
+      if (selection.ThisSelectionType == SelectionTargetType.Check_Single || selection.ThisSelectionType == SelectionTargetType.Check_Multy)
+      {
+        if (PenaltyObj.activeInHierarchy == false) PenaltyObj.SetActive(true);
+        PenaltyIcon.sprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
+      }
+      else
+      {
+        if (PenaltyObj.activeInHierarchy == true) PenaltyObj.SetActive(false);
       }
     }
 
