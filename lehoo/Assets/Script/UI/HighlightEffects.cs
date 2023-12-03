@@ -49,7 +49,7 @@ public class HighlightEffects : MonoBehaviour
       }
       else
       {
-        GetHighlight(info.CallType).SetEffect(info.Value);
+        GetHighlight(info.CallType).SetEffect();
       }
     }
   }
@@ -83,19 +83,13 @@ public class HighlightHolder
   public HighlightEffectEnum Type;
   public CanvasGroup Group = null;
   public TextMeshProUGUI Text = null;
-  private int OriginValue = 100;
   public CanvasGroup ConversationEffect = null;
   public CanvasGroup ForceEffect = null;
   public CanvasGroup WildEffect = null;
   public CanvasGroup IntelligenceEffect = null;
-  public void SetEffect(int value)
+  public void SetEffect()
   {
     Group.alpha = 1.0f;
-
-    if (OriginValue == 100 || value == 0) return;
-    OriginValue = int.Parse(Text.text);
-    string _valuetext =OriginValue+ value > 0 ? $"+{value}" : $"{value}";
-    Text.text = _valuetext;
   }
   public void SetEffect_Skill(List<SkillTypeEnum> skill)
   {
@@ -169,8 +163,5 @@ public class HighlightHolder
         }
       }
     }
-
-    if (OriginValue == 100) return;
-    Text.text=OriginValue.ToString();
   }
 }

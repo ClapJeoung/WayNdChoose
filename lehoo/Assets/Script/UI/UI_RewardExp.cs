@@ -57,7 +57,7 @@ public class UI_RewardExp : UI_default
     switch (index)
     {
       case 0:
-        LongExpHighight.SetInfo(HighlightEffectEnum.Sanity, (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true)));
+        LongExpHighight.SetInfo(HighlightEffectEnum.Sanity);
 
         if(exp != null)
         {
@@ -120,7 +120,7 @@ public class UI_RewardExp : UI_default
     if (index==0)
     {
       ExpDescription.text = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.LongTermStartTurn,
-        ConstValues.LongTermChangeCost*GameManager.Instance.MyGameData.GetSanityLossModify(true));
+        ConstValues.LongTermChangeCost*GameManager.Instance.MyGameData.GetSanityLossModify(true,0));
     }
     else
     {
@@ -160,7 +160,7 @@ public class UI_RewardExp : UI_default
     {
       if (AskedForChange)
       {
-        GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true));
+        GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0));
 
         GameManager.Instance.AddExp_Long(CurrentExp);
         if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
@@ -176,7 +176,7 @@ public class UI_RewardExp : UI_default
     }
     else
     {
-      GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true));
+      GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0));
 
       GameManager.Instance.AddExp_Long(CurrentExp);
       if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)

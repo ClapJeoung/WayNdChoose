@@ -592,35 +592,44 @@ public class UI_map : UI_default
       }
       Vector3 _pos = Vector2.zero;
       float _targettime = 0.0f;
-      for (int i = 0; i < _highlightlist.Count; i++)
+      TileData _highlighttarget = null;
+      int _min = 100;
+      foreach(var _tile in _targettiles)
       {
-        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_targettiles[i], 1))
-          if (_tile.Fogstate == 0) _tile.SetFog(1);
-        _time = 0.0f;
-        _pos = Vector2.zero;
-        _startpos = HolderRect.anchoredPosition;
-        _endpos = _highlightlist[i].anchoredPosition * -1.0f;
-        _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
-        while (_time < _targettime)
+        int _newmin = MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, _tile).Count;
+        if (_newmin < _min)
         {
-          _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
-          HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
-          _time += Time.deltaTime;
-          yield return null;
+          _min = _newmin;
+          _highlighttarget = _tile;
         }
-        HolderRect.anchoredPosition3D = _endpos;
-
-        _time = 0.0f;
-        _targettime = DoHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
-        Vector3 _highlightscale = DoHighlight ? HighlightSize_First : HighlightSize_Second;
-        while (_time < _targettime)
-        {
-          _highlightlist[i].localScale = Vector3.Lerp(Vector3.one, _highlightscale, SettlementIconCurve.Evaluate(_time / _targettime));
-          _time += Time.deltaTime;
-          yield return null;
-        }
-        _highlightlist[i].localScale = Vector3.one;
       }
+
+      foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_highlighttarget, 1))
+        if (_tile.Fogstate == 0) _tile.SetFog(1);
+      _time = 0.0f;
+      _pos = Vector2.zero;
+      _startpos = HolderRect.anchoredPosition;
+      _endpos = _highlighttarget.ButtonScript.Rect.anchoredPosition * -1.0f;
+      _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+      while (_time < _targettime)
+      {
+        _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+        HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+        _time += Time.deltaTime;
+        yield return null;
+      }
+      HolderRect.anchoredPosition3D = _endpos;
+
+      _time = 0.0f;
+      _targettime = DoHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
+      Vector3 _highlightscale = DoHighlight ? HighlightSize_First : HighlightSize_Second;
+      while (_time < _targettime)
+      {
+        _highlighttarget.ButtonScript.LandmarkImage.rectTransform.localScale = Vector3.Lerp(Vector3.one, _highlightscale, SettlementIconCurve.Evaluate(_time / _targettime));
+        _time += Time.deltaTime;
+        yield return null;
+      }
+      _highlighttarget.ButtonScript.LandmarkImage.rectTransform.localScale = Vector3.one;
 
       _time = 0.0f;
       _pos = Vector2.zero;
@@ -793,14 +802,14 @@ public class UI_map : UI_default
 
     SanitybuttonGroup.interactable = true;
     SanityButton_Highlight.Interactive = true;
-    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity, -1 * SanityCost);
-    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1 * MovePointCost);
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint);
 
     bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
     GoldbuttonGroup.interactable = _goldable;
     GoldButton_Highlight.Interactive = _goldable;
-    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold, -1 * GoldCost);
-    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint, -1 * MovePointCost);
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint);
     GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
     string[] _bonusgoldtext = null;

@@ -57,6 +57,8 @@ public class UIManager : MonoBehaviour
   public UI_Ending EndingUI = null;
   public UI_Tutorial TutorialUI = null;
   public HighlightEffects HighlightManager = null;
+  public ExpDragPreview ExpDragPreview = null;
+  public MouseScript Mouse = null;
   public bool IsWorking = false;
   public PreviewManager PreviewManager = null;
   [SerializeField] private ImageSwapScript EnvirBackground = null;
@@ -910,15 +912,25 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform LongExpCover = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn = null;
   [SerializeField] private CanvasGroup LongMad = null;
+  [SerializeField] private CanvasGroup ExpUse_Long_Group = null;
+  [SerializeField] private Image ExpUse_Long_img = null;
+  [SerializeField] private TextMeshProUGUI ExpUse_Long_text = null;
   private bool LongExpActive = false;
   [SerializeField] private RectTransform ShortExpCover_A = null;
   [SerializeField] private TextMeshProUGUI ShortExpTurn_A= null;
   [SerializeField] private CanvasGroup ShortMad_A = null;
+  [SerializeField] private CanvasGroup ExpUse_Short_A_Group = null;
+  [SerializeField] private Image ExpUse_Short_A_img = null;
+  [SerializeField] private TextMeshProUGUI ExpUse_Short_A_text = null;
   private bool ShortExpAActive = false;
   [SerializeField] private RectTransform ShortExpCover_B = null;
   [SerializeField] private TextMeshProUGUI ShortExpTurn_B = null;
   [SerializeField] private CanvasGroup ShortMad_B = null;
   private bool ShortExpBActive = false;
+  [SerializeField] private CanvasGroup ExpUse_Short_B_Group = null;
+  [SerializeField] private Image ExpUse_Short_B_img = null;
+  [SerializeField] private TextMeshProUGUI ExpUse_Short_B_text = null;
+  [SerializeField] private Color ExpUseRefuseColor = new Color();
   public Vector2 ExpCoverUpPos = new Vector2(0.0f, 81.6f);
   public void UpdateExpMad()
   {
@@ -1025,6 +1037,148 @@ public class UIManager : MonoBehaviour
     if (_starteffect) HighlightManager.HighlightAnimation(HighlightEffectEnum.Exp);
 
     UpdateHPIcon();
+  }
+  public void UpdateExpUse()
+  {
+    if (GameManager.Instance.MyGameData.LongExp == null)
+    {
+      if (ExpUse_Long_Group.alpha==1.0f)
+      {
+        ExpUse_Long_text.text = "";
+        StartCoroutine(ChangeAlpha(ExpUse_Long_Group, 0.0f, 0.2f));
+      }
+    }
+    else
+    {
+      Experience _long = GameManager.Instance.MyGameData.LongExp;
+      if (DialogueUI.ExpUsageDic_L.ContainsKey(_long))
+      {
+        ExpUse_Long_img.sprite = GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Single ?
+          GameManager.Instance.ImageHolder.SelectionBackground_none :
+          GameManager.Instance.ImageHolder.SelectionBackground(
+            GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Body ? TendencyTypeEnum.Body:TendencyTypeEnum.Head, true);
+
+        if (ExpUse_Long_Group.alpha == 0.0f)
+        {
+          StartCoroutine(ChangeAlpha(ExpUse_Long_Group, 1.0f, 0.2f));
+        }
+        ExpUse_Long_text.text = ((int)-1.0f * DialogueUI.ExpUsageDic_L[_long]).ToString();
+      }
+      else if (DialogueUI.ExpUsageDic_R.ContainsKey(_long))
+      {
+        ExpUse_Long_img.sprite = GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Single ?
+          GameManager.Instance.ImageHolder.SelectionBackground_none :
+          GameManager.Instance.ImageHolder.SelectionBackground(
+            GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Body ? TendencyTypeEnum.Body : TendencyTypeEnum.Head, false);
+
+        if (ExpUse_Long_Group.alpha == 0.0f)
+        {
+          StartCoroutine(ChangeAlpha(ExpUse_Long_Group, 1.0f, 0.2f));
+        }
+        ExpUse_Long_text.text = ((int)-1.0f * DialogueUI.ExpUsageDic_R[_long]).ToString();
+      }
+      else
+      {
+        if (ExpUse_Long_Group.alpha == 1.0f)
+        {
+          ExpUse_Long_text.text = "";
+          StartCoroutine(ChangeAlpha(ExpUse_Long_Group, 0.0f, 0.2f));
+        }
+      }
+
+    }
+    if (GameManager.Instance.MyGameData.ShortExp_A == null)
+    {
+      if (ExpUse_Short_A_Group.alpha == 1.0f)
+      {
+        ExpUse_Short_A_text.text = "";
+        StartCoroutine(ChangeAlpha(ExpUse_Short_A_Group, 0.0f, 0.2f));
+      }
+    }
+    else
+    {
+      Experience _Short = GameManager.Instance.MyGameData.ShortExp_A;
+      if (DialogueUI.ExpUsageDic_L.ContainsKey(_Short))
+      {
+        ExpUse_Short_A_img.sprite = GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Single ?
+          GameManager.Instance.ImageHolder.SelectionBackground_none :
+          GameManager.Instance.ImageHolder.SelectionBackground(
+            GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Body ? TendencyTypeEnum.Body : TendencyTypeEnum.Head, true);
+
+        if (ExpUse_Short_A_Group.alpha == 0.0f)
+        {
+          StartCoroutine(ChangeAlpha(ExpUse_Short_A_Group, 1.0f, 0.2f));
+        }
+        ExpUse_Short_A_text.text = ((int)-1.0f * DialogueUI.ExpUsageDic_L[_Short]).ToString();
+      }
+      else if (DialogueUI.ExpUsageDic_R.ContainsKey(_Short))
+      {
+        ExpUse_Short_A_img.sprite = GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Single ?
+          GameManager.Instance.ImageHolder.SelectionBackground_none :
+          GameManager.Instance.ImageHolder.SelectionBackground(
+            GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Body ? TendencyTypeEnum.Body : TendencyTypeEnum.Head, false);
+
+        if (ExpUse_Short_A_Group.alpha == 0.0f)
+        {
+          StartCoroutine(ChangeAlpha(ExpUse_Short_A_Group, 1.0f, 0.2f));
+        }
+        ExpUse_Short_A_text.text = ((int)-1.0f * DialogueUI.ExpUsageDic_R[_Short]).ToString();
+      }
+      else
+      {
+        if (ExpUse_Short_A_Group.alpha == 1.0f)
+        {
+          ExpUse_Short_A_text.text = "";
+          StartCoroutine(ChangeAlpha(ExpUse_Short_A_Group, 0.0f, 0.2f));
+        }
+      }
+    }
+    if (GameManager.Instance.MyGameData.ShortExp_B == null)
+    {
+      if (ExpUse_Short_B_Group.alpha == 1.0f)
+      {
+        ExpUse_Short_B_text.text = "";
+        StartCoroutine(ChangeAlpha(ExpUse_Short_B_Group, 0.0f, 0.2f));
+      }
+    }
+    else
+    {
+      Experience _Short = GameManager.Instance.MyGameData.ShortExp_B;
+      if (DialogueUI.ExpUsageDic_L.ContainsKey(_Short))
+      {
+        ExpUse_Short_B_img.sprite = GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Single ?
+          GameManager.Instance.ImageHolder.SelectionBackground_none :
+          GameManager.Instance.ImageHolder.SelectionBackground(
+            GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Body ? TendencyTypeEnum.Body : TendencyTypeEnum.Head, true);
+
+        if (ExpUse_Short_B_Group.alpha == 0.0f)
+        {
+          StartCoroutine(ChangeAlpha(ExpUse_Short_B_Group, 1.0f, 0.2f));
+        }
+        ExpUse_Short_B_text.text = ((int)-1.0f * DialogueUI.ExpUsageDic_L[_Short]).ToString();
+      }
+      else if (DialogueUI.ExpUsageDic_R.ContainsKey(_Short))
+      {
+        ExpUse_Short_B_img.sprite = GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Single ?
+          GameManager.Instance.ImageHolder.SelectionBackground_none :
+          GameManager.Instance.ImageHolder.SelectionBackground(
+            GameManager.Instance.MyGameData.CurrentEvent.Selection_type == SelectionTypeEnum.Body ? TendencyTypeEnum.Body : TendencyTypeEnum.Head, false);
+
+        if (ExpUse_Short_B_Group.alpha == 0.0f)
+        {
+          StartCoroutine(ChangeAlpha(ExpUse_Short_B_Group, 1.0f, 0.2f));
+        }
+        ExpUse_Short_B_text.text = ((int)-1.0f * DialogueUI.ExpUsageDic_R[_Short]).ToString();
+      }
+      else
+      {
+        if (ExpUse_Short_B_Group.alpha == 1.0f)
+        {
+          ExpUse_Short_B_text.text = "";
+          StartCoroutine(ChangeAlpha(ExpUse_Short_B_Group, 0.0f, 0.2f));
+        }
+      }
+    }
   }
   public void UpdateAllUI()
   {

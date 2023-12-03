@@ -19,7 +19,6 @@ public static class ConstValues
 
   public const int DefaultBonusGold = 1;
   public const int GoldPerSupplies = 1;
-  public const int StartSupplies = 10;
   public const int Supply_Sea = 4;
   public const int Supply_Moutain = 2;
   public const int Supply_River = 1, Supply_Forest = 1;
@@ -67,7 +66,7 @@ public static class ConstValues
   public const float Quest_Cult_LengthValue = 3.5f;
 
 
-  public const int Rest_Supply = 12;
+  public const int Rest_Supply = 8;
   public const int Rest_Discomfort = 10;
   public const float MoveRestCost_Default_Min = 9, MoveRestCost_Default_Max = 25;
   public const float Movecost_GoldValue = 0.5f;
@@ -96,6 +95,7 @@ public static class ConstValues
 
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
+  public const int StartSupplies = 12;
   public const int StartGold = 15;
   public const float HPLoss_Exp = 0.2f;
   public const float GoldGen_Exp = 0.25f;
@@ -371,20 +371,20 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #값 프로퍼티#
-  public int MadnessHPLoss_Skill { get { return (int)(ConstValues.MadnessHPCost_Skill * GetHPLossModify(true)); } }
-  public int MadnessHPLoss_HP { get { return (int)(ConstValues.MadnessHPCost_HP * GetHPLossModify(true)); } }
+  public int MadnessHPLoss_Skill { get { return (int)(ConstValues.MadnessHPCost_Skill * GetHPLossModify(true,0)); } }
+  public int MadnessHPLoss_HP { get { return (int)(ConstValues.MadnessHPCost_HP * GetHPLossModify(true,0)); } }
   public int MadnessSanityGen_Skill { get { return (int)(ConstValues.MadnessSanityGen_Skill); } }
   public int MadnessSanityGen_HP { get { return (int)(ConstValues.MadnessSanityGen_HP); } }
   public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, LerpByTurn); } }
   public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, LerpByTurn); } }
-    public int RestCost_Sanity
-    { 
+  public int RestCost_Sanity
+  {
     get
     {
       int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
-      return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true));
+      return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true,0));
     }
   }
   public int RestCost_Gold
@@ -406,10 +406,14 @@ public class GameData    //게임 진행도 데이터
   {
     return ConstValues.Rest_DiscomfortRatio * discomfort;
   }
-  public int PayHPValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max,LerpByTurn) * GetHPLossModify(true)); } }
-    public int PaySanityValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max,LerpByTurn) * GetSanityLossModify(true)); } }
+  public int PayHPValue(int modify)
+  {
+    return Mathf.Clamp((int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, LerpByTurn) * GetHPLossModify(true, modify)),0,100);
+  }
+  public int PaySanityValue(int modify)
+  {
+    return Mathf.Clamp((int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, LerpByTurn) * GetSanityLossModify(true, modify)),0,100);
+  }
     public int PayGoldValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max,LerpByTurn) ); } }
   public int PayOverSanityValue
@@ -417,9 +421,9 @@ public class GameData    //게임 진행도 데이터
     get { return (int)((PayGoldValue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue); }
   }
     public int FailHPValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max,LerpByTurn) * GetHPLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max,LerpByTurn) * GetHPLossModify(true,0)); } }
     public int FailSanityValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max,LerpByTurn) * GetSanityLossModify(true)); } }
+    { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max,LerpByTurn) * GetSanityLossModify(true,0)); } }
     public int FailGoldValue
     { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max,LerpByTurn)); } }
     public int RewardHPValue
@@ -430,9 +434,7 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
   public int GetMoveSanityCost(int movepoint)
   {
-   // float _mppenalty= 1.0f + ConstValues.MPPenaltyValue * ((MovePoint / ConstValues.MPPenaltyUnit)>0? MovePoint / ConstValues.MPPenaltyUnit:0);
-    int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn)
-      * GetSanityLossModify(true)));
+    int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn) * GetSanityLossModify(true,0)));
 
     return (GameManager.Instance.MyGameData.supply- movepoint)>=0 ? _value :
       (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(Supply- movepoint))));
@@ -782,11 +784,11 @@ public class GameData    //게임 진행도 데이터
   /// </summary>
   /// <param name="_formultiply"></param>
   /// <returns></returns>
-  public float GetHPLossModify(bool _formultiply)
+  public float GetHPLossModify(bool _formultiply,int addcount)
   {
     float _plusamount = 0;
 
-    var _count = GetEffectModifyCount_Exp(EffectType.HPLoss);
+    var _count = GetEffectModifyCount_Exp(EffectType.HPLoss)+ addcount;
 
     _plusamount = 1.0f - _count * ConstValues.HPLoss_Exp;
 
@@ -798,11 +800,11 @@ public class GameData    //게임 진행도 데이터
   /// </summary>
   /// <param name="_formultiply"></param>
   /// <returns></returns>
-  public float GetSanityLossModify(bool _formultiply)
+  public float GetSanityLossModify(bool _formultiply, int addcount)
   {
     float _plusamount = 0;
 
-    var _count = GetEffectModifyCount_Exp(EffectType.SanityLoss);
+    var _count = GetEffectModifyCount_Exp(EffectType.SanityLoss)+ addcount;
 
     _plusamount=1.0f-_count*ConstValues.SanityLoss_Exp;
 

@@ -124,12 +124,11 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI TileInfoMovePointText = null;
   [Space(10)]
   [SerializeField] private GameObject SettlementInfoPanel = null;
-  [SerializeField] private Image SettlementInfoIcon = null;
+  [SerializeField] private List<Image> SettlementSectorIcons = new List<Image>();
   [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
   [SerializeField] private RectTransform SettlementDiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
   [SerializeField] private TextMeshProUGUI SettlementMovePointText = null;
-  [SerializeField] private MouseScript CurrentMouse = null;
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
   {
@@ -197,7 +196,7 @@ public class PreviewManager : MonoBehaviour
       GameManager.Instance.GetTextData("HP_MadnessSafe"):
       string.Format(GameManager.Instance.GetTextData("HP_MadnessDanger"),WNCText.GetHPColor(GameManager.Instance.MyGameData.MinMadnessHP+1)));
 
-    int _modifyvalue = (int)GameManager.Instance.MyGameData.GetHPLossModify(false);
+    int _modifyvalue = (int)GameManager.Instance.MyGameData.GetHPLossModify(false,0);
     if (_modifyvalue == 100)
     {
 
@@ -217,7 +216,7 @@ public class PreviewManager : MonoBehaviour
     string _description = GameManager.Instance.GetTextData(_currenttype, 3)+
       (GameManager.Instance.MyGameData.Sanity>100?string.Format(GameManager.Instance.GetTextData("Sanity_Over100"),WNCText.GetMaxSanityColor(100)):"");
 
-    int  _modifyvalue= (int)GameManager.Instance.MyGameData.GetSanityLossModify(false);
+    int  _modifyvalue= (int)GameManager.Instance.MyGameData.GetSanityLossModify(false,0);
     if (_modifyvalue == 100)
     {
 
@@ -639,13 +638,14 @@ public class PreviewManager : MonoBehaviour
   public void OpenSelectionPayPreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform toprect)
   {
     if (SelectionPayReward.Setup(_selection) == false) return;
+    if (UIManager.Instance.Mouse.MouseState == MouseStateEnum.DragExp) return;
 
     SelectionPayBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
     //PaySubDescription.text = _selection.SubDescription;
 
 
     Sprite _payicon = null;
-    int _payvalue = 0;
+    int _payvalue = UIManager.Instance.DialogueUI.GetRequireValue(dir);
     string _payvaluetext = "";
     int _percent = -1;
     StatusTypeEnum _status = StatusTypeEnum.HP;
@@ -656,7 +656,6 @@ public class PreviewManager : MonoBehaviour
 
         _status = StatusTypeEnum.HP;
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
-        _payvalue = GameManager.Instance.MyGameData.PayHPValue;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.HP, 1), WNCText.GetHPColor("-" + _payvalue.ToString()));
         if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
         //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
@@ -668,7 +667,6 @@ public class PreviewManager : MonoBehaviour
 
         _status = StatusTypeEnum.Sanity;
         _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
-        _payvalue = GameManager.Instance.MyGameData.PaySanityValue;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor("-" + _payvalue.ToString()));
 
         if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
@@ -707,50 +705,35 @@ public class PreviewManager : MonoBehaviour
   public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform toprect)
   {
     if (SelectionCheckReward.Setup(_selection) == false) return;
+    if (UIManager.Instance.Mouse.MouseState == MouseStateEnum.DragExp) return;
 
     SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
-    //  Sprite[] _icons = new Sprite[2];
     Skill[] _skills= new Skill[2];
-    int _requirelevel = 0, _currentlevel = 0, _percentage = 0;
+    int _requirelevel = UIManager.Instance.DialogueUI.GetRequireValue(dir), _currentlevel = 0, _percentage = 0;
     string  _percentage_text = "", _percentage_int = "";//, _subdescription = "";
 
-  //  _subdescription= _selection.SubDescription;
     _percentage_text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
 
     if (_selection.ThisSelectionType.Equals(SelectionTargetType.Check_Single))
     {
-      _requirelevel = GameManager.Instance.MyGameData.CheckSkillSingleValue;
-
       _skills[0] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[0]);
-   //   _icons[0]=GameManager.Instance.ImageHolder.GetSkillIcon(_skills[0].MySkillType);
       _currentlevel = _skills[0].Level;
-
-    //  if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(true)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(false);
     }
     else
     {
-      _requirelevel = GameManager.Instance.MyGameData.CheckSkillMultyValue;
-
       for(int i = 0; i < 2; i++)
       {
         _skills[i] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[i]);
-     //   _icons[i] = GameManager.Instance.ImageHolder.GetSkillIcon(_skills[i].MySkillType);
         _currentlevel += _skills[i].Level;
       }
-
-     // if (SelectionCheckIcons[1].transform.parent.gameObject.activeInHierarchy.Equals(false)) SelectionCheckIcons[1].transform.parent.gameObject.SetActive(true);
     }
 
     _percentage =GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentlevel, _requirelevel);
     _percentage_int = WNCText.PercentageColor((100 - _percentage).ToString(), (100 - _percentage)/100.0f)+"%";
 
-  //  SelectionCheckIcons[0].sprite = _icons[0];
-  //  SelectionCheckIcons[1].sprite=_icons[1];
     SelectionCheckPercent_text.text = _percentage_text;
     SelectionCheckPercent_int.text = _percentage_int;
-    // SelectionCheckDescription.text = _subdescription;
-
 
     OpenPreviewPanel(SelectionCheckPanel, toprect);
   }
@@ -832,7 +815,7 @@ public class PreviewManager : MonoBehaviour
     if (islong)
     {
       _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn,
-        (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true)));
+        (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
     }
     else
     {
@@ -919,7 +902,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenTileInfoPreveiew(TileData tileData, RectTransform tilerect)
   {
     if (tileData == GameManager.Instance.MyGameData.CurrentTile) return;
-    if (CurrentMouse.MouseState == MouseStateEnum.DragMap) return;
+    if (UIManager.Instance.Mouse.MouseState == MouseStateEnum.DragMap) return;
 
     Vector2 _pivot = new Vector2(0.5f,tileData.Coordinate.y<=GameManager.Instance.MyGameData.Coordinate.y?1.05f:-0.05f);
     string _movepointstring = "";
@@ -955,13 +938,20 @@ public class PreviewManager : MonoBehaviour
     else
     {
       if (tileData.Coordinate.y - GameManager.Instance.MyGameData.Coordinate.y == -3) _pivot.y = -0.05f;
-      switch (tileData.TileSettle.SettlementType)
-      {
-        case SettlementType.Village: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.VillageIcon_white; break;
-        case SettlementType.Town: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.TownIcon_white; break;
-        case SettlementType.City: SettlementInfoIcon.sprite = GameManager.Instance.ImageHolder.CityIcon_white; break;
-      }
 
+      var _sectorlist = tileData.TileSettle.Sectors;
+      for(int i = 0; i < SettlementSectorIcons.Count; i++)
+      {
+        if (i >= _sectorlist.Count)
+        {
+          if(SettlementSectorIcons[i].gameObject.activeInHierarchy)SettlementSectorIcons[i].gameObject.SetActive(false);
+        }
+        else
+        {
+          SettlementSectorIcons[i].sprite = GameManager.Instance.ImageHolder.GetSectorIcon(_sectorlist[i], false);
+        }
+      }
+      LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementSectorIcons[0].transform.parent.transform as RectTransform);
       SettlementInfoName.text =string.Format(GameManager.Instance.GetTextData("SettlementInfoNames"),
         GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType), tileData.TileSettle.Name);
 

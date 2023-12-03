@@ -55,6 +55,8 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
     yield return StartCoroutine(updatesheet());
 #endif
+    yield return StartCoroutine((ConvertSheetDatas()));
+
     if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName))
     {
       GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
@@ -64,12 +66,12 @@ public class GameManager : MonoBehaviour
       }
       catch (Exception e)
       {
+        Debug.Log(e);
         if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName)) System.IO.File.Delete(Application.persistentDataPath + "/" + GameDataName);
       }
     }
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
-    yield return StartCoroutine((ConvertSheetDatas()));
  //   Debug.Log(GetTextData("ProgressInfo"));
     UIManager.Instance.MainUi.SetupMain();
   }

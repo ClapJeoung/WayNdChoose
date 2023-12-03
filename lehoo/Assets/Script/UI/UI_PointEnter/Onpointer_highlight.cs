@@ -25,24 +25,6 @@ public class Onpointer_highlight : MonoBehaviour,IPointerEnterHandler,IPointerEx
 
     return null;
   }
-  public void SetInfo(HighlightEffectEnum type,int value)
-  {
-    bool _createnew = true;
-
-    foreach (HighlightCallInfo call in HighlightList)
-    {
-      if (call.CallType == type)
-      {
-        call.Value = value;
-        _createnew = false;
-        break;
-      }
-    }
-    if (_createnew)
-    {
-      HighlightList.Add(new HighlightCallInfo(type,value));
-    }
-  }
   public void SetInfo(List<SkillTypeEnum> skilltypes)
   {
     bool _createnew = true;
@@ -101,16 +83,10 @@ public class Onpointer_highlight : MonoBehaviour,IPointerEnterHandler,IPointerEx
 public class HighlightCallInfo
 {
   public HighlightEffectEnum CallType;
-  public int Value = 0;
   public List<SkillTypeEnum> Skilltype;
   public HighlightCallInfo(HighlightEffectEnum type)
   {
     CallType = type;
-  }
-  public HighlightCallInfo(HighlightEffectEnum type,int value)
-  {
-    CallType = type;
-    Value = value;
   }
   public HighlightCallInfo(List<SkillTypeEnum> skilltype)
   {

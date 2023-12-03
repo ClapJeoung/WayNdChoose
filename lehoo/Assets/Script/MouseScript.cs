@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public enum MouseStateEnum { Idle,DragMap}
+public enum MouseStateEnum { Idle,DragMap,DragExp}
 public class MouseScript : MonoBehaviour
 {
   public MouseStateEnum MouseState = MouseStateEnum.Idle;
@@ -14,29 +14,82 @@ public class MouseScript : MonoBehaviour
   public Vector2 LastPos= Vector2.zero;
   public Vector2 Offset= Vector2.zero;
   public float MapMoveDegree = 30.0f;
+  public Experience DragExpTarget = null;
   private void Update()
   {
+    if (Input.GetMouseButtonDown(0))
+    {
+      if (GameManager.Instance.IsPlaying && GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress)
+      {
+          GameObject _expicon = CheckObjTag("ExpIcon");
+          if (_expicon != null)
+          {
+            if (_expicon.name[_expicon.name.Length - 1] == '0')
+            {
+              DragExpTarget = GameManager.Instance.MyGameData.LongExp;
+            }
+            else if (_expicon.name[_expicon.name.Length - 1] == '1')
+            {
+              DragExpTarget = GameManager.Instance.MyGameData.ShortExp_A;
+            }
+            else
+            {
+              DragExpTarget = GameManager.Instance.MyGameData.ShortExp_B;
+            }
+
+            if (DragExpTarget != null&& DragExpTarget.Duration>1)
+            {
+            UIManager.Instance.ExpDragPreview.gameObject.SetActive(true);
+              UIManager.Instance.ExpDragPreview.Setup(DragExpTarget);
+              MouseState = MouseStateEnum.DragExp;
+            }
+          }
+      }
+    }
+    if (Input.GetMouseButtonUp(0))
+    {
+      if (GameManager.Instance.IsPlaying&& MouseState == MouseStateEnum.DragExp)
+      {
+        GameObject _object = CheckObjTag("Selection");
+        if(_object != null)
+        {
+          _object.GetComponent<UI_Selection>().AddExp(DragExpTarget);
+        }
+
+        MouseState = MouseStateEnum.Idle;
+        DragExpTarget = null;
+        UIManager.Instance.ExpDragPreview.SetDown();
+      }
+    }
     if (Input.GetMouseButtonDown(1))
     {
-      MyPointerEventData = new PointerEventData(CurrentEventSystem);
-      //Set the Pointer Event Position to that of the game object
-      MyPointerEventData.position = Input.mousePosition;
-
-      //Create a list of Raycast Results
-      List<RaycastResult> results = new List<RaycastResult>();
-
-      //Raycast using the Graphics Raycaster and mouse click position
-      RayCaster.Raycast(MyPointerEventData, results);
-
-      if (results.Count > 0)
+      if (MouseState == MouseStateEnum.DragExp)
       {
-        foreach (var _obj in results)
-          if (_obj.gameObject.CompareTag("TilePanel"))
-          {
-            MouseState = MouseStateEnum.DragMap;
-            LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-            break;
-          }
+        MouseState = MouseStateEnum.Idle;
+      }
+      if (GameManager.Instance.IsPlaying && CheckObjTag("TilePanel")!=null)
+      {
+        MouseState = MouseStateEnum.DragMap;
+        LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+      }
+      else if (GameManager.Instance.IsPlaying && CheckObjTag("ExpIcon"))
+      {
+        GameObject _expicon = CheckObjTag("ExpIcon");
+        Experience _selectedexp = null;
+        if (_expicon.name[_expicon.name.Length - 1] == '0')
+        {
+          _selectedexp = GameManager.Instance.MyGameData.LongExp;
+        }
+        else if (_expicon.name[_expicon.name.Length - 1] == '1')
+        {
+          _selectedexp = GameManager.Instance.MyGameData.ShortExp_A;
+        }
+        else
+        {
+          _selectedexp = GameManager.Instance.MyGameData.ShortExp_B;
+        }
+        
+        if(_selectedexp!=null)UIManager.Instance.DialogueUI.SubExp(_selectedexp);
       }
     }
     if (Input.GetMouseButton(1)&&MouseState==MouseStateEnum.DragMap)
@@ -80,5 +133,28 @@ public class MouseScript : MonoBehaviour
       }
     }
     if (Input.GetMouseButtonUp(1)) MouseState = MouseStateEnum.Idle;
+  }
+  private GameObject CheckObjTag(string tag)
+  {
+    MyPointerEventData = new PointerEventData(CurrentEventSystem);
+    //Set the Pointer Event Position to that of the game object
+    MyPointerEventData.position = Input.mousePosition;
+
+    //Create a list of Raycast Results
+    List<RaycastResult> results = new List<RaycastResult>();
+
+    //Raycast using the Graphics Raycaster and mouse click position
+    RayCaster.Raycast(MyPointerEventData, results);
+
+    if (results.Count > 0)
+    {
+      foreach (var _obj in results)
+        if (_obj.gameObject.CompareTag(tag))
+        {
+          return _obj.gameObject;
+        }
+      return null;
+    }
+    else return null;
   }
 }

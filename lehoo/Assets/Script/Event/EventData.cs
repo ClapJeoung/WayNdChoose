@@ -755,7 +755,7 @@ public enum EventAppearType { Outer, Village, Town, City, Settlement}
 public enum SectorTypeEnum {NULL, Residence, Temple,Marketplace, Library}
 //,Theater,Academy
 public enum EnvironmentType { NULL, River,Forest,Mountain,Sea,Beach,Land,RiverBeach, Highland }
-public enum SelectionTypeEnum { Single,Body, Head,Tendency,Experience }// (Vertical)Body : ÁÂ ÀÌ¼º ¿ì À°Ã¼    (Horizontal)Head : ÁÂ Á¤½Å ¿ì ¹°Áú    
+public enum SelectionTypeEnum { Single,Body, Head}// (Vertical)Body : ÁÂ ÀÌ¼º ¿ì À°Ã¼    (Horizontal)Head : ÁÂ Á¤½Å ¿ì ¹°Áú    
 public enum PenaltyTarget { None,Status,EXP }
 public enum RewardTypeEnum {None, Status,Skill, Experience }
 public enum EventSequence { Progress,Clear}

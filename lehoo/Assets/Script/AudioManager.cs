@@ -232,7 +232,7 @@ public class AudioManager : MonoBehaviour
   private IEnumerator WalkingCoroiutine = null;
   public void PlayWalking()
   {
-    if (WalkingCoroiutine == null) WalkingCoroiutine = playwalking();
+    WalkingCoroiutine = playwalking();
     StartCoroutine(WalkingCoroiutine);
   }
   private IEnumerator playwalking()
