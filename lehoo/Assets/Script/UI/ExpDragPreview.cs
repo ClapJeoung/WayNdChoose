@@ -20,8 +20,8 @@ public class ExpDragPreview : MonoBehaviour
         if (!EffectGroups[i].gameObject.activeInHierarchy)
         {
           EffectGroups[i].gameObject.SetActive(true);
-          EffectGroups[i].alpha = 0.2f;
         }
+        EffectGroups[i].alpha = 0.2f;
       }
       else
       {

@@ -587,6 +587,7 @@ public class UI_map : UI_default
           }
           break;
         case 4:
+          _targettiles.Add(GameManager.Instance.MyGameData.Cult_RitualTile);
           _highlightlist.Add(GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.rectTransform);
           break;
       }

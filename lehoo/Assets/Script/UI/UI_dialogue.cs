@@ -88,9 +88,9 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[0].SelectionPayTarget)
           {
             case StatusTypeEnum.HP:
-              return GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.HPLoss));
+              return GameManager.Instance.MyGameData.PayHPValue(GetUsingExpEffectCount(ExpUsageDic_L, EffectType.HPLoss));
             case StatusTypeEnum.Sanity:
-              return GameManager.Instance.MyGameData.PaySanityValue(GetExpEffectCount(ExpUsageDic_L, EffectType.SanityLoss));
+              return GameManager.Instance.MyGameData.PaySanityValue(GetUsingExpEffectCount(ExpUsageDic_L, EffectType.SanityLoss));
             case StatusTypeEnum.Gold:
               return GameManager.Instance.MyGameData.PayGoldValue;
             default: return 0;
@@ -99,16 +99,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[0].SelectionCheckSkill[0])
           {
             case SkillTypeEnum.Conversation:
-              _value =GameManager.Instance.MyGameData.Skill_Conversation.Level+GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value =GameManager.Instance.MyGameData.Skill_Conversation.Level+GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value =GameManager.Instance.MyGameData.Skill_Force.Level+ GameManager.Instance.MyGameData.Skill_Conversation.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value =GameManager.Instance.MyGameData.Skill_Force.Level+ GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value = GameManager.Instance.MyGameData.Skill_Wild.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Wild.Level +GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -119,16 +119,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[0].SelectionCheckSkill[0])
           {
             case SkillTypeEnum.Conversation:
-              _value = GameManager.Instance.MyGameData.Skill_Conversation.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Conversation.Level +GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value = GameManager.Instance.MyGameData.Skill_Force.Level + GameManager.Instance.MyGameData.Skill_Conversation.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Force.Level + GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value = GameManager.Instance.MyGameData.Skill_Wild.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Wild.Level +GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -137,16 +137,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[0].SelectionCheckSkill[1])
           {
             case SkillTypeEnum.Conversation:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_L, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -168,9 +168,9 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[1].SelectionPayTarget)
           {
             case StatusTypeEnum.HP:
-              return GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.HPLoss));
+              return GameManager.Instance.MyGameData.PayHPValue(GetUsingExpEffectCount(ExpUsageDic_R, EffectType.HPLoss));
             case StatusTypeEnum.Sanity:
-              return GameManager.Instance.MyGameData.PaySanityValue(GetExpEffectCount(ExpUsageDic_R, EffectType.SanityLoss));
+              return GameManager.Instance.MyGameData.PaySanityValue(GetUsingExpEffectCount(ExpUsageDic_R, EffectType.SanityLoss));
             case StatusTypeEnum.Gold:
               return GameManager.Instance.MyGameData.PayGoldValue;
             default: return 0;
@@ -179,16 +179,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[1].SelectionCheckSkill[0])
           {
             case SkillTypeEnum.Conversation:
-              _value = GameManager.Instance.MyGameData.Skill_Conversation.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Conversation.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value = GameManager.Instance.MyGameData.Skill_Force.Level + GameManager.Instance.MyGameData.Skill_Conversation.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Force.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value = GameManager.Instance.MyGameData.Skill_Wild.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Wild.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -199,16 +199,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[1].SelectionCheckSkill[0])
           {
             case SkillTypeEnum.Conversation:
-              _value = GameManager.Instance.MyGameData.Skill_Conversation.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Conversation.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value = GameManager.Instance.MyGameData.Skill_Force.Level + GameManager.Instance.MyGameData.Skill_Conversation.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Force.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value = GameManager.Instance.MyGameData.Skill_Wild.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Wild.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value = GameManager.Instance.MyGameData.Skill_Intelligence.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -217,16 +217,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[1].SelectionCheckSkill[1])
           {
             case SkillTypeEnum.Conversation:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value += GameManager.Instance.MyGameData.PayHPValue(GetExpEffectCount(ExpUsageDic_R, EffectType.Conversation));
+              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -239,7 +239,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private UI_Selection Selection_B = null;
   public Dictionary<Experience, int> ExpUsageDic_L = new Dictionary<Experience, int>();
   public Dictionary<Experience, int> ExpUsageDic_R = new Dictionary<Experience, int>();
-  public int GetExpEffectCount(Dictionary<Experience,int> dic, EffectType targettype)
+  public int GetUsingExpEffectCount(Dictionary<Experience,int> dic, EffectType targettype)
   {
     int _count = 0;
     foreach(var _data in dic)
@@ -309,32 +309,32 @@ public class UI_dialogue : UI_default
           if (ExpUsageDic_L[exp] < exp.Duration -1) ExpUsageDic_L[exp]++;
           else
           {
-            //안 된다고 경고
+            UIManager.Instance.ExpUsingWarning(exp);
             return;
           }
         }
         else if (ExpUsageDic_R.ContainsKey(exp))
         {
-          if (exp.Duration > 2)
+          if (exp.Duration > 1)
           {
             ExpUsageDic_R.Remove(exp);
             ExpUsageDic_L.Add(exp, 1);
           }
           else
           {
-            //안 된다고 경고
+            UIManager.Instance.ExpUsingWarning(exp);
             return;
           }
         }
         else
         {
-          if (exp.Duration > 2)
+          if (exp.Duration > 1)
           {
             ExpUsageDic_L.Add(exp, 1);
           }
           else
           {
-            //안 된다고 경고
+            UIManager.Instance.ExpUsingWarning(exp);
             return;
           }
         }
@@ -397,32 +397,32 @@ public class UI_dialogue : UI_default
           if (ExpUsageDic_R[exp] < exp.Duration -1) ExpUsageDic_R[exp]++;
           else
           {
-            //안 된다고 경고
+            UIManager.Instance.ExpUsingWarning(exp);
             return;
           }
         }
         else if (ExpUsageDic_L.ContainsKey(exp))
         {
-          if (exp.Duration > 2)
+          if (exp.Duration > 1)
           {
             ExpUsageDic_L.Remove(exp);
             ExpUsageDic_R.Add(exp, 1);
           }
           else
           {
-            //안 된다고 경고
+            UIManager.Instance.ExpUsingWarning(exp);
             return;
           }
         }
         else
         {
-          if (exp.Duration > 2)
+          if (exp.Duration > 1)
           {
             ExpUsageDic_R.Add(exp, 1);
           }
           else
           {
-            //안 된다고 경고
+            UIManager.Instance.ExpUsingWarning(exp);
             return;
           }
         }
@@ -745,11 +745,13 @@ public class UI_dialogue : UI_default
           if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
           StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
+          UIManager.Instance.UpdateExpButton(true);
           yield return StartCoroutine(updatescrollbar());
 
           break;
         case 3:
           StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
+          UIManager.Instance.UpdateExpButton(true);
           yield return StartCoroutine(updatescrollbar());
 
           break;
@@ -915,6 +917,8 @@ public class UI_dialogue : UI_default
       GetOppositeSelection(_selection).DeActive();
     }
     //다른거 사라지게 만들고
+    UIManager.Instance.UseExp(_selection.IsLeft);
+    UIManager.Instance.UpdateExpButton(false);
     UIManager.Instance.AddUIQueue(selectionanimation(_selection));
     //성공, 실패 검사 실행 
   }
@@ -923,10 +927,10 @@ public class UI_dialogue : UI_default
     CurrentUISelection = _selection;
 
     SelectionData _selectiondata = _selection.MySelectionData;
-    int _payvalue = 0;
-    int _currentvalue = 0, _checkvalue = 0;    //기술 체크에만 사용
-    int _percentvalue = UnityEngine.Random.Range(1,101);
-    int _requirevalue = 0;                   //성공 확률(골드 혹은 기술 체크) 
+    int _currentvalue = GetRequireValue(_selection.IsLeft);
+    int  _requirevalue = 0;    //기술 체크에만 사용
+    int _currentpercent = UnityEngine.Random.Range(1,101);
+    int _requirepercent = 0;                   //성공 확률(골드 혹은 기술 체크) 
     bool _issuccess = false;  
                                                
     switch (_selectiondata.ThisSelectionType)
@@ -939,42 +943,39 @@ public class UI_dialogue : UI_default
         UIManager.Instance.AudioManager.PlaySFX(2);
         if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.HP))
         {
-          _payvalue = GetRequireValue(_selection.IsLeft);
-          yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
+          yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
           _issuccess = true;
           UIManager.Instance.AudioManager.PlaySFX(25);
-          GameManager.Instance.MyGameData.HP -= _payvalue;
+          GameManager.Instance.MyGameData.HP -= _currentvalue;
         }
         else if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.Sanity))
         {
-          _payvalue = GetRequireValue(_selection.IsLeft);
-          yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
+          yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
           UIManager.Instance.AudioManager.PlaySFX(25);
-          GameManager.Instance.MyGameData.Sanity -= _payvalue;
+          GameManager.Instance.MyGameData.Sanity -= _currentvalue;
         }
         else        //돈 지불일 경우 돈 적을 때 실행하는 뭔가 있어야 함
         {
-          _payvalue = GetRequireValue(_selection.IsLeft);
-          int _goldsuccesspercent = GameManager.Instance.MyGameData.Gold >= _payvalue ? 100 : GameManager.Instance.MyGameData.RequireValue_Money(_payvalue);
+          int _goldsuccesspercent = GameManager.Instance.MyGameData.Gold >= _currentvalue ? 100 : GameManager.Instance.MyGameData.RequireValue_Money(_currentvalue);
 
-          if (GameManager.Instance.MyGameData.Gold >= _payvalue)
+          if (GameManager.Instance.MyGameData.Gold >= _currentvalue)
           {
-            yield return StartCoroutine(payanimation(_selection.PayIcon, _payvalue, 0, _selection.PayInfo));
+            yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
-            GameManager.Instance.MyGameData.Gold -= _payvalue;
+            GameManager.Instance.MyGameData.Gold -= _currentvalue;
             UIManager.Instance.AudioManager.PlaySFX(25);
             _issuccess = true;
           }
           else
           {
-            if (_percentvalue >= _goldsuccesspercent)
+            if (_currentpercent >= _goldsuccesspercent)
             {
-              int _elsevalue = _payvalue - GameManager.Instance.MyGameData.Gold;
+              int _elsevalue = _currentvalue - GameManager.Instance.MyGameData.Gold;
 
-              yield return StartCoroutine(payanimation(_selection.PayIcon,_payvalue, 0, _selection.PayInfo));
+              yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
               _issuccess = true;
               UIManager.Instance.AudioManager.PlaySFX(25);
@@ -984,7 +985,7 @@ public class UI_dialogue : UI_default
             }//돈이 부족해 성공한 경우
             else
             {
-              yield return StartCoroutine(payanimation(_selection.PayIcon,  _payvalue,_payvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
+              yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, _currentvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
 
               _issuccess = false;
               UIManager.Instance.AudioManager.PlaySFX(26);
@@ -996,10 +997,9 @@ public class UI_dialogue : UI_default
       case SelectionTargetType.Check_Single: //기술(단수) 선택지면 확률 검사
         UIManager.Instance.AudioManager.PlaySFX(2);
 
-        _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level;
-        _checkvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
-        _requirevalue = GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentvalue, _checkvalue);
-        if (_percentvalue >= _requirevalue)
+        _requirevalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
+        _requirepercent = GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentvalue, _requirevalue);
+        if (_currentpercent >= _requirepercent)
         {
           _issuccess = true;
         }
@@ -1008,17 +1008,15 @@ public class UI_dialogue : UI_default
           _issuccess = false;
         }
 
-        yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_percentvalue / (float)_requirevalue, 0.0f, 1.0f)));
+        yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
         yield return new WaitForSeconds(0.5f);
         break;
       case SelectionTargetType.Check_Multy: //기술(복수) 선택지면 확률 검사
         UIManager.Instance.AudioManager.PlaySFX(2);
         
-        _currentvalue = GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[0]).Level +
-          GameManager.Instance.MyGameData.GetSkill(_selectiondata.SelectionCheckSkill[1]).Level;
-        _checkvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
-        _requirevalue = GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentvalue, _checkvalue);
-        if (_percentvalue >= _requirevalue)
+        _requirevalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
+        _requirepercent = GameManager.Instance.MyGameData.RequireValue_SkillCheck(_currentvalue, _requirevalue);
+        if (_currentpercent >= _requirepercent)
         {
           _issuccess = true;
         }
@@ -1026,7 +1024,7 @@ public class UI_dialogue : UI_default
         {
           _issuccess = false;
         }
-        yield return StartCoroutine(checkanimation(_selection.SkillIcon_A, _selection.SkillIcon_B,Mathf.Clamp(_percentvalue / (float)_requirevalue, 0.0f, 1.0f)));
+        yield return StartCoroutine(checkanimation(_selection.SkillIcon_A, _selection.SkillIcon_B,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
         yield return new WaitForSeconds(0.5f);
         break;
     }

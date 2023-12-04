@@ -346,6 +346,10 @@ public class UI_Selection : MonoBehaviour
     if (UIManager.Instance.IsWorking) return;
 
     StopAllCoroutines();
+    foreach(var _group in TendencyProgressArrows_inside)
+    {
+      _group.alpha = 0.0f;
+    }
     UIManager.Instance.AddUIQueue(select());
   }
   private IEnumerator select()

@@ -675,7 +675,6 @@ public class PreviewManager : MonoBehaviour
       case StatusTypeEnum.Gold:
         _status = StatusTypeEnum.Gold;
         _payicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
-        _payvalue = GameManager.Instance.MyGameData.PayGoldValue;
         if (_payvalue > GameManager.Instance.MyGameData.Gold)
         {
           _percent = GameManager.Instance.MyGameData.RequireValue_Money(_payvalue);
@@ -710,22 +709,22 @@ public class PreviewManager : MonoBehaviour
     SelectionCheckBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
 
     Skill[] _skills= new Skill[2];
-    int _requirelevel = UIManager.Instance.DialogueUI.GetRequireValue(dir), _currentlevel = 0, _percentage = 0;
+    int _requirelevel = 0, _currentlevel = UIManager.Instance.DialogueUI.GetRequireValue(dir), _percentage = 0;
     string  _percentage_text = "", _percentage_int = "";//, _subdescription = "";
 
     _percentage_text = GameManager.Instance.GetTextData("SUCCESSPERCENT_TEXT");
 
     if (_selection.ThisSelectionType.Equals(SelectionTargetType.Check_Single))
     {
+      _requirelevel = GameManager.Instance.MyGameData.CheckSkillSingleValue;
       _skills[0] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[0]);
-      _currentlevel = _skills[0].Level;
     }
     else
     {
+      _requirelevel = GameManager.Instance.MyGameData.CheckSkillMultyValue;
       for(int i = 0; i < 2; i++)
       {
         _skills[i] = GameManager.Instance.MyGameData.GetSkill(_selection.SelectionCheckSkill[i]);
-        _currentlevel += _skills[i].Level;
       }
     }
 

@@ -9,6 +9,7 @@ using System;
 using System.Reflection;
 using OpenCvSharp.Flann;
 using OpenCvSharp;
+using System.Runtime.CompilerServices;
 
 public class UIManager : MonoBehaviour
 {
@@ -909,6 +910,7 @@ public class UIManager : MonoBehaviour
 
     titlerect.anchoredPosition = _targetpos_title;
   }
+  [SerializeField] private Button LongExpButton = null;
   [SerializeField] private RectTransform LongExpCover = null;
   [SerializeField] private TextMeshProUGUI LongExpTurn = null;
   [SerializeField] private CanvasGroup LongMad = null;
@@ -916,6 +918,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Image ExpUse_Long_img = null;
   [SerializeField] private TextMeshProUGUI ExpUse_Long_text = null;
   private bool LongExpActive = false;
+  [SerializeField] private Button ShortExpButton_A = null;
   [SerializeField] private RectTransform ShortExpCover_A = null;
   [SerializeField] private TextMeshProUGUI ShortExpTurn_A= null;
   [SerializeField] private CanvasGroup ShortMad_A = null;
@@ -923,15 +926,122 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Image ExpUse_Short_A_img = null;
   [SerializeField] private TextMeshProUGUI ExpUse_Short_A_text = null;
   private bool ShortExpAActive = false;
+  [SerializeField] private Button ShortExpButton_B = null;
   [SerializeField] private RectTransform ShortExpCover_B = null;
   [SerializeField] private TextMeshProUGUI ShortExpTurn_B = null;
   [SerializeField] private CanvasGroup ShortMad_B = null;
-  private bool ShortExpBActive = false;
   [SerializeField] private CanvasGroup ExpUse_Short_B_Group = null;
   [SerializeField] private Image ExpUse_Short_B_img = null;
   [SerializeField] private TextMeshProUGUI ExpUse_Short_B_text = null;
+  private bool ShortExpBActive = false;
   [SerializeField] private Color ExpUseRefuseColor = new Color();
-  public Vector2 ExpCoverUpPos = new Vector2(0.0f, 81.6f);
+  [SerializeField] private float UsedTextWarningSize = 1.4f;
+  [SerializeField] private float UsedTextWarningTime = 0.5f;
+  [SerializeField] private float ExpUsingTime = 0.6f;
+  public void UseExp(bool dir)
+  {
+    bool _anyexpused = false;
+    if (GameManager.Instance.MyGameData.LongExp != null)
+    {
+      Experience _long = GameManager.Instance.MyGameData.LongExp;
+      if (dir&&DialogueUI.ExpUsageDic_L.ContainsKey(_long))
+      {
+        StartCoroutine(useexp(ExpUse_Long_Group, LongExpButton.GetComponent<RectTransform>(),_long, DialogueUI.ExpUsageDic_L[_long]));
+        _anyexpused = true;
+      }
+      else if (!dir&&DialogueUI.ExpUsageDic_R.ContainsKey(_long))
+      {
+        StartCoroutine(useexp(ExpUse_Long_Group, LongExpButton.GetComponent<RectTransform>(), _long, DialogueUI.ExpUsageDic_R[_long]));
+        _anyexpused = true;
+      }
+      else if (ExpUse_Long_Group.alpha == 1.0f)
+      {
+        StartCoroutine(ChangeAlpha(ExpUse_Long_Group, 0.0f, 0.4f));
+      }
+    }
+    if (GameManager.Instance.MyGameData.ShortExp_A != null)
+    {
+      Experience _exp = GameManager.Instance.MyGameData.ShortExp_A;
+      if (dir && DialogueUI.ExpUsageDic_L.ContainsKey(_exp))
+      {
+        StartCoroutine(useexp(ExpUse_Short_A_Group, ShortExpButton_A.GetComponent<RectTransform>(), _exp, DialogueUI.ExpUsageDic_L[_exp]));
+        _anyexpused = true;
+      }
+      else if (!dir && DialogueUI.ExpUsageDic_R.ContainsKey(_exp))
+      {
+        StartCoroutine(useexp(ExpUse_Short_A_Group, ShortExpButton_A.GetComponent<RectTransform>(), _exp, DialogueUI.ExpUsageDic_R[_exp]));
+        _anyexpused = true;
+      }
+      else if (ExpUse_Short_A_Group.alpha == 1.0f)
+      {
+        StartCoroutine(ChangeAlpha(ExpUse_Short_A_Group, 0.0f, 0.4f));
+      }
+    }
+    if (GameManager.Instance.MyGameData.ShortExp_B != null)
+    {
+      Experience _exp = GameManager.Instance.MyGameData.ShortExp_B;
+      if (dir && DialogueUI.ExpUsageDic_L.ContainsKey(_exp))
+      {
+        StartCoroutine(useexp(ExpUse_Short_B_Group, ShortExpButton_B.GetComponent<RectTransform>(), _exp, DialogueUI.ExpUsageDic_L[_exp]));
+        _anyexpused = true;
+      }
+      else if (!dir && DialogueUI.ExpUsageDic_R.ContainsKey(_exp))
+      {
+        StartCoroutine(useexp(ExpUse_Short_B_Group, ShortExpButton_B.GetComponent<RectTransform>(), _exp, DialogueUI.ExpUsageDic_R[_exp]));
+        _anyexpused = true;
+      }
+      else if (ExpUse_Short_B_Group.alpha == 1.0f)
+      {
+        StartCoroutine(ChangeAlpha(ExpUse_Short_B_Group, 0.0f, 0.4f));
+      }
+    }
+
+    if (_anyexpused)
+    {
+      Invoke("UpdateExpPael", ExpUsingTime);
+    }
+  }
+  private IEnumerator useexp(CanvasGroup group,RectTransform targetrect,Experience exp,int duration)
+  {
+    RectTransform _rect = group.GetComponent<RectTransform>();
+    Vector2 _startpos = _rect.anchoredPosition, _endpos = targetrect.anchoredPosition;
+    float _time = 0.0f, _targettime = ExpUsingTime;
+    while(_time< _targettime)
+    {
+      _rect.anchoredPosition=Vector2.Lerp(_startpos,_endpos,_time/_targettime);
+      group.alpha=Mathf.Lerp(1.0f,0.0f,_time/_targettime);
+      _time += Time.deltaTime; yield return null;
+    }
+    group.alpha = 0.0f;
+    _rect.anchoredPosition = _startpos;
+    exp.Duration -= duration;
+  }
+  public void UpdateExpButton(bool isactive)
+  {
+    LongExpButton.interactable = GameManager.Instance.MyGameData.LongExp != null ? GameManager.Instance.MyGameData.LongExp.Duration > 1 ? isactive : false:false ;
+    ShortExpButton_A.interactable = GameManager.Instance.MyGameData.ShortExp_A != null ? GameManager.Instance.MyGameData.ShortExp_A.Duration>1?isactive : false:false;
+    ShortExpButton_B.interactable = GameManager.Instance.MyGameData.ShortExp_B != null ? GameManager.Instance.MyGameData.ShortExp_B.Duration>1? isactive : false:false;
+  }
+  public void ExpUsingWarning(Experience exp)
+  {
+    TextMeshProUGUI _targettext =
+      GameManager.Instance.MyGameData.LongExp == exp ? ExpUse_Long_text :
+      GameManager.Instance.MyGameData.ShortExp_A == exp ? ExpUse_Short_A_text : ExpUse_Short_B_text;
+    StartCoroutine(expusingwarning(_targettext));
+  }
+  private IEnumerator expusingwarning(TextMeshProUGUI tmp)
+  {
+    float _time = 0.0f;
+    while(_time < UsedTextWarningTime)
+    {
+      tmp.rectTransform.localScale = Vector3.one * Mathf.Lerp(UsedTextWarningSize, 1.0f, _time / UsedTextWarningTime);
+      tmp.color=Color.Lerp(ExpUseRefuseColor,Color.white, _time / UsedTextWarningTime);
+      _time += Time.deltaTime; yield return null;
+    }
+    tmp.rectTransform.localScale = Vector3.one;
+    tmp.color = Color.white;
+  }
+  public Vector2 ExpCoverUpPos = new Vector2(0.0f, 48.0f);
   public void UpdateExpMad()
   {
     if (GameManager.Instance.MyGameData.LongExp != null && GameManager.Instance.MyGameData.LongExp.Duration > (ConstValues.MadnessEffect_Intelligence-1))
@@ -944,6 +1054,7 @@ public class UIManager : MonoBehaviour
   public void UpdateExpPael()
   {
     bool _starteffect = false;
+    bool _turnchanged = false;
 
     if (GameManager.Instance.MyGameData.LongExp == null)
     {
@@ -959,19 +1070,20 @@ public class UIManager : MonoBehaviour
     }
     else
     {
-      LongExpTurn.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
 
       if (LongExpActive == false)
       {
         StartCoroutine(moverect(LongExpCover, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(statusgainanimation(LongExpTurn.rectTransform));
-        UIManager.Instance.AudioManager.PlaySFX(20);
+        AudioManager.PlaySFX(20);
       }
       else
       {
-        StartCoroutine(statuslossanimation(LongExpTurn.rectTransform,1.2f));
+        _turnchanged = int.Parse(LongExpTurn.text) != GameManager.Instance.MyGameData.LongExp.Duration;
+        if (_turnchanged) StartCoroutine(statuslossanimation(LongExpTurn.rectTransform,1.2f));
       }
+      LongExpTurn.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
       LongExpActive = true;
     }
 
@@ -983,26 +1095,26 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_A, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
-        UIManager.Instance.AudioManager.PlaySFX(21);
+        AudioManager.PlaySFX(21);
       }
       ShortExpAActive = false;
     }
     else
     {
-      ShortExpTurn_A.text = GameManager.Instance.MyGameData.ShortExp_A.Duration.ToString();
-
       if (ShortExpAActive == false)
       {
         StartCoroutine(moverect(ShortExpCover_A, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(statusgainanimation(ShortExpTurn_A.rectTransform));
-        UIManager.Instance.AudioManager.PlaySFX(20);
+        AudioManager.PlaySFX(20);
       }
       else
       {
-        StartCoroutine(statuslossanimation(ShortExpTurn_A.rectTransform,1.2f));
+        _turnchanged = int.Parse(ShortExpTurn_A.text) != GameManager.Instance.MyGameData.ShortExp_A.Duration;
+        if (_turnchanged)StartCoroutine(statuslossanimation(ShortExpTurn_A.rectTransform,1.2f));
       }
-        ShortExpAActive = true;
+      ShortExpTurn_A.text = GameManager.Instance.MyGameData.ShortExp_A.Duration.ToString();
+      ShortExpAActive = true;
     }
     if (GameManager.Instance.MyGameData.ShortExp_B == null)
     {
@@ -1012,26 +1124,26 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_B, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
         _starteffect = true;
-        UIManager.Instance.AudioManager.PlaySFX(21);
+        AudioManager.PlaySFX(21);
       }
 
       ShortExpBActive = false;
     }
     else
     {
-      ShortExpTurn_B.text = GameManager.Instance.MyGameData.ShortExp_B.Duration.ToString();
-
       if (ShortExpBActive == false)
       {
         StartCoroutine(moverect(ShortExpCover_B, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(statusgainanimation(ShortExpTurn_B.rectTransform));
-        UIManager.Instance.AudioManager.PlaySFX(20);
+        AudioManager.PlaySFX(20);
       }
       else
       {
-        StartCoroutine(statuslossanimation(ShortExpTurn_B.rectTransform,1.2f));
+        _turnchanged = int.Parse(ShortExpTurn_B.text) != GameManager.Instance.MyGameData.ShortExp_B.Duration;
+        if (_turnchanged) StartCoroutine(statuslossanimation(ShortExpTurn_B.rectTransform,1.2f));
       }
+      ShortExpTurn_B.text = GameManager.Instance.MyGameData.ShortExp_B.Duration.ToString();
       ShortExpBActive = true;
     }
     if (_starteffect) HighlightManager.HighlightAnimation(HighlightEffectEnum.Exp);

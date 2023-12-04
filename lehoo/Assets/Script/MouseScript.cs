@@ -22,7 +22,7 @@ public class MouseScript : MonoBehaviour
       if (GameManager.Instance.IsPlaying && GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress)
       {
           GameObject _expicon = CheckObjTag("ExpIcon");
-          if (_expicon != null)
+          if (_expicon != null&&_expicon.GetComponent<Button>().interactable)
           {
             if (_expicon.name[_expicon.name.Length - 1] == '0')
             {
@@ -72,24 +72,27 @@ public class MouseScript : MonoBehaviour
         MouseState = MouseStateEnum.DragMap;
         LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
       }
-      else if (GameManager.Instance.IsPlaying && CheckObjTag("ExpIcon"))
+      else if (GameManager.Instance.IsPlaying && GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress&& CheckObjTag("ExpIcon"))
       {
         GameObject _expicon = CheckObjTag("ExpIcon");
-        Experience _selectedexp = null;
-        if (_expicon.name[_expicon.name.Length - 1] == '0')
+        if (_expicon.GetComponent<Button>().interactable)
         {
-          _selectedexp = GameManager.Instance.MyGameData.LongExp;
+          Experience _selectedexp = null;
+          if (_expicon.name[_expicon.name.Length - 1] == '0')
+          {
+            _selectedexp = GameManager.Instance.MyGameData.LongExp;
+          }
+          else if (_expicon.name[_expicon.name.Length - 1] == '1')
+          {
+            _selectedexp = GameManager.Instance.MyGameData.ShortExp_A;
+          }
+          else
+          {
+            _selectedexp = GameManager.Instance.MyGameData.ShortExp_B;
+          }
+
+          if (_selectedexp != null) UIManager.Instance.DialogueUI.SubExp(_selectedexp);
         }
-        else if (_expicon.name[_expicon.name.Length - 1] == '1')
-        {
-          _selectedexp = GameManager.Instance.MyGameData.ShortExp_A;
-        }
-        else
-        {
-          _selectedexp = GameManager.Instance.MyGameData.ShortExp_B;
-        }
-        
-        if(_selectedexp!=null)UIManager.Instance.DialogueUI.SubExp(_selectedexp);
       }
     }
     if (Input.GetMouseButton(1)&&MouseState==MouseStateEnum.DragMap)
