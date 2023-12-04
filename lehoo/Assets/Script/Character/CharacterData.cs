@@ -101,8 +101,8 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.15f;
 
-  public const int Tendency_Head_m2 = 0;
-  public const float Tendency_Head_m1 = 0.2f;
+  public const int Tendency_Head_m2 = 4;
+  public const float Tendency_Head_m1 = 0.1f;
   public const int Tendency_Head_p1_length =2,Tendency_Head_p1_value=2;
   public const int Tendency_Head_p2 = 5;
   //정신적 2: 첫 휴식 불쾌 0
@@ -140,8 +140,8 @@ public static class ConstValues
   public const int RewardSanity = 15;
   public const int RewardGold = 10;
 
-  public const int ShortTermStartTurn = 9;
-  public const int LongTermStartTurn =  15;
+  public const int EXPMaxTurn_short_idle = 7;
+  public const int EXPMaxTurn_long_idle =  13;
 
   public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
@@ -197,12 +197,12 @@ public class GameData    //게임 진행도 데이터
         int _addvalue = ConstValues.SectorEffect_Library;
 
         if(LongExp!=null)
-        LongExp.Duration = LongExp.Duration + _addvalue > ConstValues.LongTermStartTurn ? ConstValues.LongTermStartTurn : LongExp.Duration + _addvalue;
+        LongExp.Duration = LongExp.Duration + _addvalue > GameManager.Instance.MyGameData.ExpMaxTurn_Long ? GameManager.Instance.MyGameData.ExpMaxTurn_Long : LongExp.Duration + _addvalue;
 
         if (ShortExp_A != null) ShortExp_A .Duration =
-                ShortExp_A .Duration + _addvalue > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortExp_A .Duration + _addvalue;
+                ShortExp_A .Duration + _addvalue > GameManager.Instance.MyGameData.ExpMaxTurn_Short ? GameManager.Instance.MyGameData.ExpMaxTurn_Short : ShortExp_A .Duration + _addvalue;
         if (ShortExp_B != null) ShortExp_B.Duration =
-                ShortExp_B.Duration + _addvalue > ConstValues.ShortTermStartTurn ? ConstValues.ShortTermStartTurn : ShortExp_B.Duration + _addvalue;
+                ShortExp_B.Duration + _addvalue > GameManager.Instance.MyGameData.ExpMaxTurn_Short ? GameManager.Instance.MyGameData.ExpMaxTurn_Short : ShortExp_B.Duration + _addvalue;
         UIManager.Instance.UpdateExpPael();
         break;
       case SectorTypeEnum.NULL:
@@ -586,8 +586,16 @@ public class GameData    //게임 진행도 데이터
   #endregion
   #region #경험#
   public Experience LongExp = null;
+  public int ExpMaxTurn_Long
+  {
+    get { return ConstValues.EXPMaxTurn_long_idle + (Tendency_Head.Level < -1 ? ConstValues.Tendency_Head_m2 : 0); }
+  }
   public Experience ShortExp_A = null;
   public Experience ShortExp_B = null;
+  public int ExpMaxTurn_Short
+  {
+    get { return ConstValues.EXPMaxTurn_short_idle + (Tendency_Head.Level < -1 ? ConstValues.Tendency_Head_m2 : 0); }
+  }
   public void DeleteExp(Experience _exp)
   {
     if (LongExp == _exp) LongExp = null;
@@ -1222,8 +1230,9 @@ public class Tendency
           {
             case -2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       ConstValues.LackMPAmplifiedValue_Idle * 100, ConstValues.Tendency_Head_m1 * 100)+"<br><br>"+ string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
-                      WNCText.GetMovepointColor(ConstValues.Tendency_Head_m2));
+                       ConstValues.LackMPAmplifiedValue_Idle * 100, ConstValues.Tendency_Head_m1 * 100)+"<br><br>"+ 
+                       string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
+                      ConstValues.Tendency_Head_m2,GameManager.Instance.MyGameData.ExpMaxTurn_Long,GameManager.Instance.MyGameData.ExpMaxTurn_Short);
               break;
             case -1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
@@ -1235,7 +1244,8 @@ public class Tendency
               break;
             case 2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-              ConstValues.Tendency_Head_p1_length, WNCText.GetGoldColor(ConstValues.Tendency_Head_p1_value)) +"<br><br>"+ string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
+              ConstValues.Tendency_Head_p1_length, WNCText.GetGoldColor(ConstValues.Tendency_Head_p1_value)) +"<br><br>"+ 
+              string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
                WNCText.GetDiscomfortColor(ConstValues.Tendency_Head_p2));
               break;
           }

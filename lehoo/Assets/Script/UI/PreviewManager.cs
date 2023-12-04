@@ -810,15 +810,15 @@ public class PreviewManager : MonoBehaviour
   {
     string _turn, _description;
 
-    _turn=islong?ConstValues.LongTermStartTurn.ToString():ConstValues.ShortTermStartTurn.ToString();
+    _turn=islong?GameManager.Instance.MyGameData.ExpMaxTurn_Long.ToString():GameManager.Instance.MyGameData.ExpMaxTurn_Short.ToString();
     if (islong)
     {
-      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),ConstValues.LongTermStartTurn,
+      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),GameManager.Instance.MyGameData.ExpMaxTurn_Long,
         (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
     }
     else
     {
-      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
+      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), GameManager.Instance.MyGameData.ExpMaxTurn_Short);
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
@@ -832,15 +832,15 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong, RectTransform rect)
   {
-    int _turn = islong ? ConstValues.LongTermStartTurn : ConstValues.ShortTermStartTurn;
+    int _turn = islong ? GameManager.Instance.MyGameData.ExpMaxTurn_Long : GameManager.Instance.MyGameData.ExpMaxTurn_Short;
     string _description = "";
     if (islong)
     {
-      _description =string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.LongTermStartTurn, ConstValues.LongTermChangeCost);
+      _description =string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), GameManager.Instance.MyGameData.ExpMaxTurn_Long, ConstValues.LongTermChangeCost);
     }
     else
     {
-      _description = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.ShortTermStartTurn);
+      _description = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), GameManager.Instance.MyGameData.ExpMaxTurn_Short);
     }
 
     string _origineffect = _origin.EffectString;
