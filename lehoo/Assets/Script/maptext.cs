@@ -10,24 +10,13 @@ using UnityEngine.SceneManagement;
 
 public class maptext : MonoBehaviour
 {
-  [ContextMenu("거리 받기 테스트")]
-  public void GetLength()
-  {
-    HexGrid Hexgrid = new HexGrid(AxisGrid);
-    string _str=$"({AxisGrid.x},{AxisGrid.y}) -> ({Hexgrid.q},{Hexgrid.r},{Hexgrid.s}) -> ";
-    foreach (var dir in Hexgrid.GetDir)
-      _str += (int)dir + " ";
-    print(_str);
-  }
-  public Vector2Int AxisGrid=new Vector2Int();
-
-
   [SerializeField] private UI_map MapUIScript = null;
   public Tilemap Tilemap_bottom, Tilemap_top;
    public TilePrefabs MyTiles;
   [Space(10)]
   [SerializeField] private Transform TileHolder_bottomenvir = null;
   [SerializeField] private Transform TileHolder_topenvir = null;
+  [SerializeField] private Transform TileHolder_EventMark = null;
   [SerializeField] private Transform TileHolder_landmark = null;
   [SerializeField] private Transform TileHolder_Fog = null;
   [SerializeField] private Sprite Villagesprite, Townsprite, Citysprite;
@@ -615,9 +604,9 @@ public class maptext : MonoBehaviour
     List<int> _indexes = new List<int>();
     for (int i = 0; i < _landtiles.Count; i++)
     {
-      int _length = _NewMapData.GetLength(_NewMapData.CenterTile.Coordinate, _landtiles[i].Coordinate).Count;
+      int _length = _NewMapData.CenterTile.HexGrid.GetDistance(_landtiles[i]);
       int _count = _length <= (ConstValues.LandRadius / 2 + 1) ? _length : (Mathf.Clamp(-_length + (ConstValues.LandRadius), 0, 100));
-      _count = _count - _landtiles[i].MovePoint < 1 ? 1 : _count - _landtiles[i].MovePoint;
+      _count = _count - _landtiles[i].RequireSupply < 1 ? 1 : _count - _landtiles[i].RequireSupply;
       for (int j = 0; j < _count; j++)
       {
         _indexes.Add(i);
@@ -908,12 +897,13 @@ public class maptext : MonoBehaviour
 
         string _bottomname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).BottomEnvir}";
         Sprite _bottomspr = MyTiles.GetTile(_currenttile.BottomEnvirSprite);
-        GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(Image) });
         _bottomtile.tag = "Tile";
         _bottomtile.transform.SetParent(TileHolder_bottomenvir);
         _bottomtile.AddComponent<Onpointer_tileoutline>().MyMapUI = MapUIScript;
         _bottomtile.GetComponent<Onpointer_tileoutline>().MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
         _bottomtile.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.Transparent;
+        _bottomtile.GetComponent<Image>().raycastTarget = false;
         RectTransform _bottomrect = _bottomtile.GetComponent<RectTransform>();
         _bottomrect.sizeDelta = _cellsize;
         _bottomrect.position = new Vector3(_pos.x, _pos.y, _bottomrect.position.z);
@@ -979,6 +969,19 @@ public class maptext : MonoBehaviour
         _fogimage.raycastTarget = false;
         _fogimage.sprite = MyTiles.Fog;
 
+        string _eventname= $"{j},{i} EventMark";
+        GameObject _eventmark = new GameObject(_eventname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+        _eventmark.transform.SetParent(TileHolder_EventMark);
+        RectTransform _eventrect = _eventmark.GetComponent<RectTransform>();
+        _eventrect.sizeDelta = _cellsize;
+        _eventrect.position = new Vector3(_pos.x, _pos.y, _eventrect.position.z);
+        _eventrect.transform.localScale = Vector3.one;
+        _eventrect.anchoredPosition3D = new Vector3(_eventrect.anchoredPosition3D.x, _eventrect.anchoredPosition3D.y, 0.0f);
+        Image _eventimage = _eventmark.GetComponent<Image>();
+        _eventimage.raycastTarget = false;
+        _eventimage.sprite = GameManager.Instance.ImageHolder.UnknownEvent;
+        _eventimage.enabled = false;
+
         TileObjScript _tilescript = _bottomtile.GetComponent<TileObjScript>();
         _tilescript.Rect = _bottomrect;
         _tilescript.Button = _button;
@@ -1006,6 +1009,7 @@ public class maptext : MonoBehaviour
         _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
         _tilescript.FogGroup = _fogtile.GetComponent<CanvasGroup>();
         _tilescript.FogGroup.alpha = _currenttile.Fogstate == 0 ? 1.0f : _currenttile.Fogstate == 1 ? ConstValues.FogAlpha_visible : 0.0f;
+        _tilescript.EventMarkImage = _eventimage;
 
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _tilescript;
       }
@@ -1166,7 +1170,7 @@ public class HexGrid
   }
   public HexGrid(Vector2Int vector2)
   {
-    q = vector2.x - (vector2.y - (vector2.y &1)) / 2;
+    q = vector2.x - (vector2.y - (vector2.y & 1)) / 2;
     r = vector2.y;
     s = -q - r;
   }
@@ -1217,216 +1221,203 @@ public class HexGrid
   {
     return h0.q.Equals(h1.q) || h0.r.Equals(h1.r) || h0.s.Equals(h1.s);
   }
-  public List<HexDir> GetDir
+  private List<HexDir> GetRoute()
   {
-    get
+    int _loopcount = 0;
+    List<HexDir> _list = new List<HexDir>();
+    HexGrid _current = new HexGrid(q, r, s);
+    HexGrid _temp = new HexGrid();
+    int _value = 100;
+    int _sign = 0;
+    HexGrid _dirgrid = new HexGrid();
+
+    while (_value != 0)
     {
-      string _str = $"({q},{r},{s}) ->";
+      _loopcount++;
+      if (_loopcount > 100) { Debug.Log("테챠앗!!!"); return null; }
 
-      int _loopcount = 0;
-      List<HexDir> _list = new List<HexDir>();
-      HexGrid _current = new HexGrid(q, r, s);
-      HexGrid _temp = new HexGrid();
-      int _value = 100;
-      int _sign = 0;
-      HexGrid _dirgrid = new HexGrid();
-
-      while (_value != 0)
+      _value = _current.q / 2;
+      if (_value != 0)
       {
-        _loopcount++;
-        if (_loopcount > 100) { Debug.Log("테챠앗!!!"); return null; }
+        _sign = (int)Mathf.Sign(_value);
+        for (int i = 0; i < Mathf.Abs(_value); i++)
+        {
+          _dirgrid.q = 2 * _sign;
+          _dirgrid.r = -1 * _sign;
+          _dirgrid.s = -1 * _sign;
 
-        _value = _current.q / 2;
+          _current -= _dirgrid;
+
+          foreach (var _hex in GetDir(_dirgrid))
+            _list.Add(_hex);
+        }
+      }
+      _value = _current.r / 2;
+      if (_value != 0)
+      {
+        _sign = (int)Mathf.Sign(_value);
+        for (int i = 0; i < Mathf.Abs(_value); i++)
+        {
+          _dirgrid.q = -1 * _sign;
+          _dirgrid.r = 2 * _sign;
+          _dirgrid.s = -1 * _sign;
+
+          _current -= _dirgrid;
+
+          foreach (var _hex in GetDir(_dirgrid))
+            _list.Add(_hex);
+        }
+
+        _value = _current.s / 2;
         if (_value != 0)
         {
           _sign = (int)Mathf.Sign(_value);
           for (int i = 0; i < Mathf.Abs(_value); i++)
           {
-            _dirgrid.q = 2 * _sign;
+            _dirgrid.q = -1 * _sign;
             _dirgrid.r = -1 * _sign;
-            _dirgrid.s = -1 * _sign;
+            _dirgrid.s = 2 * _sign;
 
             _current -= _dirgrid;
 
             foreach (var _hex in GetDir(_dirgrid))
               _list.Add(_hex);
           }
-        }
-          _value = _current.r / 2;
-          if (_value != 0)
-          {
-            _sign = (int)Mathf.Sign(_value);
-            for (int i = 0; i < Mathf.Abs(_value); i++)
-            {
-              _dirgrid.q = -1 * _sign;
-              _dirgrid.r = 2 * _sign;
-              _dirgrid.s = -1 * _sign;
 
-              _current -= _dirgrid;
-
-              foreach (var _hex in GetDir(_dirgrid))
-                _list.Add(_hex);
-            }
-
-            _value = _current.s / 2;
-            if (_value != 0)
-            {
-              _sign = (int)Mathf.Sign(_value);
-              for (int i = 0; i < Mathf.Abs(_value); i++)
-              {
-                _dirgrid.q = -1 * _sign;
-                _dirgrid.r = -1 * _sign;
-                _dirgrid.s = 2 * _sign;
-
-                _current -= _dirgrid;
-
-                foreach (var _hex in GetDir(_dirgrid))
-                  _list.Add(_hex);
-              }
-
-            }
-          }
-
-        }
-
-      foreach (var hex in GetDir(_current))
-      {
-        _list.Add(hex);
-      }
-      updatedirstr();
-      bool _isoverlap = true;
-      while (_isoverlap == true)
-      {
-        _isoverlap = false;
-
-        if (_list.Contains((HexDir)0) && _list.Contains((HexDir)3))
-        {
-          _list.Remove((HexDir)0);
-          _list.Remove((HexDir)3);
-          _isoverlap = true;
-
-          _str += "   0+3 중복 제거";
-          updatedirstr();
-        }
-        if (_list.Contains((HexDir)1) && _list.Contains((HexDir)4))
-        {
-          _list.Remove((HexDir)1);
-          _list.Remove((HexDir)4);
-          _isoverlap = true;
-        
-          _str += "   1+3 중복 제거";
-          updatedirstr();
-        }
-        if (_list.Contains((HexDir)2) && _list.Contains((HexDir)5))
-        {
-          _list.Remove((HexDir)2);
-          _list.Remove((HexDir)5);
-          _isoverlap = true;
-         
-          _str += "   2+5 중복 제거";
-          updatedirstr();
-        }
-
-        if (_list.Contains((HexDir)1) && _list.Contains((HexDir)5))
-        {
-          _list.Remove((HexDir)1);
-          _list.Remove((HexDir)5);
-
-          _list.Add((HexDir)0);
-          _isoverlap = true;
-
-          _str += "   5+1 => 0";
-          updatedirstr();
-        }
-        if (_list.Contains((HexDir)0) && _list.Contains((HexDir)2))
-        {
-          _list.Remove((HexDir)0);
-          _list.Remove((HexDir)2);
-
-          _list.Add((HexDir)1);
-          _isoverlap = true;
-
-          _str += "   0+2 => 1";
-          updatedirstr();
-        }
-        if (_list.Contains((HexDir)1) && _list.Contains((HexDir)3))
-        {
-          _list.Remove((HexDir)1);
-          _list.Remove((HexDir)3);
-
-          _list.Add((HexDir)2);
-          _isoverlap = true;
-
-          _str += "   1+3 => 2";
-          updatedirstr();
-        }
-        if (_list.Contains((HexDir)2) && _list.Contains((HexDir)4))
-        {
-          _list.Remove((HexDir)2);
-          _list.Remove((HexDir)4);
-
-          _list.Add((HexDir)3);
-          _isoverlap = true;
-
-          _str += "   2+4 => 3";
-          updatedirstr();
-        }
-        if (_list.Contains((HexDir)3) && _list.Contains((HexDir)5))
-        {
-          _list.Remove((HexDir)3);
-          _list.Remove((HexDir)5);
-
-          _list.Add((HexDir)4);
-          _isoverlap = true;
-
-          _str += "   3+5 => 4";
-          updatedirstr();
-        }
-        if (_list.Contains((HexDir)0) && _list.Contains((HexDir)4))
-        {
-          _list.Remove((HexDir)0);
-          _list.Remove((HexDir)4);
-
-          _list.Add((HexDir)5);
-          _isoverlap = true;
-
-          _str += "   4+0 => 5";
-          updatedirstr();
         }
       }
 
-   //   Debug.Log(_str);
-      return _list;
+    }
 
-      //최소단위 받아서 계산
-      List<HexDir> GetDir(HexGrid grid)
+    foreach (var hex in GetDir(_current))
+    {
+      _list.Add(hex);
+    }
+    bool _isoverlap = true;
+    while (_isoverlap == true)
+    {
+      _isoverlap = false;
+
+      if (_list.Contains((HexDir)0) && _list.Contains((HexDir)3))
       {
-        List<HexDir> _temp = new List<HexDir>();
-
-        if (grid.q == 2) { _temp.Add((HexDir)1); _temp.Add((HexDir)2); }
-        else if (grid.q == -2) { _temp.Add((HexDir)4); _temp.Add((HexDir)5); }
-        else if (grid.r == 2) { _temp.Add((HexDir)0); _temp.Add((HexDir)5); }
-        else if (grid.r == -2) { _temp.Add((HexDir)2); _temp.Add((HexDir)3); }
-        else if (grid.s == 2) { _temp.Add((HexDir)3); _temp.Add((HexDir)4); }
-        else if (grid.s == -2) { _temp.Add((HexDir)0); _temp.Add((HexDir)1); }
-        else if (grid.q == 0 && grid.r == 1 && grid.s == -1) _temp.Add((HexDir)0);
-        else if (grid.q == 1 && grid.r == 0 && grid.s == -1) _temp.Add((HexDir)1);
-        else if (grid.q == 1 && grid.r == -1 && grid.s == 0) _temp.Add((HexDir)2);
-        else if (grid.q == 0 && grid.r == -1 && grid.s == 1) _temp.Add((HexDir)3);
-        else if (grid.q == -1 && grid.r == 0 && grid.s == 1) _temp.Add((HexDir)4);
-        else if (grid.q == -1 && grid.r == 1 && grid.s == 0) _temp.Add((HexDir)5);
-
-        return _temp;
+        _list.Remove((HexDir)0);
+        _list.Remove((HexDir)3);
+        _isoverlap = true;
       }
-      void updatedirstr()
+      if (_list.Contains((HexDir)1) && _list.Contains((HexDir)4))
       {
-        _str += "\n(";
-        foreach(var hex in _list)
-        {
-          _str += $"{(int)hex},";
-        }
-        _str += ")";
+        _list.Remove((HexDir)1);
+        _list.Remove((HexDir)4);
+        _isoverlap = true;
+      }
+      if (_list.Contains((HexDir)2) && _list.Contains((HexDir)5))
+      {
+        _list.Remove((HexDir)2);
+        _list.Remove((HexDir)5);
+        _isoverlap = true;
+      }
+
+      if (_list.Contains((HexDir)1) && _list.Contains((HexDir)5))
+      {
+        _list.Remove((HexDir)1);
+        _list.Remove((HexDir)5);
+
+        _list.Add((HexDir)0);
+        _isoverlap = true;
+      }
+      if (_list.Contains((HexDir)0) && _list.Contains((HexDir)2))
+      {
+        _list.Remove((HexDir)0);
+        _list.Remove((HexDir)2);
+
+        _list.Add((HexDir)1);
+        _isoverlap = true;
+      }
+      if (_list.Contains((HexDir)1) && _list.Contains((HexDir)3))
+      {
+        _list.Remove((HexDir)1);
+        _list.Remove((HexDir)3);
+
+        _list.Add((HexDir)2);
+        _isoverlap = true;
+      }
+      if (_list.Contains((HexDir)2) && _list.Contains((HexDir)4))
+      {
+        _list.Remove((HexDir)2);
+        _list.Remove((HexDir)4);
+
+        _list.Add((HexDir)3);
+        _isoverlap = true;
+      }
+      if (_list.Contains((HexDir)3) && _list.Contains((HexDir)5))
+      {
+        _list.Remove((HexDir)3);
+        _list.Remove((HexDir)5);
+
+        _list.Add((HexDir)4);
+        _isoverlap = true;
+      }
+      if (_list.Contains((HexDir)0) && _list.Contains((HexDir)4))
+      {
+        _list.Remove((HexDir)0);
+        _list.Remove((HexDir)4);
+
+        _list.Add((HexDir)5);
+        _isoverlap = true;
       }
     }
+
+    //   Debug.Log(_str);
+    return _list;
+
+    //최소단위 받아서 계산
+    List<HexDir> GetDir(HexGrid grid)
+    {
+      List<HexDir> _temp = new List<HexDir>();
+
+      if (grid.q == 2) { _temp.Add((HexDir)1); _temp.Add((HexDir)2); }
+      else if (grid.q == -2) { _temp.Add((HexDir)4); _temp.Add((HexDir)5); }
+      else if (grid.r == 2) { _temp.Add((HexDir)0); _temp.Add((HexDir)5); }
+      else if (grid.r == -2) { _temp.Add((HexDir)2); _temp.Add((HexDir)3); }
+      else if (grid.s == 2) { _temp.Add((HexDir)3); _temp.Add((HexDir)4); }
+      else if (grid.s == -2) { _temp.Add((HexDir)0); _temp.Add((HexDir)1); }
+      else if (grid.q == 0 && grid.r == 1 && grid.s == -1) _temp.Add((HexDir)0);
+      else if (grid.q == 1 && grid.r == 0 && grid.s == -1) _temp.Add((HexDir)1);
+      else if (grid.q == 1 && grid.r == -1 && grid.s == 0) _temp.Add((HexDir)2);
+      else if (grid.q == 0 && grid.r == -1 && grid.s == 1) _temp.Add((HexDir)3);
+      else if (grid.q == -1 && grid.r == 0 && grid.s == 1) _temp.Add((HexDir)4);
+      else if (grid.q == -1 && grid.r == 1 && grid.s == 0) _temp.Add((HexDir)5);
+
+      return _temp;
+    }
+  }
+  public List<HexDir> GetRoute(TileData starttile)
+  {
+    HexGrid _current = new HexGrid(starttile.HexGrid.q- q,starttile.HexGrid.r-r, starttile.HexGrid.s-s);
+    return _current.GetRoute();
+  }
+  public List<HexDir> GetRoute(HexGrid starthex)
+  {
+    HexGrid _current = new HexGrid(starthex.q-q, starthex.r-r, starthex.s-s);
+    return _current.GetRoute();
+  }
+  public int GetDistance(HexGrid starthex)
+  {
+    HexGrid _newhex = new HexGrid(q, r, s) - starthex;
+    return Mathf.Max(Mathf.Abs(_newhex.q), Mathf.Abs(_newhex.r), Mathf.Abs(_newhex.s));
+  }
+  public int GetDistance(TileData starttile)
+  {
+    HexGrid _newhex = new HexGrid(q, r, s) - starttile.HexGrid;
+    return Mathf.Max(Mathf.Abs(_newhex.q), Mathf.Abs(_newhex.r), Mathf.Abs(_newhex.s));
+  }
+  public int GetDistance(Vector2Int startcoor)
+  {
+    HexGrid _newhex = new HexGrid(q, r, s) - new HexGrid(startcoor);
+    return Mathf.Max(Mathf.Abs(_newhex.q), Mathf.Abs(_newhex.r), Mathf.Abs(_newhex.s));
+  }
+  public bool EnableLength(int length)
+  {
+    return q >= -length && q <= length && r >= -length && r <= length && s >= -length && s <= length;
   }
 }

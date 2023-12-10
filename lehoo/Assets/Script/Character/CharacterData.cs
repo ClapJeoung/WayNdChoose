@@ -8,6 +8,12 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const float WorldEventPhase_1_Cult = 30.0f, WorldEventPhase_2_Cult = 60.0f;
+  public const int WorldEventCount_0 = 2, WorldEventCount_1 = 1, WorldEventCount_2 = 0;
+
+  public const int MoveLength_Low = 4, MoveLength_Middle = 6;
+  public const int MoveLengthSupply_Low=1, MoveLengthSupply_Middle = 2, MoveLengthSupply_High = 3;
+
   public const float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.4f;
   public const float FogAlphaChangeTime = 0.4f;
   public const float FogScaleChangeTime = 0.6f;
@@ -736,7 +742,7 @@ public class GameData    //게임 진행도 데이터
       if (_tiles[i].TileSettle != null) continue;
 
 
-      for(int j = 0; j < _tiles[i].MovePoint; j++)
+      for(int j = 0; j < _tiles[i].RequireSupply; j++)
       {
         _tileasindex.Add(i);
       }
@@ -746,7 +752,7 @@ public class GameData    //게임 진행도 데이터
     Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
               UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
 
-    Cult_CoolTime = (int)(MapData.GetLength(CurrentTile,Cult_RitualTile).Count/ ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Ritual;
+    Cult_CoolTime = (int)((Cult_RitualTile.HexGrid.GetDistance(CurrentTile)/ ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Ritual);
 
     if (Cult_SabbatSector != SectorTypeEnum.NULL) Cult_SabbatSector = SectorTypeEnum.NULL;
   }
@@ -879,12 +885,13 @@ public class GameData    //게임 진행도 데이터
         _tiledata.TopEnvirSprite = (TileSpriteType)jsondata.Tiledata_TopEnvirSprite[_index];
         _tiledata.BottomEnvirSprite = (TileSpriteType)jsondata.Tiledata_BottomEnvirSprite[_index];
         _tiledata.Fogstate = jsondata.Tiledata_Fogstate[_index];
+        _tiledata.IsEvent = jsondata.Tiledata_IsEvent[_index];
 
         MyMapData.TileDatas[j, i] = _tiledata;
       }
     }
-    
-    for(int i = 0; i < jsondata.Village_Id.Count; i++)
+
+    for (int i = 0; i < jsondata.Village_Id.Count; i++)
     {
       Settlement _village = new Settlement(SettlementType.Village);
       _village.Index = jsondata.Village_Id[i];
@@ -944,6 +951,8 @@ public class GameData    //게임 진행도 데이터
     }
     FirstRest= jsondata.FirstRest;
 
+    foreach(var _coordinate in jsondata.EventTiles)
+      MyMapData.CurrentEventTiles.Add(MyMapData.Tile(_coordinate));
     TotalMoveCount = jsondata.TotalMoveCount;
     TotalRestCount = jsondata.TotalRestCount;
     Year = jsondata.Year;
@@ -1194,8 +1203,8 @@ public class Tendency
             case -2:
               _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
               _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
-              _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
-              _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
+         //     _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
+         //     _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
               _result = string.Format("{0}, {1}",
                 string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m2),
                 string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m2));
@@ -1215,8 +1224,8 @@ public class Tendency
                 string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
               break;
             case 2:
-              _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
-              _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
+          //    _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
+           //   _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
               _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
               _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
               _result = string.Format("{0}, {1}",
@@ -1349,6 +1358,7 @@ public class ProgressData
 }//게임 외부 진척도 데이터
 public class GameJsonData
 {
+  public List<Vector2Int> EventTiles=new List<Vector2Int>();
 
   public List<int> Tiledata_Rotation = new List<int>();
   public List<int> Tiledata_BottomEnvir = new List<int>();
@@ -1357,6 +1367,7 @@ public class GameJsonData
   public List<int> Tiledata_BottomEnvirSprite = new List<int>();
   public List<int> Tiledata_TopEnvirSprite = new List<int>();
   public List<int> Tiledata_Fogstate = new List<int>();
+  public List<bool> Tiledata_IsEvent=new List<bool>();
 
   public List<int> Village_Id = new List<int>();
   public List<int> Village_Discomfort = new List<int>();
@@ -1438,6 +1449,9 @@ public class GameJsonData
 
   public GameJsonData(GameData data)
   {
+    foreach (var _eventtile in data.MyMapData.CurrentEventTiles)
+      EventTiles.Add(_eventtile.Coordinate);
+
     foreach (var _tile in data.MyMapData.TileDatas)
     {
       Tiledata_Rotation.Add(_tile.Rotation);
@@ -1447,6 +1461,7 @@ public class GameJsonData
       Tiledata_BottomEnvirSprite.Add((int)_tile.BottomEnvirSprite);
       Tiledata_TopEnvirSprite.Add((int)_tile.TopEnvirSprite);
       Tiledata_Fogstate.Add(_tile.Fogstate);
+      Tiledata_IsEvent.Add(_tile.IsEvent);
     }
 
     foreach (var _village in data.MyMapData.Villages)

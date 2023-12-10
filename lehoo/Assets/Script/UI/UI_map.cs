@@ -22,10 +22,71 @@ public class UI_map : UI_default
     IsMoved = false;
     CameraResetButton.interactable = false;
   }
-  [SerializeField] private Image Outline_Idle = null;
-  [SerializeField] private Image Outline_Select = null;
+  [SerializeField] private Image Outline_Selecting = null;
   [SerializeField] private List<Image> Outline_Routes = new List<Image>();
-  [SerializeField] private List<Image> Outline_Routes_temps= new List<Image>();
+  private Image GetEnableOutline
+  {
+    get
+    {
+      foreach(Image img in Outline_Routes)
+        if(!img.enabled)return img;
+
+     GameObject _newoutline=Instantiate(OutlinePrefab, Outline_Routes[0].transform.parent);
+      Outline_Routes.Add(_newoutline.transform.GetComponent<Image>());
+      return _newoutline.transform.GetComponent<Image>();
+    }
+  }
+  [SerializeField] private GameObject OutlinePrefab = null;
+  [SerializeField] private Color MadColor = new Color();
+  [SerializeField] private Color LowColor = new Color();
+  [SerializeField] private Color MiddleColor = new Color();
+  [SerializeField] private Color HighColor = new Color();
+  [SerializeField] private List<Image> Arrows = new List<Image>();
+  private List<Image> Arrows_Current=new List<Image>();
+  private List<Image> Arrows_Selectingtemp= new List<Image>();
+  private Image GetEnableArrow
+  {
+    get
+    {
+      foreach (Image image in Arrows)
+        if (!image.enabled) return image;
+
+      GameObject _newArrow = Instantiate(ArrowPrefab, Arrows[0].transform.parent);
+      Arrows.Add(_newArrow.GetComponent<Image>());
+      return _newArrow.GetComponent<Image>();
+    }
+  }
+  private void SetArrowRotation(ref RectTransform rect, HexDir dir)
+  {
+    switch (dir)
+    {
+      case HexDir.TopRight:
+        rect.rotation = Quaternion.Euler(0.0f, 0.0f, 60.0f);
+        rect.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        break;
+      case HexDir.Right:
+        rect.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        rect.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        break;
+      case HexDir.BottomRight:
+        rect.rotation = Quaternion.Euler(0.0f, 0.0f, 300.0f);
+        rect.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        break;
+      case HexDir.BottomLeft:
+        rect.rotation = Quaternion.Euler(0.0f, 0.0f, 240.0f);
+        rect.localScale = new Vector3(1.0f, -1.0f, 1.0f);
+        break;
+      case HexDir.Left:
+        rect.rotation = Quaternion.Euler(0.0f, 0.0f, 180.0f);
+        rect.localScale = new Vector3(1.0f, -1.0f, 1.0f);
+        break;
+      case HexDir.TopLeft:
+        rect.rotation = Quaternion.Euler(0.0f, 0.0f, 120.0f);
+        rect.localScale = new Vector3(1.0f, -1.0f, 1.0f);
+        break;
+    }
+  }
+  [SerializeField] private GameObject ArrowPrefab = null;
   [SerializeField] private float MoveTime = 0.8f;
   public maptext MapCreater = null;
   [HideInInspector] public List<GameObject> CityIcons = new List<GameObject>();
@@ -106,6 +167,7 @@ public class UI_map : UI_default
   [SerializeField] private CanvasGroup TilePreviewGroup = null;
   [SerializeField] private Image TilePreview_Bottom = null;
   [SerializeField] private Image TilePreview_Top = null;
+  [SerializeField] private Image TilePreview_IsEvent = null;
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
   [SerializeField] private TextMeshProUGUI BonusGoldText = null;
@@ -144,235 +206,137 @@ public class UI_map : UI_default
       _tile.SetFog(2);
     }
   }
-  public List<TileData> SetRouteTemp(TileData tile)
+  public List<TileData> Destinations= new List<TileData>();   //좌클릭으로 찍은 타일들
+  public List<TileData> Route_Current= new List<TileData>(); //Destination를 이은 타일들
+  public List<TileData> Route_Old= new List<TileData>();     //불필요한 연산을 막기 위한 대조용 리스트
+  public int GetlengthAsRoute(TileData tile)
   {
-    if (Route_Temp.Count > 0)
+    if (Destinations.Count > 0) return Destinations.Count + tile.HexGrid.GetDistance(Destinations[Destinations.Count]);
+    else return tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+  }
+  public List<int> GetRouteSupply(List<TileData> route)
+  {
+    List<int> _temp = new List<int>();
+    for (int i = 0; i < route.Count; i++)
     {
-      for (int i = 1; i < Route_Temp.Count; i++)
+      if (i < ConstValues.MoveLength_Low) _temp.Add(route[i].RequireSupply * ConstValues.MoveLengthSupply_Low);
+      else if (i < ConstValues.MoveLength_Middle) _temp.Add(route[i].RequireSupply * ConstValues.MoveLengthSupply_Middle);
+      else _temp.Add(route[i].RequireSupply * ConstValues.MoveLengthSupply_High);
+    }
+    return _temp;
+  }
+  public void AddDestination(TileData tile)
+  {
+
+  }
+  public void RemoveDestination(TileData tile)
+  {
+
+  }
+  private void UpdateRouteIcons()
+  {
+    //시작: CurrentTile
+    //매 i당 현재 아웃라인 + 다음으로 향하는 화살표
+    for(int i = 0; i < Route_Current.Count; i++)
+    {
+      if (i < Route_Old.Count) continue;
+
+      if (i != 0)
       {
-        DisableOutline(Outline_Routes_temps[i]);
+        Color _currentcolor = new Color();
+        if (i < ConstValues.MoveLength_Low) _currentcolor = LowColor;
+        else if (i < ConstValues.MoveLength_Middle) _currentcolor = MiddleColor;
+        else _currentcolor = HighColor;
+        _currentcolor.a = Destinations.Contains(Route_Current[i]) ? 1.0f : 0.4f;
+        SetOutline(GetEnableOutline, Route_Current[i].ButtonScript.Rect, _currentcolor);
       }
+
+      if (i == Route_Current.Count - 1) continue;
+      Vector3 _arrowpos = (Route_Current[i].ButtonScript.Rect.anchoredPosition3D + Route_Current[i + 1].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+      RectTransform _arrow = GetEnableArrow;
+      _arrow.anchoredPosition = _arrowpos;
+      SetArrowRotation(ref _arrow, Route_Current[i + 1].HexGrid.GetRoute(Route_Current[i].HexGrid)[0]);
     }
-
-    //GetLength로 방향들 산출
-    TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.Tile(GameManager.Instance.MyGameData.Coordinate);
-    List<HexDir> _dirtemp = MapData.GetLength(_currenttile, tile);
-    //배열들 만들기
-    List<List<int>> _results = new List<List<int>>();
-    if (_dirtemp.Count == 1) { _results.Add(new List<int> { 0 }); }
-    else
-    {
-      int _elementindex = -1, _inputindex = 0;// _failcount = 0;
-      int _maxcount = _dirtemp.Count;
-      List<int> _elements = new List<int>();
-      for (int i = 0; i < _dirtemp.Count; i++) _elements.Add(i);
-      Dictionary<int, List<int>> _disableindex = new Dictionary<int, List<int>>();
-      List<int> _current = null;
-
-      _results.Add(new List<int>());
-      while (true)
-      {
-
-        if (_disableindex.ContainsKey(0) && _disableindex[0].Count == _maxcount) break;
-        _elementindex++;
-
-        _current = _results[_results.Count - 1];
-
-        int _temp = 0;
-        try
-        {
-          _temp = _elements[_elementindex];
-        }
-        catch (System.Exception)
-        {
-          throw;
-        }
-        if (_current.Contains(_temp) || (_disableindex.ContainsKey(_inputindex) && _disableindex[_inputindex].Contains(_temp)))
-        {
-          AddBan(_inputindex, _temp);
-
-          if (_disableindex[_inputindex].Count == _maxcount)
-          {
-            _disableindex[_inputindex].Clear();
-            _inputindex = _inputindex > 0 ? _inputindex - 1 : 0;
-            _elementindex = -1;
-            AddBan(_inputindex, _current[_current.Count - 1]);
-            if (_current.Count > 0) _current.RemoveAt(_current.Count - 1);
-          }
-          continue;
-        }
-        _current.Add(_temp);
-
-        if (_inputindex == _maxcount - 1)
-        {
-          bool _isokay = true;
-          for (int i = 0; i < _results.Count - 1; i++)
-          {
-            List<bool> _colaspeelement = new List<bool>();
-            for (int j = 0; j < _current.Count; j++)
-            {
-              if (_current[j] == _results[i][j]) { _colaspeelement.Add(true); }
-              else _colaspeelement.Add(false);
-            }
-            if (!_colaspeelement.Contains(false)) { _isokay = false; break; }
-          }
-          if (_isokay)
-          {
-            _inputindex = -1;
-            _disableindex.Clear();
-
-            _results.Add(new List<int>());
-          }
-          else
-          {
-            AddBan(_inputindex, _temp);
-            _current.RemoveAt(_current.Count - 1);
-
-            if (_disableindex[_inputindex].Count == _maxcount)
-            {
-              _disableindex[_inputindex].Clear();
-              _inputindex = _inputindex > 0 ? _inputindex - 1 : 0;
-              _elementindex = -1;
-              AddBan(_inputindex, _current[_current.Count - 1]);
-              if (_current.Count > 0) _current.RemoveAt(_current.Count - 1);
-              continue;
-            }
-            else
-            {
-              continue;
-            }
-          }
-        }
-        _inputindex++;
-        _elementindex = -1;
-      }
-      if (_results[_results.Count - 1].Count == 0) _results.RemoveAt(_results.Count - 1);
-
-      void AddBan(int inputindex, int value)
-      {
-        int _index = inputindex > 0 ? inputindex : 0;
-        if (!_disableindex.ContainsKey(_index))
-        {
-          int _banindex = _index;
-          _disableindex.Add(_banindex, new List<int>());
-        }
-        if (!_disableindex[_index].Contains(value)) _disableindex[_index].Add(value);
-      }
-    }
-    //배열대로 집어넣은 HexDir들
-    List<List<HexDir>> _routedirs = new List<List<HexDir>>();
-    foreach (var _list in _results)
-    {
-      List<HexDir> _dirs = new List<HexDir>();
-      foreach (var _value in _list) _dirs.Add(_dirtemp[_value]);
-      _routedirs.Add(_dirs);
-    }
-    //겹치는게 있으면 제거
-    bool _iscollaspe = true;
-    while (_iscollaspe == true)
-    {
-      if (_routedirs.Count == 1) break;
-
-      for (int i = 0; i < _routedirs.Count; i++)
-      {
-        for (int j = i + 1; j < _routedirs.Count; j++)
-        {
-          _iscollaspe = true;
-          for (int k = 0; k < _routedirs[i].Count; k++)
-            if (_routedirs[i][k] != _routedirs[j][k]) { _iscollaspe = false; break; }
-
-          if (_iscollaspe)
-          {
-            _routedirs.RemoveAt(j);
-            break;
-          }
-        }
-        if (_iscollaspe) break;
-      }
-      if (_iscollaspe) continue;
-    }
-    //Tile로 변환
-    List<List<TileData>> _routes = new List<List<TileData>>();
-    foreach (var _dirlist in _routedirs)
-    {
-      List<TileData> _newroute = new List<TileData>();
-      _newroute.Add(GameManager.Instance.MyGameData.CurrentTile);
-      for (int i = 0; i < _dirlist.Count; i++)
-        _newroute.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(_newroute[_newroute.Count - 1], _dirlist[i]));
-      _routes.Add(_newroute);
-    }
-    //제일 짧은 거리 산출
-    int _minMP = 100, _targetindex = 0;
-    for (int i = 0; i < _routes.Count; i++)
-    {
-      int _MP = 0;
-      foreach (TileData _tile in _routes[i])
-        _MP += _tile.MovePoint;
-      if (_MP < _minMP)
-      {
-        int _tempindex = i;
-        _targetindex = _tempindex;
-        _minMP = _MP;
-      }
-    }
-    //Temp에 넣음
-    Route_Temp = _routes[_targetindex];
-
-    for (int i = 1; i < Route_Temp.Count; i++)
-    {
-      SetOutline(Outline_Routes_temps[i], Route_Temp[i].ButtonScript.Rect);
-    }
-
-    return Route_Temp;
+  }
+  private void ResetRouteIcons()
+  {
+    foreach (var _outline in Outline_Routes)
+      if (_outline.enabled) _outline.enabled = false;
+    foreach (var _arrow in Arrows)
+      if (_arrow.GetComponent<Image>().enabled) _arrow.GetComponent<Image>().enabled = false;
   }
   public void EnterTile(TileData tile)
   {
-    SetOutline(Outline_Idle, tile.ButtonScript.Rect);
-    if (Route_Temp.Count > 0)
+    if (!IsMad)
     {
-      for (int i = 1; i < Route_Temp.Count; i++)
-      {
-        DisableOutline(Outline_Routes_temps[i]);
-      }
+      TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
+      TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
+      TilePreview_IsEvent.enabled = tile.IsEvent;
+      TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
+    }
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    {
+      case 0:
+        UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Village, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Village);
+        break;
+      case 1:
+        UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Town, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Town);
+        break;
+      case 2:
+        UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.City, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.City);
+        break;
     }
 
-    if (SelectedTile == null)
+    int _length = GetlengthAsRoute(tile);
+    Color _currentcolor = new Color();
+    if (IsMad) _currentcolor = MadColor;
+    else
     {
-      if (!IsMad)
-      {
-        TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
-        TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
-        TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
-        TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
-      }
-      switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-      {
-        case 0:
-          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Village, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Village);
-          break;
-        case 1:
-          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.Town, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.Town);
-          break;
-        case 2:
-          UIManager.Instance.SidePanelCultUI.SetSettlementEffect(SettlementType.City, tile.TileSettle == null ? false : tile.TileSettle.SettlementType == SettlementType.City);
-          break;
-      }
+      if (_length < ConstValues.MoveLength_Low) _currentcolor = LowColor;
+      else if (_length < ConstValues.MoveLength_Middle) _currentcolor = MiddleColor;
+      else _currentcolor = HighColor;
+    }
+    _currentcolor.a = 1.0f;
+
+    SetOutline(Outline_Selecting, tile.ButtonScript.Rect,_currentcolor);
+
+    List<HexDir> _routetemp=new List<HexDir>();
+    TileData _currenttile = null;
+    TileData _nexttile = null;
+    if (Destinations.Count == 0)
+    {
+      _currenttile = GameManager.Instance.MyGameData.CurrentTile;
+      _routetemp = tile.HexGrid.GetRoute(GameManager.Instance.MyGameData.CurrentTile);
+    }
+    else
+    {
+      _currenttile = Destinations[Destinations.Count - 1];
+      _routetemp = tile.HexGrid.GetRoute(Destinations[Destinations.Count - 1]);
+    }
+    for(int i=0;i<_routetemp.Count;i++)
+    {
+      _nexttile = GameManager.Instance.MyGameData.MyMapData.GetNextTile(_currenttile, _routetemp[i]);
+      Vector3 _arrowpos = (_currenttile.ButtonScript.Rect.anchoredPosition3D + _nexttile.ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+      RectTransform _arrow = GetEnableArrow;
+      _arrow.anchoredPosition = _arrowpos;
+      SetArrowRotation(ref _arrow, _routetemp[i]);
+
+      Arrows_Selectingtemp.Add(_arrow);
     }
   }
   public void ExitTile()
   {
-    if (Route_Temp.Count > 0)
-    {
-      for (int i = 1; i < Route_Temp.Count; i++)
-      {
-        DisableOutline(Outline_Routes_temps[i]);
-      }
-    }
-    DisableOutline(Outline_Idle); }
+    foreach (var _arrow in Arrows_Selectingtemp)
+      _arrow.GetComponent<Image>().enabled = false;
+    Arrows_Selectingtemp.Clear();
 
-  public void SetOutline(Image outline, RectTransform tilerect)
+    DisableOutline(Outline_Selecting); }
+
+  public void SetOutline(Image outline, RectTransform tilerect,Color color)
   {
     if (outline.enabled == false) outline.enabled = true;
+    outline.color=color;
     outline.rectTransform.position = tilerect.position;
     outline.rectTransform.anchoredPosition3D = new Vector3(outline.rectTransform.anchoredPosition3D.x, outline.rectTransform.anchoredPosition3D.y, 0.0f);
   }
@@ -416,6 +380,7 @@ public class UI_map : UI_default
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
       TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
       TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+      TilePreview_IsEvent.enabled = false;
       TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
     else
@@ -423,8 +388,9 @@ public class UI_map : UI_default
       if (MadnessEffect.enabled) MadnessEffect.enabled = false;
       IsMad = false;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
-      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.UnknownTile;
+      TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.Transparent;
       TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+      TilePreview_IsEvent.enabled = false;
       TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
 
@@ -432,7 +398,7 @@ public class UI_map : UI_default
 
     if (Route_Tile.Count > 0)
     {
-      for (int i = 1; i < 10; i++)
+      for (int i = 1; i < Outline_Routes.Count; i++)
       {
         DisableOutline(Outline_Routes[i]);
       }
@@ -445,7 +411,7 @@ public class UI_map : UI_default
       }
     }
 
-    DisableOutline(Outline_Idle);
+    DisableOutline(Outline_Selecting);
     DisableOutline(Outline_Select);
 
     for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
@@ -597,7 +563,7 @@ public class UI_map : UI_default
       int _min = 100;
       foreach(var _tile in _targettiles)
       {
-        int _newmin = MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, _tile).Count;
+        int _newmin = GameManager.Instance.MyGameData.CurrentTile.HexGrid.GetDistance(_tile);
         if (_newmin < _min)
         {
           _min = _newmin;
@@ -671,28 +637,24 @@ public class UI_map : UI_default
     {
       int _count = 0;
       for (int i = 1; i < Route_Tile.Count; i++)
-        _count += Route_Tile[i].MovePoint;
+        _count += Route_Tile[i].RequireSupply;
       return _count;
     }
   }
   private TileData SelectedTile = null;
   public List<HexDir> Route_Dir=new List<HexDir>();
   public int SanityCost = 0, GoldCost = 0, BonusGold = 0;
-  public void SelectTile(TileData selectedtiledata)
+  public void SelectTile(TileData selectedtile)
   {
     //동일한 좌표면 호출되지 않게 이미 거름
-    if (selectedtiledata.Coordinate == GameManager.Instance.MyGameData.Coordinate || (SelectedTile != null && selectedtiledata == SelectedTile)) return;
+    if (selectedtile.Coordinate == GameManager.Instance.MyGameData.Coordinate || Route_Current.Contains(selectedtile)) return;
 
-    if (Route_Tile.Count > 0)
-    {
-      for(int i=0;i< Route_Tile.Count;i++)
-      {
-        DisableOutline(Outline_Routes[i]);
-      }
-    }
+    foreach (var _temparrow in Arrows_Selectingtemp)
+      Arrows_Current.Add(_temparrow);
+    Arrows_Selectingtemp.Clear();
 
     UIManager.Instance.AudioManager.PlaySFX(5);
-    SetOutline(Outline_Select, selectedtiledata.ButtonScript.Rect);
+    SetOutline(Outline_Select, selectedtile.ButtonScript.Rect);
 
 
     Route_Tile.Clear();
@@ -702,7 +664,7 @@ public class UI_map : UI_default
       SetOutline(Outline_Routes[i], Route_Tile[i].ButtonScript.Rect);
     }
 
-    SelectedTile = selectedtiledata;
+    SelectedTile = selectedtile;
 
     TilePreviewRect.anchoredPosition = TilePreviewDownPos;
     TilePreviewGroup.alpha = TilePreviewStartAlpha;
@@ -710,7 +672,9 @@ public class UI_map : UI_default
     {
       TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
+      TilePreview_IsEvent.enabled = SelectedTile.IsEvent;
       TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
+      TilePreview_IsEvent.enabled = SelectedTile.IsEvent;
       TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
     }
     StopAllCoroutines();
@@ -795,7 +759,7 @@ public class UI_map : UI_default
     GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(MovePointCost);
     if (SelectedTile.TileSettle == null)
     {
-      BonusGold = SelectedTile.MovePoint>1?(int)((SelectedTile.MovePoint) * ConstValues.GoldPerSupplies * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
+      BonusGold = SelectedTile.RequireSupply>1?(int)((SelectedTile.RequireSupply) * ConstValues.GoldPerSupplies * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
       BonusGold += (Route_Tile.Count > ConstValues.Tendency_Head_p1_length && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? ConstValues.Tendency_Head_p1_value : 0;
     }
     SelectedCostType = StatusTypeEnum.HP;
@@ -936,7 +900,7 @@ public class UI_map : UI_default
       }
       SelectedTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
 
-      Route_Dir = MapData.GetLength(GameManager.Instance.MyGameData.CurrentTile, SelectedTile);
+      Route_Dir = GameManager.Instance.MyGameData.CurrentTile.HexGrid.GetRoute(SelectedTile);
       Route_Tile = new List<TileData>();
       Route_Tile.Add(GameManager.Instance.MyGameData.CurrentTile);
       for (int i = 0; i < Route_Dir.Count; i++)
@@ -967,7 +931,7 @@ public class UI_map : UI_default
     int _totalmp = 0;
     for(int i = 1; i < Route_Tile.Count; i++)
     {
-      int _mp = Route_Tile[i].MovePoint;
+      int _mp = Route_Tile[i].RequireSupply;
       _totalmp += _mp;
       if (GameManager.Instance.MyGameData.Supply >= _totalmp)
       {
@@ -1022,7 +986,6 @@ public class UI_map : UI_default
     float _currentvalue = 0.0f;     //
     Vector2 _current = Vector2.zero,_next= Vector2.zero;
     float _movetime = MoveTime * _pathcount;
-    List<TileData> _endaroundtiles = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, ConstValues.ViewRange);
     while (_time < _movetime)
     {
       _value = MoveAnimationCurve.Evaluate(_time / _movetime);
@@ -1042,16 +1005,6 @@ public class UI_map : UI_default
           UIManager.Instance.CultUI.AddProgress(4, null);
 
         List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(Route_Tile[_currentindex], ConstValues.ViewRange);
-        foreach(var _oldtile in ActiveTileData)
-        {
-          if (!_newarounds.Contains(_oldtile))
-          {
-            _oldtile.SetFog(1);
-            _oldtile.ButtonScript.Button.interactable = false;
-            if (_oldtile.ButtonScript.Preview != null) _oldtile.ButtonScript.Preview.enabled = false;
-          }
-        }
-        ActiveTileData.Clear();
         foreach (var _tile in _newarounds)
         {
           ActiveTileData.Add(_tile);

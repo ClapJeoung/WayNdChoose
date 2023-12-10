@@ -11,6 +11,7 @@ public class TileObjScript : MonoBehaviour
   public TileData TileData = null;
   public Image BottomImage = null;
   public Image TopImage = null;
+  public Image EventMarkImage = null;
   public Image LandmarkImage = null;
   public Onpointer_tileoutline OnPointer = null;
   public PreviewInteractive Preview = null;

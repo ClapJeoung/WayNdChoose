@@ -152,7 +152,7 @@ public class MapData
     int _min = 100;
     foreach (var settlement in settlements)
     {
-      int _length= GetLength(starttile, settlement.Tile).Count;
+      int _length = starttile.HexGrid.GetDistance(settlement.Tile.HexGrid);
       if(_length<_min) _min = _length;
     }
     return _min;
@@ -162,24 +162,10 @@ public class MapData
     int _max = -1;
     foreach (var settlement in settlements)
     {
-      int _length = GetLength(starttile, settlement.Tile).Count;
+      int _length = starttile.HexGrid.GetDistance(settlement.Tile.HexGrid);
       if (_length > _max) _max = _length;
     }
     return _max;
-  }
-  public static List<HexDir> GetLength(TileData start, TileData end)
-  {
-
-    HexGrid _current = new HexGrid(start.Coordinate);
-    HexGrid _end = new HexGrid(end.Coordinate);
-
-    HexGrid _distance = _end - _current;
-
-    return _distance.GetDir;
-  }
-  public List<HexDir> GetLength(Vector2Int start, Vector2Int end)
-  {
-    return MapData.GetLength(Tile(start),Tile(end));
   }
   public Vector2Int GetNextCoor(Vector2Int coor,HexDir dir,bool limitgrid)
   {
@@ -282,50 +268,28 @@ public class MapData
     foreach (var _coor in _aroundcoors) _tiles.Add(TileDatas[_coor.x, _coor.y]);
     return _tiles;
   }
+  /// <summary>
+  /// HexDir로 경로 방향 방식으로 모아둔 것들
+  /// </summary>
   private Dictionary<int, List<List<HexDir>>> AroundCoors = new Dictionary<int, List<List<HexDir>>>();
   public List<Vector2Int> GetAroundCoor(Vector2Int coor, int range)
   {
     if (!AroundCoors.ContainsKey(range))
     {
-      List<HexGrid> _totalranges = new List<HexGrid> { new HexGrid(Vector2Int.zero) };
-      List<HexGrid> _newgrids= new List<HexGrid> { new HexGrid(Vector2Int.zero) };
-      for (int i = 0; i < range; i++)
-      {
-        List<HexGrid> _aroundgrids = new List<HexGrid>();
-        bool _able = true;
-        HexGrid _targethexgrid = null;
-
-        foreach (var _hexgrid in _newgrids)
-          for (int j = 0; j < 6; j++)
+      List<HexGrid> _rangegrids=new List<HexGrid>();
+      for(int q=range*-1; q<range+1;q++)
+        for(int r=range*-1;r<range+1;r++)
+          for(int s=range*-1;s<range+1;s++)
           {
-            _able = true;
-            _targethexgrid = _hexgrid.AddHexdir((HexDir)j);
-            foreach (var _existgrids in _aroundgrids)
-            {
-              if (_existgrids == _targethexgrid) { _able = false; break; }
-            }
-            if (!_able) continue;
-            _aroundgrids.Add(_targethexgrid);
+            if(q==0&&r==0&&s==0) continue;
+            if (q + r + s != 0) continue;
+            _rangegrids.Add(new HexGrid(q,r,s));
           }
-
-        _newgrids.Clear();
-        foreach (var _hexgrid in _aroundgrids)
-        {
-          _able = true;
-          foreach(var _existgrids in _totalranges)
-          {
-            if (_existgrids == _hexgrid) { _able = false; break; }
-          }
-          if (!_able) continue;
-
-          _totalranges.Add(_hexgrid);
-          _newgrids.Add(_hexgrid);
-        }
-      }
-      List<List<HexDir>> _alldirs = new List<List<HexDir>>();
-      foreach (var _hexdir in _totalranges)
-        _alldirs.Add(_hexdir.GetDir);
-      AroundCoors.Add(range, _alldirs);
+      HexGrid _zero=new HexGrid(0,0,0);
+      List<List<HexDir>> _dirs=new List<List<HexDir>>();
+      foreach (var _hexgrid in _rangegrids)
+        _dirs.Add(_hexgrid.GetRoute(_zero));
+      AroundCoors.Add(range, _dirs);
     }
 
     Vector2Int _temp = coor;
@@ -347,45 +311,20 @@ public class MapData
   {
     if (!AroundCoors.ContainsKey(range))
     {
-      List<HexGrid> _totalranges = new List<HexGrid> { new HexGrid(Vector2Int.zero) };
-      List<HexGrid> _newgrids = new List<HexGrid> { new HexGrid(Vector2Int.zero) };
-      for (int i = 0; i < range; i++)
-      {
-        List<HexGrid> _aroundgrids = new List<HexGrid>();
-        bool _able = true;
-        HexGrid _targethexgrid = null;
-
-        foreach (var _hexgrid in _newgrids)
-          for (int j = 0; j < 6; j++)
+      List<HexGrid> _rangegrids = new List<HexGrid>();
+      for (int q = range * -1; q < range + 1; q++)
+        for (int r = range * -1; r < range + 1; r++)
+          for (int s = range * -1; s < range + 1; s++)
           {
-            _able = true;
-            _targethexgrid = _hexgrid.AddHexdir((HexDir)j);
-            foreach (var _existgrids in _aroundgrids)
-            {
-              if (_existgrids == _targethexgrid) { _able = false; break; }
-            }
-            if (!_able) continue;
-            _aroundgrids.Add(_targethexgrid);
+            if (q == 0 && r == 0 && s == 0) continue;
+            if (q + r + s != 0) continue;
+            _rangegrids.Add(new HexGrid(q, r, s));
           }
-
-        _newgrids.Clear();
-        foreach (var _hexgrid in _aroundgrids)
-        {
-          _able = true;
-          foreach (var _existgrids in _totalranges)
-          {
-            if (_existgrids == _hexgrid) { _able = false; break; }
-          }
-          if (!_able) continue;
-
-          _totalranges.Add(_hexgrid);
-          _newgrids.Add(_hexgrid);
-        }
-      }
-      List<List<HexDir>> _alldirs = new List<List<HexDir>>();
-      foreach (var _hexdir in _totalranges)
-        _alldirs.Add(_hexdir.GetDir);
-      AroundCoors.Add(range, _alldirs);
+      HexGrid _zero = new HexGrid(0, 0, 0);
+      List<List<HexDir>> _dirs = new List<List<HexDir>>();
+      foreach (var _hexgrid in _rangegrids)
+        _dirs.Add(_hexgrid.GetRoute(_zero));
+      AroundCoors.Add(range, _dirs);
     }
 
 
@@ -545,52 +484,12 @@ public class MapData
     }
     if(!_data.EnvirList.Contains(_centerbottomenvir))_data.EnvirList.Add(_centerbottomenvir);
     if (!_data.EnvirList.Contains(_centertopenvir)) _data.EnvirList.Add(_centertopenvir);
-    /*
-
-    foreach(var tile_1 in _tiles_1)
-    {
-      EnvironmentType _range1bottomenvir = EnvironmentType.NULL;
-      switch (tile_1.BottomEnvir)
-      {
-        case BottomEnvirType.Land: _range1bottomenvir = EnvironmentType.Land; break;
-        case BottomEnvirType.River: _range1bottomenvir = EnvironmentType.River; break;
-        case BottomEnvirType.Sea: _range1bottomenvir = EnvironmentType.Sea; break;
-        case BottomEnvirType.Beach: _range1bottomenvir = EnvironmentType.Beach; break;
-        case BottomEnvirType.RiverBeach: _range1bottomenvir = EnvironmentType.RiverBeach; break;
-      }
-      EnvironmentType _range1topenvir = EnvironmentType.NULL;
-      switch (tile_1.TopEnvir)
-      {
-        case TopEnvirType.Forest: _range1topenvir = EnvironmentType.Forest; break;
-        case TopEnvirType.Mountain: _range1topenvir = EnvironmentType.Mountain; break;
-        case TopEnvirType.Highland: _range1topenvir = EnvironmentType.Highland; break;
-      }
-      if (!_data.EnvirList.Contains(_range1bottomenvir)) _data.EnvirList.Add(_range1bottomenvir);
-      if (!_data.EnvirList.Contains(_range1topenvir)) _data.EnvirList.Add(_range1topenvir);
-    }
-    foreach (var tile_2 in _tiles_2)
-    {
-      EnvironmentType _range2bottomenvir = EnvironmentType.NULL;
-      switch (tile_2.BottomEnvir)
-      {
-        case BottomEnvirType.Sea: _range2bottomenvir = EnvironmentType.Sea; break;
-        case BottomEnvirType.Beach: _range2bottomenvir = EnvironmentType.Beach; break;
-        case BottomEnvirType.RiverBeach: _range2bottomenvir = EnvironmentType.RiverBeach; break;
-      }
-      EnvironmentType _range2topenvir = EnvironmentType.NULL;
-      switch (tile_2.TopEnvir)
-      {
-        case TopEnvirType.Mountain: _range2topenvir = EnvironmentType.Mountain; break;
-      }
-      if (!_data.EnvirList.Contains(_range2bottomenvir)) _data.EnvirList.Add(_range2bottomenvir);
-      if (!_data.EnvirList.Contains(_range2topenvir)) _data.EnvirList.Add(_range2topenvir);
-    }
-    */
 
     return _data;
   }//월드 기준 타일 1개 좌표 하나 받아서 그 주위 2칸의 산 바다, 나머지 1타일
 
 
+  public List<TileData> CurrentEventTiles = new List<TileData>();
   public TileData[,] TileDatas;
   public List<Settlement> Villages = new List<Settlement>();
   public List<Settlement> Towns = new List<Settlement>();

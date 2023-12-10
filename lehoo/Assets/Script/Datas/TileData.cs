@@ -12,13 +12,14 @@ public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
 [System.Serializable]
 public class TileData
 {
+  public bool IsEvent = false;
   public Vector2Int Coordinate = Vector2Int.zero;
   private HexGrid hexgrid = null;
   public HexGrid HexGrid
   {
     get 
     {
-      if (hexgrid == null) hexgrid = new HexGrid(Coordinate);
+      if (hexgrid is null) hexgrid = new HexGrid(Coordinate);
       return hexgrid;
     }
   }
@@ -68,7 +69,7 @@ public class TileData
       return true;
     }
   }
-  public int MovePoint
+  public int RequireSupply
   {
     get
     {

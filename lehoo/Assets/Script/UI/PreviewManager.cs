@@ -907,26 +907,14 @@ public class PreviewManager : MonoBehaviour
     string _movepointstring = "";
     if (tileData.TileSettle == null)
     {
-      List<TileData> _tiles = UIManager.Instance.MapUI.SetRouteTemp(tileData);
       if (UIManager.Instance.MapUI.IsMad)
       {
         _movepointstring += "?";
       }
       else
       {
-        for (int i = 1; i < _tiles.Count; i++)
-        {
-          if (i == 1)
-          {
-            if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
-            else _movepointstring += _tiles[i].MovePoint;
-          }
-          else
-          {
-            if (i == _tiles.Count - 1) _movepointstring += $" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
-            else _movepointstring += $" + {_tiles[i].MovePoint}";
-          }
-        }
+        int _length = UIManager.Instance.MapUI.GetlengthAsRoute(tileData);
+        _movepointstring=WNCText.GetAsLengthColor(tileData.RequireSupply, _length);
       }
       TileInfoMovePointText.text = _movepointstring;
 
@@ -961,26 +949,14 @@ public class PreviewManager : MonoBehaviour
 
       SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
       LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementInfoDiscomfort.transform.parent.transform as RectTransform);
-      List<TileData> _tiles = UIManager.Instance.MapUI.SetRouteTemp(tileData);
       if (UIManager.Instance.MapUI.IsMad)
       {
         _movepointstring += "?";
       }
       else
       {
-        for (int i = 1; i < _tiles.Count; i++)
-        {
-          if (i == 1)
-          {
-            if (i == _tiles.Count - 1) _movepointstring += WNCText.GetMovepointColor(_tiles[i].MovePoint);
-            else _movepointstring += _tiles[i].MovePoint;
-          }
-          else
-          {
-            if (i == _tiles.Count - 1) _movepointstring += $" + {WNCText.GetMovepointColor(_tiles[i].MovePoint)}";
-            else _movepointstring += $" + {_tiles[i].MovePoint}";
-          }
-        }
+        int _length = UIManager.Instance.MapUI.GetlengthAsRoute(tileData);
+        _movepointstring = WNCText.GetAsLengthColor(tileData.RequireSupply, _length);
       }
       SettlementMovePointText.text = _movepointstring;
 

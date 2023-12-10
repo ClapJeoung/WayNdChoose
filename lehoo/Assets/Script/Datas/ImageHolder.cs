@@ -552,6 +552,7 @@ public class ImageHolder : ScriptableObject
   }
   [Space(10)]
   public Sprite UnknownTile = null;
+  public Sprite UnknownEvent = null;
   public Sprite RiverTile = null;
   public Sprite ForestTile=null,HighlandTile=null,MountainTile=null,SeaTile=null;
   public Sprite GetEnvirTile(EnvironmentType envir)

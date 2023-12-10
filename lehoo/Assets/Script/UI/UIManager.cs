@@ -575,7 +575,7 @@ public class UIManager : MonoBehaviour
       Vector2 _startpos = MovepointIconRect.position, _endpos = _data.Key.ButtonScript.Rect.position;
       Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
 
-      for (int j = 0; j < _data.Key.MovePoint; j++)
+      for (int j = 0; j < _data.Key.RequireSupply; j++)
       {
         int _index = 0;
         _icon = j< _data.Value? GameManager.Instance.ImageHolder.MovePointIcon_Enable:
@@ -1520,6 +1520,12 @@ public class UIManager : MonoBehaviour
 }
 public static class WNCText
 {
+  public static string GetAsLengthColor(int value,int length)
+  {
+    if(length<ConstValues.MoveLength_Low)return $"<녹색>{value}</color>";
+    else if(length<ConstValues.MoveLengthSupply_Middle)return $"<주황색>{value}</color>";
+    else return $"<적색>{value}</color>";
+  }
   public static string UIIdleColor(int value)
   {
     return $"<#D4D4D4>{value}</color>";
