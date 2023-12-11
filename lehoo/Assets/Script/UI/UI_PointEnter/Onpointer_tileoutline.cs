@@ -11,7 +11,7 @@ public class Onpointer_tileoutline : MonoBehaviour, IPointerEnterHandler, IPoint
   {
     if (!MyTile.Interactable) return;
     if (!MyTile.ButtonScript.Button.interactable) return;
-    MyMapUI.EnterTile(MyTile);
+    MyMapUI.PointerEnterTile(MyTile);
   }
 
   public void OnPointerExit(PointerEventData eventData)

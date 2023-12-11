@@ -1393,12 +1393,12 @@ public class HexGrid
   }
   public List<HexDir> GetRoute(TileData starttile)
   {
-    HexGrid _current = new HexGrid(starttile.HexGrid.q- q,starttile.HexGrid.r-r, starttile.HexGrid.s-s);
+    HexGrid _current = new HexGrid(q-starttile.HexGrid.q,r - starttile.HexGrid.r, s - starttile.HexGrid.s);
     return _current.GetRoute();
   }
   public List<HexDir> GetRoute(HexGrid starthex)
   {
-    HexGrid _current = new HexGrid(starthex.q-q, starthex.r-r, starthex.s-s);
+    HexGrid _current = new HexGrid(q- starthex.q, r- starthex.r, s- starthex.s);
     return _current.GetRoute();
   }
   public int GetDistance(HexGrid starthex)

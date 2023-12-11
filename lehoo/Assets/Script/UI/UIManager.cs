@@ -1522,9 +1522,9 @@ public static class WNCText
 {
   public static string GetAsLengthColor(int value,int length)
   {
-    if(length<ConstValues.MoveLength_Low)return $"<녹색>{value}</color>";
-    else if(length<ConstValues.MoveLengthSupply_Middle)return $"<주황색>{value}</color>";
-    else return $"<적색>{value}</color>";
+    if(length<ConstValues.MoveLength_Low)return $"<#2A7935>{value}</color>";
+    else if(length<ConstValues.MoveLengthSupply_Middle)return $"<#BAC623>{value}</color>";
+    else return $"<#BC4915>{value}</color>";
   }
   public static string UIIdleColor(int value)
   {
