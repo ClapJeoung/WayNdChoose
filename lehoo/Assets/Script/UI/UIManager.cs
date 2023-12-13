@@ -319,9 +319,9 @@ public class UIManager : MonoBehaviour
   public void SetWildMadCount()
   {
     WildMadCountText.text =
-      GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild - 1 ?
-      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild.ToString()) :
-      ((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild.ToString());
+      GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1 ?
+      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString()) :
+      ((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString());
     StartCoroutine(madcounttext(WildMadCountText.rectTransform));
   }
   private IEnumerator madcounttext(RectTransform rect)
@@ -561,45 +561,33 @@ public class UIManager : MonoBehaviour
       yield return new WaitForSeconds(0.08f);
     }
   }
-  /// <summary>
-  /// ÀÌµ¿·Â
-  /// </summary>
-  /// <param name="tendencytype"></param>
-  /// <param name="dir"></param>
-  /// <param name="rect"></param>
-  /// <returns></returns>
-  public IEnumerator SetIconEffect_movepoint_using(Dictionary<TileData,int> rectNcount,StatusTypeEnum status)
+  public void SetIconEffect_movepoint_using(RectTransform rect,StatusTypeEnum status)
   {
-    foreach(var _data in rectNcount)
+    Vector2 _startpos = 
+      status==StatusTypeEnum.HP?      MovepointIconRect.position:
+      status==StatusTypeEnum.Sanity?  SanityIconRect.position:
+                                      GoldIconRect.position,
+      _endpos = rect.position;
+    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+
+    int _index = 0;
+    _icon = status==StatusTypeEnum.HP ? GameManager.Instance.ImageHolder.MovePointIcon_Enable :
+      status == StatusTypeEnum.Sanity ? GameManager.Instance.ImageHolder.SanityIcon :
+                                        GameManager.Instance.ImageHolder.GoldIcon;
+    RectTransform _targetrect = null;
+    for (int i = 0; i < IconRectList.Count; i++)
     {
-      Vector2 _startpos = MovepointIconRect.position, _endpos = _data.Key.ButtonScript.Rect.position;
-      Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+      _index = i;
+      if (ActiveIconIndexList.Contains(i)) continue;
 
-      for (int j = 0; j < _data.Key.RequireSupply; j++)
-      {
-        int _index = 0;
-        _icon = j< _data.Value? GameManager.Instance.ImageHolder.MovePointIcon_Enable:
-          status==StatusTypeEnum.Sanity?GameManager.Instance.ImageHolder.SanityIcon:GameManager.Instance.ImageHolder.GoldIcon;
-        _startpos = j < _data.Value ? MovepointIconRect.position:
-          status==StatusTypeEnum.Sanity?SanityIconRect.position:GoldIconRect.position;
-        RectTransform _targetrect = null;
-        for (int i = 0; i < IconRectList.Count; i++)
-        {
-          _index = i;
-          if (ActiveIconIndexList.Contains(i)) continue;
-
-          _targetrect = IconRectList[_index];
-          _targetrect.GetComponent<Image>().sprite = _icon;
-          _targetrect.localScale = Vector3.one;
-          ActiveIconIndexList.Add(_index);
-          break;
-        }
-
-        StartCoroutine(iconmove_movepoint(_index, _targetrect, _startpos, _endpos, IconUsingCurve));
-        yield return new WaitForSeconds(0.08f);
-      }
-      yield return new WaitForSeconds(0.1f);
+      _targetrect = IconRectList[_index];
+      _targetrect.GetComponent<Image>().sprite = _icon;
+      _targetrect.localScale = Vector3.one;
+      ActiveIconIndexList.Add(_index);
+      break;
     }
+
+    StartCoroutine(iconmove_movepoint(_index, _targetrect, _startpos, _endpos, IconUsingCurve));
   }
   public void SetRitualFail()
   {
@@ -632,7 +620,7 @@ public class UIManager : MonoBehaviour
   }
   private IEnumerator iconmove_movepoint(int index,RectTransform rect ,Vector2 startpos,Vector2 endpos,AnimationCurve curve)
   {
-    AudioManager.PlaySFX(30);
+    AudioManager.PlaySFX(30,"movecost");
     float _time = 0.0f;
     float _targettime =  IconMoveTime_using;
     while (_time < _targettime)
@@ -1522,9 +1510,14 @@ public static class WNCText
 {
   public static string GetAsLengthColor(int value,int length)
   {
-    if(length<ConstValues.MoveLength_Low)return $"<#2A7935>{value}</color>";
-    else if(length<ConstValues.MoveLengthSupply_Middle)return $"<#BAC623>{value}</color>";
-    else return $"<#BC4915>{value}</color>";
+    switch (GameManager.Instance.MyGameData.GetMoveRangeType(length))
+    {
+      case RangeEnum.Low:
+        return $"<#2A7935>{value}</color>";
+      case RangeEnum.Middle:
+        return $"<#BAC623>{value}</color>";
+      default: return $"<#BC4915>{value}</color>";
+    }
   }
   public static string UIIdleColor(int value)
   {
@@ -1566,11 +1559,11 @@ public static class WNCText
   {
     return $"<#427573>{value}</color>";
   }
-  public static string GetMovepointColor(string str)
+  public static string GetSupplyColor(string str)
   {
     return $"<#BEF781>{str}</color>";
   }
-  public static string GetMovepointColor(int value)
+  public static string GetSupplyColor(int value)
   {
     return $"<#BEF781>{value}</color>";
   }

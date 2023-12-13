@@ -16,5 +16,7 @@ public class Onpointer_mapcostbutton : MonoBehaviour,IPointerEnterHandler,IPoint
   public void OnPointerExit(PointerEventData data)
   {
     if (UIManager.Instance.IsWorking) return;
+
+    MapUI.ExitPointerStatus(MyStatusType);
   }
 }

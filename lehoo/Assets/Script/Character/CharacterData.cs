@@ -49,7 +49,7 @@ public static class ConstValues
 
   public const int MadnessEffect_Conversation = 4;
   public const int MadnessEffect_Force = 4;
-  public const int MadnessEffect_Wild = 5;
+  public const int MadnessEffect_Wild_temporary = 5,MadnessEffect_Wild_range=2;
   public const int MadnessEffect_Intelligence = 2;
 
   public const int MadnessHPCost_Skill = 25;
@@ -74,18 +74,19 @@ public static class ConstValues
 
   public const int Rest_Supply = 8;
   public const int Rest_Discomfort = 10;
-  public const float MoveRestCost_Default_Min = 9, MoveRestCost_Default_Max = 25;
-  public const float Movecost_GoldValue = 0.5f;
+  public const float RestCost_Default_Min = 9, RestCost_Default_Max = 25;
+  public const int MoveCost_Min = 3, MoveCost_Max = 8;
+  public const float MoveCost_GoldValue = 0.5f;
+  public const int PenaltyCost_Min = 6, PenaltyCost_Max = 15;
   public const int RestSanityRestore = 15;
   public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.1f;
-  public const float LackMPAmplifiedValue_Idle = 0.4f;
 
 
   public const int EventPer_Envir = 5, EventPer_NoEnvir = 1,
                    EventPer_Sector = 4, EventPer_NoSector = 1,
                    EventPer_Quest = 1, EventPer_Follow_Ev = 10, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
-  public const int ViewRange = 3;
+  public const int DefaultViewRange = 3;
   public const int MapSize = 30;
   public const int LandRadius = 10;
   public const int MinRiverCount = 5;
@@ -107,8 +108,8 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.15f;
 
-  public const int Tendency_Head_m2 = 4;
-  public const float Tendency_Head_m1 = 0.1f;
+  public const int Tendency_Head_m2 = 2;
+  public const int Tendency_Head_m1 = 1;
   public const int Tendency_Head_p1_length =2,Tendency_Head_p1_value=2;
   public const int Tendency_Head_p2 = 5;
   //정신적 2: 첫 휴식 불쾌 0
@@ -203,12 +204,12 @@ public class GameData    //게임 진행도 데이터
         int _addvalue = ConstValues.SectorEffect_Library;
 
         if(LongExp!=null)
-        LongExp.Duration = LongExp.Duration + _addvalue > GameManager.Instance.MyGameData.ExpMaxTurn_Long ? GameManager.Instance.MyGameData.ExpMaxTurn_Long : LongExp.Duration + _addvalue;
+        LongExp.Duration = LongExp.Duration + _addvalue > ConstValues.EXPMaxTurn_long_idle? ConstValues.EXPMaxTurn_long_idle : LongExp.Duration + _addvalue;
 
         if (ShortExp_A != null) ShortExp_A .Duration =
-                ShortExp_A .Duration + _addvalue > GameManager.Instance.MyGameData.ExpMaxTurn_Short ? GameManager.Instance.MyGameData.ExpMaxTurn_Short : ShortExp_A .Duration + _addvalue;
+                ShortExp_A .Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle ? ConstValues.EXPMaxTurn_short_idle : ShortExp_A .Duration + _addvalue;
         if (ShortExp_B != null) ShortExp_B.Duration =
-                ShortExp_B.Duration + _addvalue > GameManager.Instance.MyGameData.ExpMaxTurn_Short ? GameManager.Instance.MyGameData.ExpMaxTurn_Short : ShortExp_B.Duration + _addvalue;
+                ShortExp_B.Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle ? ConstValues.EXPMaxTurn_short_idle : ShortExp_B.Duration + _addvalue;
         UIManager.Instance.UpdateExpPael();
         break;
       case SectorTypeEnum.NULL:
@@ -377,6 +378,16 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #값 프로퍼티#
+  public int ViewRange { get { return ConstValues.DefaultViewRange + (Tendency_Head.Level <0 ? ConstValues.Tendency_Head_m1 : 0); } }
+  public RangeEnum GetMoveRangeType(int range)
+  {
+    int _low = ConstValues.MoveLength_Low + (Tendency_Head.Level == -2 ? ConstValues.Tendency_Head_m2 : 0);
+    int _middle= ConstValues.MoveLength_Middle + (Tendency_Head.Level == -2 ? ConstValues.Tendency_Head_m2 : 0);
+
+    if (range < _low) return RangeEnum.Low;
+    else if(range < _middle) return RangeEnum.Middle;
+    else return RangeEnum.High;
+  }
   public int MadnessHPLoss_Skill { get { return (int)(ConstValues.MadnessHPCost_Skill * GetHPLossModify(true,0)); } }
   public int MadnessHPLoss_HP { get { return (int)(ConstValues.MadnessHPCost_HP * GetHPLossModify(true,0)); } }
   public int MadnessSanityGen_Skill { get { return (int)(ConstValues.MadnessSanityGen_Skill); } }
@@ -387,7 +398,7 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.RestCost_Default_Min, ConstValues.RestCost_Default_Max, LerpByTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true,0));
@@ -397,7 +408,7 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn);
+      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.RestCost_Default_Min, ConstValues.RestCost_Default_Max, LerpByTurn);
       float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value );
@@ -438,27 +449,18 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)ConstValues.RewardSanity; } }
     public int RewardGoldValue
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
-  public int GetMoveSanityCost(int movepoint)
-  {
-    int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max,LerpByTurn) * GetSanityLossModify(true,0)));
-
-    return (GameManager.Instance.MyGameData.supply- movepoint)>=0 ? _value :
-      (int)(_value * (1.0f+MovePointAmplified*(Mathf.Abs(Supply- movepoint))));
-  }
-  public int GetMoveGoldCost(int movepoint)
-  {
-    int _value = (int)((Mathf.Lerp(ConstValues.MoveRestCost_Default_Min, ConstValues.MoveRestCost_Default_Max, LerpByTurn)
-       * (ConstValues.Movecost_GoldValue)));
-
-    return (GameManager.Instance.MyGameData.supply - movepoint) >= 0 ? _value :
-      (int)(_value * (1.0f + MovePointAmplified * (Mathf.Abs(Supply - movepoint))));
-  }
-  public float MovePointAmplified
+  public int Movecost
   {
     get
     {
-      if (Tendency_Head.Level <= -1) return ConstValues.Tendency_Head_m1;
-      return ConstValues.LackMPAmplifiedValue_Idle;
+      return (int)((Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, LerpByTurn) * GetSanityLossModify(true, 0)));
+    }
+  }
+  public int PenaltyCost
+  {
+    get
+    {
+      return (int)((Mathf.Lerp(ConstValues.PenaltyCost_Min, ConstValues.PenaltyCost_Max, LerpByTurn) * GetSanityLossModify(true, 0)));
     }
   }
   #endregion
@@ -544,7 +546,7 @@ public class GameData    //게임 진행도 데이터
     get { return supply; }
     set
     {
-      supply = value;
+      supply = value < 0 ? 0 : value;
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateMovePointText();
     }
   }
@@ -592,16 +594,8 @@ public class GameData    //게임 진행도 데이터
   #endregion
   #region #경험#
   public Experience LongExp = null;
-  public int ExpMaxTurn_Long
-  {
-    get { return ConstValues.EXPMaxTurn_long_idle + (Tendency_Head.Level < -1 ? ConstValues.Tendency_Head_m2 : 0); }
-  }
   public Experience ShortExp_A = null;
   public Experience ShortExp_B = null;
-  public int ExpMaxTurn_Short
-  {
-    get { return ConstValues.EXPMaxTurn_short_idle + (Tendency_Head.Level < -1 ? ConstValues.Tendency_Head_m2 : 0); }
-  }
   public void DeleteExp(Experience _exp)
   {
     if (LongExp == _exp) LongExp = null;
@@ -1239,13 +1233,13 @@ public class Tendency
           {
             case -2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       ConstValues.LackMPAmplifiedValue_Idle * 100, ConstValues.Tendency_Head_m1 * 100)+"<br><br>"+ 
+                       ConstValues.Tendency_Head_m1)+"<br><br>"+ 
                        string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
-                      ConstValues.Tendency_Head_m2,GameManager.Instance.MyGameData.ExpMaxTurn_Long,GameManager.Instance.MyGameData.ExpMaxTurn_Short);
+                      ConstValues.Tendency_Head_m2);
               break;
             case -1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       ConstValues.LackMPAmplifiedValue_Idle*100, ConstValues.Tendency_Head_m1*100);
+                       ConstValues.Tendency_Head_m1);
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),

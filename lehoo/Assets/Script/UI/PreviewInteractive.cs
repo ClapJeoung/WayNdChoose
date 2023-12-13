@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel,TileInfo}
+CultSidePanel,TileInfo,}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -114,10 +114,39 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.MadnessRefuse:
         break;
       case PreviewPanelType.MoveCostSanity:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"), WNCText.GetSanityColor(UIManager.Instance.MapUI.SanityCost)), OtherRect==null?transform as RectTransform : OtherRect);
+        string _sanitycosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Santiy"),
+          WNCText.GetSanityColor(UIManager.Instance.MapUI.MoveCost_Sanity)+(UIManager.Instance.MapUI.IsMad?WNCText.GetMadnessColor("?"):""));
+        if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
+          _sanitycosttext += string.Format(string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),
+            UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply,
+           WNCText.GetSanityColor((UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost)));
+
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
+          _sanitycosttext
+          ,new Vector2(0.5f,-0.05f)
+          ,OtherRect==null?transform as RectTransform : OtherRect);
         break;
       case PreviewPanelType.MoveCostGold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"), WNCText.GetGoldColor(UIManager.Instance.MapUI.GoldCost)), OtherRect==null?transform as RectTransform : OtherRect);
+        int _defaultvalue = UIManager.Instance.MapUI.MoveCost_Sanity;
+        int _requiregold = UIManager.Instance.MapUI.MoveCost_Gold;
+        string _goldcosttext = "";
+        if (GameManager.Instance.MyGameData.Gold >= _requiregold)
+          _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_full"), WNCText.GetGoldColor(_requiregold) + (UIManager.Instance.MapUI.IsMad ? WNCText.GetMadnessColor("?") : ""));
+        else
+          _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_lack"),
+            WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold),
+           WNCText.GetSanityColor(_defaultvalue - GameManager.Instance.MyGameData.Gold * 2)) + (UIManager.Instance.MapUI.IsMad ? WNCText.GetMadnessColor("?") : "");
+
+        if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
+          _goldcosttext += string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),
+            UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply,
+            WNCText.GetSanityColor((UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost));
+
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
+  _goldcosttext
+  , new Vector2(0.5f, -0.05f)
+  , OtherRect == null ? transform as RectTransform : OtherRect);
+
         break;
       case PreviewPanelType.RestSanity:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_SANITY"), OtherRect==null?transform as RectTransform : OtherRect);

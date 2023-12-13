@@ -35,7 +35,7 @@ public class UI_Tutorial : MonoBehaviour
   {
     var _text = GameManager.Instance.GetTextData("Tutorial_Map").Split('@');
     Map_Hello.text = _text[0];
-    Map_MoveCost.text = string.Format(_text[1],ConstValues.Movecost_GoldValue*100);
+    Map_MoveCost.text = string.Format(_text[1],ConstValues.MoveCost_GoldValue * 100);
     Map_Settlement.text = _text[2];
     StartCoroutine(UIManager.Instance.ChangeAlpha(Tutorial_Map, 1.0f, 0.5f));
   }

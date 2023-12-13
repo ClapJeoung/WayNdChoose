@@ -534,7 +534,7 @@ public class GameManager : MonoBehaviour
   }
   public void AddExp_Long(Experience exp)
   {
-    exp.Duration = GameManager.Instance.MyGameData.ExpMaxTurn_Long;
+    exp.Duration = ConstValues.EXPMaxTurn_long_idle;
     MyGameData.LongExp = exp;
 
     UIManager.Instance.UpdateExpPael();
@@ -547,7 +547,7 @@ public class GameManager : MonoBehaviour
   /// <param name="index"></param>
   public void AddExp_Short(Experience exp,bool index)
   {
-    exp.Duration = GameManager.Instance.MyGameData.ExpMaxTurn_Short;
+    exp.Duration = ConstValues.EXPMaxTurn_short_idle;
     if(index==true)MyGameData.ShortExp_A=exp;
     else MyGameData.ShortExp_B=exp;
 

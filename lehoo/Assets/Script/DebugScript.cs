@@ -102,7 +102,7 @@ public class DebugScript : MonoBehaviour
       else
       {
         GameManager.Instance.MyGameData.LongExp = GameManager.Instance.ExpDic[EXP_Long_ID.text];
-        GameManager.Instance.MyGameData.LongExp.Duration = EXP_Long_Turn.text != "" ? int.Parse(EXP_Long_Turn.text) : GameManager.Instance.MyGameData.ExpMaxTurn_Long;
+        GameManager.Instance.MyGameData.LongExp.Duration = EXP_Long_Turn.text != "" ? int.Parse(EXP_Long_Turn.text) : ConstValues.EXPMaxTurn_long_idle;
       }
     }
     if (EXP_Short_0_ID.text == "")
@@ -118,7 +118,7 @@ public class DebugScript : MonoBehaviour
       else
       {
         GameManager.Instance.MyGameData.ShortExp_A = GameManager.Instance.ExpDic[EXP_Short_0_ID.text];
-        GameManager.Instance.MyGameData.ShortExp_A.Duration = EXP_Short_0_Turn.text != "" ? int.Parse(EXP_Short_0_Turn.text) : GameManager.Instance.MyGameData.ExpMaxTurn_Short;
+        GameManager.Instance.MyGameData.ShortExp_A.Duration = EXP_Short_0_Turn.text != "" ? int.Parse(EXP_Short_0_Turn.text) : ConstValues.EXPMaxTurn_short_idle;
       }
     }
     if (EXP_Short_1_ID.text == "")
@@ -134,7 +134,7 @@ public class DebugScript : MonoBehaviour
       else
       {
         GameManager.Instance.MyGameData.ShortExp_B = GameManager.Instance.ExpDic[EXP_Short_1_ID.text];
-        GameManager.Instance.MyGameData.ShortExp_B.Duration = EXP_Short_1_Turn.text != "" ? int.Parse(EXP_Short_1_Turn.text) : GameManager.Instance.MyGameData.ExpMaxTurn_Short;
+        GameManager.Instance.MyGameData.ShortExp_B.Duration = EXP_Short_1_Turn.text != "" ? int.Parse(EXP_Short_1_Turn.text) : ConstValues.EXPMaxTurn_short_idle;
       }
     }
     UIManager.Instance.UpdateExpPael();

@@ -6,7 +6,10 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
 using System.IO;
+using Unity.VisualScripting;
+using System.Runtime.InteropServices.WindowsRuntime;
 
+public enum RangeEnum { Low,Middle,High}
 public class RouteData
 {
   public TileData Start, End;
@@ -195,7 +198,7 @@ public class UI_map : UI_default
     HolderRect.anchoredPosition = _newpos;
   }
   #endregion
-  #region 이동 조작 UI
+  #region UI 부분
   [SerializeField] private RectTransform TilePreviewRect = null;
   [SerializeField] private CanvasGroup TilePreviewGroup = null;
   [SerializeField] private Image TilePreview_Bottom = null;
@@ -203,16 +206,17 @@ public class UI_map : UI_default
   [SerializeField] private Image TilePreview_IsEvent = null;
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
-  [SerializeField] private TextMeshProUGUI BonusGoldText = null;
-  [SerializeField] private TextMeshProUGUI MoveLengthText = null;
-  [SerializeField] private TextMeshProUGUI MoveLengthCostText = null;
+  [SerializeField] private TextMeshProUGUI RequireSupply = null;
+  [SerializeField] private TextMeshProUGUI CurrentSupply = null;
+  [SerializeField] private TextMeshProUGUI RequireSupplyInfo = null;
+  [SerializeField] private TextMeshProUGUI BonusGoldInfo = null;
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
   [SerializeField] private Onpointer_highlight GoldButton_Highlight = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
+  [SerializeField] private Image MadnessIcon = null;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
-  [SerializeField] private TextMeshProUGUI MoveCostText = null;
   public Image MadnessEffect = null;
   #endregion
   private List<TileData> ActiveTileData = new List<TileData>();
@@ -227,7 +231,8 @@ public class UI_map : UI_default
     }
     ActiveTileData.Clear();
 
-    List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, ConstValues.ViewRange);
+    List<TileData> _currents = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(GameManager.Instance.MyGameData.Coordinate, 
+      GameManager.Instance.MyGameData.ViewRange);
     foreach (TileData _tile in _currents) //새로운 주위 타일 전부 가져오기
     {
       _tile.ButtonScript.Button.interactable = true;
@@ -246,6 +251,19 @@ public class UI_map : UI_default
     }
   }
   public List<RouteData> Routes= new List<RouteData>();
+  public List<TileData> AllTiles = new List<TileData>();
+  public int TotalSupplyCost
+  {
+    get
+    {
+      int _count = 0;
+      foreach (var _sup in AllSupplys)
+        _count += _sup;
+      return _count;
+    }
+  }
+
+  public List<int> AllSupplys= new List<int>();
   private int RouteLength
   {
     get
@@ -256,6 +274,13 @@ public class UI_map : UI_default
       return _sum;
     }
   }
+  private struct Paydata
+  {
+    public int Pay_Sanity;
+    public float Pay_Gold;
+  }
+  private List<Paydata> PayValues_Sanity = new List<Paydata>();
+  private List<Paydata> PayValues_Gold= new List<Paydata>();
   public int GetlengthAsRoute(TileData tile)
   {
     if (Destinations.Count > 0) 
@@ -280,27 +305,137 @@ public class UI_map : UI_default
       int _length = GetlengthAsRoute(_targettile);
       Color _currentcolor = new Color();
       if (IsMad) _currentcolor = MadColor;
-      else if (_length < ConstValues.MoveLength_Low) _currentcolor = LowColor;
-      else if (_length < ConstValues.MoveLength_Middle) _currentcolor = MiddleColor;
-      else _currentcolor = HighColor;
+      else
+      {
+        switch (GameManager.Instance.MyGameData.GetMoveRangeType(_length))
+        {
+          case RangeEnum.Low: _currentcolor = LowColor;
+            break;
+          case RangeEnum.Middle: _currentcolor = MiddleColor;
+            break;
+          case RangeEnum.High: _currentcolor = HighColor;
+            break;
+        }
+      }
       _currentcolor.a = i == _newroute.Length - 1 ? 1.0f : 0.4f;
       Image _enableoutline = GetEnableOutline;
       SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
       _newroute.Outlines.Add(_enableoutline);
     }
-    foreach(var _arrow in Arrows_Selectingtemp)
-      _newroute.Arrows.Add(_arrow);
-    Arrows_Selectingtemp.Clear();
 
+    if (Arrows_Selectingtemp.Count > 0)
+    {
+      foreach (var _arrow in Arrows_Selectingtemp)
+        _newroute.Arrows.Add(_arrow);
+      Arrows_Selectingtemp.Clear();
+    }
     DisableOutline(Outline_Selecting);
     Destinations.Add(tile);
     Routes.Add(_newroute);
+
+    AllTiles.Clear();
+    AllSupplys.Clear();
+    int _index = 0;
+    foreach (var _route in Routes)
+    {
+      foreach (var _tile in _route.Route)
+      {
+        AllTiles.Add(_tile);
+        switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
+        {
+          case RangeEnum.Low:
+            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Low);
+            break;
+          case RangeEnum.Middle:
+            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Middle);
+            break;
+          case RangeEnum.High:
+            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_High);
+            break;
+        }
+
+        _index++;
+      }
+      AllTiles.Add(_route.End);
+      switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
+      {
+        case RangeEnum.Low:
+          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Low);
+          break;
+        case RangeEnum.Middle:
+          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Middle);
+          break;
+        case RangeEnum.High:
+          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_High);
+          break;
+      }
+
+      _index++;
+    }
+
+    MoveCost_Sanity = GameManager.Instance.MyGameData.Movecost * AllTiles.Count;
+    PenaltyCost = TotalSupplyCost > GameManager.Instance.MyGameData.Supply ?
+      (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost :
+      0;
+
+    int _supplycost = 0;
+    float _totalgold = 0.0f;
+    bool _supplyover = false;
+    PayValues_Sanity.Clear();
+    PayValues_Gold.Clear();
+    for (int i = 0; i < AllTiles.Count; i++)
+    {
+      Paydata _pay_sanity=new Paydata();
+      _pay_sanity.Pay_Gold = 0;
+      _pay_sanity.Pay_Sanity = 0;
+      Paydata _pay_gold = new Paydata();
+      _pay_gold.Pay_Gold = 0;
+      _pay_gold.Pay_Sanity = 0;
+
+      _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost;
+      if (_totalgold <= GameManager.Instance.MyGameData.Gold)
+      {
+        _pay_gold.Pay_Gold = GameManager.Instance.MyGameData.Movecost * ConstValues.MoveCost_GoldValue;
+        _totalgold += GameManager.Instance.MyGameData.Movecost * ConstValues.MoveCost_GoldValue;
+      }
+      else
+        _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost;
+
+
+      _supplycost += AllSupplys[i];
+
+      if (_supplyover)
+      {
+        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
+      }
+      else if (GameManager.Instance.MyGameData.Supply < _supplycost)
+      {
+        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
+        _supplyover = true;
+      }
+      PayValues_Sanity.Add(_pay_sanity);
+      PayValues_Gold.Add(_pay_gold);
+    }
+    if (_supplyover)
+    {
+      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
+    }
+    else
+    {
+      GoldButton_Highlight.RemoveAllCall();
+      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    }
 
     UIManager.Instance.PreviewManager.ClosePreview();
   }
   public void RemoveDestination(TileData tile)
   {
     if (!Destinations.Contains(tile)) return;
+
+    bool _islast = LastDestination == tile;
 
     RouteData _fixroute = null, _removeroute= null;
     TileData _newnexttile = null;
@@ -341,8 +476,11 @@ public class UI_map : UI_default
       _fixroute.End = _newnexttile;
       foreach (var _outline in _fixroute.Outlines)
         _outline.enabled = false;
+      _fixroute.Outlines.Clear();
       foreach (var _arrow in _fixroute.Arrows)
         _arrow.enabled = false;
+      _fixroute.Arrows.Clear();
+
       _fixroute.Route.Clear();
       List<HexDir> _grid = _fixroute.End.HexGrid.GetRoute(_fixroute.Start);
       for (int i = 0; i < _grid.Count - 1; i++)
@@ -352,9 +490,18 @@ public class UI_map : UI_default
         TileData _targettile = i == _fixroute.Length - 1 ? _fixroute.End : _fixroute.Route[i];
         Color _currentcolor = new Color();
         if (IsMad) _currentcolor = MadColor;
-        else if (i < ConstValues.MoveLength_Low) _currentcolor = LowColor;
-        else if (i < ConstValues.MoveLength_Middle) _currentcolor = MiddleColor;
-        else _currentcolor = HighColor;
+        else
+        {
+          switch (GameManager.Instance.MyGameData.GetMoveRangeType(i))
+          {
+            case RangeEnum.Low: _currentcolor = LowColor;
+              break;
+            case RangeEnum.Middle: _currentcolor = MiddleColor;
+              break;
+            case RangeEnum.High: _currentcolor = HighColor;
+              break;
+          }
+        }
         _currentcolor.a = i == _fixroute.Length - 1 ? 1.0f : 0.4f;
         Image _enableoutline = GetEnableOutline;
         SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
@@ -371,6 +518,122 @@ public class UI_map : UI_default
       }
     }
 
+    AllTiles.Clear();
+    AllSupplys.Clear();
+    int _index = 0;
+    foreach (var _route in Routes)
+    {
+      foreach (var _tile in _route.Route)
+      {
+        AllTiles.Add(_tile);
+        switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
+        {
+          case RangeEnum.Low:
+            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Low);
+            break;
+          case RangeEnum.Middle:
+            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Middle);
+            break;
+          case RangeEnum.High:
+            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_High);
+            break;
+        }
+
+        _index++;
+      }
+      AllTiles.Add(_route.End);
+      switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
+      {
+        case RangeEnum.Low:
+          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Low);
+          break;
+        case RangeEnum.Middle:
+          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Middle);
+          break;
+        case RangeEnum.High:
+          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_High);
+          break;
+      }
+
+      _index++;
+    }
+
+    if (!IsMad && _islast)
+    {
+      TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
+      TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
+      TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
+      TilePreview_IsEvent.enabled = tile.IsEvent;
+      TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
+    }
+    UpdateSupplyTexts();
+    if (Destinations.Count == 0)
+    {
+      MovecostButtonGroup.alpha = 0.0f;
+      MovecostButtonGroup.interactable = false;
+      MovecostButtonGroup.blocksRaycasts = false;
+      MoveCost_Sanity = 0;
+    }
+    else
+    {
+      MoveCost_Sanity = GameManager.Instance.MyGameData.Movecost * AllTiles.Count;
+      PenaltyCost = TotalSupplyCost > GameManager.Instance.MyGameData.Supply ?
+        (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost :
+        0;
+    }
+
+    int _supplycost = 0;
+    float _totalgold = 0.0f;
+    bool _supplyover = false;
+    PayValues_Sanity.Clear();
+    PayValues_Gold.Clear();
+    for (int i = 0; i < AllTiles.Count; i++)
+    {
+      Paydata _pay_sanity = new Paydata();
+      _pay_sanity.Pay_Gold = 0;
+      _pay_sanity.Pay_Sanity = 0;
+      Paydata _pay_gold = new Paydata();
+      _pay_gold.Pay_Gold = 0;
+      _pay_gold.Pay_Sanity = 0;
+
+      _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost;
+      if (_totalgold <= GameManager.Instance.MyGameData.Gold)
+      {
+        _pay_gold.Pay_Gold = GameManager.Instance.MyGameData.Movecost * ConstValues.MoveCost_GoldValue;
+        _totalgold += GameManager.Instance.MyGameData.Movecost * ConstValues.MoveCost_GoldValue;
+      }
+      else
+        _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost;
+
+
+      _supplycost += AllSupplys[i];
+
+      if (_supplyover)
+      {
+        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
+      }
+      else if (GameManager.Instance.MyGameData.Supply < _supplycost)
+      {
+        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
+        _supplyover = true;
+      }
+      PayValues_Sanity.Add(_pay_sanity);
+      PayValues_Gold.Add(_pay_gold);
+    }
+    if (_supplyover)
+    {
+      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
+    }
+    else
+    {
+      GoldButton_Highlight.RemoveAllCall();
+      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    }
+
+
   }
   private void ResetRoute()
   {
@@ -380,12 +643,16 @@ public class UI_map : UI_default
       if (_arrow.enabled) _arrow.enabled = false;
     Destinations.Clear();
     Routes.Clear();
+    AllTiles.Clear();
+    AllSupplys.Clear();
+    PayValues_Gold.Clear();
+    PayValues_Sanity.Clear();
   }
   public void PointerEnterTile(TileData tile)
   {
-    if (Route_Tile.Contains(tile)) return;
+    if (AllTiles.Contains(tile)) return;
 
-    if (!IsMad)
+    if (!IsMad&&Destinations.Count==0)
     {
       TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
@@ -409,9 +676,18 @@ public class UI_map : UI_default
     int _length = GetlengthAsRoute(tile);
     Color _currentcolor = new Color();
     if (IsMad) _currentcolor = MadColor;
-    else if (_length < ConstValues.MoveLength_Low) _currentcolor = LowColor;
-    else if (_length < ConstValues.MoveLength_Middle) _currentcolor = MiddleColor;
-    else _currentcolor = HighColor;
+    else switch (GameManager.Instance.MyGameData.GetMoveRangeType(_length))
+      {
+        case RangeEnum.Low:
+          _currentcolor = LowColor;
+          break;
+        case RangeEnum.Middle:
+          _currentcolor = MiddleColor;
+          break;
+        case RangeEnum.High:
+          _currentcolor = HighColor;
+          break;
+      }
 
     _currentcolor.a = 1.0f;
 
@@ -476,7 +752,7 @@ public class UI_map : UI_default
     if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
     if (DragDescription.text == "") DragDescription.text = GameManager.Instance.GetTextData("MapDragDescription");
     CameraResetButton.interactable = false;
-    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild == ConstValues.MadnessEffect_Wild - 1))
+    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1))
     {
       Debug.Log("자연 광기 발동");
       UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
@@ -499,6 +775,7 @@ public class UI_map : UI_default
       TilePreview_IsEvent.enabled = false;
       TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
+    if (MadnessIcon.enabled) MadnessIcon.enabled = false;
 
     ResetEnableTiles();
     ResetRoute();
@@ -512,14 +789,12 @@ public class UI_map : UI_default
     }
 
     TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
-    BonusGold = 0;
-    BonusGoldText.text = "";
-    MoveLengthText.text = "";
-    MoveLengthCostText.text = "";
-    MoveCostText.text = "";
+    CurrentSupply.text=GameManager.Instance.MyGameData.Supply.ToString();
+    UpdateSupplyTexts();
     MovecostButtonGroup.alpha = 0.0f;
     MovecostButtonGroup.interactable = false;
     MovecostButtonGroup.blocksRaycasts = false;
+    MoveCost_Sanity = 0;
 
     SelectedCostType = StatusTypeEnum.HP;
 
@@ -720,32 +995,61 @@ public class UI_map : UI_default
   public AnimationCurve SettlementIconCurve = new AnimationCurve();
   [SerializeField] private Vector2 TilePreviewDownPos = new Vector2(-235.0f, 23.0f);
   private float TilePreviewStartAlpha = 0.5f;
-  private List<TileData> Route_Tile
-  {
-    get
-    {
-      List<TileData> _temp=new List<TileData>();
-      foreach(var _route in Routes)
-      {
-        foreach (var _tile in _route.Route)
-          _temp.Add(_tile);
-        _temp.Add(_route.End);
-      }
-      return _temp;
-    }
-  }
-  private int MovePointCost
-  {
-    get
-    {
-      int _count = 0;
-      for (int i = 1; i < Route_Tile.Count; i++)
-        _count += Route_Tile[i].RequireSupply;
-      return _count;
-    }
-  }
   private TileData SelectedTile = null;
-  public int SanityCost = 0, GoldCost = 0, BonusGold = 0;
+  public int MoveCost_Sanity = 0;
+  public int MoveCost_Gold
+  {
+    get
+    {
+      return Mathf.CeilToInt(MoveCost_Sanity * ConstValues.MoveCost_GoldValue);
+    }
+  }
+  public int PenaltyCost = 0;
+  public int BonusGold 
+  {
+    get 
+    {
+      return AllTiles.Count == 0 ? 0 :
+        LastDestination.TileSettle != null ? 0 :
+        (LastDestination.RequireSupply * ConstValues.GoldPerSupplies +
+        (GameManager.Instance.MyGameData.Tendency_Head.Level == 1 ? AllTiles.Count >= ConstValues.Tendency_Head_p1_value ? ConstValues.Tendency_Head_p1_value : 0 : 0));  
+    } 
+  }
+  private void UpdateSupplyTexts()
+  {
+    if (Destinations.Count == 0)
+    {
+      RequireSupply.text = "0";
+      RequireSupplyInfo.text = "";
+      BonusGoldInfo.text = "";
+    }
+    else if (IsMad)
+    {
+      RequireSupply.text = TotalSupplyCost.ToString()+"?";
+      string _info = WNCText.GetAsLengthColor(AllSupplys[0], 1);
+      for (int i = 1; i < AllSupplys.Count; i++)
+      {
+        _info += $" + {WNCText.GetAsLengthColor(AllSupplys[i], i)}";
+      }
+      _info += " + ?";
+      RequireSupplyInfo.text = _info;
+      BonusGoldInfo.text = GameManager.Instance.GetTextData("BonusGold_unknown");
+    }
+    else
+    {
+      RequireSupply.text = TotalSupplyCost.ToString();
+      string _info = WNCText.GetAsLengthColor(AllSupplys[0], 1);
+      for(int i = 1; i < AllSupplys.Count; i++)
+      {
+        _info += $" + {WNCText.GetAsLengthColor(AllSupplys[i],i)}";
+      }
+      RequireSupplyInfo.text = _info;
+      BonusGoldInfo.text =LastDestination.TileSettle!=null?"": string.Format(GameManager.Instance.GetTextData("Bonusgold_Info"),
+        WNCText.GetAsLengthColor(AllTiles[AllTiles.Count - 1].RequireSupply, AllTiles.Count),
+       GameManager.Instance.MyGameData.Tendency_Head.Level == 1 && AllTiles.Count >= ConstValues.Tendency_Head_p1_value ? "<sprite=104>":"",
+       BonusGold);
+    }
+  }
   public void SelectTile(TileData selectedtile)
   {
     if (Destinations.Contains(selectedtile))
@@ -754,7 +1058,7 @@ public class UI_map : UI_default
       return;
     }
     //동일한 좌표면 호출되지 않게 이미 거름
-    if (selectedtile.Coordinate == GameManager.Instance.MyGameData.Coordinate || Route_Tile.Contains(selectedtile)) return;
+    if (selectedtile.Coordinate == GameManager.Instance.MyGameData.Coordinate || AllTiles.Contains(selectedtile)) return;
 
 
     AddDestination(selectedtile);
@@ -782,7 +1086,7 @@ public class UI_map : UI_default
     {
       TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
     }
-     else if (SelectedTile.TileSettle != null)
+    else if (SelectedTile.TileSettle != null)
     {
       TileInfoText.text =  GameManager.Instance.GetTextData("MoveDescription_Settlement");
     }
@@ -859,122 +1163,85 @@ public class UI_map : UI_default
     MovecostButtonGroup.alpha = 1.0f;
     MovecostButtonGroup.interactable = true;
     MovecostButtonGroup.blocksRaycasts = true;
-    
-    SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(MovePointCost);
-    GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(MovePointCost);
-    if (SelectedTile.TileSettle == null)
-    {
-      BonusGold = SelectedTile.RequireSupply>1?(int)((SelectedTile.RequireSupply) * ConstValues.GoldPerSupplies * GameManager.Instance.MyGameData.GetGoldGenModify(true)):0;
-      BonusGold += (Route_Tile.Count > ConstValues.Tendency_Head_p1_length && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? ConstValues.Tendency_Head_p1_value : 0;
-    }
+
     SelectedCostType = StatusTypeEnum.HP;
-    MoveCostText.text = "";
+
+    UpdateSupplyTexts();
 
     SanitybuttonGroup.interactable = true;
     SanityButton_Highlight.Interactive = true;
     SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
     SanityButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint);
 
-    bool _goldable = GameManager.Instance.MyGameData.Gold >= GoldCost;
+    bool _goldable = GameManager.Instance.MyGameData.Gold > 0;
     GoldbuttonGroup.interactable = _goldable;
     GoldButton_Highlight.Interactive = _goldable;
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint);
     GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
-    string[] _bonusgoldtext = null;
-    if (!IsMad)
-    switch (BonusGold)
-    {
-      case 0:
-        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_0").Split('@');
-        break;
-        case 1: case 2:
-        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_2").Split('@');
-        break;
-      case 3: case 4:
-        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_4").Split('@');
-        break;
-      default:
-        _bonusgoldtext = GameManager.Instance.GetTextData("BonusGold_over").Split('@');
-        break;
-    }
-    BonusGoldText.text =IsMad? GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2) + " +?":
-      SelectedTile.TileSettle!=null?"":
-      ((Route_Tile.Count>2 && GameManager.Instance.MyGameData.Tendency_Head.Level >= 1) ? 
-      "<sprite=104>":
-      "") + _bonusgoldtext[Random.Range(0,_bonusgoldtext.Length)]+" "+ GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2)+" +" + BonusGold.ToString();
-    MoveLengthText.text = IsMad ? "<sprite=100> ?" :
-      string.Format(GameManager.Instance.GetTextData("MoveLength"),
-      GameManager.Instance.MyGameData.Supply,
-      WNCText.PercentageColor(MovePointCost.ToString(), MovePointCost <= GameManager.Instance.MyGameData.Supply ? 1.0f : 0.0f));
-    if (GameManager.Instance.MyGameData.Supply < 0)
-    {
-      MoveLengthCostText.text = GameManager.Instance.GetTextData("Movepoint_NoSupplies");
-    }
-    else if (MovePointCost > GameManager.Instance.MyGameData.Supply)
-    {
-      MoveLengthCostText.text = string.Format(GameManager.Instance.GetTextData("LackofMovepoint"),
-     MovePointCost - GameManager.Instance.MyGameData.Supply);
-    }
-    else MoveLengthCostText.text = "";
-
   }
   private bool CheckRitual
   {
     get
     {
-      foreach (var _tile in Route_Tile)
+      foreach (var _tile in AllTiles)
         if (_tile.Landmark == LandmarkType.Ritual) return true;
       return false;
     }
   }
+  private int MadnessTileIndex = -1;
   public void EnterPointerStatus(StatusTypeEnum type)
   {
-    string _costtext = "";
     switch (type)
     {
       case StatusTypeEnum.Sanity:
         SelectedCostType = StatusTypeEnum.Sanity;
-
-        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_SANITY"),
-          MovePointCost <= GameManager.Instance.MyGameData.Supply?"" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
-        MovePointCost - GameManager.Instance.MyGameData.Supply, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
-        !IsMad ?SanityCost:"?");
         break;
       case StatusTypeEnum.Gold:
-        if (GameManager.Instance.MyGameData.Gold < GoldCost) return;
-
+        if (GameManager.Instance.MyGameData.Gold < 1) return;
         SelectedCostType = StatusTypeEnum.Gold;
-
-        _costtext = string.Format(GameManager.Instance.GetTextData("MAPCOSTTYPE_GOLD"),
-                    MovePointCost <= GameManager.Instance.MyGameData.Supply ? "" : string.Format(GameManager.Instance.GetTextData("AmplifiedValues"),
-        MovePointCost - GameManager.Instance.MyGameData.Supply, (GameManager.Instance.MyGameData.Tendency_Head.Level <= -1 ? "<sprite=103>" : "") + (int)(GameManager.Instance.MyGameData.MovePointAmplified * 100)),
-!IsMad ?GoldCost:"?");
         break;
     }
-    MoveCostText.text = _costtext;
+
+
+    int _sanitycost = 0;
+    for (int i = 0; i < AllTiles.Count; i++)
+    {
+      _sanitycost += SelectedCostType == StatusTypeEnum.Sanity ? PayValues_Sanity[i].Pay_Sanity : PayValues_Gold[i].Pay_Sanity;
+      if (_sanitycost >= GameManager.Instance.MyGameData.Sanity && !MadnessIcon.enabled)
+      {
+        MadnessTileIndex = i;
+        MadnessIcon.rectTransform.position = AllTiles[MadnessTileIndex].ButtonScript.Rect.position;
+        MadnessIcon.rectTransform.anchoredPosition3D = new Vector3(MadnessIcon.rectTransform.anchoredPosition3D.x, MadnessIcon.rectTransform.anchoredPosition3D.y, 0.0f);
+        if (!MadnessIcon.enabled) MadnessIcon.enabled = true;
+        break;
+      }
+    }//이성 비용 합이 현재 이성 값을 넘어서면 그 자리에서 멈추고 광기 실행해야 함
+
   }
   public void ExitPointerStatus(StatusTypeEnum type)
   {
-    if (type==StatusTypeEnum.Gold&& GameManager.Instance.MyGameData.Gold < GoldCost) return;
+    if (MadnessIcon.enabled)
+    {
+      MadnessIcon.enabled = false;
+      MadnessTileIndex = -1;
+    }
+    if (UIManager.Instance.IsWorking) return;
+    if (GameManager.Instance.MyGameData.Gold < 1) return;
 
-   // SanitybuttonGroup.alpha = MoveButtonDisableAlpha;
-   // GoldbuttonGroup.alpha = MoveButtonDisableAlpha;
-    MoveCostText.text = "";
   }
 
   public void MoveMap()
   {
     if (UIManager.Instance.IsWorking) return;
-    if (SelectedCostType == StatusTypeEnum.Gold && GameManager.Instance.MyGameData.Gold < GoldCost) return;
+    if (SelectedCostType == StatusTypeEnum.Gold && GameManager.Instance.MyGameData.Gold < 1) return;
 
     DefaultGroup.interactable = false;
     DefaultGroup.blocksRaycasts = false;
     SanityButton_Highlight.Interactive = false;
     GoldButton_Highlight.Interactive = false;
 
-    //  UIManager.Instance.ResetEventPanels();
     UIManager.Instance.AddUIQueue(movemap());
   }
   public AnimationCurve MoveAnimationCurve = new AnimationCurve();
@@ -983,38 +1250,35 @@ public class UI_map : UI_default
     if (IsMad)
     {
       List<TileData> _availabletiles = new List<TileData>();
-      foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 1))
+      foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, ConstValues.MadnessEffect_Wild_range))
       {
-        if (_tile == SelectedTile) continue;
-        if (_tile == GameManager.Instance.MyGameData.CurrentTile) continue;
-        if (_tile.Interactable == false) continue;
-        if (!ActiveTileData.Contains(_tile)) continue;
+        if (_tile == SelectedTile||
+          _tile == GameManager.Instance.MyGameData.CurrentTile||
+          !_tile.Interactable||
+          AllTiles.Contains(_tile)) continue;
+
         _availabletiles.Add(_tile);
       }
       if (_availabletiles.Count == 0)
       {
         _availabletiles = new List<TileData>();
-        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, 2))
+        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, ConstValues.MadnessEffect_Wild_range+1))
         {
-          if (_tile == SelectedTile) continue;
-          if (_tile == GameManager.Instance.MyGameData.CurrentTile) continue;
-          if (_tile.Interactable == false) continue;
-          if (!ActiveTileData.Contains(_tile)) continue;
+          if (_tile == SelectedTile ||
+            _tile == GameManager.Instance.MyGameData.CurrentTile ||
+            !_tile.Interactable ||
+            AllTiles.Contains(_tile)) continue;
+
           _availabletiles.Add(_tile);
         }
       }
       SelectedTile = _availabletiles[Random.Range(0, _availabletiles.Count)];
 
-      SanityCost = GameManager.Instance.MyGameData.GetMoveSanityCost(MovePointCost);
-      GoldCost = GameManager.Instance.MyGameData.GetMoveGoldCost(MovePointCost);
+      AddDestination(SelectedTile);
+      UpdateSupplyTexts();
 
       GameManager.Instance.MyGameData.TotalMoveCount++;
       UIManager.Instance.SetWildMadCount();
-    }
-    if (SelectedCostType == StatusTypeEnum.Sanity && GameManager.Instance.MyGameData.Sanity < SanityCost && !GameManager.Instance.MyGameData.MadnessSafe)
-    {
-      GameManager.Instance.GameOver();
-      yield break;
     }
 
     if (IsMoved)
@@ -1024,62 +1288,19 @@ public class UI_map : UI_default
       yield return StartCoroutine(resetholderpos());
     }
 
-    Dictionary<TileData, int> _movepointicondata = new Dictionary<TileData, int>();
-    int _totalmp = 0;
-    for(int i = 1; i < Route_Tile.Count; i++)
-    {
-      int _mp = Route_Tile[i].RequireSupply;
-      _totalmp += _mp;
-      if (GameManager.Instance.MyGameData.Supply >= _totalmp)
-      {
-        _movepointicondata.Add(Route_Tile[i],_mp);
-      }
-      else
-      {
-        _movepointicondata.Add(Route_Tile[i],Mathf.Clamp(GameManager.Instance.MyGameData.Supply - (_totalmp - _mp),0,100));
-      }
-    }
-    yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint_using(_movepointicondata,SelectedCostType));
+    var _paytarget = SelectedCostType == StatusTypeEnum.Sanity ? PayValues_Sanity : PayValues_Gold;
+    bool _hungry = GameManager.Instance.MyGameData.Supply < AllSupplys[0];
 
- //   yield return StartCoroutine(UIManager.Instance.statusgainanimation(PlayerRect));
-
-    bool _iswalking = false;
-    if (GameManager.Instance.MyGameData.Supply >= MovePointCost)
-      _iswalking = true;
-    else _iswalking = false;
-
-
-    GameManager.Instance.MyGameData.Supply -= MovePointCost;
-    switch (SelectedCostType)
-    {
-      case StatusTypeEnum.Sanity:
-        GameManager.Instance.MyGameData.Sanity -= SanityCost;
-        break;
-      case StatusTypeEnum.Gold:
-        GameManager.Instance.MyGameData.Gold -= GoldCost;
-        break;
-    }
-
- //   Debug.Log($"시작 타일 {GameManager.Instance.MyGameData.Coordinate} 목표 타일 {SelectedTile.Coordinate}");
-
-    List<Vector2> _path= new List<Vector2>();
-    _path.Add(PlayerRect.anchoredPosition);
-    MapData _map = GameManager.Instance.MyGameData.MyMapData;
-    for(int i = 0; i < Route_Tile.Count; i++)
-    {
-      _path.Add(Route_Tile[i].ButtonScript.Rect.anchoredPosition);
-    }
-    if(_iswalking)
-      UIManager.Instance.AudioManager.PlayWalking();
+    if(!_hungry) UIManager.Instance.AudioManager.PlayWalking();
     else UIManager.Instance.AudioManager.PlaySFX(29);
 
 
     float _time = 0.0f;             //x
-    int _pathcount = _path.Count-1; //길 개수-1 (마지막 좌표는 current가 되면 안되니까)   n
+    int _pathcount = AllTiles.Count; //   n
     int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)
     int _lastindex = 0;
     float _value = 0.0f;            //커브에 따른 이동 값(y)                              0.0f ~ 1.0f
-    float _valuedegree = 1.0f / _pathcount;
+    float _valuedegree = 1.0f / (float)_pathcount;
     float _currentvalue = 0.0f;     //
     Vector2 _current = Vector2.zero,_next= Vector2.zero;
     float _movetime = MoveTime * _pathcount;
@@ -1089,8 +1310,10 @@ public class UI_map : UI_default
 
       _currentindex = Mathf.FloorToInt(_value / _valuedegree);
       if (_currentindex == _pathcount) break;
-      _current = _path[_currentindex];
-      _next = _path[_currentindex+1];
+      _current =_currentindex==0?GameManager.Instance.MyGameData.CurrentTile.ButtonScript.Rect.anchoredPosition:
+        AllTiles[_currentindex-1].ButtonScript.Rect.anchoredPosition;
+      _next =_currentindex==0? AllTiles[0].ButtonScript.Rect.anchoredPosition :
+        AllTiles[_currentindex].ButtonScript.Rect.anchoredPosition;
       _currentvalue = (_value % _valuedegree) * _pathcount;
 
       PlayerRect.anchoredPosition = Vector3.Lerp(_current,_next,_currentvalue);
@@ -1098,15 +1321,36 @@ public class UI_map : UI_default
 
       if (_lastindex!=_currentindex)
       {
-        if(Route_Tile[_currentindex].Landmark == LandmarkType.Ritual)
+        if(AllTiles[_currentindex-1].Landmark == LandmarkType.Ritual)
           UIManager.Instance.CultUI.AddProgress(4, null);
 
-        List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(Route_Tile[_currentindex], ConstValues.ViewRange);
+        List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(AllTiles[_currentindex - 1], GameManager.Instance.MyGameData.ViewRange);
         foreach (var _tile in _newarounds)
         {
           ActiveTileData.Add(_tile);
           _tile.SetFog(2);
         }
+
+        if (_paytarget[_currentindex - 1].Pay_Sanity > 0) GameManager.Instance.MyGameData.Sanity -= _paytarget[_currentindex - 1].Pay_Sanity;
+        if (_paytarget[_currentindex - 1].Pay_Gold > 0) GameManager.Instance.MyGameData.Gold -= Mathf.CeilToInt(_paytarget[_currentindex - 1].Pay_Gold);
+
+        if (GameManager.Instance.MyGameData.Supply >= AllSupplys[_currentindex - 1])
+        {
+          UIManager.Instance.SetIconEffect_movepoint_using(AllTiles[_currentindex - 1].ButtonScript.Rect, StatusTypeEnum.HP);
+          UIManager.Instance.SetIconEffect_movepoint_using(AllTiles[_currentindex - 1].ButtonScript.Rect, SelectedCostType);
+        }
+        else
+        {
+          UIManager.Instance.SetIconEffect_movepoint_using(AllTiles[_currentindex - 1].ButtonScript.Rect, StatusTypeEnum.Sanity);
+          if (!_hungry)
+          {
+            UIManager.Instance.AudioManager.StopWalking();
+            UIManager.Instance.AudioManager.PlaySFX(29);
+            _hungry = true;
+          }
+        }
+
+        if (GameManager.Instance.MyGameData.Sanity < 1) break;
 
         _lastindex = _currentindex;
       }
@@ -1114,15 +1358,15 @@ public class UI_map : UI_default
       _time += Time.deltaTime;
       yield return null;
     }
-    if(SelectedTile.TileSettle==null) GameManager.Instance.MyGameData.Gold += BonusGold;
-    UIManager.Instance.AudioManager.StopWalking();
+    TileData _stoptile = AllTiles[_currentindex - 1];
 
-    PlayerRect.anchoredPosition = _path[_path.Count-1];
+    if (_stoptile.TileSettle==null) GameManager.Instance.MyGameData.Gold += BonusGold;
+    if(!_hungry) UIManager.Instance.AudioManager.StopWalking();
+
+    PlayerRect.anchoredPosition = _stoptile.ButtonScript.Rect.position;
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
-    GameManager.Instance.MyGameData.Coordinate = SelectedTile.Coordinate;
-
- //   StartCoroutine(zoominview());
+    GameManager.Instance.MyGameData.Coordinate = _stoptile.Coordinate;
 
     //CloseUI 안 쓰고 여기서 닫기 실행
     yield return new WaitForSeconds(0.7f);
@@ -1151,7 +1395,7 @@ public class UI_map : UI_default
     yield return new WaitForSeconds(0.2f);
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, Left_InsidePos,Left_OutsidePos , UIOpenTime_Move, UIManager.Instance.UIPanelCLoseCurve));
 
-    switch (SelectedTile.Landmark)
+    switch (_stoptile.Landmark)
     {
       case LandmarkType.Outer:
       case LandmarkType.Ritual:
@@ -1159,14 +1403,16 @@ public class UI_map : UI_default
 
         GameManager.Instance.MyGameData.CurrentSettlement = null;
         GameManager.Instance.MyGameData.DownAllDiscomfort(ConstValues.DiscomfortDownValue);
-        EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(SelectedTile.Coordinate));
+
+        if(_stoptile.IsEvent)
+        EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(_stoptile.Coordinate));
         break;
 
       case LandmarkType.Village:
       case LandmarkType.Town:
       case LandmarkType.City:
         GameManager.Instance.MyGameData.FirstRest = true;
-        GameManager.Instance.EnterSettlement(SelectedTile.TileSettle);
+        GameManager.Instance.EnterSettlement(_stoptile.TileSettle);
 
         GameManager.Instance.MyGameData.Turn++;
         GameManager.Instance.SaveData();

@@ -1543,8 +1543,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector,false);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
-    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==-2) == true ?
-      ConstValues.Tendency_Head_m2 : ConstValues.Rest_Discomfort;
+    int _discomfort_default = ConstValues.Rest_Discomfort;
     switch (sector)
     {
       case SectorTypeEnum.Residence:
@@ -1639,8 +1638,7 @@ SettlementNameText.text = CurrentSettlement.Name;
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector, false);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = (GameManager.Instance.MyGameData.FirstRest && GameManager.Instance.MyGameData.Tendency_Head.Level ==-2)?
-      ConstValues.Tendency_Head_m2 : ConstValues.Rest_Discomfort;
+    int _discomfort_default = ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:

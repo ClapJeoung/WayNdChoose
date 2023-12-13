@@ -308,7 +308,8 @@ public class PreviewManager : MonoBehaviour
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Wild_Preview"),
-            GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild+1, ConstValues.MadnessEffect_Wild);
+            GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary+1, ConstValues.MadnessEffect_Wild_temporary,
+            ConstValues.MadnessEffect_Wild_range);
           _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
@@ -810,15 +811,15 @@ public class PreviewManager : MonoBehaviour
   {
     string _turn, _description;
 
-    _turn=islong?GameManager.Instance.MyGameData.ExpMaxTurn_Long.ToString():GameManager.Instance.MyGameData.ExpMaxTurn_Short.ToString();
+    _turn=islong ? ConstValues.EXPMaxTurn_long_idle.ToString() : ConstValues.EXPMaxTurn_short_idle.ToString();
     if (islong)
     {
-      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"),GameManager.Instance.MyGameData.ExpMaxTurn_Long,
+      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_long_idle,
         (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
     }
     else
     {
-      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), GameManager.Instance.MyGameData.ExpMaxTurn_Short);
+      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_short_idle);
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
@@ -832,15 +833,15 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong, RectTransform rect)
   {
-    int _turn = islong ? GameManager.Instance.MyGameData.ExpMaxTurn_Long : GameManager.Instance.MyGameData.ExpMaxTurn_Short;
+    int _turn = islong ? ConstValues.EXPMaxTurn_long_idle : ConstValues.EXPMaxTurn_short_idle;
     string _description = "";
     if (islong)
     {
-      _description =string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), GameManager.Instance.MyGameData.ExpMaxTurn_Long, ConstValues.LongTermChangeCost);
+      _description =string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_long_idle, ConstValues.LongTermChangeCost);
     }
     else
     {
-      _description = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), GameManager.Instance.MyGameData.ExpMaxTurn_Short);
+      _description = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_short_idle);
     }
 
     string _origineffect = _origin.EffectString;
@@ -904,23 +905,10 @@ public class PreviewManager : MonoBehaviour
     if (UIManager.Instance.Mouse.MouseState == MouseStateEnum.DragMap) return;
 
     Vector2 _pivot = new Vector2(0.5f,tileData.Coordinate.y<=GameManager.Instance.MyGameData.Coordinate.y?1.05f:-0.05f);
-    string _movepointstring = "";
     if (tileData.TileSettle == null)
     {
-      if (UIManager.Instance.MapUI.IsMad)
-      {
-        _movepointstring += "?";
-      }
-      else
-      {
-        int _length = UIManager.Instance.MapUI.GetlengthAsRoute(tileData);
-        _movepointstring=WNCText.GetAsLengthColor(tileData.RequireSupply, _length);
-      }
-      TileInfoMovePointText.text = _movepointstring;
-
-      LayoutRebuilder.ForceRebuildLayoutImmediate(TileInfoMovePointText.transform.parent.transform as RectTransform);
-
-      OpenPreviewPanel(TileInfoPanel, _pivot, tilerect);
+      if (UIManager.Instance.MapUI.Destinations.Contains(tileData))
+        OpenJustDescriptionPreview(GameManager.Instance.GetTextData("RemoveDestination"), _pivot, tilerect);
     }
     else
     {
@@ -949,18 +937,7 @@ public class PreviewManager : MonoBehaviour
 
       SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
       LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementInfoDiscomfort.transform.parent.transform as RectTransform);
-      if (UIManager.Instance.MapUI.IsMad)
-      {
-        _movepointstring += "?";
-      }
-      else
-      {
-        int _length = UIManager.Instance.MapUI.GetlengthAsRoute(tileData);
-        _movepointstring = WNCText.GetAsLengthColor(tileData.RequireSupply, _length);
-      }
-      SettlementMovePointText.text = _movepointstring;
 
-      LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementMovePointText.transform.parent.transform as RectTransform);
       OpenPreviewPanel(SettlementInfoPanel, _pivot, tilerect);
     }
   }
