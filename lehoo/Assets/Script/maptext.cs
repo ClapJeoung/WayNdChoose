@@ -980,7 +980,7 @@ public class maptext : MonoBehaviour
         Image _eventimage = _eventmark.GetComponent<Image>();
         _eventimage.raycastTarget = false;
         _eventimage.sprite = GameManager.Instance.ImageHolder.UnknownEvent;
-        _eventimage.enabled = false;
+        _eventimage.enabled = _currenttile.IsEvent;
 
         TileObjScript _tilescript = _bottomtile.GetComponent<TileObjScript>();
         _tilescript.Rect = _bottomrect;

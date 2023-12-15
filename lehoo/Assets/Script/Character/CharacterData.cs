@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro.SpriteAssetUtilities;
 using Unity.Mathematics;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+    public const int CultEventRange_Route = 3, CultEventRange_Target = 4;
+    public const int WorldEventRange_max = 5, WorldEventRange_min = 2;
+
   public const float WorldEventPhase_1_Cult = 30.0f, WorldEventPhase_2_Cult = 60.0f;
   public const int WorldEventCount_0 = 2, WorldEventCount_1 = 1, WorldEventCount_2 = 0;
 
@@ -617,8 +621,92 @@ public class GameData    //게임 진행도 데이터
     if(FailEvent_All.Contains(eventid)) return false;
     return true;
   }
+    public bool IsEventTypeEnable(EventData eventdata, bool isouter)
+    {
+        if (isouter && eventdata.AppearSpace != EventAppearType.Outer) return false;
+        else if (!isouter && eventdata.AppearSpace == EventAppearType.Outer) return false;
 
-  public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
+        switch (eventdata.EventType)
+        {
+            default:
+                return true;
+            case EventTypeEnum.Follow:
+                switch (eventdata.FollowType)
+                {
+                    case FollowTypeEnum.Event:  //이벤트 연계일 경우 
+                        List<List<string>> _checktarget = new List<List<string>>();
+                        switch (eventdata.FollowTargetSuccess)
+                        {
+                            case 0:
+                                switch (eventdata.FollowTendency)
+                                {
+                                    case 0:
+                                        _checktarget.Add(SuccessEvent_None);
+                                        _checktarget.Add(SuccessEvent_Rational);
+                                        _checktarget.Add(SuccessEvent_Mental);
+                                        break;
+                                    case 1:
+                                        _checktarget.Add(SuccessEvent_Physical);
+                                        _checktarget.Add(SuccessEvent_Material); break;
+                                    case 2:
+                                        _checktarget.Add(SuccessEvent_All); break;
+                                }
+                                break;
+                            case 1:
+                                switch (eventdata.FollowTendency)
+                                {
+                                    case 0:
+                                        _checktarget.Add(FailEvent_None);
+                                        _checktarget.Add(FailEvent_Rational);
+                                        _checktarget.Add(FailEvent_Mental);
+                                        break;
+                                    case 1:
+                                        _checktarget.Add(FailEvent_Physical);
+                                        _checktarget.Add(FailEvent_Material); break;
+                                    case 2:
+                                        _checktarget.Add(FailEvent_All); break;
+                                }
+                                break;
+                            case 2:
+                                switch (eventdata.FollowTendency)
+                                {
+                                    case 0:
+                                        _checktarget.Add(SuccessEvent_None);
+                                        _checktarget.Add(SuccessEvent_Rational);
+                                        _checktarget.Add(SuccessEvent_Mental);
+                                        _checktarget.Add(FailEvent_None);
+                                        _checktarget.Add(FailEvent_Rational);
+                                        _checktarget.Add(FailEvent_Mental);
+                                        break;
+                                    case 1:
+                                        _checktarget.Add(SuccessEvent_Physical);
+                                        _checktarget.Add(SuccessEvent_Material);
+                                        _checktarget.Add(FailEvent_Physical);
+                                        _checktarget.Add(FailEvent_Material); break;
+                                    case 2:
+                                        _checktarget.Add(FailEvent_All);
+                                        _checktarget.Add(SuccessEvent_All); break;
+                                }
+                                break;
+                        }
+                        foreach (var _list in _checktarget)
+                            if (_list.Contains(eventdata.FollowID)) return true;
+                            else return false;
+                        break;
+                    case FollowTypeEnum.Exp:
+                        if ((LongExp != null && LongExp.ID == eventdata.FollowID)
+                          || (ShortExp_A != null && ShortExp_A.ID == eventdata.FollowID)
+                          || (ShortExp_B != null && ShortExp_B.ID == eventdata.FollowID))
+                            return true;
+                        else return false;
+                    default: return false;
+                }
+                break;
+        }
+        return false;
+    }
+
+    public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
@@ -946,7 +1034,7 @@ public class GameData    //게임 진행도 데이터
     FirstRest= jsondata.FirstRest;
 
     foreach(var _coordinate in jsondata.EventTiles)
-      MyMapData.CurrentEventTiles.Add(MyMapData.Tile(_coordinate));
+      MyMapData.EventTiles.Add(MyMapData.Tile(_coordinate));
     TotalMoveCount = jsondata.TotalMoveCount;
     TotalRestCount = jsondata.TotalRestCount;
     Year = jsondata.Year;
@@ -1443,7 +1531,7 @@ public class GameJsonData
 
   public GameJsonData(GameData data)
   {
-    foreach (var _eventtile in data.MyMapData.CurrentEventTiles)
+    foreach (var _eventtile in data.MyMapData.EventTiles)
       EventTiles.Add(_eventtile.Coordinate);
 
     foreach (var _tile in data.MyMapData.TileDatas)
