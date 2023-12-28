@@ -172,15 +172,18 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
       // if(_changedvalue!=0)
       // StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
-      if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform }));
-      else
-      {
-        StartCoroutine(statuslossanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform },
-          Mathf.Lerp(ConstValues.StatusLossMinSacle,ConstValues.StatusLossMaxScale,(Mathf.Abs(_changedvalue)-ConstValues.StatusLoss_HP_Min)/ConstValues.StatusLoss_HP_Max)));
-        AudioManager.PlaySFX(15,"status");
-      }
 
-      HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
+      if (lasthp != GameManager.Instance.MyGameData.HP)
+      {
+        if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform }));
+        else
+        {
+          StartCoroutine(statuslossanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform },
+            Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_HP_Min) / ConstValues.StatusLoss_HP_Max)));
+          AudioManager.PlaySFX(15, "status");
+        }
+        HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
+      }
     }
 
 
@@ -206,19 +209,23 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.Sanity - lastsanity;
       // if (_changedvalue != 0)
       //   StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
-      if (lastsanity < GameManager.Instance.MyGameData.Sanity)
-      {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
-        AudioManager.PlaySFX(16, "status");
-      }
-      else
-      {
-        StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform },
-          Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Sanity_Min) / ConstValues.StatusLoss_Sanity_Max)));
-        AudioManager.PlaySFX(17, "status");
-      }
 
-      HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
+      if (lastsanity != GameManager.Instance.MyGameData.Sanity)
+      {
+        if (lastsanity < GameManager.Instance.MyGameData.Sanity)
+        {
+          StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
+          AudioManager.PlaySFX(16, "status");
+        }
+        else
+        {
+          StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform },
+            Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Sanity_Min) / ConstValues.StatusLoss_Sanity_Max)));
+          AudioManager.PlaySFX(17, "status");
+        }
+
+        HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
+      }
     }
 
     SanityIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.Sanity / 100.0f);
@@ -239,18 +246,22 @@ public class UIManager : MonoBehaviour
       int _changedvalue = GameManager.Instance.MyGameData.Gold - lastgold;
       //  if (_changedvalue != 0)
       //   StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
-      if (lastgold < GameManager.Instance.MyGameData.Gold)
-      {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
-        AudioManager.PlaySFX(18,"status");
-      }
-      else
-      {
-        StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform },
-          Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Gold_Min) / ConstValues.StatusLoss_Gold_Max)));
-      }
 
-      HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
+      if (lastgold != GameManager.Instance.MyGameData.Gold)
+      {
+        if (lastgold < GameManager.Instance.MyGameData.Gold)
+        {
+          StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
+          AudioManager.PlaySFX(18, "status");
+        }
+        else
+        {
+          StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform },
+            Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Gold_Min) / ConstValues.StatusLoss_Gold_Max)));
+        }
+
+        HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
+      }
     }
 
     GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
@@ -261,31 +272,34 @@ public class UIManager : MonoBehaviour
   }
   [SerializeField] private Image MovePoint_Icon = null;
   [SerializeField] private TextMeshProUGUI MovePointText = null;
-  private int lastmovepoint = -1;
-  public void UpdateMovePointText()
+  private int lastsupply = -1;
+  public void UpdateSupplyText()
   {
-    if (lastmovepoint != -1)
+    if (lastsupply != -1)
     {
-      int _changedvalue = GameManager.Instance.MyGameData.Supply - lastmovepoint;
+      int _changedvalue = GameManager.Instance.MyGameData.Supply - lastsupply;
    //   if (_changedvalue != 0)
     //    StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
-      if (lastmovepoint < GameManager.Instance.MyGameData.Supply) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
-      else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform},
-        Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_MP_Min) / ConstValues.StatusLoss_MP_Max)));
+      if (lastsupply != GameManager.Instance.MyGameData.Supply)
+      {
+        HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
+        if (lastsupply < GameManager.Instance.MyGameData.Supply) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
+        else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform },
+          Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_MP_Min) / ConstValues.StatusLoss_MP_Max)));
 
-      HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
+      }
     }
 
     MovePoint_Icon.sprite = GameManager.Instance.MyGameData.Supply >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
 
   //  Debug.Log("이동력 수치 업데이트");
-    if (lastmovepoint == 0 && GameManager.Instance.MyGameData.Supply == 0) return;
+    if (lastsupply == 0 && GameManager.Instance.MyGameData.Supply == 0) return;
 
     MovepointIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max,
       (GameManager.Instance.MyGameData.Supply - ConstValues.SupplyIconMinCount) / (float)(ConstValues.SupplyIconMaxCount-ConstValues.SupplyIconMinCount));
     MovePointText.text = GameManager.Instance.MyGameData.Supply.ToString();
 
-    lastmovepoint = GameManager.Instance.MyGameData.Supply;
+    lastsupply = GameManager.Instance.MyGameData.Supply;
   }
   [Space(10)]
   [SerializeField] private float IconMoveTime_using = 1.0f;
@@ -1287,7 +1301,7 @@ public class UIManager : MonoBehaviour
     UpdateHPText();
     UpdateSanityText();
     UpdateGoldText();
-    UpdateMovePointText();
+    UpdateSupplyText();
     UpdateExpPael();
     UpdateTendencyIcon();
     UpdateSkillLevel();
@@ -1429,7 +1443,6 @@ public class UIManager : MonoBehaviour
   #region 메인-게임 전환
   [SerializeField] private List<PanelRectEditor> TitlePanels=new List<PanelRectEditor>();
   [SerializeField] private float SceneAnimationTitleMoveTime = 0.3f;
-  [SerializeField] private float SceneAnimationObjMoveTime = 0.1f;
   [SerializeField] private float TitleWaitTime = 0.4f;
   [SerializeField] private float ObjWaitTime = 0.2f;
   [SerializeField] private AnimationCurve SceneAnimationCurve = null;

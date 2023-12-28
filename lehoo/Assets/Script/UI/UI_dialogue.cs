@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
-using System.Net.Http.Headers;
-using Unity.VisualScripting;
+
 
 public class UI_dialogue : UI_default
 {
+  private enum DialogueTypeEnum { None,Event,Settlement}
+  private DialogueTypeEnum CurrentDialogueType=DialogueTypeEnum.None;
   public float OpenTime = 1.5f;
   public float CloseTime = 1.0f;
   public RectTransform DialogueRect = null;
@@ -19,6 +20,8 @@ public class UI_dialogue : UI_default
   public Vector2 CenterPos = Vector2.zero;
   public Vector2 RightPos = new Vector2(1250.0f, 0.0f);
   public Image SettlementBackground = null;
+  [SerializeField] private Vector2 Descriptionpos_Outside = new Vector2(0.0f, 342.0f);
+  [SerializeField] private Vector2 Descriptionpos_Inside = new Vector2(-600.0f, 342.0f);
   [Header("이벤트")]
   #region 이벤트
   public GameObject EventObjectHolder = null;
@@ -32,7 +35,6 @@ public class UI_dialogue : UI_default
   [SerializeField] private Color FailColor = Color.red;
 
   [SerializeField] private TextMeshProUGUI NameText = null;
-  [SerializeField] private float ButtonFadeinTime = 0.4f;
   [SerializeField] private TextMeshProUGUI DescriptionText = null;
   public Scrollbar DescriptionScrollBar = null;
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
@@ -569,6 +571,8 @@ public class UI_dialogue : UI_default
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
 
     DefaultGroup.interactable = true;
+
+    CurrentDialogueType = DialogueTypeEnum.Event;
     yield return null;
   }
   public IEnumerator OpenEventUI(bool issuccess,bool isleft,bool dir)
@@ -655,6 +659,9 @@ public class UI_dialogue : UI_default
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
 
     DefaultGroup.interactable = true;
+
+    CurrentDialogueType = DialogueTypeEnum.Event;
+
     yield return null;
   }
   [Space(15)]
@@ -1265,6 +1272,8 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator closeui_all(bool dir)
   {
+    CurrentDialogueType = DialogueTypeEnum.None;
+
     DefaultGroup.interactable = false;
     IsOpen = false;
 
@@ -1388,7 +1397,7 @@ public class UI_dialogue : UI_default
   public Image MadenssEffect = null;
   [SerializeField] private RectTransform MapbuttonPos_Settlemtn = null;
   [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
-  [SerializeField] private TextMeshProUGUI SettlementNameText = null;
+  [SerializeField] private TextMeshProUGUI SettlementTypeText = null;
   [SerializeField] private RectTransform DiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
   [SerializeField] private TextMeshProUGUI RestCostValueText = null;
@@ -1481,7 +1490,6 @@ public class UI_dialogue : UI_default
     Illust.Setup(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
 
 
-SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
       Mathf.Clamp(CurrentSettlement.Discomfort /ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
     DiscomfortText.fontSize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
@@ -1524,6 +1532,7 @@ SettlementNameText.text = CurrentSettlement.Name;
 
     yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos_panel, _endpos_panel, OpenTime, UIManager.Instance.UIPanelOpenCurve));
 
+    CurrentDialogueType = DialogueTypeEnum.Settlement;
 
     DefaultGroup.interactable = true;
   }
@@ -1847,7 +1856,4 @@ SettlementNameText.text = CurrentSettlement.Name;
     DiscomfortText.fontSize = _fontendsize;
   }
   #endregion
-
-  [SerializeField] private UI_map MapUI = null;
-
 }

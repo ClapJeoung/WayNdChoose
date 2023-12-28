@@ -50,6 +50,7 @@ public class Settlement
     }
   }
   public SettlementType SettlementType;
+  /*
   public string OriginName
   {
     get
@@ -71,6 +72,7 @@ public class Settlement
       return GameManager.Instance.GetTextData(OriginName);
     }
   }
+  */
   public Vector3 Position
   {
     get
@@ -111,262 +113,268 @@ public class Settlement
 }
 public class MapData
 {
-    public void SetEventTiles()
+  public void SetEventTiles()
+  {
+    foreach (var _eventtile in EventTiles)
     {
-        foreach(var _eventtile in EventTiles)
-        {
-            _eventtile.IsEvent = false;
-            _eventtile.ButtonScript.EventMarkImage.enabled = false;
-        }
-
-        List<EnvironmentType> _availableenvirs = new List<EnvironmentType>();
-        foreach(var _event in GameManager.Instance.EventHolder.AllEvent)
-        {
-            if (!GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
-            if (!GameManager.Instance.MyGameData.IsEventTypeEnable(_event, true)) continue;
-            if (_event.EnvironmentType == EnvironmentType.Land) continue;
-
-            if (!_availableenvirs.Contains(_event.EnvironmentType)) _availableenvirs.Add(_event.EnvironmentType);
-        }
-
-        List<TileData> _neweventtiles = new List<TileData>();
-
-        int _worldeventcount = 0;
-        switch (GameManager.Instance.MyGameData.QuestType)
-        {
-            case QuestType.Cult:
-
-                TileData _cultphasetarget = null;
-                int _min = 100;
-                switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-                {
-                    case 0:
-                        foreach (var _target in Villages)
-                        {
-                            int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                            if (_distance < _min)
-                            {
-                                _min = _distance;
-                                _cultphasetarget = _target.Tile;
-                            }
-                        }
-                        break;
-                    case 1:
-                        foreach (var _target in Towns)
-                        {
-                            int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                            if (_distance < _min)
-                            {
-                                _min = _distance;
-                                _cultphasetarget = _target.Tile;
-                            }
-                        }
-                        break;
-                    case 2:
-                        foreach (var _target in Citys)
-                        {
-                            int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                            if (_distance < _min)
-                            {
-                                _min = _distance;
-                                _cultphasetarget = _target.Tile;
-                            }
-                        }
-                        break;
-                    case 3:
-                        switch (GameManager.Instance.MyGameData.Cult_SabbatSector)
-                        {
-                            case SectorTypeEnum.Residence:
-                                foreach (var _target in Villages)
-                                {
-                                    int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                                    if (_distance < _min)
-                                    {
-                                        _min = _distance;
-                                        _cultphasetarget = _target.Tile;
-                                    }
-                                }
-                                break;
-                            case SectorTypeEnum.Temple:
-                                foreach (var _target in Villages)
-                                {
-                                    int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                                    if (_distance < _min)
-                                    {
-                                        _min = _distance;
-                                        _cultphasetarget = _target.Tile;
-                                    }
-                                }
-                                foreach (var _target in Towns)
-                                {
-                                    int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                                    if (_distance < _min)
-                                    {
-                                        _min = _distance;
-                                        _cultphasetarget = _target.Tile;
-                                    }
-                                }
-                                break;
-                            case SectorTypeEnum.Marketplace:
-                                foreach (var _target in Towns)
-                                {
-                                    int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                                    if (_distance < _min)
-                                    {
-                                        _min = _distance;
-                                        _cultphasetarget = _target.Tile;
-                                    }
-                                }
-                                foreach (var _target in Citys)
-                                {
-                                    int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                                    if (_distance < _min)
-                                    {
-                                        _min = _distance;
-                                        _cultphasetarget = _target.Tile;
-                                    }
-                                }
-                                break;
-                            case SectorTypeEnum.Library:
-                                foreach (var _target in Citys)
-                                {
-                                    int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
-                                    if (_distance < _min)
-                                    {
-                                        _min = _distance;
-                                        _cultphasetarget = _target.Tile;
-                                    }
-                                }
-                                break;
-                        }
-                        break;
-                    case 4:
-                        _cultphasetarget = GameManager.Instance.MyGameData.Cult_RitualTile;
-                        break;
-                }
-
-                List<TileData> _enablerange = GetAroundTile(GameManager.Instance.MyGameData.CurrentTile, ConstValues.WorldEventRange_max);
-                _enablerange.Remove(GameManager.Instance.MyGameData.CurrentTile);
-                foreach (var _removetile in GetAroundTile(GameManager.Instance.MyGameData.CurrentTile, ConstValues.WorldEventRange_min))
-                    _enablerange.Remove(_removetile);
-                //ÁÖÀ§ 3Ä­~5Ä­
-
-                _neweventtiles.Add(GetRandomEventTile(_cultphasetarget));
-
-
-                if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_1_Cult)
-                    _worldeventcount = ConstValues.WorldEventCount_0;
-                if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_2_Cult)
-                    _worldeventcount = ConstValues.WorldEventCount_1;
-                else _worldeventcount = ConstValues.WorldEventCount_2;
-
-                if (_worldeventcount == 0)
-                {
-
-                }
-                else
-                {
-                    var _allsettlements = AllSettles.OrderBy(settle => settle.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile)).ToList();
-                    List<TileData> _worldeventtargets = new List<TileData>();
-                    int _indextemp = 0;
-                    while(_worldeventtargets.Count< _worldeventcount)
-                    {
-                        if (_allsettlements[_indextemp].Tile == _cultphasetarget)
-                        {
-                            _indextemp++;
-                            continue;
-                        }
-
-                        _worldeventtargets.Add(_allsettlements[_indextemp].Tile);
-                        _indextemp++;
-                    }
-                    foreach (var _target in _worldeventtargets)
-                        _neweventtiles.Add(GetRandomEventTile(_target));
-                }
-
-                EventTiles.Clear();
-                foreach (var _tile in _neweventtiles)
-                    EventTiles.Add(_tile);
-                break;
-
-
-                TileData GetRandomEventTile(TileData targetcentertile)
-                {
-                    List<TileData> _targettiles = new List<TileData>();
-                    if (targetcentertile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile) < 3)
-                    {
-                        List<TileData> _targetaround = GetAroundTile(targetcentertile, ConstValues.CultEventRange_Target);
-                        _targetaround.Remove(targetcentertile);
-                        _targetaround.Remove(GameManager.Instance.MyGameData.CurrentTile);
-                        foreach (var _tile in _targetaround)
-                        {
-                            if (!_enablerange.Contains(_tile) || !_tile.Interactable || _tile.TileSettle != null || EventTiles.Contains(_tile) || _tile.Fogstate == 0) continue;
-                            _targettiles.Add(_tile);
-                        }
-                    }
-                    else
-                    {
-                        List<TileData> _route = new List<TileData>();
-                        _route.Add(GameManager.Instance.MyGameData.CurrentTile);
-
-                        foreach (var _dir in targetcentertile.HexGrid.GetRoute(GameManager.Instance.MyGameData.CurrentTile))
-                            _route.Add(GetNextTile(_route[_route.Count - 1], _dir));
-
-                        _route = GetAroundTile(_route, 2);
-                        _route.Remove(GameManager.Instance.MyGameData.CurrentTile);
-                        foreach (var _tile in _route)
-                        {
-                            if (!_enablerange.Contains(_tile) || !_tile.Interactable || _tile.TileSettle != null || EventTiles.Contains(_tile) || _tile.Fogstate == 0) continue;
-                            _targettiles.Add(_tile);
-                        }
-                    }
-
-                    int _fog0count = 3, _envircount=10, _envirdefaultcount=1, _fogdefaultcount = 0;
-                    List<int> _indexes = new List<int>();
-                    for (int i = 0; i < _targettiles.Count; i++)
-                    {
-                        int _count = 0;
-                        List<TileData> _aroundtile = GetAroundTile(_targettiles[i], 1);
-                        _aroundtile.Remove(_targettiles[i]);
-                        foreach (var _tile in _aroundtile)
-                            _count += _tile.Fogstate == 0 ? _fog0count : _fogdefaultcount;
-                        switch (_targettiles[i].BottomEnvir)
-                        {
-                            case BottomEnvirType.NULL:
-                            case BottomEnvirType.Land:
-                            case BottomEnvirType.Sea:
-                            case BottomEnvirType.Source:
-                                break;
-                            case BottomEnvirType.River:
-                            case BottomEnvirType.RiverBeach:
-                                _count += _availableenvirs.Contains(EnvironmentType.River) ? _envircount : _envirdefaultcount;
-                                break;
-                            case BottomEnvirType.Beach:
-                                _count += _availableenvirs.Contains(EnvironmentType.Beach) ? _envircount : _envirdefaultcount;
-                                break;
-                        }
-                        switch (_targettiles[i].TopEnvir)
-                        {
-                            case TopEnvirType.NULL:
-                                break;
-                            case TopEnvirType.Forest:
-                                _count += _availableenvirs.Contains(EnvironmentType.Forest) ? _envircount : _envirdefaultcount;
-                                break;
-                            case TopEnvirType.Mountain:
-                                _count += _availableenvirs.Contains(EnvironmentType.Mountain) ? _envircount : _envirdefaultcount;
-                                break;
-                            case TopEnvirType.Highland:
-                                _count += _availableenvirs.Contains(EnvironmentType.Highland) ? _envircount : _envirdefaultcount;
-                                break;
-                        }
-                    }
-
-                    return _targettiles[_indexes[Random.Range(0, _indexes.Count)]];
-                }
-        }
-
+      _eventtile.IsEvent = false;
+      _eventtile.ButtonScript.EventMarkImage.enabled = false;
     }
-    public static int GetMinLength(TileData starttile, List<Settlement> settlements)
+
+    List<EnvironmentType> _priorenvirs = new List<EnvironmentType>();
+    foreach (var _event in GameManager.Instance.EventHolder.AllEvent)
+    {
+      if (!GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)) continue;
+      if (_event.EnvironmentType == EnvironmentType.Land) continue;
+      if (!GameManager.Instance.MyGameData.IsEventTypeEnable(_event, true)) continue;
+
+      if (!_priorenvirs.Contains(_event.EnvironmentType)) _priorenvirs.Add(_event.EnvironmentType);
+    }
+
+    List<TileData> _neweventtiles = new List<TileData>();
+
+    int _worldeventcount = 0;
+    switch (GameManager.Instance.MyGameData.QuestType)
+    {
+      case QuestType.Cult:
+
+        TileData _culttarget = null;
+        int _min = 100;
+        switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+        {
+          case 0:
+            foreach (var _target in Villages)
+            {
+              int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+              if (_distance < _min)
+              {
+                _min = _distance;
+                _culttarget = _target.Tile;
+              }
+            }
+            break;
+          case 1:
+            foreach (var _target in Towns)
+            {
+              int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+              if (_distance < _min)
+              {
+                _min = _distance;
+                _culttarget = _target.Tile;
+              }
+            }
+            break;
+          case 2:
+            foreach (var _target in Citys)
+            {
+              int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+              if (_distance < _min)
+              {
+                _min = _distance;
+                _culttarget = _target.Tile;
+              }
+            }
+            break;
+          case 3:
+            switch (GameManager.Instance.MyGameData.Cult_SabbatSector)
+            {
+              case SectorTypeEnum.Residence:
+                foreach (var _target in Villages)
+                {
+                  int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+                  if (_distance < _min)
+                  {
+                    _min = _distance;
+                    _culttarget = _target.Tile;
+                  }
+                }
+                break;
+              case SectorTypeEnum.Temple:
+                foreach (var _target in Villages)
+                {
+                  int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+                  if (_distance < _min)
+                  {
+                    _min = _distance;
+                    _culttarget = _target.Tile;
+                  }
+                }
+                foreach (var _target in Towns)
+                {
+                  int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+                  if (_distance < _min)
+                  {
+                    _min = _distance;
+                    _culttarget = _target.Tile;
+                  }
+                }
+                break;
+              case SectorTypeEnum.Marketplace:
+                foreach (var _target in Towns)
+                {
+                  int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+                  if (_distance < _min)
+                  {
+                    _min = _distance;
+                    _culttarget = _target.Tile;
+                  }
+                }
+                foreach (var _target in Citys)
+                {
+                  int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+                  if (_distance < _min)
+                  {
+                    _min = _distance;
+                    _culttarget = _target.Tile;
+                  }
+                }
+                break;
+              case SectorTypeEnum.Library:
+                foreach (var _target in Citys)
+                {
+                  int _distance = _target.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile);
+                  if (_distance < _min)
+                  {
+                    _min = _distance;
+                    _culttarget = _target.Tile;
+                  }
+                }
+                break;
+            }
+            break;
+          case 4:
+            _culttarget = GameManager.Instance.MyGameData.Cult_RitualTile;
+            break;
+        }
+
+        List<TileData> _enablerange = GetAroundTile(GameManager.Instance.MyGameData.CurrentTile, ConstValues.WorldEventRange_max);
+        List<TileData> _minrangetiles = GetAroundTile(GameManager.Instance.MyGameData.CurrentTile, ConstValues.WorldEventRange_min - 1);
+        foreach (var _removetile in _minrangetiles)
+          _enablerange.Remove(_removetile);
+        //ÁÖÀ§ 3Ä­~5Ä­
+
+        _neweventtiles.Add(GetRandomEventTile(_culttarget));
+
+
+        if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_1_Cult)
+          _worldeventcount = ConstValues.WorldEventCount_0;
+        if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_2_Cult)
+          _worldeventcount = ConstValues.WorldEventCount_1;
+        else _worldeventcount = ConstValues.WorldEventCount_2;
+
+        if (_worldeventcount == 0)
+        {
+
+        }
+        else
+        {
+          var _allsettlements = AllSettles.OrderBy(settle => settle.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile)).ToList();
+          List<TileData> _worldeventtargets = new List<TileData>();
+          int _indextemp = 0;
+          while (_worldeventtargets.Count < _worldeventcount+1)
+          {
+            if (_allsettlements[_indextemp].Tile == _culttarget)
+            {
+              _indextemp++;
+              continue;
+            }
+
+            _worldeventtargets.Add(_allsettlements[_indextemp].Tile);
+            _indextemp++;
+          }
+          foreach (var _target in _worldeventtargets)
+            _neweventtiles.Add(GetRandomEventTile(_target));
+        }
+
+        EventTiles.Clear();
+        foreach (var _tile in _neweventtiles)
+        {
+          EventTiles.Add(_tile);
+          _tile.IsEvent = true;
+          _tile.ButtonScript.EventMarkImage.enabled = true;
+        }
+        break;
+
+
+        TileData GetRandomEventTile(TileData targetcentertile)
+        {
+          List<TileData> _targettiles = new List<TileData>();
+          if (targetcentertile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile) < 3)
+          {
+            List<TileData> _targetaround = GetAroundTile(targetcentertile, ConstValues.CultEventRange_Target);
+            _targetaround.Remove(targetcentertile);
+            _targetaround.Remove(GameManager.Instance.MyGameData.CurrentTile);
+            foreach (var _tile in _targetaround)
+            {
+              if (!_enablerange.Contains(_tile) || !_tile.Interactable || _tile.TileSettle != null || EventTiles.Contains(_tile) || _tile.Fogstate == 0) continue;
+            
+              _targettiles.Add(_tile);
+            }
+          }
+          else
+          {
+            List<TileData> _route = new List<TileData>();
+            _route.Add(GameManager.Instance.MyGameData.CurrentTile);
+
+            foreach (var _dir in targetcentertile.HexGrid.GetRoute(GameManager.Instance.MyGameData.CurrentTile))
+              _route.Add(GetNextTile(_route[_route.Count - 1], _dir));
+
+            _route = GetAroundTile(_route, 2);
+            _route.Remove(GameManager.Instance.MyGameData.CurrentTile);
+            foreach (var _tile in _route)
+            {
+              if (!_enablerange.Contains(_tile) || !_tile.Interactable || _tile.TileSettle != null || EventTiles.Contains(_tile) || _tile.Fogstate == 0) continue;
+              _targettiles.Add(_tile);
+            }
+          }
+
+          int _fog0count = 3, _envircount = 10, _envirdefaultcount = 1, _fogdefaultcount = 0;
+          List<int> _indexes = new List<int>();
+          for (int i = 0; i < _targettiles.Count; i++)
+          {
+            int _count = 0;
+            List<TileData> _aroundtile = GetAroundTile(_targettiles[i], 1);
+            _aroundtile.Remove(_targettiles[i]);
+            foreach (var _tile in _aroundtile)
+              _count += _tile.Fogstate == 0 ? _fog0count : _fogdefaultcount;
+            switch (_targettiles[i].BottomEnvir)
+            {
+              case BottomEnvirType.NULL:
+              case BottomEnvirType.Land:
+              case BottomEnvirType.Sea:
+              case BottomEnvirType.Source:
+                break;
+              case BottomEnvirType.River:
+              case BottomEnvirType.RiverBeach:
+                _count += _priorenvirs.Contains(EnvironmentType.River) ? _envircount : _envirdefaultcount;
+                break;
+              case BottomEnvirType.Beach:
+                _count += _priorenvirs.Contains(EnvironmentType.Beach) ? _envircount : _envirdefaultcount;
+                break;
+            }
+            switch (_targettiles[i].TopEnvir)
+            {
+              case TopEnvirType.NULL:
+                break;
+              case TopEnvirType.Forest:
+                _count += _priorenvirs.Contains(EnvironmentType.Forest) ? _envircount : _envirdefaultcount;
+                break;
+              case TopEnvirType.Mountain:
+                _count += _priorenvirs.Contains(EnvironmentType.Mountain) ? _envircount : _envirdefaultcount;
+                break;
+              case TopEnvirType.Highland:
+                _count += _priorenvirs.Contains(EnvironmentType.Highland) ? _envircount : _envirdefaultcount;
+                break;
+            }
+            for (int j = 0; j < _count; j++) _indexes.Add(i);
+          }
+
+          return _targettiles[_indexes[Random.Range(0, _indexes.Count)]];
+        }
+    }
+
+  }
+  public static int GetMinLength(TileData starttile, List<Settlement> settlements)
   {
     int _min = 100;
     foreach (var settlement in settlements)
@@ -633,14 +641,6 @@ public class MapData
     {
       return TileDatas[ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1, ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1];
     }
-  }
-  public Settlement GetSettle(string originname)
-  {
-    for(int i = 0; i < AllSettles.Count; i++)
-    {
-      if (AllSettles[i].OriginName.Equals(originname)) return AllSettles[i];
-    }
-    return null;
   }
   public List<Settlement> GetCloseSettles(Settlement _origin,int _count)
   {

@@ -44,10 +44,6 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 2800000, guid: 093eae1a1ffb35f409a3c5424e00db88, type: 3}
-    - {fileID: 2800000, guid: d0f4a284cbce8b54c9aa4c78f1233dbd, type: 3}
-    - {fileID: 2800000, guid: d3f2132f9c5065f4e8f95ffe2913efa4, type: 3}
-    - {fileID: 2800000, guid: a7a01fe0b2aacea4dbd792b659476ed7, type: 3}
     - {fileID: 2800000, guid: 04fd3fa6a0dbc4d418a022efa6cf1562, type: 3}
     - {fileID: 2800000, guid: 2b8cd0ca018e9b344aa640824c7ef883, type: 3}
     - {fileID: 2800000, guid: 9ba7989d9770fa644afaafbe5a8c30b6, type: 3}
@@ -157,7 +153,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2ea6daa0a5879104681844953fbec643, type: 3}
   - {fileID: 21300000, guid: 041670d02bec28d4c83f3ba7d492e9b9, type: 3}
   - {fileID: 21300000, guid: 87f690e0652652247824f964a82f4a53, type: 3}
-  - {fileID: 21300000, guid: a7a01fe0b2aacea4dbd792b659476ed7, type: 3}
   - {fileID: 21300000, guid: ec7a7f21ea6b4944abbcc0ac10a2bad6, type: 3}
   - {fileID: 21300000, guid: b9a27331121f10f4e96531a4c4940ca8, type: 3}
   - {fileID: 21300000, guid: 0197a141769b46e4dbe1663fa5375201, type: 3}
@@ -176,7 +171,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0a84fbd327f849845ab86d4c3c0d6944, type: 3}
   - {fileID: 21300000, guid: 8d4df0f36cc96d74495deaa9f8f8b71f, type: 3}
   - {fileID: 21300000, guid: 56f5cc7482a02a340a0176c903459e4f, type: 3}
-  - {fileID: 21300000, guid: d0f4a284cbce8b54c9aa4c78f1233dbd, type: 3}
   - {fileID: 21300000, guid: 155dd7d40cb9f3a459ae8abc0319b821, type: 3}
   - {fileID: 21300000, guid: 48401dd403943414b9cb208a04a27b1b, type: 3}
   - {fileID: 21300000, guid: 7af1baf47562cc94094744871fef8889, type: 3}
@@ -212,7 +206,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b979fcd904399d5488714c1793ab419b, type: 3}
   - {fileID: 21300000, guid: 0099f10a6fc74d140aee6f7af92dc814, type: 3}
   - {fileID: 21300000, guid: 3028830a9d83e0e4b985754058379177, type: 3}
-  - {fileID: 21300000, guid: 093eae1a1ffb35f409a3c5424e00db88, type: 3}
   - {fileID: 21300000, guid: c6fcd32a18d8030449db5fe112063766, type: 3}
   - {fileID: 21300000, guid: 7384163aaa0a5e34d9a49dba25995b34, type: 3}
   - {fileID: 21300000, guid: 529f105a4a10f664a82eee41a8dcf18e, type: 3}
@@ -253,7 +246,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 19d218ce7b138614ba668fdce9c858f2, type: 3}
   - {fileID: 21300000, guid: ac4d0fcee60664f44b4e8f1b660e0888, type: 3}
   - {fileID: 21300000, guid: be83900fc3a634d4fb3279c54416a00d, type: 3}
-  - {fileID: 21300000, guid: d3f2132f9c5065f4e8f95ffe2913efa4, type: 3}
   - {fileID: 21300000, guid: be7de45fef67bf7428c6fd0ea07e5a11, type: 3}
   - {fileID: 21300000, guid: e35d98bffeae7864ab4b2c2f85f90287, type: 3}
   - {fileID: 21300000, guid: beb142df46d955a4880cfe44eae75264, type: 3}
@@ -263,7 +255,6 @@ SpriteAtlas:
   - EV_Stone_RSuccess_s1
   - EV_Wheat_RFail0_s3
   - EV_Poket_LSuccess_s3
-  - EV_Aztec_RSuccess1_s3
   - EV_Stone_LSuccess_s2
   - EV_Stone_Beginning_s3
   - EV_Lemon_Beginning_s2
@@ -282,7 +273,6 @@ SpriteAtlas:
   - EV_Poket_Beginning_s3
   - EV_ScareCrow_LSuccess_s2
   - EV_Spire_LSuccess_s3
-  - EV_Aztec_RSuccess1_s1
   - EV_Stone_RSuccess_s2
   - EV_MushroomForest_Beginning_s1
   - EV_ScareCrow_LSuccess_s3
@@ -318,7 +308,6 @@ SpriteAtlas:
   - EV_ScareCrow_Beginning_s2
   - EV_Lemon_Beginning_s3
   - EV_Spire_LFail_s0
-  - EV_Aztec_RSuccess1_s0
   - EV_Poket_Beginning_s1
   - EV_Poket_RSuccess0
   - EV_ScareCrow_RSuccess_s0
@@ -359,7 +348,6 @@ SpriteAtlas:
   - EV_Stone_RSuccess_s0
   - EV_MushroomForest_LSuccess_s2
   - EV_Germanium_Beginning0_s1
-  - EV_Aztec_RSuccess1_s2
   - EV_Hots_LFail_s1
   - EV_MushroomForest_LSuccess_s0
   - EV_ScareCrow_RSuccess_s3

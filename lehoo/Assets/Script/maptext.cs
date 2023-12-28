@@ -926,7 +926,7 @@ public class maptext : MonoBehaviour
         _button.navigation = _nav;
         _bottomtile.AddComponent(typeof(TileObjScript));
         _bottomtile.GetComponent<Image>().raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
-        _button.interactable = false;
+        _button.interactable = _currenttile.Fogstate==2;
         var _buttoncolor = _button.colors;
         _buttoncolor.disabledColor = Color.white;
         _button.colors = _buttoncolor;
@@ -1024,7 +1024,7 @@ public class maptext : MonoBehaviour
       Settlement _village = GameManager.Instance.MyGameData.MyMapData.Villages[i];
       _settlementpos = _village.Tile.ButtonScript.Rect.anchoredPosition;
 
-      string _villagename = _village.OriginName;
+      string _villagename = "village_" + i.ToString();
       GameObject _villageholder = new GameObject(_villagename, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
       _villageholder.transform.SetParent(TileHolder_landmark);
       _villageholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
@@ -1058,7 +1058,7 @@ public class maptext : MonoBehaviour
       Settlement _town = GameManager.Instance.MyGameData.MyMapData.Towns[i];
       _settlementpos = _town.Tile.ButtonScript.Rect.anchoredPosition;
 
-      string _townname = _town.OriginName;
+      string _townname = "town_" + i.ToString();
       GameObject _townholder = new GameObject(_townname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
       _townholder.transform.SetParent(TileHolder_landmark);
       _townholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;
@@ -1092,7 +1092,7 @@ public class maptext : MonoBehaviour
       Settlement _city = GameManager.Instance.MyGameData.MyMapData.Citys[i];
       _settlementpos = _city.Tile.ButtonScript.Rect.anchoredPosition;
 
-      string _cityname = _city.OriginName;
+      string _cityname = "city_" + i.ToString();
       GameObject _cityholder = new GameObject(_cityname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(CanvasGroup) });
       _cityholder.transform.SetParent(TileHolder_landmark);
       _cityholder.GetComponent<RectTransform>().anchoredPosition = _settlementpos;

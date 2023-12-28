@@ -79,7 +79,7 @@ public static class ConstValues
   public const int Rest_Supply = 8;
   public const int Rest_Discomfort = 10;
   public const float RestCost_Default_Min = 9, RestCost_Default_Max = 25;
-  public const int MoveCost_Min = 3, MoveCost_Max = 8;
+  public const int MoveCost_Min = 1, MoveCost_Max = 4;
   public const float MoveCost_GoldValue = 0.5f;
   public const int PenaltyCost_Min = 6, PenaltyCost_Max = 15;
   public const int RestSanityRestore = 15;
@@ -453,7 +453,14 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)ConstValues.RewardSanity; } }
     public int RewardGoldValue
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
-  public int Movecost
+  public int Movecost_sanity
+  {
+    get
+    {
+      return (int)((Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, LerpByTurn) * GetSanityLossModify(true, 0))/ConstValues.MoveCost_GoldValue);
+    }
+  }
+  public int Movecost_gold
   {
     get
     {
@@ -551,7 +558,7 @@ public class GameData    //게임 진행도 데이터
     set
     {
       supply = value < 0 ? 0 : value;
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateMovePointText();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateSupplyText();
     }
   }
 
@@ -621,92 +628,92 @@ public class GameData    //게임 진행도 데이터
     if(FailEvent_All.Contains(eventid)) return false;
     return true;
   }
-    public bool IsEventTypeEnable(EventData eventdata, bool isouter)
-    {
-        if (isouter && eventdata.AppearSpace != EventAppearType.Outer) return false;
-        else if (!isouter && eventdata.AppearSpace == EventAppearType.Outer) return false;
+  public bool IsEventTypeEnable(EventData eventdata, bool isouter)
+  {
+    if (isouter && eventdata.AppearSpace != EventAppearType.Outer) return false;
+    else if (!isouter && eventdata.AppearSpace == EventAppearType.Outer) return false;
 
-        switch (eventdata.EventType)
+    switch (eventdata.EventType)
+    {
+      default:
+        return true;
+      case EventTypeEnum.Follow:
+        switch (eventdata.FollowType)
         {
-            default:
-                return true;
-            case EventTypeEnum.Follow:
-                switch (eventdata.FollowType)
+          case FollowTypeEnum.Event:  //이벤트 연계일 경우 
+            List<List<string>> _checktarget = new List<List<string>>();
+            switch (eventdata.FollowTargetSuccess)
+            {
+              case 0:
+                switch (eventdata.FollowTendency)
                 {
-                    case FollowTypeEnum.Event:  //이벤트 연계일 경우 
-                        List<List<string>> _checktarget = new List<List<string>>();
-                        switch (eventdata.FollowTargetSuccess)
-                        {
-                            case 0:
-                                switch (eventdata.FollowTendency)
-                                {
-                                    case 0:
-                                        _checktarget.Add(SuccessEvent_None);
-                                        _checktarget.Add(SuccessEvent_Rational);
-                                        _checktarget.Add(SuccessEvent_Mental);
-                                        break;
-                                    case 1:
-                                        _checktarget.Add(SuccessEvent_Physical);
-                                        _checktarget.Add(SuccessEvent_Material); break;
-                                    case 2:
-                                        _checktarget.Add(SuccessEvent_All); break;
-                                }
-                                break;
-                            case 1:
-                                switch (eventdata.FollowTendency)
-                                {
-                                    case 0:
-                                        _checktarget.Add(FailEvent_None);
-                                        _checktarget.Add(FailEvent_Rational);
-                                        _checktarget.Add(FailEvent_Mental);
-                                        break;
-                                    case 1:
-                                        _checktarget.Add(FailEvent_Physical);
-                                        _checktarget.Add(FailEvent_Material); break;
-                                    case 2:
-                                        _checktarget.Add(FailEvent_All); break;
-                                }
-                                break;
-                            case 2:
-                                switch (eventdata.FollowTendency)
-                                {
-                                    case 0:
-                                        _checktarget.Add(SuccessEvent_None);
-                                        _checktarget.Add(SuccessEvent_Rational);
-                                        _checktarget.Add(SuccessEvent_Mental);
-                                        _checktarget.Add(FailEvent_None);
-                                        _checktarget.Add(FailEvent_Rational);
-                                        _checktarget.Add(FailEvent_Mental);
-                                        break;
-                                    case 1:
-                                        _checktarget.Add(SuccessEvent_Physical);
-                                        _checktarget.Add(SuccessEvent_Material);
-                                        _checktarget.Add(FailEvent_Physical);
-                                        _checktarget.Add(FailEvent_Material); break;
-                                    case 2:
-                                        _checktarget.Add(FailEvent_All);
-                                        _checktarget.Add(SuccessEvent_All); break;
-                                }
-                                break;
-                        }
-                        foreach (var _list in _checktarget)
-                            if (_list.Contains(eventdata.FollowID)) return true;
-                            else return false;
-                        break;
-                    case FollowTypeEnum.Exp:
-                        if ((LongExp != null && LongExp.ID == eventdata.FollowID)
-                          || (ShortExp_A != null && ShortExp_A.ID == eventdata.FollowID)
-                          || (ShortExp_B != null && ShortExp_B.ID == eventdata.FollowID))
-                            return true;
-                        else return false;
-                    default: return false;
+                  case 0:
+                    _checktarget.Add(SuccessEvent_None);
+                    _checktarget.Add(SuccessEvent_Rational);
+                    _checktarget.Add(SuccessEvent_Mental);
+                    break;
+                  case 1:
+                    _checktarget.Add(SuccessEvent_Physical);
+                    _checktarget.Add(SuccessEvent_Material); break;
+                  case 2:
+                    _checktarget.Add(SuccessEvent_All); break;
                 }
                 break;
+              case 1:
+                switch (eventdata.FollowTendency)
+                {
+                  case 0:
+                    _checktarget.Add(FailEvent_None);
+                    _checktarget.Add(FailEvent_Rational);
+                    _checktarget.Add(FailEvent_Mental);
+                    break;
+                  case 1:
+                    _checktarget.Add(FailEvent_Physical);
+                    _checktarget.Add(FailEvent_Material); break;
+                  case 2:
+                    _checktarget.Add(FailEvent_All); break;
+                }
+                break;
+              case 2:
+                switch (eventdata.FollowTendency)
+                {
+                  case 0:
+                    _checktarget.Add(SuccessEvent_None);
+                    _checktarget.Add(SuccessEvent_Rational);
+                    _checktarget.Add(SuccessEvent_Mental);
+                    _checktarget.Add(FailEvent_None);
+                    _checktarget.Add(FailEvent_Rational);
+                    _checktarget.Add(FailEvent_Mental);
+                    break;
+                  case 1:
+                    _checktarget.Add(SuccessEvent_Physical);
+                    _checktarget.Add(SuccessEvent_Material);
+                    _checktarget.Add(FailEvent_Physical);
+                    _checktarget.Add(FailEvent_Material); break;
+                  case 2:
+                    _checktarget.Add(FailEvent_All);
+                    _checktarget.Add(SuccessEvent_All); break;
+                }
+                break;
+            }
+            foreach (var _list in _checktarget)
+              if (_list.Contains(eventdata.FollowID)) return true;
+              else return false;
+            break;
+          case FollowTypeEnum.Exp:
+            if ((LongExp != null && LongExp.ID == eventdata.FollowID)
+              || (ShortExp_A != null && ShortExp_A.ID == eventdata.FollowID)
+              || (ShortExp_B != null && ShortExp_B.ID == eventdata.FollowID))
+              return true;
+            else return false;
+          default: return false;
         }
-        return false;
+        break;
     }
+    return false;
+  }
 
-    public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
@@ -1022,16 +1029,8 @@ public class GameData    //게임 진행도 데이터
     }
 
     Coordinate = jsondata.Coordinate;
-    if(jsondata.CurrentSettlementName!="")
-    foreach(var settlement in MyMapData.AllSettles)
-    {
-      if (settlement.OriginName == jsondata.CurrentSettlementName)
-      {
-        CurrentSettlement = settlement;
-        break;
-      }
-    }
-    FirstRest= jsondata.FirstRest;
+    CurrentSettlement = MyMapData.Tile(Coordinate).TileSettle;
+    FirstRest = jsondata.FirstRest;
 
     foreach(var _coordinate in jsondata.EventTiles)
       MyMapData.EventTiles.Add(MyMapData.Tile(_coordinate));
@@ -1476,8 +1475,8 @@ public class GameJsonData
   public List<Vector2Int> City_Tile = new List<Vector2Int>();
 
   public Vector2 Coordinate = new Vector2();
-  public string CurrentSettlementName = "";
   public bool FirstRest = false;
+  public string SettlementType = "";
 
   public int TotalMoveCount = 0, TotalRestCount = 0;
   public int Year = 0;
@@ -1580,8 +1579,8 @@ public class GameJsonData
     }
 
     Coordinate = data.Coordinate;
-    CurrentSettlementName = data.CurrentSettlement == null ? "" : data.CurrentSettlement.OriginName;
     FirstRest = data.FirstRest;
+    SettlementType = data.CurrentSettlement != null ? data.CurrentSettlement.SettlementType.ToString() : "";
 
     TotalMoveCount = data.TotalMoveCount;
     TotalRestCount = data.TotalRestCount;

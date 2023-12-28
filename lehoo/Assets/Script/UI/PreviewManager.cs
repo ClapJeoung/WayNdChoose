@@ -7,8 +7,6 @@ using TMPro;
 public class PreviewManager : MonoBehaviour
 {
 //  [SerializeField] private RectTransform WholeRect = null;
-  [SerializeField] private Camera MainCamera = null;
-  [Space(10)]
   [SerializeField] private GameObject IconAndDescription_Panel = null;
  // [SerializeField] private Image IconAndDescription_IconBackground = null;
   [SerializeField] private Image IconAndDescription_Icon = null;
@@ -34,7 +32,6 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject ExpPreview = null;
   [SerializeField] private TextMeshProUGUI ExpName = null;
-  [SerializeField] private TextMeshProUGUI ExpDuration = null;
   [SerializeField] private Image ExpIllust = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSubdescription = null;
@@ -84,25 +81,6 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private GameObject SelectionElsePanel = null;
   [SerializeField] private Image SelectionElseBackground = null;
   [SerializeField] private Image SelectionElseIcon = null;
- // [SerializeField] private TextMeshProUGUI SelectionElseDescription = null;
-//  [SerializeField] private PreviewSelectionTendency SelectionElseTendency = null;
-  [Space(10)]
-  [SerializeField] private GameObject RewardStatusPanel = null;
-  [SerializeField] private Image RewardStatusIcon = null;
-  [SerializeField] private TextMeshProUGUI RewardStatusValue = null;
-  [SerializeField] private TextMeshProUGUI RewardStatusModify = null;
-  [SerializeField] private TextMeshProUGUI RewardStatusClickText = null;
-  [Space(10)]
-  [SerializeField] private GameObject RewardExpPanel = null;
-  [SerializeField] private TextMeshProUGUI RewardExpName = null;
-  [SerializeField] private Image RewardExpIllust = null;
-  [SerializeField] private TextMeshProUGUI RewardExpEffect = null;
-  [SerializeField] private TextMeshProUGUI RewardExpClickText = null;
-  [Space(10)]
-  [SerializeField] private GameObject RewardSkillPanel = null;
-  [SerializeField] private TextMeshProUGUI RewardSkillName = null;
-  [SerializeField] private Image RewardSkillIcon = null;
-  [SerializeField] private TextMeshProUGUI RewardSkillClickText = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectEmptyPanel = null;
   [SerializeField] private Image ExpSelectEmptyIllust = null;
@@ -121,14 +99,12 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
   [Space(10)]
   [SerializeField] private GameObject TileInfoPanel = null;
-  [SerializeField] private TextMeshProUGUI TileInfoMovePointText = null;
   [Space(10)]
   [SerializeField] private GameObject SettlementInfoPanel = null;
   [SerializeField] private List<Image> SettlementSectorIcons = new List<Image>();
   [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
   [SerializeField] private RectTransform SettlementDiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
-  [SerializeField] private TextMeshProUGUI SettlementMovePointText = null;
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
   {
@@ -754,58 +730,12 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenRewardStatusPreview(StatusTypeEnum status, int _value, RectTransform rect)
   {
-    Sprite _icon = null;
-  //  int  _modify = 0;
-    string _valuetext="",_modifydescription = "";
-
-    _icon = GameManager.Instance.ImageHolder.StatusIcon(status);
- //   _modify = (int)GameManager.Instance.MyGameData.GetHPGenModify(false);
-    _valuetext = "+" + _value.ToString();
-    /*
-    if (_modify > 0)
-    {
-      _modifydescription = $"(+{GameManager.Instance.GetTextData(status,13)}{WNCText.PositiveColor(_modify.ToString())})";
-      if (RewardStatusModify.gameObject.activeInHierarchy.Equals(false)) RewardStatusModify.gameObject.SetActive(true);
-    }
-    else
-    {
-      if (RewardStatusModify.gameObject.activeInHierarchy.Equals(true)) RewardStatusModify.gameObject.SetActive(false);
-    }
-*/
-    RewardStatusIcon.sprite = _icon;
-    RewardStatusValue.text = _valuetext;
-   // RewardStatusModify.text= _modifydescription;
-    RewardStatusClickText.text = GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
-
-    OpenPreviewPanel(RewardStatusPanel,rect);
   }
   public void OpenRewardExpPreview(Experience _exp, RectTransform rect)
   {
-    string _name = "";
-    Sprite _illust = null;
-    string _effect = "";
-    _name = _exp.Name;
-    _illust = GameManager.Instance.ImageHolder.GetEXPIllust(_exp.ID);
-    _effect = _exp.EffectString;
-
-    RewardExpName.text = _name;
-    RewardExpIllust.sprite = _illust;
-    RewardExpEffect.text = _effect;
-    RewardExpClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
-
-
-    OpenPreviewPanel(RewardExpPanel,rect);
   }
   public void OpenRewardSkillPreview(SkillTypeEnum skilltype, RectTransform rect)
   {
-    string _name = $"{GameManager.Instance.GetTextData(skilltype,0)} +1";
-    Sprite _icon = GameManager.Instance.ImageHolder.GetSkillIcon(skilltype,false);
-
-    RewardSkillIcon.sprite = _icon;
-    RewardSkillName.text = _name;
-    RewardSkillClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
-
-    OpenPreviewPanel(RewardSkillPanel,rect);
   }
   public void OpenExpSelectionEmptyPreview(Experience _exp,bool islong, RectTransform rect)
   {
@@ -928,7 +858,7 @@ public class PreviewManager : MonoBehaviour
       }
       LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementSectorIcons[0].transform.parent.transform as RectTransform);
       SettlementInfoName.text =string.Format(GameManager.Instance.GetTextData("SettlementInfoNames"),
-        GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType), tileData.TileSettle.Name);
+        GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType), GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType));
 
       SettlementDiscomfortIcon.sizeDelta=Vector2.one* Mathf.Lerp(ConstValues.SettlementPreviewDiscomfortIconSize_min, ConstValues.SettlementPreviewDiscomfortIconSize_max,
         Mathf.Clamp(tileData.TileSettle.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));

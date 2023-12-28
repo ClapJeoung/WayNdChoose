@@ -55,7 +55,7 @@ public class TileData
     if (Fogstate == value) return;
 
     Fogstate = value;
-    if (value == 2) ButtonScript.SetReveal();
+    if (value == 2) { ButtonScript.SetReveal(); ButtonScript.Button.interactable = true; }
     else if (value == 1) ButtonScript.SetVisible();
   }
 
@@ -82,6 +82,41 @@ public class TileData
       if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _movepoint += ConstValues.Supply_River;
 
       return _movepoint;
+    }
+  }
+  public EnvironmentType RandomEnvir
+  {
+    get
+    {
+      List<EnvironmentType> _allenvirs= new List<EnvironmentType>();
+      switch (BottomEnvir)
+      {
+        case BottomEnvirType.Land: _allenvirs.Add(EnvironmentType.Land);
+          break;
+        case BottomEnvirType.River: _allenvirs.Add(EnvironmentType.River);
+          break;
+        case BottomEnvirType.Beach: _allenvirs.Add(EnvironmentType.Beach); _allenvirs.Add(EnvironmentType.Sea);
+          break;
+        case BottomEnvirType.RiverBeach:
+          _allenvirs.Add(EnvironmentType.River); _allenvirs.Add(EnvironmentType.Sea);
+          break;
+      }
+      switch (TopEnvir)
+      {
+        case TopEnvirType.NULL:
+          break;
+        case TopEnvirType.Forest: 
+          if (_allenvirs.Contains(EnvironmentType.Land)) _allenvirs.Remove(EnvironmentType.Land);
+          _allenvirs.Add(EnvironmentType.Forest);
+          break;
+        case TopEnvirType.Mountain:
+          if (_allenvirs.Contains(EnvironmentType.Land)) _allenvirs.Remove(EnvironmentType.Land);
+          _allenvirs.Add(EnvironmentType.Mountain);
+          break;
+        case TopEnvirType.Highland:
+          break;
+      }
+      return _allenvirs[Random.Range(0,_allenvirs.Count - 1)];
     }
   }
 }

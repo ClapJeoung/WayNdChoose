@@ -98,9 +98,10 @@ public class UI_Main : UI_default
        GameManager.Instance.GameSaveData.Year,
        _turnname,
        Mathf.FloorToInt(GameManager.Instance.GameSaveData.Cult_Progress),
-     GameManager.Instance.GameSaveData.CurrentEventID==""?
-     GameManager.Instance.GetTextData(GameManager.Instance.GameSaveData.CurrentSettlementName):
-     GameManager.Instance.EventHolder.GetEvent(GameManager.Instance.GameSaveData.CurrentEventID).Name,
+     GameManager.Instance.GameSaveData.CurrentEventID!=""?
+     GameManager.Instance.EventHolder.GetEvent(GameManager.Instance.GameSaveData.CurrentEventID).Name:
+         GameManager.Instance.GameSaveData.SettlementType!=""?
+         GameManager.Instance.GetTextData(GameManager.Instance.GameSaveData.SettlementType):"",
        GameManager.Instance.GameSaveData.HP,
        GameManager.Instance.GameSaveData.Sanity,
        GameManager.Instance.GameSaveData.Gold,

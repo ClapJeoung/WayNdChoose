@@ -96,7 +96,7 @@ public class UI_QuestWolf : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);
     StartCoroutine(updatescrollbar());
 
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup, 1.0f, 2.0f));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup, 1.0f, FadeInTime));
 
     ActiveSetNextButton();
 

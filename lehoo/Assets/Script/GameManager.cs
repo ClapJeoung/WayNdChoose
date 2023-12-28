@@ -683,6 +683,7 @@ public class GameManager : MonoBehaviour
       case QuestType.Cult: UIManager.Instance.CultUI.OpenUI_Prologue((QuestHolder_Cult)MyGameData.CurrentQuestData); break;
     }
 
+    MyGameData.MyMapData.SetEventTiles();
     UIManager.Instance.UpdateAllUI();
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
@@ -743,7 +744,14 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.OpenEventUI(_issuccess, _isleft, false));
       }
     }
-    else UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(true));
+    else if(MyGameData.CurrentTile.TileSettle!=null)
+    {
+      UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(true));
+    }
+    else
+    {
+      UIManager.Instance.MapUI.OpenUI(false);
+    }
 
     IsPlaying = true;
 
@@ -755,7 +763,6 @@ public class GameManager : MonoBehaviour
 
   private IEnumerator createnewmap(bool realperfect)
   {
-
     maptext _map = FindObjectOfType<maptext>().GetComponent<maptext>();
 
     yield return StartCoroutine(_map.makeperfectmap(realperfect));
@@ -774,6 +781,9 @@ public class GameManager : MonoBehaviour
     foreach(var _deletetile in _disabletiles)_randomstartlands.Remove(_deletetile);
 
     MyGameData.Coordinate = _randomstartlands[UnityEngine.Random.Range(0, _randomstartlands.Count)].Coordinate;
+
+    foreach (var _tile in MyGameData.MyMapData.GetAroundTile(MyGameData.CurrentTile, MyGameData.ViewRange))
+      _tile.Fogstate = 2;
 
     yield return StartCoroutine(_map.MakeTilemap());
     UIManager.Instance.UpdateMap_SetPlayerPos();
