@@ -996,7 +996,7 @@ public class maptext : MonoBehaviour
         _tilepreview.PanelType = PreviewPanelType.TileInfo;
         _tilepreview.MyTileData = _currenttile;
         _tilescript.Preview= _tilepreview;
-        _tilepreview.enabled = false;
+        _tilepreview.enabled = true;
         GameObject _previewpos_bottom = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
         _tilepreview.OtherRect = _previewpos_bottom.GetComponent<RectTransform>();
         _previewpos_bottom.transform.localScale = Vector3.zero;

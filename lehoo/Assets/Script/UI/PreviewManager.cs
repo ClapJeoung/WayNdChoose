@@ -102,8 +102,8 @@ public class PreviewManager : MonoBehaviour
   [Space(10)]
   [SerializeField] private GameObject SettlementInfoPanel = null;
   [SerializeField] private List<Image> SettlementSectorIcons = new List<Image>();
+  [SerializeField] private Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
-  [SerializeField] private RectTransform SettlementDiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
@@ -835,10 +835,12 @@ public class PreviewManager : MonoBehaviour
     if (UIManager.Instance.Mouse.MouseState == MouseStateEnum.DragMap) return;
 
     Vector2 _pivot = new Vector2(0.5f,tileData.Coordinate.y<=GameManager.Instance.MyGameData.Coordinate.y?1.05f:-0.05f);
-    if (tileData.TileSettle == null)
+    if (UIManager.Instance.MapUI.Destinations.Contains(tileData))
     {
-      if (UIManager.Instance.MapUI.Destinations.Contains(tileData))
-        OpenJustDescriptionPreview(GameManager.Instance.GetTextData("RemoveDestination"), _pivot, tilerect);
+      OpenJustDescriptionPreview(GameManager.Instance.GetTextData("RemoveDestination"), _pivot, tilerect);
+    }
+    else if (tileData.TileSettle == null)
+    {
     }
     else
     {
@@ -857,13 +859,16 @@ public class PreviewManager : MonoBehaviour
         }
       }
       LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementSectorIcons[0].transform.parent.transform as RectTransform);
+      Sprite _settlementicon = null;
+      switch (tileData.TileSettle.SettlementType)
+      {
+        case SettlementType.Village: _settlementicon = GameManager.Instance.ImageHolder.VillageIcon_white; break;
+        case SettlementType.Town: _settlementicon = GameManager.Instance.ImageHolder.TownIcon_white; break;
+        case SettlementType.City: _settlementicon = GameManager.Instance.ImageHolder.CityIcon_white; break;
+      }
+      SettlementIcon.sprite = _settlementicon;
       SettlementInfoName.text =string.Format(GameManager.Instance.GetTextData("SettlementInfoNames"),
-        GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType), GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType));
-
-      SettlementDiscomfortIcon.sizeDelta=Vector2.one* Mathf.Lerp(ConstValues.SettlementPreviewDiscomfortIconSize_min, ConstValues.SettlementPreviewDiscomfortIconSize_max,
-        Mathf.Clamp(tileData.TileSettle.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
-      SettlementInfoDiscomfort.fontSize = Mathf.Lerp(ConstValues.SettlementPreviewDiscomfortFont_min, ConstValues.SettlementPreviewDiscomfortFont_max,
-        Mathf.Clamp(tileData.TileSettle.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
+        GameManager.Instance.GetTextData(tileData.TileSettle.SettlementType));
 
       SettlementInfoDiscomfort.text = tileData.TileSettle.Discomfort.ToString();
       LayoutRebuilder.ForceRebuildLayoutImmediate(SettlementInfoDiscomfort.transform.parent.transform as RectTransform);

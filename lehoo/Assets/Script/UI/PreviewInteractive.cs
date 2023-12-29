@@ -149,10 +149,25 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
 
         break;
       case PreviewPanelType.RestSanity:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_SANITY"), OtherRect==null?transform as RectTransform : OtherRect);
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
+          string.Format(GameManager.Instance.GetTextData("RestCost"),
+          UIManager.Instance.DialogueUI.DiscomfortValue, GameManager.Instance.GetTextData(StatusTypeEnum.Sanity,2), 
+          WNCText.GetSanityColor(UIManager.Instance.DialogueUI.SanityCost))
+          +"<br>"+
+          string.Format(GameManager.Instance.GetTextData("RestResult"), WNCText.GetSupplyColor(UIManager.Instance.DialogueUI.SupplyValue),""),
+          new Vector2(0.5f, -0.05f),
+          OtherRect == null?transform as RectTransform : OtherRect);
         break;
       case PreviewPanelType.RestGold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("REST_GOLD"), OtherRect==null?transform as RectTransform : OtherRect);
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
+          string.Format(GameManager.Instance.GetTextData("RestCost"),
+          UIManager.Instance.DialogueUI.DiscomfortValue, GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), 
+          WNCText.GetGoldColor(UIManager.Instance.DialogueUI.GoldCost))
+          + "<br>" +
+          string.Format(GameManager.Instance.GetTextData("RestResult"),
+          UIManager.Instance.DialogueUI.SupplyValue, GameManager.Instance.GetTextData(StatusTypeEnum.Sanity,2)+"+"+ WNCText.GetSanityColor(ConstValues.RestSanityRestore)),
+          new Vector2(0.5f, -0.05f),
+          OtherRect == null ? transform as RectTransform : OtherRect);
         break;
       case PreviewPanelType.MovePoint:
         UIManager.Instance.PreviewManager.OpenMovePointPreview(OtherRect==null?transform as RectTransform : OtherRect);

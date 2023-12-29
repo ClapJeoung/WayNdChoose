@@ -1398,7 +1398,6 @@ public class UI_dialogue : UI_default
   [SerializeField] private RectTransform MapbuttonPos_Settlemtn = null;
   [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementTypeText = null;
-  [SerializeField] private RectTransform DiscomfortIcon = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
   [SerializeField] private TextMeshProUGUI RestCostValueText = null;
   [SerializeField] private List<PlaceIconScript> SectorIcons = new List<PlaceIconScript>();
@@ -1413,9 +1412,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private UnityEngine.UI.Image SelectSectorIcon = null;
   [SerializeField] private TextMeshProUGUI SectorName = null;
   [SerializeField] private TextMeshProUGUI SectorEffect = null;
-  [SerializeField] private TextMeshProUGUI RestResult = null;
   [SerializeField] private GameObject RestButtonHolder = null;
-  [SerializeField] private TextMeshProUGUI CostText = null;
   [SerializeField] private Onpointer_highlight CostHighlight_Sanity = null;
   [SerializeField] private UnityEngine.UI.Button Cost_Sanity = null;
   [SerializeField] private Onpointer_highlight CostHighlight_Gold = null;
@@ -1489,11 +1486,6 @@ public class UI_dialogue : UI_default
     SelectedSector = SectorTypeEnum.NULL;
     Illust.Setup(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
 
-
-    DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-      Mathf.Clamp(CurrentSettlement.Discomfort /ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
-    DiscomfortText.fontSize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
@@ -1520,12 +1512,10 @@ public class UI_dialogue : UI_default
     }
 
     SettlementIcon.sprite = _settlementicon;
+    SettlementTypeText.text = GameManager.Instance.GetTextData(CurrentSettlement.SettlementType);
     SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.UnknownSectorIcon;
     SectorName.text =IsMad?"": GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
-
-    RestResult.text = "";
-    CostText.text = "";
 
     Vector2 _startpos_panel = dir?LeftPos:RightPos, _endpos_panel = CenterPos;
     UIManager.Instance.MapButton.SetCurrentUI(this, MapbuttonPos_Settlemtn, 1.0f);
@@ -1540,7 +1530,7 @@ public class UI_dialogue : UI_default
   [HideInInspector] public int GoldCost = 0;
   [HideInInspector] public int SanityCost = 0;
   [HideInInspector] public int DiscomfortValue = 0;
-  [HideInInspector] public int MovePointValue = 0;
+  [HideInInspector] public int SupplyValue = 0;
   [HideInInspector] public bool IsSelectSector = false;
 
   public void OnPointerSector(SectorTypeEnum sector)
@@ -1562,7 +1552,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue=IsMad? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Temple:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
@@ -1570,7 +1560,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Marketplace:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
@@ -1578,7 +1568,7 @@ public class UI_dialogue : UI_default
         GoldCost =IsMad? GameManager.Instance.MyGameData.RestCost_Gold: Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Library:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
@@ -1586,7 +1576,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
     }
 
@@ -1602,10 +1592,6 @@ public class UI_dialogue : UI_default
         SectorEffect.text = _effect + _sabbatdescription;
         break;
     }
-    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"),
-      GameManager.Instance.MyGameData.Tendency_Head.Level == -2 && GameManager.Instance.MyGameData.FirstRest ? "<sprite=102>" : ""
-      ,DiscomfortValue, MovePointValue);
-
   }
   public void OutPointerSector()
   {
@@ -1614,7 +1600,6 @@ public class UI_dialogue : UI_default
     SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.UnknownSectorIcon;
     SectorName.text = GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
-    RestResult.text = "";
   }
   public void SelectPlace(int index)  //SectortypeÀº 0ÀÌ NULLÀÓ
   {
@@ -1657,7 +1642,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = IsMad ? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Temple:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
@@ -1665,7 +1650,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Marketplace:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
@@ -1673,7 +1658,7 @@ public class UI_dialogue : UI_default
         GoldCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Gold : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
       case SectorTypeEnum.Library:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
@@ -1681,7 +1666,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        MovePointValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply;
         break;
     }
 
@@ -1699,11 +1684,6 @@ public class UI_dialogue : UI_default
         UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
         break;
     }
-    RestResult.text = string.Format(GameManager.Instance.GetTextData("RestResult"), 
-      GameManager.Instance.MyGameData.Tendency_Head.Level==-2&&GameManager.Instance.MyGameData.FirstRest ? "<sprite=102>":"",
-      DiscomfortValue, MovePointValue);
-
-    CostText.text = "";
     if (RestButtonHolder.gameObject.activeInHierarchy == false)
     {
       RestButtonHolder.gameObject.SetActive(true);
@@ -1721,19 +1701,6 @@ public class UI_dialogue : UI_default
   public void OnPointerRestType(StatusTypeEnum type)
   {
     if (UIManager.Instance.IsWorking) return;
-
-    switch (type)
-    {
-      case StatusTypeEnum.Sanity:
-
-        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Sanity"),SanityCost);
-        break;
-      case StatusTypeEnum.Gold:
-
-        CostText.text = string.Format(GameManager.Instance.GetTextData("Restbutton_Gold"), GoldCost,ConstValues.RestSanityRestore);
-        break;
-
-    }
   }
   public void OnExitRestType(StatusTypeEnum type)
   {
@@ -1792,15 +1759,15 @@ public class UI_dialogue : UI_default
         break;
     }
 
+    float _restvalue = GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100;
     switch (statustype)
     {
       case StatusTypeEnum.Sanity:
         GameManager.Instance.MyGameData.Sanity -= SanityCost;
         CurrentSettlement.Discomfort += _discomfortvalue;
-        DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
         if (DiscomfortValue > 0)
         {
-          yield return StartCoroutine(discomfortscale());
+          yield return StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
       case StatusTypeEnum.Gold:
@@ -1808,16 +1775,14 @@ public class UI_dialogue : UI_default
         GameManager.Instance.MyGameData.Gold -= GoldCost;
         GameManager.Instance.MyGameData.Sanity += ConstValues.RestSanityRestore;
         CurrentSettlement.Discomfort += _discomfortvalue;
-        DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
         if (DiscomfortValue > 0)
         {
-          yield return StartCoroutine(discomfortscale());
+          yield return StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
     }
-   if(GameManager.Instance.MyGameData.Supply < 0) GameManager.Instance.MyGameData.Supply = MovePointValue;
-   else GameManager.Instance.MyGameData.Supply += MovePointValue;
-    yield return StartCoroutine(UIManager.Instance.SetIconEffect_movepoint_gain(SettlementIcon.rectTransform, MovePointValue));
+   if(GameManager.Instance.MyGameData.Supply < 0) GameManager.Instance.MyGameData.Supply = SupplyValue;
+   else GameManager.Instance.MyGameData.Supply += SupplyValue;
     GameManager.Instance.MyGameData.ApplySectorEffect(IsMad? SectorTypeEnum.NULL: SelectedSector);
 
     UIManager.Instance.AudioManager.PlaySFX(2);
@@ -1831,29 +1796,24 @@ public class UI_dialogue : UI_default
     EventManager.Instance.SetSettlementEvent(SelectedSector);
 
   }
-  public float DiscomfortScaleEffectTime = 0.3f;
+  public float DiscomfortChangeTime = 0.3f;
   public AnimationCurve DiscomfortAnimationCurve = new AnimationCurve();
-  private IEnumerator discomfortscale()
+  private IEnumerator discomfortanimation(float startrestvalue)
   {
     float _time = 0.0f;
-    float _startsize = DiscomfortIcon.sizeDelta.x,
-      _endsize = Mathf.Lerp(ConstValues.DiscomfortIconSize_min, ConstValues.DiscomfortIconsize_max,
-  Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
-    float _fontstartsize = DiscomfortText.fontSize;
-    float _fontendsize = Mathf.Lerp(ConstValues.DiscomfortFontSize_min, ConstValues.DiscomfortFontSize_max,
-          Mathf.Clamp(CurrentSettlement.Discomfort / ConstValues.MaxDiscomfortForUI, 0.0f, 1.0f));
-    RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
-     (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
-    while (_time < DiscomfortScaleEffectTime)
+
+    string _valuetext = GameManager.Instance.GetTextData("RestCostValue");
+    float _startdisdcomfort = float.Parse(DiscomfortText.text), _enddiscomfort = CurrentSettlement.Discomfort;
+    float _endrestvalue = GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100;
+    while (_time < DiscomfortChangeTime)
     {
-      DiscomfortIcon.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 1.5f, DiscomfortAnimationCurve.Evaluate(_time / DiscomfortScaleEffectTime));
-      DiscomfortIcon.sizeDelta = Vector2.one * Mathf.Lerp(_startsize, _endsize, _time / DiscomfortScaleEffectTime);
-      DiscomfortText.fontSize = Mathf.Lerp(_fontstartsize, _fontendsize, _time / DiscomfortScaleEffectTime);
+      DiscomfortText.text = Mathf.RoundToInt(Mathf.Lerp(_startdisdcomfort, _enddiscomfort,_time/DiscomfortChangeTime)).ToString();
+      RestCostValueText.text = string.Format(_valuetext, Mathf.RoundToInt(Mathf.Lerp(startrestvalue, _endrestvalue, _time / DiscomfortChangeTime)));
       _time += Time.deltaTime;
       yield return null;
     }
-    DiscomfortIcon.localScale = Vector3.one;
-    DiscomfortText.fontSize = _fontendsize;
+    DiscomfortText.text = _enddiscomfort.ToString();
+    RestCostValueText.text = string.Format(_valuetext, _endrestvalue);
   }
   #endregion
 }

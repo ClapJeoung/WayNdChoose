@@ -10,7 +10,7 @@ public class Onpointer_restbuttons : MonoBehaviour,IPointerEnterHandler,IPointer
 
   public void OnPointerEnter(PointerEventData data)
   {
-    SettlementUI.OnPointerRestType(MyStatusType);
+//    SettlementUI.OnPointerRestType(MyStatusType);
   }
   public void OnPointerExit(PointerEventData data)
   {

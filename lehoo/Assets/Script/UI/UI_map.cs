@@ -1155,6 +1155,7 @@ public class UI_map : UI_default
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint);
     GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
+    UIManager.Instance.PreviewManager.ClosePreview();
     UIManager.Instance.PreviewManager.OpenTileInfoPreveiew(selectedtile, selectedtile.ButtonScript.Rect);
   }
   private bool CheckRitual
@@ -1367,6 +1368,12 @@ public class UI_map : UI_default
       RequireSupply.text = (_origintotalsupply < 0 ? "0" : _origintotalsupply.ToString())
         + (IsMad ? "?" : "");
       Routes[Routes.Count - 1].Outlines[Routes[Routes.Count - 1].Outlines.Count - 1].enabled = false;
+
+      List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(AllTiles[_currentindex - 1], GameManager.Instance.MyGameData.ViewRange);
+      foreach (var _tile in _newarounds)
+      {
+        _tile.SetFog(2);
+      }
 
       GameManager.Instance.MyGameData.Supply -= AllSupplys[AllSupplys.Count - 1];
       GameManager.Instance.MyGameData.Sanity -= SelectedCostType == StatusTypeEnum.Sanity ?
