@@ -90,7 +90,7 @@ public class UI_QuestWolf : UI_default
   {
     DeActiveSetNextButton();
      
-    Illust.Setup(QuestHolder.Prologue_0_Illust, 0.1f);
+    Illust.Next(QuestHolder.Prologue_0_Illust, 0.1f);
 
     Prologue_Description.text = QuestHolder.Prologue_0_Description;
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);

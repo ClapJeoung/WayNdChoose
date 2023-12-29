@@ -13,6 +13,7 @@ public class UI_dialogue : UI_default
   public float OpenTime = 1.5f;
   public float CloseTime = 1.0f;
   public RectTransform DialogueRect = null;
+  public CanvasGroup DialogueAlpha = null;
 
   public Vector2 EventDialogueSize = new Vector2(475.0f, 480.0f);
   public Vector2 SettlementDialogueSize = new Vector2(475.0f, 780.0f);
@@ -515,71 +516,126 @@ public class UI_dialogue : UI_default
   public IEnumerator OpenEventUI(bool dir)
   {
     if (PlayerPrefs.GetInt("Tutorial_Event") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Event();
+        if (RewardAskText.text == "")
+        {
+            RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
+            RewardText_No.text = GameManager.Instance.GetTextData("NO");
+        }
+        RewardAskText.text = string.Format(GameManager.Instance.GetTextData("NOREWARD"),
+          GameManager.Instance.MyGameData.CurrentSettlement == null ? GameManager.Instance.GetTextData("Map") : GameManager.Instance.GetTextData("Settlement"));
 
-    if (MadenssEffect.enabled) MadenssEffect.enabled = false;
-    if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
-    if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
-    if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
-    ExpUsageDic_L.Clear();
-    IsOpen = true;
+        if (CurrentDialogueType == DialogueTypeEnum.None)
+        {
+            if (MadenssEffect.enabled) MadenssEffect.enabled = false;
+            if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
+            if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
+            if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
+            if (DialogueAlpha.alpha == 0.0f) DialogueAlpha.alpha = 1.0f;
+            ExpUsageDic_L.Clear();
+            ExpUsageDic_R.Clear();
+            IsOpen = true;
 
-    UIManager.Instance.SettleButton.DeActive();
-    UIManager.Instance.MapButton.DeActive();
-    if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
-    if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
-    if(SettlementBackground.enabled==true) SettlementBackground.enabled = false;
-    DialogueRect.sizeDelta = EventDialogueSize;
+            UIManager.Instance.SettleButton.DeActive();
+            UIManager.Instance.MapButton.DeActive();
+            if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
+            if (SettlementObjectHolder.activeInHierarchy == true) SettlementObjectHolder.SetActive(false);
+            DialogueRect.sizeDelta = EventDialogueSize;
 
-    if(CurrentEvent.AppearSpace==EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+            if (CurrentEvent.AppearSpace == EventAppearType.Outer)
+            {
+                UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+                if (SettlementBackground.enabled == true) SettlementBackground.enabled = false;
+            }
+            else
+            {
+                if (SettlementBackground.enabled == false) SettlementBackground.enabled = true;
+            }
 
-    if (RewardAskText.text == "")
-    {
-      RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
-      RewardText_No.text = GameManager.Instance.GetTextData("NO");
-    }
-    RewardAskText.text = string.Format(GameManager.Instance.GetTextData("NOREWARD"),
-      GameManager.Instance.MyGameData.CurrentSettlement == null ? GameManager.Instance.GetTextData("Map") : GameManager.Instance.GetTextData("Settlement"));
 
-    EndingButtonGroup.alpha = 0.0f;
-    EndingButtonGroup.interactable = false;
-    EndingButtonGroup.blocksRaycasts = false;
-    EndingRefuseGroup.alpha = 0.0f;
-    EndingRefuseGroup.interactable = false;
-    EndingRefuseGroup.blocksRaycasts = false;
-    NextButtonGroup.alpha = 0.0f;
-    NextButtonGroup.interactable = false;
-    RewardButtonGroup.alpha = 0.0f;
-    RewardButtonGroup.interactable = false;
-    SelectionGroup.alpha = 0.0f;
-    SelectionGroup.interactable = false;
+            EndingButtonGroup.alpha = 0.0f;
+            EndingButtonGroup.interactable = false;
+            EndingButtonGroup.blocksRaycasts = false;
+            EndingRefuseGroup.alpha = 0.0f;
+            EndingRefuseGroup.interactable = false;
+            EndingRefuseGroup.blocksRaycasts = false;
+            NextButtonGroup.alpha = 0.0f;
+            NextButtonGroup.interactable = false;
+            RewardButtonGroup.alpha = 0.0f;
+            RewardButtonGroup.interactable = false;
+            SelectionGroup.alpha = 0.0f;
+            SelectionGroup.interactable = false;
 
-    CurrentEventIllustHolderes = CurrentEvent.BeginningIllusts;
-    CurrentEventDescriptions = CurrentEvent.BeginningDescriptions;
-    IsBeginning = true;
-    CurrentEventPhaseIndex = 0;
-    CurrentEventPhaseMaxIndex = CurrentEventIllustHolderes.Count;
+            CurrentEventIllustHolderes = CurrentEvent.BeginningIllusts;
+            CurrentEventDescriptions = CurrentEvent.BeginningDescriptions;
+            IsBeginning = true;
+            CurrentEventPhaseIndex = 0;
+            CurrentEventPhaseMaxIndex = CurrentEventIllustHolderes.Count;
 
-    NameText.text = CurrentEvent.Name;
-    DescriptionText.text = "";
+            NameText.text = CurrentEvent.Name;
+            DescriptionText.text = "";
 
-    UpdateSelections();
+            UpdateSelections();
 
-    DefaultGroup.interactable = false;
-    StartCoroutine(displaynextindex(true));
+            DefaultGroup.interactable = false;
+            StartCoroutine(displaynextindex(true));
 
-    Vector2 _startpos = dir ? LeftPos : RightPos;
-    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+            Vector2 _startpos = dir ? LeftPos : RightPos;
+            yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos, CenterPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
 
-    DefaultGroup.interactable = true;
+            DefaultGroup.interactable = true;
+        }
+        else if(CurrentDialogueType == DialogueTypeEnum.Settlement&&CurrentEvent.AppearSpace!=EventAppearType.Outer)
+        {
+            DefaultGroup.interactable = false;
+            UIManager.Instance.SettleButton.DeActive();
+            ExpUsageDic_R.Clear();
+            ExpUsageDic_L.Clear();
+            StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueAlpha, 0.0f, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+            StartCoroutine(UIManager.Instance.moverect(DialogueRect, Descriptionpos_Outside, Descriptionpos_Inside, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+            yield return new WaitForSeconds(CloseTime);
+            if (MadenssEffect.enabled) MadenssEffect.enabled = false;
+            SettlementObjectHolder.SetActive(false);
+            EventObjectHolder.SetActive(true);
+            DialogueRect.sizeDelta = EventDialogueSize;
 
-    CurrentDialogueType = DialogueTypeEnum.Event;
+            EndingButtonGroup.alpha = 0.0f;
+            EndingButtonGroup.interactable = false;
+            EndingButtonGroup.blocksRaycasts = false;
+            EndingRefuseGroup.alpha = 0.0f;
+            EndingRefuseGroup.interactable = false;
+            EndingRefuseGroup.blocksRaycasts = false;
+            NextButtonGroup.alpha = 0.0f;
+            NextButtonGroup.interactable = false;
+            RewardButtonGroup.alpha = 0.0f;
+            RewardButtonGroup.interactable = false;
+            SelectionGroup.alpha = 0.0f;
+            SelectionGroup.interactable = false;
+
+            CurrentEventIllustHolderes = CurrentEvent.BeginningIllusts;
+            CurrentEventDescriptions = CurrentEvent.BeginningDescriptions;
+            IsBeginning = true;
+            CurrentEventPhaseIndex = 0;
+            CurrentEventPhaseMaxIndex = CurrentEventIllustHolderes.Count;
+
+            NameText.text = CurrentEvent.Name;
+            DescriptionText.text = "";
+            UpdateSelections();
+            StartCoroutine(displaynextindex(true));
+
+            StartCoroutine(UIManager.Instance.moverect(DialogueRect, Descriptionpos_Inside, Descriptionpos_Outside, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+            StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueAlpha, 1.0f, OpenTime,UIManager.Instance.UIPanelOpenCurve));
+            yield return new WaitForSeconds(OpenTime);
+            DefaultGroup.interactable = true;
+        }
+        CurrentDialogueType = DialogueTypeEnum.Event;
     yield return null;
   }
   public IEnumerator OpenEventUI(bool issuccess,bool isleft,bool dir)
   {
     if (MadenssEffect.enabled) MadenssEffect.enabled = false;
     if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
-    ExpUsageDic_L.Clear();
+        if (DialogueAlpha.alpha == 0.0f) DialogueAlpha.alpha = 1.0f;
+        ExpUsageDic_L.Clear();
     ExpUsageDic_R.Clear();
     IsOpen = true;
     if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
@@ -590,9 +646,17 @@ public class UI_dialogue : UI_default
     UIManager.Instance.SettleButton.DeActive();
     DialogueRect.sizeDelta = EventDialogueSize;
 
-    if (CurrentEvent.AppearSpace == EventAppearType.Outer) UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
-   
-    if (RewardAskText.text == "")
+        if (CurrentEvent.AppearSpace == EventAppearType.Outer)
+        {
+            UIManager.Instance.UpdateBackground(CurrentEvent.EnvironmentType);
+            if (SettlementBackground.enabled == true) SettlementBackground.enabled = false;
+        }
+        else
+        {
+            if (SettlementBackground.enabled == false) SettlementBackground.enabled = true;
+        }
+
+        if (RewardAskText.text == "")
     {
       RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
       RewardText_No.text = GameManager.Instance.GetTextData("NO");
@@ -652,7 +716,7 @@ public class UI_dialogue : UI_default
     CurrentEventPhaseMaxIndex = CurrentEventIllustHolderes.Count;
 
     DefaultGroup.interactable = false;
-    Illust.Setup(CurrentEventIllustHolderes[0].CurrentIllust);
+    Illust.Next(CurrentEventIllustHolderes[0].CurrentIllust);
     StartCoroutine(displaynextindex(true));
 
     Vector2 _startpos = dir ? LeftPos : RightPos;
@@ -726,8 +790,7 @@ public class UI_dialogue : UI_default
         }
       }
 
-      if(CurrentEventPhaseIndex==0) Illust.Setup(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, 0.1f);
-      else Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
+      Illust.Next(CurrentEventIllustHolderes[CurrentEventPhaseIndex].CurrentIllust, FadeTime);
       yield return new WaitForSeconds(FadeTime);
       DescriptionText.text += (CurrentEventPhaseIndex == 0?"": "<br><br>" )+ CurrentEventDescriptions[CurrentEventPhaseIndex];
       LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
@@ -1293,7 +1356,7 @@ public class UI_dialogue : UI_default
     {
       yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, DefaultRect.anchoredPosition, RightPos, CloseTime, UIManager.Instance.UIPanelOpenCurve));
     }
-
+        Illust.Next(GameManager.Instance.ImageHolder.Transparent);
   }
   public void GetEnding()
   {
@@ -1448,13 +1511,20 @@ public class UI_dialogue : UI_default
       QuitText_Yes.text = GameManager.Instance.GetTextData("YES");
       QuitText_No.text = GameManager.Instance.GetTextData("NO");
     }
+    if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
+
+        DefaultGroup.interactable = false;
+        if (CurrentDialogueType == DialogueTypeEnum.Event)
+        {
+            StartCoroutine(UIManager.Instance.moverect(DialogueRect, Descriptionpos_Outside, Descriptionpos_Inside, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+            StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueAlpha, 0.0f, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+            yield return new WaitForSeconds(CloseTime);
+        }
     if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
     if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     ExpUsageDic_L.Clear();
+    ExpUsageDic_R.Clear();
 
-    if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
-
-    if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
     if (GameManager.Instance.MyGameData.Madness_Force && (GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force == ConstValues.MadnessEffect_Force-1))
     {
       Debug.Log("무력 광기 발동");
@@ -1471,11 +1541,6 @@ public class UI_dialogue : UI_default
     }
     UIManager.Instance.OffBackground();
 
-
-    DefaultGroup.interactable = false;
-
-    IsOpen = true;
-
     if (EventObjectHolder.activeInHierarchy == true) EventObjectHolder.SetActive(false);
     if (SettlementObjectHolder.activeInHierarchy == false) SettlementObjectHolder.SetActive(true);
     if (SettlementBackground.enabled == false) SettlementBackground.enabled = true;
@@ -1484,7 +1549,7 @@ public class UI_dialogue : UI_default
     IsSelectSector = false;
     QuestSectorInfo = false;
     SelectedSector = SectorTypeEnum.NULL;
-    Illust.Setup(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
+    Illust.Next(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
 
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
@@ -1516,17 +1581,26 @@ public class UI_dialogue : UI_default
     SelectSectorIcon.sprite = GameManager.Instance.ImageHolder.UnknownSectorIcon;
     SectorName.text =IsMad?"": GameManager.Instance.GetTextData("SELECTPLACE");
     SectorEffect.text = "";
+        UIManager.Instance.MapButton.SetCurrentUI(this, MapbuttonPos_Settlemtn, 1.0f);
 
-    Vector2 _startpos_panel = dir?LeftPos:RightPos, _endpos_panel = CenterPos;
-    UIManager.Instance.MapButton.SetCurrentUI(this, MapbuttonPos_Settlemtn, 1.0f);
-
-    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos_panel, _endpos_panel, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+        if (CurrentDialogueType == DialogueTypeEnum.None)
+        {
+            Vector2 _startpos_panel = dir ? LeftPos : RightPos, _endpos_panel = CenterPos;
+            yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, _startpos_panel, _endpos_panel, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+        }
+        else
+        {
+            StartCoroutine(UIManager.Instance.moverect(DialogueRect, Descriptionpos_Inside, Descriptionpos_Outside, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+            StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueAlpha, 1.0f, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+            yield return new WaitForSeconds(OpenTime);
+        }
+        DefaultGroup.interactable = true;
 
     CurrentDialogueType = DialogueTypeEnum.Settlement;
+        IsOpen = true;
 
-    DefaultGroup.interactable = true;
-  }
-  [HideInInspector] public bool QuestSectorInfo = false;
+    }
+    [HideInInspector] public bool QuestSectorInfo = false;
   [HideInInspector] public int GoldCost = 0;
   [HideInInspector] public int SanityCost = 0;
   [HideInInspector] public int DiscomfortValue = 0;
@@ -1625,7 +1699,7 @@ public class UI_dialogue : UI_default
         break;
     }
 
-    Illust.Setup(GameManager.Instance.ImageHolder.GetSectorIllust(CurrentSettlement.SettlementType, SelectedSector, GameManager.Instance.MyGameData.Turn));
+    Illust.Next(GameManager.Instance.ImageHolder.GetSectorIllust(CurrentSettlement.SettlementType, SelectedSector, GameManager.Instance.MyGameData.Turn));
 
     QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector;
 
@@ -1767,7 +1841,7 @@ public class UI_dialogue : UI_default
         CurrentSettlement.Discomfort += _discomfortvalue;
         if (DiscomfortValue > 0)
         {
-          yield return StartCoroutine(discomfortanimation(_restvalue));
+          StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
       case StatusTypeEnum.Gold:
@@ -1777,7 +1851,7 @@ public class UI_dialogue : UI_default
         CurrentSettlement.Discomfort += _discomfortvalue;
         if (DiscomfortValue > 0)
         {
-          yield return StartCoroutine(discomfortanimation(_restvalue));
+          StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
     }
@@ -1787,11 +1861,9 @@ public class UI_dialogue : UI_default
 
     UIManager.Instance.AudioManager.PlaySFX(2);
 
-    yield return new WaitForSeconds(0.8f);
+    yield return new WaitForSeconds(0.2f);
 
     UIManager.Instance.AudioManager.PlaySFX(14);
-
-    yield return StartCoroutine(closeui_all(true));
 
     EventManager.Instance.SetSettlementEvent(SelectedSector);
 

@@ -38,7 +38,7 @@ public class UI_Ending : UI_default
   public void OpenUI_Dead(Sprite illust,string description)
   {
     UIManager.Instance.PreviewManager.ClosePreview();
-    Illust.Setup(illust, 0.5f);
+    Illust.Next(illust, 0.5f);
     Description.text = description;
     QuitButtonText.text = GameManager.Instance.GetTextData("QUITTOMAIN");
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);
@@ -57,7 +57,7 @@ public class UI_Ending : UI_default
     LastButtonText= endingdata.LastWord;
     QuitButtonText.text = endingdata.LastWord;
 
-    Illust.Setup(Illusts[CurrentIndex], 0.5f);
+    Illust.Next(Illusts[CurrentIndex], 0.5f);
     Description.text = Descriptions[CurrentIndex];
 
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);

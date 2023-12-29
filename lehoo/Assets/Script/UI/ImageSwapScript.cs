@@ -10,26 +10,12 @@ public class ImageSwapScript : MonoBehaviour
   public Image Image_B = null;
   public CanvasGroup Group_B = null;
   public bool Index = true;
-  public float ChangeTime = 2.0f;
+  private float ChangeTime = 1.2f;
   private Image CurrentImage { get { return Index == true? Image_A : Image_B; } }
   private Image NextImage { get { return Index==true?Image_B : Image_A; } }
   private CanvasGroup CurrentGroup { get { return Index==true?Group_A : Group_B; } }
   private CanvasGroup NextGroup { get { return Index==true?Group_B : Group_A; } }
   public bool Sound = true;
-  public void Setup(Sprite illust)
-  {
-    CurrentGroup.alpha = 0.0f;
-    NextGroup.alpha = 0.0f;
-    CurrentImage.sprite = illust;
-    CurrentGroup.alpha = 1.0f;
-  }
-  public void Setup(Sprite illust,float time)
-  {
-    CurrentGroup.alpha = 0.0f;
-    NextGroup.alpha = 0.0f;
-    CurrentImage.sprite = illust;
-    StartCoroutine(changealpha(CurrentGroup, 1.0f, time));
-  }
   public void Next(Sprite illust)
   {
     NextImage.sprite = illust;

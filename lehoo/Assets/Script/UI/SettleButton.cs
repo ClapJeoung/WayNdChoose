@@ -17,14 +17,6 @@ public class SettleButton : ReturnButton
       return;
     }
 
-    if (CurrentUI as UI_dialogue != null)
-    {
-      UI_dialogue _dialogue = CurrentUI as UI_dialogue;
-      {
-        UIManager.Instance.DialogueUI.CloseUI(false);
-      }
-    }
-
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:

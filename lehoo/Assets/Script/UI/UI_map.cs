@@ -1369,7 +1369,7 @@ public class UI_map : UI_default
         + (IsMad ? "?" : "");
       Routes[Routes.Count - 1].Outlines[Routes[Routes.Count - 1].Outlines.Count - 1].enabled = false;
 
-      List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(AllTiles[_currentindex - 1], GameManager.Instance.MyGameData.ViewRange);
+      List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_stoptile, GameManager.Instance.MyGameData.ViewRange);
       foreach (var _tile in _newarounds)
       {
         _tile.SetFog(2);
