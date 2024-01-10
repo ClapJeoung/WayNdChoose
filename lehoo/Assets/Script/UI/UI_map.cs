@@ -1222,10 +1222,27 @@ public class UI_map : UI_default
     UIManager.Instance.AddUIQueue(movemap());
   }
   public AnimationCurve MoveAnimationCurve = new AnimationCurve();
+  private IEnumerator changesupplytext(float _lastsum,float _currentsum,float _lastsupply,float _currentsupply)
+  {
+    int _sum = (int)_lastsum, _supply = (int)_lastsupply;
+    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_map;
+    while (_time < _targettime)
+    {
+      _sum=Mathf.FloorToInt(Mathf.Lerp(_lastsum,_currentsum,_time/_targettime));
+      _supply = Mathf.FloorToInt(Mathf.Lerp(_lastsupply, _currentsupply, _time / _targettime));
+
+      RequireSupply.text = (_sum < 0 ? "0" : _sum.ToString())
+        + (IsMad ? "?" : "");
+      CurrentSupply.text= _supply.ToString();
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    RequireSupply.text = (_sum < 0 ? "0" : _sum.ToString())
+      + (IsMad ? "?" : "");
+    CurrentSupply.text = ((int)_currentsupply).ToString();
+  }
   private IEnumerator movemap()
   {
-    int _origintotalsupply = TotalSupplyCost;
-
     if (IsMad)
     {
       List<TileData> _availabletiles = new List<TileData>();
@@ -1292,6 +1309,8 @@ public class UI_map : UI_default
     float _currentvalue = 0.0f;     //
     Vector2 _current = Vector2.zero,_next= Vector2.zero;
     float _movetime = MoveTime * _pathcount;
+    float _countchangetime = MoveTime * 0.8f;
+    int _lastsum = TotalSupplyCost, _currentsum = TotalSupplyCost, _lastsupply=0, _currentsupply = 0;
     while (_time < _movetime)
     {
       _movedvalue = MoveAnimationCurve.Evaluate(_time / _movetime);
@@ -1334,8 +1353,10 @@ public class UI_map : UI_default
         {
           _tile.SetFog(2);
         }
+        _lastsupply = GameManager.Instance.MyGameData.Supply;
 
         GameManager.Instance.MyGameData.Supply -= AllSupplys[_currentindex-1];
+        _currentsupply = GameManager.Instance.MyGameData.Supply;
         GameManager.Instance.MyGameData.Sanity -= SelectedCostType == StatusTypeEnum.Sanity ?
           PayValues_Sanity[_currentindex - 1].Pay_Sanity : PayValues_Gold[_currentindex - 1].Pay_Sanity;
         GameManager.Instance.MyGameData.Gold-=SelectedCostType==StatusTypeEnum.Sanity ?
@@ -1348,25 +1369,24 @@ public class UI_map : UI_default
           _hungry = true;
         }
 
-        _origintotalsupply -= AllSupplys[_currentindex - 1];
-        RequireSupply.text = (_origintotalsupply <0 ? "0" : _origintotalsupply.ToString())
-          + (IsMad ? "?" : "");
-        CurrentSupply.text = GameManager.Instance.MyGameData.Supply.ToString();
+        _currentsum -= AllSupplys[_currentindex - 1];
+
+        StartCoroutine(changesupplytext((float)_lastsum, (float)_currentsum, (float)_lastsupply, (float)_currentsupply));
 
         if (GameManager.Instance.MyGameData.Sanity < 1) break;
 
         _lastindex = _currentindex;
+        _lastsum = _currentsum;
       }
 
       _time += Time.deltaTime;
       yield return null;
     }
+
     TileData _stoptile = _time >= _movetime? LastDestination: AllTiles[_currentindex - 1];
     if (_time >= _movetime)
     {
-      _origintotalsupply -= AllSupplys[AllSupplys.Count-1];
-      RequireSupply.text = (_origintotalsupply < 0 ? "0" : _origintotalsupply.ToString())
-        + (IsMad ? "?" : "");
+      _currentsum -= AllSupplys[AllSupplys.Count-1];
       Routes[Routes.Count - 1].Outlines[Routes[Routes.Count - 1].Outlines.Count - 1].enabled = false;
 
       List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_stoptile, GameManager.Instance.MyGameData.ViewRange);
@@ -1375,11 +1395,16 @@ public class UI_map : UI_default
         _tile.SetFog(2);
       }
 
+      _lastsupply = GameManager.Instance.MyGameData.Supply;
+
       GameManager.Instance.MyGameData.Supply -= AllSupplys[AllSupplys.Count - 1];
+      _currentsupply = GameManager.Instance.MyGameData.Supply;
       GameManager.Instance.MyGameData.Sanity -= SelectedCostType == StatusTypeEnum.Sanity ?
         PayValues_Sanity[PayValues_Sanity.Count - 1].Pay_Sanity : PayValues_Gold[PayValues_Gold.Count - 1].Pay_Sanity;
       GameManager.Instance.MyGameData.Gold -= SelectedCostType == StatusTypeEnum.Sanity ?
         PayValues_Sanity[PayValues_Sanity.Count - 1].Pay_Gold : PayValues_Gold[PayValues_Gold.Count - 1].Pay_Gold;
+
+      StartCoroutine(changesupplytext((float)_lastsum, (float)_currentsum, (float)_lastsupply, (float)_currentsupply));
     }
     CurrentSupply.text = GameManager.Instance.MyGameData.Supply.ToString();
     RequireSupplyInfo.text = "";
@@ -1479,6 +1504,8 @@ public class UI_map : UI_default
         TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_IsEvent.enabled = false;
         TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
+
+        BonusGoldInfo.text = "";
       }
       else        //일반->일반
       {

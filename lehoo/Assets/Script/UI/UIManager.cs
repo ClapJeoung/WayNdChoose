@@ -10,6 +10,7 @@ using System.Reflection;
 using OpenCvSharp.Flann;
 using OpenCvSharp;
 using System.Runtime.CompilerServices;
+using UnityEngine.WSA;
 
 public class UIManager : MonoBehaviour
 {
@@ -162,10 +163,38 @@ public class UIManager : MonoBehaviour
     }
       rect.localScale = Vector3.one;
   }
+  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float _last,float _current)
+  {
+    int _count = (int)_last;
+    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
+    while (_time < _targettime)
+    {
+      _count = Mathf.FloorToInt(Mathf.Lerp(_last, _current, _time / _targettime));
+      tmp.text=_count.ToString();
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    tmp.text = ((int)_current).ToString();
+  }
+  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float _last, float _current, Func<int, string> _coloraction)
+  {
+    int _count = (int)_last;
+    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
+    while (_time < _targettime)
+    {
+      _count = Mathf.FloorToInt(Mathf.Lerp(_last, _current, _time / _targettime));
+      tmp.text = _coloraction!=null? _coloraction(_count):_count.ToString();
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    tmp.text = _coloraction != null ? _coloraction((int)_current) : ((int)_current).ToString();
+  }
   [SerializeField] private AnimationCurve StatusEffectLossCurve = new AnimationCurve();
   [SerializeField] private TextMeshProUGUI HPText = null;
   private int lasthp = -1;
-  public void UpdateHPText()
+  public void UpdateHPText(int _last)
   {
     if (!lasthp.Equals(-1))
     {
@@ -186,9 +215,8 @@ public class UIManager : MonoBehaviour
       }
     }
 
-
     HPIcon.rectTransform.sizeDelta = Vector2.one * Mathf.Lerp( ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.HP / 100.0f);
-    HPText.text = GameManager.Instance.MyGameData.HP.ToString();
+    StartCoroutine(ChangeCount(HPText, _last,GameManager.Instance.MyGameData.HP));
   //  Debug.Log("체력 수치 업데이트");
 
     lasthp = GameManager.Instance.MyGameData.HP;
@@ -199,10 +227,10 @@ public class UIManager : MonoBehaviour
     HPIcon.sprite = GameManager.Instance.MyGameData.MadnessSafe ?
       GameManager.Instance.ImageHolder.HPIcon : GameManager.Instance.ImageHolder.HPBroken;
   }
-  [SerializeField] private TextMeshProUGUI SanityText_current = null;
+  [SerializeField] private TextMeshProUGUI SanityText = null;
  // [SerializeField] private TextMeshProUGUI SanityText_max = null;
   private int lastsanity = -1;
-  public void UpdateSanityText()
+  public void UpdateSanityText(int _last)
   {
     if (!lastsanity.Equals(-1))
     {
@@ -214,12 +242,12 @@ public class UIManager : MonoBehaviour
       {
         if (lastsanity < GameManager.Instance.MyGameData.Sanity)
         {
-          StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform }));
+          StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText.rectTransform }));
           AudioManager.PlaySFX(16, "status");
         }
         else
         {
-          StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText_current.rectTransform },
+          StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText.rectTransform },
             Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Sanity_Min) / ConstValues.StatusLoss_Sanity_Max)));
           AudioManager.PlaySFX(17, "status");
         }
@@ -229,17 +257,14 @@ public class UIManager : MonoBehaviour
     }
 
     SanityIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.Sanity / 100.0f);
-    SanityText_current.text = GameManager.Instance.MyGameData.Sanity>100?
-      WNCText.GetMaxSanityColor(GameManager.Instance.MyGameData.Sanity.ToString()): GameManager.Instance.MyGameData.Sanity.ToString();
-   // SanityText_max.text = GameManager.Instance.MyGameData.MaxSanity.ToString();
- //   Debug.Log("정신력, 최대 정신력 수치 업데이트");
-
+    StartCoroutine(ChangeCount(SanityText, _last, GameManager.Instance.MyGameData.Sanity,
+      GameManager.Instance.MyGameData.Sanity>100?WNCText.GetMaxSanityColor:null));
 
     lastsanity = GameManager.Instance.MyGameData.Sanity;
   }
   [SerializeField] private TextMeshProUGUI GoldText = null;
   private int lastgold = -1;
-  public void UpdateGoldText()
+  public void UpdateGoldText(int _last)
   {
     if (!lastgold.Equals(-1))
     {
@@ -264,16 +289,13 @@ public class UIManager : MonoBehaviour
       }
     }
 
-    GoldText.text = GameManager.Instance.MyGameData.Gold.ToString();
-  //  Debug.Log("골드 수치 업데이트");
-
-
+    StartCoroutine(ChangeCount(GoldText, _last, GameManager.Instance.MyGameData.Gold));
     lastgold = GameManager.Instance.MyGameData.Gold;
   }
-  [SerializeField] private Image MovePoint_Icon = null;
-  [SerializeField] private TextMeshProUGUI MovePointText = null;
+  [SerializeField] private Image Supply_Icon = null;
+  [SerializeField] private TextMeshProUGUI SupplyText = null;
   private int lastsupply = -1;
-  public void UpdateSupplyText()
+  public void UpdateSupplyText(int _last)
   {
     if (lastsupply != -1)
     {
@@ -283,21 +305,19 @@ public class UIManager : MonoBehaviour
       if (lastsupply != GameManager.Instance.MyGameData.Supply)
       {
         HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
-        if (lastsupply < GameManager.Instance.MyGameData.Supply) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform }));
-        else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, MovePointText.rectTransform },
+        if (lastsupply < GameManager.Instance.MyGameData.Supply) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, SupplyText.rectTransform }));
+        else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, SupplyText.rectTransform },
           Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_MP_Min) / ConstValues.StatusLoss_MP_Max)));
 
       }
     }
 
-    MovePoint_Icon.sprite = GameManager.Instance.MyGameData.Supply >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
-
-  //  Debug.Log("이동력 수치 업데이트");
+    Supply_Icon.sprite = GameManager.Instance.MyGameData.Supply >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
     if (lastsupply == 0 && GameManager.Instance.MyGameData.Supply == 0) return;
 
     MovepointIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max,
       (GameManager.Instance.MyGameData.Supply - ConstValues.SupplyIconMinCount) / (float)(ConstValues.SupplyIconMaxCount-ConstValues.SupplyIconMinCount));
-    MovePointText.text = GameManager.Instance.MyGameData.Supply.ToString();
+    StartCoroutine(ChangeCount(SupplyText, _last, GameManager.Instance.MyGameData.Supply));
 
     lastsupply = GameManager.Instance.MyGameData.Supply;
   }
@@ -1298,10 +1318,10 @@ public class UIManager : MonoBehaviour
   {
     UpdateYearText();
     UpdateTurnIcon();
-    UpdateHPText();
-    UpdateSanityText();
-    UpdateGoldText();
-    UpdateSupplyText();
+    UpdateHPText(12);
+    UpdateSanityText(12);
+    UpdateGoldText(12);
+    UpdateSupplyText(12);
     UpdateExpPael();
     UpdateTendencyIcon();
     UpdateSkillLevel();

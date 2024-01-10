@@ -703,6 +703,8 @@ public class GameManager : MonoBehaviour
     //    Debug.Log(JsonUtility.ToJson(new GameJsonData(new GameData(new GameJsonData(MyGameData)))));
     MyGameData = new GameData(GameSaveData);
 
+    yield return new WaitUntil(()=>MyGameData!=null);
+
     yield return StartCoroutine(UIManager.Instance.MapUI.MapCreater.MakeTilemap());
     UIManager.Instance.UpdateMap_SetPlayerPos();
     UIManager.Instance.UpdateAllUI();

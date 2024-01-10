@@ -1868,7 +1868,6 @@ public class UI_dialogue : UI_default
     EventManager.Instance.SetSettlementEvent(SelectedSector);
 
   }
-  public float DiscomfortChangeTime = 0.3f;
   public AnimationCurve DiscomfortAnimationCurve = new AnimationCurve();
   private IEnumerator discomfortanimation(float startrestvalue)
   {
@@ -1877,10 +1876,10 @@ public class UI_dialogue : UI_default
     string _valuetext = GameManager.Instance.GetTextData("RestCostValue");
     float _startdisdcomfort = float.Parse(DiscomfortText.text), _enddiscomfort = CurrentSettlement.Discomfort;
     float _endrestvalue = GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100;
-    while (_time < DiscomfortChangeTime)
+    while (_time < ConstValues.CountChangeTime_settlement)
     {
-      DiscomfortText.text = Mathf.RoundToInt(Mathf.Lerp(_startdisdcomfort, _enddiscomfort,_time/DiscomfortChangeTime)).ToString();
-      RestCostValueText.text = string.Format(_valuetext, Mathf.RoundToInt(Mathf.Lerp(startrestvalue, _endrestvalue, _time / DiscomfortChangeTime)));
+      DiscomfortText.text = Mathf.RoundToInt(Mathf.Lerp(_startdisdcomfort, _enddiscomfort,_time/ ConstValues.CountChangeTime_settlement)).ToString();
+      RestCostValueText.text = string.Format(_valuetext, Mathf.RoundToInt(Mathf.Lerp(startrestvalue, _endrestvalue, _time / ConstValues.CountChangeTime_settlement)));
       _time += Time.deltaTime;
       yield return null;
     }

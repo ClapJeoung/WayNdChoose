@@ -9,8 +9,12 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const float CountChangeTime_settlement = 0.6f;
+  public const float CountChangeTime_status = 0.3f;
+  public const float CountChangeTime_map = 0.3f;
+
     public const int CultEventRange_Route = 3, CultEventRange_Target = 4;
-    public const int WorldEventRange_max = 5, WorldEventRange_min = 2;
+    public const int WorldEventRange_max = 4, WorldEventRange_min = 2;
 
   public const float WorldEventPhase_1_Cult = 30.0f, WorldEventPhase_2_Cult = 60.0f;
   public const int WorldEventCount_0 = 2, WorldEventCount_1 = 1, WorldEventCount_2 = 0;
@@ -510,11 +514,11 @@ public class GameData    //게임 진행도 데이터
     get { return hp; }
     set
     {
-      //체력 감소 시 장소 효과(거주지)가 있었으면 해당 효과 만료
+      int _last = hp;
       hp = value;
       if (hp > 100) hp = 100;
       if (hp <= 0) { hp = 0; GameManager.Instance.GameOver(); }
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateHPText();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateHPText(_last);
     }
   }
   private int sanity = 0;
@@ -524,10 +528,10 @@ public class GameData    //게임 진행도 데이터
     set
     {
       if (sanity <= 0 && value < 0) return;
-
+      int _last = sanity;
       if (sanity > 100) sanity = value > sanity ? sanity : value < 0 ? 0 : value; 
       else sanity = Mathf.Clamp(value, 0, 100);
-      UIManager.Instance.UpdateSanityText();
+      UIManager.Instance.UpdateSanityText(_last);
 
       if (value<=0)
       {
@@ -537,8 +541,9 @@ public class GameData    //게임 진행도 데이터
   }
   public void SetSanityOver100(int value)
   {
+    int _last = sanity;
     sanity = value;
-    UIManager.Instance.UpdateSanityText();
+    UIManager.Instance.UpdateSanityText(_last);
   }
   private int gold = 0;
   public int Gold
@@ -546,8 +551,9 @@ public class GameData    //게임 진행도 데이터
     get { return gold; }
     set
     {
+      int _last = gold;
       gold = value;
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText(_last);
     }
   }
 
@@ -557,8 +563,9 @@ public class GameData    //게임 진행도 데이터
     get { return supply; }
     set
     {
+      int _last = supply;
       supply = value < 0 ? 0 : value;
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateSupplyText();
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateSupplyText(_last);
     }
   }
 
