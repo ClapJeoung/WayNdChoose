@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 public static class ConstValues
 {
   public const float CountChangeTime_settlement = 0.6f;
-  public const float CountChangeTime_status = 0.3f;
+  public const float CountChangeTime_status = 0.5f;
   public const float CountChangeTime_map = 0.3f;
 
     public const int CultEventRange_Route = 3, CultEventRange_Target = 4;

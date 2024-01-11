@@ -108,7 +108,6 @@ public class UI_map : UI_default
       return _temp;
     }
   }
-  private List<Image> Arrows_Selectingtemp= new List<Image>();
   private void SetArrowRotation(ref Image img, HexDir dir)
   {
     switch (dir)
@@ -299,14 +298,17 @@ public class UI_map : UI_default
       Image _enableoutline = GetEnableOutline;
       SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
       _newroute.Outlines.Add(_enableoutline);
+
+      Vector3 _arrowpos = i == 0 ? (_newroute.Start.ButtonScript.Rect.anchoredPosition3D + _newroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f :
+        i == _newroute.Length - 1 ? (_newroute.Route[i-1].ButtonScript.Rect.anchoredPosition3D + _newroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f :
+        (_newroute.Route[i-1].ButtonScript.Rect.anchoredPosition3D + _newroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+      Image _arrow = GetEnableArrow;
+      _arrow.rectTransform.anchoredPosition = _arrowpos;
+      SetArrowRotation(ref _arrow, _grid[i]);
+      _newroute.Arrows.Add(_arrow);
+
     }
 
-    if (Arrows_Selectingtemp.Count > 0)
-    {
-      foreach (var _arrow in Arrows_Selectingtemp)
-        _newroute.Arrows.Add(_arrow);
-      Arrows_Selectingtemp.Clear();
-    }
     DisableOutline(Outline_Selecting);
     Destinations.Add(tile);
     Routes.Add(_newroute);
@@ -676,21 +678,11 @@ public class UI_map : UI_default
     for(int i=0;i<_routetemp.Count;i++)
     {
       _nexttile = GameManager.Instance.MyGameData.MyMapData.GetNextTile(_currenttile, _routetemp[i]);
-      Vector3 _arrowpos = (_currenttile.ButtonScript.Rect.anchoredPosition3D + _nexttile.ButtonScript.Rect.anchoredPosition3D) / 2.0f;
-      Image _arrow = GetEnableArrow;
-      _arrow.rectTransform.anchoredPosition = _arrowpos;
-      SetArrowRotation(ref _arrow, _routetemp[i]);
-
-      Arrows_Selectingtemp.Add(_arrow);
       _currenttile = _nexttile;
     }
   }
   public void ExitTile()
   {
-    foreach (var _arrow in Arrows_Selectingtemp)
-      _arrow.GetComponent<Image>().enabled = false;
-    Arrows_Selectingtemp.Clear();
-
     DisableOutline(Outline_Selecting); }
 
   public void SetOutline(Image outline, RectTransform tilerect,Color color)
@@ -1388,6 +1380,8 @@ public class UI_map : UI_default
     {
       _currentsum -= AllSupplys[AllSupplys.Count-1];
       Routes[Routes.Count - 1].Outlines[Routes[Routes.Count - 1].Outlines.Count - 1].enabled = false;
+      if (_stoptile.Landmark == LandmarkType.Ritual)
+        UIManager.Instance.CultUI.AddProgress(4, null);
 
       List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_stoptile, GameManager.Instance.MyGameData.ViewRange);
       foreach (var _tile in _newarounds)
