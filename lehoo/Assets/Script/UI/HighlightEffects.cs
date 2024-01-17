@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum HighlightEffectEnum { HP, Sanity, Gold, Movepoint,Skill, Madness, Exp,Rational,Physical,Mental,Material}
+public enum HighlightEffectEnum { HP, Sanity, Gold, Supply,Skill, Madness, Exp,Rational,Physical,Mental,Material}
 
 public class HighlightEffects : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public class HighlightEffects : MonoBehaviour
         return HighlightList[1];
       case HighlightEffectEnum.Gold:
         return HighlightList[2];
-      case HighlightEffectEnum.Movepoint:
+      case HighlightEffectEnum.Supply:
         return HighlightList[3];
       case HighlightEffectEnum.Skill:
         return HighlightList[4];
@@ -43,13 +43,20 @@ public class HighlightEffects : MonoBehaviour
   {
     foreach (HighlightCallInfo info in callinfo)
     {
-      if (info.CallType == HighlightEffectEnum.Skill)
+      switch (info.CallType)
       {
-        GetHighlight(info.CallType).SetEffect_Skill(info.Skilltype);
-      }
-      else
-      {
-        GetHighlight(info.CallType).SetEffect();
+        case HighlightEffectEnum.HP:
+        case HighlightEffectEnum.Sanity:
+        case HighlightEffectEnum.Gold:
+        case HighlightEffectEnum.Supply:
+          GetHighlight(info.CallType).IconRect.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+          break;
+        case HighlightEffectEnum.Skill:
+          GetHighlight(info.CallType).SetEffect_Skill(info.Skilltype);
+          break;
+        default:
+          GetHighlight(info.CallType).SetEffect();
+          break;
       }
     }
   }
@@ -62,17 +69,38 @@ public class HighlightEffects : MonoBehaviour
   }
   public void HighlightAnimation(HighlightEffectEnum type)
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(GetHighlight(type).Group, 0.0f, EffectTime));
+    switch (type)
+    {
+      case HighlightEffectEnum.HP:
+      case HighlightEffectEnum.Sanity:
+      case HighlightEffectEnum.Gold:
+      case HighlightEffectEnum.Supply:
+      case HighlightEffectEnum.Skill:
+        GetHighlight(type).IconRect.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+        break;
+      default:
+        StartCoroutine(UIManager.Instance.ChangeAlpha(GetHighlight(type).Group, 0.0f, EffectTime));
+        break;
+    }
+  }
+  public void Highlight_Skill(SkillTypeEnum skill)
+  {
+    GetHighlight(HighlightEffectEnum.Skill).GetIcon_Skill(skill).localScale=Vector3.one * ConstValues.StatusHighlightSize;
+  }
+  public void Highlight_Skill(List<SkillTypeEnum> skills)
+  {
+    foreach (var _icon in GetHighlight(HighlightEffectEnum.Skill).GetIcon_Skill(skills))
+      _icon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
   }
   /// <summary>
   /// 광기 하이라이트
   /// </summary>
   /// <param name="type"></param>
   /// <param name="skilltype"></param>
-  public void HighlightAnimation(HighlightEffectEnum type,SkillTypeEnum skilltype)
+  public void Highlight_Madness(SkillTypeEnum skilltype)
   {
-    StartCoroutine(UIManager.Instance.ChangeAlpha(GetHighlight(type).Group, 0.0f, EffectTime));
-    CanvasGroup _group = GetHighlight(type).GetSkillGroup_Madness(skilltype);
+    StartCoroutine(UIManager.Instance.ChangeAlpha(GetHighlight(HighlightEffectEnum.Skill).Group, 0.0f, EffectTime));
+    CanvasGroup _group = GetHighlight(HighlightEffectEnum.Skill).GetSkillGroup_Madness(skilltype);
     if(_group!=null) StartCoroutine(UIManager.Instance.ChangeAlpha(_group, 0.0f, EffectTime));
   }
 
@@ -81,8 +109,13 @@ public class HighlightEffects : MonoBehaviour
 public class HighlightHolder
 {
   public HighlightEffectEnum Type;
+  public RectTransform IconRect = null;
   public CanvasGroup Group = null;
   public TextMeshProUGUI Text = null;
+  public RectTransform ConvIcon = null;
+  public RectTransform ForceIcon = null;
+  public RectTransform WildIcon = null;
+  public RectTransform IntelIcon = null;
   public CanvasGroup ConversationEffect = null;
   public CanvasGroup ForceEffect = null;
   public CanvasGroup WildEffect = null;
@@ -93,26 +126,63 @@ public class HighlightHolder
   }
   public void SetEffect_Skill(List<SkillTypeEnum> skill)
   {
-    Sprite _spr = null;
     foreach(var type in skill)
     {
-      _spr = GameManager.Instance.ImageHolder.GetSkillIcon(type, false);
       switch (type)
       {
         case SkillTypeEnum.Conversation:
-          ConversationEffect.alpha = 1.0f;
+          ConvIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
           break;
         case SkillTypeEnum.Force:
-          ForceEffect.alpha = 1.0f;
+          ForceIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
           break;
         case SkillTypeEnum.Wild:
-          WildEffect.alpha = 1.0f;
+          WildIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
           break;
         case SkillTypeEnum.Intelligence:
-          IntelligenceEffect.alpha = 1.0f;
+          IntelIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
           break;
       }
     }
+  }
+  public RectTransform GetIcon_Skill(SkillTypeEnum skill)
+  {
+    switch (skill)
+    {
+      case SkillTypeEnum.Conversation:
+        return ConvIcon;
+      case SkillTypeEnum.Force:
+        return ForceIcon;
+      case SkillTypeEnum.Wild:
+        return WildIcon;
+      case SkillTypeEnum.Intelligence:
+        return IntelIcon;
+      default:
+        return null;
+    }
+  }
+  public List<RectTransform> GetIcon_Skill(List<SkillTypeEnum> skills)
+  {
+    List<RectTransform> _icons= new List<RectTransform>();
+    foreach (SkillTypeEnum skill in skills)
+    {
+      switch (skill)
+      {
+        case SkillTypeEnum.Conversation:
+          _icons.Add(ConvIcon);
+          break;
+        case SkillTypeEnum.Force:
+          _icons.Add(ForceIcon);
+          break;
+        case SkillTypeEnum.Wild:
+          _icons.Add(WildIcon);
+          break;
+        case SkillTypeEnum.Intelligence:
+          _icons.Add(IntelIcon);
+          break;
+      }
+    }
+    return _icons;
   }
   public CanvasGroup GetSkillGroup_Madness(SkillTypeEnum skilltype)
   {
@@ -137,31 +207,18 @@ public class HighlightHolder
   public void Reset()
   {
     if(Group.alpha!=0.0f) Group.alpha = 0.0f;
+    if (IconRect != null) IconRect.localScale = Vector3.one;
 
     if (Type == HighlightEffectEnum.Skill)
     {
-      Sprite _spr = null;
-      SkillTypeEnum _skilltype = SkillTypeEnum.Conversation;
-      for(int i=0;i<4;i++)
-      {
-        _skilltype = (SkillTypeEnum)i;
-        _spr = GameManager.Instance.ImageHolder.GetSkillIcon(_skilltype, false);
-        switch (_skilltype)
-        {
-          case SkillTypeEnum.Conversation:
-            ConversationEffect.alpha = 0.0f;
-            break;
-          case SkillTypeEnum.Force:
-            ForceEffect.alpha = 0.0f;
-            break;
-          case SkillTypeEnum.Wild:
-            WildEffect.alpha = 0.0f;
-            break;
-          case SkillTypeEnum.Intelligence:
-            IntelligenceEffect.alpha = 0.0f;
-            break;
-        }
-      }
+      ConvIcon.localScale = Vector3.one;
+      ForceIcon.localScale = Vector3.one;
+      WildIcon.localScale = Vector3.one;
+      IntelIcon.localScale = Vector3.one;
+      ConversationEffect.alpha = 0.0f;
+      ForceEffect.alpha = 0.0f;
+      WildEffect.alpha = 0.0f;
+      IntelligenceEffect.alpha = 0.0f;
     }
   }
 }

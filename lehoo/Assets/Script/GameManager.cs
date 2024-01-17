@@ -537,7 +537,7 @@ public class GameManager : MonoBehaviour
     exp.Duration = ConstValues.EXPMaxTurn_long_idle;
     MyGameData.LongExp = exp;
 
-    UIManager.Instance.UpdateExpPael();
+    UIManager.Instance.UpdateExpPanel();
     UIManager.Instance.UpdateSkillLevel();
   }
   /// <summary>
@@ -551,7 +551,7 @@ public class GameManager : MonoBehaviour
     if(index==true)MyGameData.ShortExp_A=exp;
     else MyGameData.ShortExp_B=exp;
 
-    UIManager.Instance.UpdateExpPael();
+    UIManager.Instance.UpdateExpPanel();
     UIManager.Instance.UpdateSkillLevel();
   }
   public void SetEvent(EventData eventdata)

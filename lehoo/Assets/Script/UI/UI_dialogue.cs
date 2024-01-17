@@ -607,6 +607,7 @@ public class UI_dialogue : UI_default
       EventIllustHolderes = CurrentEvent.BeginningIllusts;
       EventDescriptions = CurrentEvent.BeginningDescriptions;
       IsBeginning = true;
+      IsOpen = true;
       EventPhaseIndex = 0;
       PhrIndex = -1;
 
@@ -836,6 +837,7 @@ public class UI_dialogue : UI_default
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
             UIManager.Instance.UpdateExpButton(true);
+            UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(updatescrollbar());
 
             break;
@@ -844,6 +846,7 @@ public class UI_dialogue : UI_default
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
             UIManager.Instance.UpdateExpButton(true);
+            UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(updatescrollbar());
 
             break;
@@ -923,6 +926,7 @@ public class UI_dialogue : UI_default
         {
           case 0:   //선택 누르고 내용
             if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
+            UIManager.Instance.SetExpUnuse();
 
             yield return StartCoroutine(updatescrollbar());
             SetNextButtonActive();
@@ -959,6 +963,7 @@ public class UI_dialogue : UI_default
             break;
           case 3:   //선택 눌러서 보상
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
+            UIManager.Instance.SetExpUnuse();
 
             if (CurrentSuccessData != null && CurrentEvent.EndingID != "")
             {
@@ -1557,7 +1562,7 @@ public class UI_dialogue : UI_default
     if (GameManager.Instance.MyGameData.Madness_Force && (GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force == ConstValues.MadnessEffect_Force-1))
     {
       Debug.Log("무력 광기 발동");
-      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Force);
+      UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Force);
       UIManager.Instance.AudioManager.PlaySFX(27, "madness");
       if (!MadenssEffect.enabled) MadenssEffect.enabled = true;
       IsMad = true;
@@ -1870,7 +1875,7 @@ public class UI_dialogue : UI_default
         CurrentSettlement.Discomfort += _discomfortvalue;
         if (DiscomfortValue > 0)
         {
-          StartCoroutine(discomfortanimation(_restvalue));
+          yield return StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
       case StatusTypeEnum.Gold:
@@ -1880,7 +1885,7 @@ public class UI_dialogue : UI_default
         CurrentSettlement.Discomfort += _discomfortvalue;
         if (DiscomfortValue > 0)
         {
-          StartCoroutine(discomfortanimation(_restvalue));
+          yield return StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
     }
@@ -1912,6 +1917,7 @@ public class UI_dialogue : UI_default
       _time += Time.deltaTime;
       yield return null;
     }
+    yield return new WaitForSeconds(0.5f);
     DiscomfortText.text = _enddiscomfort.ToString();
     RestCostValueText.text = string.Format(_valuetext, _endrestvalue);
   }

@@ -1,16 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using System.Linq;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System;
-using System.Reflection;
-using OpenCvSharp.Flann;
-using OpenCvSharp;
-using System.Runtime.CompilerServices;
-using UnityEngine.WSA;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -100,63 +94,31 @@ public class UIManager : MonoBehaviour
     }
   }
   [Space(10)]
-  [SerializeField] private float StatusGainTime = 0.8f;
-  [SerializeField] private float StatusGainSize = 1.4f;
-  [SerializeField] private float StatusLossTime = 0.8f;
-  [SerializeField] private AnimationCurve StatusGainCurve=new AnimationCurve();
-  [SerializeField] private AnimationCurve StatusLossCurve=new AnimationCurve();
-  private IEnumerator statusgainanimation(List<RectTransform> rectlist)
+  [SerializeField] private float ExpGainTime = 0.5f;
+  [SerializeField] private float ExpLossTime = 0.4f;
+  [SerializeField] private AnimationCurve ExpAnimationCurve=new AnimationCurve();
+  public IEnumerator ExpGainCount(RectTransform rect)
   {
     float _time = 0.0f;
     Vector3 _currentscale = Vector3.one;
 
-    while (_time < StatusGainTime)
+    while (_time < ExpGainTime)
     {
-      _currentscale= Vector3.Lerp(Vector3.one, Vector3.one * StatusGainSize, StatusGainCurve.Evaluate(_time / StatusGainTime));
-      foreach(var rect in rectlist)
-        rect.localScale = _currentscale;
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    foreach (var rect in rectlist)
-      rect.localScale = Vector3.one;
-  }
-  private IEnumerator statuslossanimation(List<RectTransform> rectlist,float losssscalesize)
-  {
-    float _time = 0.0f;
-    Vector3 _currentscale = Vector3.one * losssscalesize;
-    while (_time < StatusLossTime)
-    {
-      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * losssscalesize, StatusLossCurve.Evaluate(_time / StatusLossTime));
-      foreach (var rect in rectlist)
-        rect.localScale = _currentscale;
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    foreach (var rect in rectlist)
-      rect.localScale = Vector3.one;
-  }
-  public IEnumerator statusgainanimation(RectTransform rect)
-  {
-    float _time = 0.0f;
-    Vector3 _currentscale = Vector3.one;
-
-    while (_time < StatusGainTime)
-    {
-      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * StatusGainSize, StatusGainCurve.Evaluate(_time / StatusGainTime));
+      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * 1.5f, ExpAnimationCurve.Evaluate(_time / ExpGainTime));
         rect.localScale = _currentscale;
       _time += Time.deltaTime;
       yield return null;
     }
       rect.localScale = Vector3.one;
   }
-  private IEnumerator statuslossanimation(RectTransform rect,float losssscalesize)
+  private IEnumerator ExpLossCount(RectTransform rect)
   {
     float _time = 0.0f;
-    Vector3 _currentscale = Vector3.one * losssscalesize;
-    while (_time < StatusLossTime)
+    float _lossscale = 1.2f;
+    Vector3 _currentscale = Vector3.one * _lossscale;
+    while (_time < ExpLossTime)
     {
-      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * losssscalesize, StatusLossCurve.Evaluate(_time / StatusLossTime));
+      _currentscale = Vector3.Lerp(Vector3.one, Vector3.one * _lossscale, ExpAnimationCurve.Evaluate(_time / ExpLossTime));
         rect.localScale = _currentscale;
       _time += Time.deltaTime;
       yield return null;
@@ -191,7 +153,7 @@ public class UIManager : MonoBehaviour
     }
     tmp.text = _coloraction != null ? _coloraction((int)_current) : ((int)_current).ToString();
   }
-  [SerializeField] private AnimationCurve StatusEffectLossCurve = new AnimationCurve();
+  [SerializeField] private RectTransform HPUIRect = null;
   [SerializeField] private TextMeshProUGUI HPText = null;
   private int lasthp = -1;
   public void UpdateHPText(int _last)
@@ -199,19 +161,21 @@ public class UIManager : MonoBehaviour
     if (!lasthp.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.HP - lasthp;
-      // if(_changedvalue!=0)
-      // StartCoroutine(statuschangedtexteffect(WNCText.GetHPColor(_changedvalue), HPText.rectTransform));
+       if(_changedvalue!=0)
+       StartCoroutine(statuschangedtexteffect(
+         (_changedvalue>0?"<sprite=0>":"<sprite=6>")+ (_changedvalue>0?WNCText.GetHPColor("+"+_changedvalue):WNCText.GetHPColor(_changedvalue)),
+         HPUIRect, _changedvalue>0));
 
       if (lasthp != GameManager.Instance.MyGameData.HP)
       {
-        if (lasthp < GameManager.Instance.MyGameData.HP) StartCoroutine(statusgainanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform }));
+        if (lasthp < GameManager.Instance.MyGameData.HP)
+        {
+
+        }
         else
         {
-          StartCoroutine(statuslossanimation(new List<RectTransform> { HPIcon.rectTransform, HPText.rectTransform },
-            Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_HP_Min) / ConstValues.StatusLoss_HP_Max)));
           AudioManager.PlaySFX(15, "status");
         }
-        HighlightManager.HighlightAnimation(HighlightEffectEnum.HP);
       }
     }
 
@@ -227,32 +191,29 @@ public class UIManager : MonoBehaviour
     HPIcon.sprite = GameManager.Instance.MyGameData.MadnessSafe ?
       GameManager.Instance.ImageHolder.HPIcon : GameManager.Instance.ImageHolder.HPBroken;
   }
+  [SerializeField] private RectTransform SanityUIRect = null;
   [SerializeField] private TextMeshProUGUI SanityText = null;
- // [SerializeField] private TextMeshProUGUI SanityText_max = null;
   private int lastsanity = -1;
   public void UpdateSanityText(int _last)
   {
     if (!lastsanity.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.Sanity - lastsanity;
-      // if (_changedvalue != 0)
-      //   StartCoroutine(statuschangedtexteffect(WNCText.GetSanityColor(_changedvalue), SanityText_current.rectTransform));
+      if(_changedvalue!=0)
+        StartCoroutine(statuschangedtexteffect(
+          (_changedvalue > 0 ? "<sprite=11>" : "<sprite=17>") + (_changedvalue > 0 ? WNCText.GetSanityColor("+" + _changedvalue) : WNCText.GetSanityColor(_changedvalue)),
+          SanityUIRect, _changedvalue > 0));
 
       if (lastsanity != GameManager.Instance.MyGameData.Sanity)
       {
         if (lastsanity < GameManager.Instance.MyGameData.Sanity)
         {
-          StartCoroutine(statusgainanimation(new List<RectTransform> { SanityIconRect, SanityText.rectTransform }));
           AudioManager.PlaySFX(16, "status");
         }
         else
         {
-          StartCoroutine(statuslossanimation(new List<RectTransform> { SanityIconRect, SanityText.rectTransform },
-            Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Sanity_Min) / ConstValues.StatusLoss_Sanity_Max)));
           AudioManager.PlaySFX(17, "status");
         }
-
-        HighlightManager.HighlightAnimation(HighlightEffectEnum.Sanity);
       }
     }
 
@@ -262,6 +223,7 @@ public class UIManager : MonoBehaviour
 
     lastsanity = GameManager.Instance.MyGameData.Sanity;
   }
+  [SerializeField] private RectTransform GoldUIRect = null;
   [SerializeField] private TextMeshProUGUI GoldText = null;
   private int lastgold = -1;
   public void UpdateGoldText(int _last)
@@ -269,29 +231,27 @@ public class UIManager : MonoBehaviour
     if (!lastgold.Equals(-1))
     {
       int _changedvalue = GameManager.Instance.MyGameData.Gold - lastgold;
-      //  if (_changedvalue != 0)
-      //   StartCoroutine(statuschangedtexteffect(WNCText.GetGoldColor(_changedvalue), GoldText.rectTransform));
+      if (_changedvalue != 0)
+        StartCoroutine(statuschangedtexteffect(
+         ( _changedvalue > 0 ? "<sprite=22>" : "<sprite=28>") + (_changedvalue > 0 ? WNCText.GetGoldColor("+" + _changedvalue) : WNCText.GetGoldColor(_changedvalue)),
+          GoldUIRect, _changedvalue > 0));
 
       if (lastgold != GameManager.Instance.MyGameData.Gold)
       {
         if (lastgold < GameManager.Instance.MyGameData.Gold)
         {
-          StartCoroutine(statusgainanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform }));
           AudioManager.PlaySFX(18, "status");
         }
         else
         {
-          StartCoroutine(statuslossanimation(new List<RectTransform> { GoldIconRect, GoldText.rectTransform },
-            Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_Gold_Min) / ConstValues.StatusLoss_Gold_Max)));
         }
-
-        HighlightManager.HighlightAnimation(HighlightEffectEnum.Gold);
       }
     }
 
     StartCoroutine(ChangeCount(GoldText, _last, GameManager.Instance.MyGameData.Gold));
     lastgold = GameManager.Instance.MyGameData.Gold;
   }
+  [SerializeField] private RectTransform SupplyUIRect = null;
   [SerializeField] private Image Supply_Icon = null;
   [SerializeField] private TextMeshProUGUI SupplyText = null;
   private int lastsupply = -1;
@@ -300,15 +260,19 @@ public class UIManager : MonoBehaviour
     if (lastsupply != -1)
     {
       int _changedvalue = GameManager.Instance.MyGameData.Supply - lastsupply;
-   //   if (_changedvalue != 0)
-    //    StartCoroutine(statuschangedtexteffect(WNCText.GetMovepointColor(_changedvalue), MovePointText.rectTransform));
+      if (_changedvalue != 0)
+        StartCoroutine(statuschangedtexteffect(
+        (  _changedvalue > 0 ? "<sprite=100>" : "<sprite=101>") + (_changedvalue > 0 ? WNCText.GetSupplyColor("+" + _changedvalue) : WNCText.GetSupplyColor(_changedvalue)),
+          SupplyUIRect, _changedvalue > 0));
+      
       if (lastsupply != GameManager.Instance.MyGameData.Supply)
       {
-        HighlightManager.HighlightAnimation(HighlightEffectEnum.Movepoint);
-        if (lastsupply < GameManager.Instance.MyGameData.Supply) StartCoroutine(statusgainanimation(new List<RectTransform> { MovepointIconRect, SupplyText.rectTransform }));
-        else StartCoroutine(statuslossanimation(new List<RectTransform> { MovepointIconRect, SupplyText.rectTransform },
-          Mathf.Lerp(ConstValues.StatusLossMinSacle, ConstValues.StatusLossMaxScale, (Mathf.Abs(_changedvalue) - ConstValues.StatusLoss_MP_Min) / ConstValues.StatusLoss_MP_Max)));
-
+        if (lastsupply < GameManager.Instance.MyGameData.Supply)
+        {
+        }
+        else
+        {
+        }
       }
     }
 
@@ -760,30 +724,32 @@ public class UIManager : MonoBehaviour
   }
 
   [Space(10)]
-  [SerializeField] private float StatusTextMovetime = 1.0f;
-  [SerializeField] private float LossStatusMoveSpace = 35.0f;
+  [SerializeField] private RectTransform StatusRect = null;
+  [SerializeField] private float StatusTextMovetime_gain = 1.0f;
+  [SerializeField] private float StatusTextMovetime_loss = 1.0f;
+  [SerializeField] private Vector3 StatusTextEffectPos_top = new Vector3(0.0f, -80.0f);
+  [SerializeField] private Vector3 StatusTextEffectPos_gain = new Vector3(0.0f, -160.0f);
+  [SerializeField] private Vector3 StatusTextEffectPos_loss = new Vector3(0.0f, -160.0f);
   [SerializeField] private GameObject StatusTextPrefab = null;
-  private IEnumerator statuschangedtexteffect(string value,RectTransform targetrect)
+  [SerializeField] private AnimationCurve StatusTextEffectCurve_gain = new AnimationCurve();
+  [SerializeField] private AnimationCurve StatusTextEffectCurve_loss = new AnimationCurve();
+  private IEnumerator statuschangedtexteffect(string value,RectTransform targetrect, bool isgain)
   {
-    float _time = 0.0f, _targettime = StatusTextMovetime;
-    GameObject _prefab=Instantiate(StatusTextPrefab,MyCanvas);
+    float _time = 0.0f, _targettime = isgain?StatusTextMovetime_gain:StatusTextMovetime_loss;
+    GameObject _prefab=Instantiate(StatusTextPrefab,StatusRect);
     _prefab.GetComponent<TextMeshProUGUI>().text = value;
     RectTransform _rect = _prefab.GetComponent<RectTransform>();
 
-    float _startingspace = 40.0f;
-    _rect.position = targetrect.position;
-    _rect.anchoredPosition3D = new Vector3(_rect.anchoredPosition.x, _rect.anchoredPosition.y-_startingspace, 0.0f);
-    StartCoroutine(ChangeAlpha(_prefab.GetComponent<CanvasGroup>(), 1.0f, 0.3f));
-
-    Vector3 _startpos = _rect.anchoredPosition;
-    Vector3 _endpos = _rect.anchoredPosition + Vector2.down * LossStatusMoveSpace;
+    Vector3 _startpos = targetrect.anchoredPosition3D + (isgain ? StatusTextEffectPos_gain : StatusTextEffectPos_top);
+    Vector3 _endpos = targetrect.anchoredPosition3D + (isgain ? StatusTextEffectPos_top: StatusTextEffectPos_loss);
     while (_time < _targettime)
     {
-      _rect.anchoredPosition = Vector3.Lerp(_startpos, _endpos, StatusEffectLossCurve.Evaluate(_time / _targettime));
+      _rect.anchoredPosition = Vector3.Lerp(_startpos, _endpos, 
+        isgain? StatusTextEffectCurve_gain.Evaluate(_time / _targettime): StatusTextEffectCurve_loss.Evaluate(_time / _targettime));
       _time += Time.deltaTime;
       yield return null;
     }
-
+    _rect.anchoredPosition = _endpos;
     yield return StartCoroutine(ChangeAlpha(_prefab.GetComponent<CanvasGroup>(),0.0f,0.2f));
     Destroy(_prefab);
   }
@@ -814,8 +780,7 @@ public class UIManager : MonoBehaviour
     {
       if (conversationlevel != GameManager.Instance.MyGameData.Skill_Conversation.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { ConversationLevel.rectTransform, ConversationEffectGroup.transform as RectTransform}));
-        StartCoroutine(ChangeAlpha(ConversationEffectGroup, 0.0f, StatusGainTime));
+        StartCoroutine(ChangeAlpha(ConversationEffectGroup, 0.0f, ExpGainTime));
         conversationlevel = GameManager.Instance.MyGameData.Skill_Conversation.Level;
       }
     }
@@ -829,8 +794,7 @@ public class UIManager : MonoBehaviour
     {
       if (forcelevel != GameManager.Instance.MyGameData.Skill_Force.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { ForceLevel.rectTransform, ForceEffectGroup.transform as RectTransform }));
-        StartCoroutine(ChangeAlpha(ForceEffectGroup, 0.0f, StatusGainTime));
+        StartCoroutine(ChangeAlpha(ForceEffectGroup, 0.0f, ExpGainTime));
         forcelevel = GameManager.Instance.MyGameData.Skill_Force.Level;
       }
     }
@@ -844,8 +808,7 @@ public class UIManager : MonoBehaviour
     {
       if (wildlevel != GameManager.Instance.MyGameData.Skill_Wild.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { WildLevel.rectTransform, WildEffectGroup.transform as RectTransform }));
-        StartCoroutine(ChangeAlpha(WildEffectGroup, 0.0f, StatusGainTime));
+        StartCoroutine(ChangeAlpha(WildEffectGroup, 0.0f, ExpGainTime));
         wildlevel = GameManager.Instance.MyGameData.Skill_Wild.Level;
       }
     }
@@ -859,8 +822,7 @@ public class UIManager : MonoBehaviour
     {
       if (intelligencelevel != GameManager.Instance.MyGameData.Skill_Intelligence.Level)
       {
-        StartCoroutine(statusgainanimation(new List<RectTransform> { IntelligenceLevel.rectTransform, IntelligenceEffectGroup.transform as RectTransform }));
-        StartCoroutine(ChangeAlpha(IntelligenceEffectGroup, 0.0f, StatusGainTime));
+        StartCoroutine(ChangeAlpha(IntelligenceEffectGroup, 0.0f, ExpGainTime));
         intelligencelevel = GameManager.Instance.MyGameData.Skill_Intelligence.Level;
       }
     }
@@ -939,6 +901,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private CanvasGroup ExpUse_Long_Group = null;
   [SerializeField] private Image ExpUse_Long_img = null;
   [SerializeField] private TextMeshProUGUI ExpUse_Long_text = null;
+  [SerializeField] private CanvasGroup Exp_Long_Group = null;
   private bool LongExpActive = false;
   [SerializeField] private Button ShortExpButton_A = null;
   [SerializeField] private RectTransform ShortExpCover_A = null;
@@ -947,6 +910,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private CanvasGroup ExpUse_Short_A_Group = null;
   [SerializeField] private Image ExpUse_Short_A_img = null;
   [SerializeField] private TextMeshProUGUI ExpUse_Short_A_text = null;
+  [SerializeField] private CanvasGroup Exp_Short_A_Group = null;
   private bool ShortExpAActive = false;
   [SerializeField] private Button ShortExpButton_B = null;
   [SerializeField] private RectTransform ShortExpCover_B = null;
@@ -955,11 +919,95 @@ public class UIManager : MonoBehaviour
   [SerializeField] private CanvasGroup ExpUse_Short_B_Group = null;
   [SerializeField] private Image ExpUse_Short_B_img = null;
   [SerializeField] private TextMeshProUGUI ExpUse_Short_B_text = null;
+  [SerializeField] private CanvasGroup Exp_Short_B_Group = null;
   private bool ShortExpBActive = false;
   [SerializeField] private Color ExpUseRefuseColor = new Color();
   [SerializeField] private float UsedTextWarningSize = 1.4f;
   [SerializeField] private float UsedTextWarningTime = 0.5f;
   [SerializeField] private float ExpUsingTime = 0.6f;
+  private float ExpGroupAlpha_disable = 0.25f;
+  private float ExpGroupAlpha_enable = 1.0f;
+  public void SetExpUse(List<SelectionData> datas)
+  {
+    List<EffectType> _effects= new List<EffectType>();
+    foreach(var _data in datas)
+    {
+      switch (_data.ThisSelectionType)
+      {
+        case SelectionTargetType.None:
+          break;
+        case SelectionTargetType.Pay:
+          switch (_data.SelectionPayTarget)
+          {
+            case StatusTypeEnum.HP:
+              _effects.Add(EffectType.HPLoss);
+              break;
+            case StatusTypeEnum.Sanity:
+              _effects.Add(EffectType.SanityLoss);
+              break;
+            case StatusTypeEnum.Gold:
+              break;
+          }
+          break;
+        case SelectionTargetType.Check_Single:
+          switch (_data.SelectionCheckSkill[0])
+          {
+            case SkillTypeEnum.Conversation:
+              _effects.Add(EffectType.Conversation);
+              break;
+            case SkillTypeEnum.Force:
+              _effects.Add(EffectType.Force);
+              break;
+            case SkillTypeEnum.Wild:
+              _effects.Add(EffectType.Wild);
+              break;
+            case SkillTypeEnum.Intelligence:
+              _effects.Add(EffectType.Intelligence);
+              break;
+          }
+          break;
+        case SelectionTargetType.Check_Multy:
+          foreach(var _skill in _data.SelectionCheckSkill)
+          {
+            switch (_skill)
+            {
+              case SkillTypeEnum.Conversation:
+                _effects.Add(EffectType.Conversation);
+                break;
+              case SkillTypeEnum.Force:
+                _effects.Add(EffectType.Force);
+                break;
+              case SkillTypeEnum.Wild:
+                _effects.Add(EffectType.Wild);
+                break;
+              case SkillTypeEnum.Intelligence:
+                _effects.Add(EffectType.Intelligence);
+                break;
+            }
+          }
+          break;
+      }
+    }
+
+    foreach(var _effect in _effects)
+    {
+      if (GameManager.Instance.MyGameData.LongExp != null &&
+        GameManager.Instance.MyGameData.LongExp.Effects.Contains(_effect) &&
+        Exp_Long_Group.alpha == ExpGroupAlpha_disable) Exp_Long_Group.alpha = ExpGroupAlpha_enable;
+      if (GameManager.Instance.MyGameData.ShortExp_A != null &&
+     GameManager.Instance.MyGameData.ShortExp_A.Effects.Contains(_effect) &&
+     Exp_Short_A_Group.alpha == ExpGroupAlpha_disable) Exp_Short_A_Group.alpha = ExpGroupAlpha_enable;
+      if (GameManager.Instance.MyGameData.ShortExp_B != null &&
+        GameManager.Instance.MyGameData.ShortExp_B.Effects.Contains(_effect) &&
+        Exp_Short_B_Group.alpha == ExpGroupAlpha_disable) Exp_Short_B_Group.alpha = ExpGroupAlpha_enable;
+    }
+  }
+  public void SetExpUnuse()
+  {
+    Exp_Long_Group.alpha = ExpGroupAlpha_disable;
+    Exp_Short_A_Group.alpha = ExpGroupAlpha_disable;
+    Exp_Short_B_Group.alpha = ExpGroupAlpha_disable;
+  }
   public void UseExp(bool dir)
   {
     bool _anyexpused = false;
@@ -1017,11 +1065,15 @@ public class UIManager : MonoBehaviour
         StartCoroutine(ChangeAlpha(ExpUse_Short_B_Group, 0.0f, 0.4f));
       }
     }
-
     if (_anyexpused)
     {
-      Invoke("UpdateExpPael", ExpUsingTime);
+      StartCoroutine(doitlater());
     }
+  }
+  private IEnumerator doitlater()
+  {
+    yield return new WaitForSeconds(ExpUsingTime);
+    UpdateExpPanel();
   }
   private IEnumerator useexp(CanvasGroup group,RectTransform targetrect,Experience exp,int duration)
   {
@@ -1073,7 +1125,7 @@ public class UIManager : MonoBehaviour
     if (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.Duration > (ConstValues.MadnessEffect_Intelligence - 1))
       StartCoroutine(ChangeAlpha(ShortMad_B, 0.0f, 1.0f));
   }
-  public void UpdateExpPael()
+  public void UpdateExpPanel()
   {
     bool _starteffect = false;
     bool _turnchanged = false;
@@ -1097,13 +1149,13 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(LongExpCover, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
-        StartCoroutine(statusgainanimation(LongExpTurn.rectTransform));
+        StartCoroutine(ExpGainCount(LongExpTurn.rectTransform));
         AudioManager.PlaySFX(20);
       }
       else
       {
         _turnchanged = int.Parse(LongExpTurn.text) != GameManager.Instance.MyGameData.LongExp.Duration;
-        if (_turnchanged) StartCoroutine(statuslossanimation(LongExpTurn.rectTransform,1.2f));
+        if (_turnchanged) StartCoroutine(ExpLossCount(LongExpTurn.rectTransform));
       }
       LongExpTurn.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
       LongExpActive = true;
@@ -1127,13 +1179,13 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_A, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
-        StartCoroutine(statusgainanimation(ShortExpTurn_A.rectTransform));
+        StartCoroutine(ExpGainCount(ShortExpTurn_A.rectTransform));
         AudioManager.PlaySFX(20);
       }
       else
       {
         _turnchanged = int.Parse(ShortExpTurn_A.text) != GameManager.Instance.MyGameData.ShortExp_A.Duration;
-        if (_turnchanged)StartCoroutine(statuslossanimation(ShortExpTurn_A.rectTransform,1.2f));
+        if (_turnchanged)StartCoroutine(ExpLossCount(ShortExpTurn_A.rectTransform));
       }
       ShortExpTurn_A.text = GameManager.Instance.MyGameData.ShortExp_A.Duration.ToString();
       ShortExpAActive = true;
@@ -1157,13 +1209,13 @@ public class UIManager : MonoBehaviour
       {
         StartCoroutine(moverect(ShortExpCover_B, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
-        StartCoroutine(statusgainanimation(ShortExpTurn_B.rectTransform));
+        StartCoroutine(ExpGainCount(ShortExpTurn_B.rectTransform));
         AudioManager.PlaySFX(20);
       }
       else
       {
         _turnchanged = int.Parse(ShortExpTurn_B.text) != GameManager.Instance.MyGameData.ShortExp_B.Duration;
-        if (_turnchanged) StartCoroutine(statuslossanimation(ShortExpTurn_B.rectTransform,1.2f));
+        if (_turnchanged) StartCoroutine(ExpLossCount(ShortExpTurn_B.rectTransform));
       }
       ShortExpTurn_B.text = GameManager.Instance.MyGameData.ShortExp_B.Duration.ToString();
       ShortExpBActive = true;
@@ -1322,7 +1374,7 @@ public class UIManager : MonoBehaviour
     UpdateSanityText(12);
     UpdateGoldText(12);
     UpdateSupplyText(12);
-    UpdateExpPael();
+    UpdateExpPanel();
     UpdateTendencyIcon();
     UpdateSkillLevel();
     switch (GameManager.Instance.MyGameData.QuestType)
@@ -1594,11 +1646,11 @@ public static class WNCText
   }
   public static string GetSupplyColor(string str)
   {
-    return $"<#BEF781>{str}</color>";
+    return $"<#6BA260>{str}</color>";
   }
   public static string GetSupplyColor(int value)
   {
-    return $"<#BEF781>{value}</color>";
+    return $"<#6BA260>{value}</color>";
   }
   public static string GetHPColor(string str)
   {

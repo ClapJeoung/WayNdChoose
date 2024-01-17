@@ -299,7 +299,8 @@ public class UI_map : UI_default
       SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
       _newroute.Outlines.Add(_enableoutline);
 
-      Vector3 _arrowpos = i == 0 ? (_newroute.Start.ButtonScript.Rect.anchoredPosition3D + _newroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f :
+      Vector3 _arrowpos = _newroute.Length==1? (_newroute.Start.ButtonScript.Rect.anchoredPosition3D + _newroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f :
+        i == 0 ? (_newroute.Start.ButtonScript.Rect.anchoredPosition3D + _newroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f :
         i == _newroute.Length - 1 ? (_newroute.Route[i-1].ButtonScript.Rect.anchoredPosition3D + _newroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f :
         (_newroute.Route[i-1].ButtonScript.Rect.anchoredPosition3D + _newroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
       Image _arrow = GetEnableArrow;
@@ -398,16 +399,17 @@ public class UI_map : UI_default
       PayValues_Sanity.Add(_pay_sanity);
       PayValues_Gold.Add(_pay_gold);
     }
-    if (_supplyover)
-    {
-      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
-      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
-    }
-    else
-    {
-      GoldButton_Highlight.RemoveAllCall();
-      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
-    }
+
+    SanityButton_Highlight.RemoveAllCall();
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
+    if (GameManager.Instance.MyGameData.Supply > 0) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
+    if (LastDestination.TileSettle == null) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+
+    GoldButton_Highlight.RemoveAllCall();
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    if (GameManager.Instance.MyGameData.Supply > 0) GoldButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
+    if (_supplyover) GoldButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
+
 
     UIManager.Instance.PreviewManager.ClosePreview();
   }
@@ -602,17 +604,16 @@ public class UI_map : UI_default
       PayValues_Sanity.Add(_pay_sanity);
       PayValues_Gold.Add(_pay_gold);
     }
-    if (_supplyover)
-    {
-      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
-      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
-    }
-    else
-    {
-      GoldButton_Highlight.RemoveAllCall();
-      GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
-    }
 
+    SanityButton_Highlight.RemoveAllCall();
+    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
+    if (GameManager.Instance.MyGameData.Supply > 0) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
+    if (LastDestination.TileSettle == null) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+
+    GoldButton_Highlight.RemoveAllCall();
+    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    if (GameManager.Instance.MyGameData.Supply > 0) GoldButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
+    if (_supplyover) GoldButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
 
   }
   private void ResetRoute()
@@ -727,7 +728,7 @@ public class UI_map : UI_default
       IsMad = true;
 
       Debug.Log("ÀÚ¿¬ ±¤±â ¹ßµ¿");
-      UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
+      UIManager.Instance.HighlightManager.Highlight_Madness( SkillTypeEnum.Wild);
       UIManager.Instance.AudioManager.PlaySFX(27, "madness");
       if (MadnessEffect.alpha != 1.0f) MadnessEffect.alpha = 1.0f;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
@@ -1136,15 +1137,11 @@ public class UI_map : UI_default
 
     SanitybuttonGroup.interactable = true;
     SanityButton_Highlight.Interactive = true;
-    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
-    SanityButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint);
     SanitybuttonGroup.alpha = 1.0f;
 
     bool _goldable = GameManager.Instance.MyGameData.Gold > 0;
     GoldbuttonGroup.interactable = _goldable;
     GoldButton_Highlight.Interactive = _goldable;
-    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
-    GoldButton_Highlight.SetInfo(HighlightEffectEnum.Movepoint);
     GoldbuttonGroup.alpha = _goldable ? 1.0f : 0.4f;
 
     UIManager.Instance.PreviewManager.ClosePreview();
@@ -1490,7 +1487,7 @@ public class UI_map : UI_default
       {           //ÀÏ¹Ý->±¤±â
         IsMad = true;
 
-        UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Wild);
+        UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Wild);
         UIManager.Instance.AudioManager.PlaySFX(27, "madness");
         StartCoroutine(UIManager.Instance.ChangeAlpha(MadnessEffect, 1.0f, 0.8f));
         TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);

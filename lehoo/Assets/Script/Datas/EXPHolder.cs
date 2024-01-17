@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum EffectType {
     Conversation,Force,Wild,Intelligence,
-    HPLoss,SanityLoss,GoldGen
+    HPLoss,SanityLoss,GoldGen,None
    }
 public class Experience
 {

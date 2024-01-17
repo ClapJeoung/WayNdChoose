@@ -137,7 +137,7 @@ public class DebugScript : MonoBehaviour
         GameManager.Instance.MyGameData.ShortExp_B.Duration = EXP_Short_1_Turn.text != "" ? int.Parse(EXP_Short_1_Turn.text) : ConstValues.EXPMaxTurn_short_idle;
       }
     }
-    UIManager.Instance.UpdateExpPael();
+    UIManager.Instance.UpdateExpPanel();
 
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {

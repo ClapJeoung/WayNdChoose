@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro.SpriteAssetUtilities;
 using Unity.Mathematics;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public static class ConstValues
 {
-  public const float CountChangeTime_settlement = 0.6f;
+  public const float CountChangeTime_settlement = 1.2f;
   public const float CountChangeTime_status = 0.5f;
   public const float CountChangeTime_map = 0.3f;
 
@@ -38,7 +37,8 @@ public static class ConstValues
   public const int Supply_River = 1, Supply_Forest = 1;
   public const int Supply_Default = 1;
 
-  public const float StatusLossMinSacle = 1.15f, StatusLossMaxScale = 1.4f;
+  public const float StatusHighlightSize = 1.3f;
+
   public const float StatusLoss_HP_Min = 6, StatusLoss_HP_Max = 30;
   public const float StatusLoss_Sanity_Min = 6, StatusLoss_Sanity_Max = 30;
   public const float StatusLoss_Gold_Min = 6, StatusLoss_Gold_Max = 30;
@@ -218,7 +218,7 @@ public class GameData    //게임 진행도 데이터
                 ShortExp_A .Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle ? ConstValues.EXPMaxTurn_short_idle : ShortExp_A .Duration + _addvalue;
         if (ShortExp_B != null) ShortExp_B.Duration =
                 ShortExp_B.Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle ? ConstValues.EXPMaxTurn_short_idle : ShortExp_B.Duration + _addvalue;
-        UIManager.Instance.UpdateExpPael();
+        UIManager.Instance.UpdateExpPanel();
         break;
       case SectorTypeEnum.NULL:
         break;
@@ -271,7 +271,7 @@ public class GameData    //게임 진행도 데이터
                 case QuestType.Cult:
                   Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
                   Debug.Log("대화 광기 발동");
-                  UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Conversation);
+                  UIManager.Instance.HighlightManager.Highlight_Madness( SkillTypeEnum.Conversation);
                   UIManager.Instance.AudioManager.PlaySFX(27, "madness");
                   UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.MadnessActive,
                     UIManager.Instance.ConversationIconRect);
@@ -286,7 +286,7 @@ public class GameData    //게임 진행도 데이터
             {
               _expvalue = ConstValues.MadnessEffect_Intelligence;
               Debug.Log("지성 광기 발동");
-              UIManager.Instance.HighlightManager.HighlightAnimation(HighlightEffectEnum.Madness, SkillTypeEnum.Intelligence);
+              UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
               UIManager.Instance.AudioManager.PlaySFX(27, "madness");
               UIManager.Instance.UpdateExpMad();
             }
@@ -299,7 +299,7 @@ public class GameData    //게임 진행도 데이터
         if (ShortExp_B != null) ShortExp_B.Duration -= _expvalue;
 
 
-        UIManager.Instance.UpdateExpPael();
+        UIManager.Instance.UpdateExpPanel();
 
         switch (QuestType)
         {
@@ -620,7 +620,7 @@ public class GameData    //게임 진행도 데이터
     else if(ShortExp_A== _exp) ShortExp_A = null;
     else if(ShortExp_B== _exp) ShortExp_B = null;
 
-    UIManager.Instance.UpdateExpPael();
+    UIManager.Instance.UpdateExpPanel();
     UIManager.Instance.UpdateSkillLevel();
   }
   #endregion
