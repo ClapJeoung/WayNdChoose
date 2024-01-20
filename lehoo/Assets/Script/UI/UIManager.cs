@@ -296,6 +296,8 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform SanityIconRect = null;
   [SerializeField] private RectTransform GoldIconRect = null;
   [SerializeField] private RectTransform MovepointIconRect = null;
+  [SerializeField] private AnimationCurve SkillIconGainCurve = new AnimationCurve();
+  [SerializeField] private float SkillIconGainTime = 0.6f;
   public RectTransform ConversationIconRect = null;
   [SerializeField] private RectTransform ForceIconRect = null;
   [SerializeField] private RectTransform WildIconRect = null;
@@ -400,72 +402,33 @@ public class UIManager : MonoBehaviour
     _iconrect.anchoredPosition = Vector2.one * 3000.0f;
     ActiveIconIndexList.Remove(_index);
   }
-  /// <summary>
-  /// 기술
-  /// </summary>
-  /// <param name="isusing"></param>
-  /// <param name="skilltype"></param>
-  /// <param name="rect"></param>
-  /// <returns></returns>
-  public IEnumerator SetIconEffect(bool isusing, SkillTypeEnum skilltype, RectTransform rect)
+  
+  public IEnumerator SetIconEffect(SkillTypeEnum skilltype)
   {
-    Vector2 _startpos = Vector2.zero, _endpos = Vector2.zero;
-    Sprite _icon = null;
+    RectTransform _targetrect = null;
     switch (skilltype)
     {
       case SkillTypeEnum.Conversation:
-        _icon = GameManager.Instance.ImageHolder.SkillIcon_Conversation_w;
-        _startpos = isusing ? ConversationIconRect.position : rect.position;
-        _endpos = isusing ? rect.position : ConversationIconRect.position;
+        _targetrect = ConversationIconRect;
         break;
       case SkillTypeEnum.Force:
-        _icon = GameManager.Instance.ImageHolder.SkillIcon_Force_w;
-        _startpos = isusing ? ForceIconRect.position : rect.position;
-        _endpos = isusing ? rect.position : ForceIconRect.position;
+        _targetrect = ForceIconRect;
         break;
       case SkillTypeEnum.Wild:
-        _icon = GameManager.Instance.ImageHolder.SkillIcon_Wild_w;
-        _startpos = isusing ? WildIconRect.position : rect.position;
-        _endpos = isusing ? rect.position : WildIconRect.position;
+        _targetrect = WildIconRect;
         break;
       case SkillTypeEnum.Intelligence:
-        _icon = GameManager.Instance.ImageHolder.SkillIcon_Intelligence_w;
-        _startpos = isusing ? IntelligenceIconRect.position : rect.position;
-        _endpos = isusing ? rect.position : IntelligenceIconRect.position;
+        _targetrect = IntelligenceIconRect;
         break;
     }
-    int _index = 0;
-    RectTransform _iconrect = null;
-    for (int i = 0; i < IconRectList.Count; i++)
-    {
-      _index = i;
-      if (ActiveIconIndexList.Contains(i)) continue;
-
-      _iconrect = IconRectList[_index];
-      _iconrect.GetComponent<Image>().sprite = _icon;
-      _iconrect.localScale = Vector3.one;
-      ActiveIconIndexList.Add(_index);
-      break;
-    }
-
-    float _time = 0.0f;
-    AnimationCurve _curve = isusing ? IconUsingCurve : IconGainCurve;
-    float _targettime = isusing ? IconMoveTime_using : IconMoveTime_gain;
+    float _time = 0.0f, _targettime = SkillIconGainTime;
     while (_time < _targettime)
     {
-
-      _iconrect.position = Vector3.Lerp(_startpos, _endpos, _curve.Evaluate(_time / _targettime));
-      _iconrect.anchoredPosition3D = new Vector3(_iconrect.anchoredPosition3D.x, _iconrect.anchoredPosition3D.y, 0.0f);
-     _iconrect.localScale = Vector3.one * (1.0f - IconUsingScaleCurve.Evaluate(_time / _targettime));
-
+      _targetrect.localScale=Vector3.one*Mathf.Lerp(1.0f,ConstValues.StatusHighlightSize,SkillIconGainCurve.Evaluate(_time/ _targettime));
       _time += Time.deltaTime;
       yield return null;
     }
-    _iconrect.anchoredPosition = Vector2.one * 3000.0f;
-    ActiveIconIndexList.Remove(_index);
-
-    GameManager.Instance.MyGameData.GetSkill(skilltype).LevelByDefault++;
-    UIManager.Instance.AudioManager.PlaySFX(19);
+    _targetrect.localScale = Vector3.one;
   }
   /// <summary>
   /// 성향
@@ -586,10 +549,6 @@ public class UIManager : MonoBehaviour
     }
 
     StartCoroutine(iconmove_movepoint(_index, _targetrect, _startpos, _endpos, IconUsingCurve));
-  }
-  public void SetRitualFail()
-  {
-    StartCoroutine(SetIconEffect_movepoint_ritualfail(CultSidepanelOpenpos,ConstValues.Quest_Cult_Ritual_PenaltySupply));
   }
   public IEnumerator SetIconEffect_movepoint_ritualfail(RectTransform endrect,int count)
   {
@@ -727,9 +686,10 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform StatusRect = null;
   [SerializeField] private float StatusTextMovetime_gain = 1.0f;
   [SerializeField] private float StatusTextMovetime_loss = 1.0f;
-  [SerializeField] private Vector3 StatusTextEffectPos_top = new Vector3(0.0f, -80.0f);
-  [SerializeField] private Vector3 StatusTextEffectPos_gain = new Vector3(0.0f, -160.0f);
-  [SerializeField] private Vector3 StatusTextEffectPos_loss = new Vector3(0.0f, -160.0f);
+  [SerializeField] private Vector3 StatusTextEffectPos_gain_top = new Vector3(0.0f, 50.0f);
+  [SerializeField] private Vector3 StatusTextEffectPos_gain_bottom = new Vector3(0.0f, 30.0f);
+  [SerializeField] private Vector3 StatusTextEffectPos_loss_top = new Vector3(0.0f, -50.0f);
+  [SerializeField] private Vector3 StatusTextEffectPos_loss_bottom = new Vector3(0.0f, -100.0f);
   [SerializeField] private GameObject StatusTextPrefab = null;
   [SerializeField] private AnimationCurve StatusTextEffectCurve_gain = new AnimationCurve();
   [SerializeField] private AnimationCurve StatusTextEffectCurve_loss = new AnimationCurve();
@@ -740,8 +700,8 @@ public class UIManager : MonoBehaviour
     _prefab.GetComponent<TextMeshProUGUI>().text = value;
     RectTransform _rect = _prefab.GetComponent<RectTransform>();
 
-    Vector3 _startpos = targetrect.anchoredPosition3D + (isgain ? StatusTextEffectPos_gain : StatusTextEffectPos_top);
-    Vector3 _endpos = targetrect.anchoredPosition3D + (isgain ? StatusTextEffectPos_top: StatusTextEffectPos_loss);
+    Vector3 _startpos = targetrect.anchoredPosition3D + (isgain ? StatusTextEffectPos_gain_bottom : StatusTextEffectPos_loss_top);
+    Vector3 _endpos = targetrect.anchoredPosition3D + (isgain ? StatusTextEffectPos_gain_top: StatusTextEffectPos_loss_bottom);
     while (_time < _targettime)
     {
       _rect.anchoredPosition = Vector3.Lerp(_startpos, _endpos, 
@@ -1593,6 +1553,7 @@ public class UIManager : MonoBehaviour
 }
 public static class WNCText
 {
+  /*
   public static string GetAsLengthColor(int value,int length)
   {
     switch (GameManager.Instance.MyGameData.GetMoveRangeType(length))
@@ -1604,6 +1565,7 @@ public static class WNCText
       default: return $"<#BC4915>{value}</color>";
     }
   }
+  */
   public static string UIIdleColor(int value)
   {
     return $"<#D4D4D4>{value}</color>";

@@ -9,7 +9,7 @@ using System.IO;
 using Unity.VisualScripting;
 using System.Runtime.InteropServices.WindowsRuntime;
 
-public enum RangeEnum { Low,Middle,High}
+//public enum RangeEnum { Low,Middle,High}
 public class RouteData
 {
   public TileData Start, End;
@@ -207,7 +207,6 @@ public class UI_map : UI_default
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
   [SerializeField] private TextMeshProUGUI RequireSupply = null;
   [SerializeField] private TextMeshProUGUI CurrentSupply = null;
-  [SerializeField] private TextMeshProUGUI RequireSupplyInfo = null;
   [SerializeField] private TextMeshProUGUI BonusGoldInfo = null;
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
@@ -284,15 +283,7 @@ public class UI_map : UI_default
       if (IsMad) _currentcolor = MadColor;
       else
       {
-        switch (GameManager.Instance.MyGameData.GetMoveRangeType(_length))
-        {
-          case RangeEnum.Low: _currentcolor = LowColor;
-            break;
-          case RangeEnum.Middle: _currentcolor = MiddleColor;
-            break;
-          case RangeEnum.High: _currentcolor = HighColor;
-            break;
-        }
+        _currentcolor = LowColor;
       }
       _currentcolor.a = i == _newroute.Length - 1 ? 1.0f : 0.4f;
       Image _enableoutline = GetEnableOutline;
@@ -322,35 +313,11 @@ public class UI_map : UI_default
       foreach (var _tile in _route.Route)
       {
         AllTiles.Add(_tile);
-        switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
-        {
-          case RangeEnum.Low:
-            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Low);
-            break;
-          case RangeEnum.Middle:
-            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Middle);
-            break;
-          case RangeEnum.High:
-            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_High);
-            break;
-        }
-
+        AllSupplys.Add(_tile.RequireSupply);
         _index++;
       }
       AllTiles.Add(_route.End);
-      switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
-      {
-        case RangeEnum.Low:
-          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Low);
-          break;
-        case RangeEnum.Middle:
-          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Middle);
-          break;
-        case RangeEnum.High:
-          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_High);
-          break;
-      }
-
+      AllSupplys.Add(_route.End.RequireSupply);
       _index++;
     }
 
@@ -474,28 +441,26 @@ public class UI_map : UI_default
         if (IsMad) _currentcolor = MadColor;
         else
         {
-          switch (GameManager.Instance.MyGameData.GetMoveRangeType(i))
-          {
-            case RangeEnum.Low: _currentcolor = LowColor;
-              break;
-            case RangeEnum.Middle: _currentcolor = MiddleColor;
-              break;
-            case RangeEnum.High: _currentcolor = HighColor;
-              break;
-          }
+          _currentcolor = LowColor;
         }
         _currentcolor.a = i == _fixroute.Length - 1 ? 1.0f : 0.4f;
         Image _enableoutline = GetEnableOutline;
         SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
         _fixroute.Outlines.Add(_enableoutline);
 
-        if (i == _fixroute.Route.Count) continue;
-        Vector3 _arrowpos = (i == 0 ? (_fixroute.Start.ButtonScript.Rect.anchoredPosition3D+ _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D)/2.0f :
-          _fixroute.Route[i-1].ButtonScript.Rect.anchoredPosition3D +_fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+        Vector3 _arrowpos = Vector3.zero;
+        if (i == 0) _arrowpos = (_fixroute.Start.ButtonScript.Rect.anchoredPosition3D + _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+        else if (i == _fixroute.Length - 1) _arrowpos = (_fixroute.Route[_fixroute.Route.Count - 1].ButtonScript.Rect.anchoredPosition3D + _fixroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+        else _arrowpos = (_fixroute.Route[i - 1].ButtonScript.Rect.anchoredPosition3D + _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+
         Image _arrow = GetEnableArrow;
         _arrow.rectTransform.anchoredPosition = _arrowpos;
-        SetArrowRotation(ref _arrow, i==0? _fixroute.Route[i].HexGrid.GetRoute(_fixroute.Start)[0] :
-          _fixroute.Route[i].HexGrid.GetRoute(_fixroute.Route[i-1].HexGrid)[0]);
+        HexDir _dir = HexDir.TopRight;
+        if (i == 0) _dir = _fixroute.Route[i].HexGrid.GetRoute(_fixroute.Start)[0];
+        else if (i == _fixroute.Length - 1) _dir = _fixroute.End.HexGrid.GetRoute(_fixroute.Route[_fixroute.Route.Count - 1])[0];
+        else _dir = _fixroute.Route[i].HexGrid.GetRoute(_fixroute.Route[i - 1].HexGrid)[0];
+
+        SetArrowRotation(ref _arrow, _dir);
         _fixroute.Arrows.Add(_arrow);
       }
     }
@@ -508,35 +473,11 @@ public class UI_map : UI_default
       foreach (var _tile in _route.Route)
       {
         AllTiles.Add(_tile);
-        switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
-        {
-          case RangeEnum.Low:
-            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Low);
-            break;
-          case RangeEnum.Middle:
-            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_Middle);
-            break;
-          case RangeEnum.High:
-            AllSupplys.Add(_tile.RequireSupply * ConstValues.MoveLengthSupply_High);
-            break;
-        }
-
+        AllSupplys.Add(_tile.RequireSupply);
         _index++;
       }
       AllTiles.Add(_route.End);
-      switch (GameManager.Instance.MyGameData.GetMoveRangeType(_index))
-      {
-        case RangeEnum.Low:
-          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Low);
-          break;
-        case RangeEnum.Middle:
-          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_Middle);
-          break;
-        case RangeEnum.High:
-          AllSupplys.Add(_route.End.RequireSupply * ConstValues.MoveLengthSupply_High);
-          break;
-      }
-
+      AllSupplys.Add(_route.End.RequireSupply);
       _index++;
     }
 
@@ -657,18 +598,7 @@ public class UI_map : UI_default
     int _length = GetlengthAsRoute(tile);
     Color _currentcolor = new Color();
     if (IsMad) _currentcolor = MadColor;
-    else switch (GameManager.Instance.MyGameData.GetMoveRangeType(_length))
-      {
-        case RangeEnum.Low:
-          _currentcolor = LowColor;
-          break;
-        case RangeEnum.Middle:
-          _currentcolor = MiddleColor;
-          break;
-        case RangeEnum.High:
-          _currentcolor = HighColor;
-          break;
-      }
+    else _currentcolor = LowColor;
 
     _currentcolor.a = 1.0f;
 
@@ -987,32 +917,31 @@ public class UI_map : UI_default
     if (Destinations.Count == 0)
     {
       RequireSupply.text = "0";
-      RequireSupplyInfo.text = "";
       BonusGoldInfo.text = "";
     }
     else if (IsMad)
     {
       RequireSupply.text = TotalSupplyCost.ToString()+"?";
-      string _info = WNCText.GetAsLengthColor(AllSupplys[0], 1);
+      string _info = AllSupplys[0].ToString();
       for (int i = 1; i < AllSupplys.Count; i++)
       {
-        _info += $" + {WNCText.GetAsLengthColor(AllSupplys[i], i)}";
+        _info += $" + {AllSupplys[i].ToString()}";
       }
       _info += " + ?";
-      RequireSupplyInfo.text = _info;
+    //  RequireSupplyInfo.text = _info;
       BonusGoldInfo.text = GameManager.Instance.GetTextData("BonusGold_unknown");
     }
     else
     {
       RequireSupply.text = TotalSupplyCost.ToString();
-      string _info = WNCText.GetAsLengthColor(AllSupplys[0], 1);
+      string _info = AllSupplys[0].ToString();
       for(int i = 1; i < AllSupplys.Count; i++)
       {
-        _info += $" + {WNCText.GetAsLengthColor(AllSupplys[i],i)}";
+        _info += $" + {AllSupplys[i].ToString()}";
       }
-      RequireSupplyInfo.text = _info;
+     // RequireSupplyInfo.text = _info;
       BonusGoldInfo.text =LastDestination.TileSettle!=null?"": string.Format(GameManager.Instance.GetTextData("Bonusgold_Info"),
-        WNCText.GetAsLengthColor(AllTiles[AllTiles.Count - 1].RequireSupply, AllTiles.Count),
+        AllTiles[AllTiles.Count - 1].RequireSupply,
        GameManager.Instance.MyGameData.Tendency_Head.Level == 1 && AllTiles.Count >= ConstValues.Tendency_Head_p1_value ? "<sprite=104>":"",
        BonusGold);
     }
@@ -1032,7 +961,7 @@ public class UI_map : UI_default
 
     UIManager.Instance.AudioManager.PlaySFX(5);
 
-    SelectedTile = selectedtile;
+    SelectedTile = LastDestination;
 
     TilePreviewRect.anchoredPosition = TilePreviewDownPos;
     TilePreviewGroup.alpha = TilePreviewStartAlpha;
@@ -1049,7 +978,11 @@ public class UI_map : UI_default
     StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-235.0f,57.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
     StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
 
-    if (IsMad)
+    if (LastDestination == GameManager.Instance.MyGameData.CurrentTile)
+    {
+      TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+    }
+    else if (IsMad)
     {
       TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
     }
@@ -1261,9 +1194,6 @@ public class UI_map : UI_default
 
       RemoveDestination(LastDestination,false);
       AddDestination(SelectedTile);
-
-      GameManager.Instance.MyGameData.TotalMoveCount++;
-      UIManager.Instance.SetWildMadCount();
     }
 
     if (IsMoved)
@@ -1288,7 +1218,7 @@ public class UI_map : UI_default
     if(!_hungry) UIManager.Instance.AudioManager.PlayWalking();
     else UIManager.Instance.AudioManager.PlaySFX(29);
 
-
+    #region 이동 애니메이션
     float _time = 0.0f;             //x
     int _pathcount = AllTiles.Count; //   n
     int _currentindex = 0;          //y를 개수로 나눈 값(현재 start가 될 index)
@@ -1398,9 +1328,8 @@ public class UI_map : UI_default
       StartCoroutine(changesupplytext((float)_lastsum, (float)_currentsum, (float)_lastsupply, (float)_currentsupply));
     }
     CurrentSupply.text = GameManager.Instance.MyGameData.Supply.ToString();
-    RequireSupplyInfo.text = "";
-
-    if (_stoptile.TileSettle==null) GameManager.Instance.MyGameData.Gold += BonusGold;
+    #endregion
+    if (_stoptile.TileSettle==null&&!_stoptile.IsEvent) GameManager.Instance.MyGameData.Gold += BonusGold;
     if(!_hungry) UIManager.Instance.AudioManager.StopWalking();
 
     PlayerRect.anchoredPosition = _stoptile.ButtonScript.Rect.anchoredPosition3D;
@@ -1659,6 +1588,10 @@ public class UI_map : UI_default
       DefaultGroup.interactable = true;
       DefaultGroup.blocksRaycasts = true;
     }
+
+    GameManager.Instance.MyGameData.TotalMoveCount++;
+    UIManager.Instance.SetWildMadCount();
+
     //Debug.Log("이동 코루틴이 끝난 레후~");
   }
   public void SetPlayerPos(Vector2 coordinate)

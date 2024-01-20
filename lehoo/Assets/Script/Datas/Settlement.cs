@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
 using UnityEngine.UIElements;
+using Newtonsoft.Json;
 
 public class Settlement
 {
@@ -306,8 +307,24 @@ public class MapData
             _targetaround.Remove(GameManager.Instance.MyGameData.CurrentTile);
             foreach (var _tile in _targetaround)
             {
-              if (!_enablerange.Contains(_tile) || !_tile.Interactable || _tile.TileSettle != null || EventTiles.Contains(_tile) || _tile.Fogstate == 0) continue;
-            
+              if (!_enablerange.Contains(_tile) ||
+                !_tile.Interactable ||
+                _tile.Landmark != LandmarkType.Outer ||
+                EventTiles.Contains(_tile) ||
+                _tile.Fogstate == 0) continue;
+              bool _isoverlap = false;
+              foreach (var _preeventtile in _neweventtiles)
+                foreach (var _aroundtile in GetAroundTile(_preeventtile, 1))
+                {
+                  if (_tile.Coordinate == _aroundtile.Coordinate)
+                  {
+                    _isoverlap = true;
+                    break;
+                  }
+                  if (_isoverlap) break;
+                }
+              if (_isoverlap) continue;
+
               _targettiles.Add(_tile);
             }
           }

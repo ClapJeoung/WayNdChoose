@@ -31,28 +31,17 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   public CanvasGroup Sabbat_Group = null;
   [SerializeField] private Image Sabbat_SectorIcon = null;
   [SerializeField] private Outline Sabbat_Effect = null;
-  [SerializeField] private CanvasGroup SabbatFailGroup = null;
-  [SerializeField] private TextMeshProUGUI SabbatFailText = null;
-  [SerializeField] private RectTransform SabbatFailRect = null;
-  [SerializeField] private AnimationCurve SabbatFailScaleCurve = null;
-  [SerializeField] private float SabbatFailDisappearTime = 2.0f;
-  [SerializeField] private AnimationCurve SabbatFailDisappearCurve = null;
+  [Space(10)]
+  [SerializeField] private CultFailPanel FailUI = null;
   public void SetSabbatFail()
   {
-    SabbatFailText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort);
-    StartCoroutine(UIManager.Instance.ChangeAlpha(SabbatFailGroup, 0.0f, SabbatFailDisappearTime, SabbatFailDisappearCurve));
-    StartCoroutine(sabbatscale());
+    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort));
+    StartCoroutine(FailUI.OpenAnimation(_failtext));
   }
-  private IEnumerator sabbatscale()
+  public void SetRitualFail()
   {
-    float _time = 0.0f;
-    while (_time < SabbatFailDisappearTime)
-    {
-      SabbatFailRect.localScale = Vector3.Lerp(Vector3.one, Vector3.one*1.3f, SabbatFailScaleCurve.Evaluate(_time / SabbatFailDisappearTime));
-      _time+= Time.deltaTime;
-      yield return null;
-    }
-    SabbatFailRect.localScale = Vector3.one;
+    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_"), WNCText.GetSupplyColor(ConstValues.Quest_Cult_Ritual_PenaltySupply));
+    StartCoroutine(FailUI.OpenAnimation(_failtext));
   }
   [Space(5)]
   public CanvasGroup Ritual_Group = null;

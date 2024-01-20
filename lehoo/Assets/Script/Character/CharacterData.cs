@@ -18,8 +18,8 @@ public static class ConstValues
   public const float WorldEventPhase_1_Cult = 30.0f, WorldEventPhase_2_Cult = 60.0f;
   public const int WorldEventCount_0 = 2, WorldEventCount_1 = 1, WorldEventCount_2 = 0;
 
-  public const int MoveLength_Low = 4, MoveLength_Middle = 6;
-  public const int MoveLengthSupply_Low=1, MoveLengthSupply_Middle = 2, MoveLengthSupply_High = 3;
+ // public const int MoveLength_Low = 4, MoveLength_Middle = 6;
+//  public const int MoveLengthSupply_Low=1, MoveLengthSupply_Middle = 2, MoveLengthSupply_High = 3;
 
   public const float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.4f;
   public const float FogAlphaChangeTime = 0.4f;
@@ -332,8 +332,7 @@ public class GameData    //게임 진행도 데이터
                   break;
                 case 4:
                   Supply -= ConstValues.Quest_Cult_Ritual_PenaltySupply;
-                  UIManager.Instance.SetRitualFail();
-
+                  UIManager.Instance.SidePanelCultUI.SetRitualFail();
                   SetSabbat();
                   break;
               }
@@ -387,6 +386,7 @@ public class GameData    //게임 진행도 데이터
 
   #region #값 프로퍼티#
   public int ViewRange { get { return ConstValues.DefaultViewRange + (Tendency_Head.Level <0 ? ConstValues.Tendency_Head_m1 : 0); } }
+  /*
   public RangeEnum GetMoveRangeType(int range)
   {
     int _low = ConstValues.MoveLength_Low + (Tendency_Head.Level == -2 ? ConstValues.Tendency_Head_m2 : 0);
@@ -396,6 +396,7 @@ public class GameData    //게임 진행도 데이터
     else if(range < _middle) return RangeEnum.Middle;
     else return RangeEnum.High;
   }
+  */
   public int MadnessHPLoss_Skill { get { return (int)(ConstValues.MadnessHPCost_Skill * GetHPLossModify(true,0)); } }
   public int MadnessHPLoss_HP { get { return (int)(ConstValues.MadnessHPCost_HP * GetHPLossModify(true,0)); } }
   public int MadnessSanityGen_Skill { get { return (int)(ConstValues.MadnessSanityGen_Skill); } }

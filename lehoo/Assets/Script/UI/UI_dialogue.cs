@@ -134,16 +134,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[0].SelectionCheckSkill[1])
           {
             case SkillTypeEnum.Conversation:
-              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Conversation);
+              _value += GameManager.Instance.MyGameData.Skill_Conversation.Level + GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Force);
+              _value += GameManager.Instance.MyGameData.Skill_Force.Level + GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Wild);
+              _value += GameManager.Instance.MyGameData.Skill_Wild.Level + GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value += GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Intelligence);
+              _value += GameManager.Instance.MyGameData.Skill_Intelligence.Level + GetUsingExpEffectCount(ExpUsageDic_L, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -214,16 +214,16 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[1].SelectionCheckSkill[1])
           {
             case SkillTypeEnum.Conversation:
-              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Conversation);
+              _value += GameManager.Instance.MyGameData.Skill_Conversation.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Conversation);
               break;
             case SkillTypeEnum.Force:
-              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Force);
+              _value += GameManager.Instance.MyGameData.Skill_Force.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Force);
               break;
             case SkillTypeEnum.Wild:
-              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Wild);
+              _value += GameManager.Instance.MyGameData.Skill_Wild.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Wild);
               break;
             case SkillTypeEnum.Intelligence:
-              _value += GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Intelligence);
+              _value += GameManager.Instance.MyGameData.Skill_Intelligence.Level + GetUsingExpEffectCount(ExpUsageDic_R, EffectType.Intelligence);
               break;
             default:
               _value += 0;
@@ -1423,15 +1423,12 @@ public class UI_dialogue : UI_default
             switch (CurrentSuccessData.Reward_StatusType)
             {
               case StatusTypeEnum.HP:
-             //   yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.HP, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.HP += GameManager.Instance.MyGameData.RewardHPValue;
                 break;
               case StatusTypeEnum.Sanity:
-              //  yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Sanity, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.RewardSanityValue;
                 break;
               case StatusTypeEnum.Gold:
-              //  yield return StartCoroutine(UIManager.Instance.SetIconEffect(false, StatusTypeEnum.Gold, RewardIcon.transform as RectTransform));
                 GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue;
                 break;
             }
@@ -1439,7 +1436,10 @@ public class UI_dialogue : UI_default
             break;
           case RewardTypeEnum.Skill:
             RemainReward = false;
-            yield return StartCoroutine(UIManager.Instance.SetIconEffect(false,CurrentSuccessData.Reward_SkillType,RewardIcon.transform as RectTransform));
+            GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
+            UIManager.Instance.AudioManager.PlaySFX(19);
+
+            StartCoroutine(UIManager.Instance.SetIconEffect(CurrentSuccessData.Reward_SkillType));
             break;
         }
 
@@ -1875,7 +1875,7 @@ public class UI_dialogue : UI_default
         CurrentSettlement.Discomfort += _discomfortvalue;
         if (DiscomfortValue > 0)
         {
-          yield return StartCoroutine(discomfortanimation(_restvalue));
+          StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
       case StatusTypeEnum.Gold:
@@ -1885,7 +1885,7 @@ public class UI_dialogue : UI_default
         CurrentSettlement.Discomfort += _discomfortvalue;
         if (DiscomfortValue > 0)
         {
-          yield return StartCoroutine(discomfortanimation(_restvalue));
+          StartCoroutine(discomfortanimation(_restvalue));
         }
         break;
     }
@@ -1895,7 +1895,7 @@ public class UI_dialogue : UI_default
 
     UIManager.Instance.AudioManager.PlaySFX(2);
 
-    yield return new WaitForSeconds(0.2f);
+    yield return new WaitForSeconds(ConstValues.CountChangeTime_settlement);
 
     UIManager.Instance.AudioManager.PlaySFX(14);
 
@@ -1917,7 +1917,6 @@ public class UI_dialogue : UI_default
       _time += Time.deltaTime;
       yield return null;
     }
-    yield return new WaitForSeconds(0.5f);
     DiscomfortText.text = _enddiscomfort.ToString();
     RestCostValueText.text = string.Format(_valuetext, _endrestvalue);
   }

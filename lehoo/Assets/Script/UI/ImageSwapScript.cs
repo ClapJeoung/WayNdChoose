@@ -10,7 +10,7 @@ public class ImageSwapScript : MonoBehaviour
   public Image Image_B = null;
   public CanvasGroup Group_B = null;
   public bool Index = true;
-  private float ChangeTime = 1.2f;
+  private float ChangeTime = 0.8f;
   private Image CurrentImage { get { return Index == true? Image_A : Image_B; } }
   private Image NextImage { get { return Index==true?Image_B : Image_A; } }
   private CanvasGroup CurrentGroup { get { return Index==true?Group_A : Group_B; } }
