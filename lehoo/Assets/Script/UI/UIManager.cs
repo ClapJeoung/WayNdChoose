@@ -276,7 +276,7 @@ public class UIManager : MonoBehaviour
       }
     }
 
-    Supply_Icon.sprite = GameManager.Instance.MyGameData.Supply >0 ? GameManager.Instance.ImageHolder.MovePointIcon_Enable : GameManager.Instance.ImageHolder.MovePointIcon_Lack;
+    Supply_Icon.sprite = GameManager.Instance.MyGameData.Supply >0 ? GameManager.Instance.ImageHolder.Supply_Enable : GameManager.Instance.ImageHolder.Supply_Lack;
     if (lastsupply == 0 && GameManager.Instance.MyGameData.Supply == 0) return;
 
     MovepointIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max,
@@ -502,7 +502,7 @@ public class UIManager : MonoBehaviour
   {
     Vector2 _startpos = startrect.position;
     Vector2 _endpos = MovepointIconRect.position;
-    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+    Sprite _icon = GameManager.Instance.ImageHolder.Supply_Enable;
     for(int i=0;i< count;i++)
     {
       int _index = 0;
@@ -529,10 +529,10 @@ public class UIManager : MonoBehaviour
       status==StatusTypeEnum.Sanity?  SanityIconRect.position:
                                       GoldIconRect.position,
       _endpos = rect.position;
-    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+    Sprite _icon = GameManager.Instance.ImageHolder.Supply_Enable;
 
     int _index = 0;
-    _icon = status==StatusTypeEnum.HP ? GameManager.Instance.ImageHolder.MovePointIcon_Enable :
+    _icon = status==StatusTypeEnum.HP ? GameManager.Instance.ImageHolder.Supply_Enable :
       status == StatusTypeEnum.Sanity ? GameManager.Instance.ImageHolder.SanityIcon :
                                         GameManager.Instance.ImageHolder.GoldIcon;
     RectTransform _targetrect = null;
@@ -553,7 +553,7 @@ public class UIManager : MonoBehaviour
   public IEnumerator SetIconEffect_movepoint_ritualfail(RectTransform endrect,int count)
   {
     Vector2 _startpos = MovepointIconRect.position, _endpos = endrect.position;
-    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+    Sprite _icon = GameManager.Instance.ImageHolder.Supply_Enable;
 
     for (int j = 0; j < count; j++)
     {
@@ -1471,6 +1471,21 @@ public class UIManager : MonoBehaviour
     AddUIQueue(DialogueUI.OpenEventUI(dir));
   }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void GetMad() => MadUI.OpenUI();
+  public IEnumerator updatescrollbar(Scrollbar scrollbar)
+  {
+    yield return new WaitForSeconds(0.05f);
+
+    float _time = 0.0f;
+    while (scrollbar.value > ConstValues.ScrollDoneValue && _time < ConstValues.ScrollTime)
+    {
+      scrollbar.value = Mathf.Lerp(scrollbar.value, 0.0f, ConstValues.ScrollSpeed);
+      _time += Time.deltaTime;
+      yield return null;
+
+    }
+    scrollbar.value = 0.0f;
+  }
+
 
   #region 메인-게임 전환
   [SerializeField] private List<PanelRectEditor> TitlePanels=new List<PanelRectEditor>();

@@ -39,23 +39,10 @@ public class UI_dialogue : UI_default
   [SerializeField] private TextMeshProUGUI DescriptionText = null;
   public Scrollbar DescriptionScrollBar = null;
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
-  private IEnumerator updatescrollbar()
-  {
-    yield return new WaitForSeconds(0.05f);
-
-    float _time = 0.0f;
-    while (DescriptionScrollBar.value > 0.001f && _time < ConstValues.ScrollTime)
-    {
-      DescriptionScrollBar.value = Mathf.Lerp(DescriptionScrollBar.value, 0.0f, ConstValues.ScrollSpeed);
-      _time += Time.deltaTime;
-      yield return null;
-
-    }
-    DescriptionScrollBar.value = 0.0f;
-  }
   [SerializeField] private CanvasGroup NextButtonGroup = null;
   private void SetNextButtonDisable() => NextButtonGroup.interactable = false;
   public void SetNextButtonActive()=> NextButtonGroup.interactable = true;
+  [SerializeField] private Onpointer_highlight Reward_Highlight = null;
   [SerializeField] private CanvasGroup RewardButtonGroup = null;
   [SerializeField] private Image RewardIcon = null;
   [SerializeField] private TextMeshProUGUI RewardDescription = null;
@@ -775,7 +762,7 @@ public class UI_dialogue : UI_default
 
       DescriptionText.text += (EventPhaseIndex == 0 && PhrIndex == 0 ? "" : "<br><br>") + CurrentDescription[PhrIndex];
       LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
-      yield return StartCoroutine(updatescrollbar());
+      yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
       if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
       SetNextButtonActive();
@@ -821,14 +808,14 @@ public class UI_dialogue : UI_default
           case 0:   //처음 열고 내용
             if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
 
-            yield return StartCoroutine(updatescrollbar());
+            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
             SetNextButtonActive();
             break;
           case 1:   //다음 버튼 눌러 내용
             if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
 
-            yield return StartCoroutine(updatescrollbar());
+            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
             SetNextButtonActive();
             break;
@@ -838,7 +825,7 @@ public class UI_dialogue : UI_default
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
             UIManager.Instance.UpdateExpButton(true);
             UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
-            yield return StartCoroutine(updatescrollbar());
+            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
             break;
           case 3:   //처음 열고 선택
@@ -847,7 +834,7 @@ public class UI_dialogue : UI_default
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
             UIManager.Instance.UpdateExpButton(true);
             UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
-            yield return StartCoroutine(updatescrollbar());
+            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
             break;
         }
@@ -928,13 +915,13 @@ public class UI_dialogue : UI_default
             if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
             UIManager.Instance.SetExpUnuse();
 
-            yield return StartCoroutine(updatescrollbar());
+            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             SetNextButtonActive();
             break;
           case 1:   //다음 눌러서 내용
             if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
 
-            yield return StartCoroutine(updatescrollbar());
+            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             SetNextButtonActive();
             break;
           case 2:   //다음 버튼 눌러서 보상
@@ -951,11 +938,11 @@ public class UI_dialogue : UI_default
 
               StartCoroutine(UIManager.Instance.ChangeAlpha(EndingButtonGroup, 1.0f, FadeTime));
               StartCoroutine(UIManager.Instance.ChangeAlpha(EndingRefuseGroup, 1.0f, FadeTime));
-              yield return StartCoroutine(updatescrollbar());
+              yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             }
             else
             {
-              yield return StartCoroutine(updatescrollbar());
+              yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
               if (CurrentSuccessData != null) SetRewardButton();
               OpenReturnButton();
@@ -976,11 +963,11 @@ public class UI_dialogue : UI_default
 
               StartCoroutine(UIManager.Instance.ChangeAlpha(EndingButtonGroup, 1.0f, FadeTime));
               StartCoroutine(UIManager.Instance.ChangeAlpha(EndingRefuseGroup, 1.0f, FadeTime));
-              yield return StartCoroutine(updatescrollbar());
+              yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             }
             else
             {
-              yield return StartCoroutine(updatescrollbar());
+              yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
               if (CurrentSuccessData != null) SetRewardButton();
               OpenReturnButton();
@@ -1006,7 +993,7 @@ public class UI_dialogue : UI_default
     Illust.Next(CurrentEndingData.RefuseIllust,FadeTime);
     DescriptionText.text += "<br><br>" + CurrentEndingData.Refuse_Description;
     LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
-    yield return StartCoroutine(updatescrollbar());
+    yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
     SetRewardButton();
     OpenReturnButton();
@@ -1246,8 +1233,8 @@ public class UI_dialogue : UI_default
 
     RewardButtonGroup.alpha = 0.0f;
 
-  //  Reward_Highlight.RemoveAllCall();
-   // Reward_Highlight.Interactive = true;
+    Reward_Highlight.RemoveAllCall();
+    Reward_Highlight.Interactive = true;
     RemainReward = CurrentSuccessData.Reward_Type == RewardTypeEnum.None ? false : true;
     Sprite _icon = null;
     string _description = "";
@@ -1259,30 +1246,33 @@ public class UI_dialogue : UI_default
           case StatusTypeEnum.HP:
             _icon = GameManager.Instance.ImageHolder.HPIcon;
             _description = $"+{WNCText.GetHPColor(GameManager.Instance.MyGameData.RewardHPValue)}";
-        //    Reward_Highlight.SetInfo(HighlightEffectEnum.HP, GameManager.Instance.MyGameData.RewardHPValue);
+            Reward_Highlight.SetInfo(HighlightEffectEnum.HP);
             break;
           case StatusTypeEnum.Sanity:
             _icon = GameManager.Instance.ImageHolder.SanityIcon;
             _description = $"+{WNCText.GetSanityColor(GameManager.Instance.MyGameData.RewardSanityValue)}";
-      //      Reward_Highlight.SetInfo(HighlightEffectEnum.Sanity, GameManager.Instance.MyGameData.RewardSanityValue);
+            Reward_Highlight.SetInfo(HighlightEffectEnum.Sanity);
             break;
           case StatusTypeEnum.Gold:
             _icon = GameManager.Instance.ImageHolder.GoldIcon;
             _description = $"+{WNCText.GetGoldColor(GameManager.Instance.MyGameData.RewardGoldValue)}";
-        //    Reward_Highlight.SetInfo(HighlightEffectEnum.Gold, GameManager.Instance.MyGameData.RewardGoldValue);
+            Reward_Highlight.SetInfo(HighlightEffectEnum.Gold);
             break;
+          case StatusTypeEnum.Supply:
+            _icon = GameManager.Instance.ImageHolder.Supply_Enable;
+            _description = $"+{WNCText.GetSupplyColor(GameManager.Instance.MyGameData.RewardSupplyValue)}";
+              break;
         }
         break;
       case RewardTypeEnum.Experience:
         _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
-        //   _name = GameManager.Instance.GetTextData("EXP_NAME");
         _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
-      //  Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
+        Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
         break;
       case RewardTypeEnum.Skill:
         _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType, false);
         _description = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType, 0)} +1";
-     //   Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
+        Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
         break;
     }
     RewardIcon.sprite = _icon;
@@ -1431,6 +1421,9 @@ public class UI_dialogue : UI_default
               case StatusTypeEnum.Gold:
                 GameManager.Instance.MyGameData.Gold += GameManager.Instance.MyGameData.RewardGoldValue;
                 break;
+              case StatusTypeEnum.Supply:
+                GameManager.Instance.MyGameData.Supply += GameManager.Instance.MyGameData.RewardSupplyValue;
+                  break;
             }
             RemainReward = false;
             break;
@@ -1895,7 +1888,7 @@ public class UI_dialogue : UI_default
 
     UIManager.Instance.AudioManager.PlaySFX(2);
 
-    yield return new WaitForSeconds(ConstValues.CountChangeTime_settlement);
+    yield return new WaitForSeconds(ConstValues.CountChangeTime_settlement+0.3f);
 
     UIManager.Instance.AudioManager.PlaySFX(14);
 

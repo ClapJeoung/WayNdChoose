@@ -370,7 +370,7 @@ public class UI_map : UI_default
     SanityButton_Highlight.RemoveAllCall();
     SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
     if (GameManager.Instance.MyGameData.Supply > 0) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
-    if (LastDestination.TileSettle == null) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    if (LastDestination.TileSettle == null&&!LastDestination.IsEvent) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
 
     GoldButton_Highlight.RemoveAllCall();
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
@@ -549,7 +549,7 @@ public class UI_map : UI_default
     SanityButton_Highlight.RemoveAllCall();
     SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
     if (GameManager.Instance.MyGameData.Supply > 0) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
-    if (LastDestination.TileSettle == null) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    if (LastDestination.TileSettle == null&&!LastDestination.IsEvent) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
 
     GoldButton_Highlight.RemoveAllCall();
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);

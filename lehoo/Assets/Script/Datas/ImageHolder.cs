@@ -300,8 +300,8 @@ public class ImageHolder : ScriptableObject
     return _targetlist[Random.Range(0, _targetlist.Count)];
   }
 
-  public Sprite MovePointIcon_Enable = null;
-  public Sprite MovePointIcon_Lack = null;
+  public Sprite Supply_Enable = null;
+  public Sprite Supply_Lack = null;
   public Sprite VillageIcon_black = null;
   public Sprite VillageIcon_white = null;
   public Sprite VillageIcon_outline = null;

@@ -11,19 +11,6 @@ public class UI_Ending : UI_default
   [SerializeField] private TextMeshProUGUI Description = null;
   [SerializeField] private Scrollbar DescriptionScrollbar = null;
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
-  private IEnumerator updatescrollbar()
-  {
-    yield return new WaitForSeconds(0.05f);
-
-    float _time = 0.0f;
-    while (DescriptionScrollbar.value > 0.001f && _time < ConstValues.ScrollTime)
-    {
-      DescriptionScrollbar.value = Mathf.Lerp(DescriptionScrollbar.value, 0.0f, ConstValues.ScrollSpeed);
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    DescriptionScrollbar.value = 0.0f;
-  }
   [SerializeField] private CanvasGroup NextButtonGroup = null;
   [SerializeField] private CanvasGroup QuitButtonGroup = null;
   [SerializeField] private TextMeshProUGUI QuitButtonText = null;
@@ -96,7 +83,7 @@ public class UI_Ending : UI_default
     Description.text +="<br><br>"+ Descriptions[CurrentIndex];
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);
-    yield return StartCoroutine(updatescrollbar());
+    yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollbar));
 
     if (CurrentIndex == Illusts.Count - 1)
     {

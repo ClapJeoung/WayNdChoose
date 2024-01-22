@@ -40,7 +40,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   }
   public void SetRitualFail()
   {
-    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_"), WNCText.GetSupplyColor(ConstValues.Quest_Cult_Ritual_PenaltySupply));
+    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetSupplyColor(ConstValues.Quest_Cult_Ritual_PenaltySupply));
     StartCoroutine(FailUI.OpenAnimation(_failtext));
   }
   [Space(5)]

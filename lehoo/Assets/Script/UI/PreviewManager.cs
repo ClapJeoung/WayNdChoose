@@ -226,7 +226,7 @@ public class PreviewManager : MonoBehaviour
   }//골드 설명,증감량 표기 후 열기
   public void OpenMovePointPreview( RectTransform rect)
   {
-    Sprite _icon = GameManager.Instance.ImageHolder.MovePointIcon_Enable;
+    Sprite _icon = GameManager.Instance.ImageHolder.Supply_Enable;
     string _description = GameManager.Instance.GetTextData("MOVEPOINT_DESCRIPTION");
     if (GameManager.Instance.MyGameData.Supply < 0) _description +="<br>"+ GameManager.Instance.GetTextData("Movepoint_NoSupplies");
 
@@ -625,13 +625,11 @@ public class PreviewManager : MonoBehaviour
     int _payvalue = UIManager.Instance.DialogueUI.GetRequireValue(dir);
     string _payvaluetext = "";
     int _percent = -1;
-    StatusTypeEnum _status = StatusTypeEnum.HP;
     switch (_selection.SelectionPayTarget)
     {
       case StatusTypeEnum.HP:
         if (_selection.SuccessData.Reward_Type == RewardTypeEnum.None) return;
 
-        _status = StatusTypeEnum.HP;
         _payicon = GameManager.Instance.ImageHolder.HPDecreaseIcon;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.HP, 1), WNCText.GetHPColor("-" + _payvalue.ToString()));
         if (PayNoGold_Text.gameObject.activeInHierarchy.Equals(true)) PayNoGold_Text.gameObject.SetActive(false);
@@ -642,7 +640,6 @@ public class PreviewManager : MonoBehaviour
       case StatusTypeEnum.Sanity:
         if (_selection.SuccessData.Reward_Type == RewardTypeEnum.None) return;
 
-        _status = StatusTypeEnum.Sanity;
         _payicon = GameManager.Instance.ImageHolder.SanityDecreaseIcon;
         _payvaluetext = string.Format(GameManager.Instance.GetTextData("PAYVALUE_TEXT"), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 1), WNCText.GetSanityColor("-" + _payvalue.ToString()));
 
@@ -650,7 +647,6 @@ public class PreviewManager : MonoBehaviour
         //  if (PayRequireValue.gameObject.activeInHierarchy.Equals(false)) PayRequireValue.gameObject.SetActive(true);
         break;//정신력이라면 지불 기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입
       case StatusTypeEnum.Gold:
-        _status = StatusTypeEnum.Gold;
         _payicon = GameManager.Instance.ImageHolder.GoldDecreaseIcon;
         if (_payvalue > GameManager.Instance.MyGameData.Gold)
         {
@@ -671,10 +667,6 @@ public class PreviewManager : MonoBehaviour
         }//골드 지불이 가능할 때
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
     }
-
-
-    //  PayIcon.sprite = _payicon;
-
 
     OpenPreviewPanel(SelectionPayPanel, toprect);
   }

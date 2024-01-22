@@ -961,7 +961,7 @@ public class GoldFailData : FailData
   public Sprite Illust = null;
 }
 public enum SelectionTargetType { None,Pay, Check_Single,Check_Multy}//선택지 개별 내용
-public enum StatusTypeEnum { HP,Sanity,Gold}
+public enum StatusTypeEnum { HP,Sanity,Gold,Supply}
 public class SuccessData
 {
   public TendencyTypeEnum Tendencytype = TendencyTypeEnum.None;

@@ -44,8 +44,9 @@ public static class ConstValues
   public const float StatusLoss_Gold_Min = 6, StatusLoss_Gold_Max = 30;
   public const float StatusLoss_MP_Min = 6, StatusLoss_MP_Max = 30;
 
+  public const float ScrollDoneValue = 0.05f;
   public const float ScrollSpeed = 0.08f;
-  public const float ScrollTime = 1.25f;
+  public const float ScrollTime = 1.0f;
 
   public const int ExpSkillLevel = 1;
 
@@ -145,7 +146,7 @@ public static class ConstValues
   public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 20;
 
   public const float Difficult = 1.0f;
-  public const float PayHP_min = 2, PayHP_max = 6;      
+  public const float PayHP_min = 3, PayHP_max = 6;      
   public const float PaySanity_min = 8, PaySanity_max = 24;
   public const float PayGold_min = 6, PayGold_max = 18; 
   public const float FailHP_min = 4, FailHP_max = 12;   
@@ -154,6 +155,7 @@ public static class ConstValues
   public const int RewardHP_min = 0, RewardHP_max = 0;
   public const int RewardSanity = 15;
   public const int RewardGold = 10;
+  public const int RewardSupply = 6;
 
   public const int EXPMaxTurn_short_idle = 7;
   public const int EXPMaxTurn_long_idle =  13;
@@ -458,6 +460,7 @@ public class GameData    //게임 진행도 데이터
     { get { return (int)ConstValues.RewardSanity; } }
     public int RewardGoldValue
     { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
+  public int RewardSupplyValue { get { return ConstValues.RewardSupply; } }
   public int Movecost_sanity
   {
     get

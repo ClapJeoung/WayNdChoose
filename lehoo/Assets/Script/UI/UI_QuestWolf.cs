@@ -30,21 +30,6 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private TextMeshProUGUI Prologue_Description = null;
   [SerializeField] private Scrollbar PrologueScrollbar = null;
   public AnimationCurve ScrollbarCurve = new AnimationCurve();
-  [SerializeField] private float ScrollSpeed = 0.4f;
-  private IEnumerator updatescrollbar()
-  {
-    yield return new WaitForSeconds(0.05f);
-
-    float _time = 0.0f;
-    while (PrologueScrollbar.value > 0.001f && _time < ConstValues.ScrollTime)
-    {
-      PrologueScrollbar.value = Mathf.Lerp(PrologueScrollbar.value, 0.0f, ConstValues.ScrollSpeed);
-      _time += Time.deltaTime;
-      yield return null;
-
-    }
-    PrologueScrollbar.value = 0.0f;
-  }
   [SerializeField] private CanvasGroup Prologue_TendencyGroup = null;
   [SerializeField] private Button Prologue_Button_Left = null;
   [SerializeField] private TextMeshProUGUI Prologue_ButtonText_Left = null;
@@ -94,7 +79,7 @@ public class UI_QuestWolf : UI_default
 
     Prologue_Description.text = QuestHolder.Prologue_0_Description;
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);
-    StartCoroutine(updatescrollbar());
+    StartCoroutine(UIManager.Instance.updatescrollbar(PrologueScrollbar));
 
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(PrologueGroup, 1.0f, FadeInTime));
 
@@ -195,7 +180,7 @@ public class UI_QuestWolf : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.parent.transform as RectTransform);
     if (CurrentPrologueIndex == 8) Prologue_Nextbutton_Group.gameObject.SetActive(false);
-    yield return StartCoroutine(updatescrollbar());
+    yield return StartCoroutine(UIManager.Instance.updatescrollbar(PrologueScrollbar));
 
     if (_buttontext_a == "")
     {

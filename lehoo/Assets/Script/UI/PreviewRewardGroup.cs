@@ -122,6 +122,7 @@ public class PreviewRewardGroup : MonoBehaviour
               case StatusTypeEnum.HP: _rewardicon = GameManager.Instance.ImageHolder.HPIcon; break;
               case StatusTypeEnum.Sanity: _rewardicon = GameManager.Instance.ImageHolder.SanityIcon; break;
               case StatusTypeEnum.Gold: _rewardicon = GameManager.Instance.ImageHolder.GoldIcon; break;
+              case StatusTypeEnum.Supply: _rewardicon = GameManager.Instance.ImageHolder.Supply_Enable;  break;
             }
             RewardIcon.sprite = _rewardicon;
             break;

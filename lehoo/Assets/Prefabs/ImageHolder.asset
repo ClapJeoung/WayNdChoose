@@ -525,8 +525,8 @@ MonoBehaviour:
   City_Library_s3:
   - {fileID: 21300000, guid: efaabf5544eba9f46893db061dfebd44, type: 3}
   - {fileID: 21300000, guid: 79e5746cf8f0a8d498e2b1171b1e0af2, type: 3}
-  MovePointIcon_Enable: {fileID: 21300000, guid: cfdf7cb8ba959524e90a6ac0ba00007f, type: 3}
-  MovePointIcon_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
+  Supply_Enable: {fileID: 21300000, guid: cfdf7cb8ba959524e90a6ac0ba00007f, type: 3}
+  Supply_Lack: {fileID: 21300000, guid: 843d282ea1d502a42b3d19ab853135e1, type: 3}
   VillageIcon_black: {fileID: 21300000, guid: a4e91d81e0dd57b45888a932340e1161, type: 3}
   VillageIcon_white: {fileID: 21300000, guid: 3f20511af86d5a545964d57952d19432, type: 3}
   VillageIcon_outline: {fileID: 21300000, guid: 127cb467c90829745b4f29864550c219, type: 3}

@@ -18,6 +18,7 @@ public class ImageSwapScript : MonoBehaviour
   public bool Sound = true;
   public void Next(Sprite illust)
   {
+    StopAllCoroutines();
     NextImage.sprite = illust;
     StartCoroutine(changealpha( CurrentGroup, 0.0f, ChangeTime));
     StartCoroutine(changealpha(NextGroup,1.0f,ChangeTime));
@@ -28,6 +29,7 @@ public class ImageSwapScript : MonoBehaviour
   }
   public void Next(Sprite illust,float time)
   {
+    StopAllCoroutines();
     NextImage.sprite = illust;
     StartCoroutine(changealpha(CurrentGroup, 0.0f, time));
     StartCoroutine(changealpha(NextGroup, 1.0f, time));
