@@ -323,7 +323,7 @@ public class UI_map : UI_default
 
     MoveCost_Sanity = GameManager.Instance.MyGameData.Movecost_sanity * AllTiles.Count;
     PenaltyCost = TotalSupplyCost > GameManager.Instance.MyGameData.Supply ?
-      (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost :
+      (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack :
       0;
 
     int _supplycost = 0;
@@ -354,13 +354,13 @@ public class UI_map : UI_default
 
       if (_supplyover)
       {
-        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
-        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
       }
       else if (GameManager.Instance.MyGameData.Supply < _supplycost)
       {
-        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
-        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
         _supplyover = true;
       }
       PayValues_Sanity.Add(_pay_sanity);
@@ -501,7 +501,7 @@ public class UI_map : UI_default
     {
       MoveCost_Sanity = GameManager.Instance.MyGameData.Movecost_sanity * AllTiles.Count;
       PenaltyCost = TotalSupplyCost > GameManager.Instance.MyGameData.Supply ?
-        (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost :
+        (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack :
         0;
     }
 
@@ -533,13 +533,13 @@ public class UI_map : UI_default
 
       if (_supplyover)
       {
-        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
-        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
       }
       else if (GameManager.Instance.MyGameData.Supply < _supplycost)
       {
-        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
-        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost;
+        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
         _supplyover = true;
       }
       PayValues_Sanity.Add(_pay_sanity);
@@ -907,9 +907,9 @@ public class UI_map : UI_default
     get 
     {
       return AllTiles.Count == 0 ? 0 :
-        LastDestination.TileSettle != null ? 0 :
-        (LastDestination.RequireSupply * ConstValues.GoldPerSupplies +
-        (GameManager.Instance.MyGameData.Tendency_Head.Level == 1 ? AllTiles.Count >= ConstValues.Tendency_Head_p1_value ? ConstValues.Tendency_Head_p1_value : 0 : 0));  
+        LastDestination.TileSettle != null ? GameManager.Instance.MyGameData.Tendency_Head.Level>1?ConstValues.Tendency_Head_p1: 0 
+        : LastDestination.IsEvent? GameManager.Instance.MyGameData.Tendency_Head.Level==2? LastDestination.RequireSupply * ConstValues.GoldPerSupplies:0:
+        (LastDestination.RequireSupply * ConstValues.GoldPerSupplies);  
     } 
   }
   private void UpdateSupplyTexts()
@@ -928,7 +928,6 @@ public class UI_map : UI_default
         _info += $" + {AllSupplys[i].ToString()}";
       }
       _info += " + ?";
-    //  RequireSupplyInfo.text = _info;
       BonusGoldInfo.text = GameManager.Instance.GetTextData("BonusGold_unknown");
     }
     else
@@ -939,11 +938,18 @@ public class UI_map : UI_default
       {
         _info += $" + {AllSupplys[i].ToString()}";
       }
-     // RequireSupplyInfo.text = _info;
-      BonusGoldInfo.text =LastDestination.TileSettle!=null?"": string.Format(GameManager.Instance.GetTextData("Bonusgold_Info"),
-        AllTiles[AllTiles.Count - 1].RequireSupply,
-       GameManager.Instance.MyGameData.Tendency_Head.Level == 1 && AllTiles.Count >= ConstValues.Tendency_Head_p1_value ? "<sprite=104>":"",
-       BonusGold);
+      if(LastDestination.TileSettle!=null)
+      BonusGoldInfo.text = GameManager.Instance.MyGameData.Tendency_Head.Level >= 1 ?
+string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_gold"),
+WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager.Instance.MyGameData.GetGoldGenModify(true)))) : "";
+      else if(LastDestination.IsEvent)
+      BonusGoldInfo.text = GameManager.Instance.MyGameData.Tendency_Head.Level == 2 ?
+        string.Format(GameManager.Instance.GetTextData("MoveDescription_Event_gold"),
+        WNCText.GetSupplyColor(SelectedTile.RequireSupply), WNCText.GetGoldColor(BonusGold)) : "";
+      else
+      BonusGoldInfo.text = string.Format(GameManager.Instance.GetTextData("MoveDescription_Outer_gold"),
+       WNCText.GetSupplyColor(SelectedTile.RequireSupply), WNCText.GetGoldColor(BonusGold));
+
     }
   }
   public void SelectTile(TileData selectedtile)
@@ -963,8 +969,8 @@ public class UI_map : UI_default
 
     SelectedTile = LastDestination;
 
-    TilePreviewRect.anchoredPosition = TilePreviewDownPos;
-    TilePreviewGroup.alpha = TilePreviewStartAlpha;
+ //   TilePreviewRect.anchoredPosition = TilePreviewDownPos;
+ //   TilePreviewGroup.alpha = TilePreviewStartAlpha;
     if (!IsMad)
     {
       TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
@@ -975,8 +981,8 @@ public class UI_map : UI_default
       TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
     }
     StopAllCoroutines();
-    StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-235.0f,57.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
+  //  StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-235.0f,57.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
+ // StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
 
     if (LastDestination == GameManager.Instance.MyGameData.CurrentTile)
     {
@@ -1339,6 +1345,11 @@ public class UI_map : UI_default
     MovecostButtonGroup.alpha = 0.0f;
     MovecostButtonGroup.interactable = false;
 
+    if (GameManager.Instance.MyGameData.Madness_Wild)
+    {
+      GameManager.Instance.MyGameData.TotalMoveCount++;
+      UIManager.Instance.SetWildMadCount();
+    }
 
     if (_stoptile.TileSettle != null || _stoptile.IsEvent)
     { //닫기
@@ -1588,10 +1599,6 @@ public class UI_map : UI_default
       DefaultGroup.interactable = true;
       DefaultGroup.blocksRaycasts = true;
     }
-
-    GameManager.Instance.MyGameData.TotalMoveCount++;
-    UIManager.Instance.SetWildMadCount();
-
     //Debug.Log("이동 코루틴이 끝난 레후~");
   }
   public void SetPlayerPos(Vector2 coordinate)

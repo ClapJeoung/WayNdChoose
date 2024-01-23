@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel,TileInfo,}
+CultSidePanel,TileInfo,TurnInfo}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -40,12 +40,12 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.EXP_long:
          _exp = GameManager.Instance.MyGameData.LongExp;
         if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, OtherRect==null?transform as RectTransform : OtherRect);
-        else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"), new Vector2(1.0f, 0.5f), OtherRect==null?transform as RectTransform : OtherRect);
+        else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"),OtherRect==null?transform as RectTransform : OtherRect, new Vector2(1.0f, 0.5f));
         break;
         case PreviewPanelType.EXP_short:
          _exp = ExpIndex==0? GameManager.Instance.MyGameData.ShortExp_A: GameManager.Instance.MyGameData.ShortExp_B;
         if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, OtherRect==null?transform as RectTransform : OtherRect);
-        else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"),new Vector2(1.0f,0.5f), OtherRect==null?transform as RectTransform : OtherRect);
+        else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"), OtherRect==null?transform as RectTransform : OtherRect, new Vector2(1.0f, 0.5f));
         break;
       case PreviewPanelType.Tendency:
         if (GameManager.Instance.MyGameData.GetTendencyLevel(MyTendency) == 0) return;
@@ -59,9 +59,29 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
             break;
           case TendencyTypeEnum.Head:
              _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyDir==true?0:1];
+            if (MySelectionTendencyDir && GameManager.Instance.MyGameData.Tendency_Head.Level == -2)
+            {
+              UIManager.Instance.PreviewManager.OpenSelectionOverTendencyPreview(MySelectionTendency, MySelectionTendencyDir, OtherRect);
+              return;
+            }
+            else if (!MySelectionTendencyDir && GameManager.Instance.MyGameData.Tendency_Head.Level == 2)
+            {
+              UIManager.Instance.PreviewManager.OpenSelectionOverTendencyPreview(MySelectionTendency, MySelectionTendencyDir, OtherRect);
+              return;
+            }
             break;
           case TendencyTypeEnum.Body:
             _selection = GameManager.Instance.MyGameData.CurrentEvent.SelectionDatas[MySelectionTendencyDir == true ? 0 : 1];
+            if (MySelectionTendencyDir && GameManager.Instance.MyGameData.Tendency_Body.Level == -2)
+            {
+              UIManager.Instance.PreviewManager.OpenSelectionOverTendencyPreview(MySelectionTendency, MySelectionTendencyDir, OtherRect);
+              return;
+            }
+            else if (!MySelectionTendencyDir && GameManager.Instance.MyGameData.Tendency_Body.Level == 2)
+            {
+              UIManager.Instance.PreviewManager.OpenSelectionOverTendencyPreview(MySelectionTendency, MySelectionTendencyDir, OtherRect);
+              return;
+            }
             break;
         }
         switch (_selection.ThisSelectionType)
@@ -119,12 +139,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
           _sanitycosttext += string.Format(string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),
             UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply,
-           WNCText.GetSanityColor((UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost)));
+           WNCText.GetSanityColor((UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack)));
 
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
           _sanitycosttext
-          ,new Vector2(0.5f,-0.05f)
-          ,OtherRect==null?transform as RectTransform : OtherRect);
+          ,OtherRect==null?transform as RectTransform : OtherRect, new Vector2(0.5f, -0.05f));
         break;
       case PreviewPanelType.MoveCostGold:
         int _defaultvalue = UIManager.Instance.MapUI.MoveCost_Sanity;
@@ -140,12 +159,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
           _goldcosttext += string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),
             UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply,
-            WNCText.GetSanityColor((UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.PenaltyCost));
+            WNCText.GetSanityColor((UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack));
 
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
   _goldcosttext
-  , new Vector2(0.5f, -0.05f)
-  , OtherRect == null ? transform as RectTransform : OtherRect);
+  , OtherRect == null ? transform as RectTransform : OtherRect, new Vector2(0.5f, -0.05f));
 
         break;
       case PreviewPanelType.RestSanity:
@@ -155,8 +173,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           WNCText.GetSanityColor(UIManager.Instance.DialogueUI.SanityCost))
           +"<br>"+
           string.Format(GameManager.Instance.GetTextData("RestResult"), WNCText.GetSupplyColor(UIManager.Instance.DialogueUI.SupplyValue),""),
-          new Vector2(0.5f, -0.05f),
-          OtherRect == null?transform as RectTransform : OtherRect);
+          OtherRect == null?transform as RectTransform : OtherRect,
+          new Vector2(0.5f, -0.05f));
         break;
       case PreviewPanelType.RestGold:
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
@@ -166,8 +184,8 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           + "<br>" +
           string.Format(GameManager.Instance.GetTextData("RestResult"),
           UIManager.Instance.DialogueUI.SupplyValue, GameManager.Instance.GetTextData(StatusTypeEnum.Sanity,2)+"+"+ WNCText.GetSanityColor(ConstValues.RestSanityRestore)),
-          new Vector2(0.5f, -0.05f),
-          OtherRect == null ? transform as RectTransform : OtherRect);
+          OtherRect == null ? transform as RectTransform : OtherRect,
+          new Vector2(0.5f, -0.05f));
         break;
       case PreviewPanelType.MovePoint:
         UIManager.Instance.PreviewManager.OpenMovePointPreview(OtherRect==null?transform as RectTransform : OtherRect);
@@ -205,13 +223,45 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
             ConstValues.Quest_Cult_Progress_Ritual, GameManager.Instance.MyGameData.Cult_CoolTime,ConstValues.Quest_Cult_Ritual_PenaltySupply);
             break;
         }
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo, IsCultSidePanel?new Vector2(1.05f,0.5f):new Vector2(0.5f,1.05f),OtherRect==null?transform as RectTransform : OtherRect);
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,OtherRect==null?transform as RectTransform : OtherRect, IsCultSidePanel ? new Vector2(1.05f, 0.5f) : new Vector2(0.5f, 1.05f));
         break;
       case PreviewPanelType.TileInfo:
         UIManager.Instance.PreviewManager.OpenTileInfoPreveiew( MyTileData,
           MyTileData.TileSettle != null && (MyTileData.Coordinate.y - GameManager.Instance.MyGameData.Coordinate.y == -3) ? OtherRect_other : MyTileData.Coordinate.y <= GameManager.Instance.MyGameData.Coordinate.y ? OtherRect:OtherRect_other);
         break;
+      case PreviewPanelType.TurnInfo:
 
+        string _year = GameManager.Instance.MyGameData.Year.ToString();
+        string _season = "";
+        switch (GameManager.Instance.GameSaveData.Turn)
+        {
+          case 0:
+            _season = GameManager.Instance.GetTextData("Spring");
+            break;
+          case 1:
+            _season = GameManager.Instance.GetTextData("Summer");
+            break;
+          case 2:
+            _season = GameManager.Instance.GetTextData("Autumn");
+            break;
+          case 3:
+            _season = GameManager.Instance.GetTextData("Winter");
+            break;
+        }
+
+        string _text = string.Format(GameManager.Instance.GetTextData("TurnPreviewInfo"),
+          _year, _season,
+          (int)(Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, GameManager.Instance.MyGameData.LerpByTurn)/ ConstValues.MoveCost_Min * 100.0f-100),
+          (int)(Mathf.Lerp(ConstValues.RestCost_Default_Min, ConstValues.RestCost_Default_Max, GameManager.Instance.MyGameData.LerpByTurn)/ ConstValues.RestCost_Default_Min * 100.0f-100),
+          (int)GameManager.Instance.MyGameData.MinSuccesPer,
+          GameManager.Instance.MyGameData.CheckSkillSingleValue,
+          GameManager.Instance.MyGameData.CheckSkillMultyValue,
+          WNCText.GetHPColor("+"+(int)(Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, GameManager.Instance.MyGameData.LerpByTurn)/ ConstValues.PayHP_min * 100.0f-100)+"%"),
+          WNCText.GetSanityColor("+" + (int)(Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, GameManager.Instance.MyGameData.LerpByTurn)/ ConstValues.PaySanity_min * 100.0f-100) + "%"),
+          WNCText.GetGoldColor("+" + (int)(Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max, GameManager.Instance.MyGameData.LerpByTurn)/ ConstValues.PayGold_min * 100.0f-100) + "%")
+          );
+
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_text,OtherRect,new Vector2(-0.05f,1.05f));        break;
     }
   }
     public void OnPointerExit(PointerEventData eventData) 

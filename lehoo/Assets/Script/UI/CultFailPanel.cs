@@ -34,6 +34,7 @@ public class CultFailPanel : MonoBehaviour
 
     yield return new WaitForSeconds(WaitTime);
     IsOpening = false;
+    StartCoroutine(closeanimation());
   }
   public void Click()
   {

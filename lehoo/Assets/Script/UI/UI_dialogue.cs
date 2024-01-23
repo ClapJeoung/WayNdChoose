@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 
 public class UI_dialogue : UI_default
@@ -1030,13 +1031,21 @@ public class UI_dialogue : UI_default
     {
       case SelectionTargetType.None:
         _issuccess = true;
+        if (_selection.IsOverTendency)
+        {
+          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+        }
         UIManager.Instance.AudioManager.PlaySFX(25);
         break;
       case SelectionTargetType.Pay:
         UIManager.Instance.AudioManager.PlaySFX(2);
         if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.HP))
         {
-          yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
+          if (_selection.IsOverTendency)
+          {
+            yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+          }
+          else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
           _issuccess = true;
           UIManager.Instance.AudioManager.PlaySFX(25);
@@ -1044,7 +1053,11 @@ public class UI_dialogue : UI_default
         }
         else if (_selectiondata.SelectionPayTarget.Equals(StatusTypeEnum.Sanity))
         {
-          yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
+          if (_selection.IsOverTendency)
+          {
+            yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+          }
+          else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
           _issuccess = true;//체력,정신력 지불의 경우 남은 값과 상관 없이 일단 성공으로만 친다
           UIManager.Instance.AudioManager.PlaySFX(25);
@@ -1056,7 +1069,11 @@ public class UI_dialogue : UI_default
 
           if (GameManager.Instance.MyGameData.Gold >= _currentvalue)
           {
-            yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
+            if (_selection.IsOverTendency)
+            {
+              yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+            }
+            else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
             GameManager.Instance.MyGameData.Gold -= _currentvalue;
             UIManager.Instance.AudioManager.PlaySFX(25);
@@ -1068,7 +1085,11 @@ public class UI_dialogue : UI_default
             {
               int _elsevalue = _currentvalue - GameManager.Instance.MyGameData.Gold;
 
-              yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
+              if (_selection.IsOverTendency)
+              {
+                yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+              }
+              else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
               _issuccess = true;
               UIManager.Instance.AudioManager.PlaySFX(25);
@@ -1078,7 +1099,11 @@ public class UI_dialogue : UI_default
             }//돈이 부족해 성공한 경우
             else
             {
-              yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, _currentvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
+              if (_selection.IsOverTendency)
+              {
+                yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, (float)(_currentvalue - GameManager.Instance.MyGameData.Gold)/_currentvalue));
+              }
+              else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, _currentvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
 
               _issuccess = false;
               UIManager.Instance.AudioManager.PlaySFX(26);
@@ -1101,7 +1126,12 @@ public class UI_dialogue : UI_default
           _issuccess = false;
         }
 
-        yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+        if (_selection.IsOverTendency)
+        {
+          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+        }
+        else yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+       
         yield return new WaitForSeconds(0.5f);
         break;
       case SelectionTargetType.Check_Multy: //기술(복수) 선택지면 확률 검사
@@ -1117,7 +1147,11 @@ public class UI_dialogue : UI_default
         {
           _issuccess = false;
         }
-        yield return StartCoroutine(checkanimation(_selection.SkillIcon_A, _selection.SkillIcon_B,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+        if (_selection.IsOverTendency)
+        {
+          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+        }
+        else yield return StartCoroutine(checkanimation(_selection.SkillIcon_A, _selection.SkillIcon_B,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
         yield return new WaitForSeconds(0.5f);
         break;
     }
@@ -1201,6 +1235,21 @@ public class UI_dialogue : UI_default
     if (_secondvalue == 1.0f) { image_R.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25);  }
     else { UIManager.Instance.AudioManager.PlaySFX(26); }
 
+    yield return new WaitForSeconds(0.25f);
+  }
+  private IEnumerator unknownanimation(Image image,float value)
+  {
+    float _time = 0.0f;
+    float _stoptime = SelectionEffectTime_check *value;
+    UIManager.Instance.AudioManager.PlaySFX(Random.Range(31,33), "payanimation");
+    while (_time < _stoptime)
+    {
+      image.fillAmount = 1.0f - _time / SelectionEffectTime_check;
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    UIManager.Instance.AudioManager.StopSFX("payanimation");
+    if (value == 1.0f) image.fillAmount = 0.0f;
     yield return new WaitForSeconds(0.25f);
   }
   private SuccessData CurrentSuccessData = null;
@@ -1486,6 +1535,7 @@ public class UI_dialogue : UI_default
   public GameObject SettlementObjectHolder = null;
   public Image MadenssEffect = null;
   [SerializeField] private RectTransform MapbuttonPos_Settlemtn = null;
+  [SerializeField] private TextMeshProUGUI DiscomfortDescriptionText = null;
   [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementTypeText = null;
   [SerializeField] private TextMeshProUGUI DiscomfortText = null;
@@ -1578,6 +1628,13 @@ public class UI_dialogue : UI_default
     SelectedSector = SectorTypeEnum.NULL;
     Illust.Next(GameManager.Instance.ImageHolder.GetSettlementIllust(CurrentSettlement.SettlementType, GameManager.Instance.MyGameData.Turn));
 
+    string[] _discomfortscript;
+    if (CurrentSettlement.Discomfort <= ConstValues.Discomfort_low) _discomfortscript = GameManager.Instance.GetTextData("Discomfort_low").Split('@');
+    else if(CurrentSettlement.Discomfort<=ConstValues.Discomfort_middle) _discomfortscript = GameManager.Instance.GetTextData("Discomfort_middle").Split('@');
+    else if(CurrentSettlement.Discomfort<=ConstValues.Discomfort_high) _discomfortscript = GameManager.Instance.GetTextData("Discomfort_high").Split('@');
+    else _discomfortscript = GameManager.Instance.GetTextData("Discomfort_max").Split('@');
+
+    DiscomfortDescriptionText.text = _discomfortscript[Random.Range(0, _discomfortscript.Length)];
     DiscomfortText.text = CurrentSettlement.Discomfort.ToString();
     RestCostValueText.text = string.Format(GameManager.Instance.GetTextData("RestCostValue"),
      (int)(GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100));
@@ -1733,7 +1790,8 @@ public class UI_dialogue : UI_default
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector, false);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = ConstValues.Rest_Discomfort;
+    int _discomfort_default = GameManager.Instance.MyGameData.Tendency_Head.Level<=-1?
+      (int)(ConstValues.Rest_Discomfort*ConstValues.Tendency_Head_m1):ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:

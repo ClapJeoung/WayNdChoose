@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int Discomfort_high = 19, Discomfort_middle = 12, Discomfort_low = 6;
+
   public const float CountChangeTime_settlement = 1.2f;
   public const float CountChangeTime_status = 0.5f;
   public const float CountChangeTime_map = 0.3f;
@@ -117,14 +119,14 @@ public static class ConstValues
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.15f;
 
-  public const int Tendency_Head_m2 = 2;
-  public const int Tendency_Head_m1 = 1;
-  public const int Tendency_Head_p1_length =2,Tendency_Head_p1_value=2;
-  public const int Tendency_Head_p2 = 5;
-  //정신적 2: 첫 휴식 불쾌 0
+  public const float Tendency_Head_m2 = 0.15f;
+  public const float Tendency_Head_m1 = 0.5f;
+  public const int Tendency_Head_p1 = 3;
+  //public const int Tendency_Head_p2 = 5;
+  //정신적 2: 광기 개수당 정신력 감소 완화
   //정신적 1: 불쾌 페널티 값 감소
-  //물질적 1: length칸 이동 시 value골드 추가
-  //물질적 2: 정착지에서 떠나면 보급 줌
+  //물질적 1: 지도->정착지 이동 시 골드
+  //물질적 2: 이벤트 타일로 이동할 때도 동일하게 골드
 
   public const int ConversationByTendency_m2 = 2, ConversationByTendency_m1 = 1,
     IntelligenceByTendency_m2 = 2, IntelligenceByTendency_m1 = 1,
@@ -142,8 +144,8 @@ public static class ConstValues
   //스킬 체크, 지불 체크 최대~최소
   public const int MaxTime = 60;  //15*4
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 15;
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 20;
+  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 8;
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
 
   public const float Difficult = 1.0f;
   public const float PayHP_min = 3, PayHP_max = 6;      
@@ -157,8 +159,8 @@ public static class ConstValues
   public const int RewardGold = 10;
   public const int RewardSupply = 6;
 
-  public const int EXPMaxTurn_short_idle = 7;
-  public const int EXPMaxTurn_long_idle =  13;
+  public const int EXPMaxTurn_short_idle = 10;
+  public const int EXPMaxTurn_long_idle =  18;
 
   public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
@@ -352,7 +354,7 @@ public class GameData    //게임 진행도 데이터
   #region #턴에 비례한 성공 확률들#
   public float LerpByTurn
   {
-    get { return Mathf.Lerp(0.0f, 1.0f, (Year * 4 + turn) / (float)ConstValues.MaxTime); }
+    get { return Mathf.Lerp(0.0f, 1.0f, ((Year-1 * 4) + (turn-1)) / (float)ConstValues.MaxTime); }
   }
   public float MinSuccesPer
   {
@@ -387,7 +389,7 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #값 프로퍼티#
-  public int ViewRange { get { return ConstValues.DefaultViewRange + (Tendency_Head.Level <0 ? ConstValues.Tendency_Head_m1 : 0); } }
+  public int ViewRange { get { return ConstValues.DefaultViewRange; } }
   /*
   public RangeEnum GetMoveRangeType(int range)
   {
@@ -475,7 +477,7 @@ public class GameData    //게임 진행도 데이터
       return (int)((Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, LerpByTurn) * GetSanityLossModify(true, 0)));
     }
   }
-  public int PenaltyCost
+  public int Movecost_supplylack
   {
     get
     {
@@ -919,8 +921,13 @@ public class GameData    //게임 진행도 데이터
     float _plusamount = 0;
 
     var _count = GetEffectModifyCount_Exp(EffectType.SanityLoss)+ addcount;
+    int _madcount = 0;
+    if (Madness_Conversation) _madcount++;
+    if (Madness_Force) _madcount++;
+    if(Madness_Wild)_madcount++;
+    if(Madness_Intelligence) _madcount++;
 
-    _plusamount=1.0f-_count*ConstValues.SanityLoss_Exp;
+    _plusamount=Mathf.Clamp(1.0f-_count*ConstValues.SanityLoss_Exp-(Tendency_Head.Level==-2? _madcount*ConstValues.Tendency_Head_m2:0),0.0f,1.0f);
 
     if (_formultiply) return _plusamount;
     else return _plusamount*100.0f;
@@ -1330,10 +1337,16 @@ public class Tendency
           switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
           {
             case -2:
+              int _madcount = 0;
+              if (GameManager.Instance.MyGameData.Madness_Conversation) _madcount++;
+              if (GameManager.Instance.MyGameData.Madness_Force) _madcount++;
+              if (GameManager.Instance.MyGameData.Madness_Wild) _madcount++;
+              if (GameManager.Instance.MyGameData.Madness_Intelligence) _madcount++;
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       ConstValues.Tendency_Head_m1)+"<br><br>"+ 
+                       (int)(ConstValues.Tendency_Head_m1*ConstValues.Rest_Discomfort))+"<br><br>"+ 
                        string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
-                      ConstValues.Tendency_Head_m2);
+                      (int)(ConstValues.Tendency_Head_m2*100.0f),
+                      (int)(_madcount*ConstValues.Tendency_Head_m2*100.0f));
               break;
             case -1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
@@ -1341,13 +1354,12 @@ public class Tendency
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-               ConstValues.Tendency_Head_p1_length, WNCText.GetGoldColor(ConstValues.Tendency_Head_p1_value));
+               WNCText.GetGoldColor(ConstValues.Tendency_Head_p1));
               break;
             case 2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-              ConstValues.Tendency_Head_p1_length, WNCText.GetGoldColor(ConstValues.Tendency_Head_p1_value)) +"<br><br>"+ 
-              string.Format(GameManager.Instance.GetTextData("Tendency_Head_P2_Description"),
-               WNCText.GetDiscomfortColor(ConstValues.Tendency_Head_p2));
+              WNCText.GetGoldColor(ConstValues.Tendency_Head_p1)) +"<br><br>"+
+              GameManager.Instance.GetTextData("Tendency_Head_P2_Description");
               break;
           }
           break;

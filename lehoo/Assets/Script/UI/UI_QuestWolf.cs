@@ -377,7 +377,7 @@ public class UI_QuestWolf : UI_default
   {
     IsProgressWorking = true;
     ProgressBackgroundButton.SetActive(false);
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressEventGroup, 0.0f, UIMoveOutTime));
+    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(ProgressEventGroup, 0.0f, FadeOutTime));
     IsProgressWorking = false;
   }
 

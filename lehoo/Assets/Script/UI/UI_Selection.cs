@@ -22,6 +22,8 @@ public class UI_Selection : MonoBehaviour
   public Image PayIcon = null;
   public TextMeshProUGUI PayInfo = null;
   public GameObject CheckHolder = null;
+  public GameObject OverTendencyHolder = null;
+  public Image OverTendencyIcon = null;
   public Image SkillIcon_A = null;
   public Image SkillIcon_B = null;
   public TextMeshProUGUI SkillInfo_require = null;
@@ -34,6 +36,7 @@ public class UI_Selection : MonoBehaviour
   public Image NextTendencyIcon = null;
   public List<Image> TendencyProgressArrows= new List<Image>();
   public List<CanvasGroup> TendencyProgressArrows_inside=new List<CanvasGroup>();
+  public bool IsOverTendency = false;
   public int Index
   {
     get { return IsLeft ? 0 : 1; }
@@ -58,15 +61,38 @@ public class UI_Selection : MonoBehaviour
     MyGroup.interactable = true;
     MyGroup.blocksRaycasts = true;
 
+    if (_data.Tendencytype == TendencyTypeEnum.Body)
+    {
+      if (_data.Index == 0 && GameManager.Instance.MyGameData.Tendency_Body.Level == -2) IsOverTendency = true;
+      else if (_data.Index == 1 && GameManager.Instance.MyGameData.Tendency_Body.Level == 2) IsOverTendency = true;
+      else IsOverTendency = false;
+    }
+    else if (_data.Tendencytype == TendencyTypeEnum.Head)
+    {
+      if (_data.Index == 0 && GameManager.Instance.MyGameData.Tendency_Head.Level == -2) IsOverTendency = true;
+      else if (_data.Index == 1 && GameManager.Instance.MyGameData.Tendency_Head.Level == 2) IsOverTendency = true;
+      else IsOverTendency = false;
+    }
+
+    if (IsOverTendency)
+    {
+      if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
+      if (CheckHolder.activeInHierarchy == true) CheckHolder.SetActive(false);
+      if (OverTendencyHolder.activeInHierarchy == false) OverTendencyHolder.SetActive(true);
+      OverTendencyIcon.fillAmount = 1.0f;
+    }
+    else 
     switch (MySelectionData.ThisSelectionType)
     {
       case SelectionTargetType.None:
         if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
         if (CheckHolder.activeInHierarchy == true) CheckHolder.SetActive(false);
+        if(OverTendencyHolder.activeInHierarchy == true) OverTendencyHolder.SetActive(false);
         break;
       case SelectionTargetType.Pay:
         if (PayHolder.activeInHierarchy == false) PayHolder.SetActive(true);
         if (CheckHolder.activeInHierarchy == true) CheckHolder.SetActive(false);
+        if (OverTendencyHolder.activeInHierarchy == true) OverTendencyHolder.SetActive(false);
         PayIcon.fillAmount = 1.0f;
         switch (MySelectionData.SelectionPayTarget)
         {
@@ -87,6 +113,7 @@ public class UI_Selection : MonoBehaviour
       case SelectionTargetType.Check_Single:
         if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
         if (CheckHolder.activeInHierarchy == false) CheckHolder.SetActive(true);
+        if (OverTendencyHolder.activeInHierarchy == true) OverTendencyHolder.SetActive(false);
         if (SkillIcon_B.gameObject.activeInHierarchy == true) SkillIcon_B.gameObject.SetActive(false);
         SkillIcon_A.fillAmount = 1.0f;
         SkillIcon_A.sprite = GameManager.Instance.ImageHolder.GetSkillIcon(MySelectionData.SelectionCheckSkill[0], false);
@@ -96,6 +123,7 @@ public class UI_Selection : MonoBehaviour
       case SelectionTargetType.Check_Multy:
         if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
         if (CheckHolder.activeInHierarchy == false) CheckHolder.SetActive(true);
+        if (OverTendencyHolder.activeInHierarchy == true) OverTendencyHolder.SetActive(false);
         if (SkillIcon_B.gameObject.activeInHierarchy.Equals(false)) SkillIcon_B.gameObject.SetActive(true);
         SkillIcon_A.fillAmount = 1.0f;
         SkillIcon_B.fillAmount = 1.0f;
@@ -108,9 +136,10 @@ public class UI_Selection : MonoBehaviour
 
         break;
     }//아이콘 채우기 등 이미지만 작업
+    LayoutRebuilder.ForceRebuildLayoutImmediate(MyGroup.transform as RectTransform);
 
     UpdateValues();
-    HighlightEffect.Interactive = true;
+    HighlightEffect.Interactive = !IsOverTendency;
 
     MyTendencyType = MySelectionData.Tendencytype;
     MyPreviewInteractive.MySelectionTendency = MyTendencyType;
@@ -262,61 +291,55 @@ public class UI_Selection : MonoBehaviour
   }
   public void UpdateValues()
   {
-    int _requirevalue = 0, _currentvalue = 0;
-    switch (MySelectionData.ThisSelectionType)
+    if (IsOverTendency)
     {
-      case SelectionTargetType.None:
-        if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
-        if (CheckHolder.activeInHierarchy == true) CheckHolder.SetActive(false);
-        break;
-      case SelectionTargetType.Pay:
-        if (PayHolder.activeInHierarchy == false) PayHolder.SetActive(true);
-        if (CheckHolder.activeInHierarchy == true) CheckHolder.SetActive(false);
-        _requirevalue = MyUIDialogue.GetRequireValue(IsLeft) * -1;
-        switch (MySelectionData.SelectionPayTarget)
-        {
-          case StatusTypeEnum.HP:
-            PayInfo.text = _requirevalue.ToString();
-            break;
-          case StatusTypeEnum.Sanity:
-            PayInfo.text = _requirevalue.ToString();
-            break;
-          case StatusTypeEnum.Gold:
-            if (GameManager.Instance.MyGameData.Gold < _requirevalue)
-            {
-              HighlightEffect.SetInfo(HighlightEffectEnum.Sanity);
-              PayInfo.text = WNCText.PercentageColor(_requirevalue.ToString(), GameManager.Instance.MyGameData.Gold / _requirevalue * -1);
-            }
-            else
-            {
+    }
+    else
+    {
+      int _requirevalue = 0, _currentvalue = 0;
+      switch (MySelectionData.ThisSelectionType)
+      {
+        case SelectionTargetType.None:
+          break;
+        case SelectionTargetType.Pay:
+          _requirevalue = MyUIDialogue.GetRequireValue(IsLeft) * -1;
+          switch (MySelectionData.SelectionPayTarget)
+          {
+            case StatusTypeEnum.HP:
               PayInfo.text = _requirevalue.ToString();
-            }
-            break;
-        }
-        break;
-      case SelectionTargetType.Check_Single:
-        if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
-        if (CheckHolder.activeInHierarchy == false) CheckHolder.SetActive(true);
-        if (SkillIcon_B.gameObject.activeInHierarchy == true) SkillIcon_B.gameObject.SetActive(false);
+              break;
+            case StatusTypeEnum.Sanity:
+              PayInfo.text = _requirevalue.ToString();
+              break;
+            case StatusTypeEnum.Gold:
+              if (GameManager.Instance.MyGameData.Gold < _requirevalue)
+              {
+                HighlightEffect.SetInfo(HighlightEffectEnum.Sanity);
+                PayInfo.text = WNCText.PercentageColor(_requirevalue.ToString(), GameManager.Instance.MyGameData.Gold / _requirevalue * -1);
+              }
+              else
+              {
+                PayInfo.text = _requirevalue.ToString();
+              }
+              break;
+          }
+          break;
+        case SelectionTargetType.Check_Single:
+          _requirevalue = MyUIDialogue.GetRequireValue(IsLeft);
+          _currentvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
+          SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
+          SkillInfo_current.text = _currentvalue.ToString();
 
-        _requirevalue = MyUIDialogue.GetRequireValue(IsLeft);
-        _currentvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
-        SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
-        SkillInfo_current.text = _currentvalue.ToString();
+          break;
+        case SelectionTargetType.Check_Multy:
+          _currentvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
+          _requirevalue = MyUIDialogue.GetRequireValue(IsLeft);
+          SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
+          SkillInfo_current.text = _currentvalue.ToString();
+          HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0], MySelectionData.SelectionCheckSkill[1] });
 
-        break;
-      case SelectionTargetType.Check_Multy:
-        if (PayHolder.activeInHierarchy == true) PayHolder.SetActive(false);
-        if (CheckHolder.activeInHierarchy == false) CheckHolder.SetActive(true);
-        if (SkillIcon_B.gameObject.activeInHierarchy.Equals(false)) SkillIcon_B.gameObject.SetActive(true);
-
-        _currentvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
-        _requirevalue = MyUIDialogue.GetRequireValue(IsLeft);
-        SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
-        SkillInfo_current.text = _currentvalue.ToString();
-        HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0], MySelectionData.SelectionCheckSkill[1] });
-
-        break;
+          break;
+      }
     }
     LayoutRebuilder.ForceRebuildLayoutImmediate(MyGroup.transform as RectTransform);
   }

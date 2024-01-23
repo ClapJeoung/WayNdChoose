@@ -28,15 +28,8 @@ public class ReturnButton : MonoBehaviour
 
     if (IsMapButton)
     {
-      if (GameManager.Instance.MyGameData.CurrentSettlement != null && GameManager.Instance.MyGameData.Tendency_Head.Level ==2)
-      {
-        MyText.text = GameManager.Instance.GetTextData("GOTOMAP")+"<br>"+
-          string.Format("<sprite=105><sprite=100> {0} +{1}",GameManager.Instance.GetTextData("MOVEPOINT_TEXT"),WNCText.GetSupplyColor(ConstValues.Tendency_Head_p2));
-      }
-      else
-      {
-        MyText.text = GameManager.Instance.GetTextData("GOTOMAP");
-      }
+      MyText.text = GameManager.Instance.GetTextData("GOTOMAP");
+
     }
     else
     {

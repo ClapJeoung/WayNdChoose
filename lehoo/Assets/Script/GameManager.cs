@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
 using System.Linq;
 using System;
-using Unity.VisualScripting;
+using Steamworks;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
         if(_event.SelectionDatas[i].FailData!=null)
           foreach (var _string in _event.SelectionDatas[i].FailData.Descriptions)
             if (_string == NullText) _errortexts.Add(_event.ID + $".{i}FailDescription");
-
       }
     }
     foreach (var _dat in _errortexts) Debug.Log(_dat);
@@ -588,9 +587,21 @@ public class GameManager : MonoBehaviour
       EventDataUpdate();
       DontDestroyOnLoad(gameObject);
       //  DebugAllEvents();
+      try
+      {
+        Steamworks.SteamClient.Init(2693250, true);
+      }
+      catch(Exception e)
+      {
+        Debug.Log(e.Message);
+      }
     }
     else { Destroy(this); }
 
+  }
+  private void OnApplicationQuit()
+  {
+    Steamworks.SteamClient.Shutdown();
   }
   private void Start()
   {

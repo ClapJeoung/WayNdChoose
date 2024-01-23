@@ -16,7 +16,6 @@ public class MapButton : ReturnButton
         UIManager.Instance.DialogueUI.OpenQuitAsk();
         return;
       }
-     if(GameManager.Instance.MyGameData.Tendency_Head.Level == 2) GameManager.Instance.MyGameData.Supply += ConstValues.Tendency_Head_p2;
     }
     else
     {

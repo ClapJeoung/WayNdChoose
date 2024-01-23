@@ -82,6 +82,12 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Image SelectionElseBackground = null;
   [SerializeField] private Image SelectionElseIcon = null;
   [Space(10)]
+  [SerializeField] private GameObject SelectionOverTendencyPanel = null;
+  [SerializeField] private Image SelectionOverTendencyBackground = null;
+  [SerializeField] private TextMeshProUGUI SelectionOverTendencyText = null;
+  [SerializeField] private TextMeshProUGUI SelectionOverTendencySuccessText = null;
+  [SerializeField] private TextMeshProUGUI SelectionOverTendencyFailText = null;
+  [Space(10)]
   [SerializeField] private GameObject ExpSelectEmptyPanel = null;
   [SerializeField] private Image ExpSelectEmptyIllust = null;
   [SerializeField] private TextMeshProUGUI ExpSelectEmptyDescription = null;
@@ -344,8 +350,9 @@ public class PreviewManager : MonoBehaviour
     string _targetselectionname = _targettendency.Type == TendencyTypeEnum.Body ?
       _targettendency.Level < 0 ? GameManager.Instance.GetTextData("Selection_logic") : GameManager.Instance.GetTextData("Selection_physical") :
       _targettendency.Level < 0 ? GameManager.Instance.GetTextData("Selection_mental") : GameManager.Instance.GetTextData("Selection_material");
-    string _targetpenaltynames = Mathf.Abs(_targettendency.Level) == 1 ? GameManager.Instance.GetTextData("Fail") :
-      GameManager.Instance.GetTextData("Success") + "," + GameManager.Instance.GetTextData("Fail");
+    string _targetpenaltynames = Mathf.Abs(_targettendency.Level) == 1 ? 
+      GameManager.Instance.GetTextData("Success") + "," + GameManager.Instance.GetTextData("Fail"):
+     GameManager.Instance.GetTextData("SelectionInfo")+","+ GameManager.Instance.GetTextData("Success") + "," + GameManager.Instance.GetTextData("Fail");
     Sprite _icon = _targettendency.CurrentIcon;
     Sprite _icon_left=_targettendency.GetNextIcon(true), _icon_right=_targettendency.GetNextIcon(false);
     int _progress =_targettendency.Progress;
@@ -720,6 +727,18 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(SelectionElsePanel,rect);
   }
+  public void OpenSelectionOverTendencyPreview(TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
+  {
+    if (UIManager.Instance.Mouse.MouseState == MouseStateEnum.DragExp) return;
+
+    if (SelectionOverTendencySuccessText.text == "") SelectionOverTendencySuccessText.text = GameManager.Instance.GetTextData("Success") + " :";
+    if (SelectionOverTendencyFailText.text == "") SelectionOverTendencyFailText.text = GameManager.Instance.GetTextData("Fail") + " :";
+
+    SelectionOverTendencyBackground.sprite= GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+    SelectionOverTendencyText.text = GameManager.Instance.GetTextData("OverTendencySelectionInfo");
+    CurrentPreview = SelectionOverTendencyPanel.GetComponent<RectTransform>();
+    OpenPreviewPanel(SelectionOverTendencyPanel, rect);
+  }
   public void OpenRewardStatusPreview(StatusTypeEnum status, int _value, RectTransform rect)
   {
   }
@@ -789,7 +808,7 @@ public class PreviewManager : MonoBehaviour
 
     OpenPreviewPanel(JustDescription_Panel,rect);
   }
-  public void OpenJustDescriptionPreview(string text,Vector2 pivot, RectTransform rect)
+  public void OpenJustDescriptionPreview(string text, RectTransform rect, Vector2 pivot)
   { 
     JustDescriptionText.text = text;
 
@@ -829,7 +848,7 @@ public class PreviewManager : MonoBehaviour
     Vector2 _pivot = new Vector2(0.5f,tileData.Coordinate.y<=GameManager.Instance.MyGameData.Coordinate.y?1.05f:-0.05f);
     if (UIManager.Instance.MapUI.Destinations.Contains(tileData))
     {
-      OpenJustDescriptionPreview(GameManager.Instance.GetTextData("RemoveDestination"), _pivot, tilerect);
+      OpenJustDescriptionPreview(GameManager.Instance.GetTextData("RemoveDestination"), tilerect, _pivot);
     }
     else if (tileData.TileSettle == null)
     {

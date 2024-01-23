@@ -319,9 +319,9 @@ public class UIManager : MonoBehaviour
   public void SetWildMadCount()
   {
     WildMadCountText.text =
-      GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1 ?
-      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString()) :
-      ((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString());
+      GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1 ?
+      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString()) :
+      ((GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString());
     StartCoroutine(madcounttext(WildMadCountText.rectTransform));
   }
   private IEnumerator madcounttext(RectTransform rect)
