@@ -6,7 +6,6 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
 using System.IO;
-using Unity.VisualScripting;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 //public enum RangeEnum { Low,Middle,High}
@@ -80,8 +79,6 @@ public class UI_map : UI_default
   [SerializeField] private GameObject OutlinePrefab = null;
   [SerializeField] private Color MadColor = new Color();
   [SerializeField] private Color LowColor = new Color();
-  [SerializeField] private Color MiddleColor = new Color();
-  [SerializeField] private Color HighColor = new Color();
 
   [SerializeField] private List<Image> Arrows = new List<Image>();
   private Image GetEnableArrow
@@ -272,7 +269,7 @@ public class UI_map : UI_default
     RouteData _newroute= new RouteData();
     _newroute.Start = LastDestination;
     _newroute.End = tile;
-    List<HexDir> _grid = tile.HexGrid.GetRoute(LastDestination);
+    List<HexDir> _grid = GameManager.Instance.MyGameData.MyMapData.GetRoute(LastDestination, tile);
     for (int i = 0; i < _grid.Count - 1; i++)
       _newroute.Route.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(i == 0 ? _newroute.Start : _newroute.Route[_newroute.Route.Count - 1], _grid[i]));
     for(int i = 0; i < _newroute.Length; i++)
@@ -285,10 +282,13 @@ public class UI_map : UI_default
       {
         _currentcolor = LowColor;
       }
-      _currentcolor.a = i == _newroute.Length - 1 ? 1.0f : 0.4f;
-      Image _enableoutline = GetEnableOutline;
-      SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
-      _newroute.Outlines.Add(_enableoutline);
+      if (i == _newroute.Length - 1)
+      {
+        _currentcolor.a = i == _newroute.Length - 1 ? 1.0f : 0.4f;
+        Image _enableoutline = GetEnableOutline;
+        SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
+        _newroute.Outlines.Add(_enableoutline);
+      }
 
       Vector3 _arrowpos = _newroute.Length==1? (_newroute.Start.ButtonScript.Rect.anchoredPosition3D + _newroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f :
         i == 0 ? (_newroute.Start.ButtonScript.Rect.anchoredPosition3D + _newroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f :
@@ -321,7 +321,6 @@ public class UI_map : UI_default
       _index++;
     }
 
-    MoveCost_Sanity = GameManager.Instance.MyGameData.Movecost_sanity * AllTiles.Count;
     PenaltyCost = TotalSupplyCost > GameManager.Instance.MyGameData.Supply ?
       (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack :
       0;
@@ -431,7 +430,7 @@ public class UI_map : UI_default
       _fixroute.Arrows.Clear();
 
       _fixroute.Route.Clear();
-      List<HexDir> _grid = _fixroute.End.HexGrid.GetRoute(_fixroute.Start);
+      List<HexDir> _grid = GameManager.Instance.MyGameData.MyMapData.GetRoute(_fixroute.Start, _fixroute.End);
       for (int i = 0; i < _grid.Count - 1; i++)
         _fixroute.Route.Add(GameManager.Instance.MyGameData.MyMapData.GetNextTile(i == 0 ? _fixroute.Start : _fixroute.Route[_fixroute.Route.Count - 1], _grid[i]));
       for (int i = 0; i < _fixroute.Length; i++)
@@ -443,10 +442,13 @@ public class UI_map : UI_default
         {
           _currentcolor = LowColor;
         }
-        _currentcolor.a = i == _fixroute.Length - 1 ? 1.0f : 0.4f;
-        Image _enableoutline = GetEnableOutline;
-        SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
-        _fixroute.Outlines.Add(_enableoutline);
+        if (i == _fixroute.Length - 1)
+        {
+          _currentcolor.a = i == _fixroute.Length - 1 ? 1.0f : 0.4f;
+          Image _enableoutline = GetEnableOutline;
+          SetOutline(_enableoutline, _targettile.ButtonScript.Rect, _currentcolor);
+          _fixroute.Outlines.Add(_enableoutline);
+        }
 
         Vector3 _arrowpos = Vector3.zero;
         if (i == 0) _arrowpos = (_fixroute.Start.ButtonScript.Rect.anchoredPosition3D + _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
@@ -456,9 +458,9 @@ public class UI_map : UI_default
         Image _arrow = GetEnableArrow;
         _arrow.rectTransform.anchoredPosition = _arrowpos;
         HexDir _dir = HexDir.TopRight;
-        if (i == 0) _dir = _fixroute.Route[i].HexGrid.GetRoute(_fixroute.Start)[0];
-        else if (i == _fixroute.Length - 1) _dir = _fixroute.End.HexGrid.GetRoute(_fixroute.Route[_fixroute.Route.Count - 1])[0];
-        else _dir = _fixroute.Route[i].HexGrid.GetRoute(_fixroute.Route[i - 1].HexGrid)[0];
+        if (i == 0) _dir = GameManager.Instance.MyGameData.MyMapData.GetRoute(_fixroute.Start, _fixroute.Route[i])[0];
+        else if (i == _fixroute.Length - 1) _dir = GameManager.Instance.MyGameData.MyMapData.GetRoute(_fixroute.Route[_fixroute.Route.Count - 1], _fixroute.End)[0];
+        else _dir = GameManager.Instance.MyGameData.MyMapData.GetRoute(_fixroute.Route[i - 1], _fixroute.Route[i])[0]; 
 
         SetArrowRotation(ref _arrow, _dir);
         _fixroute.Arrows.Add(_arrow);
@@ -495,11 +497,9 @@ public class UI_map : UI_default
       MovecostButtonGroup.alpha = 0.0f;
       MovecostButtonGroup.interactable = false;
       MovecostButtonGroup.blocksRaycasts = false;
-      MoveCost_Sanity = 0;
     }
     else
     {
-      MoveCost_Sanity = GameManager.Instance.MyGameData.Movecost_sanity * AllTiles.Count;
       PenaltyCost = TotalSupplyCost > GameManager.Instance.MyGameData.Supply ?
         (TotalSupplyCost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack :
         0;
@@ -604,13 +604,6 @@ public class UI_map : UI_default
 
     SetOutline(Outline_Selecting, tile.ButtonScript.Rect,_currentcolor);
 
-    List<HexDir> _routetemp= tile.HexGrid.GetRoute(LastDestination);
-    TileData _currenttile= LastDestination, _nexttile = null;
-    for(int i=0;i<_routetemp.Count;i++)
-    {
-      _nexttile = GameManager.Instance.MyGameData.MyMapData.GetNextTile(_currenttile, _routetemp[i]);
-      _currenttile = _nexttile;
-    }
   }
   public void ExitTile()
   {
@@ -696,7 +689,6 @@ public class UI_map : UI_default
     MovecostButtonGroup.alpha = 0.0f;
     MovecostButtonGroup.interactable = false;
     MovecostButtonGroup.blocksRaycasts = false;
-    MoveCost_Sanity = 0;
 
     SelectedCostType = StatusTypeEnum.HP;
 
@@ -893,12 +885,18 @@ public class UI_map : UI_default
   [SerializeField] private Vector2 TilePreviewDownPos = new Vector2(-235.0f, 23.0f);
   private float TilePreviewStartAlpha = 0.5f;
   private TileData SelectedTile = null;
-  public int MoveCost_Sanity = 0;
+  public int MoveCost_Sanity
+  {
+    get
+    {
+      return GameManager.Instance.MyGameData.Movecost_sanity * AllTiles.Count;
+    }
+  }
   public int MoveCost_Gold
   {
     get
     {
-      return Mathf.CeilToInt(MoveCost_Sanity * ConstValues.MoveCost_GoldValue);
+      return GameManager.Instance.MyGameData.Movecost_gold * AllTiles.Count;
     }
   }
   public int PenaltyCost = 0;
@@ -908,8 +906,8 @@ public class UI_map : UI_default
     {
       return AllTiles.Count == 0 ? 0 :
         LastDestination.TileSettle != null ? GameManager.Instance.MyGameData.Tendency_Head.Level>1?ConstValues.Tendency_Head_p1: 0 
-        : LastDestination.IsEvent? GameManager.Instance.MyGameData.Tendency_Head.Level==2? LastDestination.RequireSupply * ConstValues.GoldPerSupplies:0:
-        (LastDestination.RequireSupply * ConstValues.GoldPerSupplies);  
+        : LastDestination.IsEvent? GameManager.Instance.MyGameData.Tendency_Head.Level==2? (LastDestination.RequireSupply / 2 + 1): 0:
+        (LastDestination.RequireSupply/2+1);  
     } 
   }
   private void UpdateSupplyTexts()
@@ -957,6 +955,77 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     if (Destinations.Contains(selectedtile))
     {
       RemoveDestination(selectedtile,true);
+
+      if (LastDestination == GameManager.Instance.MyGameData.CurrentTile)
+      {
+        TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+      }
+      else
+      {
+        if (IsMad)
+        {
+          TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
+        }
+        else if (SelectedTile.TileSettle != null)
+        {
+          TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Settlement");
+        }
+        else if (SelectedTile.IsEvent)
+        {
+          TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Event");
+        }
+        else
+        {
+          TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Outer");
+        }
+        switch (GameManager.Instance.MyGameData.QuestType)
+        {
+          case QuestType.Cult:
+            if (!IsMad)
+            {
+              string _progresstext = "";
+              switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+              {
+                case 0:
+                  if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
+                  {
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village);
+                  }
+                  else _progresstext = "";
+                  break;
+                case 1:
+                  if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
+                  {
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town);
+                  }
+                  else _progresstext = "";
+                  break;
+                case 2:
+                  if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
+                  {
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City);
+                  }
+                  else _progresstext = "";
+                  break;
+                case 4:
+                  if (CheckRitual)
+                  {
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual);
+                    UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
+                  }
+                  else
+                  {
+                    _progresstext = "";
+                    UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
+                  }
+                  break;
+
+              }
+              TileInfoText.text += _progresstext;
+            }
+            break;
+        }
+      }
       return;
     }
     //동일한 좌표면 호출되지 않게 이미 거름
@@ -981,78 +1050,80 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
       TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
     }
     StopAllCoroutines();
-  //  StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-235.0f,57.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
- // StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
+    //  StartCoroutine(UIManager.Instance.moverect(TilePreviewRect, TilePreviewDownPos, new Vector2(-235.0f,57.0f), 0.5f, UIManager.Instance.UIPanelOpenCurve));
+    // StartCoroutine(UIManager.Instance.ChangeAlpha(TilePreviewGroup, TilePreviewStartAlpha, 1.0f, 0.5f));
 
     if (LastDestination == GameManager.Instance.MyGameData.CurrentTile)
     {
       TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
     }
-    else if (IsMad)
-    {
-      TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
-    }
-    else if (SelectedTile.TileSettle != null)
-    {
-      TileInfoText.text =  GameManager.Instance.GetTextData("MoveDescription_Settlement");
-    }
-    else if(SelectedTile.IsEvent)
-    {
-      TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Event");
-    }
     else
     {
-      TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Outer");
-    }
+      if (IsMad)
+      {
+        TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
+      }
+      else if (SelectedTile.TileSettle != null)
+      {
+        TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Settlement");
+      }
+      else if (SelectedTile.IsEvent)
+      {
+        TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Event");
+      }
+      else
+      {
+        TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Outer");
+      }
 
-    switch (GameManager.Instance.MyGameData.QuestType)
-    {
-      case QuestType.Cult:
-        if (!IsMad)
-        {
-          string _progresstext = "";
-          switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+      switch (GameManager.Instance.MyGameData.QuestType)
+      {
+        case QuestType.Cult:
+          if (!IsMad)
           {
-            case 0:
-              if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
-              {
-                _progresstext +=string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"),ConstValues.Quest_Cult_Progress_Village);
-              }
-              else _progresstext = "";
-              break;
-            case 1:
-              if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
-              {
-                _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town);
-              }
-              else _progresstext = "";
-              break;
-            case 2:
-              if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
-              {
-                _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City);
-              }
-              else _progresstext = "";
-              break;
-            case 4:
-              if (CheckRitual)
-              {
-                _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual);
-                UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
-              }
-              else
-              {
-                _progresstext = "";
-                UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
-              }
-              break;
+            string _progresstext = "";
+            switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+            {
+              case 0:
+                if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village);
+                }
+                else _progresstext = "";
+                break;
+              case 1:
+                if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town);
+                }
+                else _progresstext = "";
+                break;
+              case 2:
+                if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City);
+                }
+                else _progresstext = "";
+                break;
+              case 4:
+                if (CheckRitual)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual);
+                  UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
+                }
+                else
+                {
+                  _progresstext = "";
+                  UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
+                }
+                break;
 
+            }
+            TileInfoText.text += _progresstext;
           }
-          TileInfoText.text += _progresstext;
-        }
-        break;
+          break;
+      }
     }
-
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
     {
       case 0:
@@ -1335,7 +1406,11 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     }
     CurrentSupply.text = GameManager.Instance.MyGameData.Supply.ToString();
     #endregion
-    if (_stoptile.TileSettle==null&&!_stoptile.IsEvent) GameManager.Instance.MyGameData.Gold += BonusGold;
+    if (_stoptile.TileSettle == null)
+    {
+      if(!_stoptile.IsEvent)GameManager.Instance.MyGameData.Gold += BonusGold;
+      else if(_stoptile.IsEvent&&GameManager.Instance.MyGameData.Tendency_Head.Level==2) GameManager.Instance.MyGameData.Gold += BonusGold;
+    }
     if(!_hungry) UIManager.Instance.AudioManager.StopWalking();
 
     PlayerRect.anchoredPosition = _stoptile.ButtonScript.Rect.anchoredPosition3D;
@@ -1389,9 +1464,13 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
           GameManager.Instance.MyGameData.DownAllDiscomfort(ConstValues.DiscomfortDownValue);
 
           if (_stoptile.IsEvent)
+          {
             EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(_stoptile.Coordinate));
+          }
 
           GameManager.Instance.MyGameData.MyMapData.SetEventTiles();
+
+          GameManager.Instance.SaveData();
           break;
 
         case LandmarkType.Village:
@@ -1599,6 +1678,8 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
       DefaultGroup.interactable = true;
       DefaultGroup.blocksRaycasts = true;
     }
+
+    if (MadnessIcon.enabled) MadnessIcon.enabled = false;
     //Debug.Log("이동 코루틴이 끝난 레후~");
   }
   public void SetPlayerPos(Vector2 coordinate)

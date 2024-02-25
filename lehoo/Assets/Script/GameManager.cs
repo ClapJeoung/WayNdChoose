@@ -8,6 +8,7 @@ using static System.Net.WebRequestMethods;
 using System.Linq;
 using System;
 using Steamworks;
+using System.Text;
 
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
@@ -471,6 +472,19 @@ public class GameManager : MonoBehaviour
     GameJsonData _newjsondata=new GameJsonData(MyGameData);
     string _json = JsonUtility.ToJson(_newjsondata);
     System.IO.File.WriteAllText(Application.persistentDataPath + "/" + GameDataName, _json);
+
+    //여러 파일들을 한번에 저장할 때 EndFileWriteBatch로 감싸주도록 한다.
+    //Steamworks.SteamRemoteStorage.BeginFileWriteBatch();
+
+    //총 할당량과 현재 남은 용량을 조회할 수 있다.
+    //Steamworks.SteamRemoteStorage.GetQuota(out totalBytes, out availableBytes);
+
+   // var _byte = Encoding.UTF8.GetBytes(_json);
+    //실제 클라우드에 저장을 위한 함수이지만 동기화를 위해 별도의 장소에 저장을 해둔다.  실제로 네트워크를 통한 동기화는 이 시점에서는 진행하지 않는다.  비동기나 동기 여부에 따라 FileWriteAsync 또는 FileWrite를 사용한다.  fileStr은 경로가 아니라 저장하는 파일의 이름과 확장자만을 포함해야 한다. (ex. savedata.dat)
+   // Steamworks.SteamRemoteStorage.FileWriteAsync(GameDataName, _byte, (uint)_byte.Length);
+
+    //BeginFileWriteBatch()를 사용했다면 이 함수로 마무리한다.
+    //Steamworks.SteamRemoteStorage.EndFileWriteBatch();
   }//현재 데이터 저장
   #endregion
 
@@ -536,6 +550,23 @@ public class GameManager : MonoBehaviour
     exp.Duration = ConstValues.EXPMaxTurn_long_idle;
     MyGameData.LongExp = exp;
 
+    if (MyGameData.Madness_Intelligence)
+    {
+      if (MyGameData.ShortExp_A != null)
+      {
+        MyGameData.ShortExp_A.Duration -= ConstValues.MadnessEffect_Intelligence;
+        UIManager.Instance.UpdateExpMad(1);
+      }
+      if (MyGameData.ShortExp_B != null)
+      {
+        MyGameData.ShortExp_B.Duration -= ConstValues.MadnessEffect_Intelligence;
+        UIManager.Instance.UpdateExpMad(2);
+      }
+
+      UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
+      UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+    }
+
     UIManager.Instance.UpdateExpPanel();
     UIManager.Instance.UpdateSkillLevel();
   }
@@ -547,8 +578,48 @@ public class GameManager : MonoBehaviour
   public void AddExp_Short(Experience exp,bool index)
   {
     exp.Duration = ConstValues.EXPMaxTurn_short_idle;
-    if(index==true)MyGameData.ShortExp_A=exp;
-    else MyGameData.ShortExp_B=exp;
+    if (index == true)
+    {
+      MyGameData.ShortExp_A = exp;
+
+      if (MyGameData.Madness_Intelligence)
+      {
+        if (MyGameData.LongExp != null)
+        {
+          MyGameData.LongExp.Duration -= ConstValues.MadnessEffect_Intelligence;
+          UIManager.Instance.UpdateExpMad(0);
+        }
+        if (MyGameData.ShortExp_B != null)
+        {
+          MyGameData.ShortExp_B.Duration -= ConstValues.MadnessEffect_Intelligence;
+          UIManager.Instance.UpdateExpMad(2);
+        }
+
+        UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
+        UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+      }
+    }
+    else
+    {
+      MyGameData.ShortExp_B = exp;
+
+      if (MyGameData.Madness_Intelligence)
+      {
+        if (MyGameData.LongExp != null)
+        {
+          MyGameData.LongExp.Duration -= ConstValues.MadnessEffect_Intelligence;
+          UIManager.Instance.UpdateExpMad(0);
+        }
+        if (MyGameData.ShortExp_A != null)
+        {
+          MyGameData.ShortExp_A.Duration -= ConstValues.MadnessEffect_Intelligence;
+          UIManager.Instance.UpdateExpMad(1);
+        }
+
+        UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
+        UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+      }
+    }
 
     UIManager.Instance.UpdateExpPanel();
     UIManager.Instance.UpdateSkillLevel();
@@ -557,6 +628,12 @@ public class GameManager : MonoBehaviour
   {
     MyGameData.CurrentEvent = eventdata;
     MyGameData.CurrentEventSequence = EventSequence.Progress;
+    if (MyGameData.CurrentEventLine == "" && eventdata.EventLine != "")
+    {
+      MyGameData.CurrentEventLine = eventdata.EventLine;
+    }
+    else if (MyGameData.CurrentEventLine !=""&& MyGameData.CurrentEventLine == eventdata.EventLine && eventdata.EndingID != "")
+      MyGameData.CurrentEventLine = "";
 
     UIManager.Instance.OpenDialogue_Event(false);
 
@@ -587,21 +664,13 @@ public class GameManager : MonoBehaviour
       EventDataUpdate();
       DontDestroyOnLoad(gameObject);
       //  DebugAllEvents();
-      try
-      {
-        Steamworks.SteamClient.Init(2693250, true);
-      }
-      catch(Exception e)
-      {
-        Debug.Log(e.Message);
-      }
     }
     else { Destroy(this); }
 
   }
   private void OnApplicationQuit()
   {
-    Steamworks.SteamClient.Shutdown();
+   // 기존 스팀웍스 끄기 기능
   }
   private void Start()
   {
@@ -618,6 +687,20 @@ public class GameManager : MonoBehaviour
    //   CreatMapForDebug();
     //  Debug.Log(MyGameData.CurrentEvent != null);
     }
+
+    /*
+    if (Input.GetKeyDown(KeyCode.Space) && SteamManager.Initialized)
+    {
+      Debug.Log("레후");
+
+      SteamUserStats.ClearAchievement("Achievmenttest0");
+
+      SteamUserStats.StoreStats();
+    }
+    */
+
+    if (Input.GetKeyDown(KeyCode.KeypadEnter))
+      UIManager.Instance.SetInfoPanel("레후");
 #endif
   }
   public void GameOver()
@@ -784,7 +867,7 @@ public class GameManager : MonoBehaviour
 
     List<TileData> _randomstartlands = new List<TileData>();
     TileData _villagetile = MyGameData.MyMapData.Villages[UnityEngine.Random.Range(0, MyGameData.MyMapData.Villages.Count)].Tile;
-    _randomstartlands = MyGameData.MyMapData.GetAroundTile(_villagetile, 2);
+    _randomstartlands = MyGameData.MyMapData.GetAroundTile(_villagetile, 3);
     List<TileData> _disabletiles=new List<TileData>();
     foreach (var _tile in _randomstartlands)
     {
@@ -792,6 +875,7 @@ public class GameManager : MonoBehaviour
       if (_tile.TileSettle != null) { _disabletiles.Add(_tile); }
     }
     foreach(var _deletetile in _disabletiles)_randomstartlands.Remove(_deletetile);
+    foreach (var _aroundtiles in MyGameData.MyMapData.GetAroundTile(_villagetile, 2)) _randomstartlands.Remove(_aroundtiles);
 
     MyGameData.Coordinate = _randomstartlands[UnityEngine.Random.Range(0, _randomstartlands.Count)].Coordinate;
 
@@ -805,6 +889,8 @@ public class GameManager : MonoBehaviour
   public void EnterSettlement(Settlement targetsettlement)
   {
     if (MyGameData.Supply < 0) MyGameData.Supply = 0;
+    if(MyGameData.Tendency_Head.Level>=1)
+      MyGameData.Gold+=(int)(ConstValues.Tendency_Head_p1*MyGameData.GetGoldGenModify(true));
     MyGameData.CurrentEvent = null;
     MyGameData.CurrentSettlement=targetsettlement;
 

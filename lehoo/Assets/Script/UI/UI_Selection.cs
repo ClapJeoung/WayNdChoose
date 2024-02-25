@@ -26,8 +26,8 @@ public class UI_Selection : MonoBehaviour
   public Image OverTendencyIcon = null;
   public Image SkillIcon_A = null;
   public Image SkillIcon_B = null;
-  public TextMeshProUGUI SkillInfo_require = null;
   public TextMeshProUGUI SkillInfo_current = null;
+  public TextMeshProUGUI SkillInfo_require = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
   public Onpointer_highlight HighlightEffect = null;
   public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
@@ -325,17 +325,38 @@ public class UI_Selection : MonoBehaviour
           }
           break;
         case SelectionTargetType.Check_Single:
-          _requirevalue = MyUIDialogue.GetRequireValue(IsLeft);
-          _currentvalue = GameManager.Instance.MyGameData.CheckSkillSingleValue;
-          SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
-          SkillInfo_current.text = _currentvalue.ToString();
+          _requirevalue = GameManager.Instance.MyGameData.CheckSkillSingleValue; 
+          _currentvalue = MyUIDialogue.GetRequireValue(IsLeft);
+          if (skillcountcoroutine == null)
+          {
+            skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_current, _currentvalue, _requirevalue, WNCText.PercentageColor);
+            StartCoroutine(skillcountcoroutine);
+          }
+          else
+          {
+            StopCoroutine(skillcountcoroutine);
+                    skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_current, _currentvalue, _requirevalue, WNCText.PercentageColor);
+            StartCoroutine(skillcountcoroutine);
+          }
+          SkillInfo_require.text = _requirevalue.ToString();
 
           break;
         case SelectionTargetType.Check_Multy:
-          _currentvalue = GameManager.Instance.MyGameData.CheckSkillMultyValue;
-          _requirevalue = MyUIDialogue.GetRequireValue(IsLeft);
-          SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
-          SkillInfo_current.text = _currentvalue.ToString();
+          _requirevalue = GameManager.Instance.MyGameData.CheckSkillMultyValue; 
+          _currentvalue = MyUIDialogue.GetRequireValue(IsLeft);
+          if (skillcountcoroutine == null)
+          {
+            skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_current, _currentvalue, _requirevalue, WNCText.PercentageColor);
+            StartCoroutine(skillcountcoroutine);
+          }
+          else
+          {
+            StopCoroutine(skillcountcoroutine);
+            skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_current, _currentvalue, _requirevalue, WNCText.PercentageColor);
+            StartCoroutine(skillcountcoroutine);
+          }
+          //          SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
+          SkillInfo_require.text = _requirevalue.ToString();
           HighlightEffect.SetInfo(new List<SkillTypeEnum> { MySelectionData.SelectionCheckSkill[0], MySelectionData.SelectionCheckSkill[1] });
 
           break;
@@ -343,6 +364,7 @@ public class UI_Selection : MonoBehaviour
     }
     LayoutRebuilder.ForceRebuildLayoutImmediate(MyGroup.transform as RectTransform);
   }
+  private IEnumerator skillcountcoroutine = null;
   private IEnumerator arroweffect(CanvasGroup group)
   {
     group.alpha = 1.0f;

@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
 using UnityEngine.UIElements;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
 
 public class Settlement
 {
@@ -114,6 +114,222 @@ public class Settlement
 }
 public class MapData
 {
+  public List<HexDir> GetRoute(TileData starttile,TileData endtile)
+  {
+    return endtile.HexGrid.GetDirectRoute(starttile);
+
+    #region 내가 졌다아앗~~~~~~~!!!!!!!!!
+    /*
+    List<TileData> _origintiles=new List<TileData>();
+    List<HexDir> _originhexdir = endtile.HexGrid.GetDirectRoute(starttile);
+    List<TileData> _temptiles=new List<TileData>();
+    List<HexDir> _tempdirs=new List<HexDir>();
+    int _originsum = 0;                         //최단 루트의 보급 합
+    for(int i = 0; i < _originhexdir.Count; i++)
+    {
+      TileData _temptile = GetNextTile(_origintiles.Count == 0 ? starttile : _origintiles[_origintiles.Count - 1], _originhexdir[i]);
+      _origintiles.Add(_temptile);
+      _temptiles.Add(_temptile);
+      _tempdirs.Add(_originhexdir[i]);
+      _originsum += i==(_originhexdir.Count-1) ? 0 : _temptile.RequireSupply;
+    }
+    if(_originsum == _originhexdir.Count-1) return endtile.HexGrid.GetDirectRoute(starttile);
+
+    
+    int _index= 0;
+    while (_index<_temptiles.Count)
+    {
+      if (_temptiles[_index].RequireSupply > 1)
+      {
+        TileData _starttile = _index > 0 ? _temptiles[_index - 1] : starttile;
+        TileData _endtile=_index< _temptiles.Count - 1 ? _temptiles[_index +1 ] : endtile;
+        int _maxsupply = _temptiles[_index].RequireSupply;
+        HexDir _startdir = _tempdirs[_index];
+        HexDir _enddir = _tempdirs[_index + 1];
+      }
+    }
+    
+    List<HexDir> _newdirs= new List<HexDir>();
+    for(int i = 0; i < _temptiles.Count+1; i++)
+    {
+      _newdirs.Add( i==_temptiles.Count?endtile.HexGrid.GetDirectRoute(_temptiles[i - 1])[0] :
+        _temptiles[i + 1].HexGrid.GetDirectRoute(_temptiles[i])[0]);
+    }
+
+    return _newdirs;
+
+    List<TileData> getnewroute(TileData start,HexDir startdir, TileData end, HexDir enddir,TileData realend, int max, ref int sum)
+    {
+      List<List<HexDir>> _modifieddirs= new List<List<HexDir>>();
+      switch ((int)enddir - (int)startdir)
+      {
+        case -1:
+          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir,-1), (HexDir)rotatedir((int)startdir, 0) });
+          _modifieddirs.Add(new List<HexDir> { 
+            (HexDir)rotatedir((int)startdir, 1)
+          ,(HexDir)rotatedir((int)startdir,0)
+          ,(HexDir)rotatedir((int)startdir,-1)
+          ,(HexDir)rotatedir((int)startdir,-2)});
+          break;
+        case 0:
+          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir, -1), (HexDir)rotatedir((int)startdir, 0), (HexDir)rotatedir((int)startdir, 1)});
+          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir, 1) , (HexDir)rotatedir((int)startdir, 0) , (HexDir)rotatedir((int)startdir, -1) });
+          break;
+        case 1:
+          _modifieddirs.Add(new List<HexDir> {
+          (HexDir)rotatedir((int)startdir,-1),
+          (HexDir)rotatedir((int)startdir, 0),
+          (HexDir)rotatedir((int)startdir, 1),
+          (HexDir)rotatedir((int)startdir, 2)});
+          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir, 1) , (HexDir)rotatedir((int)startdir, 0) });
+          break;
+        case -2: return new List<TileData> { GetNextTile(start,(HexDir)rotatedir((int)startdir, -1)) };
+        case 2: return new List<TileData> { GetNextTile(start, (HexDir)rotatedir((int)startdir, 1)) };
+      }
+      for(int i = 0; i < _modifieddirs.Count; i++)
+      {
+        List<TileData> _temptiles = new List<TileData>();
+        int _currentsum = 0;
+        for (int j = 0; j < _modifieddirs[i].Count; j++)
+        {
+          TileData _temptile = GetNextTile(j == 0 ? start : _temptiles[_temptiles.Count - 1], _modifieddirs[i][j]);
+          _temptiles.Add(_temptile);
+        }
+        int _index = 0;
+        while (_index < _temptiles.Count)
+        {
+          if (_temptiles[_index].RequireSupply > 1)
+          {
+            TileData _starttile = _index > 0 ? _temptiles[_index - 1] : starttile;
+            TileData _endtile = _index < _temptiles.Count - 1 ? _temptiles[_index + 1] : endtile;
+            int _maxsupply = _temptiles[_index].RequireSupply;
+            HexDir _startdir = _tempdirs[_index];
+            HexDir _enddir = _tempdirs[_index + 1];
+          }
+        }
+      }
+
+    }
+
+    List<TileData> newtiles(TileData start,TileData end)
+    {
+      List<int> _rotateorder = new List<int>() { -1, 1, -2, 2, 3, 0 };
+
+      List<HexDir> _minhexdir = end.HexGrid.GetDirectRoute(start);
+      List<TileData> _mintiles = new List<TileData>();
+      bool _changed = false;
+      int _min = 0;
+      for (int i = 0; i < _minhexdir.Count-1; i++)
+      {
+        _mintiles.Add(GetNextTile(i == 0 ? start : _mintiles[i - 1], _minhexdir[i] ));
+        _min += _mintiles[_mintiles.Count - 1].RequireSupply;
+      }
+      
+      HexDir _origindir = _minhexdir[0];
+      
+      int _loopcount = 0;
+      int _dirindex = 0;
+      int _sum = 0;             //_sum은 과정 합이 아니라 과정 합-마지막 타일
+      bool _isfail = false;
+      for (int i = 0; i < 6; i++)
+      {
+        HexDir _rootdir = (HexDir)rotatedir((int)_origindir, _rotateorder[i]);
+        List<HexDir> _tempdir = new List<HexDir>() { _rootdir };
+        List<TileData> _temptiles = new List<TileData>() { GetNextTile(start, _rootdir)};
+        _sum = _temptiles[_temptiles.Count - 1].RequireSupply;
+        _dirindex = 0;
+        _loopcount = 0;
+        while (true)
+        {
+          _loopcount++;
+          if (_loopcount > 10000)
+          {
+            Debug.Log("레후");
+            break;
+          }
+          int _dirdiffer = Mathf.Abs(_dirindex - (int)_tempdir[_tempdir.Count - 1]);
+          bool _disabledir = _dirindex > 5 ||
+            (_dirdiffer==2|| _dirdiffer == 3|| _dirdiffer == 4);
+
+          TileData _currenttile = _disabledir ? null : GetNextTile(_temptiles[_temptiles.Count - 1], (HexDir)_dirindex);
+
+          if (_currenttile == end)
+          {
+            if (_sum <= _min)
+            {
+              if (_sum < _min)
+              {
+                _changed = true;
+                _mintiles.Clear();
+                for (int j = 0; j < _temptiles.Count; j++)
+                {
+                  _mintiles.Add(_temptiles[j]);
+                }
+              }
+
+              int _temp = _sum;
+              _min = _temp;
+
+              _dirindex = (int)_tempdir[_tempdir.Count - 1] + 1;
+              _tempdir.RemoveAt(_tempdir.Count - 1);
+              _sum -= _temptiles[_temptiles.Count - 1].RequireSupply;
+              _temptiles.RemoveAt(_temptiles.Count - 1);
+              continue;
+            }
+          }
+          else
+          {
+            if (_disabledir ||
+              _currenttile.Fogstate != 2 ||
+              !_currenttile.Interactable ||
+              _sum + _currenttile.HexGrid.GetDistance(end) > _min ||
+              _sum + _currenttile.RequireSupply > _min)
+            {
+              if (_dirindex >= 5)         //이 타일에서 방향 0~5 실패했을 때
+              {
+                if (_tempdir.Count == 1)  //뿌리 상태에서 실패했으면 다음 뿌리로
+                {
+                  _isfail = true;
+                  break;
+                }
+                else                      //아니라면 이전 칸만 말소하고 다음칸에서 다시 검사
+                {
+                  _dirindex = (int)_tempdir[_tempdir.Count - 1] + 1;
+                  _tempdir.RemoveAt(_tempdir.Count - 1);
+                  _sum -= _temptiles[_temptiles.Count - 1].RequireSupply;
+                  _temptiles.RemoveAt(_temptiles.Count - 1);
+                  continue;
+                }
+              }
+              else          //5 미만에서 실패할 시 다음 방향으로 넘겨서 한번 더 시도
+              {
+                _dirindex++;
+                continue;
+              }
+            }//이동 가능한 안개가 아니거나 이동이 불가능한 타일이거나  직선보다 높은 보급 합이면 끊기 혹은 넘어가기
+            int _dirtemp = _dirindex;
+            _tempdir.Add((HexDir)_dirtemp);
+            _temptiles.Add(_currenttile);
+            _sum += _currenttile.RequireSupply;
+            _dirindex = 0;
+          }
+        }
+        if (_isfail)
+        {
+          _isfail = false;
+          continue;
+        }
+      }
+
+      return _changed? _mintiles:null;
+    }
+    int rotatedir(int dir,int value)
+    {
+      return (dir + value) < 0 ? (dir + value + 6) : (dir + value) > 5 ? (dir + value - 6) : (dir + value);
+    }
+    */
+    #endregion
+  }
   public void SetEventTiles()
   {
     foreach (var _eventtile in EventTiles)
@@ -259,7 +475,7 @@ public class MapData
 
         if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_1_Cult)
           _worldeventcount = ConstValues.WorldEventCount_0;
-        if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_2_Cult)
+        else if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_2_Cult)
           _worldeventcount = ConstValues.WorldEventCount_1;
         else _worldeventcount = ConstValues.WorldEventCount_2;
 
@@ -271,20 +487,16 @@ public class MapData
         {
           var _allsettlements = AllSettles.OrderBy(settle => settle.Tile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile)).ToList();
           List<TileData> _worldeventtargets = new List<TileData>();
-          int _indextemp = 0;
-          while (_worldeventtargets.Count < _worldeventcount+1)
+          foreach(var _settlement in _allsettlements)
           {
-            if (_allsettlements[_indextemp].Tile == _culttarget)
-            {
-              _indextemp++;
-              continue;
-            }
-
-            _worldeventtargets.Add(_allsettlements[_indextemp].Tile);
-            _indextemp++;
+            if (_settlement.Tile == _culttarget) continue;
+            _worldeventtargets.Add(_settlement.Tile);
           }
-          foreach (var _target in _worldeventtargets)
-            _neweventtiles.Add(GetRandomEventTile(_target));
+          for(int i = 0; i < _worldeventtargets.Count; i++)
+          {
+            if (i == _worldeventcount) break;
+            _neweventtiles.Add(GetRandomEventTile(_worldeventtargets[i]));
+          }
         }
 
         EventTiles.Clear();
@@ -301,46 +513,72 @@ public class MapData
         {
           List<TileData> _targettiles = new List<TileData>();
           if (targetcentertile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile) < 3)
-          {
+          { //목표 중심이 플레이어랑 가까운 위치에 있을 때(3칸이내)
+            //탐색 범위를 4칸으로 늘리고 다시
             List<TileData> _targetaround = GetAroundTile(targetcentertile, ConstValues.CultEventRange_Target);
             _targetaround.Remove(targetcentertile);
             _targetaround.Remove(GameManager.Instance.MyGameData.CurrentTile);
             foreach (var _tile in _targetaround)
             {
-              if (!_enablerange.Contains(_tile) ||
-                !_tile.Interactable ||
-                _tile.Landmark != LandmarkType.Outer ||
-                EventTiles.Contains(_tile) ||
-                _tile.Fogstate == 0) continue;
-              bool _isoverlap = false;
-              foreach (var _preeventtile in _neweventtiles)
-                foreach (var _aroundtile in GetAroundTile(_preeventtile, 1))
-                {
-                  if (_tile.Coordinate == _aroundtile.Coordinate)
+              if (!_enablerange.Contains(_tile) 
+                ||!_tile.Interactable 
+                || _tile.Landmark != LandmarkType.Outer 
+                || EventTiles.Contains(_tile) 
+                || _tile.Fogstate == 0
+                ||_neweventtiles.Contains(_tile)) continue;
+              {
+                bool _isoverlap = false;
+                foreach (var _preeventtile in _neweventtiles)
+                  foreach (var _aroundtile in GetAroundTile(_preeventtile, 2))
                   {
-                    _isoverlap = true;
-                    break;
+                    if (_tile == _aroundtile)
+                    {
+                      _isoverlap = true;
+                      break;
+                    }
+                    if (_isoverlap) break;
                   }
-                  if (_isoverlap) break;
-                }
-              if (_isoverlap) continue;
+                if (_isoverlap) continue;
+              }
 
               _targettiles.Add(_tile);
             }
           }
           else
           {
+            //그 외(충분한 거리 유지)라면
             List<TileData> _route = new List<TileData>();
             _route.Add(GameManager.Instance.MyGameData.CurrentTile);
 
-            foreach (var _dir in targetcentertile.HexGrid.GetRoute(GameManager.Instance.MyGameData.CurrentTile))
+            foreach (var _dir in targetcentertile.HexGrid.GetDirectRoute(GameManager.Instance.MyGameData.CurrentTile))
               _route.Add(GetNextTile(_route[_route.Count - 1], _dir));
 
             _route = GetAroundTile(_route, 2);
             _route.Remove(GameManager.Instance.MyGameData.CurrentTile);
             foreach (var _tile in _route)
             {
-              if (!_enablerange.Contains(_tile) || !_tile.Interactable || _tile.TileSettle != null || EventTiles.Contains(_tile) || _tile.Fogstate == 0) continue;
+              if (!_enablerange.Contains(_tile) 
+                || !_tile.Interactable 
+                || _tile.TileSettle != null 
+                || EventTiles.Contains(_tile) 
+                || _tile.Fogstate == 0
+                || _tile==GameManager.Instance.MyGameData.CurrentTile
+                ||_neweventtiles.Contains(_tile)) continue;
+              {
+                bool _isoverlap = false;
+                foreach (var _preeventtile in _neweventtiles)
+                  foreach (var _aroundtile in GetAroundTile(_preeventtile, 2))
+                  {
+                    if (_tile == _aroundtile)
+                    {
+                      _isoverlap = true;
+                      break;
+                    }
+                    if (_isoverlap) break;
+                  }
+                if (_isoverlap) continue;
+              }
+
               _targettiles.Add(_tile);
             }
           }
@@ -532,7 +770,7 @@ public class MapData
       HexGrid _zero=new HexGrid(0,0,0);
       List<List<HexDir>> _dirs=new List<List<HexDir>>();
       foreach (var _hexgrid in _rangegrids)
-        _dirs.Add(_hexgrid.GetRoute(_zero));
+        _dirs.Add(_hexgrid.GetDirectRoute(_zero));
       AroundCoors.Add(range, _dirs);
     }
 
@@ -567,7 +805,7 @@ public class MapData
       HexGrid _zero = new HexGrid(0, 0, 0);
       List<List<HexDir>> _dirs = new List<List<HexDir>>();
       foreach (var _hexgrid in _rangegrids)
-        _dirs.Add(_hexgrid.GetRoute(_zero));
+        _dirs.Add(_hexgrid.GetDirectRoute(_zero));
       AroundCoors.Add(range, _dirs);
     }
 

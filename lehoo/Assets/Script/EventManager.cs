@@ -49,7 +49,7 @@ public class EventManager : MonoBehaviour
     }
 
     TileInfoData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData;
-    EventData _event = MyEventHolder.ReturnPlaceEvent(_tiledta.Settlement.SettlementType, place, _tiledta.EnvirList); ;
+    EventData _event = MyEventHolder.ReturnSectorEvent(_tiledta.Settlement.SettlementType, place, _tiledta.EnvirList); ;
     GameManager.Instance.SetEvent(_event);
   }
 

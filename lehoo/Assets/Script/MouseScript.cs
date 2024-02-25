@@ -45,6 +45,11 @@ public class MouseScript : MonoBehaviour
             }
           }
       }
+      if (GameManager.Instance.IsPlaying && CheckObjTag("TilePanel") != null)
+      {
+        MouseState = MouseStateEnum.DragMap;
+        LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+      }
     }
     if (Input.GetMouseButtonUp(0))
     {
@@ -60,6 +65,7 @@ public class MouseScript : MonoBehaviour
         DragExpTarget = null;
         UIManager.Instance.ExpDragPreview.SetDown();
       }
+      if (MouseState == MouseStateEnum.DragMap) MouseState = MouseStateEnum.Idle;
     }
     if (Input.GetMouseButtonDown(1))
     {
@@ -67,12 +73,7 @@ public class MouseScript : MonoBehaviour
       {
         MouseState = MouseStateEnum.Idle;
       }
-      if (GameManager.Instance.IsPlaying && CheckObjTag("TilePanel")!=null)
-      {
-        MouseState = MouseStateEnum.DragMap;
-        LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-      }
-      else if (GameManager.Instance.IsPlaying && GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress&& CheckObjTag("ExpIcon"))
+      if (GameManager.Instance.IsPlaying && GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress&& CheckObjTag("ExpIcon"))
       {
         GameObject _expicon = CheckObjTag("ExpIcon");
         if (_expicon.GetComponent<Button>().interactable)
@@ -95,7 +96,7 @@ public class MouseScript : MonoBehaviour
         }
       }
     }
-    if (Input.GetMouseButton(1)&&MouseState==MouseStateEnum.DragMap)
+    if (Input.GetMouseButton(0)&&MouseState==MouseStateEnum.DragMap)
     {
       MyPointerEventData = new PointerEventData(CurrentEventSystem);
       //Set the Pointer Event Position to that of the game object
@@ -135,7 +136,6 @@ public class MouseScript : MonoBehaviour
         }
       }
     }
-    if (Input.GetMouseButtonUp(1)) MouseState = MouseStateEnum.Idle;
   }
   private GameObject CheckObjTag(string tag)
   {

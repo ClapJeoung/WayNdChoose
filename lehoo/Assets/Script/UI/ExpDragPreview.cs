@@ -47,6 +47,7 @@ public class ExpDragPreview : MonoBehaviour
       case SelectionTargetType.None:
         break;
       case SelectionTargetType.Pay:
+        /*
         if (data.SelectionPayTarget == StatusTypeEnum.HP)
         {
           EffectGroups[(int)EffectType.HPLoss].alpha = 1.0f;
@@ -55,6 +56,7 @@ public class ExpDragPreview : MonoBehaviour
         {
           EffectGroups[(int)EffectType.SanityLoss].alpha = 1.0f;
         }
+        */
         break;
       case SelectionTargetType.Check_Single:
         switch (data.SelectionCheckSkill[0])

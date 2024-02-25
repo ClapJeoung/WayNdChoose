@@ -30,13 +30,13 @@ public static class ConstValues
   public const float SettlementPreviewDiscomfortIconSize_min = 35, SettlementPreviewDiscomfortIconSize_max = 90;
   public const float SettlementPreviewDiscomfortFont_min = 35, SettlementPreviewDiscomfortFont_max = 50;
 
-  public const int StartSkillLevel = 1;
+  public const int StartSkillLevel = 0;
 
   public const int DefaultBonusGold = 1;
   public const int GoldPerSupplies = 1;
   public const int Supply_Sea = 4;
-  public const int Supply_Moutain = 2;
-  public const int Supply_River = 1, Supply_Forest = 1;
+  public const int Supply_Moutain = 4;
+  public const int Supply_River = 2, Supply_Forest = 2;
   public const int Supply_Default = 1;
 
   public const float StatusHighlightSize = 1.3f;
@@ -46,11 +46,7 @@ public static class ConstValues
   public const float StatusLoss_Gold_Min = 6, StatusLoss_Gold_Max = 30;
   public const float StatusLoss_MP_Min = 6, StatusLoss_MP_Max = 30;
 
-  public const float ScrollDoneValue = 0.05f;
-  public const float ScrollSpeed = 0.08f;
-  public const float ScrollTime = 1.0f;
-
-  public const int ExpSkillLevel = 1;
+  public const int ExpSkillLevel = 2;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
   public const float MaxDiscomfortForUI = 25;
@@ -83,11 +79,11 @@ public static class ConstValues
   public const float Quest_Cult_LengthValue = 3.5f;
 
 
-  public const int Rest_Supply = 8;
+  public const int Rest_Supply = 14;
   public const int Rest_Discomfort = 10;
   public const float RestCost_Default_Min = 9, RestCost_Default_Max = 25;
-  public const int MoveCost_Min = 1, MoveCost_Max = 4;
-  public const float MoveCost_GoldValue = 0.5f;
+  public const int MoveCost_Min = 1, MoveCost_Max = 4;  //이동 비용 골드 값 기준
+  public const float MoveCost_SanityValue = 2.0f;         //이동 비용 정신력 값
   public const int PenaltyCost_Min = 6, PenaltyCost_Max = 15;
   public const int RestSanityRestore = 15;
   public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.1f;
@@ -113,14 +109,14 @@ public static class ConstValues
 
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
-  public const int StartSupplies = 12;
-  public const int StartGold = 15;
+  public const int StartSupplies = 8;
+  public const int StartGold = 10;
   public const float HPLoss_Exp = 0.2f;
   public const float GoldGen_Exp = 0.25f;
   public const float  SanityLoss_Exp = 0.15f;
 
   public const float Tendency_Head_m2 = 0.15f;
-  public const float Tendency_Head_m1 = 0.5f;
+  public const int Tendency_Head_m1 = 1;
   public const int Tendency_Head_p1 = 3;
   //public const int Tendency_Head_p2 = 5;
   //정신적 2: 광기 개수당 정신력 감소 완화
@@ -159,8 +155,8 @@ public static class ConstValues
   public const int RewardGold = 10;
   public const int RewardSupply = 6;
 
-  public const int EXPMaxTurn_short_idle = 10;
-  public const int EXPMaxTurn_long_idle =  18;
+  public const int EXPMaxTurn_short_idle = 9;
+  public const int EXPMaxTurn_long_idle =  15;
 
   public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
@@ -169,7 +165,7 @@ public static class ConstValues
     public const int SectorEffectMaxTurn = 3;
   public const int SectorEffect_residence_discomfort = 4;
     public const int SectorEffect_marketSector = 20;
-    public const int SectorEffect_temple = 2;
+    public const int SectorEffect_temple = 4;
   public const int SectorEffect_Library = 4;
   //  public const int SectorEffect_theater = 3;
   //  public const int SectorEffect_acardemy = 10;
@@ -182,6 +178,8 @@ public static class ConstValues
 }
 public class GameData    //게임 진행도 데이터
 {
+  public bool IsDead = false;
+
   #region #지도,정착지 관련#
   public MapData MyMapData = null;
   public Vector2 Coordinate = Vector2.zero;
@@ -286,13 +284,9 @@ public class GameData    //게임 진행도 데이터
           case 1:
             break;
           case 2:
-            if (Madness_Intelligence == true)
+            if (Tendency_Head.Level<=-1)
             {
-              _expvalue = ConstValues.MadnessEffect_Intelligence;
-              Debug.Log("지성 광기 발동");
-              UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
-              UIManager.Instance.AudioManager.PlaySFX(27, "madness");
-              UIManager.Instance.UpdateExpMad();
+              _expvalue = ConstValues.Tendency_Head_m1*-1;
             }
             break;
           case 3:
@@ -354,7 +348,7 @@ public class GameData    //게임 진행도 데이터
   #region #턴에 비례한 성공 확률들#
   public float LerpByTurn
   {
-    get { return Mathf.Lerp(0.0f, 1.0f, ((Year-1 * 4) + (turn-1)) / (float)ConstValues.MaxTime); }
+    get { return Mathf.Lerp(0.0f, 1.0f, (((Year-1) * 4) + turn) / (float)ConstValues.MaxTime); }
   }
   public float MinSuccesPer
   {
@@ -467,14 +461,16 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      return (int)((Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, LerpByTurn) * GetSanityLossModify(true, 0))/ConstValues.MoveCost_GoldValue);
+      return Mathf.RoundToInt( Movecost_gold 
+        *ConstValues.MoveCost_SanityValue
+        * GetSanityLossModify(true, 0));
     }
   }
   public int Movecost_gold
   {
     get
     {
-      return (int)((Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, LerpByTurn) * GetSanityLossModify(true, 0)));
+      return Mathf.FloorToInt(((Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, LerpByTurn))));
     }
   }
   public int Movecost_supplylack
@@ -558,7 +554,7 @@ public class GameData    //게임 진행도 데이터
     set
     {
       int _last = gold;
-      gold = value;
+      gold = value < 0 ? 0 : value;
       if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText(_last);
     }
   }
@@ -635,6 +631,7 @@ public class GameData    //게임 진행도 데이터
   #region #이벤트 관련#
   public EventData CurrentEvent = null;  //현재 진행 중인 이벤트
   public EventSequence CurrentEventSequence = EventSequence.Progress;
+  public string CurrentEventLine = "";
   public bool IsAbleEvent(string eventid)
   {
     if (SuccessEvent_All.Contains(eventid)) return false;
@@ -974,6 +971,8 @@ public class GameData    //게임 진행도 데이터
   /// <param name="jsondata"></param>
   public GameData(GameJsonData jsondata)
   {
+    IsDead = jsondata.IsDead;
+
     MyMapData = new MapData();
     MyMapData.TileDatas = new TileData[ConstValues.MapSize, ConstValues.MapSize];
     int _index = 0;
@@ -1092,6 +1091,7 @@ public class GameData    //게임 진행도 데이터
 
     CurrentEvent = jsondata.CurrentEventID==""?null: GameManager.Instance.EventHolder.GetEvent(jsondata.CurrentEventID);
     CurrentEventSequence = jsondata.CurrentEventSequence ? EventSequence.Progress : EventSequence.Clear;
+    CurrentEventLine= jsondata.CurrentEventLine;
 
     SuccessEvent_None = jsondata.SuccessEvent_None;
     SuccessEvent_Rational = jsondata.SuccessEvent_Rational;
@@ -1167,9 +1167,10 @@ public class Skill
   {
     get
     {
-      return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByExp + LevelByTendency + LevelByMadness, 0,100);
+      return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByTendency + LevelByMadness, 0,100);
     }
   }
+  /*
   public int LevelByExp
   {
     get
@@ -1177,7 +1178,7 @@ public class Skill
       return GameManager.Instance.MyGameData.GetEffectModifyCount_Exp(MySkillType);
     }
   }//경험 레벨
-/*  public int LevelByMadness
+  public int LevelByMadness
   {
     get
     {
@@ -1343,7 +1344,7 @@ public class Tendency
               if (GameManager.Instance.MyGameData.Madness_Wild) _madcount++;
               if (GameManager.Instance.MyGameData.Madness_Intelligence) _madcount++;
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       (int)(ConstValues.Tendency_Head_m1*ConstValues.Rest_Discomfort))+"<br><br>"+ 
+                       ConstValues.Tendency_Head_m1)+"<br><br>"+ 
                        string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
                       (int)(ConstValues.Tendency_Head_m2*100.0f),
                       (int)(_madcount*ConstValues.Tendency_Head_m2*100.0f));
@@ -1440,6 +1441,11 @@ public class Tendency
   {
     get { return level; }
     set {
+      if(GameManager.Instance.MyGameData!=null&& level != value)
+      {
+        UIManager.Instance.SetInfoPanel(
+          string.Format(GameManager.Instance.GetTextData("TendencyUpdate"), GameManager.Instance.GetTextData(Type, value, 0)));
+      }
       level = value;
       Progress = 0;
       if (GameManager.Instance.MyGameData != null)
@@ -1462,6 +1468,8 @@ public class ProgressData
 }//게임 외부 진척도 데이터
 public class GameJsonData
 {
+  public bool IsDead = false;
+
   public List<Vector2Int> EventTiles=new List<Vector2Int>();
 
   public List<int> Tiledata_Rotation = new List<int>();
@@ -1527,6 +1535,7 @@ public class GameJsonData
 
   public string CurrentEventID = "";
   public bool CurrentEventSequence;
+  public string CurrentEventLine = "";
 
   public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
@@ -1553,6 +1562,8 @@ public class GameJsonData
 
   public GameJsonData(GameData data)
   {
+    IsDead = data.IsDead;
+
     foreach (var _eventtile in data.MyMapData.EventTiles)
       EventTiles.Add(_eventtile.Coordinate);
 
@@ -1639,6 +1650,7 @@ public class GameJsonData
 
     CurrentEventID = data.CurrentEvent == null ? "" : data.CurrentEvent.ID;
     CurrentEventSequence = (int)data.CurrentEventSequence == 0 ? true : false;
+    CurrentEventLine = data.CurrentEventLine;
 
     SuccessEvent_None = data.SuccessEvent_None;
     SuccessEvent_Rational = data.SuccessEvent_Rational;

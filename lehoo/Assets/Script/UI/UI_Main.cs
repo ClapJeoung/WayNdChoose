@@ -69,7 +69,7 @@ public class UI_Main : UI_default
     StartNewGameText.text = GameManager.Instance.GetTextData("STARTGAME");
     BackToMainText.text = GameManager.Instance.GetTextData("QUIT");
     Quest_0_Text.text = GameManager.Instance.EventHolder.Quest_Cult.QuestName;
-    if (GameManager.Instance.GameSaveData != null)
+    if (GameManager.Instance.GameSaveData != null&&!GameManager.Instance.GameSaveData.IsDead)
     {
 
       string _turnname = "";

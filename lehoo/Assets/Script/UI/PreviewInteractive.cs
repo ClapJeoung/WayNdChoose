@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
@@ -24,6 +25,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
   public TileData MyTileData = null;
   public bool IsCultSidePanel = false;
+  public Button ExpButton = null;
     public void OnPointerEnter(PointerEventData eventData)
     {
     UIManager.Instance.PreviewManager.ClosePreview();
@@ -39,12 +41,12 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
       case PreviewPanelType.Skill:UIManager.Instance.PreviewManager.OpenSkillPreview(Myskill, OtherRect==null?transform as RectTransform : OtherRect);break;
       case PreviewPanelType.EXP_long:
          _exp = GameManager.Instance.MyGameData.LongExp;
-        if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, OtherRect==null?transform as RectTransform : OtherRect);
+        if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, ExpButton, OtherRect==null?transform as RectTransform : OtherRect);
         else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"),OtherRect==null?transform as RectTransform : OtherRect, new Vector2(1.0f, 0.5f));
         break;
         case PreviewPanelType.EXP_short:
          _exp = ExpIndex==0? GameManager.Instance.MyGameData.ShortExp_A: GameManager.Instance.MyGameData.ShortExp_B;
-        if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, OtherRect==null?transform as RectTransform : OtherRect);
+        if (_exp != null) UIManager.Instance.PreviewManager.OpenExpPreview(_exp, ExpButton, OtherRect ==null?transform as RectTransform : OtherRect);
         else UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData("NoExp"), OtherRect==null?transform as RectTransform : OtherRect, new Vector2(1.0f, 0.5f));
         break;
       case PreviewPanelType.Tendency:
@@ -167,25 +169,14 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
 
         break;
       case PreviewPanelType.RestSanity:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
-          string.Format(GameManager.Instance.GetTextData("RestCost"),
-          UIManager.Instance.DialogueUI.DiscomfortValue, GameManager.Instance.GetTextData(StatusTypeEnum.Sanity,2), 
-          WNCText.GetSanityColor(UIManager.Instance.DialogueUI.SanityCost))
-          +"<br>"+
-          string.Format(GameManager.Instance.GetTextData("RestResult"), WNCText.GetSupplyColor(UIManager.Instance.DialogueUI.SupplyValue),""),
-          OtherRect == null?transform as RectTransform : OtherRect,
-          new Vector2(0.5f, -0.05f));
+        UIManager.Instance.PreviewManager.OpenRestPanel(OtherRect, UIManager.Instance.DialogueUI.DiscomfortValue,
+         UIManager.Instance.DialogueUI.SanityCost, UIManager.Instance.DialogueUI.SupplyValue);
+
         break;
       case PreviewPanelType.RestGold:
-        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
-          string.Format(GameManager.Instance.GetTextData("RestCost"),
-          UIManager.Instance.DialogueUI.DiscomfortValue, GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), 
-          WNCText.GetGoldColor(UIManager.Instance.DialogueUI.GoldCost))
-          + "<br>" +
-          string.Format(GameManager.Instance.GetTextData("RestResult"),
-          UIManager.Instance.DialogueUI.SupplyValue, GameManager.Instance.GetTextData(StatusTypeEnum.Sanity,2)+"+"+ WNCText.GetSanityColor(ConstValues.RestSanityRestore)),
-          OtherRect == null ? transform as RectTransform : OtherRect,
-          new Vector2(0.5f, -0.05f));
+        UIManager.Instance.PreviewManager.OpenRestPanel(OtherRect, UIManager.Instance.DialogueUI.DiscomfortValue,
+       UIManager.Instance.DialogueUI.GoldCost, UIManager.Instance.DialogueUI.SupplyValue, ConstValues.RestSanityRestore);
+
         break;
       case PreviewPanelType.MovePoint:
         UIManager.Instance.PreviewManager.OpenMovePointPreview(OtherRect==null?transform as RectTransform : OtherRect);

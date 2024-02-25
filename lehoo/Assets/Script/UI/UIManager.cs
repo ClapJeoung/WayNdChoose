@@ -125,33 +125,93 @@ public class UIManager : MonoBehaviour
     }
       rect.localScale = Vector3.one;
   }
-  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float _last,float _current)
+  /// <summary>
+  /// 일반
+  /// </summary>
+  /// <param name="tmp"></param>
+  /// <param name="current"></param>
+  /// <param name="target"></param>
+  /// <returns></returns>
+  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float current,float target)
   {
-    int _count = (int)_last;
+    int _count = (int)current;
     float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
     while (_time < _targettime)
     {
-      _count = Mathf.FloorToInt(Mathf.Lerp(_last, _current, _time / _targettime));
+      _count = Mathf.FloorToInt(Mathf.Lerp(current, target, _time / _targettime));
       tmp.text=_count.ToString();
 
       _time += Time.deltaTime;
       yield return null;
     }
-    tmp.text = ((int)_current).ToString();
+    tmp.text = ((int)target).ToString();
   }
-  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float _last, float _current, Func<int, string> _coloraction)
+  /// <summary>
+  /// 경험 카운트
+  /// </summary>
+  /// <param name="tmp"></param>
+  /// <param name="current"></param>
+  /// <param name="target"></param>
+  /// <param name="exp"></param>
+  /// <returns></returns>
+  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float current, float target,Experience exp)
   {
-    int _count = (int)_last;
+    int _count = (int)current;
     float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
     while (_time < _targettime)
     {
-      _count = Mathf.FloorToInt(Mathf.Lerp(_last, _current, _time / _targettime));
+      _count = Mathf.FloorToInt(Mathf.Lerp(current, target, _time / _targettime));
+      tmp.text = _count.ToString();
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    tmp.text = exp==null?"": ((int)target).ToString();
+  }
+  /// <summary>
+  /// 선택지
+  /// </summary>
+  /// <param name="tmp"></param>
+  /// <param name="current"></param>
+  /// <param name="current"></param>
+  /// <param name="colorfunc"></param>
+  /// <returns></returns>
+  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float current,int require, Func<string,float,string> colorfunc)
+  {
+    int _startcount = 0;
+
+    if (tmp.text.Contains('<'))
+    {
+      int _nextindix_0 = tmp.text.IndexOf('>');
+      int _nextindex_1 = tmp.text.LastIndexOf('<');
+      _startcount = int.Parse(tmp.text.Substring(_nextindix_0+1, _nextindex_1 - _nextindix_0-1)); //text의 시작 값
+    }
+    //target: text가 바뀔 값
+    float _time = 0.0f, _targettime = 0.1f;
+    while (_time < _targettime)
+    {
+      float _current = Mathf.FloorToInt(Mathf.Lerp(_startcount, current, _time / _targettime));
+      tmp.text = colorfunc(Mathf.FloorToInt(_current).ToString(), _current / require);
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    tmp.text = colorfunc(current.ToString(), current / require);
+  }
+
+  public IEnumerator ChangeCount(TextMeshProUGUI tmp, float current, float target, Func<int, string> _coloraction)
+  {
+    int _count = (int)current;
+    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
+    while (_time < _targettime)
+    {
+      _count = Mathf.FloorToInt(Mathf.Lerp(current, target, _time / _targettime));
       tmp.text = _coloraction!=null? _coloraction(_count):_count.ToString();
 
       _time += Time.deltaTime;
       yield return null;
     }
-    tmp.text = _coloraction != null ? _coloraction((int)_current) : ((int)_current).ToString();
+    tmp.text = _coloraction != null ? _coloraction((int)target) : ((int)target).ToString();
   }
   [SerializeField] private RectTransform HPUIRect = null;
   [SerializeField] private TextMeshProUGUI HPText = null;
@@ -691,8 +751,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Vector3 StatusTextEffectPos_loss_top = new Vector3(0.0f, -50.0f);
   [SerializeField] private Vector3 StatusTextEffectPos_loss_bottom = new Vector3(0.0f, -100.0f);
   [SerializeField] private GameObject StatusTextPrefab = null;
-  [SerializeField] private AnimationCurve StatusTextEffectCurve_gain = new AnimationCurve();
-  [SerializeField] private AnimationCurve StatusTextEffectCurve_loss = new AnimationCurve();
+  [SerializeField] private AnimationCurve StatusTextEffectCurve = new AnimationCurve();
   private IEnumerator statuschangedtexteffect(string value,RectTransform targetrect, bool isgain)
   {
     float _time = 0.0f, _targettime = isgain?StatusTextMovetime_gain:StatusTextMovetime_loss;
@@ -704,8 +763,7 @@ public class UIManager : MonoBehaviour
     Vector3 _endpos = targetrect.anchoredPosition3D + (isgain ? StatusTextEffectPos_gain_top: StatusTextEffectPos_loss_bottom);
     while (_time < _targettime)
     {
-      _rect.anchoredPosition = Vector3.Lerp(_startpos, _endpos, 
-        isgain? StatusTextEffectCurve_gain.Evaluate(_time / _targettime): StatusTextEffectCurve_loss.Evaluate(_time / _targettime));
+      _rect.anchoredPosition = Vector3.Lerp(_startpos, _endpos, StatusTextEffectCurve.Evaluate(_time / _targettime));
       _time += Time.deltaTime;
       yield return null;
     }
@@ -897,6 +955,7 @@ public class UIManager : MonoBehaviour
         case SelectionTargetType.None:
           break;
         case SelectionTargetType.Pay:
+          /*
           switch (_data.SelectionPayTarget)
           {
             case StatusTypeEnum.HP:
@@ -908,6 +967,7 @@ public class UIManager : MonoBehaviour
             case StatusTypeEnum.Gold:
               break;
           }
+          */
           break;
         case SelectionTargetType.Check_Single:
           switch (_data.SelectionCheckSkill[0])
@@ -952,14 +1012,29 @@ public class UIManager : MonoBehaviour
     foreach(var _effect in _effects)
     {
       if (GameManager.Instance.MyGameData.LongExp != null &&
+        GameManager.Instance.MyGameData.LongExp.Duration > 1&&
         GameManager.Instance.MyGameData.LongExp.Effects.Contains(_effect) &&
-        Exp_Long_Group.alpha == ExpGroupAlpha_disable) Exp_Long_Group.alpha = ExpGroupAlpha_enable;
+        Exp_Long_Group.alpha == ExpGroupAlpha_disable)
+      {
+        Exp_Long_Group.alpha = ExpGroupAlpha_enable;
+        LongExpButton.interactable = true;
+      }
       if (GameManager.Instance.MyGameData.ShortExp_A != null &&
+        GameManager.Instance.MyGameData.ShortExp_A.Duration > 1 &&
      GameManager.Instance.MyGameData.ShortExp_A.Effects.Contains(_effect) &&
-     Exp_Short_A_Group.alpha == ExpGroupAlpha_disable) Exp_Short_A_Group.alpha = ExpGroupAlpha_enable;
+     Exp_Short_A_Group.alpha == ExpGroupAlpha_disable)
+      {
+        Exp_Short_A_Group.alpha = ExpGroupAlpha_enable;
+        ShortExpButton_A.interactable = true;
+      }
       if (GameManager.Instance.MyGameData.ShortExp_B != null &&
+        GameManager.Instance.MyGameData.ShortExp_B.Duration > 1 &&
         GameManager.Instance.MyGameData.ShortExp_B.Effects.Contains(_effect) &&
-        Exp_Short_B_Group.alpha == ExpGroupAlpha_disable) Exp_Short_B_Group.alpha = ExpGroupAlpha_enable;
+        Exp_Short_B_Group.alpha == ExpGroupAlpha_disable)
+      {
+        Exp_Short_B_Group.alpha = ExpGroupAlpha_enable;
+        ShortExpButton_B.interactable = true;
+      }
     }
   }
   public void SetExpUnuse()
@@ -1076,15 +1151,28 @@ public class UIManager : MonoBehaviour
     tmp.color = Color.white;
   }
   public Vector2 ExpCoverUpPos = new Vector2(0.0f, 48.0f);
-  public void UpdateExpMad()
+  /// <summary>
+  /// long A B
+  /// </summary>
+  /// <param name="index"></param>
+  public void UpdateExpMad(int index)
   {
-    if (GameManager.Instance.MyGameData.LongExp != null && GameManager.Instance.MyGameData.LongExp.Duration > (ConstValues.MadnessEffect_Intelligence-1))
-      StartCoroutine(ChangeAlpha(LongMad, 0.0f, 1.0f));
-    if (GameManager.Instance.MyGameData.ShortExp_A != null && GameManager.Instance.MyGameData.ShortExp_A.Duration > (ConstValues.MadnessEffect_Intelligence - 1))
-      StartCoroutine(ChangeAlpha(ShortMad_A, 0.0f, 1.0f));
-    if (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.Duration > (ConstValues.MadnessEffect_Intelligence - 1))
-      StartCoroutine(ChangeAlpha(ShortMad_B, 0.0f, 1.0f));
+    switch (index)
+    {
+      case 0:
+        StartCoroutine(ChangeAlpha(LongMad, 0.0f, 1.0f));
+        break;
+      case 1:
+        StartCoroutine(ChangeAlpha(ShortMad_A, 0.0f, 1.0f));
+        break;
+      case 2:
+        StartCoroutine(ChangeAlpha(ShortMad_B, 0.0f, 1.0f));
+        break;
+    }
   }
+  private IEnumerator longexpcoroutine = null;
+  private IEnumerator shortexpAcoroutine = null;
+  private IEnumerator shortexpBcoroutine = null;
   public void UpdateExpPanel()
   {
     bool _starteffect = false;
@@ -1097,6 +1185,7 @@ public class UIManager : MonoBehaviour
       if (LongExpActive == true)
       {
         StartCoroutine(moverect(LongExpCover, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+        changecount(longexpcoroutine, LongExpTurn, GameManager.Instance.MyGameData.LongExp);
         _starteffect = true;
         AudioManager.PlaySFX(21);
       }
@@ -1104,20 +1193,23 @@ public class UIManager : MonoBehaviour
     }
     else
     {
-
       if (LongExpActive == false)
       {
         StartCoroutine(moverect(LongExpCover, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(ExpGainCount(LongExpTurn.rectTransform));
+        changecount(longexpcoroutine,LongExpTurn, GameManager.Instance.MyGameData.LongExp);
         AudioManager.PlaySFX(20);
       }
       else
       {
         _turnchanged = int.Parse(LongExpTurn.text) != GameManager.Instance.MyGameData.LongExp.Duration;
-        if (_turnchanged) StartCoroutine(ExpLossCount(LongExpTurn.rectTransform));
+        if (_turnchanged)
+        {
+          StartCoroutine(ExpLossCount(LongExpTurn.rectTransform));
+          changecount(longexpcoroutine, LongExpTurn, GameManager.Instance.MyGameData.LongExp);
+        }
       }
-      LongExpTurn.text = GameManager.Instance.MyGameData.LongExp.Duration.ToString();
       LongExpActive = true;
     }
 
@@ -1128,6 +1220,7 @@ public class UIManager : MonoBehaviour
       if (ShortExpAActive == true)
       {
         StartCoroutine(moverect(ShortExpCover_A, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+        changecount(shortexpAcoroutine, ShortExpTurn_A, GameManager.Instance.MyGameData.ShortExp_A);
         _starteffect = true;
         AudioManager.PlaySFX(21);
       }
@@ -1140,14 +1233,18 @@ public class UIManager : MonoBehaviour
         StartCoroutine(moverect(ShortExpCover_A, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(ExpGainCount(ShortExpTurn_A.rectTransform));
+        changecount(shortexpAcoroutine, ShortExpTurn_A, GameManager.Instance.MyGameData.ShortExp_A);
         AudioManager.PlaySFX(20);
       }
       else
       {
         _turnchanged = int.Parse(ShortExpTurn_A.text) != GameManager.Instance.MyGameData.ShortExp_A.Duration;
-        if (_turnchanged)StartCoroutine(ExpLossCount(ShortExpTurn_A.rectTransform));
+        if (_turnchanged)
+        {
+          changecount(shortexpAcoroutine, ShortExpTurn_A, GameManager.Instance.MyGameData.ShortExp_A);
+          StartCoroutine(ExpLossCount(ShortExpTurn_A.rectTransform));
+        }
       }
-      ShortExpTurn_A.text = GameManager.Instance.MyGameData.ShortExp_A.Duration.ToString();
       ShortExpAActive = true;
     }
     if (GameManager.Instance.MyGameData.ShortExp_B == null)
@@ -1157,6 +1254,7 @@ public class UIManager : MonoBehaviour
       if (ShortExpBActive == true) 
       {
         StartCoroutine(moverect(ShortExpCover_B, ExpCoverUpPos, Vector2.zero, 0.4f, UIPanelCLoseCurve));
+        changecount(shortexpBcoroutine, ShortExpTurn_B, GameManager.Instance.MyGameData.ShortExp_B);
         _starteffect = true;
         AudioManager.PlaySFX(21);
       }
@@ -1170,19 +1268,45 @@ public class UIManager : MonoBehaviour
         StartCoroutine(moverect(ShortExpCover_B, Vector2.zero, ExpCoverUpPos, 0.4f, UIPanelOpenCurve));
         _starteffect = true;
         StartCoroutine(ExpGainCount(ShortExpTurn_B.rectTransform));
+        changecount(shortexpBcoroutine, ShortExpTurn_B, GameManager.Instance.MyGameData.ShortExp_B);
         AudioManager.PlaySFX(20);
       }
       else
       {
         _turnchanged = int.Parse(ShortExpTurn_B.text) != GameManager.Instance.MyGameData.ShortExp_B.Duration;
-        if (_turnchanged) StartCoroutine(ExpLossCount(ShortExpTurn_B.rectTransform));
+        if (_turnchanged)
+        {
+          StartCoroutine(ExpLossCount(ShortExpTurn_B.rectTransform));
+          changecount(shortexpBcoroutine, ShortExpTurn_B, GameManager.Instance.MyGameData.ShortExp_B);
+        }
       }
-      ShortExpTurn_B.text = GameManager.Instance.MyGameData.ShortExp_B.Duration.ToString();
+
       ShortExpBActive = true;
     }
     if (_starteffect) HighlightManager.HighlightAnimation(HighlightEffectEnum.Exp);
 
     UpdateHPIcon();
+
+    void changecount(IEnumerator coroutine, TextMeshProUGUI tmp,Experience exp)
+    {
+      if (coroutine == null)
+      {
+        coroutine = ChangeCount(tmp
+          , tmp.text != "" ? int.Parse(tmp.text) : 1
+          , exp==null?0: exp.Duration
+          , exp);
+        StartCoroutine(coroutine);
+      }
+      else
+      {
+        StopCoroutine(coroutine);
+        coroutine = ChangeCount(tmp
+          , tmp.text != "" ? int.Parse(tmp.text) : 1
+          , exp == null ? 0 : exp.Duration
+          , exp);
+        StartCoroutine(coroutine);
+      }
+    }
   }
   public void UpdateExpUse()
   {
@@ -1471,14 +1595,16 @@ public class UIManager : MonoBehaviour
     AddUIQueue(DialogueUI.OpenEventUI(dir));
   }//야외에서 이벤트 실행하는 경우, 정착지 진입 직후 퀘스트 실행하는 경우, 정착지에서 장소 클릭해 이벤트 실행하는 경우
   public void GetMad() => MadUI.OpenUI();
+  [SerializeField] private AnimationCurve ScrollCurve = null;
+  [SerializeField] private float ScrollTime = 0.6f;
   public IEnumerator updatescrollbar(Scrollbar scrollbar)
   {
     yield return new WaitForSeconds(0.05f);
-
+    float _originvalue = scrollbar.value;
     float _time = 0.0f;
-    while (scrollbar.value > ConstValues.ScrollDoneValue && _time < ConstValues.ScrollTime)
+    while ( _time < ScrollTime)
     {
-      scrollbar.value = Mathf.Lerp(scrollbar.value, 0.0f, ConstValues.ScrollSpeed);
+      scrollbar.value = Mathf.Lerp(_originvalue, 0.0f,ScrollCurve.Evaluate(_time/ ScrollTime));
       _time += Time.deltaTime;
       yield return null;
 
@@ -1486,8 +1612,14 @@ public class UIManager : MonoBehaviour
     scrollbar.value = 0.0f;
   }
 
-
+  [SerializeField] private Transform InfoPanelHolder = null;
+  [SerializeField] private GameObject InfoPanelPrefab = null;
+  public void SetInfoPanel(string text)
+  {
+    Instantiate(InfoPanelPrefab,InfoPanelHolder).GetComponent<InfoPanel>().Setup(text);
+  }
   #region 메인-게임 전환
+  [Space(20)]
   [SerializeField] private List<PanelRectEditor> TitlePanels=new List<PanelRectEditor>();
   [SerializeField] private float SceneAnimationTitleMoveTime = 0.3f;
   [SerializeField] private float TitleWaitTime = 0.4f;

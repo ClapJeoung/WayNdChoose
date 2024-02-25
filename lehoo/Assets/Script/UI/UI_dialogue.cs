@@ -46,6 +46,14 @@ public class UI_dialogue : UI_default
   [SerializeField] private Onpointer_highlight Reward_Highlight = null;
   [SerializeField] private CanvasGroup RewardButtonGroup = null;
   [SerializeField] private Image RewardIcon = null;
+  [SerializeField] private GameObject ExpEffectObj = null;
+  [SerializeField] private GameObject ExpEffect_Conv = null;
+  [SerializeField] private GameObject ExpEffect_Forc = null;
+  [SerializeField] private GameObject ExpEffect_Wild = null;
+  [SerializeField] private GameObject ExpEffect_Intel = null;
+  [SerializeField] private GameObject ExpEffect_HP = null;
+  [SerializeField] private GameObject ExpEffect_Sanity = null;
+  [SerializeField] private GameObject ExpEffect_Gold = null;
   [SerializeField] private TextMeshProUGUI RewardDescription = null;
   [SerializeField] private UI_RewardExp RewardExpUI = null;
   [SerializeField] private RectTransform MapbuttonPos_Event = null;
@@ -73,9 +81,9 @@ public class UI_dialogue : UI_default
           switch (CurrentEvent.SelectionDatas[0].SelectionPayTarget)
           {
             case StatusTypeEnum.HP:
-              return GameManager.Instance.MyGameData.PayHPValue(GetUsingExpEffectCount(ExpUsageDic_L, EffectType.HPLoss));
+              return GameManager.Instance.MyGameData.PayHPValue(0);
             case StatusTypeEnum.Sanity:
-              return GameManager.Instance.MyGameData.PaySanityValue(GetUsingExpEffectCount(ExpUsageDic_L, EffectType.SanityLoss));
+              return GameManager.Instance.MyGameData.PaySanityValue(0);
             case StatusTypeEnum.Gold:
               return GameManager.Instance.MyGameData.PayGoldValue;
             default: return 0;
@@ -229,7 +237,8 @@ public class UI_dialogue : UI_default
     int _count = 0;
     foreach(var _data in dic)
     {
-      if (_data.Key.Effects.Contains(targettype)) _count += _data.Value;
+      if (_data.Key.Effects.Contains(targettype)) _count +=
+          targettype==EffectType.Conversation||targettype==EffectType.Force||targettype==EffectType.Intelligence||targettype==EffectType.Wild? _data.Value*ConstValues.ExpSkillLevel: _data.Value;
     }
     return _count;
   }
@@ -753,22 +762,21 @@ public class UI_dialogue : UI_default
     SetNextButtonDisable();
 
     PhrIndex++;
-    if (PhrIndex < PhrIndex_max-1)
+    if (PhrIndex < PhrIndex_max-1)  //문단 내부 개행 중일때
     {
       if (PhrIndex == 0)
       {
         Illust.Next(EventIllustHolderes[EventPhaseIndex].CurrentIllust, FadeTime);
-        yield return new WaitForSeconds(FadeTime);
       }
 
-      DescriptionText.text += (EventPhaseIndex == 0 && PhrIndex == 0 ? "" : "<br><br>") + CurrentDescription[PhrIndex];
+      DescriptionText.text += (EventPhaseIndex > 0 || PhrIndex > 0||GameManager.Instance.MyGameData.CurrentEventSequence==EventSequence.Clear ? "<br><br>":"") + CurrentDescription[PhrIndex];
       LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
       yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
       if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
       SetNextButtonActive();
     }
-    else
+    else                            //문단 개행 끝났을 때
     {
       int _phasetype = 0;
       if (IsBeginning)
@@ -799,9 +807,8 @@ public class UI_dialogue : UI_default
         if (PhrIndex == 0)
         {
           Illust.Next(EventIllustHolderes[EventPhaseIndex].CurrentIllust, FadeTime);
-          yield return new WaitForSeconds(FadeTime);
         }
-        DescriptionText.text += (EventPhaseIndex == 0 && PhrIndex == 0 ? "" : "<br><br>") + CurrentDescription[PhrIndex];
+        DescriptionText.text += (EventPhaseIndex > 0 || PhrIndex > 0 || GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Clear ? "<br><br>":"") + CurrentDescription[PhrIndex];
         LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
 
         switch (_phasetype)
@@ -824,7 +831,6 @@ public class UI_dialogue : UI_default
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
-            UIManager.Instance.UpdateExpButton(true);
             UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
@@ -833,7 +839,6 @@ public class UI_dialogue : UI_default
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
-            UIManager.Instance.UpdateExpButton(true);
             UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
@@ -871,12 +876,11 @@ public class UI_dialogue : UI_default
         if (PhrIndex == 0)
         {
           Illust.Next(EventIllustHolderes[EventPhaseIndex].CurrentIllust, FadeTime);
-          yield return new WaitForSeconds(FadeTime);
         }
 
-        if (EventDescriptions[EventPhaseIndex].Contains("#Penalty#"))
+        if (CurrentDescription[PhrIndex].Contains("#Penalty#"))
         {
-          DescriptionText.text += "<br><br>" + EventDescriptions[EventPhaseIndex].Replace("#Penalty#", "");
+          DescriptionText.text += "<br><br>" + CurrentDescription[PhrIndex].Replace("#Penalty#", "");
           SetPenalty();
           if (CurrentFailData != null)
           {
@@ -905,7 +909,7 @@ public class UI_dialogue : UI_default
         }
         else
         {
-          DescriptionText.text += "<br><br>" + EventDescriptions[EventPhaseIndex];
+          DescriptionText.text += "<br><br>" + CurrentDescription[PhrIndex];
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
 
@@ -984,6 +988,7 @@ public class UI_dialogue : UI_default
   public void RefuseEnding()
   {
     if (UIManager.Instance.IsWorking) return;
+    GameManager.Instance.MyGameData.CurrentEventLine = "";
     UIManager.Instance.AddUIQueue(refuseending());
   }
   private IEnumerator refuseending()
@@ -1009,6 +1014,9 @@ public class UI_dialogue : UI_default
     if (_selection.MyTendencyType != TendencyTypeEnum.None)
     {
       GetOppositeSelection(_selection).DeActive();
+
+      if (CurrentEvent.EventLine != "" && GameManager.Instance.MyGameData.CurrentEventLine == CurrentEvent.EventLine && _selection.MySelectionData.StopEvent)
+        GameManager.Instance.MyGameData.CurrentEventLine = "";
     }
     //다른거 사라지게 만들고
     UIManager.Instance.UseExp(_selection.IsLeft);
@@ -1312,19 +1320,87 @@ public class UI_dialogue : UI_default
             _description = $"+{WNCText.GetSupplyColor(GameManager.Instance.MyGameData.RewardSupplyValue)}";
               break;
         }
+        RewardIcon.sprite = _icon;
+     
+        if (!RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(true);
+        if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
         break;
       case RewardTypeEnum.Experience:
-        _icon = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
         _description = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Name;
         Reward_Highlight.SetInfo(HighlightEffectEnum.Exp);
+        #region 경험 보상 아이콘 세팅
+        List<EffectType> _expeffectlist = GameManager.Instance.ExpDic[CurrentSuccessData.Reward_EXPID].Effects;
+        if (_expeffectlist.Contains(EffectType.Conversation))
+        {
+          if (!ExpEffect_Conv.activeSelf) ExpEffect_Conv.SetActive(true);
+        }
+        else
+        {
+          if (ExpEffect_Conv.activeSelf) ExpEffect_Conv.SetActive(false);
+        }
+        if (_expeffectlist.Contains(EffectType.Force))
+        {
+          if (!ExpEffect_Forc.activeSelf) ExpEffect_Forc.SetActive(true);
+        }
+        else
+        {
+          if (ExpEffect_Forc.activeSelf) ExpEffect_Forc.SetActive(false);
+        }
+        if (_expeffectlist.Contains(EffectType.Wild))
+        {
+          if (!ExpEffect_Wild.activeSelf) ExpEffect_Wild.SetActive(true);
+        }
+        else
+        {
+          if (ExpEffect_Wild.activeSelf) ExpEffect_Wild.SetActive(false);
+        }
+        if (_expeffectlist.Contains(EffectType.Intelligence))
+        {
+          if (!ExpEffect_Intel.activeSelf) ExpEffect_Intel.SetActive(true);
+        }
+        else
+        {
+          if (ExpEffect_Intel.activeSelf) ExpEffect_Intel.SetActive(false);
+        }
+        if (_expeffectlist.Contains(EffectType.HPLoss))
+        {
+          if (!ExpEffect_HP.activeSelf) ExpEffect_HP.SetActive(true);
+        }
+        else
+        {
+          if (ExpEffect_HP.activeSelf) ExpEffect_HP.SetActive(false);
+        }
+        if (_expeffectlist.Contains(EffectType.SanityLoss))
+        {
+          if (!ExpEffect_Sanity.activeSelf) ExpEffect_Sanity.SetActive(true);
+        }
+        else
+        {
+          if (ExpEffect_Sanity.activeSelf) ExpEffect_Sanity.SetActive(false);
+        }
+        if (_expeffectlist.Contains(EffectType.GoldGen))
+        {
+          if (!ExpEffect_Gold.activeSelf) ExpEffect_Gold.SetActive(true);
+        }
+        else
+        {
+          if (ExpEffect_Gold.activeSelf) ExpEffect_Gold.SetActive(false);
+        }
+        #endregion
+        LayoutRebuilder.ForceRebuildLayoutImmediate(ExpEffectObj.transform as RectTransform);
+        if (RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(false);
+        if (!ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(true);
         break;
       case RewardTypeEnum.Skill:
         _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType, false);
         _description = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType, 0)} +1";
         Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
+        RewardIcon.sprite = _icon;
+     
+        if (!RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(true);
+        if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
         break;
     }
-    RewardIcon.sprite = _icon;
     RewardDescription.text = _description;
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 1.0f, 0.3f));
@@ -1333,6 +1409,9 @@ public class UI_dialogue : UI_default
   public IEnumerator SetFail(FailData _fail, TendencyTypeEnum tendencytype, bool isleft)
   {
     CurrentFailData = _fail;
+    RewardButtonGroup.alpha = 0.0f;
+    RewardButtonGroup.interactable = false;
+    RewardButtonGroup.blocksRaycasts = false;
 
     if (_fail.Penelty_target == PenaltyTarget.Status)
     {
@@ -1557,6 +1636,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private UnityEngine.UI.Button Cost_Sanity = null;
   [SerializeField] private Onpointer_highlight CostHighlight_Gold = null;
   [SerializeField] private UnityEngine.UI.Button Cost_Gold = null;
+  [SerializeField] private PreviewInteractive Cost_Gold_Preview = null;
   private Settlement CurrentSettlement{ get { return GameManager.Instance.MyGameData.CurrentSettlement; } }
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
   private bool IsMad = false;
@@ -1790,7 +1870,7 @@ public class UI_dialogue : UI_default
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector, false);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = GameManager.Instance.MyGameData.Tendency_Head.Level<=-1?
+    int _discomfort_default = GameManager.Instance.MyGameData.Tendency_Head.Level<=-1&&GameManager.Instance.MyGameData.FirstRest?
       (int)(ConstValues.Rest_Discomfort*ConstValues.Tendency_Head_m1):ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
@@ -1855,6 +1935,7 @@ public class UI_dialogue : UI_default
     Cost_Gold.interactable = _goldable;
     Cost_Gold.GetComponent<CanvasGroup>().alpha=_goldable?1.0f:0.3f;
     CostHighlight_Gold.Interactive = _goldable;
+    Cost_Gold_Preview.enabled = _goldable;
     if (_goldable) CostHighlight_Gold.SetInfo(HighlightEffectEnum.Gold);
   }
   public void OnPointerRestType(StatusTypeEnum type)

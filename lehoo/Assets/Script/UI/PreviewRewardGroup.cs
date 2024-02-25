@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -89,11 +88,11 @@ public class PreviewRewardGroup : MonoBehaviour
     {
       case TendencyTypeEnum.Body:
         _hidepenalty = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Body.Level < 0 : GameManager.Instance.MyGameData.Tendency_Body.Level > 0;
-        _hidereward = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Body.Level < -1 : GameManager.Instance.MyGameData.Tendency_Body.Level > 1;
+        _hidereward = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Body.Level < 0 : GameManager.Instance.MyGameData.Tendency_Body.Level > 0;
         break;
       case TendencyTypeEnum.Head:
         _hidepenalty = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Head.Level < 0 : GameManager.Instance.MyGameData.Tendency_Head.Level > 0;
-        _hidereward = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Head.Level < -1 : GameManager.Instance.MyGameData.Tendency_Head.Level > 1;
+        _hidereward = selection.Index == 0 ? GameManager.Instance.MyGameData.Tendency_Head.Level < 0 : GameManager.Instance.MyGameData.Tendency_Head.Level > 0;
         break;
     }
 

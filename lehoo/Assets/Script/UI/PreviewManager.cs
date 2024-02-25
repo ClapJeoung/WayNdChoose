@@ -28,12 +28,14 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI SkillName = null;
   [SerializeField] private GameObject SkillMadnessHolder = null;
   [SerializeField] private TextMeshProUGUI SkillMadnessInfo = null;
-  [SerializeField] private TextMeshProUGUI SkillSubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject ExpPreview = null;
   [SerializeField] private TextMeshProUGUI ExpName = null;
   [SerializeField] private Image ExpIllust = null;
-  [SerializeField] private TextMeshProUGUI ExpDescription = null;
+  [SerializeField] private TextMeshProUGUI ExpEffect_Passive = null;
+  [SerializeField] private CanvasGroup ExpEffect_Active_Group = null;
+  private float ExpEffect_Active_DeActiveAlpha = 0.3f;
+  [SerializeField] private TextMeshProUGUI ExpEffect_Active = null;
   [SerializeField] private TextMeshProUGUI ExpSubdescription = null;
   [Space(10)]
   [SerializeField] private GameObject TendencyPreview = null;
@@ -111,6 +113,23 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Image SettlementIcon = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoName = null;
   [SerializeField] private TextMeshProUGUI SettlementInfoDiscomfort = null;
+  [Space(10)]
+  [SerializeField] private GameObject RestPanel = null;
+  [SerializeField] private TextMeshProUGUI RestRequireText = null;
+  [SerializeField] private TextMeshProUGUI RestResultText = null;
+  /*
+  [Space(10)]
+  [SerializeField] private GameObject CultPreviewPanel = null;
+  [SerializeField] private TextMeshProUGUI CultPreviewText = null;
+  [SerializeField] private GameObject CultPreview_Village = null;
+  [SerializeField] private GameObject CultPreview_Town = null;
+  [SerializeField] private GameObject CultPreveiw_City = null;
+  [SerializeField] private GameObject CultPreview_Sabbat_obj = null;
+  [SerializeField] private Image CultPreview_Sabbat_image = null;
+  [SerializeField] private GameObject CultPreview_Ritual_obj = null;
+  [SerializeField] private Image CultPreview_Ritual_bottom = null;
+  [SerializeField] private Image CultPreview_Ritual_top = null;
+  */
   private RectTransform CurrentPreview = null;
   private void OpenPreviewPanel(GameObject panel,Vector2 pivot,RectTransform rect)
   {
@@ -303,7 +322,6 @@ public class PreviewManager : MonoBehaviour
         if (GameManager.Instance.MyGameData.Madness_Intelligence == true)
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
-
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Preview"), ConstValues.MadnessEffect_Intelligence);
           _leveltext = WNCText.GetMadnessColor(_level);
         }
@@ -314,16 +332,33 @@ public class PreviewManager : MonoBehaviour
         break;
     }
     SkillLevel.text = _leveltext;
-    SkillSubdescription.text = GameManager.Instance.GetTextData(_skilltype, 4);
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SkillName.rectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SkillName.transform.parent.transform as RectTransform);
+
     OpenPreviewPanel(SkillPreview,rect);
   }
-  public void OpenExpPreview(Experience _exp, RectTransform rect)
+  public void OpenExpPreview(Experience _exp,Button _button,  RectTransform rect)
   {
     ExpName.text =_exp.Name;
-//    ExpDuration.text = $"{_exp.Duration}";
     ExpIllust.sprite = _exp.Illust;
-    string _description = WNCText.SetSize(EffectFontSize, _exp.EffectString);
-    ExpDescription.text = _description;
+    if (_exp.PassiveCount > 0)
+    {
+      if (!ExpEffect_Passive.transform.parent.gameObject.activeSelf) ExpEffect_Passive.transform.parent.gameObject.SetActive(true);
+      ExpEffect_Passive.text = GameManager.Instance.GetTextData("Exp_passive") + "<br>" + _exp.EffectString_Passive;
+    }
+    else ExpEffect_Passive.transform.parent.gameObject.SetActive(false);
+    if (_exp.ActiveCount > 0)
+    {
+      if (!ExpEffect_Active.transform.parent.gameObject.activeSelf) ExpEffect_Active.transform.parent.gameObject.SetActive(true);
+      ExpEffect_Active.text = GameManager.Instance.GetTextData("Exp_active") + "<br>" + _exp.EffectString_Active;
+      ExpEffect_Active_Group.alpha = _button.interactable ? 1.0f : ExpEffect_Active_DeActiveAlpha;
+    }
+    else ExpEffect_Active.transform.parent.gameObject.SetActive(false);
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(ExpEffect_Passive.transform.parent.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(ExpEffect_Passive.transform.parent.transform.parent.transform as RectTransform);
+
     ExpSubdescription.text = WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_exp.Description));
 
     OpenPreviewPanel(ExpPreview,rect);
@@ -616,6 +651,8 @@ public class PreviewManager : MonoBehaviour
     if (SelectionNoneReward.Setup(_selection) == false) return;
 
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionNoneBackground.rectTransform);
     
     OpenPreviewPanel(SelectionNonePanel, toprect);
   }
@@ -675,6 +712,8 @@ public class PreviewManager : MonoBehaviour
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
     }
 
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionPayBackground.rectTransform);
+
     OpenPreviewPanel(SelectionPayPanel, toprect);
   }
   public void OpenSelectionCheckPreview_skill(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform toprect)
@@ -710,6 +749,8 @@ public class PreviewManager : MonoBehaviour
     SelectionCheckPercent_text.text = _percentage_text;
     SelectionCheckPercent_int.text = _percentage_int;
 
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionCheckBackground.rectTransform);
+
     OpenPreviewPanel(SelectionCheckPanel, toprect);
   }
   public void OpenSelectionElsePreview(SelectionData _selection, TendencyTypeEnum tendencytype, bool dir, RectTransform rect)
@@ -724,6 +765,7 @@ public class PreviewManager : MonoBehaviour
 
     CurrentPreview=SelectionElsePanel.GetComponent<RectTransform>();
 
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionElseBackground.rectTransform);
 
     OpenPreviewPanel(SelectionElsePanel,rect);
   }
@@ -737,6 +779,10 @@ public class PreviewManager : MonoBehaviour
     SelectionOverTendencyBackground.sprite= GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
     SelectionOverTendencyText.text = GameManager.Instance.GetTextData("OverTendencySelectionInfo");
     CurrentPreview = SelectionOverTendencyPanel.GetComponent<RectTransform>();
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionOverTendencyText.transform.parent.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionOverTendencyBackground.rectTransform);
+
     OpenPreviewPanel(SelectionOverTendencyPanel, rect);
   }
   public void OpenRewardStatusPreview(StatusTypeEnum status, int _value, RectTransform rect)
@@ -764,7 +810,7 @@ public class PreviewManager : MonoBehaviour
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
-    ExpSelectEmptyEffect.text = _exp.EffectString;
+    ExpSelectEmptyEffect.text = (_exp.PassiveCount>0? _exp.EffectString_Passive+"<br>":"")+_exp.EffectString_Active;
     ExpSelectEmptyIllust.sprite = _exp.Illust;
     ExpSelectEmptyDescription.text = _description;
     ExpSelectClickText.text= GameManager.Instance.GetTextData("CLICKTOGET_TEXT");
@@ -774,6 +820,7 @@ public class PreviewManager : MonoBehaviour
   }
   public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong, RectTransform rect)
   {
+    /*
     int _turn = islong ? ConstValues.EXPMaxTurn_long_idle : ConstValues.EXPMaxTurn_short_idle;
     string _description = "";
     if (islong)
@@ -801,6 +848,7 @@ public class PreviewManager : MonoBehaviour
     if (ExpSelectClickText.gameObject.activeInHierarchy.Equals(false)) ExpSelectClickText.gameObject.SetActive(true);
 
     OpenPreviewPanel(ExpSelectExistPanel,rect);
+    */
   }
   public void OpenJustDescriptionPreview(string text, RectTransform rect)
   {
@@ -887,7 +935,29 @@ public class PreviewManager : MonoBehaviour
       OpenPreviewPanel(SettlementInfoPanel, _pivot, tilerect);
     }
   }
+  public void OpenRestPanel(RectTransform rect, int discomfort,int paysanityvalue,int supply)
+  {
+    RestRequireText.text = string.Format(GameManager.Instance.GetTextData("RestCost"),
+      WNCText.GetDiscomfortColor(discomfort), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2), WNCText.GetSanityColor(paysanityvalue));
+    RestResultText.text = string.Format(GameManager.Instance.GetTextData("RestResult"),
+       WNCText.GetSupplyColor(supply), "");
+    LayoutRebuilder.ForceRebuildLayoutImmediate(RestRequireText.transform.parent.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(RestResultText.transform.parent.transform as RectTransform);
 
+
+    OpenPreviewPanel(RestPanel, rect);
+  }
+  public void OpenRestPanel(RectTransform rect, int discomfort, int paygoldvalue, int supply, int gainsanityvalue)
+  {
+    RestRequireText.text = string.Format(GameManager.Instance.GetTextData("RestCost"),
+  WNCText.GetDiscomfortColor(discomfort), GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 2), WNCText.GetGoldColor(paygoldvalue));
+    RestResultText.text = string.Format(GameManager.Instance.GetTextData("RestResult"),
+       WNCText.GetSupplyColor(supply), GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 2) + "+" + WNCText.GetSanityColor(gainsanityvalue));
+    LayoutRebuilder.ForceRebuildLayoutImmediate(RestRequireText.transform.parent.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(RestResultText.transform.parent.transform as RectTransform);
+
+    OpenPreviewPanel(RestPanel, rect);
+  }
   private Vector2 Newpos = Vector2.zero;
   public void Update()
   {

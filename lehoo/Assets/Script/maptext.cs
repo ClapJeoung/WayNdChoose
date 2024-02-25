@@ -1221,9 +1221,8 @@ public class HexGrid
   {
     return h0.q.Equals(h1.q) || h0.r.Equals(h1.r) || h0.s.Equals(h1.s);
   }
-  private List<HexDir> GetRoute()
+  private List<HexDir> GetDirectRoute()
   {
-    int _loopcount = 0;
     List<HexDir> _list = new List<HexDir>();
     HexGrid _current = new HexGrid(q, r, s);
     HexGrid _temp = new HexGrid();
@@ -1233,9 +1232,6 @@ public class HexGrid
 
     while (_value != 0)
     {
-      _loopcount++;
-      if (_loopcount > 100) { Debug.Log("테챠앗!!!"); return null; }
-
       _value = _current.q / 2;
       if (_value != 0)
       {
@@ -1367,7 +1363,6 @@ public class HexGrid
       }
     }
 
-    //   Debug.Log(_str);
     return _list;
 
     //최소단위 받아서 계산
@@ -1391,15 +1386,15 @@ public class HexGrid
       return _temp;
     }
   }
-  public List<HexDir> GetRoute(TileData starttile)
+  public List<HexDir> GetDirectRoute(TileData starttile)
   {
     HexGrid _current = new HexGrid(q-starttile.HexGrid.q,r - starttile.HexGrid.r, s - starttile.HexGrid.s);
-    return _current.GetRoute();
+    return _current.GetDirectRoute();
   }
-  public List<HexDir> GetRoute(HexGrid starthex)
+  public List<HexDir> GetDirectRoute(HexGrid starthex)
   {
     HexGrid _current = new HexGrid(q- starthex.q, r- starthex.r, s- starthex.s);
-    return _current.GetRoute();
+    return _current.GetDirectRoute();
   }
   public int GetDistance(HexGrid starthex)
   {

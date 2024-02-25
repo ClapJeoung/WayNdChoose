@@ -10,7 +10,6 @@ public class UI_QuestWolf : UI_default
   [Space(10)]
   public bool Skip = false;
   [SerializeField] private float UIMoveInTime = 0.7f;
-  [SerializeField] private float UIMoveOutTime = 0.4f;//Rect 움직이는거
   [SerializeField] private float FadeInTime = 1.0f;
   [SerializeField] private float FadeOutTime = 0.4f;  //이미지,텍스트 투명도
   private QuestHolder_Cult questholder = null;
@@ -215,6 +214,7 @@ public class UI_QuestWolf : UI_default
       MoveRectForButton(0);
       UIManager.Instance.MapButton.SetCurrentUI(this,MapbuttonPos,0.0f);
       StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.4f));
+      StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.SliderGroup, 1.0f, 0.4f));
     }
 
   }

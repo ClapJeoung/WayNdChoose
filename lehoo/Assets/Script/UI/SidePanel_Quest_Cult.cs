@@ -7,6 +7,7 @@ using TMPro;
 public class SidePanel_Quest_Cult : MonoBehaviour
 {
   [SerializeField] private Slider ProgressSlider = null;
+  public CanvasGroup SliderGroup = null;
   public CanvasGroup DefaultGroup = null;
   [SerializeField] private TextMeshProUGUI TurnText = null;
   [SerializeField] private float TurnTitleMoveTime = 1.5f;
@@ -31,17 +32,15 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   public CanvasGroup Sabbat_Group = null;
   [SerializeField] private Image Sabbat_SectorIcon = null;
   [SerializeField] private Outline Sabbat_Effect = null;
-  [Space(10)]
-  [SerializeField] private CultFailPanel FailUI = null;
   public void SetSabbatFail()
   {
     string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort));
-    StartCoroutine(FailUI.OpenAnimation(_failtext));
+    UIManager.Instance.SetInfoPanel(_failtext);
   }
   public void SetRitualFail()
   {
     string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetSupplyColor(ConstValues.Quest_Cult_Ritual_PenaltySupply));
-    StartCoroutine(FailUI.OpenAnimation(_failtext));
+    UIManager.Instance.SetInfoPanel(_failtext);
   }
   [Space(5)]
   public CanvasGroup Ritual_Group = null;
@@ -71,13 +70,21 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         {
           StartCoroutine(OpenGroup(Village_Group, 0.0f));
         }
-        if (GameManager.Instance.MyGameData.Tendency_Body.Level != 0 && DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+        if (GameManager.Instance.MyGameData.Tendency_Body.Level != 0 && DefaultGroup.alpha == 0.0f)
+        {
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
         _progressvalue = ConstValues.Quest_Cult_Progress_Village;
         break;
       case 1:
-        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+        if (DefaultGroup.alpha == 0.0f)
+        {
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
 
-        _progressvalue = ConstValues.Quest_Cult_Progress_Town;
+          _progressvalue = ConstValues.Quest_Cult_Progress_Town;
         if (LastPhase != 1)
         {
           if (LastPhase != -1) StartCoroutine(CloseGroup(Village_Group, 0.0f));
@@ -85,9 +92,13 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         }
         break;
       case 2:
-        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+        if (DefaultGroup.alpha == 0.0f)
+        {
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
 
-        _progressvalue = ConstValues.Quest_Cult_Progress_City;
+          _progressvalue = ConstValues.Quest_Cult_Progress_City;
 
         if (LastPhase != 2)
         {
@@ -96,9 +107,13 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         }
         break;
       case 3:
-        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+        if (DefaultGroup.alpha == 0.0f)
+        {
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
 
-        _progressvalue = ConstValues.Quest_Cult_Progress_Sabbat;
+          _progressvalue = ConstValues.Quest_Cult_Progress_Sabbat;
         if (LastPhase != 3)
         {
           Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector,true);
@@ -110,9 +125,13 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         }
         break;
       case 4:
-        if (DefaultGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+        if (DefaultGroup.alpha == 0.0f)
+        {
+          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
 
-        _progressvalue = ConstValues.Quest_Cult_Progress_Ritual;
+          _progressvalue = ConstValues.Quest_Cult_Progress_Ritual;
         if (LastPhase != 4)
         {
           if (LastPhase != -1) StartCoroutine(CloseGroup(Sabbat_Group, 0.0f));
