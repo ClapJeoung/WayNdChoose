@@ -8,6 +8,9 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int ResourceGoldValue = 2;
+  public const float DiscomfortGoldValue = 0.02f;
+
   public const int Discomfort_high = 19, Discomfort_middle = 12, Discomfort_low = 6;
 
   public const float CountChangeTime_settlement = 1.2f;
@@ -15,7 +18,7 @@ public static class ConstValues
   public const float CountChangeTime_map = 0.3f;
 
     public const int CultEventRange_Route = 3, CultEventRange_Target = 4;
-    public const int WorldEventRange_max = 4, WorldEventRange_min = 2;
+    public const int WorldEventRange_max = 4, WorldEventRange_min = 1;
 
   public const float WorldEventPhase_1_Cult = 30.0f, WorldEventPhase_2_Cult = 60.0f;
   public const int WorldEventCount_0 = 2, WorldEventCount_1 = 1, WorldEventCount_2 = 0;
@@ -32,8 +35,8 @@ public static class ConstValues
 
   public const int StartSkillLevel = 0;
 
-  public const int DefaultBonusGold = 1;
-  public const int GoldPerSupplies = 1;
+ // public const int DefaultBonusGold = 1;
+ // public const int GoldPerSupplies = 1;
   public const int Supply_Sea = 4;
   public const int Supply_Moutain = 4;
   public const int Supply_River = 2, Supply_Forest = 2;
@@ -94,8 +97,8 @@ public static class ConstValues
                    EventPer_Quest = 1, EventPer_Follow_Ev = 10, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
   public const int DefaultViewRange = 3;
-  public const int MapSize = 30;
-  public const int LandRadius = 10;
+  public const int MapSize = 35;
+  public const int LandRadius = 12;
   public const int MinRiverCount = 5;
 //  public const float Ratio_highland = 0.2f;
   public const float Ratio_forest = 0.12f;
@@ -547,6 +550,7 @@ public class GameData    //게임 진행도 데이터
     sanity = value;
     UIManager.Instance.UpdateSanityText(_last);
   }
+  public List<int> Resources= new List<int>();
   private int gold = 0;
   public int Gold
   {
@@ -992,6 +996,7 @@ public class GameData    //게임 진행도 데이터
         _tiledata.BottomEnvirSprite = (TileSpriteType)jsondata.Tiledata_BottomEnvirSprite[_index];
         _tiledata.Fogstate = jsondata.Tiledata_Fogstate[_index];
         _tiledata.IsEvent = jsondata.Tiledata_IsEvent[_index];
+        _tiledata.IsResource = jsondata.Tiledata_IsResource[_index];
 
         MyMapData.TileDatas[j, i] = _tiledata;
       }
@@ -1051,12 +1056,15 @@ public class GameData    //게임 진행도 데이터
 
     foreach(var _coordinate in jsondata.EventTiles)
       MyMapData.EventTiles.Add(MyMapData.Tile(_coordinate));
+    foreach (var _coordinate in jsondata.ResourceTiles)
+      MyMapData.ResourceTiles.Add(MyMapData.Tile(_coordinate));
     TotalMoveCount = jsondata.TotalMoveCount;
     TotalRestCount = jsondata.TotalRestCount;
     Year = jsondata.Year;
     turn = jsondata.Turn;
     hp = jsondata.HP;
     sanity = jsondata.Sanity;
+    Resources=jsondata.Resources;
     gold = jsondata.Gold;
     supply= jsondata.Movepoint;
 
@@ -1471,6 +1479,7 @@ public class GameJsonData
   public bool IsDead = false;
 
   public List<Vector2Int> EventTiles=new List<Vector2Int>();
+  public List<Vector2Int> ResourceTiles=new List<Vector2Int>();
 
   public List<int> Tiledata_Rotation = new List<int>();
   public List<int> Tiledata_BottomEnvir = new List<int>();
@@ -1480,6 +1489,7 @@ public class GameJsonData
   public List<int> Tiledata_TopEnvirSprite = new List<int>();
   public List<int> Tiledata_Fogstate = new List<int>();
   public List<bool> Tiledata_IsEvent=new List<bool>();
+  public List<bool> Tiledata_IsResource=new List<bool>();
 
   public List<int> Village_Id = new List<int>();
   public List<int> Village_Discomfort = new List<int>();
@@ -1514,6 +1524,7 @@ public class GameJsonData
   public int Turn = 0;
   public int HP = 0;
   public int Sanity = 0;
+  public List<int> Resources= new List<int>();
   public int Gold = 0;
   public int Movepoint = 0;
 
@@ -1566,6 +1577,8 @@ public class GameJsonData
 
     foreach (var _eventtile in data.MyMapData.EventTiles)
       EventTiles.Add(_eventtile.Coordinate);
+    foreach(var _resourcetile in data.MyMapData.ResourceTiles)
+      ResourceTiles.Add(_resourcetile.Coordinate);
 
     foreach (var _tile in data.MyMapData.TileDatas)
     {
@@ -1577,6 +1590,7 @@ public class GameJsonData
       Tiledata_TopEnvirSprite.Add((int)_tile.TopEnvirSprite);
       Tiledata_Fogstate.Add(_tile.Fogstate);
       Tiledata_IsEvent.Add(_tile.IsEvent);
+      Tiledata_IsResource.Add(_tile.IsResource);
     }
 
     foreach (var _village in data.MyMapData.Villages)
@@ -1622,6 +1636,7 @@ public class GameJsonData
     Turn = data.Turn;
     HP = data.HP;
     Sanity = data.Sanity;
+    Resources = data.Resources;
     Gold = data.Gold;
     Movepoint = data.Supply;
 

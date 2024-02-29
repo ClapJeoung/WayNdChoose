@@ -94,6 +94,28 @@ public class maptext : MonoBehaviour
       }
       Debug.Log($"{_index}번째 맵 성공\n");
       GameManager.Instance.MyGameData.MyMapData = _map;
+
+      List<TileData> _around = new List<TileData>();
+      int _count = 0;
+      for (int i = 3; i < ConstValues.MapSize; i++)
+      {
+        if (i % 3 != 0) continue;
+
+        for(int j=3;j< ConstValues.MapSize; j++)
+        {
+          if(j%3 != 0) continue;
+
+          _around = _map.GetAroundTile(_map.TileDatas[j, i],1);
+          _count = 0;
+          foreach(var _tile in _around)
+          {
+            if (_tile.BottomEnvir != BottomEnvirType.Sea) _count++;
+          }
+          if (_count > 4) _map.ResourceGenTiles.Add(_map.TileDatas[j,i]);
+        }
+      }
+
+      _map.SetResourceTiles();
       break;
     }
   }
@@ -881,9 +903,10 @@ public class maptext : MonoBehaviour
     if (_temp == 6) Debug.Log($"{origindir} {modify} 테챠아아앗");
     return (HexDir)_temp;
   }
+
+  Vector3 _cellsize = Vector3.one * 80.0f;
   public IEnumerator MakeTilemap()
   {
-    Vector3 _cellsize = Vector3.one*80.0f; Debug.Log("맵을 만든 레후~");
     //타일로 구현화
     for (int i = 0; i < ConstValues.MapSize; i++)
     {
@@ -895,13 +918,15 @@ public class maptext : MonoBehaviour
         TileData _currenttile = GameManager.Instance.MyGameData.MyMapData.TileDatas[j, i];
         int _rotate = _currenttile.Rotation;
 
-        string _bottomname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).BottomEnvir}";
+        string _bottomname = $"{j},{i}";// {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).BottomEnvir}";
         Sprite _bottomspr = MyTiles.GetTile(_currenttile.BottomEnvirSprite);
-        GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer),typeof(Image) });
+        GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _bottomtile.tag = "Tile";
         _bottomtile.transform.SetParent(TileHolder_bottomenvir);
-        _bottomtile.AddComponent<Onpointer_tileoutline>().MyMapUI = MapUIScript;
-        _bottomtile.GetComponent<Onpointer_tileoutline>().MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
+        Onpointer_tileoutline _outline = _bottomtile.AddComponent<Onpointer_tileoutline>();
+        _outline.enabled = _currenttile.Fogstate == 2;
+        _outline.MyMapUI = MapUIScript;
+        _outline.MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
         _bottomtile.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.Transparent;
         _bottomtile.GetComponent<Image>().raycastTarget = false;
         RectTransform _bottomrect = _bottomtile.GetComponent<RectTransform>();
@@ -909,6 +934,10 @@ public class maptext : MonoBehaviour
         _bottomrect.position = new Vector3(_pos.x, _pos.y, _bottomrect.position.z);
         _bottomrect.transform.localScale = Vector3.one;
         _bottomrect.anchoredPosition3D = new Vector3(_bottomrect.anchoredPosition3D.x, _bottomrect.anchoredPosition3D.y, 0.0f);
+
+        _bottomtile.AddComponent(typeof(TileObjScript));
+        _bottomtile.GetComponent<Image>().raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
+        TileObjScript _tilescript = _bottomtile.GetComponent<TileObjScript>();
 
         GameObject _bottomimageobj = new GameObject("_image", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         Image _bottomimage = _bottomimageobj.GetComponent<Image>();
@@ -920,43 +949,40 @@ public class maptext : MonoBehaviour
         _bottomimagerect.sizeDelta = _cellsize;
         _bottomimagerect.anchoredPosition = Vector3.zero;
         _bottomimagerect.transform.localScale = Vector3.one;
-        Button _button = _bottomtile.AddComponent<Button>();
         Navigation _nav = new Navigation();
         _nav.mode = Navigation.Mode.None;
-        _button.navigation = _nav;
-        _bottomtile.AddComponent(typeof(TileObjScript));
-        _bottomtile.GetComponent<Image>().raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
-        _button.interactable = _currenttile.Fogstate==2;
-        var _buttoncolor = _button.colors;
-        _buttoncolor.disabledColor = Color.white;
-        _button.colors = _buttoncolor;
 
-        string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
-        Sprite _topespr = MyTiles.GetTile(_currenttile.TopEnvirSprite);
-        GameObject _toptile = new GameObject(_topname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        _toptile.transform.SetParent(TileHolder_topenvir);
-        RectTransform _toprect = _toptile.GetComponent<RectTransform>();
-        _toprect.sizeDelta = _cellsize;
-        _toprect.position = new Vector3(_pos.x, _pos.y, _toprect.position.z);
-        _toprect.transform.localScale = Vector3.one;
-        _toprect.anchoredPosition3D = new Vector3(_toprect.anchoredPosition3D.x, _toprect.anchoredPosition3D.y, 0.0f);
-        Image _topimage = _toptile.GetComponent<Image>();
-        _topimage.raycastTarget = false;
-        _topimage.sprite = _topespr;
+        if (_currenttile.BottomEnvir != BottomEnvirType.Sea)
+        {
+          string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
+          Sprite _topespr = MyTiles.GetTile(_currenttile.TopEnvirSprite);
+          GameObject _toptile = new GameObject(_topname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+          _toptile.transform.SetParent(TileHolder_topenvir);
+          RectTransform _toprect = _toptile.GetComponent<RectTransform>();
+          _toprect.sizeDelta = _cellsize;
+          _toprect.position = new Vector3(_pos.x, _pos.y, _toprect.position.z);
+          _toprect.transform.localScale = Vector3.one;
+          _toprect.anchoredPosition3D = new Vector3(_toprect.anchoredPosition3D.x, _toprect.anchoredPosition3D.y, 0.0f);
+          Image _topimage = _toptile.GetComponent<Image>();
+          _topimage.raycastTarget = false;
+          _topimage.sprite = _topespr;
+          _tilescript.TopImage = _topimage;
 
-        string _landmarkname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Landmark}";
-        Sprite _landmarkspr = MyTiles.GetTile(_currenttile.landmarkSprite);
-        GameObject _landmarktile= new GameObject(_landmarkname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        _landmarktile.transform.SetParent(TileHolder_landmark);
-        RectTransform _landmarkrect = _landmarktile.GetComponent<RectTransform>();
-        _landmarkrect.sizeDelta = _cellsize;
-        _landmarkrect.position = new Vector3(_pos.x, _pos.y, _landmarkrect.position.z);
-        _landmarkrect.transform.localScale = Vector3.one;
-        _landmarkrect.anchoredPosition3D = new Vector3(_landmarkrect.anchoredPosition3D.x, _landmarkrect.anchoredPosition3D.y, 0.0f);
-        Image _landmarkimage = _landmarktile.GetComponent<Image>();
-        _landmarkimage.raycastTarget = false;
-        _landmarkimage.sprite = _landmarkspr;
 
+          string _landmarkname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Landmark}";
+          Sprite _landmarkspr = MyTiles.GetTile(_currenttile.landmarkSprite);
+          GameObject _landmarktile = new GameObject(_landmarkname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+          _landmarktile.transform.SetParent(TileHolder_landmark);
+          RectTransform _landmarkrect = _landmarktile.GetComponent<RectTransform>();
+          _landmarkrect.sizeDelta = _cellsize;
+          _landmarkrect.position = new Vector3(_pos.x, _pos.y, _landmarkrect.position.z);
+          _landmarkrect.transform.localScale = Vector3.one;
+          _landmarkrect.anchoredPosition3D = new Vector3(_landmarkrect.anchoredPosition3D.x, _landmarkrect.anchoredPosition3D.y, 0.0f);
+          Image _landmarkimage = _landmarktile.GetComponent<Image>();
+          _landmarkimage.raycastTarget = false;
+          _landmarkimage.sprite = _landmarkspr;
+          _tilescript.LandmarkImage = _landmarkimage;
+        }
         string _fogname = $"{j},{i} Fog";
         GameObject _fogtile = new GameObject(_fogname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),typeof(CanvasGroup) });
         _fogtile.transform.SetParent(TileHolder_Fog);
@@ -977,21 +1003,17 @@ public class maptext : MonoBehaviour
         _eventrect.position = new Vector3(_pos.x, _pos.y, _eventrect.position.z);
         _eventrect.transform.localScale = Vector3.one;
         _eventrect.anchoredPosition3D = new Vector3(_eventrect.anchoredPosition3D.x, _eventrect.anchoredPosition3D.y, 0.0f);
-        Image _eventimage = _eventmark.GetComponent<Image>();
-        _eventimage.raycastTarget = false;
-        _eventimage.sprite = GameManager.Instance.ImageHolder.UnknownEvent;
-        _eventimage.enabled = _currenttile.IsEvent;
+        Image _etcimage = _eventmark.GetComponent<Image>();
+        _etcimage.raycastTarget = false;
+        _etcimage.sprite = _currenttile.IsEvent?GameManager.Instance.ImageHolder.UnknownEvent:
+          _currenttile.IsResource?GameManager.Instance.ImageHolder.GetResourceSprite(_currenttile,false):
+          GameManager.Instance.ImageHolder.Transparent;
 
-        TileObjScript _tilescript = _bottomtile.GetComponent<TileObjScript>();
         _tilescript.Rect = _bottomrect;
-        _tilescript.Button = _button;
         _tilescript.MapUI = MapUIScript;
         _tilescript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
         _tilescript.BottomImage = _bottomimage;
-        _tilescript.TopImage = _topimage;
-        _tilescript.LandmarkImage= _landmarkimage;
-        _tilescript.OnPointer = _bottomtile.GetComponent<Onpointer_tileoutline>();
-        _button.onClick.AddListener(() => _tilescript.Clicked());
+        _tilescript.OnPointer = _outline;
         PreviewInteractive _tilepreview = _tilescript.Rect.transform.AddComponent<PreviewInteractive>();
         _tilepreview.PanelType = PreviewPanelType.TileInfo;
         _tilepreview.MyTileData = _currenttile;
@@ -1009,7 +1031,7 @@ public class maptext : MonoBehaviour
         _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
         _tilescript.FogGroup = _fogtile.GetComponent<CanvasGroup>();
         _tilescript.FogGroup.alpha = _currenttile.Fogstate == 0 ? 1.0f : _currenttile.Fogstate == 1 ? ConstValues.FogAlpha_visible : 0.0f;
-        _tilescript.EventMarkImage = _eventimage;
+        _tilescript.ETCImage = _etcimage;
 
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _tilescript;
       }

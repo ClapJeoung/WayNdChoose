@@ -6,12 +6,11 @@ using UnityEngine.UI;
 public class TileObjScript : MonoBehaviour
 {
   public RectTransform Rect = null;
-  public Button Button = null;
   public UI_map MapUI = null;
   public TileData TileData = null;
   public Image BottomImage = null;
   public Image TopImage = null;
-  public Image EventMarkImage = null;
+  public Image ETCImage = null;
   public Image LandmarkImage = null;
   public Onpointer_tileoutline OnPointer = null;
   public PreviewInteractive Preview = null;

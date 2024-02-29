@@ -335,7 +335,7 @@ public class MapData
     foreach (var _eventtile in EventTiles)
     {
       _eventtile.IsEvent = false;
-      _eventtile.ButtonScript.EventMarkImage.enabled = false;
+      _eventtile.ButtonScript.ETCImage.enabled = false;
     }
 
     List<EnvironmentType> _priorenvirs = new List<EnvironmentType>();
@@ -464,14 +464,12 @@ public class MapData
             break;
         }
 
-        List<TileData> _enablerange = GetAroundTile(GameManager.Instance.MyGameData.CurrentTile, ConstValues.WorldEventRange_max);
-        List<TileData> _minrangetiles = GetAroundTile(GameManager.Instance.MyGameData.CurrentTile, ConstValues.WorldEventRange_min - 1);
+        List<Vector2Int> _enablerange = GetAroundCoor(GameManager.Instance.MyGameData.CurrentTile.Coordinate, ConstValues.WorldEventRange_max);
+        List<Vector2Int> _minrangetiles = GetAroundCoor(GameManager.Instance.MyGameData.CurrentTile.Coordinate, ConstValues.WorldEventRange_min);
         foreach (var _removetile in _minrangetiles)
           _enablerange.Remove(_removetile);
-        //주위 3칸~5칸
 
         _neweventtiles.Add(GetRandomEventTile(_culttarget));
-
 
         if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_1_Cult)
           _worldeventcount = ConstValues.WorldEventCount_0;
@@ -495,7 +493,8 @@ public class MapData
           for(int i = 0; i < _worldeventtargets.Count; i++)
           {
             if (i == _worldeventcount) break;
-            _neweventtiles.Add(GetRandomEventTile(_worldeventtargets[i]));
+            TileData _eventtile = GetRandomEventTile(_worldeventtargets[i]);
+            if(_eventtile!=null) _neweventtiles.Add(_eventtile);
           }
         }
 
@@ -504,7 +503,7 @@ public class MapData
         {
           EventTiles.Add(_tile);
           _tile.IsEvent = true;
-          _tile.ButtonScript.EventMarkImage.enabled = true;
+          _tile.ButtonScript.ETCImage.enabled = true;
         }
         break;
 
@@ -520,12 +519,13 @@ public class MapData
             _targetaround.Remove(GameManager.Instance.MyGameData.CurrentTile);
             foreach (var _tile in _targetaround)
             {
-              if (!_enablerange.Contains(_tile) 
+              if (!_enablerange.Contains(_tile.Coordinate) 
                 ||!_tile.Interactable 
                 || _tile.Landmark != LandmarkType.Outer 
                 || EventTiles.Contains(_tile) 
                 || _tile.Fogstate == 0
-                ||_neweventtiles.Contains(_tile)) continue;
+                ||_neweventtiles.Contains(_tile)
+                || _tile.IsResource) continue;
               {
                 bool _isoverlap = false;
                 foreach (var _preeventtile in _neweventtiles)
@@ -557,7 +557,7 @@ public class MapData
             _route.Remove(GameManager.Instance.MyGameData.CurrentTile);
             foreach (var _tile in _route)
             {
-              if (!_enablerange.Contains(_tile) 
+              if (!_enablerange.Contains(_tile.Coordinate) 
                 || !_tile.Interactable 
                 || _tile.TileSettle != null 
                 || EventTiles.Contains(_tile) 
@@ -582,7 +582,10 @@ public class MapData
               _targettiles.Add(_tile);
             }
           }
-
+          if (_targettiles.Count == 0)
+          {
+            Debug.Log("테챠앗");
+          }
           int _fog0count = 3, _envircount = 10, _envirdefaultcount = 1, _fogdefaultcount = 0;
           List<int> _indexes = new List<int>();
           for (int i = 0; i < _targettiles.Count; i++)
@@ -624,10 +627,49 @@ public class MapData
             for (int j = 0; j < _count; j++) _indexes.Add(i);
           }
 
-          return _targettiles[_indexes[Random.Range(0, _indexes.Count)]];
+          return _targettiles.Count>0?_targettiles[_indexes[Random.Range(0, _indexes.Count)]]:null;
         }
     }
 
+  }
+  public void SetResourceTiles()
+  {
+    foreach(var _tile in ResourceTiles)
+    {
+      if (GameManager.Instance.IsPlaying)
+      {
+        _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.Transparent;
+      }
+      _tile.IsResource = false;
+    }
+
+    ResourceTiles.Clear();
+
+    List<TileData> _aroundtiles = new List<TileData>();
+    List<TileData> _enabletiles = new List<TileData>();
+
+    foreach (var _gentile in ResourceGenTiles)
+    {
+      _aroundtiles= GetAroundTile(_gentile, 1);
+      _enabletiles.Clear();
+      foreach (var _tile in _aroundtiles)
+      {
+        if (_tile.TileSettle != null) continue;
+        if(_tile.IsEvent) continue;
+        if(_tile.BottomEnvir!=BottomEnvirType.Land) continue;
+        if (ResourceTiles.Contains(_tile)) continue;
+        _enabletiles.Add(_tile);
+      }
+
+      if (_enabletiles.Count > 0)
+      {
+        TileData _tile = _enabletiles[Random.Range(0,_enabletiles.Count)];
+        ResourceTiles.Add(_tile);
+        _tile.IsResource = true;
+        if (GameManager.Instance.IsPlaying) _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_tile, false);
+      }
+
+    }
   }
   public static int GetMinLength(TileData starttile, List<Settlement> settlements)
   {
@@ -897,36 +939,6 @@ public class MapData
       return TileDatas[ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1, ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1];
     }
   }
-  public List<Settlement> GetCloseSettles(Settlement _origin,int _count)
-  {
-    Vector2 _originpos = _origin.Position;
-
-    List<float> _distance=new List<float>();
-    List<Settlement> _settlement=new List<Settlement>();
-    foreach (Settlement _settle in AllSettles)
-    {
-      if (_settle == _origin) continue;
-
-      float _dis=Vector2.Distance(_settle.Position, _originpos);
-      //  Debug.Log($"_originpos 에서 _settle.VectorPos()까지의 거리 : {_dis}");
-      _distance.Add(_dis);
-      _settlement.Add(_settle);
-    }//모든 정착지로부터 거리,정착지가 담긴 딕셔너리 생성
-
-    List<Settlement> _closest = new List<Settlement>();
-    for (int i = 0; i < _count; i++)
-    {
-      float _min = _distance.Min();
-      int _index = _distance.IndexOf(_min);
-      _closest.Add(_settlement[_index]);
-
-      _distance.RemoveAt(_index); 
-      _settlement.RemoveAt(_index);
-    }
-
-
-    return _closest;
-  }//_origin 정착지로부터 제일 가까운 3개
   public TileInfoData GetTileData(Vector2 _tilepos)
   {
     Vector2Int _tileintpos = new Vector2Int(Mathf.RoundToInt(_tilepos.x), Mathf.RoundToInt(_tilepos.y));
@@ -962,9 +974,10 @@ public class MapData
     return _data;
   }//월드 기준 타일 1개 좌표 하나 받아서 그 주위 2칸의 산 바다, 나머지 1타일
 
-
   public List<TileData> EventTiles = new List<TileData>();
+  public List<TileData> ResourceTiles=new List<TileData>();
   public TileData[,] TileDatas;
+  public List<TileData> ResourceGenTiles=new List<TileData>();
   public List<Settlement> Villages = new List<Settlement>();
   public List<Settlement> Towns = new List<Settlement>();
   public List<Settlement> Citys = new List<Settlement>();

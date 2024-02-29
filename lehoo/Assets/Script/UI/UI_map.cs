@@ -7,6 +7,7 @@ using TMPro;
 using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine.WSA;
 
 //public enum RangeEnum { Low,Middle,High}
 public class RouteData
@@ -195,11 +196,13 @@ public class UI_map : UI_default
   }
   #endregion
   #region UI 부분
+  [SerializeField] private Transform ResourceHolder = null;
+  [SerializeField] private GameObject ResourceIconPrefab = null;
   [SerializeField] private RectTransform TilePreviewRect = null;
   [SerializeField] private CanvasGroup TilePreviewGroup = null;
   [SerializeField] private Image TilePreview_Bottom = null;
   [SerializeField] private Image TilePreview_Top = null;
-  [SerializeField] private Image TilePreview_IsEvent = null;
+  [SerializeField] private Image TilePreview_ETC = null;
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
   [SerializeField] private TextMeshProUGUI RequireSupply = null;
@@ -450,19 +453,15 @@ public class UI_map : UI_default
           _fixroute.Outlines.Add(_enableoutline);
         }
 
-        Vector3 _arrowpos = Vector3.zero;
-        if (i == 0) _arrowpos = (_fixroute.Start.ButtonScript.Rect.anchoredPosition3D + _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
-        else if (i == _fixroute.Length - 1) _arrowpos = (_fixroute.Route[_fixroute.Route.Count - 1].ButtonScript.Rect.anchoredPosition3D + _fixroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f;
-        else _arrowpos = (_fixroute.Route[i - 1].ButtonScript.Rect.anchoredPosition3D + _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+        Vector3 _arrowpos = _fixroute.Length == 1 ? (_fixroute.Start.ButtonScript.Rect.anchoredPosition3D + _fixroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f :
+  i == 0 ? (_fixroute.Start.ButtonScript.Rect.anchoredPosition3D + _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f :
+  i == _fixroute.Length - 1 ? (_fixroute.Route[i - 1].ButtonScript.Rect.anchoredPosition3D + _fixroute.End.ButtonScript.Rect.anchoredPosition3D) / 2.0f :
+  (_fixroute.Route[i - 1].ButtonScript.Rect.anchoredPosition3D + _fixroute.Route[i].ButtonScript.Rect.anchoredPosition3D) / 2.0f;
+
 
         Image _arrow = GetEnableArrow;
         _arrow.rectTransform.anchoredPosition = _arrowpos;
-        HexDir _dir = HexDir.TopRight;
-        if (i == 0) _dir = GameManager.Instance.MyGameData.MyMapData.GetRoute(_fixroute.Start, _fixroute.Route[i])[0];
-        else if (i == _fixroute.Length - 1) _dir = GameManager.Instance.MyGameData.MyMapData.GetRoute(_fixroute.Route[_fixroute.Route.Count - 1], _fixroute.End)[0];
-        else _dir = GameManager.Instance.MyGameData.MyMapData.GetRoute(_fixroute.Route[i - 1], _fixroute.Route[i])[0]; 
-
-        SetArrowRotation(ref _arrow, _dir);
+        SetArrowRotation(ref _arrow, _grid[i]);
         _fixroute.Arrows.Add(_arrow);
       }
     }
@@ -488,7 +487,7 @@ public class UI_map : UI_default
       TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
       TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
-      TilePreview_IsEvent.enabled = tile.IsEvent;
+      TilePreview_ETC.sprite= tile.ButtonScript.ETCImage.sprite;
       TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
     }
    if(updatetext) UpdateSupplyTexts();
@@ -579,7 +578,7 @@ public class UI_map : UI_default
       TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
       TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
-      TilePreview_IsEvent.enabled = tile.IsEvent;
+      TilePreview_ETC.sprite = tile.ButtonScript.ETCImage.sprite;
       TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
     }
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
@@ -643,6 +642,15 @@ public class UI_map : UI_default
   
   private IEnumerator openui(bool dir)
   {
+    if (GameManager.Instance.MyGameData.Resources.Count != ResourceHolder.childCount)
+    {
+      for(int i=0;i<GameManager.Instance.MyGameData.Resources.Count;i++)
+      {
+        GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
+        _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(GameManager.Instance.MyGameData.Resources[i], true);
+      }
+    }
+
     if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
     if (DragDescription.text == "") DragDescription.text = GameManager.Instance.GetTextData("MapDragDescription");
     CameraResetButton.interactable = false;
@@ -657,7 +665,7 @@ public class UI_map : UI_default
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
       TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
       TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-      TilePreview_IsEvent.enabled = false;
+      TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
       TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
     else
@@ -668,7 +676,7 @@ public class UI_map : UI_default
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
       TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.Transparent;
       TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-      TilePreview_IsEvent.enabled = false;
+      TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
       TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
     if (MadnessIcon.enabled) MadnessIcon.enabled = false;
@@ -900,6 +908,7 @@ public class UI_map : UI_default
     }
   }
   public int PenaltyCost = 0;
+  /*
   public int BonusGold 
   {
     get 
@@ -910,6 +919,7 @@ public class UI_map : UI_default
         (LastDestination.RequireSupply/2+1);  
     } 
   }
+  */
   private void UpdateSupplyTexts()
   {
     if (Destinations.Count == 0)
@@ -943,10 +953,10 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
       else if(LastDestination.IsEvent)
       BonusGoldInfo.text = GameManager.Instance.MyGameData.Tendency_Head.Level == 2 ?
         string.Format(GameManager.Instance.GetTextData("MoveDescription_Event_gold"),
-        WNCText.GetSupplyColor(SelectedTile.RequireSupply), WNCText.GetGoldColor(BonusGold)) : "";
+        WNCText.GetSupplyColor(SelectedTile.RequireSupply), "레후") : "";
       else
       BonusGoldInfo.text = string.Format(GameManager.Instance.GetTextData("MoveDescription_Outer_gold"),
-       WNCText.GetSupplyColor(SelectedTile.RequireSupply), WNCText.GetGoldColor(BonusGold));
+       WNCText.GetSupplyColor(SelectedTile.RequireSupply), "레후");
 
     }
   }
@@ -1044,9 +1054,8 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     {
       TilePreview_Bottom.sprite = SelectedTile.ButtonScript.BottomImage.sprite;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * SelectedTile.Rotation));
-      TilePreview_IsEvent.enabled = SelectedTile.IsEvent;
       TilePreview_Top.sprite = SelectedTile.ButtonScript.TopImage.sprite;
-      TilePreview_IsEvent.enabled = SelectedTile.IsEvent;
+      TilePreview_ETC.sprite = SelectedTile.ButtonScript.ETCImage.sprite;
       TilePreview_Landmark.sprite = SelectedTile.ButtonScript.LandmarkImage.sprite;
     }
     StopAllCoroutines();
@@ -1408,8 +1417,8 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     #endregion
     if (_stoptile.TileSettle == null)
     {
-      if(!_stoptile.IsEvent)GameManager.Instance.MyGameData.Gold += BonusGold;
-      else if(_stoptile.IsEvent&&GameManager.Instance.MyGameData.Tendency_Head.Level==2) GameManager.Instance.MyGameData.Gold += BonusGold;
+   //   if(!_stoptile.IsEvent)GameManager.Instance.MyGameData.Gold += BonusGold;
+    //  else if(_stoptile.IsEvent&&GameManager.Instance.MyGameData.Tendency_Head.Level==2) GameManager.Instance.MyGameData.Gold += BonusGold;
     }
     if(!_hungry) UIManager.Instance.AudioManager.StopWalking();
 
@@ -1424,6 +1433,19 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     {
       GameManager.Instance.MyGameData.TotalMoveCount++;
       UIManager.Instance.SetWildMadCount();
+    }
+
+    if (_stoptile.IsEvent || _stoptile.IsResource)
+    {
+      StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, _stoptile.IsEvent));
+    }
+    else if (_stoptile.TileSettle != null)
+    {
+      for (int i = ResourceHolder.childCount - 1; i > -1; i--)
+      {
+        Destroy(ResourceHolder.GetChild(i).gameObject);
+        yield return new WaitForSeconds(0.1f);
+      }
     }
 
     if (_stoptile.TileSettle != null || _stoptile.IsEvent)
@@ -1467,7 +1489,6 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
           {
             EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(_stoptile.Coordinate));
           }
-
           GameManager.Instance.MyGameData.MyMapData.SetEventTiles();
 
           GameManager.Instance.SaveData();
@@ -1476,6 +1497,18 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
         case LandmarkType.Village:
         case LandmarkType.Town:
         case LandmarkType.City:
+          if (GameManager.Instance.MyGameData.Resources.Count > 0)
+          {
+            int _sum = Mathf.CeilToInt(Mathf.Clamp(
+              GameManager.Instance.MyGameData.Resources.Count *
+              ConstValues.ResourceGoldValue*
+              GameManager.Instance.MyGameData.GetGoldGenModify(true)*
+              (1.0f-_stoptile.TileSettle.Discomfort*ConstValues.DiscomfortGoldValue),
+              1.0f, 1000.0f));
+            GameManager.Instance.MyGameData.Gold += _sum;
+            GameManager.Instance.MyGameData.Resources.Clear();
+          }
+
           GameManager.Instance.MyGameData.FirstRest = true;
           GameManager.Instance.EnterSettlement(_stoptile.TileSettle);
 
@@ -1488,6 +1521,29 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     }
     else
     {
+      if (_stoptile.IsResource)
+      {
+        if (_stoptile.IsResource)
+        {
+          int _resourcetype = _stoptile.ResourceType;
+          int _resourcecount = 0;
+          switch (_stoptile.ResourceType)
+          {
+            case 0: _resourcecount = 1; break;
+            case 1: case 2: _resourcecount = 2; break;
+            case 3: case 4: _resourcecount = 3; break;
+          }
+          for (int i = 0; i < _resourcecount; i++)
+          {
+            GameManager.Instance.MyGameData.Resources.Add(_resourcetype);
+            GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
+            _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
+            GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(_stoptile);
+            yield return new WaitForSeconds(0.15f);
+          }
+        }
+      }
+
       GameManager.Instance.MyGameData.Turn++;
       GameManager.Instance.MyGameData.CurrentEvent = null;
       GameManager.Instance.MyGameData.CurrentSettlement = null;
@@ -1499,7 +1555,7 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
         TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
         TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-        TilePreview_IsEvent.enabled = false;
+        TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
       }
       else if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1))
@@ -1512,7 +1568,7 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
         TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
         TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
         TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-        TilePreview_IsEvent.enabled = false;
+        TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
 
         BonusGoldInfo.text = "";
@@ -1522,7 +1578,7 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
         TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
         TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
-        TilePreview_IsEvent.enabled = false;
+        TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
       }
       SelectedTile = null;
@@ -1690,5 +1746,18 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
    // Debug.Log($"({coordinate.x},{coordinate.y}) -> {PlayerRect.anchoredPosition}");
   }
-
+  private IEnumerator deactiveetctile(Image img,bool isevent)
+  {
+    RectTransform _rect = img.rectTransform;
+    float _time = 0.0f, _targettime = isevent? 0.4f:0.8f;
+    while(_time < _targettime)
+    {
+      _rect.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, UIManager.Instance.UIPanelCLoseCurve.Evaluate(_time / _targettime));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    _rect.localScale = Vector3.zero;
+    img.sprite = GameManager.Instance.ImageHolder.Transparent;
+    _rect.localScale=Vector3.one;
+  }
 }

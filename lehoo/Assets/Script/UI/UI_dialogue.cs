@@ -2032,6 +2032,7 @@ public class UI_dialogue : UI_default
     UIManager.Instance.AudioManager.PlaySFX(14);
 
     EventManager.Instance.SetSettlementEvent(SelectedSector);
+    GameManager.Instance.MyGameData.MyMapData.SetResourceTiles();
 
   }
   public AnimationCurve DiscomfortAnimationCurve = new AnimationCurve();

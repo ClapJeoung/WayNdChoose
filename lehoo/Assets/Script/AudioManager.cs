@@ -75,7 +75,6 @@ public class AudioManager : MonoBehaviour
   }
   private IEnumerator bgm()
   {
-    Debug.Log("배경 시작");
     AudioClip _nextclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
     BGMAudio.clip = _nextclip;
     PlayedList.Add(_nextclip);

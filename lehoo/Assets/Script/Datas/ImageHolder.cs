@@ -94,10 +94,6 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> Village_Temple_s1 = new List<Sprite>();
   public List<Sprite> Village_Temple_s2 = new List<Sprite>();
   public List<Sprite> Village_Temple_s3 = new List<Sprite>();
-  public List<Sprite> Town_Residence_s0 = new List<Sprite>();
-  public List<Sprite> Town_Residence_s1 = new List<Sprite>();
-  public List<Sprite> Town_Residence_s2 = new List<Sprite>();
-  public List<Sprite> Town_Residence_s3 = new List<Sprite>();
   public List<Sprite> Town_Temple_s0 = new List<Sprite>();
   public List<Sprite> Town_Temple_s1 = new List<Sprite>();
   public List<Sprite> Town_Temple_s2 = new List<Sprite>();
@@ -106,14 +102,6 @@ public class ImageHolder : ScriptableObject
   public List<Sprite> Town_Market_s1 = new List<Sprite>();
   public List<Sprite> Town_Market_s2 = new List<Sprite>();
   public List<Sprite> Town_Market_s3 = new List<Sprite>();
-  public List<Sprite> City_Residence_s0 = new List<Sprite>();
-  public List<Sprite> City_Residence_s1 = new List<Sprite>();
-  public List<Sprite> City_Residence_s2 = new List<Sprite>();
-  public List<Sprite> City_Residence_s3 = new List<Sprite>();
-  public List<Sprite> City_Temple_s0 = new List<Sprite>();
-  public List<Sprite> City_Temple_s1 = new List<Sprite>();
-  public List<Sprite> City_Temple_s2 = new List<Sprite>();
-  public List<Sprite> City_Temple_s3 = new List<Sprite>();
   public List<Sprite> City_Market_s0 = new List<Sprite>();
   public List<Sprite> City_Market_s1 = new List<Sprite>();
   public List<Sprite> City_Market_s2 = new List<Sprite>();
@@ -169,23 +157,6 @@ public class ImageHolder : ScriptableObject
       case SettlementType.Town:
         switch (sector)
         {
-          case SectorTypeEnum.Residence:
-            switch (seasen)
-            {
-              case 0:
-                _targetlist = Town_Residence_s0;
-                break;
-              case 1:
-                _targetlist = Town_Residence_s1;
-                break;
-              case 2:
-                _targetlist = Town_Residence_s2;
-                break;
-              case 3:
-                _targetlist = Town_Residence_s3;
-                break;
-            }
-            break;
           case SectorTypeEnum.Temple:
             switch (seasen)
             {
@@ -225,40 +196,6 @@ public class ImageHolder : ScriptableObject
       case SettlementType.City:
         switch (sector)
         {
-          case SectorTypeEnum.Residence:
-            switch (seasen)
-            {
-              case 0:
-                _targetlist = City_Residence_s0;
-                break;
-              case 1:
-                _targetlist = City_Residence_s1;
-                break;
-              case 2:
-                _targetlist = City_Residence_s2;
-                break;
-              case 3:
-                _targetlist = City_Residence_s3;
-                break;
-            }
-            break;
-          case SectorTypeEnum.Temple:
-            switch (seasen)
-            {
-              case 0:
-                _targetlist = City_Temple_s0;
-                break;
-              case 1:
-                _targetlist = City_Temple_s1;
-                break;
-              case 2:
-                _targetlist = City_Temple_s2;
-                break;
-              case 3:
-                _targetlist = City_Temple_s3;
-                break;
-            }
-            break;
           case SectorTypeEnum.Marketplace:
             switch (seasen)
             {
@@ -566,18 +503,58 @@ public class ImageHolder : ScriptableObject
       default: return DefaultIcon;
     }
   }
-  /*
-  public Sprite GetSkillIllust(SkillTypeEnum _type)
+  public Sprite Resource_Berry_Icon = null;
+  public Sprite Resource_Berry_Tile = null;
+  public Sprite Resource_Wood_Icon = null;
+  public Sprite Resource_Wood_Tile = null;
+  public Sprite Resource_Fish_Icon = null;
+  public Sprite Resource_Fish_Tile = null;
+  public Sprite Resource_Swamp_Icon = null;
+  public Sprite Resource_Swamp_Tile = null;
+  public Sprite Resource_Stone_Icon = null;
+  public Sprite Resource_Stone_Tile = null;
+  /// <summary>
+  /// 베리 목재 생선 갈대 돌
+  /// </summary>
+  /// <param name="id"></param>
+  /// <param name="isicon"></param>
+  /// <returns></returns>
+  public Sprite GetResourceSprite(int id,bool isicon)
   {
-    switch (_type)
+    switch (id)
     {
-      case SkillTypeEnum.Conversation: return SkillIllust_Conversation;
-      case SkillTypeEnum.Force: return SkillIllust_Force;
-      case SkillTypeEnum.Wild: return SkillIllust_Wild;
-      default: return SkillIllust_Intelligence;
+      case 0: return isicon ? Resource_Berry_Icon : Resource_Berry_Tile;
+      case 1: return isicon? Resource_Wood_Icon : Resource_Wood_Tile;
+      case 2: return isicon? Resource_Fish_Icon: Resource_Fish_Tile;
+      case 3: return isicon ? Resource_Swamp_Icon : Resource_Swamp_Tile;
+          case 4: return isicon ? Resource_Stone_Icon : Resource_Stone_Tile;
     }
+    return null;
   }
-  */
+  public Sprite GetResourceSprite(TileData _tile, bool isicon)
+  {
+    switch (_tile.ResourceType)
+    {
+      case 0: return isicon ? Resource_Berry_Icon : Resource_Berry_Tile;
+      case 1: return isicon ? Resource_Wood_Icon : Resource_Wood_Tile;
+      case 2: return isicon ? Resource_Fish_Icon : Resource_Fish_Tile;
+      case 3: return isicon ? Resource_Swamp_Icon : Resource_Swamp_Tile;
+      case 4: return isicon ? Resource_Stone_Icon : Resource_Stone_Tile;
+    }
+    return null;
+  }
+  /*
+             public Sprite GetSkillIllust(SkillTypeEnum _type)
+             {
+               switch (_type)
+               {
+                 case SkillTypeEnum.Conversation: return SkillIllust_Conversation;
+                 case SkillTypeEnum.Force: return SkillIllust_Force;
+                 case SkillTypeEnum.Wild: return SkillIllust_Wild;
+                 default: return SkillIllust_Intelligence;
+               }
+             }
+             */
 
   /*  public Sprite GetVillageSprite(string _name)
   {
@@ -619,7 +596,7 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//성채 이름에 해당하는 일러스트 가져오기 */
 
-    public List<EventIllustHolder> GetEventIllusts(string originid,string typeid,int length)
+  public List<EventIllustHolder> GetEventIllusts(string originid,string typeid,int length)
     {
     List<Sprite> _illusts = new List<Sprite>();
     foreach (Sprite _spr in EventIllust)

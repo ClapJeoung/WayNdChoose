@@ -15,14 +15,17 @@ public class MouseScript : MonoBehaviour
   public Vector2 Offset= Vector2.zero;
   public float MapMoveDegree = 30.0f;
   public Experience DragExpTarget = null;
+  private TileData SelectingTile = null;
   private void Update()
   {
     if (Input.GetMouseButtonDown(0))
     {
-      if (GameManager.Instance.IsPlaying && GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress)
+      if (GameManager.Instance.IsPlaying)
       {
+        if(GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress)
+        {
           GameObject _expicon = CheckObjTag("ExpIcon");
-          if (_expicon != null&&_expicon.GetComponent<Button>().interactable)
+          if (_expicon != null && _expicon.GetComponent<Button>().interactable)
           {
             if (_expicon.name[_expicon.name.Length - 1] == '0')
             {
@@ -37,33 +40,54 @@ public class MouseScript : MonoBehaviour
               DragExpTarget = GameManager.Instance.MyGameData.ShortExp_B;
             }
 
-            if (DragExpTarget != null&& DragExpTarget.Duration>1)
+            if (DragExpTarget != null && DragExpTarget.Duration > 1)
             {
-            UIManager.Instance.ExpDragPreview.gameObject.SetActive(true);
+              UIManager.Instance.ExpDragPreview.gameObject.SetActive(true);
               UIManager.Instance.ExpDragPreview.Setup(DragExpTarget);
               MouseState = MouseStateEnum.DragExp;
             }
           }
+        }
+        
+        if (CheckObjTag("TilePanel") != null)
+        {
+          MouseState = MouseStateEnum.DragMap;
+          LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+
+          string _coordinate = CheckObjTag("Tile").name;
+          TileData _tile = GameManager.Instance.MyGameData.MyMapData.TileDatas[
+            int.Parse(_coordinate.Split(',')[0]),int.Parse(_coordinate.Split(',')[1])];
+          SelectingTile = !_tile.Interactable||_tile.Fogstate!=2 ? null : _tile;
+        }
       }
-      if (GameManager.Instance.IsPlaying && CheckObjTag("TilePanel") != null)
-      {
-        MouseState = MouseStateEnum.DragMap;
-        LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-      }
+
     }
     if (Input.GetMouseButtonUp(0))
     {
-      if (GameManager.Instance.IsPlaying&& MouseState == MouseStateEnum.DragExp)
+      if (GameManager.Instance.IsPlaying )
       {
-        GameObject _object = CheckObjTag("Selection");
-        if(_object != null)
+        if (MouseState == MouseStateEnum.DragExp)
         {
-          _object.GetComponent<UI_Selection>().AddExp(DragExpTarget);
-        }
+          GameObject _object = CheckObjTag("Selection");
+          if (_object != null)
+          {
+            _object.GetComponent<UI_Selection>().AddExp(DragExpTarget);
+          }
 
-        MouseState = MouseStateEnum.Idle;
-        DragExpTarget = null;
-        UIManager.Instance.ExpDragPreview.SetDown();
+          MouseState = MouseStateEnum.Idle;
+          DragExpTarget = null;
+          UIManager.Instance.ExpDragPreview.SetDown();
+        }
+        
+        if (SelectingTile!=null&& CheckObjTag("Tile") != null)
+        {
+          string _coordinate = CheckObjTag("Tile").name;
+          TileData _tile = GameManager.Instance.MyGameData.MyMapData.TileDatas[
+            int.Parse(_coordinate.Split(',')[0]), int.Parse(_coordinate.Split(',')[1])];
+          if (_tile == SelectingTile) SelectingTile.ButtonScript.Clicked();
+
+          SelectingTile = null;
+        }
       }
       if (MouseState == MouseStateEnum.DragMap) MouseState = MouseStateEnum.Idle;
     }

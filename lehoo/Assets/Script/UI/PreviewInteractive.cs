@@ -224,7 +224,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
 
         string _year = GameManager.Instance.MyGameData.Year.ToString();
         string _season = "";
-        switch (GameManager.Instance.GameSaveData.Turn)
+        switch (GameManager.Instance.MyGameData.Turn)
         {
           case 0:
             _season = GameManager.Instance.GetTextData("Spring");

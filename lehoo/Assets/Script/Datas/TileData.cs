@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Text;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public enum BottomEnvirType
@@ -15,6 +16,20 @@ public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
 public class TileData
 {
   public bool IsEvent = false;
+  public bool IsResource = false;
+  public int ResourceType
+  {
+    get
+    {
+      int _id = 0;
+      if (TopEnvir == TopEnvirType.Mountain) _id = 4;
+      else if ((BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) && TopEnvir == TopEnvirType.Forest) _id = 3;
+      else if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _id = 2;
+      else if (TopEnvir == TopEnvirType.Forest) _id = 1;
+      else _id = 0;
+      return _id;
+    }
+  }
   public Vector2Int Coordinate = Vector2Int.zero;
   private HexGrid hexgrid = null;
   public HexGrid HexGrid
@@ -55,7 +70,9 @@ public class TileData
     if (Fogstate == value) return;
 
     Fogstate = value;
-    if (value == 2) { ButtonScript.SetReveal(); ButtonScript.Button.interactable = true; }
+    if (value == 2) { ButtonScript.SetReveal(); 
+      if(BottomEnvir!=BottomEnvirType.Sea)
+      ButtonScript.Rect.GetComponent<Onpointer_tileoutline>().enabled = true; }
     else if (value == 1) ButtonScript.SetVisible();
   }
 
