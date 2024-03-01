@@ -83,7 +83,7 @@ public static class ConstValues
 
 
   public const int Rest_Supply = 14;
-  public const int Rest_Discomfort = 10;
+  public const int Rest_Discomfort = 8;
   public const float RestCost_Default_Min = 9, RestCost_Default_Max = 25;
   public const int MoveCost_Min = 1, MoveCost_Max = 4;  //이동 비용 골드 값 기준
   public const float MoveCost_SanityValue = 2.0f;         //이동 비용 정신력 값
@@ -103,7 +103,7 @@ public static class ConstValues
 //  public const float Ratio_highland = 0.2f;
   public const float Ratio_forest = 0.12f;
   public const int Mountain_Count_min = 3, Mountain_Count_max = 4;
-  public const float Mountain_length_min = 0.3f, Mountain_length_max = 0.7f;
+  public const float Mountain_length_min = 0.3f, Mountain_length_max = 0.7f; 
   public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
   public const float SettlementLength_min = 0.3f;
   public const float SettlementLength_Village = 0.5f;
@@ -119,8 +119,8 @@ public static class ConstValues
   public const float  SanityLoss_Exp = 0.15f;
 
   public const float Tendency_Head_m2 = 0.15f;
-  public const int Tendency_Head_m1 = 1;
-  public const int Tendency_Head_p1 = 3;
+  public const int Tendency_Head_m1 = 2;
+  public const float Tendency_Head_p1 = 1.25f;
   //public const int Tendency_Head_p2 = 5;
   //정신적 2: 광기 개수당 정신력 감소 완화
   //정신적 1: 불쾌 페널티 값 감소
@@ -277,7 +277,7 @@ public class GameData    //게임 진행도 데이터
                   Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
                   Debug.Log("대화 광기 발동");
                   UIManager.Instance.HighlightManager.Highlight_Madness( SkillTypeEnum.Conversation);
-                  UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+                  UIManager.Instance.AudioManager.PlaySFX(34, "madness");
                   UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.MadnessActive,
                     UIManager.Instance.ConversationIconRect);
                   break;
@@ -1122,7 +1122,7 @@ public class GameData    //게임 진행도 데이터
         quest_cult_progress = jsondata.Cult_Progress;
         Quest_Cult_Phase = jsondata.Cult_Phase;
         Cult_SabbatSector = (SectorTypeEnum)jsondata.Cult_SabbatSector;
-        Cult_RitualTile = MyMapData.Tile(jsondata.Cult_RitualTile);
+        Cult_RitualTile = jsondata.Cult_RitualTile==Vector2Int.zero?null:  MyMapData.Tile(jsondata.Cult_RitualTile);
         Cult_CoolTime = jsondata.Cult_CoolTime;
         Cult_Progress_SabbatEventIndex = jsondata.Cult_Progress_SabbatEventIndex;
         Cult_Progress_RitualEventIndex = jsondata.Cult_Progress_RitualEventIndex;
@@ -1363,11 +1363,11 @@ public class Tendency
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-               WNCText.GetGoldColor(ConstValues.Tendency_Head_p1));
+               ConstValues.Tendency_Head_p1*100-100);
               break;
             case 2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-              WNCText.GetGoldColor(ConstValues.Tendency_Head_p1)) +"<br><br>"+
+              ConstValues.Tendency_Head_p1 * 100 - 100) +"<br><br>"+
               GameManager.Instance.GetTextData("Tendency_Head_P2_Description");
               break;
           }
@@ -1566,7 +1566,7 @@ public class GameJsonData
   public int Cult_Phase = 0;
   public float Cult_Progress = 0;
   public int Cult_SabbatSector = 0;
-  public Vector2 Cult_RitualTile = new Vector2();
+  public Vector2Int Cult_RitualTile = new Vector2Int();
   public int Cult_CoolTime = 0;
   public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
   public List<int> Cult_Progress_RitualEventIndex = new List<int>();
@@ -1690,7 +1690,7 @@ public class GameJsonData
         Cult_Progress = data.Quest_Cult_Progress;
         Cult_Phase = data.Quest_Cult_Phase;
         Cult_SabbatSector = (int)data.Cult_SabbatSector;
-        Cult_RitualTile = data.Cult_RitualTile != null ? data.Cult_RitualTile.Coordinate : Vector2.zero;
+        Cult_RitualTile = data.Cult_RitualTile != null ? data.Cult_RitualTile.Coordinate : Vector2Int.zero;
         Cult_CoolTime = data.Cult_CoolTime;
         Cult_Progress_SabbatEventIndex = data.Cult_Progress_SabbatEventIndex;
         Cult_Progress_RitualEventIndex = data.Cult_Progress_RitualEventIndex;

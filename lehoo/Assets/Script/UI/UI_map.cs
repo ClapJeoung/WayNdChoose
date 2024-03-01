@@ -8,6 +8,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.WSA;
+using Mono.Cecil;
 
 //public enum RangeEnum { Low,Middle,High}
 public class RouteData
@@ -205,9 +206,62 @@ public class UI_map : UI_default
   [SerializeField] private Image TilePreview_ETC = null;
   [SerializeField] private Image TilePreview_Landmark = null;
   [SerializeField] private TextMeshProUGUI TileInfoText = null;
+  private string TileInfoDescription
+  {
+    get
+    {
+      string _str = "";
+      if (LastDestination.TileSettle != null)
+      {
+        if (GameManager.Instance.MyGameData.Resources.Count == 0) _str = GameManager.Instance.GetTextData("MoveDescription_Settlement_noresource");
+        else
+        {
+          int _sum= Mathf.CeilToInt(Mathf.Clamp(
+            GameManager.Instance.MyGameData.Resources.Count *
+            ConstValues.ResourceGoldValue *
+            (GameManager.Instance.MyGameData.Tendency_Head.Level > 0 ? ConstValues.Tendency_Head_p1 : 1.0f) *
+            GameManager.Instance.MyGameData.GetGoldGenModify(true) *
+            (1.0f - LastDestination.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue),
+            1.0f, 1000.0f));
+
+          if (LastDestination.TileSettle.Discomfort == 0)
+            _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource"),
+              GameManager.Instance.MyGameData.Resources.Count, _sum);
+              else if (LastDestination.TileSettle.Discomfort > 0)
+            _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource_discomfort"),
+              GameManager.Instance.MyGameData.Resources.Count, _sum,
+              LastDestination.TileSettle.Discomfort,ConstValues.DiscomfortGoldValue*LastDestination.TileSettle.Discomfort*100);
+        }
+      }
+      else if (LastDestination.IsEvent)
+      {
+        _str = GameManager.Instance.GetTextData("MoveDescription_Event");
+        if (GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
+          _str += GameManager.Instance.GetTextData("MoveDescription_Event_resource");
+      }
+      else if (LastDestination.IsResource)
+        switch (LastDestination.ResourceType)
+        {
+          case 0: return GameManager.Instance.GetTextData("MoveDescription_Land_Resource");
+          case 1: return GameManager.Instance.GetTextData("MoveDescription_Forest_Resource");
+          case 2: return GameManager.Instance.GetTextData("MoveDescription_River_Resource");
+          case 3: return GameManager.Instance.GetTextData("MoveDescription_Swamp_Resource");
+          case 4: return GameManager.Instance.GetTextData("MoveDescription_Mountain_Resource");
+        }
+      else
+        switch (LastDestination.ResourceType)
+        {
+          case 0: return GameManager.Instance.GetTextData("MoveDescription_Land_Idle").Split('@')[Random.Range(0,3)];
+          case 1: return GameManager.Instance.GetTextData("MoveDescription_Forest_Idle").Split('@')[Random.Range(0, 3)];
+          case 2: return GameManager.Instance.GetTextData("MoveDescription_River_Idle").Split('@')[Random.Range(0, 3)];
+          case 3: return GameManager.Instance.GetTextData("MoveDescription_Swamp_Idle").Split('@')[Random.Range(0, 3)];
+          case 4: return GameManager.Instance.GetTextData("MoveDescription_Mountain_Idle").Split('@')[Random.Range(0, 3)];
+        }
+      return _str;
+    }
+  }
   [SerializeField] private TextMeshProUGUI RequireSupply = null;
   [SerializeField] private TextMeshProUGUI CurrentSupply = null;
-  [SerializeField] private TextMeshProUGUI BonusGoldInfo = null;
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
@@ -660,7 +714,7 @@ public class UI_map : UI_default
 
       Debug.Log("자연 광기 발동");
       UIManager.Instance.HighlightManager.Highlight_Madness( SkillTypeEnum.Wild);
-      UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+      UIManager.Instance.AudioManager.PlaySFX(34, "madness");
       if (MadnessEffect.alpha != 1.0f) MadnessEffect.alpha = 1.0f;
       TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
       TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
@@ -908,24 +962,11 @@ public class UI_map : UI_default
     }
   }
   public int PenaltyCost = 0;
-  /*
-  public int BonusGold 
-  {
-    get 
-    {
-      return AllTiles.Count == 0 ? 0 :
-        LastDestination.TileSettle != null ? GameManager.Instance.MyGameData.Tendency_Head.Level>1?ConstValues.Tendency_Head_p1: 0 
-        : LastDestination.IsEvent? GameManager.Instance.MyGameData.Tendency_Head.Level==2? (LastDestination.RequireSupply / 2 + 1): 0:
-        (LastDestination.RequireSupply/2+1);  
-    } 
-  }
-  */
   private void UpdateSupplyTexts()
   {
     if (Destinations.Count == 0)
     {
       RequireSupply.text = "0";
-      BonusGoldInfo.text = "";
     }
     else if (IsMad)
     {
@@ -936,7 +977,6 @@ public class UI_map : UI_default
         _info += $" + {AllSupplys[i].ToString()}";
       }
       _info += " + ?";
-      BonusGoldInfo.text = GameManager.Instance.GetTextData("BonusGold_unknown");
     }
     else
     {
@@ -946,18 +986,6 @@ public class UI_map : UI_default
       {
         _info += $" + {AllSupplys[i].ToString()}";
       }
-      if(LastDestination.TileSettle!=null)
-      BonusGoldInfo.text = GameManager.Instance.MyGameData.Tendency_Head.Level >= 1 ?
-string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_gold"),
-WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager.Instance.MyGameData.GetGoldGenModify(true)))) : "";
-      else if(LastDestination.IsEvent)
-      BonusGoldInfo.text = GameManager.Instance.MyGameData.Tendency_Head.Level == 2 ?
-        string.Format(GameManager.Instance.GetTextData("MoveDescription_Event_gold"),
-        WNCText.GetSupplyColor(SelectedTile.RequireSupply), "레후") : "";
-      else
-      BonusGoldInfo.text = string.Format(GameManager.Instance.GetTextData("MoveDescription_Outer_gold"),
-       WNCText.GetSupplyColor(SelectedTile.RequireSupply), "레후");
-
     }
   }
   public void SelectTile(TileData selectedtile)
@@ -976,17 +1004,9 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
         {
           TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
         }
-        else if (SelectedTile.TileSettle != null)
-        {
-          TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Settlement");
-        }
-        else if (SelectedTile.IsEvent)
-        {
-          TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Event");
-        }
         else
         {
-          TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Outer");
+          TileInfoText.text = TileInfoDescription;
         }
         switch (GameManager.Instance.MyGameData.QuestType)
         {
@@ -1072,17 +1092,9 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
       {
         TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
       }
-      else if (SelectedTile.TileSettle != null)
-      {
-        TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Settlement");
-      }
-      else if (SelectedTile.IsEvent)
-      {
-        TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Event");
-      }
       else
       {
-        TileInfoText.text = GameManager.Instance.GetTextData("MoveDescription_Outer");
+        TileInfoText.text = TileInfoDescription;
       }
 
       switch (GameManager.Instance.MyGameData.QuestType)
@@ -1304,6 +1316,7 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     if(!_hungry) UIManager.Instance.AudioManager.PlayWalking();
     else UIManager.Instance.AudioManager.PlaySFX(29);
 
+    UIManager.Instance.AudioManager.BlockChanel("status");
     #region 이동 애니메이션
     float _time = 0.0f;             //x
     int _pathcount = AllTiles.Count; //   n
@@ -1387,7 +1400,6 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
       _time += Time.deltaTime;
       yield return null;
     }
-
     TileData _stoptile = _time >= _movetime? LastDestination: AllTiles[_currentindex - 1];
     if (_time >= _movetime)
     {
@@ -1415,12 +1427,9 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     }
     CurrentSupply.text = GameManager.Instance.MyGameData.Supply.ToString();
     #endregion
-    if (_stoptile.TileSettle == null)
-    {
-   //   if(!_stoptile.IsEvent)GameManager.Instance.MyGameData.Gold += BonusGold;
-    //  else if(_stoptile.IsEvent&&GameManager.Instance.MyGameData.Tendency_Head.Level==2) GameManager.Instance.MyGameData.Gold += BonusGold;
-    }
     if(!_hungry) UIManager.Instance.AudioManager.StopWalking();
+    UIManager.Instance.AudioManager.ReleaseChanel("status");
+
 
     PlayerRect.anchoredPosition = _stoptile.ButtonScript.Rect.anchoredPosition3D;
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
@@ -1438,17 +1447,45 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
     if (_stoptile.IsEvent || _stoptile.IsResource)
     {
       StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, _stoptile.IsEvent));
+      if (_stoptile.IsEvent && GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
+      {
+        for (int i = 0; i < 2; i++)
+        {
+          GameManager.Instance.MyGameData.Resources.Add(5);
+          GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
+          _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(5, true);
+          UIManager.Instance.AudioManager.PlayResourceUseSFX();
+          yield return new WaitForSeconds(0.15f);
+        }
+      }
     }
     else if (_stoptile.TileSettle != null)
     {
-      for (int i = ResourceHolder.childCount - 1; i > -1; i--)
+      if (ResourceHolder.childCount > 0)
       {
-        Destroy(ResourceHolder.GetChild(i).gameObject);
-        yield return new WaitForSeconds(0.1f);
+        string _chanelname = "gainsfx";
+        for (int i = ResourceHolder.childCount - 1; i > -1; i--)
+        {
+          Destroy(ResourceHolder.GetChild(i).gameObject);
+          UIManager.Instance.AudioManager.PlaySFX(33, _chanelname);
+          yield return new WaitForSeconds(0.1f);
+        }
+        if (GameManager.Instance.MyGameData.Resources.Count > 0)
+        {
+          int _sum = Mathf.CeilToInt(Mathf.Clamp(
+            GameManager.Instance.MyGameData.Resources.Count *
+            ConstValues.ResourceGoldValue *
+            (GameManager.Instance.MyGameData.Tendency_Head.Level>0?ConstValues.Tendency_Head_p1:1.0f)*
+            GameManager.Instance.MyGameData.GetGoldGenModify(true) *
+            (1.0f - _stoptile.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue),
+            1.0f, 1000.0f));
+          GameManager.Instance.MyGameData.Gold += _sum;
+          GameManager.Instance.MyGameData.Resources.Clear();
+        }
       }
-    }
+      }
 
-    if (_stoptile.TileSettle != null || _stoptile.IsEvent)
+      if (_stoptile.TileSettle != null || _stoptile.IsEvent)
     { //닫기
       yield return new WaitForSeconds(0.5f);
 
@@ -1497,17 +1534,6 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
         case LandmarkType.Village:
         case LandmarkType.Town:
         case LandmarkType.City:
-          if (GameManager.Instance.MyGameData.Resources.Count > 0)
-          {
-            int _sum = Mathf.CeilToInt(Mathf.Clamp(
-              GameManager.Instance.MyGameData.Resources.Count *
-              ConstValues.ResourceGoldValue*
-              GameManager.Instance.MyGameData.GetGoldGenModify(true)*
-              (1.0f-_stoptile.TileSettle.Discomfort*ConstValues.DiscomfortGoldValue),
-              1.0f, 1000.0f));
-            GameManager.Instance.MyGameData.Gold += _sum;
-            GameManager.Instance.MyGameData.Resources.Clear();
-          }
 
           GameManager.Instance.MyGameData.FirstRest = true;
           GameManager.Instance.EnterSettlement(_stoptile.TileSettle);
@@ -1538,9 +1564,11 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
             GameManager.Instance.MyGameData.Resources.Add(_resourcetype);
             GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
             _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
-            GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(_stoptile);
+            UIManager.Instance.AudioManager.PlayResourceUseSFX();
             yield return new WaitForSeconds(0.15f);
           }
+          GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(_stoptile);
+          _stoptile.IsResource = false;
         }
       }
 
@@ -1563,15 +1591,13 @@ WNCText.GetGoldColor(Mathf.FloorToInt(ConstValues.Tendency_Head_p1 * GameManager
         IsMad = true;
 
         UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Wild);
-        UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+        UIManager.Instance.AudioManager.PlaySFX(34, "madness");
         StartCoroutine(UIManager.Instance.ChangeAlpha(MadnessEffect, 1.0f, 0.8f));
         TilePreview_Bottom.transform.rotation = Quaternion.Euler(Vector3.zero);
         TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.MadnessActive;
         TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
-
-        BonusGoldInfo.text = "";
       }
       else        //일반->일반
       {

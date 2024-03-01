@@ -24,6 +24,8 @@ public class UI_Ending : UI_default
   public bool IsDead = false;
   public void OpenUI_Dead(Sprite illust,string description)
   {
+    NextButtonGroup.alpha = 0.0f;
+    NextButtonGroup.interactable = false;
     UIManager.Instance.PreviewManager.ClosePreview();
     Illust.Next(illust, 0.5f);
     Description.text = description;

@@ -1138,7 +1138,7 @@ public class UI_dialogue : UI_default
         {
           yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
         }
-        else yield return StartCoroutine(checkanimation(_selection.SkillIcon_A,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+        else yield return StartCoroutine(skillcheckanimation(_selection,_requirepercent, _currentpercent));
        
         yield return new WaitForSeconds(0.5f);
         break;
@@ -1159,7 +1159,7 @@ public class UI_dialogue : UI_default
         {
           yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
         }
-        else yield return StartCoroutine(checkanimation(_selection.SkillIcon_A, _selection.SkillIcon_B,Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+        else yield return StartCoroutine(skillcheckanimation(_selection, _requirepercent, _currentpercent));
         yield return new WaitForSeconds(0.5f);
         break;
     }
@@ -1201,49 +1201,73 @@ public class UI_dialogue : UI_default
     UIManager.Instance.AudioManager.StopSFX("payanimation");
     yield return new WaitForSeconds(0.25f);
   }
-  private IEnumerator checkanimation(Image image,float successvalue)
+  private IEnumerator skillcheckanimation(UI_Selection currentselection,int requirevalue,int currentvalue)
   {
-  //  Debug.Log(successvalue);
-    float _time = 0.0f;
-    UIManager.Instance.AudioManager.PlaySFX(32, "checkanimation");
-    while (_time< SelectionEffectTime_check * successvalue)
-    {
-      image.fillAmount=Mathf.Lerp(1.0f,0.0f, SelectionCheckCurve.Evaluate(_time/ SelectionEffectTime_check));
-      _time += Time.deltaTime;yield return null;
-    }
-    UIManager.Instance.AudioManager.StopSFX("checkanimation");
-    if (successvalue == 1.0f) { image.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25); }
-    else { UIManager.Instance.AudioManager.PlaySFX(26); }
+    #region 쓰잘데기없는거
+    currentselection.SkillInfo_left_center.gameObject.SetActive(false);
+    currentselection.SkillInfo_right_center.gameObject.SetActive(false);
+    currentselection.SkillInfo_left_10.text = "";
+    currentselection.SkillInfo_left_10.gameObject.SetActive(true);
+    currentselection.SkillInfo_left_1.text = "";
+    currentselection.SkillInfo_left_1.gameObject.SetActive(true);
+    currentselection.SkillInfo_right_10.text = "";
+    currentselection.SkillInfo_right_10.gameObject.SetActive(true);
+    currentselection.SkillInfo_right_1.text = "";
+    currentselection.SkillInfo_right_1.gameObject.SetActive(true);
+    #endregion
+    float _targettime = 0.75f;
+    int _targetcount =20;
+    float _waittime = _targettime / (float)_targetcount;
+    List<int> _randomint = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int _targetint = _randomint[Random.Range(0, _randomint.Count)];
 
-    yield return new WaitForSeconds(0.25f);
-  }
-  private IEnumerator checkanimation(Image image_L,Image image_R,float successvalue)
-  {
-    float _time = 0.0f;
-    float _firstvalue = Mathf.Clamp(successvalue * 2.0f, 0.0f, 1.0f), _secondvalue = (successvalue - 0.5f) * 2.0f;
-
-    UIManager.Instance.AudioManager.PlaySFX(32, "checkanimation");
-    while (_time < (SelectionEffectTime_check/2)* _firstvalue)
-    {
-      image_L.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
-      _time += Time.deltaTime; yield return null;
-    }
-    UIManager.Instance.AudioManager.StopSFX("checkanimation");
-    if (_firstvalue == 1.0f) { image_L.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25); _time = 0.0f; }
-    else { UIManager.Instance.AudioManager.PlaySFX(26); yield return new WaitForSeconds(0.25f); yield break; }
-
+    var _wait = new WaitForSeconds(_waittime);
 
     UIManager.Instance.AudioManager.PlaySFX(32, "checkanimation");
-    while (_time < (SelectionEffectTime_check / 2) *_secondvalue)
+    for (int i = 0; i < _targetcount; i++)
     {
-      image_R.fillAmount = Mathf.Lerp(1.0f, 0.0f, SelectionCheckCurve.Evaluate(_time / (SelectionEffectTime_check / 2)));
-      _time += Time.deltaTime;yield return null;
-    }
-    UIManager.Instance.AudioManager.StopSFX("checkanimation");
-    if (_secondvalue == 1.0f) { image_R.fillAmount = 0.0f; UIManager.Instance.AudioManager.PlaySFX(25);  }
-    else { UIManager.Instance.AudioManager.PlaySFX(26); }
+      if (i > 0) _randomint.Add(_targetint);
+      currentselection.SkillInfo_right_1.text = _targetint.ToString();
 
-    yield return new WaitForSeconds(0.25f);
+      _targetint = _randomint[Random.Range(0, _randomint.Count)];
+      _randomint.Remove(_targetint);
+      yield return _wait;
+    }
+    currentselection.SkillInfo_right_1.text = (requirevalue % 10).ToString();
+    for (int i = 0; i < _targetcount; i++)
+    {
+      _randomint.Add(_targetint);
+      currentselection.SkillInfo_right_10.text = _targetint.ToString();
+
+      _targetint = _randomint[Random.Range(0, _randomint.Count)];
+      _randomint.Remove(_targetint);
+      yield return _wait;
+    }
+    currentselection.SkillInfo_right_10.text = (requirevalue / 10).ToString();
+    for (int i = 0; i < _targetcount; i++)
+    {
+      if (i > 0) _randomint.Add(_targetint);
+      currentselection.SkillInfo_left_1.text = _targetint.ToString();
+
+      _targetint = _randomint[Random.Range(0, _randomint.Count)];
+      _randomint.Remove(_targetint);
+      yield return _wait;
+    }
+    currentselection.SkillInfo_left_1.text = (currentvalue % 10).ToString();
+    for (int i = 0; i < _targetcount; i++)
+    {
+      if (i > 0) _randomint.Add(_targetint);
+      currentselection.SkillInfo_left_10.text = _targetint.ToString();
+
+      _targetint = _randomint[Random.Range(0, _randomint.Count)];
+      _randomint.Remove(_targetint);
+      yield return _wait;
+    }
+    currentselection.SkillInfo_left_10.text = (currentvalue / 10).ToString();
+
+    if (currentvalue >= requirevalue) UIManager.Instance.AudioManager.PlaySFX(25);
+    else UIManager.Instance.AudioManager.PlaySFX(26);
+    yield return new WaitForSeconds(0.5f);
   }
   private IEnumerator unknownanimation(Image image,float value)
   {
@@ -1686,7 +1710,7 @@ public class UI_dialogue : UI_default
     {
       Debug.Log("무력 광기 발동");
       UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Force);
-      UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+      UIManager.Instance.AudioManager.PlaySFX(34, "madness");
       if (!MadenssEffect.enabled) MadenssEffect.enabled = true;
       IsMad = true;
     }
@@ -2032,7 +2056,7 @@ public class UI_dialogue : UI_default
     UIManager.Instance.AudioManager.PlaySFX(14);
 
     EventManager.Instance.SetSettlementEvent(SelectedSector);
-    GameManager.Instance.MyGameData.MyMapData.SetResourceTiles();
+    if(GameManager.Instance.MyGameData.FirstRest)GameManager.Instance.MyGameData.MyMapData.SetResourceTiles();
 
   }
   public AnimationCurve DiscomfortAnimationCurve = new AnimationCurve();

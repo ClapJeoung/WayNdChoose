@@ -513,6 +513,7 @@ public class ImageHolder : ScriptableObject
   public Sprite Resource_Swamp_Tile = null;
   public Sprite Resource_Stone_Icon = null;
   public Sprite Resource_Stone_Tile = null;
+  public Sprite Resource_Chest = null;
   /// <summary>
   /// 베리 목재 생선 갈대 돌
   /// </summary>
@@ -528,6 +529,7 @@ public class ImageHolder : ScriptableObject
       case 2: return isicon? Resource_Fish_Icon: Resource_Fish_Tile;
       case 3: return isicon ? Resource_Swamp_Icon : Resource_Swamp_Tile;
           case 4: return isicon ? Resource_Stone_Icon : Resource_Stone_Tile;
+      case 5: return Resource_Chest;
     }
     return null;
   }
@@ -540,6 +542,7 @@ public class ImageHolder : ScriptableObject
       case 2: return isicon ? Resource_Fish_Icon : Resource_Fish_Tile;
       case 3: return isicon ? Resource_Swamp_Icon : Resource_Swamp_Tile;
       case 4: return isicon ? Resource_Stone_Icon : Resource_Stone_Tile;
+      case 5: return Resource_Chest;
     }
     return null;
   }

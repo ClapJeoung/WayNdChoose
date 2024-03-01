@@ -1014,24 +1014,28 @@ public class maptext : MonoBehaviour
         _tilescript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
         _tilescript.BottomImage = _bottomimage;
         _tilescript.OnPointer = _outline;
-        PreviewInteractive _tilepreview = _tilescript.Rect.transform.AddComponent<PreviewInteractive>();
-        _tilepreview.PanelType = PreviewPanelType.TileInfo;
-        _tilepreview.MyTileData = _currenttile;
-        _tilescript.Preview= _tilepreview;
-        _tilepreview.enabled = true;
         GameObject _previewpos_bottom = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
-        _tilepreview.OtherRect = _previewpos_bottom.GetComponent<RectTransform>();
         _previewpos_bottom.transform.localScale = Vector3.zero;
         _previewpos_bottom.transform.SetParent(_bottomtile.transform);
         _previewpos_bottom.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f,-_cellsize.y / 2.0f);
         GameObject _previewpos_top = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
-        _tilepreview.OtherRect_other = _previewpos_top.GetComponent<RectTransform>();
         _previewpos_top.transform.localScale = Vector3.zero;
         _previewpos_top.transform.SetParent(_bottomtile.transform);
         _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
         _tilescript.FogGroup = _fogtile.GetComponent<CanvasGroup>();
         _tilescript.FogGroup.alpha = _currenttile.Fogstate == 0 ? 1.0f : _currenttile.Fogstate == 1 ? ConstValues.FogAlpha_visible : 0.0f;
         _tilescript.ETCImage = _etcimage;
+
+        if (_currenttile.TileSettle != null)
+        {
+          PreviewInteractive _tilepreview = _tilescript.Rect.transform.AddComponent<PreviewInteractive>();
+          _tilepreview.PanelType = PreviewPanelType.TileInfo;
+          _tilepreview.MyTileData = _currenttile;
+          _tilepreview.enabled = _currenttile.Fogstate==2;
+          _tilescript.Preview = _tilepreview;
+          _tilepreview.OtherRect = _previewpos_bottom.GetComponent<RectTransform>();
+          _tilepreview.OtherRect_other = _previewpos_top.GetComponent<RectTransform>();
+        }
 
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _tilescript;
       }

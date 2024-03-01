@@ -564,7 +564,7 @@ public class GameManager : MonoBehaviour
       }
 
       UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
-      UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+      UIManager.Instance.AudioManager.PlaySFX(34, "madness");
     }
 
     UIManager.Instance.UpdateExpPanel();
@@ -596,7 +596,7 @@ public class GameManager : MonoBehaviour
         }
 
         UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
-        UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+        UIManager.Instance.AudioManager.PlaySFX(34, "madness");
       }
     }
     else
@@ -617,7 +617,7 @@ public class GameManager : MonoBehaviour
         }
 
         UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
-        UIManager.Instance.AudioManager.PlaySFX(27, "madness");
+        UIManager.Instance.AudioManager.PlaySFX(34, "madness");
       }
     }
 
@@ -889,8 +889,6 @@ public class GameManager : MonoBehaviour
   public void EnterSettlement(Settlement targetsettlement)
   {
     if (MyGameData.Supply < 0) MyGameData.Supply = 0;
-    if(MyGameData.Tendency_Head.Level>=1)
-      MyGameData.Gold+=(int)(ConstValues.Tendency_Head_p1*MyGameData.GetGoldGenModify(true));
     MyGameData.CurrentEvent = null;
     MyGameData.CurrentSettlement=targetsettlement;
 

@@ -38,7 +38,8 @@ CultSFX,
 Hungry,
 Movement,
 PaysanimationSFX,
-CheckAnimationSFX
+CheckAnimationSFX,
+ResourceGain
 }
 public class AudioManager : MonoBehaviour
 {
@@ -68,6 +69,7 @@ public class AudioManager : MonoBehaviour
   [SerializeField] private List<AudioClip> BackgroundMusics = new List<AudioClip>();
   [SerializeField] private List<AudioClip> SFXs = new List<AudioClip>();
   [SerializeField] private List<AudioClip> WalkingSFXs= new List<AudioClip>();
+  [SerializeField] private List<AudioClip> ResourceUseSFXs= new List<AudioClip>();
   private List<AudioClip> PlayedList = new List<AudioClip>();
   public void PlayBGM()
   {
@@ -117,6 +119,17 @@ public class AudioManager : MonoBehaviour
     }
     source.volume = targetvolume;
   }
+  private List<string> BlockedChanels=new List<string>();
+  public void BlockChanel(string id)
+  {
+    if(BlockedChanels.Contains(id)) return;
+    BlockedChanels.Add(id);
+  }
+  public void ReleaseChanel(string id)
+  {
+    if (!BlockedChanels.Contains(id)) return;
+    BlockedChanels.Remove(id);
+  }
   public void PlaySFX(int index)
   {
     foreach(var audio in SFXAudios)
@@ -128,13 +141,9 @@ public class AudioManager : MonoBehaviour
       break;
     }
   }
-  /// <summary>
-  /// 채널은 1번부터 쓰기
-  /// </summary>
-  /// <param name="index"></param>
-  /// <param name="chanel"></param>
   public void PlaySFX(int index,string chanel)
   {
+    if(BlockedChanels.Contains(chanel)) return;
     foreach (var audio in SFXAudios)
     {
       if (audio.Channel == chanel&& audio.Audio.isPlaying)
@@ -184,6 +193,7 @@ public class AudioManager : MonoBehaviour
   /// <param name="chanel"></param>
   public void PlaySFX(AudioClip clip, string chanel)
   {
+    if (BlockedChanels.Contains(chanel)) return;
     foreach (var audio in SFXAudios)
     {
       if (audio.Channel == chanel && audio.Audio.isPlaying)
@@ -267,6 +277,14 @@ public class AudioManager : MonoBehaviour
       CurrentWalkingChanel.Audio.Stop();
       CurrentWalkingChanel = null;
     }
+  }
+  int LastResourceIndex = -1;
+  public void PlayResourceUseSFX()
+  {
+    int _index = Random.Range(0, ResourceUseSFXs.Count);
+    while (_index == LastResourceIndex) _index = Random.Range(0, ResourceUseSFXs.Count);
+    PlaySFX(ResourceUseSFXs[_index]);
+    LastResourceIndex = _index;
   }
 }
 public class AudioChanel

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Security.Cryptography;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 public enum BottomEnvirType
@@ -72,7 +73,10 @@ public class TileData
     Fogstate = value;
     if (value == 2) { ButtonScript.SetReveal(); 
       if(BottomEnvir!=BottomEnvirType.Sea)
-      ButtonScript.Rect.GetComponent<Onpointer_tileoutline>().enabled = true; }
+      ButtonScript.Rect.GetComponent<Onpointer_tileoutline>().enabled = true;
+      if (TileSettle != null)
+        ButtonScript.Preview.enabled = true;
+    }
     else if (value == 1) ButtonScript.SetVisible();
   }
 

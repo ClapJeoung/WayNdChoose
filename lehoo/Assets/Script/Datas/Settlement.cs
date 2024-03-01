@@ -335,7 +335,7 @@ public class MapData
     foreach (var _eventtile in EventTiles)
     {
       _eventtile.IsEvent = false;
-      _eventtile.ButtonScript.ETCImage.enabled = false;
+      _eventtile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
 
     List<EnvironmentType> _priorenvirs = new List<EnvironmentType>();
@@ -503,7 +503,7 @@ public class MapData
         {
           EventTiles.Add(_tile);
           _tile.IsEvent = true;
-          _tile.ButtonScript.ETCImage.enabled = true;
+          _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.UnknownEvent;
         }
         break;
 
@@ -520,26 +520,27 @@ public class MapData
             foreach (var _tile in _targetaround)
             {
               if (!_enablerange.Contains(_tile.Coordinate) 
-                ||!_tile.Interactable 
+                ||!_tile.Interactable
+                || _tile.TileSettle != null
                 || _tile.Landmark != LandmarkType.Outer 
                 || EventTiles.Contains(_tile) 
-                || _tile.Fogstate == 0
-                ||_neweventtiles.Contains(_tile)
+                || _tile.Fogstate != 2
+                || _tile == GameManager.Instance.MyGameData.CurrentTile
+                || _neweventtiles.Contains(_tile)
                 || _tile.IsResource) continue;
-              {
-                bool _isoverlap = false;
-                foreach (var _preeventtile in _neweventtiles)
-                  foreach (var _aroundtile in GetAroundTile(_preeventtile, 2))
+
+              bool _isoverlap = false;
+              foreach (var _preeventtile in _neweventtiles)
+                foreach (var _aroundtile in GetAroundTile(_preeventtile, 2))
+                {
+                  if (_tile == _aroundtile)
                   {
-                    if (_tile == _aroundtile)
-                    {
-                      _isoverlap = true;
-                      break;
-                    }
-                    if (_isoverlap) break;
+                    _isoverlap = true;
+                    break;
                   }
-                if (_isoverlap) continue;
-              }
+                  if (_isoverlap) break;
+                }
+              if (_isoverlap) continue;
 
               _targettiles.Add(_tile);
             }
@@ -559,25 +560,26 @@ public class MapData
             {
               if (!_enablerange.Contains(_tile.Coordinate) 
                 || !_tile.Interactable 
-                || _tile.TileSettle != null 
+                || _tile.TileSettle != null
+                || _tile.Landmark != LandmarkType.Outer
                 || EventTiles.Contains(_tile) 
-                || _tile.Fogstate == 0
+                || _tile.Fogstate != 2
                 || _tile==GameManager.Instance.MyGameData.CurrentTile
-                ||_neweventtiles.Contains(_tile)) continue;
-              {
-                bool _isoverlap = false;
-                foreach (var _preeventtile in _neweventtiles)
-                  foreach (var _aroundtile in GetAroundTile(_preeventtile, 2))
+                ||_neweventtiles.Contains(_tile)
+                ||_tile.IsResource) continue;
+
+              bool _isoverlap = false;
+              foreach (var _preeventtile in _neweventtiles)
+                foreach (var _aroundtile in GetAroundTile(_preeventtile, 2))
+                {
+                  if (_tile == _aroundtile)
                   {
-                    if (_tile == _aroundtile)
-                    {
-                      _isoverlap = true;
-                      break;
-                    }
-                    if (_isoverlap) break;
+                    _isoverlap = true;
+                    break;
                   }
-                if (_isoverlap) continue;
-              }
+                  if (_isoverlap) break;
+                }
+              if (_isoverlap) continue;
 
               _targettiles.Add(_tile);
             }
