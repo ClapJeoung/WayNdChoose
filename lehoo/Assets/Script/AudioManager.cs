@@ -64,13 +64,14 @@ public class AudioManager : MonoBehaviour
     }
   }
   [SerializeField] private GameObject SFXAudio = null;
-  [SerializeField] private AudioSource BGMAudio = null;
+  public AudioSource BGMAudio = null;
 
   [SerializeField] private List<AudioClip> BackgroundMusics = new List<AudioClip>();
   [SerializeField] private List<AudioClip> SFXs = new List<AudioClip>();
   [SerializeField] private List<AudioClip> WalkingSFXs= new List<AudioClip>();
   [SerializeField] private List<AudioClip> ResourceUseSFXs= new List<AudioClip>();
   private List<AudioClip> PlayedList = new List<AudioClip>();
+  [SerializeField] private UI_Menu Menu = null;
   public void PlayBGM()
   {
     StartCoroutine(bgm());
@@ -85,7 +86,7 @@ public class AudioManager : MonoBehaviour
 
     while (true)
     {
-
+      Menu.SetBGMName();
       yield return new WaitUntil(() => { return !BGMAudio.isPlaying||Input.GetKeyDown(KeyCode.N); });
 
       _nextclip = BackgroundMusics[Random.Range(0, BackgroundMusics.Count)];
@@ -235,7 +236,7 @@ public class AudioManager : MonoBehaviour
       }
     }
   }
-  private AudioChanel CurrentWalkingChanel = null;
+  private AudioChanel CurrentWalkingChanel;
   private bool Walking = true;
   private IEnumerator WalkingCoroiutine = null;
   public void PlayWalking()
@@ -252,7 +253,9 @@ public class AudioManager : MonoBehaviour
       if (audio.Audio.isPlaying) continue;
 
       CurrentWalkingChanel=audio;
+      break;
     }
+    if (CurrentWalkingChanel == null) yield break;
     AudioClip _clip= WalkingSFXs[Random.Range(0, WalkingSFXs.Count)];
     CurrentWalkingChanel.Channel = "walking";
     CurrentWalkingChanel.Audio.clip= _clip;
@@ -275,6 +278,7 @@ public class AudioManager : MonoBehaviour
       StopCoroutine(WalkingCoroiutine);
       Walking = false;
       CurrentWalkingChanel.Audio.Stop();
+      CurrentWalkingChanel.Channel = "";
       CurrentWalkingChanel = null;
     }
   }

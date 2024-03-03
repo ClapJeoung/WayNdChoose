@@ -116,219 +116,188 @@ public class MapData
 {
   public List<HexDir> GetRoute(TileData starttile,TileData endtile)
   {
-    return endtile.HexGrid.GetDirectRoute(starttile);
+    if(endtile.HexGrid.GetDistance(starttile)==1) return endtile.HexGrid.GetDirectRoute(starttile);
 
-    #region 내가 졌다아앗~~~~~~~!!!!!!!!!
-    /*
-    List<TileData> _origintiles=new List<TileData>();
     List<HexDir> _originhexdir = endtile.HexGrid.GetDirectRoute(starttile);
-    List<TileData> _temptiles=new List<TileData>();
-    List<HexDir> _tempdirs=new List<HexDir>();
-    int _originsum = 0;                         //최단 루트의 보급 합
+    List<TileData> _origintiles = new List<TileData>();//시작 빼고 end까지
+    bool _isminimun = true;
     for(int i = 0; i < _originhexdir.Count; i++)
     {
       TileData _temptile = GetNextTile(_origintiles.Count == 0 ? starttile : _origintiles[_origintiles.Count - 1], _originhexdir[i]);
       _origintiles.Add(_temptile);
-      _temptiles.Add(_temptile);
-      _tempdirs.Add(_originhexdir[i]);
-      _originsum += i==(_originhexdir.Count-1) ? 0 : _temptile.RequireSupply;
+      if (i<_originhexdir.Count-1&& _temptile.RequireSupply > 1) _isminimun = false;
     }
-    if(_originsum == _originhexdir.Count-1) return endtile.HexGrid.GetDirectRoute(starttile);
+    if (_isminimun) { Debug.Log("이미 최소 경로인 레후~"); return endtile.HexGrid.GetDirectRoute(starttile); }
 
-    
-    int _index= 0;
-    while (_index<_temptiles.Count)
+    int _hexdirdif = 0;
+    int[] _altersum = new int[2];
+    bool[] _altersuccess=new bool[2];
+    int _currentsupply = 0;
+    int _index = 0;
+    TileData _starttile = null, _targettile = null;
+    List<int> _skipindex=new List<int>();
+    int _loopcount = 0;
+    while (_index < _origintiles.Count-1)
     {
-      if (_temptiles[_index].RequireSupply > 1)
+      _loopcount++;
+      if (_loopcount > 1000) 
       {
-        TileData _starttile = _index > 0 ? _temptiles[_index - 1] : starttile;
-        TileData _endtile=_index< _temptiles.Count - 1 ? _temptiles[_index +1 ] : endtile;
-        int _maxsupply = _temptiles[_index].RequireSupply;
-        HexDir _startdir = _tempdirs[_index];
-        HexDir _enddir = _tempdirs[_index + 1];
+        Debug.Log("테챠앗"); 
+        return null; 
       }
-    }
-    
-    List<HexDir> _newdirs= new List<HexDir>();
-    for(int i = 0; i < _temptiles.Count+1; i++)
-    {
-      _newdirs.Add( i==_temptiles.Count?endtile.HexGrid.GetDirectRoute(_temptiles[i - 1])[0] :
-        _temptiles[i + 1].HexGrid.GetDirectRoute(_temptiles[i])[0]);
-    }
+      if (_skipindex.Contains(_index)) { _index++; continue; }
+      _altersum[0] = 0;
+      _altersum[1] = 0;
+      _altersuccess[0] = true;
+      _altersuccess[1] = true;
+      _starttile = _index == 0 ? starttile : _origintiles[_index-1];
+      TileData _middletile = _origintiles[_index];
+      _targettile = _origintiles[_index + 1];
 
-    return _newdirs;
-
-    List<TileData> getnewroute(TileData start,HexDir startdir, TileData end, HexDir enddir,TileData realend, int max, ref int sum)
-    {
-      List<List<HexDir>> _modifieddirs= new List<List<HexDir>>();
-      switch ((int)enddir - (int)startdir)
+      if (_middletile.RequireSupply > 1 || !_middletile.Interactable || _middletile.Fogstate != 2)
       {
-        case -1:
-          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir,-1), (HexDir)rotatedir((int)startdir, 0) });
-          _modifieddirs.Add(new List<HexDir> { 
-            (HexDir)rotatedir((int)startdir, 1)
-          ,(HexDir)rotatedir((int)startdir,0)
-          ,(HexDir)rotatedir((int)startdir,-1)
-          ,(HexDir)rotatedir((int)startdir,-2)});
-          break;
-        case 0:
-          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir, -1), (HexDir)rotatedir((int)startdir, 0), (HexDir)rotatedir((int)startdir, 1)});
-          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir, 1) , (HexDir)rotatedir((int)startdir, 0) , (HexDir)rotatedir((int)startdir, -1) });
-          break;
-        case 1:
-          _modifieddirs.Add(new List<HexDir> {
-          (HexDir)rotatedir((int)startdir,-1),
-          (HexDir)rotatedir((int)startdir, 0),
-          (HexDir)rotatedir((int)startdir, 1),
-          (HexDir)rotatedir((int)startdir, 2)});
-          _modifieddirs.Add(new List<HexDir> { (HexDir)rotatedir((int)startdir, 1) , (HexDir)rotatedir((int)startdir, 0) });
-          break;
-        case -2: return new List<TileData> { GetNextTile(start,(HexDir)rotatedir((int)startdir, -1)) };
-        case 2: return new List<TileData> { GetNextTile(start, (HexDir)rotatedir((int)startdir, 1)) };
-      }
-      for(int i = 0; i < _modifieddirs.Count; i++)
-      {
-        List<TileData> _temptiles = new List<TileData>();
-        int _currentsum = 0;
-        for (int j = 0; j < _modifieddirs[i].Count; j++)
+        if (!_middletile.Interactable || _middletile.Fogstate != 2)
         {
-          TileData _temptile = GetNextTile(j == 0 ? start : _temptiles[_temptiles.Count - 1], _modifieddirs[i][j]);
-          _temptiles.Add(_temptile);
+          _currentsupply = 0;
         }
-        int _index = 0;
-        while (_index < _temptiles.Count)
+        else
         {
-          if (_temptiles[_index].RequireSupply > 1)
+          _currentsupply = _middletile.RequireSupply;
+        }
+        _hexdirdif = (int)_originhexdir[_index + 1] - (int)_originhexdir[_index];
+        var _alterroute = getalterroute(_originhexdir[_index], _hexdirdif);
+        for(int i=0; i < _alterroute.Length; i++)
+        {
+          TileData _temptile = null;
+          for (int j = 0; j < _alterroute[i].Count-1; j++)
           {
-            TileData _starttile = _index > 0 ? _temptiles[_index - 1] : starttile;
-            TileData _endtile = _index < _temptiles.Count - 1 ? _temptiles[_index + 1] : endtile;
-            int _maxsupply = _temptiles[_index].RequireSupply;
-            HexDir _startdir = _tempdirs[_index];
-            HexDir _enddir = _tempdirs[_index + 1];
+            _temptile = GetNextTile(j==0?_starttile:_temptile, _alterroute[i][j]);
+            if (!_temptile.Interactable   //targettile이 이동 불가하거나
+              || _temptile.Fogstate != 2  //targettile 안개에 막혀있거나
+              ||(_currentsupply!=0&&_altersum[i] + _temptile.RequireSupply + _temptile.HexGrid.GetDistance(_targettile)-1 >= _currentsupply))
+            {                             //기존 루트가 이동 가능하고, 기존 루트보다 비싸질 경우엔
+              _altersuccess[i] = false;   //이 대체 루트 폐기
+              break;
+            }
+           _altersum[i] += _temptile.RequireSupply;
           }
         }
-      }
-
-    }
-
-    List<TileData> newtiles(TileData start,TileData end)
-    {
-      List<int> _rotateorder = new List<int>() { -1, 1, -2, 2, 3, 0 };
-
-      List<HexDir> _minhexdir = end.HexGrid.GetDirectRoute(start);
-      List<TileData> _mintiles = new List<TileData>();
-      bool _changed = false;
-      int _min = 0;
-      for (int i = 0; i < _minhexdir.Count-1; i++)
-      {
-        _mintiles.Add(GetNextTile(i == 0 ? start : _mintiles[i - 1], _minhexdir[i] ));
-        _min += _mintiles[_mintiles.Count - 1].RequireSupply;
-      }
-      
-      HexDir _origindir = _minhexdir[0];
-      
-      int _loopcount = 0;
-      int _dirindex = 0;
-      int _sum = 0;             //_sum은 과정 합이 아니라 과정 합-마지막 타일
-      bool _isfail = false;
-      for (int i = 0; i < 6; i++)
-      {
-        HexDir _rootdir = (HexDir)rotatedir((int)_origindir, _rotateorder[i]);
-        List<HexDir> _tempdir = new List<HexDir>() { _rootdir };
-        List<TileData> _temptiles = new List<TileData>() { GetNextTile(start, _rootdir)};
-        _sum = _temptiles[_temptiles.Count - 1].RequireSupply;
-        _dirindex = 0;
-        _loopcount = 0;
-        while (true)
+        int _resultid = 0;
+        if (_altersuccess[0] && !_altersuccess[1])  //0번 루트만 이동 가능
         {
-          _loopcount++;
-          if (_loopcount > 10000)
-          {
-            Debug.Log("레후");
-            break;
-          }
-          int _dirdiffer = Mathf.Abs(_dirindex - (int)_tempdir[_tempdir.Count - 1]);
-          bool _disabledir = _dirindex > 5 ||
-            (_dirdiffer==2|| _dirdiffer == 3|| _dirdiffer == 4);
-
-          TileData _currenttile = _disabledir ? null : GetNextTile(_temptiles[_temptiles.Count - 1], (HexDir)_dirindex);
-
-          if (_currenttile == end)
-          {
-            if (_sum <= _min)
+          if (_currentsupply == 0) _resultid = 0;   //0번 루트로 교체
+          else if (_altersum[0] < _currentsupply) _resultid = 0;//0번 루트로 교체
+          else _resultid = 2;//실패
+        }
+        else if (!_altersuccess[0] && _altersuccess[1])//1번 루트만 이동 가능
+        {
+          if (_currentsupply == 0) _resultid = 1;   //1번 루트로 교체
+          else if (_altersum[1] < _currentsupply) _resultid = 1;//1번 루트로 교체
+          else _resultid = 2;//실패
+        }
+        else if (!_altersuccess[0] && !_altersuccess[1])//0번, 1번 둘 다 이동 불가능
+        {
+          _resultid = 2;//실패
+        }
+        else if (_altersuccess[0] && _altersuccess[1]) //0번, 1번 둘 다 성공
+        {
+          if (_altersum[0] < _altersum[1]) _resultid = 0;
+          else _resultid = 1;
+        }
+        switch (_resultid)
+        {
+          case 0: //0번 루트 삽입
+            _origintiles.RemoveAt(_index);
+            _originhexdir.RemoveAt(_index + 1);
+            _originhexdir.RemoveAt(_index);
+            for(int i = 0; i < _alterroute[0].Count; i++)
             {
-              if (_sum < _min)
-              {
-                _changed = true;
-                _mintiles.Clear();
-                for (int j = 0; j < _temptiles.Count; j++)
-                {
-                  _mintiles.Add(_temptiles[j]);
-                }
-              }
+              if(i<_alterroute[0].Count-1) _origintiles.Insert(_index + i, GetNextTile(_index+i==0?starttile: _origintiles[_index-1 + i], _alterroute[0][i]));
+              _originhexdir.Insert(_index + i, _alterroute[0][i]);
+            }
+            for (int i = 0; i < _skipindex.Count; i++) if(i>_index) _skipindex[i] += _alterroute[0].Count-1;
+            _index = -1;
+            break;
+          case 1: //1번 루트 삽입
+            _origintiles.RemoveAt(_index);
+            _originhexdir.RemoveAt(_index+1);
+            _originhexdir.RemoveAt(_index);
+            for (int i = 0; i < _alterroute[1].Count; i++)
+            {
+              if (i < _alterroute[1].Count - 1) _origintiles.Insert(_index + i, GetNextTile(_index+i == 0 ? starttile : _origintiles[_index-1 + i], _alterroute[1][i]));
+              _originhexdir.Insert(_index + i, _alterroute[1][i]);
+            }
+            for (int i = 0; i < _skipindex.Count; i++) if (i > _index) _skipindex[i] += _alterroute[1].Count - 1;
+            _index = -1;
+            break;
+          case 2: //포기하고 실패 인덱스에 추가
+            _skipindex.Add(_index);
+            break;
+        }
 
-              int _temp = _sum;
-              _min = _temp;
+        if (_resultid != 2)
+        {
+          for (int i = 0; i < _originhexdir.Count - 1; i++)
+          {
+            if (rotatedir((int)_originhexdir[i], 2) == (int)_originhexdir[i+1])
+            {
+              if (_skipindex.Contains(i)) _skipindex.Remove(i);
+              for(int j = 0; j < _skipindex.Count; j++) if (_skipindex[j] > i) _skipindex[j]--;
 
-              _dirindex = (int)_tempdir[_tempdir.Count - 1] + 1;
-              _tempdir.RemoveAt(_tempdir.Count - 1);
-              _sum -= _temptiles[_temptiles.Count - 1].RequireSupply;
-              _temptiles.RemoveAt(_temptiles.Count - 1);
+              _originhexdir[i] = (HexDir)rotatedir((int)_originhexdir[i], 1);
+              _originhexdir.RemoveAt(i + 1);
+
+              i = -1;
+              continue;
+            }
+            else if (rotatedir((int)_originhexdir[i], -2) == (int)_originhexdir[i + 1])
+            {
+              if (_skipindex.Contains(i)) _skipindex.Remove(i);
+              for (int j = 0; j < _skipindex.Count; j++) if (_skipindex[j] > i) _skipindex[j]--;
+
+              _originhexdir[i] = (HexDir)rotatedir((int)_originhexdir[i], -1);
+              _originhexdir.RemoveAt(i + 1);
+
+              i = -1;
               continue;
             }
           }
-          else
-          {
-            if (_disabledir ||
-              _currenttile.Fogstate != 2 ||
-              !_currenttile.Interactable ||
-              _sum + _currenttile.HexGrid.GetDistance(end) > _min ||
-              _sum + _currenttile.RequireSupply > _min)
-            {
-              if (_dirindex >= 5)         //이 타일에서 방향 0~5 실패했을 때
-              {
-                if (_tempdir.Count == 1)  //뿌리 상태에서 실패했으면 다음 뿌리로
-                {
-                  _isfail = true;
-                  break;
-                }
-                else                      //아니라면 이전 칸만 말소하고 다음칸에서 다시 검사
-                {
-                  _dirindex = (int)_tempdir[_tempdir.Count - 1] + 1;
-                  _tempdir.RemoveAt(_tempdir.Count - 1);
-                  _sum -= _temptiles[_temptiles.Count - 1].RequireSupply;
-                  _temptiles.RemoveAt(_temptiles.Count - 1);
-                  continue;
-                }
-              }
-              else          //5 미만에서 실패할 시 다음 방향으로 넘겨서 한번 더 시도
-              {
-                _dirindex++;
-                continue;
-              }
-            }//이동 가능한 안개가 아니거나 이동이 불가능한 타일이거나  직선보다 높은 보급 합이면 끊기 혹은 넘어가기
-            int _dirtemp = _dirindex;
-            _tempdir.Add((HexDir)_dirtemp);
-            _temptiles.Add(_currenttile);
-            _sum += _currenttile.RequireSupply;
-            _dirindex = 0;
-          }
-        }
-        if (_isfail)
-        {
-          _isfail = false;
-          continue;
         }
       }
+      _index++;
+    }
+    Debug.Log(_loopcount);
+    return _originhexdir;
 
-      return _changed? _mintiles:null;
-    }
-    int rotatedir(int dir,int value)
+    List<HexDir>[] getalterroute(HexDir startdir, int dir)
     {
-      return (dir + value) < 0 ? (dir + value + 6) : (dir + value) > 5 ? (dir + value - 6) : (dir + value);
+      List<HexDir>[] _modifieddirs = new List<HexDir>[2];
+      switch (dir)
+      {
+        case -1:
+          _modifieddirs[0]=new List<HexDir> { (HexDir)rotatedir((int)startdir,-1), (HexDir)rotatedir((int)startdir, 0) };
+          _modifieddirs[1]=new List<HexDir> { 
+            (HexDir)rotatedir((int)startdir, 1)
+          ,(HexDir)rotatedir((int)startdir,0)
+          ,(HexDir)rotatedir((int)startdir,-1)
+          ,(HexDir)rotatedir((int)startdir,-2)};
+          break;
+        case 0:
+          _modifieddirs[0]=new List<HexDir> { (HexDir)rotatedir((int)startdir, -1), (HexDir)rotatedir((int)startdir, 0), (HexDir)rotatedir((int)startdir, 1)};
+          _modifieddirs[1]=new List<HexDir> { (HexDir)rotatedir((int)startdir, 1) , (HexDir)rotatedir((int)startdir, 0) , (HexDir)rotatedir((int)startdir, -1) };
+          break;
+        case 1:
+          _modifieddirs[0]=new List<HexDir> {
+          (HexDir)rotatedir((int)startdir,-1),
+          (HexDir)rotatedir((int)startdir, 0),
+          (HexDir)rotatedir((int)startdir, 1),
+          (HexDir)rotatedir((int)startdir, 2)};
+          _modifieddirs[1]=new List<HexDir> { (HexDir)rotatedir((int)startdir, 1) , (HexDir)rotatedir((int)startdir, 0) };
+          break;
+      }
+      return _modifieddirs;
     }
-    */
-    #endregion
+    int rotatedir(int dir,int value) { return (dir + value) < 0 ? (dir + value + 6) : (dir + value) > 5 ? (dir + value - 6) : (dir + value); }
   }
   public void SetEventTiles()
   {
@@ -629,7 +598,7 @@ public class MapData
             for (int j = 0; j < _count; j++) _indexes.Add(i);
           }
 
-          return _targettiles.Count>0?_targettiles[_indexes[Random.Range(0, _indexes.Count)]]:null;
+          return _targettiles.Count>0&& _indexes.Count>0? _targettiles[_indexes[Random.Range(0, _indexes.Count)]]:null;
         }
     }
 

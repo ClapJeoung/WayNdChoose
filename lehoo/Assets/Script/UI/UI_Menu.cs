@@ -7,11 +7,28 @@ using UnityEngine.UI;
 public class UI_Menu : UI_default
 {
   [SerializeField] private TextMeshProUGUI ReturnText = null;
+  [SerializeField] private TextMeshProUGUI BGMText = null;
   [SerializeField] private Slider BGMSlider = null;
   [SerializeField] private Slider SFXSlider = null;
   [SerializeField] private TextMeshProUGUI QuitText = null;
   [SerializeField] private TextMeshProUGUI DataSaveInfo = null;
   private bool IsWorking = false;
+  private Dictionary<string, string> BGMNames = new Dictionary<string, string>()
+  {
+    {"Ale and Anecdotes", "Darren Curtis" },
+    {"Minstrels Song", "Keys of Moon" },
+    {"One Bard Band", "Alexander Nakarada" },
+    {"The Virgin", "JuliushH" },
+    {"Kings Feast", "RandomMind" },
+    {"The Bards Tale", "RandomMind" },
+    {"Exploration", "RandomMind" },
+    {"The Old Tower Inn", "RandomMind" }
+  };
+  public void SetBGMName()
+  {
+    string _name = UIManager.Instance.AudioManager.BGMAudio.clip.name;
+    BGMText.text = $"BGM<br>{_name}-{BGMNames[_name]}";
+  }
 
   private void Update()
   {
@@ -46,6 +63,7 @@ public class UI_Menu : UI_default
   }
   private IEnumerator openui()
   {
+    SetBGMName();
     IsWorking = true;
     ReturnText.text = GameManager.Instance.GetTextData("Return");
     LayoutRebuilder.ForceRebuildLayoutImmediate(ReturnText.transform.parent.transform as RectTransform);
