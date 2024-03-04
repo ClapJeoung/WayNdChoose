@@ -73,10 +73,10 @@ public class UI_QuestWolf : UI_default
   private IEnumerator openui_prologue()
   {
     DeActiveSetNextButton();
-     
-    Illust.Next(QuestHolder.Prologue_0_Illust, 0.1f);
 
-    Prologue_Description.text = QuestHolder.Prologue_0_Description;
+    Illust.Next(GameManager.Instance.ImageHolder.Cult_Prologue[0], 0.1f);
+
+    Prologue_Description.text = GameManager.Instance.GetTextData("Cult_Prologue_0_Description");
     LayoutRebuilder.ForceRebuildLayoutImmediate(Prologue_Description.transform.transform.transform as RectTransform);
     StartCoroutine(UIManager.Instance.updatescrollbar(PrologueScrollbar));
 
@@ -121,56 +121,58 @@ public class UI_QuestWolf : UI_default
     switch (CurrentPrologueIndex)
     {
       case 1:
-        _illust = QuestHolder.Prologue_1_Illust;
-        _description = QuestHolder.Prologue_1_Description;
-        _buttontext_a = QuestHolder.Prologue_1_Selection_0;
-        _buttontext_b=QuestHolder.Prologue_1_Selection_1;
+        _illust = GameManager.Instance.ImageHolder.Cult_Prologue[1];
+        _description = GameManager.Instance.GetTextData("Cult_Prologue_1_Description");
+        _buttontext_a = GameManager.Instance.GetTextData("Cult_Prologue_1_Selection_0");
+        _buttontext_b = GameManager.Instance.GetTextData("Cult_Prologue_1_Selection_1");
         break;
       case 2:
         if (GameManager.Instance.MyGameData.Tendency_Body.Level == -1)
         {
-          _illust = QuestHolder.Prologue_2_0_Illust;
-          _description = QuestHolder.Prologue_2_0_Description;
+          _illust = GameManager.Instance.ImageHolder.Cult_Prologue[2];
+          _description = GameManager.Instance.GetTextData("Cult_Prologue_2_0_Description");
         }
         else
         {
-          _illust = QuestHolder.Prologue_2_1_Illust;
-          _description = QuestHolder.Prologue_2_1_Description;
+          _illust = GameManager.Instance.ImageHolder.Cult_Prologue[3];
+          _description = GameManager.Instance.GetTextData("Cult_Prologue_2_1_Description");
         }
         break;
       case 3:
-        _illust = QuestHolder.Prologue_3_Illust;
-        _description = QuestHolder.Prologue_3_Description;
-        _buttontext_a = QuestHolder.Prologue_3_Selection_0;
-        _buttontext_b = QuestHolder.Prologue_3_Selection_1;
+        _illust = GameManager.Instance.MyGameData.Tendency_Body.Level == -1 ? GameManager.Instance.ImageHolder.Cult_Prologue[4] : GameManager.Instance.ImageHolder.Cult_Prologue[7];
+        _description = GameManager.Instance.MyGameData.Tendency_Body.Level == -1 ? GameManager.Instance.GetTextData("Cult_Prologue_3_0_Description") : GameManager.Instance.GetTextData("Cult_Prologue_3_1_Description");
+        _buttontext_a = GameManager.Instance.MyGameData.Tendency_Body.Level == -1 ? GameManager.Instance.GetTextData("Cult_Prologue_3_0_Description_Selection_0") : GameManager.Instance.GetTextData("Cult_Prologue_3_1_Description_Selection_0");
+        _buttontext_b = GameManager.Instance.MyGameData.Tendency_Body.Level == -1 ? GameManager.Instance.GetTextData("Cult_Prologue_3_0_Description_Selection_1") : GameManager.Instance.GetTextData("Cult_Prologue_3_1_Description_Selection_1");
         break;
       case 4:
-        if (GameManager.Instance.MyGameData.Tendency_Head.Level == -1)
+        if (GameManager.Instance.MyGameData.Tendency_Body.Level == -1)
         {
-          _illust = QuestHolder.Prologue_4_0_Illust;
-          _description = QuestHolder.Prologue_4_0_Description;
+          _illust = GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? GameManager.Instance.ImageHolder.Cult_Prologue[5] : GameManager.Instance.ImageHolder.Cult_Prologue[6];
+          _description = GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? GameManager.Instance.GetTextData("Cult_Prologue_4_0_0_Description") : GameManager.Instance.GetTextData("Cult_Prologue_4_0_1_Description");
+          GameManager.Instance.AddExp_Long(GameManager.Instance.ExpDic[GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? "EX_00" : "EX_01"], false);
         }
         else
         {
-          _illust = QuestHolder.Prologue_4_1_Illust;
-          _description = QuestHolder.Prologue_4_1_Description;
+          _illust = GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? GameManager.Instance.ImageHolder.Cult_Prologue[8] : GameManager.Instance.ImageHolder.Cult_Prologue[9];
+          _description = GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? GameManager.Instance.GetTextData("Cult_Prologue_4_1_0_Description") : GameManager.Instance.GetTextData("Cult_Prologue_4_1_1_Description");
+          GameManager.Instance.AddExp_Long(GameManager.Instance.ExpDic[GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? "EX_10" : "EX_11"], false);
         }
         break;
       case 5:
-        _illust = QuestHolder.Prologue_5_Illust;
-        _description = QuestHolder.Prologue_5_Description;
+        _illust = GameManager.Instance.ImageHolder.Cult_Prologue[10];
+        _description = GameManager.Instance.GetTextData("Cult_Prologue_5_Description");
         break;
       case 6:
-        _illust = QuestHolder.Prologue_6_Illust;
-        _description = QuestHolder.Prologue_6_Description;
+        _illust = GameManager.Instance.ImageHolder.Cult_Prologue[11];
+        _description = GameManager.Instance.GetTextData("Cult_Prologue_6_Description");
         break;
       case 7:
-        _illust = QuestHolder.Prologue_7_Illust;
-        _description = QuestHolder.Prologue_7_Description;
+        _illust = GameManager.Instance.ImageHolder.Cult_Prologue[12];
+        _description = GameManager.Instance.GetTextData("Cult_Prologue_7_Description");
         break;
       case 8:
-        _illust = QuestHolder.Prologue_8_Illust;
-        _description = QuestHolder.Prologue_8_Description;
+        _illust = GameManager.Instance.ImageHolder.Cult_Prologue[13];
+        _description = GameManager.Instance.GetTextData("Cult_Prologue_8_Description");
         break;
     }
     Illust.Next(_illust,  PrologueFadetime);

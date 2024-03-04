@@ -265,6 +265,7 @@ public class UI_map : UI_default
   [SerializeField] private CanvasGroup MovecostButtonGroup = null;
   [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
+  [SerializeField] private PreviewInteractive GoldButtonPreview = null;
   [SerializeField] private Onpointer_highlight GoldButton_Highlight = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
   [SerializeField] private Image MadnessIcon = null;
@@ -306,8 +307,8 @@ public class UI_map : UI_default
   }
   private struct Paydata
   {
-    public int Pay_Sanity;
-    public int Pay_Gold;
+    public int Sanity;
+    public int Gold;
   }
   private List<Paydata> PayValues_Sanity = new List<Paydata>();
   private List<Paydata> PayValues_Gold= new List<Paydata>();
@@ -390,33 +391,33 @@ public class UI_map : UI_default
     for (int i = 0; i < AllTiles.Count; i++)
     {
       Paydata _pay_sanity=new Paydata();
-      _pay_sanity.Pay_Gold = 0;
-      _pay_sanity.Pay_Sanity = 0;
+      _pay_sanity.Gold = 0;
+      _pay_sanity.Sanity = 0;
       Paydata _pay_gold = new Paydata();
-      _pay_gold.Pay_Gold = 0;
-      _pay_gold.Pay_Sanity = 0;
+      _pay_gold.Gold = 0;
+      _pay_gold.Sanity = 0;
 
-      _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
+      _pay_sanity.Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
       if (_totalgold <= GameManager.Instance.MyGameData.Gold)
       {
-        _pay_gold.Pay_Gold = GameManager.Instance.MyGameData.Movecost_gold;
+        _pay_gold.Gold = GameManager.Instance.MyGameData.Movecost_gold;
         _totalgold += GameManager.Instance.MyGameData.Movecost_gold;
       }
       else
-        _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
+        _pay_gold.Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
 
 
       _supplycost += AllSupplys[i];
 
       if (_supplyover)
       {
-        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
-        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_sanity.Sanity += AllTiles[i].RequireSupply * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Sanity += AllTiles[i].RequireSupply * GameManager.Instance.MyGameData.Movecost_supplylack;
       }
       else if (GameManager.Instance.MyGameData.Supply < _supplycost)
       {
-        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
-        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_sanity.Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
         _supplyover = true;
       }
       PayValues_Sanity.Add(_pay_sanity);
@@ -428,6 +429,7 @@ public class UI_map : UI_default
     if (GameManager.Instance.MyGameData.Supply > 0) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
     if (LastDestination.TileSettle == null&&!LastDestination.IsEvent) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
 
+    GoldButtonPreview.enabled = GameManager.Instance.MyGameData.Gold >= PayValues_Gold[0].Gold;
     GoldButton_Highlight.RemoveAllCall();
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
     if (GameManager.Instance.MyGameData.Supply > 0) GoldButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
@@ -566,33 +568,33 @@ public class UI_map : UI_default
     for (int i = 0; i < AllTiles.Count; i++)
     {
       Paydata _pay_sanity = new Paydata();
-      _pay_sanity.Pay_Gold = 0;
-      _pay_sanity.Pay_Sanity = 0;
+      _pay_sanity.Gold = 0;
+      _pay_sanity.Sanity = 0;
       Paydata _pay_gold = new Paydata();
-      _pay_gold.Pay_Gold = 0;
-      _pay_gold.Pay_Sanity = 0;
+      _pay_gold.Gold = 0;
+      _pay_gold.Sanity = 0;
 
-      _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
+      _pay_sanity.Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
       if (_totalgold <= GameManager.Instance.MyGameData.Gold)
       {
-        _pay_gold.Pay_Gold = GameManager.Instance.MyGameData.Movecost_gold;
+        _pay_gold.Gold = GameManager.Instance.MyGameData.Movecost_gold;
         _totalgold += GameManager.Instance.MyGameData.Movecost_gold;
       }
       else
-        _pay_sanity.Pay_Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
+        _pay_sanity.Sanity = GameManager.Instance.MyGameData.Movecost_sanity;
 
 
       _supplycost += AllSupplys[i];
 
       if (_supplyover)
       {
-        _pay_sanity.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
-        _pay_gold.Pay_Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_sanity.Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Sanity += AllSupplys[i] * GameManager.Instance.MyGameData.Movecost_supplylack;
       }
       else if (GameManager.Instance.MyGameData.Supply < _supplycost)
       {
-        _pay_sanity.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
-        _pay_gold.Pay_Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_sanity.Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
+        _pay_gold.Sanity += (_supplycost - GameManager.Instance.MyGameData.Supply) * GameManager.Instance.MyGameData.Movecost_supplylack;
         _supplyover = true;
       }
       PayValues_Sanity.Add(_pay_sanity);
@@ -1205,7 +1207,7 @@ public class UI_map : UI_default
     int _sanitycost = 0;
     for (int i = 0; i < AllTiles.Count; i++)
     {
-      _sanitycost += SelectedCostType == StatusTypeEnum.Sanity ? PayValues_Sanity[i].Pay_Sanity : PayValues_Gold[i].Pay_Sanity;
+      _sanitycost += SelectedCostType == StatusTypeEnum.Sanity ? PayValues_Sanity[i].Sanity : PayValues_Gold[i].Sanity;
       if (_sanitycost >= GameManager.Instance.MyGameData.Sanity && !MadnessIcon.enabled)
       {
         MadnessTileIndex = i;
@@ -1365,6 +1367,28 @@ public class UI_map : UI_default
 
         if(AllTiles[_currentindex-1].Landmark == LandmarkType.Ritual)
           UIManager.Instance.CultUI.AddProgress(4, null);
+        if (AllTiles[_currentindex - 1].IsResource)
+        {
+          StartCoroutine(deactiveetctile(AllTiles[_currentindex - 1].ButtonScript.ETCImage, AllTiles[_currentindex - 1].IsEvent));
+          int _resourcetype = AllTiles[_currentindex - 1].ResourceType;
+          int _resourcecount = 0;
+          switch (AllTiles[_currentindex - 1].ResourceType)
+          {
+            case 0: _resourcecount = 1; break;
+            case 1: case 2: _resourcecount = 2; break;
+            case 3: case 4: _resourcecount = 3; break;
+          }
+          for (int i = 0; i < _resourcecount; i++)
+          {
+            GameManager.Instance.MyGameData.Resources.Add(_resourcetype);
+            GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
+            _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
+            UIManager.Instance.AudioManager.PlaySFX(33);
+            yield return new WaitForSeconds(0.15f);
+          }
+          GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(AllTiles[_currentindex - 1]);
+          AllTiles[_currentindex - 1].IsResource = false;
+        }
 
         List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(AllTiles[_currentindex - 1], GameManager.Instance.MyGameData.ViewRange);
         foreach (var _tile in _newarounds)
@@ -1376,9 +1400,11 @@ public class UI_map : UI_default
         GameManager.Instance.MyGameData.Supply -= AllSupplys[_currentindex-1];
         _currentsupply = GameManager.Instance.MyGameData.Supply;
         GameManager.Instance.MyGameData.Sanity -= SelectedCostType == StatusTypeEnum.Sanity ?
-          PayValues_Sanity[_currentindex - 1].Pay_Sanity : PayValues_Gold[_currentindex - 1].Pay_Sanity;
+          PayValues_Sanity[_currentindex - 1].Sanity : 
+          PayValues_Gold[_currentindex - 1].Sanity;
         GameManager.Instance.MyGameData.Gold-=SelectedCostType==StatusTypeEnum.Sanity ?
-          PayValues_Sanity[_currentindex - 1].Pay_Gold : PayValues_Gold[_currentindex - 1].Pay_Gold;
+          PayValues_Sanity[_currentindex - 1].Gold : 
+          PayValues_Gold[_currentindex - 1].Gold;
 
         if (GameManager.Instance.MyGameData.Supply < AllSupplys[_currentindex - 1]&& !_hungry)
         {
@@ -1419,11 +1445,35 @@ public class UI_map : UI_default
       GameManager.Instance.MyGameData.Supply -= AllSupplys[AllSupplys.Count - 1];
       _currentsupply = GameManager.Instance.MyGameData.Supply;
       GameManager.Instance.MyGameData.Sanity -= SelectedCostType == StatusTypeEnum.Sanity ?
-        PayValues_Sanity[PayValues_Sanity.Count - 1].Pay_Sanity : PayValues_Gold[PayValues_Gold.Count - 1].Pay_Sanity;
+        PayValues_Sanity[PayValues_Sanity.Count - 1].Sanity : PayValues_Gold[PayValues_Gold.Count - 1].Sanity;
       GameManager.Instance.MyGameData.Gold -= SelectedCostType == StatusTypeEnum.Sanity ?
-        PayValues_Sanity[PayValues_Sanity.Count - 1].Pay_Gold : PayValues_Gold[PayValues_Gold.Count - 1].Pay_Gold;
+        PayValues_Sanity[PayValues_Sanity.Count - 1].Gold : PayValues_Gold[PayValues_Gold.Count - 1].Gold;
 
       StartCoroutine(changesupplytext((float)_lastsum, (float)_currentsum, (float)_lastsupply, (float)_currentsupply));
+      if (_stoptile.IsResource)
+      {
+        StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, _stoptile.IsEvent));
+        int _resourcetype = _stoptile.ResourceType;
+        int _resourcecount = 0;
+        switch (_stoptile.ResourceType)
+        {
+          case 0: _resourcecount = 1; break;
+          case 1: case 2: _resourcecount = 2; break;
+          case 3: case 4: _resourcecount = 3; break;
+        }
+        for (int i = 0; i < _resourcecount; i++)
+        {
+          GameManager.Instance.MyGameData.Resources.Add(_resourcetype);
+          GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
+          _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
+          UIManager.Instance.AudioManager.PlaySFX(33);
+          yield return new WaitForSeconds(0.15f);
+        }
+        GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(_stoptile);
+        _stoptile.IsResource = false;
+      }
+
+
     }
     CurrentSupply.text = GameManager.Instance.MyGameData.Supply.ToString();
     #endregion
@@ -1444,7 +1494,7 @@ public class UI_map : UI_default
       UIManager.Instance.SetWildMadCount();
     }
 
-    if (_stoptile.IsEvent || _stoptile.IsResource)
+    if (_stoptile.IsEvent)
     {
       StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, _stoptile.IsEvent));
       if (_stoptile.IsEvent && GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
@@ -1547,31 +1597,6 @@ public class UI_map : UI_default
     }
     else
     {
-      if (_stoptile.IsResource)
-      {
-        if (_stoptile.IsResource)
-        {
-          int _resourcetype = _stoptile.ResourceType;
-          int _resourcecount = 0;
-          switch (_stoptile.ResourceType)
-          {
-            case 0: _resourcecount = 1; break;
-            case 1: case 2: _resourcecount = 2; break;
-            case 3: case 4: _resourcecount = 3; break;
-          }
-          for (int i = 0; i < _resourcecount; i++)
-          {
-            GameManager.Instance.MyGameData.Resources.Add(_resourcetype);
-            GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
-            _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
-            UIManager.Instance.AudioManager.PlayResourceUseSFX();
-            yield return new WaitForSeconds(0.15f);
-          }
-          GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(_stoptile);
-          _stoptile.IsResource = false;
-        }
-      }
-
       GameManager.Instance.MyGameData.Turn++;
       GameManager.Instance.MyGameData.CurrentEvent = null;
       GameManager.Instance.MyGameData.CurrentSettlement = null;

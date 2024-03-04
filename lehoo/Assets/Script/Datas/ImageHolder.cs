@@ -681,16 +681,6 @@ public class ImageHolder : ScriptableObject
   }
   public List<Sprite> Cult_Sabbat = new List<Sprite>();
   public List<Sprite> Cult_Ritual = new List<Sprite>();
-  public Sprite GetCultIllust(List<Sprite> targetlist, string id)
-  {
-    foreach (var _illust in targetlist)
-    {
-      if (string.Compare(id, _illust.name, true).Equals(0)) return _illust;
-    }
-    Debug.Log($"{id} 이미지 없음");
-    return DefaultIllust;
-  }
-
 }
 public class EventIllustHolder
 {

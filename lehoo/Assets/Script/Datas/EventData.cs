@@ -1038,40 +1038,6 @@ public class QuestHolder_Cult:Quest
     OriginID = id;
     Type = type;
   }
-  #region 프롤로그 관련
-  public Sprite Prologue_0_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_0_Illust"); } }
-  public string Prologue_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_0_Description"); } }
-
-  public Sprite Prologue_1_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_1_Illust"); } }
-  public string Prologue_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Description"); } }
-  public string Prologue_1_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Selection_0"); } }
-  public string Prologue_1_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_1_Selection_1"); } }
- 
-  public Sprite Prologue_2_0_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_2_0_Illust"); } }
-  public string Prologue_2_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_2_0_Description"); } }
-
-  public Sprite Prologue_2_1_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_2_1_Illust"); } }
-  public string Prologue_2_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_2_1_Description"); } }
- 
-  public Sprite Prologue_3_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_3_Illust"); } }
-  public string Prologue_3_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Description"); } }
-  public string Prologue_3_Selection_0 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Selection_0"); } }
-  public string Prologue_3_Selection_1 { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_3_Selection_1"); } }
-
-  public Sprite Prologue_4_0_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_4_0_Illust"); } }
-  public string Prologue_4_0_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_4_0_Description"); } }
-  public Sprite Prologue_4_1_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_4_1_Illust"); } }
-  public string Prologue_4_1_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_4_1_Description"); } }
-
-  public Sprite Prologue_5_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_5_Illust"); } }
-  public string Prologue_5_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_5_Description"); } }
-  public Sprite Prologue_6_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_6_Illust"); } }
-  public string Prologue_6_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_6_Description"); } }
-  public Sprite Prologue_7_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_7_Illust"); } }
-  public string Prologue_7_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_7_Description"); } }
-  public Sprite Prologue_8_Illust { get { return GameManager.Instance.ImageHolder.GetCultIllust(GameManager.Instance.ImageHolder.Cult_Prologue, OriginID + "_Prologue_8_Illust"); } }
-  public string Prologue_8_Description { get { return GameManager.Instance.GetTextData(OriginID + "_Prologue_8_Description"); } }
-  #endregion
 
   public List<EventData> Events_Cult_0to30 = new List<EventData>(); 
   public List<EventData> Events_Cult_30to60 = new List<EventData>();

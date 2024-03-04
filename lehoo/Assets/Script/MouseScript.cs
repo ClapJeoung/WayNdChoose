@@ -54,10 +54,13 @@ public class MouseScript : MonoBehaviour
           MouseState = MouseStateEnum.DragMap;
           LastPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
 
-          string _coordinate = CheckObjTag("Tile").name;
-          TileData _tile = GameManager.Instance.MyGameData.MyMapData.TileDatas[
-            int.Parse(_coordinate.Split(',')[0]),int.Parse(_coordinate.Split(',')[1])];
-          SelectingTile = !_tile.Interactable||_tile.Fogstate!=2 ? null : _tile;
+          if (CheckObjTag("Tile") != null)
+          {
+            string _coordinate = CheckObjTag("Tile").name;
+            TileData _tile = GameManager.Instance.MyGameData.MyMapData.TileDatas[
+              int.Parse(_coordinate.Split(',')[0]), int.Parse(_coordinate.Split(',')[1])];
+            SelectingTile = !_tile.Interactable || _tile.Fogstate != 2 ? null : _tile;
+          }
         }
       }
 

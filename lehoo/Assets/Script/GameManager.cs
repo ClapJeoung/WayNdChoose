@@ -545,8 +545,11 @@ public class GameManager : MonoBehaviour
         break;
     }
   }
-  public void AddExp_Long(Experience exp)
+  public void AddExp_Long(Experience exp,bool sanityloss)
   {
+    UIManager.Instance.SetInfoPanel(string.Format(GetTextData("GainExp"), exp.Name));
+    if (sanityloss) MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * MyGameData.GetSanityLossModify(true, 0));
+
     exp.Duration = ConstValues.EXPMaxTurn_long_idle;
     MyGameData.LongExp = exp;
 
@@ -577,6 +580,7 @@ public class GameManager : MonoBehaviour
   /// <param name="index"></param>
   public void AddExp_Short(Experience exp,bool index)
   {
+    UIManager.Instance.SetInfoPanel(string.Format(GetTextData("GainExp"), exp.Name));
     exp.Duration = ConstValues.EXPMaxTurn_short_idle;
     if (index == true)
     {

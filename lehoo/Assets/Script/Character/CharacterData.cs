@@ -87,7 +87,7 @@ public static class ConstValues
   public const float RestCost_Default_Min = 9, RestCost_Default_Max = 25;
   public const int MoveCost_Min = 1, MoveCost_Max = 4;  //이동 비용 골드 값 기준
   public const float MoveCost_SanityValue = 2.0f;         //이동 비용 정신력 값
-  public const int PenaltyCost_Min = 6, PenaltyCost_Max = 15;
+  public const int PenaltyCost_Min = 6, PenaltyCost_Max = 12;
   public const int RestSanityRestore = 15;
   public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.1f;
 
@@ -124,19 +124,14 @@ public static class ConstValues
   //public const int Tendency_Head_p2 = 5;
   //정신적 2: 광기 개수당 정신력 감소 완화
   //정신적 1: 불쾌 페널티 값 감소
-  //물질적 1: 지도->정착지 이동 시 골드
-  //물질적 2: 이벤트 타일로 이동할 때도 동일하게 골드
+  //물질적 1: 자원 정산 값 증가
+  //물질적 2: 이벤트 타일로 이동할 때도 자원 획득
 
-  public const int ConversationByTendency_m2 = 2, ConversationByTendency_m1 = 1,
-    IntelligenceByTendency_m2 = 2, IntelligenceByTendency_m1 = 1,
-    ForceByTendency_p1 = 1, ForceByTendency_p2 = 2,
-     WildByTendency_p1 = 1, WildByTendency_p2 = 2;
-  //논리적 2: 화술+3 학식+3 격투-1 생존-1
-  //논리적 1: 화술+1 학식+1
-  //육체적 1: 격투+1 생존+1
-  //육체적 2: 격투+3 생존+3 화술-1 학식-1
+  public const int ConversationByTendency_m2 = 3, ConversationByTendency_m1 = 1,
+    IntelligenceByTendency_m2 = 3, IntelligenceByTendency_m1 = 1,
+    ForceByTendency_p1 = 1, ForceByTendency_p2 = 3,
+     WildByTendency_p1 = 1, WildByTendency_p2 = 3;
 
-  //성향 진행도 따라 긍정,부정 값
   public const float minsuccesper_max = 45;
   public const float minsuccesper_min = 5;
   public const float MaxSuccessPer = 95;

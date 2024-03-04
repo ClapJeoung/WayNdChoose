@@ -160,9 +160,7 @@ public class UI_RewardExp : UI_default
     {
       if (AskedForChange)
       {
-        GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0));
-
-        GameManager.Instance.AddExp_Long(CurrentExp);
+        GameManager.Instance.AddExp_Long(CurrentExp,true);
         if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
         {
           UIManager.Instance.DialogueUI.ExpAcquired();
@@ -176,9 +174,7 @@ public class UI_RewardExp : UI_default
     }
     else
     {
-      GameManager.Instance.MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0));
-
-      GameManager.Instance.AddExp_Long(CurrentExp);
+      GameManager.Instance.AddExp_Long(CurrentExp,true);
       if (UIManager.Instance.DialogueUI.IsOpen && UIManager.Instance.DialogueUI.RemainReward == true)
       {
         UIManager.Instance.DialogueUI.ExpAcquired();

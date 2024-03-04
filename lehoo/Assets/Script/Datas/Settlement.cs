@@ -174,7 +174,7 @@ public class MapData
             _temptile = GetNextTile(j==0?_starttile:_temptile, _alterroute[i][j]);
             if (!_temptile.Interactable   //targettile이 이동 불가하거나
               || _temptile.Fogstate != 2  //targettile 안개에 막혀있거나
-              ||(_currentsupply!=0&&_altersum[i] + _temptile.RequireSupply + _temptile.HexGrid.GetDistance(_targettile)-1 >= _currentsupply))
+              ||(_currentsupply>0&&_altersum[i] + _temptile.RequireSupply + _temptile.HexGrid.GetDistance(_targettile)-1 >= _currentsupply))
             {                             //기존 루트가 이동 가능하고, 기존 루트보다 비싸질 경우엔
               _altersuccess[i] = false;   //이 대체 루트 폐기
               break;
@@ -183,7 +183,7 @@ public class MapData
           }
         }
         int _resultid = 0;
-        if (_altersuccess[0] && !_altersuccess[1])  //0번 루트만 이동 가능
+         if (_altersuccess[0] && !_altersuccess[1])  //0번 루트만 이동 가능
         {
           if (_currentsupply == 0) _resultid = 0;   //0번 루트로 교체
           else if (_altersum[0] < _currentsupply) _resultid = 0;//0번 루트로 교체
@@ -244,6 +244,7 @@ public class MapData
               if (_skipindex.Contains(i)) _skipindex.Remove(i);
               for(int j = 0; j < _skipindex.Count; j++) if (_skipindex[j] > i) _skipindex[j]--;
 
+              _origintiles.RemoveAt(i);
               _originhexdir[i] = (HexDir)rotatedir((int)_originhexdir[i], 1);
               _originhexdir.RemoveAt(i + 1);
 
@@ -255,6 +256,7 @@ public class MapData
               if (_skipindex.Contains(i)) _skipindex.Remove(i);
               for (int j = 0; j < _skipindex.Count; j++) if (_skipindex[j] > i) _skipindex[j]--;
 
+              _origintiles.RemoveAt(i);
               _originhexdir[i] = (HexDir)rotatedir((int)_originhexdir[i], -1);
               _originhexdir.RemoveAt(i + 1);
 
@@ -275,6 +277,7 @@ public class MapData
       switch (dir)
       {
         case -1:
+        case 5:
           _modifieddirs[0]=new List<HexDir> { (HexDir)rotatedir((int)startdir,-1), (HexDir)rotatedir((int)startdir, 0) };
           _modifieddirs[1]=new List<HexDir> { 
             (HexDir)rotatedir((int)startdir, 1)
@@ -287,6 +290,7 @@ public class MapData
           _modifieddirs[1]=new List<HexDir> { (HexDir)rotatedir((int)startdir, 1) , (HexDir)rotatedir((int)startdir, 0) , (HexDir)rotatedir((int)startdir, -1) };
           break;
         case 1:
+        case -5:
           _modifieddirs[0]=new List<HexDir> {
           (HexDir)rotatedir((int)startdir,-1),
           (HexDir)rotatedir((int)startdir, 0),

@@ -314,6 +314,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 85df6a89323e0b145bc5e10e19966ca7, type: 3}
   - {fileID: 21300000, guid: b913841e8f15b2648a7c4819c036cc54, type: 3}
   - {fileID: 21300000, guid: 0d1061875a98f564ab322dbcc95d7128, type: 3}
+  - {fileID: 21300000, guid: ddd6b97ef935680418ebb3513eea56e0, type: 3}
+  - {fileID: 21300000, guid: 8bfa98bd6f3d0874e8cd0d6b1e09b794, type: 3}
+  - {fileID: 21300000, guid: ce7723651644f2945b09362f02225926, type: 3}
+  - {fileID: 21300000, guid: 8bc091143fa7e124886d92430f03f927, type: 3}
   CultEndingData:
     ID: CultEnding
     Illusts:
@@ -324,7 +328,6 @@ MonoBehaviour:
     - {fileID: 21300000, guid: b9c1d9cd2f2e7964f804a92671673aae, type: 3}
     - {fileID: 21300000, guid: f2987305ce04442478b4fcf48cfdeecc, type: 3}
     - {fileID: 21300000, guid: f2b0be6328d418744a82ad32821ed9b6, type: 3}
-    - {fileID: 21300000, guid: 513d59d410b59b348ac3b8008fa6f288, type: 3}
     RefuseIllust: {fileID: 0}
   EndingIllustList:
   - ID: Ascendent
@@ -644,9 +647,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e3f9c15f6013bd448bf90effd2680f80, type: 3}
   - {fileID: 21300000, guid: bd5edf032e3ab4a40b4dadd97e9fb5e7, type: 3}
   - {fileID: 21300000, guid: 98afb1e422902864f85fbcbfedde724e, type: 3}
-  - {fileID: 21300000, guid: 87ed217e1a275d744b659cf79da29997, type: 3}
-  - {fileID: 21300000, guid: 1b16b2eebef6c394981e5c4fd5122bbc, type: 3}
-  - {fileID: 21300000, guid: a80975cfc3b2d38448fedec493e5cf78, type: 3}
+  - {fileID: 21300000, guid: e918c055375669549835b604dfe5ffe2, type: 3}
+  - {fileID: 21300000, guid: c43c6b3f91e917d46b166e7504562364, type: 3}
+  - {fileID: 21300000, guid: ba0f60b2d9d01cf47a418018956bc5df, type: 3}
+  - {fileID: 21300000, guid: 20c989b76a3d92d488c7473472e21e68, type: 3}
+  - {fileID: 21300000, guid: 66ba4c0e4ee718c4988c101e625bd045, type: 3}
+  - {fileID: 21300000, guid: 5b66247afdd1d2849940bdb5194174cc, type: 3}
   - {fileID: 21300000, guid: 5a0439063757dc7448f6b4434f199164, type: 3}
   - {fileID: 21300000, guid: 010c9f20cc4f6cf47b9997a573180b88, type: 3}
   - {fileID: 21300000, guid: beef5ca902b69804297b75a497689ccb, type: 3}
