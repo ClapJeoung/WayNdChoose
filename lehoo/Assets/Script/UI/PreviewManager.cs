@@ -26,6 +26,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Image SkillIcon = null;
   [SerializeField] private TextMeshProUGUI SkillLevel = null;
   [SerializeField] private TextMeshProUGUI SkillName = null;
+  [SerializeField] private TextMeshProUGUI SkillEffect = null;
   [SerializeField] private GameObject SkillMadnessHolder = null;
   [SerializeField] private TextMeshProUGUI SkillMadnessInfo = null;
   [Space(10)]
@@ -273,6 +274,21 @@ public class PreviewManager : MonoBehaviour
     string _leveltext = WNCText.UIIdleColor(_level);
     SkillName.text = GameManager.Instance.GetTextData(_skilltype, 0);
     SkillIcon.sprite = _icon;
+    switch (_skilltype)
+    {
+      case SkillTypeEnum.Conversation:
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Conversation_Effect"), ConstValues.ConversationEffect_Level, ConstValues.ConversationEffect_Value);
+        break;
+      case SkillTypeEnum.Force:
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Force_Effect"), ConstValues.ForceEffect_Level, ConstValues.ForceEffect_Value);
+        break;
+      case SkillTypeEnum.Wild:
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Wild_Effect"), ConstValues.WildEffect_Level, ConstValues.WildEffect_Value);
+        break;
+      case SkillTypeEnum.Intelligence:
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Intelligence_Effect"), ConstValues.IntelEffect_Level, ConstValues.IntelEffect_Value);
+        break;
+    }
 
     switch (_skilltype)
     {
@@ -334,6 +350,8 @@ public class PreviewManager : MonoBehaviour
     SkillLevel.text = _leveltext;
 
     LayoutRebuilder.ForceRebuildLayoutImmediate(SkillName.rectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SkillEffect.rectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(SkillMadnessInfo.rectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(SkillName.transform.parent.transform as RectTransform);
 
     OpenPreviewPanel(SkillPreview,rect);
@@ -798,15 +816,15 @@ public class PreviewManager : MonoBehaviour
   {
     string _turn, _description;
 
-    _turn=islong ? ConstValues.EXPMaxTurn_long_idle.ToString() : ConstValues.EXPMaxTurn_short_idle.ToString();
+    _turn=islong ? (ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value).ToString() : (ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value).ToString();
     if (islong)
     {
-      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_long_idle,
+      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value,
         (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
     }
     else
     {
-      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_short_idle);
+      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value);
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();

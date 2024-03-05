@@ -366,16 +366,17 @@ public class UI_map : UI_default
     AllTiles.Clear();
     AllSupplys.Clear();
     int _index = 0;
+    int _skipcount = GameManager.Instance.MyGameData.Skill_Wild.Level / ConstValues.WildEffect_Level * ConstValues.WildEffect_Value;
     foreach (var _route in Routes)
     {
       foreach (var _tile in _route.Route)
       {
         AllTiles.Add(_tile);
-        AllSupplys.Add(_tile.RequireSupply);
+        AllSupplys.Add(_skipcount>_index?0: _tile.RequireSupply);
         _index++;
       }
       AllTiles.Add(_route.End);
-      AllSupplys.Add(_route.End.RequireSupply);
+      AllSupplys.Add(_skipcount > _index ? 0 : _route.End.RequireSupply);
       _index++;
     }
 
@@ -525,16 +526,17 @@ public class UI_map : UI_default
     AllTiles.Clear();
     AllSupplys.Clear();
     int _index = 0;
+    int _skipcount = GameManager.Instance.MyGameData.Skill_Wild.Level / ConstValues.WildEffect_Level * ConstValues.WildEffect_Value;
     foreach (var _route in Routes)
     {
       foreach (var _tile in _route.Route)
       {
         AllTiles.Add(_tile);
-        AllSupplys.Add(_tile.RequireSupply);
+        AllSupplys.Add(_skipcount > _index ? 0 : _tile.RequireSupply);
         _index++;
       }
       AllTiles.Add(_route.End);
-      AllSupplys.Add(_route.End.RequireSupply);
+      AllSupplys.Add(_skipcount > _index ? 0 : _route.End.RequireSupply);
       _index++;
     }
 
@@ -695,9 +697,11 @@ public class UI_map : UI_default
     IsOpen = true;
     UIManager.Instance.AddUIQueue(openui(dir));
   }
-  
+  private bool EnvirBackground = false;
   private IEnumerator openui(bool dir)
   {
+    if(!UIManager.Instance.EnvirBackgroundEnable) UIManager.Instance.UpdateBackground(GameManager.Instance.MyGameData.CurrentTile.RandomEnvir);
+
     if (GameManager.Instance.MyGameData.Resources.Count != ResourceHolder.childCount)
     {
       for(int i=0;i<GameManager.Instance.MyGameData.Resources.Count;i++)
@@ -1021,28 +1025,28 @@ public class UI_map : UI_default
                 case 0:
                   if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
                   {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village);
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                   }
                   else _progresstext = "";
                   break;
                 case 1:
                   if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
                   {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town);
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                   }
                   else _progresstext = "";
                   break;
                 case 2:
                   if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
                   {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City);
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                   }
                   else _progresstext = "";
                   break;
                 case 4:
                   if (CheckRitual)
                   {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual);
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                     UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
                   }
                   else
@@ -1110,28 +1114,28 @@ public class UI_map : UI_default
               case 0:
                 if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 1:
                 if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 2:
                 if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 4:
                 if (CheckRitual)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
                   UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
                 }
                 else

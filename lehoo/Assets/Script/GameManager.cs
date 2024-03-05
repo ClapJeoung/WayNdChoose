@@ -550,7 +550,7 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.SetInfoPanel(string.Format(GetTextData("GainExp"), exp.Name));
     if (sanityloss) MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * MyGameData.GetSanityLossModify(true, 0));
 
-    exp.Duration = ConstValues.EXPMaxTurn_long_idle;
+    exp.Duration = ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value;
     MyGameData.LongExp = exp;
 
     if (MyGameData.Madness_Intelligence)
@@ -581,7 +581,7 @@ public class GameManager : MonoBehaviour
   public void AddExp_Short(Experience exp,bool index)
   {
     UIManager.Instance.SetInfoPanel(string.Format(GetTextData("GainExp"), exp.Name));
-    exp.Duration = ConstValues.EXPMaxTurn_short_idle;
+    exp.Duration = ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value;
     if (index == true)
     {
       MyGameData.ShortExp_A = exp;

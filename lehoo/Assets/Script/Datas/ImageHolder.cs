@@ -473,6 +473,8 @@ public class ImageHolder : ScriptableObject
     switch (envir)
     {
       case EnvironmentType.River:
+      case EnvironmentType.Sea:
+      case EnvironmentType.RiverBeach:
         return RiverEnvirIllust[GameManager.Instance.MyGameData.Turn];
       case EnvironmentType.Forest:
         return ForestEnvirIllust[GameManager.Instance.MyGameData.Turn];
@@ -480,8 +482,6 @@ public class ImageHolder : ScriptableObject
         return HighlandEnvirIllust[GameManager.Instance.MyGameData.Turn];
       case EnvironmentType.Mountain:
         return MountainEnvirIllust[GameManager.Instance.MyGameData.Turn];
-      case EnvironmentType.Sea:
-        return SeaEnvirIllust[GameManager.Instance.MyGameData.Turn];
       default:
         return NullEnvirIllust[GameManager.Instance.MyGameData.Turn];
     }

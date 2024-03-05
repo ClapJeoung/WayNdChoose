@@ -289,7 +289,7 @@ public class UI_QuestWolf : UI_default
         switch (GameManager.Instance.MyGameData.CurrentSettlement.SettlementType)
         {
           case SettlementType.Village:
-            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Village;
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
             GameManager.Instance.MyGameData.Cult_CoolTime =
               (int)( 
               ((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile,GameManager.Instance.MyGameData.MyMapData.Towns)+
@@ -299,7 +299,7 @@ public class UI_QuestWolf : UI_default
               UIManager.Instance.SidePanelCultUI.VillageIconEffect.transform as RectTransform);
             break;
           case SettlementType.Town:
-            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town;
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
             GameManager.Instance.MyGameData.Cult_CoolTime =
              (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys) +
               MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
@@ -309,7 +309,7 @@ public class UI_QuestWolf : UI_default
             break;
           case SettlementType.City:
             GameManager.Instance.MyGameData.SetSabbat();
-            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_City;
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
     UIManager.Instance.SidePanelCultUI.CityIconEffect.transform as RectTransform);
             break;
@@ -319,14 +319,14 @@ public class UI_QuestWolf : UI_default
       case 3:
         UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult, sectorrect);
         GameManager.Instance.MyGameData.SetRitual();
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sabbat;
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
         _eventtype = 3;
         break;
       case 4:
         UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
         GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.Rect);
         GameManager.Instance.MyGameData.SetSabbat();
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual;
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += ConstValues.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
         _eventtype = 4;
         break;
       default:

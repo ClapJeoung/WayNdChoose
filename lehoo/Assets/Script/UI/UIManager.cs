@@ -62,13 +62,16 @@ public class UIManager : MonoBehaviour
   public MapButton MapButton = null;
   public SettleButton SettleButton = null;
   [SerializeField] private AnimationCurve FadeAnimationCurve = null;
+  [HideInInspector] public bool EnvirBackgroundEnable = false;
   public void UpdateBackground(EnvironmentType envir)
   {
+    EnvirBackgroundEnable = true;
     Sprite _newbackground = GameManager.Instance.ImageHolder.GetEnvirBackground(envir);
     EnvirBackground.Next( _newbackground,1.0f);
   }
   public void OffBackground()
   {
+    EnvirBackgroundEnable = false;
     EnvirBackground.Next(GameManager.Instance.ImageHolder.Transparent, 1.0f);
   }
   [Space(10)]

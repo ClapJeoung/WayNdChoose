@@ -45,6 +45,8 @@ public class UI_Ending : UI_default
     Descriptions = endingdata.Descriptions; 
     LastButtonText= endingdata.LastWord;
     QuitButtonText.text = endingdata.LastWord;
+    QuitButtonGroup.alpha = 0.0f;
+    QuitButtonGroup.interactable = false;
 
     Illust.Next(Illusts[CurrentIndex], 0.5f);
     Description.text = Descriptions[CurrentIndex];

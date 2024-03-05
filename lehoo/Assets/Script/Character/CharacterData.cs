@@ -8,6 +8,11 @@ using UnityEngine.UIElements;
 
 public static class ConstValues
 {
+  public const int ConversationEffect_Level=1, ConversationEffect_Value = 1;
+  public const int ForceEffect_Level = 1, ForceEffect_Value = 1;
+  public const int WildEffect_Level=3, WildEffect_Value = 1;
+  public const int IntelEffect_Level=2,IntelEffect_Value = 1;
+
   public const int ResourceGoldValue = 2;
   public const float DiscomfortGoldValue = 0.02f;
 
@@ -149,7 +154,7 @@ public static class ConstValues
   public const float FailSanity_min = 14, FailSanity_max = 36;
   public const float FailGold_min = 6, FailGold_max = 18;
   public const int RewardHP_min = 0, RewardHP_max = 0;
-  public const int RewardSanity = 15;
+  public const int RewardSanity = 20;
   public const int RewardGold = 10;
   public const int RewardSupply = 6;
 
@@ -189,8 +194,8 @@ public class GameData    //게임 진행도 데이터
     for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
     {
       if (CurrentSettlement != null && GameManager.Instance.MyGameData.MyMapData.AllSettles[i] == CurrentSettlement) continue;
-      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort- value <0  ?
-          0 : GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - value;
+      GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort = (GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort- value) <0  ?
+          0 : (GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort - value);
     }
   }
 
@@ -212,12 +217,12 @@ public class GameData    //게임 진행도 데이터
         int _addvalue = ConstValues.SectorEffect_Library;
 
         if(LongExp!=null)
-        LongExp.Duration = LongExp.Duration + _addvalue > ConstValues.EXPMaxTurn_long_idle? ConstValues.EXPMaxTurn_long_idle : LongExp.Duration + _addvalue;
+        LongExp.Duration = LongExp.Duration + _addvalue > ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value ? ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value : LongExp.Duration + _addvalue;
 
         if (ShortExp_A != null) ShortExp_A .Duration =
-                ShortExp_A .Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle ? ConstValues.EXPMaxTurn_short_idle : ShortExp_A .Duration + _addvalue;
+                ShortExp_A .Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle+GameManager.Instance.MyGameData.Skill_Intelligence.Level/ConstValues.IntelEffect_Level*ConstValues.IntelEffect_Value  ? ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value : ShortExp_A .Duration + _addvalue;
         if (ShortExp_B != null) ShortExp_B.Duration =
-                ShortExp_B.Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle ? ConstValues.EXPMaxTurn_short_idle : ShortExp_B.Duration + _addvalue;
+                ShortExp_B.Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value ? ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value : ShortExp_B.Duration + _addvalue;
         UIManager.Instance.UpdateExpPanel();
         break;
       case SectorTypeEnum.NULL:

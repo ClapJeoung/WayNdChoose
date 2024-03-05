@@ -1814,7 +1814,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue=IsMad? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply+GameManager.Instance.MyGameData.Skill_Force.Level/ConstValues.ForceEffect_Level*ConstValues.ForceEffect_Value;
         break;
       case SectorTypeEnum.Temple:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
@@ -1822,7 +1822,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / ConstValues.ForceEffect_Level * ConstValues.ForceEffect_Value;
         break;
       case SectorTypeEnum.Marketplace:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
@@ -1830,7 +1830,7 @@ public class UI_dialogue : UI_default
         GoldCost =IsMad? GameManager.Instance.MyGameData.RestCost_Gold: Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / ConstValues.ForceEffect_Level * ConstValues.ForceEffect_Value;
         break;
       case SectorTypeEnum.Library:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
@@ -1838,7 +1838,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / ConstValues.ForceEffect_Level * ConstValues.ForceEffect_Value;
         break;
     }
 
@@ -1850,7 +1850,7 @@ public class UI_dialogue : UI_default
         break;
       case true:
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
-        ConstValues.Quest_Cult_Progress_Sabbat);
+        ConstValues.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
         SectorEffect.text = _effect + _sabbatdescription;
         break;
     }
@@ -1905,7 +1905,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = IsMad ? _discomfort_default : (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - ConstValues.SectorEffect_residence_discomfort) : 0;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / ConstValues.ForceEffect_Level * ConstValues.ForceEffect_Value;
         break;
       case SectorTypeEnum.Temple:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_temple);
@@ -1913,7 +1913,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / ConstValues.ForceEffect_Level * ConstValues.ForceEffect_Value;
         break;
       case SectorTypeEnum.Marketplace:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_marketSector);
@@ -1921,7 +1921,7 @@ public class UI_dialogue : UI_default
         GoldCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Gold : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - ConstValues.SectorEffect_marketSector / 100.0f));
         DiscomfortValue = _discomfort_default;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / ConstValues.ForceEffect_Level * ConstValues.ForceEffect_Value;
         break;
       case SectorTypeEnum.Library:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, ConstValues.SectorEffect_Library);
@@ -1929,7 +1929,7 @@ public class UI_dialogue : UI_default
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = ConstValues.Rest_Supply;
+        SupplyValue = ConstValues.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / ConstValues.ForceEffect_Level * ConstValues.ForceEffect_Value;
         break;
     }
 
@@ -1942,7 +1942,7 @@ public class UI_dialogue : UI_default
         break;
       case true:
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
-        ConstValues.Quest_Cult_Progress_Sabbat);
+        ConstValues.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
         SectorEffect.text = _effect + _sabbatdescription;
         UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
         break;
