@@ -14,7 +14,7 @@ public static class ConstValues
   public const int IntelEffect_Level=2,IntelEffect_Value = 1;
 
   public const int ResourceGoldValue = 2;
-  public const float DiscomfortGoldValue = 0.02f;
+  public const float DiscomfortGoldValue = 0.05f;
 
   public const int Discomfort_high = 19, Discomfort_middle = 12, Discomfort_low = 6;
 

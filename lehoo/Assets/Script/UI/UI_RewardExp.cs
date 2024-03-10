@@ -66,7 +66,7 @@ public class UI_RewardExp : UI_default
           if (LongExpTurn_Obj.activeInHierarchy == false) LongExpTurn_Obj.SetActive(true);
 
           LongExpTurn_Text.text = exp.Duration==0 ? (ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value).ToString():exp.Duration.ToString();
-          LongExp_Effect.text = (exp.PassiveCount > 0 ? exp.EffectString_Passive + "<br>" : "") + exp.EffectString_Active;
+          LongExp_Effect.text = (exp.PassiveCount > 0 ? exp.EffectString_Passive : "") + exp.EffectString_Active;
         }
         else
         {
@@ -84,7 +84,7 @@ public class UI_RewardExp : UI_default
           if (ShortExpTurn_Obj[0].activeInHierarchy == false) ShortExpTurn_Obj[0].SetActive(true);
 
           ShortExpTurn_Text[0].text = exp.Duration == 0 ? (ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value).ToString() : exp.Duration.ToString();
-          ShortExp_Effect[0].text = (exp.PassiveCount > 0 ? exp.EffectString_Passive + "<br>" : "") + exp.EffectString_Active;
+          ShortExp_Effect[0].text = (exp.PassiveCount > 0 ? exp.EffectString_Passive : "") + exp.EffectString_Active;
         }
         else
         {
@@ -102,7 +102,7 @@ public class UI_RewardExp : UI_default
           if (ShortExpTurn_Obj[1].activeInHierarchy == false) ShortExpTurn_Obj[1].SetActive(true);
 
           ShortExpTurn_Text[1].text = exp.Duration == 0 ? (ConstValues.EXPMaxTurn_short_idle+GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value).ToString() : exp.Duration.ToString();
-          ShortExp_Effect[1].text = (exp.PassiveCount > 0 ? exp.EffectString_Passive + "<br>" : "") + exp.EffectString_Active;
+          ShortExp_Effect[1].text = (exp.PassiveCount > 0 ? exp.EffectString_Passive : "") + exp.EffectString_Active;
         }
         else
         {

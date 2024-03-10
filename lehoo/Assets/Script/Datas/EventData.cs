@@ -79,129 +79,138 @@ public class EventHolder
   }
   public EventData ReturnEventDataDefault(EventJsonData _data) 
   {
-    EventData Data=new EventData();
-    Data.ID = _data.ID;
-
-    string[] _placeinfos = _data.PlaceInfo.Split('@');
-    Data.AppearSpace = (EventAppearType)int.Parse(_placeinfos[0]);
-    Data.EnvironmentType = (EnvironmentType)int.Parse(_placeinfos[1]);
-    if(Data.AppearSpace!=EventAppearType.Outer)  Data.Sector = (SectorTypeEnum)int.Parse(_placeinfos[2]);
-
-    if (_data.Selection_Type != "")
+    try
     {
-      Data.Selection_type = (SelectionTypeEnum)int.Parse(_data.Selection_Type);
-      switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
+      EventData Data = new EventData();
+      Data.ID = _data.ID;
+
+      string[] _placeinfos = _data.PlaceInfo.Split('@');
+      Data.AppearSpace = (EventAppearType)int.Parse(_placeinfos[0]);
+      Data.EnvironmentType = (EnvironmentType)int.Parse(_placeinfos[1]);
+      if (Data.AppearSpace != EventAppearType.Outer) Data.Sector = (SectorTypeEnum)int.Parse(_placeinfos[2]);
+
+      if (_data.Selection_Type != "")
       {
-        case SelectionTypeEnum.Single://단일 선택지
-          Data.SelectionDatas = new SelectionData[1];
-          Data.SelectionDatas[0] = new SelectionData(Data);
+        Data.Selection_type = (SelectionTypeEnum)int.Parse(_data.Selection_Type);
+        switch (Data.Selection_type)//단일,이성육체,정신물질,기타 등등 분류별로 선택지,실패,성공 데이터 만들기
+        {
+          case SelectionTypeEnum.Single://단일 선택지
+            Data.SelectionDatas = new SelectionData[1];
+            Data.SelectionDatas[0] = new SelectionData(Data);
+
+            if (_data.Selection_Target != "")
+            {
+              Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
+              switch (Data.SelectionDatas[0].ThisSelectionType)
+              {
+                case SelectionTargetType.Pay: //지불
+                  Data.SelectionDatas[0].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info);
+                  break;
+                case SelectionTargetType.Check_Single: //기술(단일)
+                  Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info));
+                  break;
+                case SelectionTargetType.Check_Multy: //기술(복수)
+                  string[] _temp = _data.Selection_Info.Split(',');
+                  for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[i]));
+                  break;
+              }
+              if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
+                Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy) ||
+                  Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
+              {
+                Data.SelectionDatas[0].FailData = new FailData(Data);
+                Data.SelectionDatas[0].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
+                switch (Data.SelectionDatas[0].FailData.Penelty_target)
+                {
+                  case PenaltyTarget.None: break;
+                  case PenaltyTarget.Status: Data.SelectionDatas[0].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
+                  case PenaltyTarget.EXP: Data.SelectionDatas[0].FailData.ExpID = _data.Failure_Penalty_info; break;
+                }
+              }
+              Data.SelectionDatas[0].SuccessData = new SuccessData(Data, TendencyTypeEnum.None, 0);
+              Data.SelectionDatas[0].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target);
+              switch (Data.SelectionDatas[0].SuccessData.Reward_Type)
+              {
+                case RewardTypeEnum.Experience: Data.SelectionDatas[0].SuccessData.Reward_EXPID = _data.Reward_Info; break;
+                case RewardTypeEnum.Status: Data.SelectionDatas[0].SuccessData.Reward_StatusType = (StatusTypeEnum)int.Parse(_data.Reward_Info); break;
+                case RewardTypeEnum.Skill: Data.SelectionDatas[0].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info); break;
+              }
+            }
+
+            break;
+          case SelectionTypeEnum.Body://이성육체
+            maketendencydata(TendencyTypeEnum.Body);
+            break;
+          case SelectionTypeEnum.Head://정신물질
+            maketendencydata(TendencyTypeEnum.Head);
+            break;
+        }
+        void maketendencydata(TendencyTypeEnum tendencytype)
+        {
+          Data.SelectionDatas = new SelectionData[2];
 
           if (_data.Selection_Target != "")
           {
-            Data.SelectionDatas[0].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target);
-            switch (Data.SelectionDatas[0].ThisSelectionType)
+            for (int i = 0; i < Data.SelectionDatas.Length; i++)
             {
-              case SelectionTargetType.Pay: //지불
-                Data.SelectionDatas[0].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info);
-                break;
-              case SelectionTargetType.Check_Single: //기술(단일)
-                Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info));
-                break;
-              case SelectionTargetType.Check_Multy: //기술(복수)
-                string[] _temp = _data.Selection_Info.Split(',');
-                for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[i]));
-                break;
-            }
-            if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
-              Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Multy)||
-                Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
-            {
-              Data.SelectionDatas[0].FailData = new FailData(Data);
-              Data.SelectionDatas[0].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty);
-              switch (Data.SelectionDatas[0].FailData.Penelty_target)
+              Data.SelectionDatas[i] = new SelectionData(Data, tendencytype, i);
+
+              Data.SelectionDatas[i].StopEvent = _data.EventLine != "" && _data.EventLine.Split('@').Length > 1 ?
+                int.Parse(_data.EventLine.Split('@')[1]) == i : false;
+
+              Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target.Split('@')[i]);
+              switch (Data.SelectionDatas[i].ThisSelectionType)
               {
-                case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.SelectionDatas[0].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info); break;
-                case PenaltyTarget.EXP: Data.SelectionDatas[0].FailData.ExpID = _data.Failure_Penalty_info; break;
+                case SelectionTargetType.Pay: //지불
+                  Data.SelectionDatas[i].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]);
+                  break;
+                case SelectionTargetType.Check_Single: //기술(단일)
+                  Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]));
+                  break;
+                case SelectionTargetType.Check_Multy: //기술(복수)
+                  string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
+                  for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[j]));
+                  break;
               }
-            }
-            Data.SelectionDatas[0].SuccessData = new SuccessData(Data, TendencyTypeEnum.None,0);
-            Data.SelectionDatas[0].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target);
-            switch (Data.SelectionDatas[0].SuccessData.Reward_Type)
-            {
-              case RewardTypeEnum.Experience: Data.SelectionDatas[0].SuccessData.Reward_EXPID = _data.Reward_Info; break;
-              case RewardTypeEnum.Status:Data.SelectionDatas[0].SuccessData.Reward_StatusType=(StatusTypeEnum)int.Parse(_data.Reward_Info); break;
-              case RewardTypeEnum.Skill: Data.SelectionDatas[0].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info); break;
+
+              if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
+                Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy) ||
+                                Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
+
+              {
+                Data.SelectionDatas[i].FailData = new FailData(Data, tendencytype, i);
+                Data.SelectionDatas[i].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
+                switch (Data.SelectionDatas[i].FailData.Penelty_target)
+                {
+                  case PenaltyTarget.None: break;
+                  case PenaltyTarget.Status: Data.SelectionDatas[i].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
+                  case PenaltyTarget.EXP: Data.SelectionDatas[i].FailData.ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
+                }
+              }
+              Data.SelectionDatas[i].SuccessData = new SuccessData(Data, tendencytype, i);
+              Data.SelectionDatas[i].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target.Split('@')[i]);
+              switch (Data.SelectionDatas[i].SuccessData.Reward_Type)
+              {
+                case RewardTypeEnum.Experience: Data.SelectionDatas[i].SuccessData.Reward_EXPID = _data.Reward_Info.Split('@')[i]; break;
+                case RewardTypeEnum.Status: Data.SelectionDatas[i].SuccessData.Reward_StatusType = (StatusTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
+                case RewardTypeEnum.Skill: Data.SelectionDatas[i].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
+              }
+
             }
           }
 
-          break;
-        case SelectionTypeEnum.Body://이성육체
-          maketendencydata(TendencyTypeEnum.Body);
-          break;
-        case SelectionTypeEnum.Head://정신물질
-          maketendencydata(TendencyTypeEnum.Head);
-          break;
-      }
-      void maketendencydata(TendencyTypeEnum tendencytype)
-      {
-        Data.SelectionDatas = new SelectionData[2];
-
-        if (_data.Selection_Target != "")
-        {
-          for (int i = 0; i < Data.SelectionDatas.Length; i++)
-          {
-            Data.SelectionDatas[i] = new SelectionData(Data,tendencytype, i);
-
-            Data.SelectionDatas[i].StopEvent = _data.EventLine != "" && _data.EventLine.Split('@').Length > 1 ?
-              int.Parse(_data.EventLine.Split('@')[1]) == i : false;
-
-            Data.SelectionDatas[i].ThisSelectionType = (SelectionTargetType)int.Parse(_data.Selection_Target.Split('@')[i]);
-            switch (Data.SelectionDatas[i].ThisSelectionType)
-            {
-              case SelectionTargetType.Pay: //지불
-                Data.SelectionDatas[i].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]);
-                break;
-              case SelectionTargetType.Check_Single: //기술(단일)
-                Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]));
-                break;
-              case SelectionTargetType.Check_Multy: //기술(복수)
-                string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
-                for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[j]));
-                break;
-            }
-
-            if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
-              Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy)||
-                              Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
-
-            {
-              Data.SelectionDatas[i].FailData = new FailData(Data,tendencytype, i);
-              Data.SelectionDatas[i].FailData.Penelty_target = (PenaltyTarget)int.Parse(_data.Failure_Penalty.Split('@')[i]);
-              switch (Data.SelectionDatas[i].FailData.Penelty_target)
-              {
-                case PenaltyTarget.None: break;
-                case PenaltyTarget.Status: Data.SelectionDatas[i].FailData.StatusType = (StatusTypeEnum)int.Parse(_data.Failure_Penalty_info.Split('@')[i]); break;
-                case PenaltyTarget.EXP: Data.SelectionDatas[i].FailData.ExpID = _data.Failure_Penalty_info.Split('@')[i]; break;
-              }
-            }
-            Data.SelectionDatas[i].SuccessData = new SuccessData(Data,tendencytype, i);
-            Data.SelectionDatas[i].SuccessData.Reward_Type = (RewardTypeEnum)int.Parse(_data.Reward_Target.Split('@')[i]);
-            switch (Data.SelectionDatas[i].SuccessData.Reward_Type)
-            {
-              case RewardTypeEnum.Experience: Data.SelectionDatas[i].SuccessData.Reward_EXPID = _data.Reward_Info.Split('@')[i]; break;
-              case RewardTypeEnum.Status: Data.SelectionDatas[i].SuccessData.Reward_StatusType = (StatusTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
-              case RewardTypeEnum.Skill: Data.SelectionDatas[i].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
-            }
-
-          }
         }
-
       }
-    }
 
-    Data.EventLine = _data.EventLine.Split('@')[0];
-    return Data;
+      Data.EventLine = _data.EventLine.Split('@')[0];
+      return Data;
+    }
+    catch (System.Exception e)
+    {
+      Debug.Log($"{_data.ID}가 이상한 레후");
+      Debug.Break();
+      return null;
+    }
   }
   public void ConvertData_Normal(EventJsonData _data)
   {

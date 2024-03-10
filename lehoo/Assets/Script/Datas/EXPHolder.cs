@@ -57,28 +57,29 @@ public class Experience
     get
     {
       string _str = "";
-      foreach (var _data in Effects)
+      for(int i = 0; i < Effects.Count; i++)
       {
-        if (!_str.Equals("")) _str += "\n";
         string _temp = "";
-        switch (_data)
+        switch (Effects[i])
         {
           case EffectType.HPLoss:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.HP, 12) + " "
-        + string.Format("{0}%", WNCText.PositiveColor((ConstValues.HPLoss_Exp*100).ToString()));
+        + string.Format("{0}%", WNCText.PositiveColor((ConstValues.HPLoss_Exp * 100).ToString()));
             break;
           case EffectType.SanityLoss:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Sanity, 12) + " "
-+ string.Format("{0}%", WNCText.PositiveColor((ConstValues.SanityLoss_Exp*100).ToString()));
++ string.Format("{0}%", WNCText.PositiveColor((ConstValues.SanityLoss_Exp * 100).ToString()));
             break;
           case EffectType.GoldGen:
             _temp = GameManager.Instance.GetTextData(StatusTypeEnum.Gold, 12) + " "
-+ string.Format("{0}%", WNCText.PositiveColor((ConstValues.GoldGen_Exp*100).ToString()));
++ string.Format("{0}%", WNCText.PositiveColor((ConstValues.GoldGen_Exp * 100).ToString()));
             break;
         }
-        _str += _temp;
+        if (_temp != "")
+        {
+          _str += _temp+"<br>";
+        }
       }
-
       return _str;
     }
   }
@@ -87,11 +88,10 @@ public class Experience
     get
     {
       string _str = "";
-      foreach (var _data in Effects)
+      for (int i = 0; i < Effects.Count; i++)
       {
-        if (!_str.Equals("")) _str += "\n";
         string _temp = "";
-        switch (_data)
+        switch (Effects[i])
         {
           case EffectType.Conversation:
             _temp = $"{GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1)} + {ConstValues.ExpSkillLevel}";
@@ -106,9 +106,11 @@ public class Experience
             _temp = $"{GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1)} + {ConstValues.ExpSkillLevel}";
             break;
         }
-        _str += _temp;
+        if (_temp != "")
+        {
+          _str += _temp + "<br>";
+        }
       }
-
       return _str;
     }
   }
