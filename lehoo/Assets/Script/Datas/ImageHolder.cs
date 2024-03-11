@@ -37,14 +37,17 @@ public class ImageHolder : ScriptableObject
   public Sprite GameOver_Intelligence = null;
   public Sprite GameOver_Madness = null;
   [Space(10)]
+  public List<Sprite> Background_Village=new List<Sprite>();
   public List<Sprite> Village_spring = new List<Sprite>();
   public List<Sprite> Village_summer = new List<Sprite>();
   public List<Sprite> Village_autumn = new List<Sprite>();
   public List<Sprite> Village_winter = new List<Sprite>();
+  public List<Sprite> Background_Town = new List<Sprite>();
   public List<Sprite> Town_spring= new List<Sprite>();
   public List<Sprite> Town_summer= new List<Sprite>();
   public List<Sprite> Town_autumn= new List<Sprite>();
   public List<Sprite> Town_winter=new List<Sprite>();
+  public List<Sprite> Background_City = new List<Sprite>();
   public List<Sprite> City_spring = new List<Sprite>();
   public List<Sprite> City_summer = new List<Sprite>();
   public List<Sprite> City_autumn = new List<Sprite>();
@@ -84,6 +87,19 @@ public class ImageHolder : ScriptableObject
     }
 
     return _targetlist[Random.Range(0,_targetlist.Count)];
+  }
+  public Sprite GetSettlementBackground(SettlementType type,int season)
+  {
+    switch (type)
+    {
+      case SettlementType.Village:
+        return Background_Village[season];
+      case SettlementType.Town:
+        return Background_Town[season];
+      case SettlementType.City:
+        return Background_City[season];
+    }
+    return null;
   }
   [Space(5)]
   public List<Sprite> Village_Residence_s0 = new List<Sprite>();

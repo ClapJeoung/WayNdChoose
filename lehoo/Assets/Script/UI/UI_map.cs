@@ -700,7 +700,7 @@ public class UI_map : UI_default
   private bool EnvirBackground = false;
   private IEnumerator openui(bool dir)
   {
-    if(!UIManager.Instance.EnvirBackgroundEnable) UIManager.Instance.UpdateBackground(GameManager.Instance.MyGameData.CurrentTile.RandomEnvir);
+    if(GameManager.Instance.MyGameData.CurrentEvent==null) UIManager.Instance.UpdateBackground(GameManager.Instance.MyGameData.CurrentTile.RandomEnvir);
 
     if (GameManager.Instance.MyGameData.Resources.Count != ResourceHolder.childCount)
     {

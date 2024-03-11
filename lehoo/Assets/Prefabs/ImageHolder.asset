@@ -388,6 +388,11 @@ MonoBehaviour:
   GameOver_Wild: {fileID: 21300000, guid: f5f8ef03f61a3594c96b255d49942269, type: 3}
   GameOver_Intelligence: {fileID: 21300000, guid: f4ddf5c78e3ead64483685202e28ceaa, type: 3}
   GameOver_Madness: {fileID: 21300000, guid: 1e804cc870a34de4fb3b4a1360e3d712, type: 3}
+  Background_Village:
+  - {fileID: 21300000, guid: 8c21e24584ab4d9438eff14d1c11f066, type: 3}
+  - {fileID: 21300000, guid: 2c7a791e95b81ee40a42da5b1111cb3c, type: 3}
+  - {fileID: 21300000, guid: 16bda082b4bb22f458ace6706f73059d, type: 3}
+  - {fileID: 21300000, guid: 71487190531006f4697bd815900f4de6, type: 3}
   Village_spring:
   - {fileID: 21300000, guid: a0e73dd4855f22247a12c782f466257c, type: 3}
   - {fileID: 21300000, guid: ca1d5f4f7c8d5e14e88593ac5efa3156, type: 3}
@@ -400,6 +405,11 @@ MonoBehaviour:
   Village_winter:
   - {fileID: 21300000, guid: 438c0f3aa26d8864089835b2e20b60f1, type: 3}
   - {fileID: 21300000, guid: 421ff4bbfe0668340bef14a56b8ed5a8, type: 3}
+  Background_Town:
+  - {fileID: 21300000, guid: f39cda44877345a49a325178b50b3fe9, type: 3}
+  - {fileID: 21300000, guid: 1a752a96e19422547be49beffabdb372, type: 3}
+  - {fileID: 21300000, guid: 8c5fd33f6cb2df343bcd337b6206cfb6, type: 3}
+  - {fileID: 21300000, guid: 953ad27b8fde82b4c9e72e7a7c1f1cf4, type: 3}
   Town_spring:
   - {fileID: 21300000, guid: 6aecb9a7cfd37404abe8781fa094cb28, type: 3}
   - {fileID: 21300000, guid: 26684cbb8afcb674c91b7684a447047c, type: 3}
@@ -412,6 +422,11 @@ MonoBehaviour:
   Town_winter:
   - {fileID: 21300000, guid: ada1936289e8e8e42a3adb6668518567, type: 3}
   - {fileID: 21300000, guid: 947760940853b5340ba1bdb446c0ca2d, type: 3}
+  Background_City:
+  - {fileID: 21300000, guid: 938d21a97a53c13499b21b4f6ce24a88, type: 3}
+  - {fileID: 21300000, guid: 8bea320726f3a3e49b23cd4f8bf8de92, type: 3}
+  - {fileID: 21300000, guid: 313cfbf4207bf6348a7dffe5aa2700df, type: 3}
+  - {fileID: 21300000, guid: 23fb7ebfd6e4d134b919be24af8048b8, type: 3}
   City_spring:
   - {fileID: 21300000, guid: 31092b811a6178842a8e3a9939639917, type: 3}
   - {fileID: 21300000, guid: ba521dbb9fc714f4a8c88435bca4f7b0, type: 3}

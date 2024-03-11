@@ -539,6 +539,7 @@ public class UI_dialogue : UI_default
       }
       else
       {
+        if (!UIManager.Instance.EnvirBackgroundEnable) UIManager.Instance.UpdateBackground(CurrentSettlement.SettlementType);
         if (SettlementBackground.enabled == false) SettlementBackground.enabled = true;
       }
 
@@ -644,6 +645,7 @@ public class UI_dialogue : UI_default
     }
     else
     {
+      if(!UIManager.Instance.EnvirBackgroundEnable) UIManager.Instance.UpdateBackground(CurrentSettlement.SettlementType);
       if (SettlementBackground.enabled == false) SettlementBackground.enabled = true;
     }
 
@@ -1694,13 +1696,13 @@ public class UI_dialogue : UI_default
     }
     if (PlayerPrefs.GetInt("Tutorial_Settlement") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Settlement();
 
-        DefaultGroup.interactable = false;
-        if (CurrentDialogueType == DialogueTypeEnum.Event)
-        {
-            StartCoroutine(UIManager.Instance.moverect(DialogueRect, Descriptionpos_Outside, Descriptionpos_Inside, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
-            StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueAlpha, 0.0f, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
-            yield return new WaitForSeconds(CloseTime);
-        }
+    DefaultGroup.interactable = false;
+    if (CurrentDialogueType == DialogueTypeEnum.Event)
+    {
+      StartCoroutine(UIManager.Instance.moverect(DialogueRect, Descriptionpos_Outside, Descriptionpos_Inside, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+      StartCoroutine(UIManager.Instance.ChangeAlpha(DialogueAlpha, 0.0f, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+      yield return new WaitForSeconds(CloseTime);
+    }
     if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
     if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     ExpUsageDic_L.Clear();
@@ -1720,7 +1722,7 @@ public class UI_dialogue : UI_default
       if (MadenssEffect.enabled) MadenssEffect.enabled = false;
       IsMad = false;
     }
-    UIManager.Instance.OffBackground();
+    UIManager.Instance.UpdateBackground(CurrentSettlement.SettlementType);
 
     if (EventObjectHolder.activeInHierarchy == true) EventObjectHolder.SetActive(false);
     if (SettlementObjectHolder.activeInHierarchy == false) SettlementObjectHolder.SetActive(true);

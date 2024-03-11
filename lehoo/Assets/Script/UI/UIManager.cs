@@ -69,6 +69,12 @@ public class UIManager : MonoBehaviour
     Sprite _newbackground = GameManager.Instance.ImageHolder.GetEnvirBackground(envir);
     EnvirBackground.Next( _newbackground,1.0f);
   }
+  public void UpdateBackground(SettlementType type)
+  {
+    EnvirBackgroundEnable = true;
+    Sprite _newbackground = GameManager.Instance.ImageHolder.GetSettlementBackground(type,GameManager.Instance.MyGameData.Turn);
+    EnvirBackground.Next(_newbackground, 1.0f);
+  }
   public void OffBackground()
   {
     EnvirBackgroundEnable = false;
