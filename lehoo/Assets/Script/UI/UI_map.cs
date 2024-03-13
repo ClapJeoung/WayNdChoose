@@ -102,7 +102,7 @@ public class UI_map : UI_default
     {
       List<Image> _temp = new List<Image>();
       foreach (var _routedata in Routes)
-        foreach (var _arrow in _routedata.Outlines)
+        foreach (var _arrow in _routedata.Arrows)
           _temp.Add(_arrow);
       return _temp;
     }
@@ -1368,6 +1368,7 @@ public class UI_map : UI_default
           }
           if (_isdone) break;
         }
+        CurrentArrows[_currentindex - 1].enabled = false;
 
         if(AllTiles[_currentindex-1].Landmark == LandmarkType.Ritual)
           UIManager.Instance.CultUI.AddProgress(4, null);
@@ -1437,6 +1438,7 @@ public class UI_map : UI_default
       Routes[Routes.Count - 1].Outlines[Routes[Routes.Count - 1].Outlines.Count - 1].enabled = false;
       if (_stoptile.Landmark == LandmarkType.Ritual)
         UIManager.Instance.CultUI.AddProgress(4, null);
+      CurrentArrows[_currentindex].enabled = false;
 
       List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_stoptile, GameManager.Instance.MyGameData.ViewRange);
       foreach (var _tile in _newarounds)

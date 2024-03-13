@@ -1896,8 +1896,7 @@ public class UI_dialogue : UI_default
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector, false);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = GameManager.Instance.MyGameData.Tendency_Head.Level<=-1&&GameManager.Instance.MyGameData.FirstRest?
-      (int)(ConstValues.Rest_Discomfort*ConstValues.Tendency_Head_m1):ConstValues.Rest_Discomfort;
+    int _discomfort_default = ConstValues.Rest_Discomfort;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
