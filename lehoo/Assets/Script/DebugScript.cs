@@ -141,11 +141,11 @@ public class DebugScript : MonoBehaviour
 
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
-      GameManager.Instance.MyGameData.Quest_Cult_Phase = int.Parse(Cult_Phase.text);
-      GameManager.Instance.MyGameData.Cult_CoolTime = int.Parse(Cult_Cooltime.text);
-      GameManager.Instance.MyGameData.Quest_Cult_Progress = float.Parse(Cult_Progress.text);
-      UIManager.Instance.SidePanelCultUI.UpdateProgressValue();
-      UIManager.Instance.SidePanelCultUI.UpdateUI();
+    //  GameManager.Instance.MyGameData.Quest_Cult_Phase = int.Parse(Cult_Phase.text);
+    //  GameManager.Instance.MyGameData.Cult_CoolTime = int.Parse(Cult_Cooltime.text);
+    //  GameManager.Instance.MyGameData.Quest_Cult_Progress = float.Parse(Cult_Progress.text);
+    //  UIManager.Instance.SidePanelCultUI.UpdateProgressValue();
+     // UIManager.Instance.SidePanelCultUI.UpdateUI();
     }
    GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = NextEventId.text;
 

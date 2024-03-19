@@ -77,6 +77,7 @@ public class UI_Selection : MonoBehaviour
       else if (_data.Index == 1 && GameManager.Instance.MyGameData.Tendency_Head.Level == 2) IsOverTendency = true;
       else IsOverTendency = false;
     }
+    else IsOverTendency = false;
 
     if (IsOverTendency)
     {

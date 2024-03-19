@@ -6,6 +6,7 @@ using TMPro;
 using System.IO;
 using System.Numerics;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class UI_Main : UI_default
 {
@@ -40,6 +41,9 @@ public class UI_Main : UI_default
     else if(MusicLicensePanel.activeInHierarchy == false) MusicLicensePanel.SetActive(true);
   }
   [SerializeField] private GameObject MusicLicensePanel = null;
+  [SerializeField] private CanvasGroup EndingGroup = null;
+  [SerializeField] private TextMeshProUGUI EndingText = null;
+  [SerializeField] private List<PreviewInteractive> EndingPreviews = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
   [SerializeField] private CanvasGroup QuestIllustGroup = null;
@@ -63,6 +67,7 @@ public class UI_Main : UI_default
   }
   public void SetupMain()
   {
+    EndingText.text = GameManager.Instance.GetTextData("EndingList");
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
     LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
     QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
@@ -115,6 +120,37 @@ public class UI_Main : UI_default
       LoadInfoText.text = "";
     }
     StartCoroutine(showimage());
+
+    for(int i=0;i< GameManager.Instance.ImageHolder.EndingList.Count; i++)
+    {
+      EndingDatas _ending = GameManager.Instance.ImageHolder.EndingList[i];
+      EndingPreviews[i].EndingID = _ending.ID;
+
+      if (GameManager.Instance.ProgressData.EndingLists.Contains(_ending.ID))
+      {
+        EndingPreviews[i].transform.GetChild(0).GetComponent<Image>().sprite = _ending.PreviewIcon;
+      }
+      else
+      {
+        EndingPreviews[i].transform.GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
+      }
+    }
+    if (LoadInfoText.text != "")
+    {
+      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup, 1.0f, MainUIOpenTime));
+    }
+    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement") == 1)
+    {
+      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOn");
+    }
+    else
+    {
+      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOff");
+    }
+    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, MainUIOpenTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(LanguageGroup, 1.0f, MainUIOpenTime));
+
     UIManager.Instance.AddUIQueue(openmain());
   }//메인 화면 텍스트 세팅
   public void StartGameDirect()
@@ -239,11 +275,13 @@ public class UI_Main : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(LanguageGroup,1.0f, MainUIOpenTime));
     yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, MainUIOpenTime));
   }
   private IEnumerator closemain()
   {
     if (MusicLicensePanel.activeInHierarchy==true) MusicLicensePanel.SetActive(false);
 
+    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").InsidePos, GetPanelRect("loadgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;

@@ -20,11 +20,10 @@ public class ImageHolder : ScriptableObject
     return _spr;
   }
   [Space(10)]
-  public EndingDatas CultEndingData=new EndingDatas();
-  public List<EndingDatas> EndingIllustList = new List<EndingDatas>();//엔딩 일러스트
+  public List<EndingDatas> EndingList = new List<EndingDatas>();//엔딩 일러스트
   public EndingDatas GetEndingData(string id)
   {
-    foreach (var _temp in EndingIllustList)
+    foreach (var _temp in EndingList)
       if (_temp.ID == id) return _temp;
 
     return null;
@@ -620,7 +619,7 @@ public class ImageHolder : ScriptableObject
     List<Sprite> _illusts = new List<Sprite>();
     foreach (Sprite _spr in EventIllust)
     {
-      if (_spr.name.Contains(originid, System.StringComparison.InvariantCultureIgnoreCase) == true)
+      if (_spr.name.Split('_')[1].Equals(originid.Split('_')[1], System.StringComparison.InvariantCultureIgnoreCase) == true)
       {
         if(_spr.name.Contains(typeid, System.StringComparison.InvariantCultureIgnoreCase)==true)
         _illusts.Add(_spr);
@@ -760,10 +759,15 @@ public class EventIllustHolder
 public class EndingDatas
 {
   public string ID = "";
-  public string Name { get
+  public string SelectName { get
     {
       return GameManager.Instance.GetTextData(ID + "_Name");
     } }
+  public Sprite PreviewIcon = null;
+  public string Preview_Name { get { return GameManager.Instance.GetTextData(ID + "_preview_name"); } }
+  public string Preview_Opened { get { return GameManager.Instance.GetTextData(ID + "_preview_opened"); } }
+  public string Preview_Closed { get { return GameManager.Instance.GetTextData(ID + "_preview_closed"); } }
+
   public List<Sprite> Illusts;
   public string Refuse_Name
   {

@@ -221,7 +221,7 @@ public class UI_map : UI_default
             ConstValues.ResourceGoldValue *
             (GameManager.Instance.MyGameData.Tendency_Head.Level > 0 ? ConstValues.Tendency_Head_p1 : 1.0f) *
             GameManager.Instance.MyGameData.GetGoldGenModify(true) *
-            (1.0f - LastDestination.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue),
+            Mathf.Clamp(1.0f - LastDestination.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue,0.0f,1.0f),
             1.0f, 1000.0f));
 
           if (LastDestination.TileSettle.Discomfort == 0)
@@ -230,7 +230,8 @@ public class UI_map : UI_default
               else if (LastDestination.TileSettle.Discomfort > 0)
             _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource_discomfort"),
               GameManager.Instance.MyGameData.Resources.Count, _sum,
-              LastDestination.TileSettle.Discomfort,ConstValues.DiscomfortGoldValue*LastDestination.TileSettle.Discomfort*100);
+              LastDestination.TileSettle.Discomfort,
+              Mathf.Clamp(ConstValues.DiscomfortGoldValue*LastDestination.TileSettle.Discomfort*100,0,100));
         }
       }
       else if (LastDestination.IsEvent)
@@ -1533,7 +1534,7 @@ public class UI_map : UI_default
             ConstValues.ResourceGoldValue *
             (GameManager.Instance.MyGameData.Tendency_Head.Level>0?ConstValues.Tendency_Head_p1:1.0f)*
             GameManager.Instance.MyGameData.GetGoldGenModify(true) *
-            (1.0f - _stoptile.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue),
+             Mathf.Clamp(1.0f - _stoptile.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue, 0.0f, 1.0f),
             1.0f, 1000.0f));
           GameManager.Instance.MyGameData.Gold += _sum;
           GameManager.Instance.MyGameData.Resources.Clear();

@@ -118,6 +118,11 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private GameObject RestPanel = null;
   [SerializeField] private TextMeshProUGUI RestRequireText = null;
   [SerializeField] private TextMeshProUGUI RestResultText = null;
+  [Space(10)]
+  [SerializeField] private GameObject EndingPreviewPanel = null;
+  [SerializeField] private Image EndingPreview_Illust = null;
+  [SerializeField] private TextMeshProUGUI EndingPreview_Name = null;
+  [SerializeField] private TextMeshProUGUI EndingPreview_Description = null;
   /*
   [Space(10)]
   [SerializeField] private GameObject CultPreviewPanel = null;
@@ -975,6 +980,14 @@ public class PreviewManager : MonoBehaviour
     LayoutRebuilder.ForceRebuildLayoutImmediate(RestResultText.transform.parent.transform as RectTransform);
 
     OpenPreviewPanel(RestPanel, rect);
+  }
+  public void OpenEndingPreviewPanel(RectTransform rect, Sprite illust, string name, string description)
+  {
+    EndingPreview_Illust.sprite= illust;
+    EndingPreview_Name.text= name;
+    EndingPreview_Description.text= description;
+
+    OpenPreviewPanel(EndingPreviewPanel, rect);
   }
   private Vector2 Newpos = Vector2.zero;
   public void Update()

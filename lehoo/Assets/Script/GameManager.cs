@@ -10,6 +10,10 @@ using System;
 using Steamworks;
 using System.Text;
 
+public class ProgressData
+{
+  public List<string> EndingLists = new List<string>();
+}
 public enum GameOverTypeEnum { HP,Sanity}
 public class GameManager : MonoBehaviour
 {
@@ -70,6 +74,11 @@ public class GameManager : MonoBehaviour
         if (System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName)) System.IO.File.Delete(Application.persistentDataPath + "/" + GameDataName);
       }
     }
+    if (System.IO.File.Exists(Application.persistentDataPath + "/" + ProgressDataName))
+    {
+      ProgressData = JsonUtility.FromJson<ProgressData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + ProgressDataName));
+    }
+    else ProgressData = new ProgressData();
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
 
  //   Debug.Log(GetTextData("ProgressInfo"));
@@ -162,7 +171,17 @@ public class GameManager : MonoBehaviour
 
   public GameJsonData GameSaveData = null;
   public const string GameDataName = "WNCGameData.json";
+  public ProgressData ProgressData = null;
+  public const string ProgressDataName = "PlayerProgressData.json";
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
+  public void AddEnding(string id)
+  {
+    if (ProgressData.EndingLists.Contains(id)) return;
+
+    ProgressData.EndingLists.Add(id);
+    string _json = JsonUtility.ToJson(ProgressData);
+    System.IO.File.WriteAllText(Application.persistentDataPath + "/" + ProgressDataName, _json);
+  }
 
   public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
 

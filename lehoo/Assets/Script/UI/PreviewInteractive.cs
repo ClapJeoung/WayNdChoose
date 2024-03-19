@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel,TileInfo,TurnInfo}
+CultSidePanel,TileInfo,TurnInfo,EndingPreview}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -26,6 +27,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
   public TileData MyTileData = null;
   public bool IsCultSidePanel = false;
   public Button ExpButton = null;
+  public string EndingID = "";
     public void OnPointerEnter(PointerEventData eventData)
     {
     UIManager.Instance.PreviewManager.ClosePreview();
@@ -253,6 +255,15 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           );
 
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_text,OtherRect,new Vector2(-0.05f,1.05f));        break;
+      case PreviewPanelType.EndingPreview:
+        if (!GameManager.Instance.ProgressData.EndingLists.Contains(EndingID))
+          UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData(EndingID + "_preview_closed"), OtherRect,new Vector2(0.5f,-0.05f));
+        else
+        {
+          EndingDatas _ending = GameManager.Instance.ImageHolder.GetEndingData(EndingID);
+          UIManager.Instance.PreviewManager.OpenEndingPreviewPanel(OtherRect, _ending.PreviewIcon, _ending.Preview_Name, _ending.Preview_Opened);
+        }
+        break;
     }
   }
     public void OnPointerExit(PointerEventData eventData) 

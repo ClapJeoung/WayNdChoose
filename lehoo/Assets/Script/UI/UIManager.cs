@@ -1481,7 +1481,7 @@ public class UIManager : MonoBehaviour
   private void Update()
   {
 #if UNITY_EDITOR
-    if (Input.GetKeyDown(KeyCode.F12))
+    if (Input.GetKeyDown(KeyCode.F10))
     {
       if(DebugUI.gameObject.activeInHierarchy==true)DebugUI.gameObject.SetActive(false);
       else
@@ -1693,6 +1693,7 @@ public class UIManager : MonoBehaviour
   }
   public void OpenEnding(EndingDatas data)
   {
+    GameManager.Instance.AddEnding(data.ID);
     StopAllCoroutines();
     GameManager.Instance.DeleteSaveData();
     AudioManager.StopWalking();

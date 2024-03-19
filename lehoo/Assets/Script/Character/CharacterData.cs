@@ -14,7 +14,7 @@ public static class ConstValues
   public const int IntelEffect_Level=2,IntelEffect_Value = 1;
 
   public const int ResourceGoldValue = 2;
-  public const float DiscomfortGoldValue = 0.05f;
+  public const float DiscomfortGoldValue = 0.04f;
 
   public const int Discomfort_high = 19, Discomfort_middle = 12, Discomfort_low = 6;
 
@@ -54,7 +54,7 @@ public static class ConstValues
   public const float StatusLoss_Gold_Min = 6, StatusLoss_Gold_Max = 30;
   public const float StatusLoss_MP_Min = 6, StatusLoss_MP_Max = 30;
 
-  public const int ExpSkillLevel = 2;
+  public const int ExpSkillLevel = 1;
 
   public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
   public const float MaxDiscomfortForUI = 25;
@@ -75,19 +75,19 @@ public static class ConstValues
 
   public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
     Quest_Cult_Progress_Sabbat =8,Quest_Cult_Progress_Ritual = 7;
-  public const float Qeust_Cult_EventProgress_Clear = 1.75f;
-  public const float Quest_Cult_EventProgress_Fail = 1.25f;
+  public const float Qeust_Cult_EventProgress_Clear = 2.5f;
+  public const float Quest_Cult_EventProgress_Fail = 1.5f;
   public const int Quest_Cult_Sabbat_PenaltyDiscomfort = 4, Quest_Cult_Ritual_PenaltySupply = 3;
   public const int Quest_Cult_SupplyAsSanity = 7;
-  public const int Quest_Cult_CoolTime_Village =7;
-  public const int Quest_Cult_CoolTime_Town = 6;
-  public const int Quest_Cult_CoolTime_City = 7;
-  public const int Quest_Cult_CoolTime_Sabbat = 7;
-  public const int Quest_Cult_CoolTime_Ritual = 6;
+  public const int Quest_Cult_CoolTime_Village =8;
+  public const int Quest_Cult_CoolTime_Town = 8;
+  public const int Quest_Cult_CoolTime_City = 9;
+  public const int Quest_Cult_CoolTime_Sabbat = 9;
+  public const int Quest_Cult_CoolTime_Ritual = 9;
   public const float Quest_Cult_LengthValue = 3.5f;
 
 
-  public const int Rest_Supply = 14;
+  public const int Rest_Supply = 10;
   public const int Rest_Discomfort = 8;
   public const float RestCost_Default_Min = 9, RestCost_Default_Max = 25;
   public const int MoveCost_Min = 1, MoveCost_Max = 4;  //이동 비용 골드 값 기준
@@ -117,7 +117,7 @@ public static class ConstValues
 
   public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
 
-  public const int StartSupplies = 8;
+  public const int StartSupplies = 15;
   public const int StartGold = 10;
   public const float HPLoss_Exp = 0.2f;
   public const float GoldGen_Exp = 0.25f;
@@ -143,8 +143,8 @@ public static class ConstValues
   //스킬 체크, 지불 체크 최대~최소
   public const int MaxTime = 60;  //15*4
   //보정치 최대 년도
-  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 8;
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 10;
+  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 12;
+  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 15;
 
   public const float Difficult = 1.0f;
   public const float PayHP_min = 3, PayHP_max = 6;      
@@ -158,8 +158,8 @@ public static class ConstValues
   public const int RewardGold = 10;
   public const int RewardSupply = 6;
 
-  public const int EXPMaxTurn_short_idle = 9;
-  public const int EXPMaxTurn_long_idle =  15;
+  public const int EXPMaxTurn_short_idle = 7;
+  public const int EXPMaxTurn_long_idle =  11;
 
   public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
   public const int TendencyRegress = 2;
@@ -758,7 +758,7 @@ public class GameData    //게임 진행도 데이터
     get { return quest_cult_progress; }
     set 
     {
-      if (value >= 100&&!UIManager.Instance.EndingUI.IsDead) UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.CultEndingData);
+      if (value >= 100&&!UIManager.Instance.EndingUI.IsDead) UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.EndingList[0]);
 
       quest_cult_progress = value < 0 ? 0 : value;
 
@@ -1471,9 +1471,6 @@ public class Tendency
   }
 
 }
-public class ProgressData
-{
-}//게임 외부 진척도 데이터
 public class GameJsonData
 {
   public bool IsDead = false;

@@ -938,7 +938,7 @@ public class UI_dialogue : UI_default
             {
               CurrentEndingData = GameManager.Instance.ImageHolder.GetEndingData(CurrentEvent.EndingID);
               EndingButtonGroup.alpha = 0.0f;
-              EndingButtonText.text = string.Format(GameManager.Instance.GetTextData("Ending"), CurrentEndingData.Name);
+              EndingButtonText.text = string.Format(GameManager.Instance.GetTextData("Ending"), CurrentEndingData.SelectName);
               EndingRefuseText.text = CurrentEndingData.Refuse_Name;
               LayoutRebuilder.ForceRebuildLayoutImmediate(EndingButtonGroup.transform as RectTransform);
               LayoutRebuilder.ForceRebuildLayoutImmediate(EndingRefuseGroup.transform as RectTransform);
@@ -963,7 +963,7 @@ public class UI_dialogue : UI_default
             {
               CurrentEndingData = GameManager.Instance.ImageHolder.GetEndingData(CurrentEvent.EndingID);
               EndingButtonGroup.alpha = 0.0f;
-              EndingButtonText.text = string.Format(GameManager.Instance.GetTextData("Ending"), CurrentEndingData.Name);
+              EndingButtonText.text = string.Format(GameManager.Instance.GetTextData("Ending"), CurrentEndingData.SelectName);
               EndingRefuseText.text = CurrentEndingData.Refuse_Name;
               LayoutRebuilder.ForceRebuildLayoutImmediate(EndingButtonGroup.transform as RectTransform);
               LayoutRebuilder.ForceRebuildLayoutImmediate(EndingRefuseGroup.transform as RectTransform);
@@ -1217,8 +1217,8 @@ public class UI_dialogue : UI_default
     currentselection.SkillInfo_right_1.text = "";
     currentselection.SkillInfo_right_1.gameObject.SetActive(true);
     #endregion
-    float _targettime = 0.75f;
-    int _targetcount =20;
+    float _targettime = 0.5f;
+    int _targetcount =15;
     float _waittime = _targettime / (float)_targetcount;
     List<int> _randomint = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     int _targetint = _randomint[Random.Range(0, _randomint.Count)];
@@ -1686,6 +1686,8 @@ public class UI_dialogue : UI_default
     {
       GameManager.Instance.MyGameData.Turn++;
       GameManager.Instance.MyGameData.CurrentEvent = null;
+      CurrentSuccessData = null;
+      CurrentFailData = null;
       GameManager.Instance.SaveData();
     }
     if (QuitAskText.text == "")
