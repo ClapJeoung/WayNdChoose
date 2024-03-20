@@ -65,6 +65,11 @@ public class UI_Main : UI_default
     PlayerPrefs.SetInt("LanguageIndex", index);
     UnityEngine.SceneManagement.SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
+  [SerializeField] private Button DiscordButton = null;
+  public void OpenDiscord()
+  {
+    Application.OpenURL("https://discord.gg/fruH7Ycu");
+  }
   public void SetupMain()
   {
     EndingText.text = GameManager.Instance.GetTextData("EndingList");
@@ -254,6 +259,7 @@ public class UI_Main : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").OutisdePos, GetPanelRect("mainillust").InsidePos, MainUIOpenTime, true));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("discord").Rect, GetPanelRect("discord").OutisdePos, GetPanelRect("discord").InsidePos, MainUIOpenTime, true));
     yield return Wait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").OutisdePos, GetPanelRect("quitgame").InsidePos, MainUIOpenTime, true));
     yield return Wait;
@@ -280,6 +286,7 @@ public class UI_Main : UI_default
   private IEnumerator closemain()
   {
     if (MusicLicensePanel.activeInHierarchy==true) MusicLicensePanel.SetActive(false);
+    DiscordButton.interactable = false;
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, MainUICloseTime));
@@ -297,6 +304,8 @@ public class UI_Main : UI_default
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("newgame").Rect, GetPanelRect("newgame").InsidePos, GetPanelRect("newgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").InsidePos, GetPanelRect("quitgame").OutisdePos, MainUICloseTime, false));
+    yield return LittleWait;
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("discord").Rect, GetPanelRect("discord").InsidePos, GetPanelRect("discord").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, MainUICloseTime));
   }
