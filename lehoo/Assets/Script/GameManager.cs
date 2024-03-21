@@ -678,6 +678,8 @@ public class GameManager : MonoBehaviour
   {
     if (instance == null)
     {
+      Application.runInBackground = true;
+
       instance = this;
       if (PlayerPrefs.GetInt("LanguageIndex", -1) == -1)
       {
