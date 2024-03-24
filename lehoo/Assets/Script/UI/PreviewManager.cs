@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
+using System.Text;
 
 public class PreviewManager : MonoBehaviour
 {
@@ -107,8 +109,6 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ExpSelecitonExistDescription = null;
   [SerializeField] private TextMeshProUGUI ExpSelectClickText = null;
   [Space(10)]
-  [SerializeField] private GameObject TileInfoPanel = null;
-  [Space(10)]
   [SerializeField] private GameObject SettlementInfoPanel = null;
   [SerializeField] private List<Image> SettlementSectorIcons = new List<Image>();
   [SerializeField] private Image SettlementIcon = null;
@@ -123,6 +123,10 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private Image EndingPreview_Illust = null;
   [SerializeField] private TextMeshProUGUI EndingPreview_Name = null;
   [SerializeField] private TextMeshProUGUI EndingPreview_Description = null;
+  [Space(10)]
+  [SerializeField] private GameObject ChatListPanel = null;
+  [SerializeField] private Image ChatListPanelBackground = null;
+  [SerializeField] private TextMeshProUGUI ChatListText = null;
   /*
   [Space(10)]
   [SerializeField] private GameObject CultPreviewPanel = null;
@@ -988,6 +992,29 @@ public class PreviewManager : MonoBehaviour
     EndingPreview_Description.text= description;
 
     OpenPreviewPanel(EndingPreviewPanel, rect);
+  }
+  public void OpenChatListPanel(RectTransform rect,TendencyTypeEnum tendencytype, bool isleft)
+  {
+    var _dic = isleft ? UIManager.Instance.DialogueUI.ChatIDList_L : UIManager.Instance.DialogueUI.ChatIDList_R;
+    ChatListPanelBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, isleft);
+    if (_dic.Count == 0)
+    {
+      ChatListText.text = GameManager.Instance.GetTextData("NoChat");
+    }
+    else
+    {
+      StringBuilder _str = new StringBuilder();
+      foreach (var _data in _dic)
+      {
+        if (_str.Length > 1) _str.Append("  ");
+        _str.Append(_data.Value.Type == StreamingTypeEnum.Chzz ? "<sprite=122>" : "<sprite=123");
+        _str.Append(_data.Value.Nickname);
+      }
+      ChatListText.text = _str.ToString();
+    }
+    LayoutRebuilder.ForceRebuildLayoutImmediate(ChatListText.transform as RectTransform);
+
+    OpenPreviewPanel(ChatListPanel,rect);
   }
   private Vector2 Newpos = Vector2.zero;
   public void Update()

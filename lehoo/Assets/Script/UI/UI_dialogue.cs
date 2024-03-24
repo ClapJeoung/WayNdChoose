@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
-using static Unity.Burst.Intrinsics.X86.Avx;
-
+using Lexone.UnityTwitchChat;
+using Unity.VisualScripting;
 
 public class UI_dialogue : UI_default
 {
@@ -62,6 +62,58 @@ public class UI_dialogue : UI_default
   [SerializeField] private CanvasGroup EndingRefuseGroup = null;
   [SerializeField] private TextMeshProUGUI EndingRefuseText = null;
   [SerializeField] private CanvasGroup SelectionGroup = null;
+  public struct ChatData
+  {
+    public string Nickname;
+    public StreamingTypeEnum Type;
+    public ChatData(string nickname,StreamingTypeEnum type)
+    {
+      Nickname = nickname;
+      Type= type;
+    }
+  }
+  public Dictionary<string,ChatData> ChatIDList_L = new Dictionary<string,ChatData>();
+  public Dictionary<string,ChatData> ChatIDList_R = new Dictionary<string,ChatData>();
+  [SerializeField] private GameObject ChatCommandButton = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandButtonText = null;
+  private void TurnOnChatButton()
+  {
+    if (!ChatCommandButton.activeSelf)
+    {
+      ChatCommandButton.SetActive(true);
+    }
+    if (ChatCommandButtonText.text == "")
+    {
+      ChatCommandButtonText.text = GameManager.Instance.GetTextData("ChatCommand_Name");
+    }
+  }
+  private void TurnOffChatButton()
+  {
+    if (ChatCommandButton.activeSelf) ChatCommandButton.SetActive(false);
+  }
+  [SerializeField] private GameObject ChatCommandPanel = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandPanelText = null;
+  public void ClickChatButton()
+  {
+    if (ChatCommandPanel.activeSelf) TurnOffChatPanel();
+    else TurnOnChatPanel();
+  }
+  private void TurnOnChatPanel()
+  {
+    if (!ChatCommandPanel.activeSelf)
+    {
+      ChatCommandPanel.SetActive(true);
+    }
+    if (ChatCommandPanelText.text == "")
+    {
+      ChatCommandPanelText.text = GameManager.Instance.GetTextData("ChatCommand_Description");
+      LayoutRebuilder.ForceRebuildLayoutImmediate(ChatCommandPanelText.transform as RectTransform);
+    }
+  }
+  private void TurnOffChatPanel()
+  {
+    if (ChatCommandPanel.activeSelf) ChatCommandPanel.SetActive(false);
+  }
   [SerializeField] private UI_Selection Selection_A = null;
   
   public int GetRequireValue(bool dir)
@@ -498,12 +550,47 @@ public class UI_dialogue : UI_default
   {
     get { return GameManager.Instance.MyGameData.CurrentEvent; }
   }
-
+  public int SelectionCount_A = -1, SelectionCount_B = -1;
   private UI_Selection GetOppositeSelection(UI_Selection _selection)
   {
     if (_selection == Selection_A) return Selection_B;
     return Selection_A;
   }
+  public bool EnableSameChatID = false;
+  public void GetChat(string IDhash,string nickname,string message,StreamingTypeEnum streamingtype)
+  {
+    if (!IsSelecting) return;
+    if (!EnableSameChatID&&ChatIDList_L.ContainsKey(IDhash)|| ChatIDList_R.ContainsKey(IDhash)) return;
+    if (CurrentEvent.Selection_type == SelectionTypeEnum.Single) return;
+    if (message.Contains("choice_l", System.StringComparison.InvariantCultureIgnoreCase))
+    {
+      Selection_A.AddChatCount(nickname, streamingtype);
+      if (ChatIDList_L.ContainsKey(IDhash)) ChatIDList_L.Add(IDhash,new ChatData(nickname,streamingtype));
+    }
+    else if (message.Contains("choice_r", System.StringComparison.InvariantCultureIgnoreCase))
+    {
+      Selection_B.AddChatCount(nickname, streamingtype);
+      if (ChatIDList_R.ContainsKey(IDhash)) ChatIDList_R.Add(IDhash, new ChatData(nickname, streamingtype));
+    }
+  }
+  
+  public void GetChat(Chatter chatter)
+  {
+    if (!IsSelecting) return;
+    if (!EnableSameChatID && ChatIDList_L.ContainsKey(chatter.tags.userId) || ChatIDList_R.ContainsKey(chatter.tags.userId)) return;
+    if (CurrentEvent.Selection_type == SelectionTypeEnum.Single) return;
+    if (chatter.message.Contains("choice_l", System.StringComparison.InvariantCultureIgnoreCase))
+    {
+      Selection_A.AddChatCount(chatter.tags.displayName, StreamingTypeEnum.Twitch);
+      if(ChatIDList_L.ContainsKey(chatter.tags.channelId)) ChatIDList_L.Add(chatter.tags.userId, new ChatData(chatter.tags.displayName, StreamingTypeEnum.Twitch));
+    }
+    else if (chatter.message.Contains("choice_r", System.StringComparison.InvariantCultureIgnoreCase))
+    {
+      Selection_B.AddChatCount(chatter.tags.displayName, StreamingTypeEnum.Twitch);
+      if (ChatIDList_R.ContainsKey(chatter.tags.channelId)) ChatIDList_R.Add(chatter.tags.userId, new ChatData(chatter.tags.displayName, StreamingTypeEnum.Twitch));
+    }
+  }
+  private bool SelectDir = true;
   public IEnumerator OpenEventUI(bool dir)
   {
     if (PlayerPrefs.GetInt("Tutorial_Event") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Event();
@@ -512,9 +599,12 @@ public class UI_dialogue : UI_default
       RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
       RewardText_No.text = GameManager.Instance.GetTextData("NO");
     }
+    StartCoroutine(GameManager.Instance.ConnectSelectionData_get(CurrentEvent.ID));
     RewardAskText.text = string.Format(GameManager.Instance.GetTextData("NOREWARD"),
       GameManager.Instance.MyGameData.CurrentSettlement == null ? GameManager.Instance.GetTextData("Map") : GameManager.Instance.GetTextData("Settlement"));
-
+    ChatIDList_L.Clear();
+    ChatIDList_R.Clear();
+    IsSelecting = false;
     if (CurrentDialogueType == DialogueTypeEnum.None)
     {
       if (MadenssEffect.enabled) MadenssEffect.enabled = false;
@@ -624,12 +714,17 @@ public class UI_dialogue : UI_default
   }
   public IEnumerator OpenEventUI(bool issuccess, bool isleft, bool dir)
   {
+    SelectDir = isleft;
     if (MadenssEffect.enabled) MadenssEffect.enabled = false;
     if (!DefaultGroup.interactable) DefaultGroup.interactable = true;
     if (DialogueAlpha.alpha == 0.0f) DialogueAlpha.alpha = 1.0f;
+    IsSelecting = false;
+    ChatIDList_L.Clear();
+    ChatIDList_R.Clear();
     ExpUsageDic_L.Clear();
     ExpUsageDic_R.Clear();
     IsOpen = true;
+    StartCoroutine(GameManager.Instance.ConnectSelectionData_get(CurrentEvent.ID));
     if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
     if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
@@ -733,6 +828,7 @@ public class UI_dialogue : UI_default
   private int PhrIndex_max { get { return CurrentDescription != null ? CurrentDescription.Count : 0; } }
   private int PhrIndex = -1;
   private bool IsBeginning = false;
+  public bool IsSelecting = false;
   public void NextDescription()
   {
     if (UIManager.Instance.IsWorking) return;
@@ -821,6 +917,7 @@ public class UI_dialogue : UI_default
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
             SetNextButtonActive();
+            IsSelecting = false;
             break;
           case 1:   //다음 버튼 눌러 내용
             if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
@@ -828,28 +925,35 @@ public class UI_dialogue : UI_default
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
 
             SetNextButtonActive();
+            IsSelecting = false;
             break;
           case 2:   //다음 버튼 눌러 선택
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
-            UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
-            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
+            IsSelecting = true;
+            if ((GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect) && CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+              TurnOnChatButton();
 
+              UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
+            yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             break;
           case 3:   //처음 열고 선택
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
+            if ((GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect) && CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+              TurnOnChatButton();
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
+            IsSelecting = true;
             UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
-
             break;
         }
 
       }
       else
       {
+        IsSelecting = false;
         if (EventPhaseIndex == EventPhaseIndex_max - 1)             //보상 단계에 도달
         {
           if (EventPhaseIndex == 0)     //선택지 선택 후 바로 보상일때         (선택지 애니메이션은 완료)
@@ -934,7 +1038,14 @@ public class UI_dialogue : UI_default
           case 2:   //다음 버튼 눌러서 보상
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
-            if (CurrentSuccessData != null && CurrentEvent.EndingID != "")
+            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+            {
+              DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
+   (int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B))*100);
+              LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
+
+            }
+              if (CurrentSuccessData != null && CurrentEvent.EndingID != "")
             {
               CurrentEndingData = GameManager.Instance.ImageHolder.GetEndingData(CurrentEvent.EndingID);
               EndingButtonGroup.alpha = 0.0f;
@@ -959,7 +1070,14 @@ public class UI_dialogue : UI_default
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
             UIManager.Instance.SetExpUnuse();
 
-            if (CurrentSuccessData != null && CurrentEvent.EndingID != "")
+            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+            {
+              DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
+   (int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B)) * 100);
+              LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
+
+            }
+              if (CurrentSuccessData != null && CurrentEvent.EndingID != "")
             {
               CurrentEndingData = GameManager.Instance.ImageHolder.GetEndingData(CurrentEvent.EndingID);
               EndingButtonGroup.alpha = 0.0f;
@@ -1006,19 +1124,32 @@ public class UI_dialogue : UI_default
     SetRewardButton();
     OpenReturnButton();
   }
-  private UI_Selection CurrentUISelection = null;
   /// <summary>
   /// 선택지 클릭했을때 선택지 스크립트에서 호출
   /// </summary>
   /// <param name="_selection"></param>
   public void SelectSelection(UI_Selection _selection)
   {
+    if ((GameManager.Instance.IsChzzConnect|| GameManager.Instance.IsTwitchConnect)&& CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+    {
+      Selection_A.StopAllChat();
+      Selection_B.StopAllChat();
+
+      TurnOffChatButton();
+      TurnOffChatPanel();
+    }
     if (_selection.MyTendencyType != TendencyTypeEnum.None)
     {
       GetOppositeSelection(_selection).DeActive();
 
       if (CurrentEvent.EventLine != "" && GameManager.Instance.MyGameData.CurrentEventLine == CurrentEvent.EventLine && _selection.MySelectionData.StopEvent)
         GameManager.Instance.MyGameData.CurrentEventLine = "";
+
+      StartCoroutine(GameManager.Instance.ConnectSelectionData_set(CurrentEvent.ID, _selection.IsLeft ? 0 : 1));
+      if (_selection.IsLeft) SelectionCount_A++;
+      else SelectionCount_B++;
+
+      SelectDir = _selection.IsLeft;
     }
     //다른거 사라지게 만들고
     UIManager.Instance.UseExp(_selection.IsLeft);
@@ -1028,8 +1159,6 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator selectionanimation(UI_Selection _selection)
   {
-    CurrentUISelection = _selection;
-
     SelectionData _selectiondata = _selection.MySelectionData;
     int _currentvalue = GetRequireValue(_selection.IsLeft);
     int  _requirevalue = 0;    //기술 체크에만 사용
@@ -1183,7 +1312,6 @@ public class UI_dialogue : UI_default
   //이 코루틴에서 SetSuccess 아니면 SetFail로 바로 넘어감
   [SerializeField] private float SelectionEffectTime_check = 3.5f;
   [SerializeField] private float SelectionEffectTime_pay = 1.0f;
-  [SerializeField] private AnimationCurve SelectionCheckCurve = null;
   private IEnumerator payanimation(Image image, int payvalue, int targetvalue, TextMeshProUGUI tmp)
   {
     float _time = 0.0f;
@@ -1217,7 +1345,7 @@ public class UI_dialogue : UI_default
     currentselection.SkillInfo_right_1.text = "";
     currentselection.SkillInfo_right_1.gameObject.SetActive(true);
     #endregion
-    float _targettime = 0.5f;
+    float _targettime = 0.6f;
     int _targetcount =15;
     float _waittime = _targettime / (float)_targetcount;
     List<int> _randomint = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };

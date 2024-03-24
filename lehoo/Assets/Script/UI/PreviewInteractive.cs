@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel,TileInfo,TurnInfo,EndingPreview}
+CultSidePanel,TileInfo,TurnInfo,EndingPreview,ChatList}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
     public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -111,21 +111,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         _exp = UIManager.Instance.ExpRewardUI.CurrentExp;
         UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, true, OtherRect==null?transform as RectTransform : OtherRect);
         break;
-        if (MyEXP == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, true, OtherRect==null?transform as RectTransform : OtherRect);
-        else
-        {
-          UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(MyEXP, _exp, false, OtherRect==null?transform as RectTransform : OtherRect);
-        }
         break;
       case PreviewPanelType.RewardExpSelect_short:
         _exp = UIManager.Instance.ExpRewardUI.CurrentExp;
         UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, false, OtherRect==null?transform as RectTransform : OtherRect);
         break;
-        if (MyEXP == null) UIManager.Instance.PreviewManager.OpenExpSelectionEmptyPreview(_exp, false, OtherRect==null?transform as RectTransform : OtherRect);
-        else
-        {
-          UIManager.Instance.PreviewManager.OpenExpSelectionExistPreview(MyEXP, _exp, false, OtherRect==null?transform as RectTransform : OtherRect);
-        }
         break;
       case PreviewPanelType.Discomfort:
         UIManager.Instance.PreviewManager.OpenDisComfortPanel( OtherRect==null?transform as RectTransform : OtherRect);
@@ -263,6 +253,9 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           EndingDatas _ending = GameManager.Instance.ImageHolder.GetEndingData(EndingID);
           UIManager.Instance.PreviewManager.OpenEndingPreviewPanel(OtherRect, _ending.PreviewIcon, _ending.Preview_Name, _ending.Preview_Opened);
         }
+        break;
+      case PreviewPanelType.ChatList:
+        UIManager.Instance.PreviewManager.OpenChatListPanel(OtherRect, MySelectionTendency,MySelectionTendencyDir);
         break;
     }
   }

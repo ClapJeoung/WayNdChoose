@@ -268,7 +268,7 @@ public class MapData
       }
       _index++;
     }
-    Debug.Log(_loopcount);
+   // Debug.Log(_loopcount);
     return _originhexdir;
 
     List<HexDir>[] getalterroute(HexDir startdir, int dir)

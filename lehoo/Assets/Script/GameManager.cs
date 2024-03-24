@@ -9,12 +9,15 @@ using System.Linq;
 using System;
 using Steamworks;
 using System.Text;
+using Lexone.UnityTwitchChat;
+using OpenCvSharp;
+using UnityEngine.XR;
 
 public class ProgressData
 {
   public List<string> EndingLists = new List<string>();
 }
-public enum GameOverTypeEnum { HP,Sanity}
+public enum StreamingTypeEnum { Chzz,Twitch}
 public class GameManager : MonoBehaviour
 {
   [ContextMenu("텍스트 체크")]
@@ -67,6 +70,7 @@ public class GameManager : MonoBehaviour
       try
       {
         MyGameData = new GameData(GameSaveData);
+        if (!GameSaveData.CurrentEventSequence) StartCoroutine(ConnectSelectionData_get(GameSaveData.CurrentEventID));
       }
       catch (Exception e)
       {
@@ -166,6 +170,10 @@ public class GameManager : MonoBehaviour
 
   private static GameManager instance;
   public static GameManager Instance { get { return instance; } }
+  public ChzzkUnity Chzz = null;
+  public IRC Twitch = null;
+  public bool IsChzzConnect = false;
+  public bool IsTwitchConnect = false;
 
   [HideInInspector] public GameData MyGameData = null;            //게임 데이터(진행도,현재 진행 중 이벤트, 현재 맵 상태,퀘스트 등등)
 
@@ -188,6 +196,46 @@ public class GameManager : MonoBehaviour
   private const string SeetURL_Event = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=0";
   private const string SeetURL_Exp = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=634251844";
   private const string SeetURL_Text = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=1628546529";
+  private const string SeetURL_Selection = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/edit#gid=2014251167";
+  [SerializeField] private string SheetURL_SelectionScript;
+  public IEnumerator ConnectSelectionData_get(string eventid)
+  {
+    if (Application.internetReachability == NetworkReachability.NotReachable) yield break;
+
+    WWWForm _form = new WWWForm();
+    _form.AddField("order", "get");        //get: a,b 이렇게 받음
+    _form.AddField("eventid", eventid);
+
+    using (UnityWebRequest _www = UnityWebRequest.Post(SheetURL_SelectionScript, _form))
+    {
+
+      yield return _www.SendWebRequest();
+
+      string _text = _www.downloadHandler.text;
+      UIManager.Instance.DialogueUI.SelectionCount_A = int.Parse(_text.Split(',')[0]);
+      UIManager.Instance.DialogueUI.SelectionCount_B = int.Parse(_text.Split(',')[1]);
+
+      _www.Dispose();
+      Debug.Log("선택지 결과 불러오기 완료");
+    }
+  }
+  public IEnumerator ConnectSelectionData_set(string eventid,int selection)
+  {
+    if (Application.internetReachability == NetworkReachability.NotReachable) yield break;
+
+    WWWForm _form = new WWWForm();
+    _form.AddField("order", "set");        //get: a,b 이렇게 받음
+    _form.AddField("eventid", eventid);
+    _form.AddField("selection", selection);
+
+    using (UnityWebRequest _www = UnityWebRequest.Post(SheetURL_SelectionScript, _form))
+    {
+      yield return _www.SendWebRequest();
+      _www.Dispose();
+      Debug.Log("선택지 결과 업데이트 완료");
+    }
+  }
+
   public List<EventJsonData> EventJsonDataList= new List<EventJsonData>();
   public List<ExperienceJsonData> ExpJsonDataList= new List<ExperienceJsonData>();
   private IEnumerator ConvertSheetDatas()
@@ -679,6 +727,10 @@ public class GameManager : MonoBehaviour
     if (instance == null)
     {
       Application.runInBackground = true;
+      Twitch.OnChatMessage += UIManager.Instance.DialogueUI.GetChat;
+      Twitch.OnChatMessage += (chat) => { Debug.Log("레후채팅: "+chat.tags.userId+": "+chat.message); };
+      Twitch.OnConnectSuccess += UIManager.Instance.MainUi.SetTwitchConnectSuccess;
+      Twitch.OnConnectFail += UIManager.Instance.MainUi.SetTwitchConnectFail;
 
       instance = this;
       if (PlayerPrefs.GetInt("LanguageIndex", -1) == -1)
@@ -705,13 +757,13 @@ public class GameManager : MonoBehaviour
   private void Update()
   {
 #if UNITY_EDITOR
-    if (Input.GetKeyDown(KeyCode.Backspace))
-    {
-         MyGameData = new GameData(QuestType.Cult);
-      FindObjectOfType<maptext>().GetComponent<maptext>().CreateMap();
+   // if (Input.GetKeyDown(KeyCode.Backspace))
+   // {
+   //      MyGameData = new GameData(QuestType.Cult);
+   //   FindObjectOfType<maptext>().GetComponent<maptext>().CreateMap();
    //   CreatMapForDebug();
     //  Debug.Log(MyGameData.CurrentEvent != null);
-    }
+   // }
 
     /*
     if (Input.GetKeyDown(KeyCode.Space) && SteamManager.Initialized)

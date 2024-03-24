@@ -70,8 +70,101 @@ public class UI_Main : UI_default
   {
     Application.OpenURL("https://discord.gg/fruH7Ycu");
   }
+  public void ChzzButtonClick()
+  {
+    if (TwitchPanel.activeSelf) TwitchPanel.SetActive(false);
+    if (!ChzzPanel.activeSelf)
+    {
+      if (GameManager.Instance.IsChzzConnect)
+      {
+        ChzzConnectState.text = string.Format(GameManager.Instance.GetTextData("Connected"), GameManager.Instance.Chzz.CurrentLive.content.liveTitle);
+        ChzzChanel.text = GameManager.Instance.Chzz.channel;
+      }
+      else
+      {
+        ChzzConnectState.text = GameManager.Instance.GetTextData("NoConnect");
+        ChzzChanel.text = null;
+      }
+
+      ChzzPanel.SetActive(true);
+    }
+    else
+    {
+      ChzzPanel.SetActive(false);
+    }
+  }
+  public void SetChzzConnecting() { ChzzConnectState.text = GameManager.Instance.GetTextData("Connecting"); }
+  public void SetChzzConnectFail() { ChzzConnectState.text = GameManager.Instance.GetTextData("ConnectFail"); }
+  public void SetChzzConnectSuccess()
+  {
+    ChzzConnectState.text = string.Format(GameManager.Instance.GetTextData("Connected"), GameManager.Instance.Chzz.CurrentLive.content.liveTitle);
+  }
+  [SerializeField] private GameObject ChzzPanel = null;
+  [SerializeField] private TextMeshProUGUI ChzzConnectText = null;
+  [SerializeField] private TMP_InputField ChzzChanel = null;
+  [SerializeField] private TextMeshProUGUI ChzzConnectState = null;
+  public void ConnectChzz()
+  {
+    string _id = ChzzChanel.text;
+    if (_id == "" || _id == null) return;
+
+    GameManager.Instance.Chzz.Connect(_id);
+  }
+  [SerializeField] private GameObject TwitchPanel = null;
+  [SerializeField] private TextMeshProUGUI TwitchConnectText = null;
+  [SerializeField] private TMP_InputField Twitch_Oauth = null;
+  [SerializeField] private TMP_InputField Twitch_NickName = null;
+  [SerializeField] private TMP_InputField Twitch_Channel = null;
+  [SerializeField] private TextMeshProUGUI TwitchConnectState = null;
+  public void ClickTwitchButton()
+  {
+    if (ChzzPanel.activeInHierarchy) ChzzPanel.SetActive(false);
+    if (!TwitchPanel.activeSelf)
+    {
+      if (GameManager.Instance.IsChzzConnect)
+      {
+        TwitchConnectState.text = string.Format(GameManager.Instance.GetTextData("Connected"), GameManager.Instance.Twitch.channel);
+        Twitch_Oauth.text = GameManager.Instance.Twitch.oauth;
+        Twitch_Channel.text = GameManager.Instance.Twitch.channel;
+        Twitch_NickName.text = GameManager.Instance.Twitch.username;
+      }
+      else
+      {
+        TwitchConnectState.text = GameManager.Instance.GetTextData("NoConnect");
+        Twitch_Oauth.text = "";
+        Twitch_Channel.text = "";
+        Twitch_NickName.text = "";
+      }
+
+      TwitchPanel.SetActive(true);
+    }
+    else
+    {
+      TwitchPanel.SetActive(false);
+    }
+  }
+  public void SetTwitchConnecting() { TwitchConnectState.text = GameManager.Instance.GetTextData("Connecting"); }
+  public void SetTwitchConnectFail() { TwitchConnectState.text = GameManager.Instance.GetTextData("ConnectFail"); }
+  public void SetTwitchConnectSuccess()
+  {
+    GameManager.Instance.IsTwitchConnect = true;
+    TwitchConnectState.text = string.Format(GameManager.Instance.GetTextData("Connected"), GameManager.Instance.Twitch.channel);
+  }
+  public void ConnectTwitch()
+  {
+    TwitchConnectState.text = GameManager.Instance.GetTextData("Connecting");
+    string _oauth = Twitch_Oauth.text;
+    string _nickname = Twitch_NickName.text;
+    string _channel=Twitch_Channel.text;
+    GameManager.Instance.Twitch.oauth= _oauth;
+    GameManager.Instance.Twitch.username= _nickname;
+    GameManager.Instance.Twitch.channel= _channel;
+    GameManager.Instance.Twitch.Connect();
+  }
   public void SetupMain()
   {
+    ChzzConnectText.text = GameManager.Instance.GetTextData("Connect");
+    TwitchConnectText.text = GameManager.Instance.GetTextData("Connect");
     EndingText.text = GameManager.Instance.GetTextData("EndingList");
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
     LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
@@ -140,21 +233,6 @@ public class UI_Main : UI_default
         EndingPreviews[i].transform.GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
       }
     }
-    if (LoadInfoText.text != "")
-    {
-      StartCoroutine(UIManager.Instance.ChangeAlpha(LoadInfoGroup, 1.0f, MainUIOpenTime));
-    }
-    if (PlayerPrefs.GetInt("Tutorial_Map", 0) == 1 && PlayerPrefs.GetInt("Tutorial_Settlement") == 1)
-    {
-      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOn");
-    }
-    else
-    {
-      TutorialButtonText.text = GameManager.Instance.GetTextData("TutorialOff");
-    }
-    StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, MainUIOpenTime));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(LanguageGroup, 1.0f, MainUIOpenTime));
 
     UIManager.Instance.AddUIQueue(openmain());
   }//메인 화면 텍스트 세팅
@@ -259,6 +337,8 @@ public class UI_Main : UI_default
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").OutisdePos, GetPanelRect("mainillust").InsidePos, MainUIOpenTime, true));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("zzz").Rect, GetPanelRect("zzz").OutisdePos, GetPanelRect("zzz").InsidePos, MainUIOpenTime, true));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("twitch").Rect, GetPanelRect("twitch").OutisdePos, GetPanelRect("twitch").InsidePos, MainUIOpenTime, true));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("discord").Rect, GetPanelRect("discord").OutisdePos, GetPanelRect("discord").InsidePos, MainUIOpenTime, true));
     yield return Wait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").OutisdePos, GetPanelRect("quitgame").InsidePos, MainUIOpenTime, true));
@@ -285,10 +365,14 @@ public class UI_Main : UI_default
   }
   private IEnumerator closemain()
   {
-    if (MusicLicensePanel.activeInHierarchy==true) MusicLicensePanel.SetActive(false);
+    if (MusicLicensePanel.activeSelf==true) MusicLicensePanel.SetActive(false);
+    if(ChzzPanel.activeSelf)ChzzPanel.SetActive(false);
+    if (TwitchPanel.activeSelf) TwitchPanel.SetActive(false);
     DiscordButton.interactable = false;
 
     StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 0.0f, MainUICloseTime));
+    EndingGroup.interactable = false;
+    EndingGroup.blocksRaycasts = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").InsidePos, GetPanelRect("loadgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
@@ -305,6 +389,8 @@ public class UI_Main : UI_default
     yield return LittleWait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("quitgame").Rect, GetPanelRect("quitgame").InsidePos, GetPanelRect("quitgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("zzz").Rect, GetPanelRect("zzz").InsidePos, GetPanelRect("zzz").OutisdePos, MainUICloseTime, false));
+    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("twitch").Rect, GetPanelRect("twitch").InsidePos, GetPanelRect("twitch").OutisdePos, MainUICloseTime, false));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("discord").Rect, GetPanelRect("discord").InsidePos, GetPanelRect("discord").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
     yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, MainUICloseTime));

@@ -33,6 +33,7 @@ public class UI_Selection : MonoBehaviour
   public TextMeshProUGUI SkillInfo_right_1 = null;
   public TextMeshProUGUI SkillInfo_right_center = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
+  [SerializeField] private PreviewInteractive ChatPreviewInteractive = null;
   public Onpointer_highlight HighlightEffect = null;
   public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
   public bool IsLeft = true;
@@ -41,6 +42,50 @@ public class UI_Selection : MonoBehaviour
   public List<Image> TendencyProgressArrows= new List<Image>();
   public List<CanvasGroup> TendencyProgressArrows_inside=new List<CanvasGroup>();
   public bool IsOverTendency = false;
+  [SerializeField] private RectTransform TopRect = null;
+  [SerializeField] private GameObject ChatPanelPrefab = null;
+  [SerializeField] private GameObject ChatCount_Obj = null;
+  [SerializeField] private RectTransform ChatCount_Pos = null;
+  [SerializeField] private TextMeshProUGUI ChatCount_Text = null;
+  public int ChatCount = 0;
+  private float ChatPanelWaitTime = 0.1f;
+  public void AddChatCount(string nickname, StreamingTypeEnum type)
+  {
+    string _chatname = (type == StreamingTypeEnum.Chzz ? "<sprite=122> " : "<sprite=123> ") + nickname;
+    ChatNamePanel _newchat=Instantiate(ChatPanelPrefab,UIManager.Instance.MyCanvas).GetComponent<ChatNamePanel>();
+    _newchat.Setup(_chatname, TopRect);
+    ChatCount++;
+    ChatCount_Text.text = ChatCount.ToString();
+    ChatQueue.Enqueue(_newchat);
+    if (chatqueuefield == null)
+    {
+      chatqueuefield = ChatQueueCoroutine();
+      StartCoroutine(chatqueuefield);
+    }
+  }
+  private Queue<ChatNamePanel> ChatQueue = new Queue<ChatNamePanel>();
+  private IEnumerator chatqueuefield = null;
+  private IEnumerator ChatQueueCoroutine()
+  {
+    var _wait = new WaitForSeconds(ChatPanelWaitTime);
+    while (ChatQueue.Count > 0)
+    {
+      StartCoroutine(ChatQueue.Dequeue().movepanel());
+      yield return _wait;
+    }
+    chatqueuefield = null;
+  }
+  public void StopAllChat()
+  {
+    if (chatqueuefield != null)
+    {
+      StopCoroutine(chatqueuefield);
+    }
+    while (ChatQueue.Count > 0)
+    {
+      ChatQueue.Dequeue().DestroyPanel();
+    }
+  }
   public int Index
   {
     get { return IsLeft ? 0 : 1; }
@@ -55,6 +100,23 @@ public class UI_Selection : MonoBehaviour
   public void Setup(SelectionData _data)
   {
     HighlightEffect.RemoveAllCall();
+    if (GameManager.Instance.IsChzzConnect||GameManager.Instance.IsTwitchConnect)
+    {
+      ChatQueue.Clear();
+      ChatCount = 0;
+      ChatCount_Text.text = "0";
+      if (!ChatCount_Obj.activeSelf)
+      {
+        ChatCount_Obj.SetActive(true);
+      }
+      RectTransform _chatrect = ChatCount_Obj.GetComponent<RectTransform>();
+      _chatrect.position = ChatCount_Pos.position;
+      _chatrect.anchoredPosition3D = new Vector3(_chatrect.anchoredPosition3D.x, _chatrect.anchoredPosition3D.y, 0.0f);
+    }
+    else
+    {
+      if (ChatCount_Obj.activeSelf) ChatCount_Obj.SetActive(false);
+    }
     SkillIcon_A.fillAmount = 1.0f;
     SkillIcon_B.fillAmount = 1.0f;
     MySelectionData = _data;
@@ -148,6 +210,7 @@ public class UI_Selection : MonoBehaviour
 
     MyTendencyType = MySelectionData.Tendencytype;
     MyPreviewInteractive.MySelectionTendency = MyTendencyType;
+    ChatPreviewInteractive.MySelectionTendency = MyTendencyType;
     if (MyTendencyType == TendencyTypeEnum.None)
     {
       if (TendencyHolder.activeInHierarchy == true) TendencyHolder.SetActive(false);
@@ -155,7 +218,7 @@ public class UI_Selection : MonoBehaviour
     else
     {
       MyPreviewInteractive.MySelectionTendencyDir = IsLeft;
-
+      ChatPreviewInteractive.MySelectionTendencyDir = IsLeft;
       Tendency _targettendency = GameManager.Instance.MyGameData.GetTendency(MyTendencyType);
       Sprite _nexttendencyicon = null;
       Sprite _tendencyicon = null;

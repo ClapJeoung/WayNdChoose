@@ -200,7 +200,6 @@ public class UI_map : UI_default
   [SerializeField] private Transform ResourceHolder = null;
   [SerializeField] private GameObject ResourceIconPrefab = null;
   [SerializeField] private RectTransform TilePreviewRect = null;
-  [SerializeField] private CanvasGroup TilePreviewGroup = null;
   [SerializeField] private Image TilePreview_Bottom = null;
   [SerializeField] private Image TilePreview_Top = null;
   [SerializeField] private Image TilePreview_ETC = null;
@@ -951,8 +950,6 @@ public class UI_map : UI_default
   public bool DoHighlight = true;
   public AnimationCurve SettlementAnimationCurve = new AnimationCurve();
   public AnimationCurve SettlementIconCurve = new AnimationCurve();
-  [SerializeField] private Vector2 TilePreviewDownPos = new Vector2(-235.0f, 23.0f);
-  private float TilePreviewStartAlpha = 0.5f;
   private TileData SelectedTile = null;
   public int MoveCost_Sanity
   {
