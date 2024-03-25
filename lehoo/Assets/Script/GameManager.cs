@@ -705,6 +705,7 @@ public class GameManager : MonoBehaviour
     }
     else if (MyGameData.CurrentEventLine !=""&& MyGameData.CurrentEventLine == eventdata.EventLine && eventdata.EndingID != "")
       MyGameData.CurrentEventLine = "";
+    StartCoroutine(ConnectSelectionData_get(eventdata.ID));
 
     UIManager.Instance.OpenDialogue_Event(false);
 

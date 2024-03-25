@@ -231,6 +231,7 @@ public class UI_Main : UI_default
       else
       {
         EndingPreviews[i].transform.GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
+        EndingPreviews[i].transform.GetComponent<CanvasGroup>().alpha = 0.4f;
       }
     }
 
@@ -360,8 +361,8 @@ public class UI_Main : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(LanguageGroup,1.0f, MainUIOpenTime));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, MainUIOpenTime ));
     yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, MainUIOpenTime));
   }
   private IEnumerator closemain()
   {

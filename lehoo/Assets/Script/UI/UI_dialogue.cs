@@ -599,7 +599,7 @@ public class UI_dialogue : UI_default
       RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
       RewardText_No.text = GameManager.Instance.GetTextData("NO");
     }
-    StartCoroutine(GameManager.Instance.ConnectSelectionData_get(CurrentEvent.ID));
+    SelectionCount_A = -1;SelectionCount_B = -1;
     RewardAskText.text = string.Format(GameManager.Instance.GetTextData("NOREWARD"),
       GameManager.Instance.MyGameData.CurrentSettlement == null ? GameManager.Instance.GetTextData("Map") : GameManager.Instance.GetTextData("Settlement"));
     ChatIDList_L.Clear();
@@ -724,7 +724,6 @@ public class UI_dialogue : UI_default
     ExpUsageDic_L.Clear();
     ExpUsageDic_R.Clear();
     IsOpen = true;
-    StartCoroutine(GameManager.Instance.ConnectSelectionData_get(CurrentEvent.ID));
     if (RewardAskObject.activeInHierarchy) RewardAskObject.SetActive(false);
     if (QuitAskObject.activeInHierarchy) QuitAskObject.SetActive(false);
     if (EventObjectHolder.activeInHierarchy == false) EventObjectHolder.SetActive(true);
@@ -1038,7 +1037,9 @@ public class UI_dialogue : UI_default
           case 2:   //다음 버튼 눌러서 보상
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
-            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single 
+              && Application.internetReachability!=NetworkReachability.NotReachable
+              &&SelectionCount_A>-1&&SelectionCount_B>-1 )
             {
               DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
    (int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B))*100);
@@ -1070,7 +1071,9 @@ public class UI_dialogue : UI_default
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
             UIManager.Instance.SetExpUnuse();
 
-            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single
+              && Application.internetReachability != NetworkReachability.NotReachable
+              && SelectionCount_A > -1 && SelectionCount_B > -1)
             {
               DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
    (int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B)) * 100);
@@ -1146,8 +1149,12 @@ public class UI_dialogue : UI_default
         GameManager.Instance.MyGameData.CurrentEventLine = "";
 
       StartCoroutine(GameManager.Instance.ConnectSelectionData_set(CurrentEvent.ID, _selection.IsLeft ? 0 : 1));
-      if (_selection.IsLeft) SelectionCount_A++;
-      else SelectionCount_B++;
+
+      if (SelectionCount_A > -1)
+      {
+        if (_selection.IsLeft) SelectionCount_A++;
+        else SelectionCount_B++;
+      }
 
       SelectDir = _selection.IsLeft;
     }
