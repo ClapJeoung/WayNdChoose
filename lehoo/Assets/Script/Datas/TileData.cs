@@ -96,11 +96,11 @@ public class TileData
   {
     get
     {
-      int _movepoint = ConstValues.Supply_Default;
-      if (BottomEnvir == BottomEnvirType.Sea) _movepoint += ConstValues.Supply_Sea;
-      if (TopEnvir == TopEnvirType.Mountain) _movepoint += ConstValues.Supply_Moutain;
-      if (TopEnvir == TopEnvirType.Forest) _movepoint += ConstValues.Supply_Forest;
-      if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _movepoint += ConstValues.Supply_River;
+      int _movepoint = GameManager.Instance.Status.Supply_Default;
+      if (BottomEnvir == BottomEnvirType.Sea) _movepoint += GameManager.Instance.Status.Supply_Sea;
+      if (TopEnvir == TopEnvirType.Mountain) _movepoint += GameManager.Instance.Status.Supply_Moutain;
+      if (TopEnvir == TopEnvirType.Forest) _movepoint += GameManager.Instance.Status.Supply_Forest;
+      if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _movepoint += GameManager.Instance.Status.Supply_River;
 
       return _movepoint;
     }

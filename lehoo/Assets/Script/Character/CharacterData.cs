@@ -6,178 +6,327 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public static class ConstValues
+[Serializable]
+public class StatusData
 {
-  public const int ConversationEffect_Level=1, ConversationEffect_Value = 1;
-  public const int ForceEffect_Level = 1, ForceEffect_Value = 1;
-  public const int WildEffect_Level=3, WildEffect_Value = 1;
-  public const int IntelEffect_Level=2,IntelEffect_Value = 1;
+  public StatusData()
+  {
 
-  public const int ResourceGoldValue = 2;
-  public const float DiscomfortGoldValue = 0.04f;
+  }
+  public StatusData(string[] textrow)
+  {
+    ConversationEffect_Level = int.Parse(textrow[0].Split("\t")[1]);
+    ConversationEffect_Value = int.Parse(textrow[1].Split("\t")[1]);
+    ForceEffect_Level = int.Parse(textrow[2].Split("\t")[1]);
+    ForceEffect_Value = int.Parse(textrow[3].Split("\t")[1]);
+    WildEffect_Level = int.Parse(textrow[4].Split("\t")[1]);
+    WildEffect_Value = int.Parse(textrow[5].Split("\t")[1]);
+    IntelEffect_Level = int.Parse(textrow[6].Split("\t")[1]);
+    IntelEffect_Value = int.Parse(textrow[7].Split("\t")[1]);
 
-  public const int Discomfort_high = 19, Discomfort_middle = 12, Discomfort_low = 6;
+    ResourceGoldValue = int.Parse(textrow[8].Split("\t")[1]);
+    DiscomfortGoldValue = float.Parse(textrow[9].Split("\t")[1]);
 
-  public const float CountChangeTime_settlement = 1.2f;
-  public const float CountChangeTime_status = 0.5f;
-  public const float CountChangeTime_map = 0.3f;
+    Discomfort_high = int.Parse(textrow[10].Split("\t")[1]);
+    Discomfort_middle = int.Parse(textrow[11].Split("\t")[1]);
+    Discomfort_low = int.Parse(textrow[12].Split("\t")[1]);
 
-    public const int CultEventRange_Route = 3, CultEventRange_Target = 4;
-    public const int WorldEventRange_max = 4, WorldEventRange_min = 1;
+    CultEventRange_Target = int.Parse(textrow[13].Split("\t")[1]);
+    WorldEventRange_max = int.Parse(textrow[14].Split("\t")[1]);
+    WorldEventRange_min = int.Parse(textrow[15].Split("\t")[1]);
 
-  public const float WorldEventPhase_1_Cult = 30.0f, WorldEventPhase_2_Cult = 60.0f;
-  public const int WorldEventCount_0 = 2, WorldEventCount_1 = 1, WorldEventCount_2 = 0;
+    WorldEventPhase_1_Cult = float.Parse(textrow[16].Split("\t")[1]);
+    WorldEventPhase_2_Cult = float.Parse(textrow[17].Split("\t")[1]);
+    WorldEventCount_0 = int.Parse(textrow[18].Split("\t")[1]);
+    WorldEventCount_1 = int.Parse(textrow[19].Split("\t")[1]);
+    WorldEventCount_2 = int.Parse(textrow[20].Split("\t")[1]);
 
- // public const int MoveLength_Low = 4, MoveLength_Middle = 6;
-//  public const int MoveLengthSupply_Low=1, MoveLengthSupply_Middle = 2, MoveLengthSupply_High = 3;
+    Supply_Sea = int.Parse(textrow[21].Split("\t")[1]);
+    Supply_Moutain = int.Parse(textrow[22].Split("\t")[1]);
+    Supply_River = int.Parse(textrow[23].Split("\t")[1]);
+    Supply_Forest = int.Parse(textrow[24].Split("\t")[1]);
+    Supply_Default = int.Parse(textrow[25].Split("\t")[1]);
 
-  public const float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.4f;
-  public const float FogAlphaChangeTime = 0.4f;
-  public const float FogScaleChangeTime = 0.6f;
+      StatusHighlightSize = float.Parse(textrow[26].Split("\t")[1]);
 
-  public const float SettlementPreviewDiscomfortIconSize_min = 35, SettlementPreviewDiscomfortIconSize_max = 90;
-  public const float SettlementPreviewDiscomfortFont_min = 35, SettlementPreviewDiscomfortFont_max = 50;
+    ExpSkillLevel = int.Parse(textrow[27].Split("\t")[1]);
 
-  public const int StartSkillLevel = 0;
+    MadnessEffect_Conversation = int.Parse(textrow[28].Split("\t")[1]);
+    MadnessEffect_Force = int.Parse(textrow[29].Split("\t")[1]);
+    MadnessEffect_Wild_temporary = int.Parse(textrow[30].Split("\t")[1]);
+    MadnessEffect_Wild_range = int.Parse(textrow[31].Split("\t")[1]);
+    MadnessEffect_Intelligence = int.Parse(textrow[32].Split("\t")[1]);
 
- // public const int DefaultBonusGold = 1;
- // public const int GoldPerSupplies = 1;
-  public const int Supply_Sea = 4;
-  public const int Supply_Moutain = 4;
-  public const int Supply_River = 2, Supply_Forest = 2;
-  public const int Supply_Default = 1;
+    MadnessHPCost_Skill = int.Parse(textrow[33].Split("\t")[1]);
+    MadnessSanityGen_Skill = int.Parse(textrow[34].Split("\t")[1]);
+    MadnessSkillLevel = int.Parse(textrow[35].Split("\t")[1]);
+    MadnessHPCost_HP = int.Parse(textrow[36].Split("\t")[1]);
+    MadnessSanityGen_HP = int.Parse(textrow[37].Split("\t")[1]);
 
-  public const float StatusHighlightSize = 1.3f;
+    Quest_Cult_Progress_Village = int.Parse(textrow[38].Split("\t")[1]);
+    Quest_Cult_Progress_Town = int.Parse(textrow[39].Split("\t")[1]);
+    Quest_Cult_Progress_City = int.Parse(textrow[40].Split("\t")[1]);
+    Quest_Cult_Progress_Sabbat = int.Parse(textrow[41].Split("\t")[1]);
+    Quest_Cult_Progress_Ritual = int.Parse(textrow[42].Split("\t")[1]);
+    Qeust_Cult_EventProgress_Clear = float.Parse(textrow[43].Split("\t")[1]);
+    Quest_Cult_EventProgress_Fail = float.Parse(textrow[44].Split("\t")[1]);
+    Quest_Cult_Sabbat_PenaltyDiscomfort = int.Parse(textrow[45].Split("\t")[1]);
+    Quest_Cult_Ritual_PenaltySupply = int.Parse(textrow[46].Split("\t")[1]);
+    Quest_Cult_SupplyAsSanity = int.Parse(textrow[47].Split("\t")[1]);
+    Quest_Cult_CoolTime_Village = int.Parse(textrow[48].Split("\t")[1]);
+    Quest_Cult_CoolTime_Town = int.Parse(textrow[49].Split("\t")[1]);
+    Quest_Cult_CoolTime_City = int.Parse(textrow[50].Split("\t")[1]);
+    Quest_Cult_CoolTime_Sabbat = int.Parse(textrow[51].Split("\t")[1]);
+    Quest_Cult_CoolTime_Ritual = int.Parse(textrow[52].Split("\t")[1]);
+    Quest_Cult_LengthValue = float.Parse(textrow[53].Split("\t")[1]);
 
-  public const float StatusLoss_HP_Min = 6, StatusLoss_HP_Max = 30;
-  public const float StatusLoss_Sanity_Min = 6, StatusLoss_Sanity_Max = 30;
-  public const float StatusLoss_Gold_Min = 6, StatusLoss_Gold_Max = 30;
-  public const float StatusLoss_MP_Min = 6, StatusLoss_MP_Max = 30;
-
-  public const int ExpSkillLevel = 1;
-
-  public const int StatusIconSize_min = 25, StatusIconSize_max = 75;
-  public const float MaxDiscomfortForUI = 25;
-  public const int DiscomfortIconSize_min = 60, DiscomfortIconsize_max = 150;
-  public const int DiscomfortFontSize_min = 50, DiscomfortFontSize_max = 100;
-  public const int SupplyIconMinCount = -8, SupplyIconMaxCount = 30;
-
-  public const int MadnessEffect_Conversation = 4;
-  public const int MadnessEffect_Force = 4;
-  public const int MadnessEffect_Wild_temporary = 5,MadnessEffect_Wild_range=2;
-  public const int MadnessEffect_Intelligence = 2;
-
-  public const int MadnessHPCost_Skill = 25;
-  public const int MadnessSanityGen_Skill = 100;
-  public const int MadnessSkillLevel = 2;
-  public const int MadnessHPCost_HP = 40;
-  public const int MadnessSanityGen_HP = 150;
-
-  public const int Quest_Cult_Progress_Village=6,Quest_Cult_Progress_Town=7,Quest_Cult_Progress_City=8,
-    Quest_Cult_Progress_Sabbat =8,Quest_Cult_Progress_Ritual = 7;
-  public const float Qeust_Cult_EventProgress_Clear = 2.5f;
-  public const float Quest_Cult_EventProgress_Fail = 1.5f;
-  public const int Quest_Cult_Sabbat_PenaltyDiscomfort = 4, Quest_Cult_Ritual_PenaltySupply = 3;
-  public const int Quest_Cult_SupplyAsSanity = 7;
-  public const int Quest_Cult_CoolTime_Village =8;
-  public const int Quest_Cult_CoolTime_Town = 8;
-  public const int Quest_Cult_CoolTime_City = 9;
-  public const int Quest_Cult_CoolTime_Sabbat = 9;
-  public const int Quest_Cult_CoolTime_Ritual = 9;
-  public const float Quest_Cult_LengthValue = 3.5f;
-
-
-  public const int Rest_Supply = 10;
-  public const int Rest_Discomfort = 8;
-  public const float RestCost_Default_Min = 9, RestCost_Default_Max = 25;
-  public const int MoveCost_Min = 1, MoveCost_Max = 4;  //이동 비용 골드 값 기준
-  public const float MoveCost_SanityValue = 2.0f;         //이동 비용 정신력 값
-  public const int PenaltyCost_Min = 6, PenaltyCost_Max = 12;
-  public const int RestSanityRestore = 15;
-  public const float Rest_Deafult = 1.0f, Rest_DiscomfortRatio = 0.1f;
+    Rest_Supply = int.Parse(textrow[54].Split("\t")[1]);
+    Rest_Discomfort = int.Parse(textrow[55].Split("\t")[1]);
+    RestCost_Default_Min = int.Parse(textrow[56].Split("\t")[1]);
+    RestCost_Default_Max = int.Parse(textrow[57].Split("\t")[1]);
+    MoveCost_Min = int.Parse(textrow[58].Split("\t")[1]);
+    MoveCost_Max = int.Parse(textrow[59].Split("\t")[1]);
+    MoveCost_SanityValue = float.Parse(textrow[60].Split("\t")[1]);
+    PenaltyCost_Min = int.Parse(textrow[61].Split("\t")[1]);
+    PenaltyCost_Max = int.Parse(textrow[62].Split("\t")[1]);
+    RestSanityRestore = int.Parse(textrow[63].Split("\t")[1]);
+    Rest_DiscomfortRatio = float.Parse(textrow[64].Split("\t")[1]);
 
 
-  public const int EventPer_Envir = 5, EventPer_NoEnvir = 1,
+    EventPer_Envir = int.Parse(textrow[65].Split("\t")[1]);
+    EventPer_NoEnvir = int.Parse(textrow[66].Split("\t")[1]);
+    EventPer_Sector = int.Parse(textrow[67].Split("\t")[1]);
+    EventPer_NoSector = int.Parse(textrow[68].Split("\t")[1]);
+    EventPer_Quest = int.Parse(textrow[69].Split("\t")[1]);
+    EventPer_Follow_Ev = int.Parse(textrow[70].Split("\t")[1]);
+    EventPer_Follow_Ex = int.Parse(textrow[71].Split("\t")[1]);
+    EventPer_Normal = int.Parse(textrow[72].Split("\t")[1]);
+
+    MapSize = int.Parse(textrow[73].Split("\t")[1]);
+    LandRadius = int.Parse(textrow[74].Split("\t")[1]);
+    MinRiverCount = int.Parse(textrow[75].Split("\t")[1]);
+    Ratio_forest = float.Parse(textrow[76].Split("\t")[1]);
+    Mountain_Count_min = int.Parse(textrow[77].Split("\t")[1]); 
+    Mountain_Count_max = int.Parse(textrow[78].Split("\t")[1]);
+    Mountain_length_min = float.Parse(textrow[79].Split("\t")[1]);
+    Mountain_length_max = float.Parse(textrow[80].Split("\t")[1]);
+    SettlementLength_min = float.Parse(textrow[81].Split("\t")[1]);
+    SettlementLength_Village = float.Parse(textrow[82].Split("\t")[1]);
+    SettlementLength_Town = float.Parse(textrow[83].Split("\t")[1]);
+    SettlementLength_City = float.Parse(textrow[84].Split("\t")[1]);
+
+    ForestRange = int.Parse(textrow[85].Split("\t")[1]);
+    RiverRange = int.Parse(textrow[86].Split("\t")[1]);
+    MountainRange = int.Parse(textrow[87].Split("\t")[1]);
+    SeaRange = int.Parse(textrow[88].Split("\t")[1]);
+    HighlandRange = int.Parse(textrow[89].Split("\t")[1]);
+
+    StartSkillLevel = int.Parse(textrow[90].Split("\t")[1]);
+    StartSupplies = int.Parse(textrow[91].Split("\t")[1]);
+    StartGold = int.Parse(textrow[92].Split("\t")[1]);
+    HPLoss_Exp = float.Parse(textrow[93].Split("\t")[1]);
+    GoldGen_Exp = float.Parse(textrow[94].Split("\t")[1]);
+    SanityLoss_Exp = float.Parse(textrow[95].Split("\t")[1]);
+
+    Tendency_Head_m2 = float.Parse(textrow[96].Split("\t")[1]);
+    Tendency_Head_m1 = int.Parse(textrow[97].Split("\t")[1]);
+    Tendency_Head_p1 = float.Parse(textrow[98].Split("\t")[1]);
+
+    ConversationByTendency_m2 = int.Parse(textrow[99].Split("\t")[1]);
+    IntelligenceByTendency_m2 = int.Parse(textrow[100].Split("\t")[1]);
+    ConversationByTendency_m1 = int.Parse(textrow[101].Split("\t")[1]);
+    IntelligenceByTendency_m1 = int.Parse(textrow[102].Split("\t")[1]);
+    ForceByTendency_p1 = int.Parse(textrow[103].Split("\t")[1]);
+    WildByTendency_p1 = int.Parse(textrow[104].Split("\t")[1]);
+    ForceByTendency_p2 = int.Parse(textrow[105].Split("\t")[1]);
+    WildByTendency_p2 = int.Parse(textrow[106].Split("\t")[1]);
+
+    minsuccesper_max = int.Parse(textrow[107].Split("\t")[1]);
+    minsuccesper_min = int.Parse(textrow[108].Split("\t")[1]);
+    MaxSuccessPer = int.Parse(textrow[109].Split("\t")[1]);
+    MaxTime = int.Parse(textrow[110].Split("\t")[1]);
+    CheckSkill_single_min = int.Parse(textrow[111].Split("\t")[1]);
+    CheckSkill_single_max = int.Parse(textrow[112].Split("\t")[1]);
+    CheckSkill_multy_min = int.Parse(textrow[113].Split("\t")[1]);
+    CheckSkill_multy_max = int.Parse(textrow[114].Split("\t")[1]);
+
+    PayHP_min = int.Parse(textrow[115].Split("\t")[1]);
+    PayHP_max = int.Parse(textrow[116].Split("\t")[1]);
+    PaySanity_min = int.Parse(textrow[117].Split("\t")[1]);
+    PaySanity_max = int.Parse(textrow[118].Split("\t")[1]);
+    PayGold_min = int.Parse(textrow[119].Split("\t")[1]);
+    PayGold_max = int.Parse(textrow[120].Split("\t")[1]);
+    FailHP_min = int.Parse(textrow[121].Split("\t")[1]);
+    FailHP_max = int.Parse(textrow[122].Split("\t")[1]);
+    FailSanity_min = int.Parse(textrow[123].Split("\t")[1]);
+    FailSanity_max = int.Parse(textrow[124].Split("\t")[1]);
+    FailGold_min = int.Parse(textrow[125].Split("\t")[1]);
+    FailGold_max = int.Parse(textrow[126].Split("\t")[1]);
+    RewardSanity = int.Parse(textrow[127].Split("\t")[1]);
+    RewardGold = int.Parse(textrow[128].Split("\t")[1]);
+    RewardSupply = int.Parse(textrow[129].Split("\t")[1]);
+
+    EXPMaxTurn_short_idle = int.Parse(textrow[130].Split("\t")[1]);
+    EXPMaxTurn_long_idle = int.Parse(textrow[131].Split("\t")[1]);
+
+    TendencyProgress_1to2 = int.Parse(textrow[132].Split("\t")[1]);
+    TendencyRegress = int.Parse(textrow[133].Split("\t")[1]);
+
+    DiscomfortDownValue = int.Parse(textrow[134].Split("\t")[1]);
+    SectorEffect_residence_discomfort = int.Parse(textrow[135].Split("\t")[1]);
+    SectorEffect_marketSector = int.Parse(textrow[136].Split("\t")[1]);
+    SectorEffect_temple = int.Parse(textrow[137].Split("\t")[1]);
+    SectorEffect_Library = int.Parse(textrow[138].Split("\t")[1]);
+    LongTermChangeCost = int.Parse(textrow[139].Split("\t")[1]);
+
+    GoldSanityPayAmplifiedValue = float.Parse(textrow[140].Split("\t")[1]);
+
+  }
+public  int ConversationEffect_Level=1,
+    ConversationEffect_Value = 1;
+  public  int ForceEffect_Level = 1,
+    ForceEffect_Value = 1;
+  public  int WildEffect_Level=3,
+    WildEffect_Value = 1;
+  public  int IntelEffect_Level=2,
+    IntelEffect_Value = 1;
+
+  public  int ResourceGoldValue = 2;
+  public  float DiscomfortGoldValue = 0.04f;
+
+  public  int Discomfort_high = 19, Discomfort_middle = 12, Discomfort_low = 6;
+
+  public  int CultEventRange_Target = 4;
+  public  int WorldEventRange_max = 4, WorldEventRange_min = 1;
+
+  public  float WorldEventPhase_1_Cult = 30.0f, WorldEventPhase_2_Cult = 60.0f;
+  public  int WorldEventCount_0 = 2, WorldEventCount_1 = 1, WorldEventCount_2 = 0;
+
+  public  int Supply_Sea = 4;
+  public  int Supply_Moutain = 4;
+  public  int Supply_River = 2, Supply_Forest = 2;
+  public  int Supply_Default = 1;
+
+  public  float StatusHighlightSize = 1.3f;
+
+  public  int ExpSkillLevel = 1;
+
+  public  int MadnessEffect_Conversation = 4;
+  public  int MadnessEffect_Force = 4;
+  public  int MadnessEffect_Wild_temporary = 5,MadnessEffect_Wild_range=2;
+  public  int MadnessEffect_Intelligence = 2;
+
+  public  int MadnessHPCost_Skill = 25;
+  public  int MadnessSanityGen_Skill = 100;
+  public  int MadnessSkillLevel = 2;
+  public  int MadnessHPCost_HP = 40;
+  public  int MadnessSanityGen_HP = 150;
+
+  public  int Quest_Cult_Progress_Village=6,
+    Quest_Cult_Progress_Town=7,
+    Quest_Cult_Progress_City=8,
+    Quest_Cult_Progress_Sabbat =8,
+    Quest_Cult_Progress_Ritual = 7;
+  public  float Qeust_Cult_EventProgress_Clear = 2.5f;
+  public  float Quest_Cult_EventProgress_Fail = 1.5f;
+  public  int Quest_Cult_Sabbat_PenaltyDiscomfort = 4,
+    Quest_Cult_Ritual_PenaltySupply = 3;
+  public  int Quest_Cult_SupplyAsSanity = 7;
+  public  int Quest_Cult_CoolTime_Village =8;
+  public  int Quest_Cult_CoolTime_Town = 8;
+  public  int Quest_Cult_CoolTime_City = 9;
+  public  int Quest_Cult_CoolTime_Sabbat = 9;
+  public  int Quest_Cult_CoolTime_Ritual = 9;
+  public  float Quest_Cult_LengthValue = 3.5f;
+
+  public  int Rest_Supply = 10;
+  public  int Rest_Discomfort = 8;
+  public  float RestCost_Default_Min = 9,
+    RestCost_Default_Max = 25;
+  public  int MoveCost_Min = 1, MoveCost_Max = 4;  //이동 비용 골드 값 기준
+  public  float MoveCost_SanityValue = 2.0f;         //이동 비용 정신력 값
+  public  int PenaltyCost_Min = 6, PenaltyCost_Max = 12;
+  public  int RestSanityRestore = 15;
+  public  float  Rest_DiscomfortRatio = 0.1f;
+
+
+  public  int EventPer_Envir = 5, EventPer_NoEnvir = 1,
                    EventPer_Sector = 4, EventPer_NoSector = 1,
-                   EventPer_Quest = 1, EventPer_Follow_Ev = 10, EventPer_Follow_Ex = 15, EventPer_Normal = 1;
+                   EventPer_Quest = 1, EventPer_Follow_Ev = 10,
+    EventPer_Follow_Ex = 15, EventPer_Normal = 1;
 
-  public const int DefaultViewRange = 3;
-  public const int MapSize = 35;
-  public const int LandRadius = 12;
-  public const int MinRiverCount = 5;
-//  public const float Ratio_highland = 0.2f;
-  public const float Ratio_forest = 0.12f;
-  public const int Mountain_Count_min = 3, Mountain_Count_max = 4;
-  public const float Mountain_length_min = 0.3f, Mountain_length_max = 0.7f; 
-  public const float BeachRatio_min = 0.3f, BeachRatio_max = 0.7f;
-  public const float SettlementLength_min = 0.3f;
-  public const float SettlementLength_Village = 0.5f;
-  public const float SettlementLength_Town = 0.7f;
-  public const float SettlementLength_City = 0.9f;
+  public  int MapSize = 35;
+  public  int LandRadius = 12;
+  public  int MinRiverCount = 5;
+  public  float Ratio_forest = 0.12f;
+  public  int Mountain_Count_min = 3, Mountain_Count_max = 4;
+  public  float Mountain_length_min = 0.3f,
+    Mountain_length_max = 0.7f; 
+  public  float SettlementLength_min = 0.3f;
+  public  float SettlementLength_Village = 0.5f;
+  public  float SettlementLength_Town = 0.7f;
+  public  float SettlementLength_City = 0.9f;
 
-  public const int ForestRange = 1, RiverRange = 1, MountainRange = 2, SeaRange = 2, HighlandRange = 1;
+  public  int ForestRange = 1,
+    RiverRange = 1,
+    MountainRange = 2,
+    SeaRange = 2,
+    HighlandRange = 1;
 
-  public const int StartSupplies = 15;
-  public const int StartGold = 10;
-  public const float HPLoss_Exp = 0.2f;
-  public const float GoldGen_Exp = 0.25f;
-  public const float  SanityLoss_Exp = 0.15f;
+  public  int StartSkillLevel = 0;
+  public  int StartSupplies = 15;
+  public  int StartGold = 10;
+  public  float HPLoss_Exp = 0.2f;
+  public  float GoldGen_Exp = 0.25f;
+  public  float  SanityLoss_Exp = 0.15f;
 
-  public const float Tendency_Head_m2 = 0.15f;
-  public const int Tendency_Head_m1 = 2;
-  public const float Tendency_Head_p1 = 1.25f;
-  //public const int Tendency_Head_p2 = 5;
-  //정신적 2: 광기 개수당 정신력 감소 완화
-  //정신적 1: 불쾌 페널티 값 감소
-  //물질적 1: 자원 정산 값 증가
-  //물질적 2: 이벤트 타일로 이동할 때도 자원 획득
+  public  float Tendency_Head_m2 = 0.15f;
+  public  int Tendency_Head_m1 = 2;
+  public  float Tendency_Head_p1 = 1.25f;
 
-  public const int ConversationByTendency_m2 = 3, ConversationByTendency_m1 = 1,
-    IntelligenceByTendency_m2 = 3, IntelligenceByTendency_m1 = 1,
-    ForceByTendency_p1 = 1, ForceByTendency_p2 = 3,
-     WildByTendency_p1 = 1, WildByTendency_p2 = 3;
+  public  int ConversationByTendency_m2 = 3,
+      IntelligenceByTendency_m2 = 3,
+  ConversationByTendency_m1 = 1,
+    IntelligenceByTendency_m1 = 1,
+    ForceByTendency_p1 = 1, 
+     WildByTendency_p1 = 1,
+       ForceByTendency_p2 = 3,
+     WildByTendency_p2 = 3;
 
-  public const float minsuccesper_max = 45;
-  public const float minsuccesper_min = 5;
-  public const float MaxSuccessPer = 95;
-  //스킬 체크, 지불 체크 최대~최소
-  public const int MaxTime = 60;  //15*4
-  //보정치 최대 년도
-  public const int CheckSkill_single_min = 2, CheckSkill_single_max = 12;
-  public const int CheckSkill_multy_min = 3, CheckSkill_multy_max = 15;
+  public  float minsuccesper_max = 45;
+  public  float minsuccesper_min = 5;
+  public  float MaxSuccessPer = 95;
+  public  int MaxTime = 60; 
+  public  int CheckSkill_single_min = 2,
+    CheckSkill_single_max = 12;
+  public  int CheckSkill_multy_min = 3,
+    CheckSkill_multy_max = 15;
 
-  public const float Difficult = 1.0f;
-  public const float PayHP_min = 3, PayHP_max = 6;      
-  public const float PaySanity_min = 8, PaySanity_max = 24;
-  public const float PayGold_min = 6, PayGold_max = 18; 
-  public const float FailHP_min = 4, FailHP_max = 12;   
-  public const float FailSanity_min = 14, FailSanity_max = 36;
-  public const float FailGold_min = 6, FailGold_max = 18;
-  public const int RewardHP_min = 0, RewardHP_max = 0;
-  public const int RewardSanity = 20;
-  public const int RewardGold = 10;
-  public const int RewardSupply = 6;
+  public  float PayHP_min = 3, PayHP_max = 6;      
+  public  float PaySanity_min = 8, PaySanity_max = 24;
+  public  float PayGold_min = 6, PayGold_max = 18; 
+  public  float FailHP_min = 4, FailHP_max = 12;   
+  public  float FailSanity_min = 14, FailSanity_max = 36;
+  public  float FailGold_min = 6, FailGold_max = 18;
+  public  int RewardSanity = 20;
+  public  int RewardGold = 10;
+  public  int RewardSupply = 6;
 
-  public const int EXPMaxTurn_short_idle = 7;
-  public const int EXPMaxTurn_long_idle =  11;
+  public  int EXPMaxTurn_short_idle = 7;
+  public  int EXPMaxTurn_long_idle =  11;
 
-  public const int TendencyProgress_1to2 = 3, TendencyProgress_1to1 = 2;
-  public const int TendencyRegress = 2;
+  public  int TendencyProgress_1to2 = 3;
+  public  int TendencyRegress = 2;
 
-  public const int DiscomfortDownValue = 1;
-    public const int SectorEffectMaxTurn = 3;
-  public const int SectorEffect_residence_discomfort = 4;
-    public const int SectorEffect_marketSector = 20;
-    public const int SectorEffect_temple = 4;
-  public const int SectorEffect_Library = 4;
-  //  public const int SectorEffect_theater = 3;
-  //  public const int SectorEffect_acardemy = 10;
+  public  int DiscomfortDownValue = 1;
+  public  int SectorEffect_residence_discomfort = 4;
+    public  int SectorEffect_marketSector = 20;
+    public  int SectorEffect_temple = 4;
+  public  int SectorEffect_Library = 4;
 
-  public const int LongTermChangeCost = 15;
+  public  int LongTermChangeCost = 15;
 
-  public const int MaxTendencyLevel = 2;
-
-  public const float GoldSanityPayAmplifiedValue = 1.2f;
+  public  float GoldSanityPayAmplifiedValue = 1.2f;
 }
 public class GameData    //게임 진행도 데이터
 {
@@ -207,27 +356,27 @@ public class GameData    //게임 진행도 데이터
         break;//거주지 - 휴식 시 불쾌 1 적게 증가
 
       case SectorTypeEnum.Temple:
-        DownAllDiscomfort(ConstValues.SectorEffect_temple);
+        DownAllDiscomfort(GameManager.Instance.Status.SectorEffect_temple);
         break;//사원- 모든 불쾌 2 감소
 
       case SectorTypeEnum.Marketplace:
         break;//시장- 휴식 비용 감소
 
       case SectorTypeEnum.Library:
-        int _addvalue = ConstValues.SectorEffect_Library;
+        int _addvalue = GameManager.Instance.Status.SectorEffect_Library;
 
         if(LongExp!=null)
-        LongExp.Duration = LongExp.Duration + _addvalue > ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value ? ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value : LongExp.Duration + _addvalue;
+        LongExp.Duration = LongExp.Duration + _addvalue > GameManager.Instance.Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value ? GameManager.Instance.Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value : LongExp.Duration + _addvalue;
 
         if (ShortExp_A != null) ShortExp_A .Duration =
-                ShortExp_A .Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle+GameManager.Instance.MyGameData.Skill_Intelligence.Level/ConstValues.IntelEffect_Level*ConstValues.IntelEffect_Value  ? ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value : ShortExp_A .Duration + _addvalue;
+                ShortExp_A .Duration + _addvalue > GameManager.Instance.Status.EXPMaxTurn_short_idle+GameManager.Instance.MyGameData.Skill_Intelligence.Level/GameManager.Instance.Status.IntelEffect_Level*GameManager.Instance.Status.IntelEffect_Value  ? GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value : ShortExp_A .Duration + _addvalue;
         if (ShortExp_B != null) ShortExp_B.Duration =
-                ShortExp_B.Duration + _addvalue > ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value ? ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value : ShortExp_B.Duration + _addvalue;
+                ShortExp_B.Duration + _addvalue > GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value ? GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value : ShortExp_B.Duration + _addvalue;
         UIManager.Instance.UpdateExpPanel();
         break;
       case SectorTypeEnum.NULL:
         break;
-        //도서관- 무작위 테마에 속한 모든 기술 1 증가(ConstValues.PlaceDuration턴지속)
+        //도서관- 무작위 테마에 속한 모든 기술 1 증가(GameManager.Instance.Status.PlaceDuration턴지속)
 /*
       case SectorTypeEnum.Theater:
 
@@ -235,7 +384,7 @@ public class GameData    //게임 진행도 데이터
         break;//극장- 모든 경험 2턴 증가(삭제됨)
 
       case SectorTypeEnum.Academy:
-        break;//아카데미- 다음 체크 확률 증가(ConstValues.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
+        break;//아카데미- 다음 체크 확률 증가(GameManager.Instance.Status.PlaceDuration턴 지속, 성공할 때 까지)(삭제됨)
 */
     }
   }
@@ -274,7 +423,7 @@ public class GameData    //게임 진행도 데이터
               switch (QuestType)
               {
                 case QuestType.Cult:
-                  Quest_Cult_Progress = Quest_Cult_Progress > ConstValues.MadnessEffect_Conversation ? Quest_Cult_Progress - ConstValues.MadnessEffect_Conversation : 0;
+                  Quest_Cult_Progress = Quest_Cult_Progress > GameManager.Instance.Status.MadnessEffect_Conversation ? Quest_Cult_Progress - GameManager.Instance.Status.MadnessEffect_Conversation : 0;
                   Debug.Log("대화 광기 발동");
                   UIManager.Instance.HighlightManager.Highlight_Madness( SkillTypeEnum.Conversation);
                   UIManager.Instance.AudioManager.PlaySFX(34, "madness");
@@ -289,7 +438,7 @@ public class GameData    //게임 진행도 데이터
           case 2:
             if (Tendency_Head.Level<=-1)
             {
-              _expvalue = ConstValues.Tendency_Head_m1*-1;
+              _expvalue = GameManager.Instance.Status.Tendency_Head_m1*-1;
             }
             break;
           case 3:
@@ -312,13 +461,13 @@ public class GameData    //게임 진행도 데이터
               {
                 case 0:
                   Cult_CoolTime = (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns) +
-              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns))) / 2 / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Town;
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns))) / 2 / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Town;
                   Quest_Cult_Phase = 1;
                   UIManager.Instance.MapUI.DoHighlight = true;
                   break;
                 case 1:
                   Cult_CoolTime = (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys) +
-              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_City;
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_City;
                   Quest_Cult_Phase = 2;
                   UIManager.Instance.MapUI.DoHighlight = true;
                   break;
@@ -327,12 +476,12 @@ public class GameData    //게임 진행도 데이터
                   break;
                 case 3:
                   for (int i = 0; i < MyMapData.AllSettles.Count; i++)
-                    MyMapData.AllSettles[i].Discomfort += ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort;
+                    MyMapData.AllSettles[i].Discomfort += GameManager.Instance.Status.Quest_Cult_Sabbat_PenaltyDiscomfort;
                   UIManager.Instance.SidePanelCultUI.SetSabbatFail();
                   SetRitual();
                   break;
                 case 4:
-                  Supply -= ConstValues.Quest_Cult_Ritual_PenaltySupply;
+                  Supply -= GameManager.Instance.Status.Quest_Cult_Ritual_PenaltySupply;
                   UIManager.Instance.SidePanelCultUI.SetRitualFail();
                   SetSabbat();
                   break;
@@ -351,13 +500,13 @@ public class GameData    //게임 진행도 데이터
   #region #턴에 비례한 성공 확률들#
   public float LerpByTurn
   {
-    get { return Mathf.Lerp(0.0f, 1.0f, (((Year-1) * 4) + turn) / (float)ConstValues.MaxTime); }
+    get { return Mathf.Lerp(0.0f, 1.0f, (((Year-1) * 4) + turn) / (float)GameManager.Instance.Status.MaxTime); }
   }
   public float MinSuccesPer
   {
     get
     {
-      return Mathf.Lerp(ConstValues.minsuccesper_max, ConstValues.minsuccesper_min, LerpByTurn);
+      return Mathf.Lerp(GameManager.Instance.Status.minsuccesper_max, GameManager.Instance.Status.minsuccesper_min, LerpByTurn);
     }
   }//스킬 체크, 지불 체크 최소 성공확률
   /// <summary>
@@ -369,9 +518,9 @@ public class GameData    //게임 진행도 데이터
   public int RequireValue_SkillCheck(int _current, int _target)
   {
   //  Debug.Log($"{_current} {_target}");
-    if (_current >= _target) return Mathf.FloorToInt(100 - ConstValues.MaxSuccessPer);
+    if (_current >= _target) return Mathf.FloorToInt(100 - GameManager.Instance.Status.MaxSuccessPer);
     float _value =1.0f- _current / (float)_target;
-    return Mathf.RoundToInt(Mathf.Clamp(_value*100.0f,100-ConstValues.MaxSuccessPer, 100-MinSuccesPer));
+    return Mathf.RoundToInt(Mathf.Clamp(_value*100.0f,100-GameManager.Instance.Status.MaxSuccessPer, 100-MinSuccesPer));
   }
   /// <summary>
   /// 최소 ~ 100
@@ -381,35 +530,24 @@ public class GameData    //게임 진행도 데이터
   public int RequireValue_Money(int _target)
   {
     float _per =1.0f- Gold / (float)_target;
-    return Mathf.RoundToInt(Mathf.Clamp(_per*100.0f, 100 - ConstValues.MaxSuccessPer, 100- MinSuccesPer));
+    return Mathf.RoundToInt(Mathf.Clamp(_per*100.0f, 100 - GameManager.Instance.Status.MaxSuccessPer, 100- MinSuccesPer));
   }//target : 목표 지불값(돈 부족할 경우에만 실행하는 메소드)
   #endregion
 
   #region #값 프로퍼티#
-  public int ViewRange { get { return ConstValues.DefaultViewRange; } }
-  /*
-  public RangeEnum GetMoveRangeType(int range)
-  {
-    int _low = ConstValues.MoveLength_Low + (Tendency_Head.Level == -2 ? ConstValues.Tendency_Head_m2 : 0);
-    int _middle= ConstValues.MoveLength_Middle + (Tendency_Head.Level == -2 ? ConstValues.Tendency_Head_m2 : 0);
-
-    if (range < _low) return RangeEnum.Low;
-    else if(range < _middle) return RangeEnum.Middle;
-    else return RangeEnum.High;
-  }
-  */
-  public int MadnessHPLoss_Skill { get { return (int)(ConstValues.MadnessHPCost_Skill * GetHPLossModify(true,0)); } }
-  public int MadnessHPLoss_HP { get { return (int)(ConstValues.MadnessHPCost_HP * GetHPLossModify(true,0)); } }
-  public int MadnessSanityGen_Skill { get { return (int)(ConstValues.MadnessSanityGen_Skill); } }
-  public int MadnessSanityGen_HP { get { return (int)(ConstValues.MadnessSanityGen_HP); } }
-  public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_single_min, ConstValues.CheckSkill_single_max, LerpByTurn); } }
-  public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(ConstValues.CheckSkill_multy_min, ConstValues.CheckSkill_multy_max, LerpByTurn); } }
+  public int ViewRange = 3;
+  public int MadnessHPLoss_Skill { get { return (int)(GameManager.Instance.Status.MadnessHPCost_Skill * GetHPLossModify(true,0)); } }
+  public int MadnessHPLoss_HP { get { return (int)(GameManager.Instance.Status.MadnessHPCost_HP * GetHPLossModify(true,0)); } }
+  public int MadnessSanityGen_Skill { get { return (int)(GameManager.Instance.Status.MadnessSanityGen_Skill); } }
+  public int MadnessSanityGen_HP { get { return (int)(GameManager.Instance.Status.MadnessSanityGen_HP); } }
+  public int CheckSkillSingleValue { get { return (int)Mathf.Lerp(GameManager.Instance.Status.CheckSkill_single_min, GameManager.Instance.Status.CheckSkill_single_max, LerpByTurn); } }
+  public int CheckSkillMultyValue { get { return (int)Mathf.Lerp(GameManager.Instance.Status.CheckSkill_multy_min, GameManager.Instance.Status.CheckSkill_multy_max, LerpByTurn); } }
   public int RestCost_Sanity
   {
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.RestCost_Default_Min, ConstValues.RestCost_Default_Max, LerpByTurn);
-      float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
+      int _default = (int)UnityEngine.Mathf.Lerp(GameManager.Instance.Status.RestCost_Default_Min, GameManager.Instance.Status.RestCost_Default_Max, LerpByTurn);
+      float _value = 1.0f + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value * GetSanityLossModify(true,0));
     }
@@ -418,8 +556,8 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      int _default = (int)UnityEngine.Mathf.Lerp(ConstValues.RestCost_Default_Min, ConstValues.RestCost_Default_Max, LerpByTurn);
-      float _value = ConstValues.Rest_Deafult + GetDiscomfortValue(CurrentSettlement.Discomfort);
+      int _default = (int)UnityEngine.Mathf.Lerp(GameManager.Instance.Status.RestCost_Default_Min, GameManager.Instance.Status.RestCost_Default_Max, LerpByTurn);
+      float _value = 1.0f + GetDiscomfortValue(CurrentSettlement.Discomfort);
 
       return Mathf.FloorToInt(_default * _value );
     }
@@ -431,41 +569,41 @@ public class GameData    //게임 진행도 데이터
   /// <returns></returns>
   public float GetDiscomfortValue(int discomfort)
   {
-    return ConstValues.Rest_DiscomfortRatio * discomfort;
+    return GameManager.Instance.Status.Rest_DiscomfortRatio * discomfort;
   }
   public int PayHPValue(int modify)
   {
-    return Mathf.Clamp((int)((int)Mathf.Lerp(ConstValues.PayHP_min, ConstValues.PayHP_max, LerpByTurn) * GetHPLossModify(true, modify)),0,100);
+    return Mathf.Clamp((int)((int)Mathf.Lerp(GameManager.Instance.Status.PayHP_min, GameManager.Instance.Status.PayHP_max, LerpByTurn) * GetHPLossModify(true, modify)),0,100);
   }
   public int PaySanityValue(int modify)
   {
-    return Mathf.Clamp((int)((int)Mathf.Lerp(ConstValues.PaySanity_min, ConstValues.PaySanity_max, LerpByTurn) * GetSanityLossModify(true, modify)),0,100);
+    return Mathf.Clamp((int)((int)Mathf.Lerp(GameManager.Instance.Status.PaySanity_min, GameManager.Instance.Status.PaySanity_max, LerpByTurn) * GetSanityLossModify(true, modify)),0,100);
   }
     public int PayGoldValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.PayGold_min, ConstValues.PayGold_max,LerpByTurn) ); } }
+    { get { return (int)((int)Mathf.Lerp(GameManager.Instance.Status.PayGold_min, GameManager.Instance.Status.PayGold_max,LerpByTurn) ); } }
   public int PayOverSanityValue
   {
-    get { return (int)((PayGoldValue - GameManager.Instance.MyGameData.Gold) * ConstValues.GoldSanityPayAmplifiedValue); }
+    get { return (int)((PayGoldValue - GameManager.Instance.MyGameData.Gold) * GameManager.Instance.Status.GoldSanityPayAmplifiedValue); }
   }
     public int FailHPValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailHP_min, ConstValues.FailHP_max,LerpByTurn) * GetHPLossModify(true,0)); } }
+    { get { return (int)((int)Mathf.Lerp(GameManager.Instance.Status.FailHP_min, GameManager.Instance.Status.FailHP_max,LerpByTurn) * GetHPLossModify(true,0)); } }
     public int FailSanityValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailSanity_min, ConstValues.FailSanity_max,LerpByTurn) * GetSanityLossModify(true,0)); } }
+    { get { return (int)((int)Mathf.Lerp(GameManager.Instance.Status.FailSanity_min, GameManager.Instance.Status.FailSanity_max,LerpByTurn) * GetSanityLossModify(true,0)); } }
     public int FailGoldValue
-    { get { return (int)((int)Mathf.Lerp(ConstValues.FailGold_min, ConstValues.FailGold_max,LerpByTurn)); } }
+    { get { return (int)((int)Mathf.Lerp(GameManager.Instance.Status.FailGold_min, GameManager.Instance.Status.FailGold_max,LerpByTurn)); } }
     public int RewardHPValue
     { get { return 0; } }
     public int RewardSanityValue
-    { get { return (int)ConstValues.RewardSanity; } }
+    { get { return (int)GameManager.Instance.Status.RewardSanity; } }
     public int RewardGoldValue
-    { get { return (int)(ConstValues.RewardGold * GetGoldGenModify(true)); } }
-  public int RewardSupplyValue { get { return ConstValues.RewardSupply; } }
+    { get { return (int)(GameManager.Instance.Status.RewardGold * GetGoldGenModify(true)); } }
+  public int RewardSupplyValue { get { return GameManager.Instance.Status.RewardSupply; } }
   public int Movecost_sanity
   {
     get
     {
       return Mathf.RoundToInt( Movecost_gold 
-        *ConstValues.MoveCost_SanityValue
+        *GameManager.Instance.Status.MoveCost_SanityValue
         * GetSanityLossModify(true, 0));
     }
   }
@@ -473,14 +611,14 @@ public class GameData    //게임 진행도 데이터
   {
     get
     {
-      return Mathf.FloorToInt(((Mathf.Lerp(ConstValues.MoveCost_Min, ConstValues.MoveCost_Max, LerpByTurn))));
+      return Mathf.FloorToInt(((Mathf.Lerp(GameManager.Instance.Status.MoveCost_Min, GameManager.Instance.Status.MoveCost_Max, LerpByTurn))));
     }
   }
   public int Movecost_supplylack
   {
     get
     {
-      return (int)((Mathf.Lerp(ConstValues.PenaltyCost_Min, ConstValues.PenaltyCost_Max, LerpByTurn) * GetSanityLossModify(true, 0)));
+      return (int)((Mathf.Lerp(GameManager.Instance.Status.PenaltyCost_Min, GameManager.Instance.Status.PenaltyCost_Max, LerpByTurn) * GetSanityLossModify(true, 0)));
     }
   }
   #endregion
@@ -790,15 +928,15 @@ public class GameData    //게임 진행도 데이터
       {
         case 0: 
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
-          Cult_CoolTime = (int)(_village / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)(_village / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case 1:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Temple : SectorTypeEnum.Marketplace;
-          Cult_CoolTime=(int)(_town/ ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime=(int)(_town/ GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case 2:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
-          Cult_CoolTime = (int)(_city / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)(_city / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
       }
     }
@@ -808,15 +946,15 @@ public class GameData    //게임 진행도 데이터
       {
         case SettlementType.Village:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
-          Cult_CoolTime = (int)( (_town>_city?_city:_town) / ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)( (_town>_city?_city:_town) / GameManager.Instance.Status.Quest_Cult_LengthValue)+GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.Town:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Library;
-          Cult_CoolTime = (int)((Cult_SabbatSector== SectorTypeEnum.Residence?_village:_city) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)((Cult_SabbatSector== SectorTypeEnum.Residence?_village:_city) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.City:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
-          Cult_CoolTime = (int)((_village>_town?_town:_village) / ConstValues.Quest_Cult_LengthValue) + ConstValues.Quest_Cult_CoolTime_Sabbat;
+          Cult_CoolTime = (int)((_village>_town?_town:_village) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
       }
     }
@@ -855,7 +993,7 @@ public class GameData    //게임 진행도 데이터
     Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
               UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
 
-    Cult_CoolTime = (int)((Cult_RitualTile.HexGrid.GetDistance(CurrentTile)/ ConstValues.Quest_Cult_LengthValue)+ConstValues.Quest_Cult_CoolTime_Ritual);
+    Cult_CoolTime = (int)((Cult_RitualTile.HexGrid.GetDistance(CurrentTile)/ GameManager.Instance.Status.Quest_Cult_LengthValue)+GameManager.Instance.Status.Quest_Cult_CoolTime_Ritual);
 
     if (Cult_SabbatSector != SectorTypeEnum.NULL) Cult_SabbatSector = SectorTypeEnum.NULL;
   }
@@ -893,7 +1031,7 @@ public class GameData    //게임 진행도 데이터
     if (ShortExp_A != null && ShortExp_A.Effects.Contains(_targeteffect)) _count++;
     if (ShortExp_B != null && ShortExp_B.Effects.Contains(_targeteffect)) _count++;
 
-    return _count*ConstValues.ExpSkillLevel;
+    return _count*GameManager.Instance.Status.ExpSkillLevel;
 
   }//현재 경험들 중에서 해당 기술의 값 합 반환
   /// <summary>
@@ -907,7 +1045,7 @@ public class GameData    //게임 진행도 데이터
 
     var _count = GetEffectModifyCount_Exp(EffectType.HPLoss)+ addcount;
 
-    _plusamount = 1.0f - _count * ConstValues.HPLoss_Exp;
+    _plusamount = 1.0f - _count * GameManager.Instance.Status.HPLoss_Exp;
 
     if (_formultiply) return _plusamount;
     else return _plusamount * 100.0f;
@@ -928,7 +1066,7 @@ public class GameData    //게임 진행도 데이터
     if(Madness_Wild)_madcount++;
     if(Madness_Intelligence) _madcount++;
 
-    _plusamount=Mathf.Clamp(1.0f-_count*ConstValues.SanityLoss_Exp-(Tendency_Head.Level==-2? _madcount*ConstValues.Tendency_Head_m2:0),0.0f,1.0f);
+    _plusamount=Mathf.Clamp(1.0f-_count*GameManager.Instance.Status.SanityLoss_Exp-(Tendency_Head.Level==-2? _madcount*GameManager.Instance.Status.Tendency_Head_m2:0),0.0f,1.0f);
 
     if (_formultiply) return _plusamount;
     else return _plusamount*100.0f;
@@ -944,7 +1082,7 @@ public class GameData    //게임 진행도 데이터
 
     var _count = GetEffectModifyCount_Exp(EffectType.GoldGen);
 
-    _plusamount = 1.0f + _count * ConstValues.GoldGen_Exp;
+    _plusamount = 1.0f + _count * GameManager.Instance.Status.GoldGen_Exp;
 
     if (_formultiply) return _plusamount;
     else return _plusamount * 100.0f;
@@ -957,17 +1095,17 @@ public class GameData    //게임 진행도 데이터
   {
     turn = 0;
     hp = 100;
-    supply = ConstValues.StartSupplies;
+    supply = GameManager.Instance.Status.StartSupplies;
     sanity = 100;
-    gold = ConstValues.StartGold ;
+    gold = GameManager.Instance.Status.StartGold ;
     QuestType=questtype;
-    Cult_CoolTime = ConstValues.Quest_Cult_CoolTime_Village;
+    Cult_CoolTime = GameManager.Instance.Status.Quest_Cult_CoolTime_Village;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
-    Skill_Conversation = new Skill(SkillTypeEnum.Conversation,ConstValues.StartSkillLevel);
-    Skill_Force = new Skill(SkillTypeEnum.Force, ConstValues.StartSkillLevel);
-    Skill_Wild= new Skill(SkillTypeEnum.Wild, ConstValues.StartSkillLevel);
-    Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence, ConstValues.StartSkillLevel);
+    Skill_Conversation = new Skill(SkillTypeEnum.Conversation,GameManager.Instance.Status.StartSkillLevel);
+    Skill_Force = new Skill(SkillTypeEnum.Force, GameManager.Instance.Status.StartSkillLevel);
+    Skill_Wild= new Skill(SkillTypeEnum.Wild, GameManager.Instance.Status.StartSkillLevel);
+    Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence, GameManager.Instance.Status.StartSkillLevel);
   }
   /// <summary>
   /// 불러오기
@@ -978,14 +1116,14 @@ public class GameData    //게임 진행도 데이터
     IsDead = jsondata.IsDead;
 
     MyMapData = new MapData();
-    MyMapData.TileDatas = new TileData[ConstValues.MapSize, ConstValues.MapSize];
+    MyMapData.TileDatas = new TileData[GameManager.Instance.Status.MapSize, GameManager.Instance.Status.MapSize];
     int _index = 0;
     //[j,i]
-    for(int i = 0; i < ConstValues.MapSize; i++)
+    for(int i = 0; i < GameManager.Instance.Status.MapSize; i++)
     {
-      for(int j=0;j< ConstValues.MapSize; j++)
+      for(int j=0;j< GameManager.Instance.Status.MapSize; j++)
       {
-        _index = j * ConstValues.MapSize + i ;
+        _index = j * GameManager.Instance.Status.MapSize + i ;
         TileData _tiledata = new TileData();
         _tiledata.Coordinate = new Vector2Int(j, i);
         _tiledata.Rotation = jsondata.Tiledata_Rotation[_index];
@@ -1056,6 +1194,8 @@ public class GameData    //게임 진행도 데이터
 
     foreach(var _coordinate in jsondata.EventTiles)
       MyMapData.EventTiles.Add(MyMapData.Tile(_coordinate));
+    foreach(var _coordinate in jsondata.ResourceGenTiles)
+      MyMapData.ResourceGenTiles.Add(MyMapData.Tile(_coordinate));
     foreach (var _coordinate in jsondata.ResourceTiles)
       MyMapData.ResourceTiles.Add(MyMapData.Tile(_coordinate));
     TotalMoveCount = jsondata.TotalMoveCount;
@@ -1155,13 +1295,13 @@ public class Skill
       switch (MySkillType)
       {
         case SkillTypeEnum.Conversation:
-          return GameManager.Instance.MyGameData.Madness_Conversation ? ConstValues.MadnessSkillLevel : 0;
+          return GameManager.Instance.MyGameData.Madness_Conversation ? GameManager.Instance.Status.MadnessSkillLevel : 0;
         case SkillTypeEnum.Force:
-          return GameManager.Instance.MyGameData.Madness_Force ? ConstValues.MadnessSkillLevel : 0;
+          return GameManager.Instance.MyGameData.Madness_Force ? GameManager.Instance.Status.MadnessSkillLevel : 0;
         case SkillTypeEnum.Wild:
-          return GameManager.Instance.MyGameData.Madness_Wild ? ConstValues.MadnessSkillLevel : 0;
+          return GameManager.Instance.MyGameData.Madness_Wild ? GameManager.Instance.Status.MadnessSkillLevel : 0;
         case SkillTypeEnum.Intelligence:
-          return GameManager.Instance.MyGameData.Madness_Intelligence ? ConstValues.MadnessSkillLevel : 0;
+          return GameManager.Instance.MyGameData.Madness_Intelligence ? GameManager.Instance.Status.MadnessSkillLevel : 0;
       }
       return 0;
     }
@@ -1192,16 +1332,16 @@ public class Skill
     {
       switch (MySkillType)
       {
-        case SkillType.Conversation:if (GameManager.Instance.MyGameData.Madness_Conversation == true) return ConstValues.MadnessSkillLevelValue;
+        case SkillType.Conversation:if (GameManager.Instance.MyGameData.Madness_Conversation == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
           break;
         case SkillType.Force:
-          if (GameManager.Instance.MyGameData.Madness_Force == true) return ConstValues.MadnessSkillLevelValue;
+          if (GameManager.Instance.MyGameData.Madness_Force == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
           break;
         case SkillType.Wild:
-          if (GameManager.Instance.MyGameData.Madness_Wild == true) return ConstValues.MadnessSkillLevelValue;
+          if (GameManager.Instance.MyGameData.Madness_Wild == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
           break;
         case SkillType.Intelligence:
-          if (GameManager.Instance.MyGameData.Madness_Intelligence == true) return ConstValues.MadnessSkillLevelValue;
+          if (GameManager.Instance.MyGameData.Madness_Intelligence == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
           break;
       }
       return 0;
@@ -1216,13 +1356,13 @@ public class Skill
 
       if (MySkillType== SkillTypeEnum.Conversation || MySkillType == SkillTypeEnum.Intelligence)
       {
-        if (_tendencylevel.Equals(-2)) return ConstValues.ConversationByTendency_m2;
-        else if (_tendencylevel.Equals(-1)) return ConstValues.ConversationByTendency_m1;
+        if (_tendencylevel.Equals(-2)) return GameManager.Instance.Status.ConversationByTendency_m2;
+        else if (_tendencylevel.Equals(-1)) return GameManager.Instance.Status.ConversationByTendency_m1;
       }
       else
       {
-        if (_tendencylevel.Equals(2)) return ConstValues.ForceByTendency_p2;
-        else if (_tendencylevel.Equals(1)) return ConstValues.ForceByTendency_p1;
+        if (_tendencylevel.Equals(2)) return GameManager.Instance.Status.ForceByTendency_p2;
+        else if (_tendencylevel.Equals(1)) return GameManager.Instance.Status.ForceByTendency_p1;
       }
       return 0;
     }
@@ -1278,19 +1418,19 @@ public class Tendency
       switch (level)
       {
         case -2:
-          _count = Progress > 0 ? ConstValues.TendencyRegress : -1;
+          _count = Progress > 0 ? GameManager.Instance.Status.TendencyRegress : -1;
           break;
         case -1:
-          _count = Progress > 0 ? ConstValues.TendencyRegress : ConstValues.TendencyProgress_1to2;
+          _count = Progress > 0 ? GameManager.Instance.Status.TendencyRegress : GameManager.Instance.Status.TendencyProgress_1to2;
           break;
         case 0:
-          _count = ConstValues.TendencyProgress_1to2;
+          _count = GameManager.Instance.Status.TendencyProgress_1to2;
           break;
         case 1:
-          _count = Progress > 0 ? ConstValues.TendencyProgress_1to2 : ConstValues.TendencyRegress;
+          _count = Progress > 0 ? GameManager.Instance.Status.TendencyProgress_1to2 : GameManager.Instance.Status.TendencyRegress;
           break;
         case 2:
-          _count = Progress > 0 ? -1 : ConstValues.TendencyRegress;
+          _count = Progress > 0 ? -1 : GameManager.Instance.Status.TendencyRegress;
           break;
       }
       return _count;
@@ -1314,22 +1454,22 @@ public class Tendency
          //     _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
          //     _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
               _result = string.Format("{0}, {1}",
-                string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m2),
-                string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m2));
+                string.Format(_uptext, _conver, GameManager.Instance.Status.ConversationByTendency_m2),
+                string.Format(_uptext, _intel, GameManager.Instance.Status.IntelligenceByTendency_m2));
               break;
             case -1:
               _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
               _intel = GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 1);
               _result = string.Format("{0}, {1}",
-                string.Format(_uptext, _conver, ConstValues.ConversationByTendency_m1),
-                string.Format(_uptext, _intel, ConstValues.IntelligenceByTendency_m1));
+                string.Format(_uptext, _conver, GameManager.Instance.Status.ConversationByTendency_m1),
+                string.Format(_uptext, _intel, GameManager.Instance.Status.IntelligenceByTendency_m1));
               break;
             case 1:
               _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
               _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
               _result = string.Format("{0}, {1}",
-                string.Format(_uptext, _force, ConstValues.ForceByTendency_p1),
-                string.Format(_uptext, _wild, ConstValues.WildByTendency_p1));
+                string.Format(_uptext, _force, GameManager.Instance.Status.ForceByTendency_p1),
+                string.Format(_uptext, _wild, GameManager.Instance.Status.WildByTendency_p1));
               break;
             case 2:
           //    _conver = GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 1);
@@ -1337,8 +1477,8 @@ public class Tendency
               _force = GameManager.Instance.GetTextData(SkillTypeEnum.Force, 1);
               _wild = GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 1);
               _result = string.Format("{0}, {1}",
-                string.Format(_uptext, _force, ConstValues.ForceByTendency_p2),
-                string.Format(_uptext, _wild, ConstValues.WildByTendency_p2));
+                string.Format(_uptext, _force, GameManager.Instance.Status.ForceByTendency_p2),
+                string.Format(_uptext, _wild, GameManager.Instance.Status.WildByTendency_p2));
               break;
           }
           break;
@@ -1352,22 +1492,22 @@ public class Tendency
               if (GameManager.Instance.MyGameData.Madness_Wild) _madcount++;
               if (GameManager.Instance.MyGameData.Madness_Intelligence) _madcount++;
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       ConstValues.Tendency_Head_m1)+"<br><br>"+ 
+                       GameManager.Instance.Status.Tendency_Head_m1)+"<br><br>"+ 
                        string.Format(GameManager.Instance.GetTextData("Tendency_Head_M2_Description"),
-                      (int)(ConstValues.Tendency_Head_m2*100.0f),
-                      (int)(_madcount*ConstValues.Tendency_Head_m2*100.0f));
+                      (int)(GameManager.Instance.Status.Tendency_Head_m2*100.0f),
+                      (int)(_madcount*GameManager.Instance.Status.Tendency_Head_m2*100.0f));
               break;
             case -1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_M1_Description"),
-                       ConstValues.Tendency_Head_m1);
+                       GameManager.Instance.Status.Tendency_Head_m1);
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-               ConstValues.Tendency_Head_p1*100-100);
+               GameManager.Instance.Status.Tendency_Head_p1*100-100);
               break;
             case 2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-              ConstValues.Tendency_Head_p1 * 100 - 100) +"<br><br>"+
+              GameManager.Instance.Status.Tendency_Head_p1 * 100 - 100) +"<br><br>"+
               GameManager.Instance.GetTextData("Tendency_Head_P2_Description");
               break;
           }
@@ -1405,7 +1545,6 @@ public class Tendency
     }
   }
   public int Progress = 0;
-  public int MaxTendencyLevel { get { return ConstValues.MaxTendencyLevel; } }
   /// <summary>
   /// treu:음수     true:양수
   /// </summary>
@@ -1428,18 +1567,18 @@ public class Tendency
     switch (Level)
     {
       case -2:
-        if (Progress == ConstValues.TendencyRegress) Level = -1;
+        if (Progress == GameManager.Instance.Status.TendencyRegress) Level = -1;
         break;
       case -1:
-        if (Progress == ConstValues.TendencyProgress_1to2 * -1) Level = -2;
-        else if (Progress == ConstValues.TendencyRegress) Level = 1;
+        if (Progress == GameManager.Instance.Status.TendencyProgress_1to2 * -1) Level = -2;
+        else if (Progress == GameManager.Instance.Status.TendencyRegress) Level = 1;
         break;
       case 1:
-        if (Progress == ConstValues.TendencyRegress * -1) Level = -1;
-        else if (Progress == ConstValues.TendencyProgress_1to2) Level = 2;
+        if (Progress == GameManager.Instance.Status.TendencyRegress * -1) Level = -1;
+        else if (Progress == GameManager.Instance.Status.TendencyProgress_1to2) Level = 2;
         break;
       case 2:
-        if (Progress == ConstValues.TendencyRegress * -1) Level = 1;
+        if (Progress == GameManager.Instance.Status.TendencyRegress * -1) Level = 1;
         break;
     }
 
@@ -1476,6 +1615,7 @@ public class GameJsonData
   public bool IsDead = false;
 
   public List<Vector2Int> EventTiles=new List<Vector2Int>();
+  public List<Vector2Int> ResourceGenTiles=new List<Vector2Int>();
   public List<Vector2Int> ResourceTiles=new List<Vector2Int>();
 
   public List<int> Tiledata_Rotation = new List<int>();
@@ -1574,7 +1714,9 @@ public class GameJsonData
 
     foreach (var _eventtile in data.MyMapData.EventTiles)
       EventTiles.Add(_eventtile.Coordinate);
-    foreach(var _resourcetile in data.MyMapData.ResourceTiles)
+    foreach (var _gentile in data.MyMapData.ResourceGenTiles)
+      ResourceGenTiles.Add(_gentile.Coordinate);
+    foreach (var _resourcetile in data.MyMapData.ResourceTiles)
       ResourceTiles.Add(_resourcetile.Coordinate);
 
     foreach (var _tile in data.MyMapData.TileDatas)

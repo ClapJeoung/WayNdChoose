@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Steamworks;
 
 public class maptext : MonoBehaviour
 {
@@ -20,7 +21,11 @@ public class maptext : MonoBehaviour
   [SerializeField] private Transform TileHolder_landmark = null;
   [SerializeField] private Transform TileHolder_Fog = null;
   [SerializeField] private Sprite Villagesprite, Townsprite, Citysprite;
-    private void Start()
+  private float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.4f;
+  private float FogAlphaChangeTime = 0.4f;
+  private float FogScaleChangeTime = 0.6f;
+
+  private void Start()
     {
         Vector3Int _pos = new Vector3Int(5, 5,0);
         Matrix4x4 _trans = Matrix4x4.Translate(Vector3.zero) * Matrix4x4.Rotate(Quaternion.Euler(new Vector3(0, 0, -60.0f)));
@@ -97,11 +102,11 @@ public class maptext : MonoBehaviour
 
       List<TileData> _around = new List<TileData>();
       int _count = 0;
-      for (int i = 3; i < ConstValues.MapSize; i++)
+      for (int i = 3; i < GameManager.Instance.Status.MapSize; i++)
       {
         if (i % 3 != 0) continue;
 
-        for(int j=3;j< ConstValues.MapSize; j++)
+        for(int j=3;j< GameManager.Instance.Status.MapSize; j++)
         {
           if(j%3 != 0) continue;
 
@@ -129,9 +134,9 @@ public class maptext : MonoBehaviour
     int LoopCount = 0;
 
     MapData _NewMapData = new MapData();
-    _NewMapData.TileDatas = new TileData[ConstValues.MapSize, ConstValues.MapSize];
-    for (int i = 0; i < ConstValues.MapSize; i++)
-      for (int j = 0; j < ConstValues.MapSize; j++)
+    _NewMapData.TileDatas = new TileData[GameManager.Instance.Status.MapSize, GameManager.Instance.Status.MapSize];
+    for (int i = 0; i < GameManager.Instance.Status.MapSize; i++)
+      for (int j = 0; j < GameManager.Instance.Status.MapSize; j++)
       {
         _NewMapData.TileDatas[j, i] = new TileData();
         _NewMapData.TileDatas[j, i].Coordinate = new Vector2Int(j, i);
@@ -140,7 +145,7 @@ public class maptext : MonoBehaviour
 
     #region 땅 만들기
     //지도의 중심
-    List<Vector2Int> _firstlandcoors = _NewMapData.GetAroundCoor(_NewMapData.CenterTile.Coordinate, ConstValues.LandRadius);
+    List<Vector2Int> _firstlandcoors = _NewMapData.GetAroundCoor(_NewMapData.CenterTile.Coordinate, GameManager.Instance.Status.LandRadius);
     foreach (var _landcoor in _firstlandcoors)
     {
       _NewMapData.Tile(_landcoor).BottomEnvir = BottomEnvirType.Land;
@@ -271,8 +276,8 @@ public class maptext : MonoBehaviour
       _NewMapData.TileDatas[seatile.Coordinate.x, seatile.Coordinate.y].BottomEnvirSprite = TileSpriteType.Land;
     }
 
-    for (int i = 0; i < ConstValues.MapSize; i++)
-      for (int j = 0; j < ConstValues.MapSize; j++)
+    for (int i = 0; i < GameManager.Instance.Status.MapSize; i++)
+      for (int j = 0; j < GameManager.Instance.Status.MapSize; j++)
       {
         if (_NewMapData.Tile(new Vector2Int(j, i)).BottomEnvir == BottomEnvirType.Sea) continue;
 
@@ -376,7 +381,7 @@ public class maptext : MonoBehaviour
           int _nextdir = RotateDir(_maindir, _targetdirs[k]);                //현재 선택된 방향(0~5)
           TileData _nexttile = _NewMapData.GetNextTile(_currentcoor, (HexDir)_nextdir);
 
-          if (_nexttile.Coordinate.x == 0 || _nexttile.Coordinate.y == 0 || _nexttile.Coordinate.x == ConstValues.MapSize - 1 || _nexttile.Coordinate.y == ConstValues.MapSize - 1)
+          if (_nexttile.Coordinate.x == 0 || _nexttile.Coordinate.y == 0 || _nexttile.Coordinate.x == GameManager.Instance.Status.MapSize - 1 || _nexttile.Coordinate.y == GameManager.Instance.Status.MapSize - 1)
           {
             _enabledirs.Add(_targetdirs[k]);
             _finishdir = _nextdir;
@@ -417,7 +422,7 @@ public class maptext : MonoBehaviour
 
         if (_finishdir != 10)
         {
-          if (_riverdata.RiverCoors.Count < ConstValues.MinRiverCount)
+          if (_riverdata.RiverCoors.Count < GameManager.Instance.Status.MinRiverCount)
           {
             //   Debug.Log($"{i + 1}번째 강 [{_riverdata.RiverCoors.Count + 1}]{_currentcoor}->({_finishdir})->[{_riverdata.RiverCoors.Count + 2}]{_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir)} 기준 미충족 해변으로 제명 {_riverdata.RiverCoors.Count+1}번 타일 다시 검사");
             _failcoors.Add(_NewMapData.GetNextCoor(_currentcoor, (HexDir)_finishdir,true));
@@ -554,7 +559,7 @@ public class maptext : MonoBehaviour
       _mountaindone = false;
 
       List<TileData> _lines = _NewMapData.GetDirLines(_NewMapData.CenterTile, (HexDir)_mountaindirs[i]);
-      int _tilecount = Random.Range(Mathf.FloorToInt(_lines.Count * ConstValues.Mountain_length_min), Mathf.FloorToInt(_lines.Count * ConstValues.Mountain_length_max));
+      int _tilecount = Random.Range(Mathf.FloorToInt(_lines.Count * GameManager.Instance.Status.Mountain_length_min), Mathf.FloorToInt(_lines.Count * GameManager.Instance.Status.Mountain_length_max));
       Vector2Int _startcoordinate = _lines[_tilecount].Coordinate;
       for (int j = 0; j < _tilecount / 2; j++)
         _startcoordinate = _NewMapData.GetNextCoor(_startcoordinate, (HexDir)RotateDir(_mountaindirs[i], 2), true);
@@ -573,7 +578,7 @@ public class maptext : MonoBehaviour
         for(int k = 0; k < _currentmountaindirs.Count; k++)
         {
           List<List<TileData>> _mountaintilelists = new List<List<TileData>> { new List<TileData> { _mountainstartlist[0] } };
-          for(int l = 0; l < ConstValues.Mountain_Count_max; l++)
+          for(int l = 0; l < GameManager.Instance.Status.Mountain_Count_max; l++)
           {
             List<TileData> _currentlinetiles= new List<TileData>();
             TileData _previewtile = _mountaintilelists[0][0];
@@ -589,7 +594,7 @@ public class maptext : MonoBehaviour
           int _ablecount = 0;
           foreach (var _list in _mountaintilelists) if (_list.Count > 0) _ablecount++;
 
-          _mountaindone = _ablecount >= ConstValues.Mountain_Count_min;
+          _mountaindone = _ablecount >= GameManager.Instance.Status.Mountain_Count_min;
 
           if (_mountaindone)
           {
@@ -615,8 +620,21 @@ public class maptext : MonoBehaviour
 
     #region 숲
     LoopCount = 0;
+    int _totallandcount = 0;
+    for(int i = 0; i < GameManager.Instance.Status.LandRadius; i++)
+    {
+      int _tempcount = 0;
+      int _loopcount = 2 * i + 1;
+      for(int j = 0; j < _loopcount; j++)
+      {
+        _tempcount += j == 0 || j == _loopcount - 1 ? (i + 1) : 2;
+      }
+      _totallandcount += _tempcount;
+    }
 
-    int _forestmaxcount = Mathf.CeilToInt(ConstValues.LandRadius * ConstValues.LandRadius * 4.0f * ConstValues.Ratio_forest);    //숲 최대 개수
+    int _forestmaxcount = Mathf.CeilToInt(_totallandcount * GameManager.Instance.Status.Ratio_forest);    //숲 최대 개수
+    
+    
     List<TileData> _landtiles = _NewMapData.GetEnvirTiles
       (new List<BottomEnvirType> { BottomEnvirType.Land, BottomEnvirType.River, BottomEnvirType.RiverBeach },
       new List<TopEnvirType> { TopEnvirType.Mountain }, 1);
@@ -627,7 +645,7 @@ public class maptext : MonoBehaviour
     for (int i = 0; i < _landtiles.Count; i++)
     {
       int _length = _NewMapData.CenterTile.HexGrid.GetDistance(_landtiles[i]);
-      int _count = _length <= (ConstValues.LandRadius / 2 + 1) ? _length : (Mathf.Clamp(-_length + (ConstValues.LandRadius), 0, 100));
+      int _count = _length <= (GameManager.Instance.Status.LandRadius / 2 + 1) ? _length : (Mathf.Clamp(-_length + (GameManager.Instance.Status.LandRadius), 0, 100));
       _count = _count - _landtiles[i].RequireSupply < 1 ? 1 : _count - _landtiles[i].RequireSupply;
       for (int j = 0; j < _count; j++)
       {
@@ -684,8 +702,8 @@ public class maptext : MonoBehaviour
       if (LoopCount > 100) { Debug.Log("도시 생성 중 무한루프"); return null; }
       int _index = _settlementcompeleteeindex;
 
-      int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_Town);
-      int _lengthmax = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_City);
+      int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * GameManager.Instance.Status.SettlementLength_Town);
+      int _lengthmax = Mathf.FloorToInt(_enablelines[_index].Count * GameManager.Instance.Status.SettlementLength_City);
       Vector2Int _starcoor = _enablelines[_index][Random.Range(_lengthmin, _lengthmax)].Coordinate + new Vector2Int(Random.Range(-1, 2), Random.Range(-1, 2));
 
       _citytile = _NewMapData.TileDatas[_starcoor.x, _starcoor.y];
@@ -731,8 +749,8 @@ public class maptext : MonoBehaviour
       if (LoopCount > 100) { Debug.Log("마을 생성 중 무한루프"); return null; }
       int _index = _settlementcompeleteeindex;
 
-      int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_Village);
-      int _lengthmax = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_Town); 
+      int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * GameManager.Instance.Status.SettlementLength_Village);
+      int _lengthmax = Mathf.FloorToInt(_enablelines[_index].Count * GameManager.Instance.Status.SettlementLength_Town); 
       
       Vector2Int _selectcoor = _enablelines[_index][Random.Range(_lengthmin, _lengthmax)].Coordinate+new Vector2Int(Random.Range(-1,2), Random.Range(-1, 2));
       _towntile = _NewMapData.TileDatas[_selectcoor.x, _selectcoor.y];
@@ -775,8 +793,8 @@ public class maptext : MonoBehaviour
       if (LoopCount > 100) { Debug.Log("촌락 생성 중 무한루프"); return null; }
       int _index = _settlementcompeleteeindex;
 
-      int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_min);
-      int _lengthmax = Mathf.FloorToInt(_enablelines[_index].Count * ConstValues.SettlementLength_Village);
+      int _lengthmin = Mathf.FloorToInt(_enablelines[_index].Count * GameManager.Instance.Status.SettlementLength_min);
+      int _lengthmax = Mathf.FloorToInt(_enablelines[_index].Count * GameManager.Instance.Status.SettlementLength_Village);
 
       Vector2Int _selectcoor = _enablelines[_index][Random.Range(_lengthmin,_lengthmax)].Coordinate + new Vector2Int(Random.Range(-1, 2), Random.Range(-1, 2));
       TileData _villagetile = _NewMapData.Tile(_selectcoor);
@@ -908,9 +926,9 @@ public class maptext : MonoBehaviour
   public IEnumerator MakeTilemap()
   {
     //타일로 구현화
-    for (int i = 0; i < ConstValues.MapSize; i++)
+    for (int i = 0; i < GameManager.Instance.Status.MapSize; i++)
     {
-      for (int j = 0; j < ConstValues.MapSize; j++)
+      for (int j = 0; j < GameManager.Instance.Status.MapSize; j++)
       {
         Vector3Int _coordinate = new Vector3Int(j, i, 0);
 
@@ -923,10 +941,6 @@ public class maptext : MonoBehaviour
         GameObject _bottomtile = new GameObject(_bottomname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         _bottomtile.tag = "Tile";
         _bottomtile.transform.SetParent(TileHolder_bottomenvir);
-        Onpointer_tileoutline _outline = _bottomtile.AddComponent<Onpointer_tileoutline>();
-        _outline.enabled = _currenttile.Fogstate == 2;
-        _outline.MyMapUI = MapUIScript;
-        _outline.MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
         _bottomtile.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.Transparent;
         _bottomtile.GetComponent<Image>().raycastTarget = false;
         RectTransform _bottomrect = _bottomtile.GetComponent<RectTransform>();
@@ -935,9 +949,14 @@ public class maptext : MonoBehaviour
         _bottomrect.transform.localScale = Vector3.one;
         _bottomrect.anchoredPosition3D = new Vector3(_bottomrect.anchoredPosition3D.x, _bottomrect.anchoredPosition3D.y, 0.0f);
 
+
         _bottomtile.AddComponent(typeof(TileObjScript));
         _bottomtile.GetComponent<Image>().raycastTarget = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).Interactable;
         TileObjScript _tilescript = _bottomtile.GetComponent<TileObjScript>();
+        _tilescript.Rect = _bottomrect;
+        _tilescript.MapUI = MapUIScript;
+        _tilescript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
+
 
         GameObject _bottomimageobj = new GameObject("_image", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
         Image _bottomimage = _bottomimageobj.GetComponent<Image>();
@@ -945,6 +964,8 @@ public class maptext : MonoBehaviour
         _bottomimage.transform.rotation = Quaternion.Euler(new Vector3(0, 0, -60.0f * _rotate));
         _bottomimage.sprite = _bottomspr;
         _bottomimage.raycastTarget = false;
+        _tilescript.BottomImage = _bottomimage;
+
         RectTransform _bottomimagerect = _bottomimageobj.GetComponent<RectTransform>();
         _bottomimagerect.sizeDelta = _cellsize;
         _bottomimagerect.anchoredPosition = Vector3.zero;
@@ -952,8 +973,28 @@ public class maptext : MonoBehaviour
         Navigation _nav = new Navigation();
         _nav.mode = Navigation.Mode.None;
 
+        string _fogname = $"{j},{i} Fog";
+        GameObject _fogtile = new GameObject(_fogname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup) });
+        _fogtile.transform.SetParent(TileHolder_Fog);
+        RectTransform _fogrect = _fogtile.GetComponent<RectTransform>();
+        _fogrect.sizeDelta = _cellsize;
+        _fogrect.position = new Vector3(_pos.x, _pos.y, _fogrect.position.z);
+        _fogrect.transform.localScale = Vector3.one;
+        _fogrect.anchoredPosition3D = new Vector3(_fogrect.anchoredPosition3D.x, _fogrect.anchoredPosition3D.y, 0.0f);
+        Image _fogimage = _fogtile.GetComponent<Image>();
+        _fogimage.raycastTarget = false;
+        _fogimage.sprite = MyTiles.Fog;
+        _tilescript.FogGroup = _fogtile.GetComponent<CanvasGroup>();
+        _tilescript.FogGroup.alpha = _currenttile.Fogstate == 0 ? 1.0f : _currenttile.Fogstate == 1 ? FogAlpha_visible : 0.0f;
+
         if (_currenttile.BottomEnvir != BottomEnvirType.Sea)
         {
+          Onpointer_tileoutline _outline = _bottomtile.AddComponent<Onpointer_tileoutline>();
+          _outline.enabled = _currenttile.Fogstate == 2;
+          _outline.MyMapUI = MapUIScript;
+          _outline.MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
+          _tilescript.OnPointer = _outline;
+
           string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
           Sprite _topespr = MyTiles.GetTile(_currenttile.TopEnvirSprite);
           GameObject _toptile = new GameObject(_topname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
@@ -982,60 +1023,43 @@ public class maptext : MonoBehaviour
           _landmarkimage.raycastTarget = false;
           _landmarkimage.sprite = _landmarkspr;
           _tilescript.LandmarkImage = _landmarkimage;
+
+          string _eventname = $"{j},{i} EventMark";
+          GameObject _eventmark = new GameObject(_eventname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
+          _eventmark.transform.SetParent(TileHolder_EventMark);
+          RectTransform _eventrect = _eventmark.GetComponent<RectTransform>();
+          _eventrect.sizeDelta = _cellsize;
+          _eventrect.position = new Vector3(_pos.x, _pos.y, _eventrect.position.z);
+          _eventrect.transform.localScale = Vector3.one;
+          _eventrect.anchoredPosition3D = new Vector3(_eventrect.anchoredPosition3D.x, _eventrect.anchoredPosition3D.y, 0.0f);
+          Image _etcimage = _eventmark.GetComponent<Image>();
+          _etcimage.raycastTarget = false;
+          _etcimage.sprite = _currenttile.IsEvent ? GameManager.Instance.ImageHolder.UnknownEvent :
+            _currenttile.IsResource ? GameManager.Instance.ImageHolder.GetResourceSprite(_currenttile, false) :
+            GameManager.Instance.ImageHolder.Transparent;
+          _tilescript.ETCImage = _etcimage;
+
+          GameObject _previewpos_bottom = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+          _previewpos_bottom.transform.localScale = Vector3.zero;
+          _previewpos_bottom.transform.SetParent(_bottomtile.transform);
+          _previewpos_bottom.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, -_cellsize.y / 2.0f);
+          GameObject _previewpos_top = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+          _previewpos_top.transform.localScale = Vector3.zero;
+          _previewpos_top.transform.SetParent(_bottomtile.transform);
+          _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
+
+          if (_currenttile.TileSettle != null)
+          {
+            PreviewInteractive _tilepreview = _tilescript.Rect.transform.AddComponent<PreviewInteractive>();
+            _tilepreview.PanelType = PreviewPanelType.TileInfo;
+            _tilepreview.MyTileData = _currenttile;
+            _tilepreview.enabled = _currenttile.Fogstate == 2;
+            _tilescript.Preview = _tilepreview;
+            _tilepreview.OtherRect = _previewpos_bottom.GetComponent<RectTransform>();
+            _tilepreview.OtherRect_other = _previewpos_top.GetComponent<RectTransform>();
+          }
         }
-        string _fogname = $"{j},{i} Fog";
-        GameObject _fogtile = new GameObject(_fogname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),typeof(CanvasGroup) });
-        _fogtile.transform.SetParent(TileHolder_Fog);
-        RectTransform _fogrect = _fogtile.GetComponent<RectTransform>();
-        _fogrect.sizeDelta = _cellsize;
-        _fogrect.position = new Vector3(_pos.x, _pos.y, _fogrect.position.z);
-        _fogrect.transform.localScale = Vector3.one;
-        _fogrect.anchoredPosition3D = new Vector3(_fogrect.anchoredPosition3D.x, _fogrect.anchoredPosition3D.y, 0.0f);
-        Image _fogimage = _fogtile.GetComponent<Image>();
-        _fogimage.raycastTarget = false;
-        _fogimage.sprite = MyTiles.Fog;
 
-        string _eventname= $"{j},{i} EventMark";
-        GameObject _eventmark = new GameObject(_eventname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-        _eventmark.transform.SetParent(TileHolder_EventMark);
-        RectTransform _eventrect = _eventmark.GetComponent<RectTransform>();
-        _eventrect.sizeDelta = _cellsize;
-        _eventrect.position = new Vector3(_pos.x, _pos.y, _eventrect.position.z);
-        _eventrect.transform.localScale = Vector3.one;
-        _eventrect.anchoredPosition3D = new Vector3(_eventrect.anchoredPosition3D.x, _eventrect.anchoredPosition3D.y, 0.0f);
-        Image _etcimage = _eventmark.GetComponent<Image>();
-        _etcimage.raycastTarget = false;
-        _etcimage.sprite = _currenttile.IsEvent?GameManager.Instance.ImageHolder.UnknownEvent:
-          _currenttile.IsResource?GameManager.Instance.ImageHolder.GetResourceSprite(_currenttile,false):
-          GameManager.Instance.ImageHolder.Transparent;
-
-        _tilescript.Rect = _bottomrect;
-        _tilescript.MapUI = MapUIScript;
-        _tilescript.TileData = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
-        _tilescript.BottomImage = _bottomimage;
-        _tilescript.OnPointer = _outline;
-        GameObject _previewpos_bottom = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
-        _previewpos_bottom.transform.localScale = Vector3.zero;
-        _previewpos_bottom.transform.SetParent(_bottomtile.transform);
-        _previewpos_bottom.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f,-_cellsize.y / 2.0f);
-        GameObject _previewpos_top = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
-        _previewpos_top.transform.localScale = Vector3.zero;
-        _previewpos_top.transform.SetParent(_bottomtile.transform);
-        _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
-        _tilescript.FogGroup = _fogtile.GetComponent<CanvasGroup>();
-        _tilescript.FogGroup.alpha = _currenttile.Fogstate == 0 ? 1.0f : _currenttile.Fogstate == 1 ? ConstValues.FogAlpha_visible : 0.0f;
-        _tilescript.ETCImage = _etcimage;
-
-        if (_currenttile.TileSettle != null)
-        {
-          PreviewInteractive _tilepreview = _tilescript.Rect.transform.AddComponent<PreviewInteractive>();
-          _tilepreview.PanelType = PreviewPanelType.TileInfo;
-          _tilepreview.MyTileData = _currenttile;
-          _tilepreview.enabled = _currenttile.Fogstate==2;
-          _tilescript.Preview = _tilepreview;
-          _tilepreview.OtherRect = _previewpos_bottom.GetComponent<RectTransform>();
-          _tilepreview.OtherRect_other = _previewpos_top.GetComponent<RectTransform>();
-        }
 
         GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).ButtonScript = _tilescript;
       }

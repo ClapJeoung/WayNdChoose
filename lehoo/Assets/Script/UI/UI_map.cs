@@ -186,9 +186,16 @@ public class UI_map : UI_default
     HolderRect.anchoredPosition = _playerpos;
     yield return null;
   }
+  public bool IsDraggingMap = false;
+  public float DragMagMin = 5.0f;
   public void MoveHolderRect_mouse(Vector2 rawvector)
   {
-    if (rawvector.sqrMagnitude <= 2.5f) return;
+    if (rawvector.sqrMagnitude <= DragMagMin)
+    {
+      IsDraggingMap = false;
+      return;
+    }
+    IsDraggingMap = true;
     IsMoved = true;
     CameraResetButton.interactable = true;
     Vector2 _newpos= HolderRect.anchoredPosition + rawvector;
@@ -217,10 +224,10 @@ public class UI_map : UI_default
         {
           int _sum= Mathf.CeilToInt(Mathf.Clamp(
             GameManager.Instance.MyGameData.Resources.Count *
-            ConstValues.ResourceGoldValue *
-            (GameManager.Instance.MyGameData.Tendency_Head.Level > 0 ? ConstValues.Tendency_Head_p1 : 1.0f) *
+            GameManager.Instance.Status.ResourceGoldValue *
+            (GameManager.Instance.MyGameData.Tendency_Head.Level > 0 ? GameManager.Instance.Status.Tendency_Head_p1 : 1.0f) *
             GameManager.Instance.MyGameData.GetGoldGenModify(true) *
-            Mathf.Clamp(1.0f - LastDestination.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue,0.0f,1.0f),
+            Mathf.Clamp(1.0f - LastDestination.TileSettle.Discomfort * GameManager.Instance.Status.DiscomfortGoldValue,0.0f,1.0f),
             1.0f, 1000.0f));
 
           if (LastDestination.TileSettle.Discomfort == 0)
@@ -230,7 +237,7 @@ public class UI_map : UI_default
             _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource_discomfort"),
               GameManager.Instance.MyGameData.Resources.Count, _sum,
               LastDestination.TileSettle.Discomfort,
-              Mathf.Clamp(ConstValues.DiscomfortGoldValue*LastDestination.TileSettle.Discomfort*100,0,100));
+              Mathf.Clamp(GameManager.Instance.Status.DiscomfortGoldValue*LastDestination.TileSettle.Discomfort*100,0,100));
         }
       }
       else if (LastDestination.IsEvent)
@@ -366,7 +373,7 @@ public class UI_map : UI_default
     AllTiles.Clear();
     AllSupplys.Clear();
     int _index = 0;
-    int _skipcount = GameManager.Instance.MyGameData.Skill_Wild.Level / ConstValues.WildEffect_Level * ConstValues.WildEffect_Value;
+    int _skipcount = GameManager.Instance.MyGameData.Skill_Wild.Level / GameManager.Instance.Status.WildEffect_Level * GameManager.Instance.Status.WildEffect_Value;
     foreach (var _route in Routes)
     {
       foreach (var _tile in _route.Route)
@@ -526,7 +533,7 @@ public class UI_map : UI_default
     AllTiles.Clear();
     AllSupplys.Clear();
     int _index = 0;
-    int _skipcount = GameManager.Instance.MyGameData.Skill_Wild.Level / ConstValues.WildEffect_Level * ConstValues.WildEffect_Value;
+    int _skipcount = GameManager.Instance.MyGameData.Skill_Wild.Level / GameManager.Instance.Status.WildEffect_Level * GameManager.Instance.Status.WildEffect_Value;
     foreach (var _route in Routes)
     {
       foreach (var _tile in _route.Route)
@@ -540,14 +547,71 @@ public class UI_map : UI_default
       _index++;
     }
 
-    if (!IsMad && _islast)
+    if (!IsMad)
     {
-      TilePreview_Bottom.sprite = tile.ButtonScript.BottomImage.sprite;
-      TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * tile.Rotation));
-      TilePreview_Top.sprite = tile.ButtonScript.TopImage.sprite;
-      TilePreview_ETC.sprite= tile.ButtonScript.ETCImage.sprite;
-      TilePreview_Landmark.sprite = tile.ButtonScript.LandmarkImage.sprite;
-    }
+      if (Destinations.Count==0)
+      {
+        TilePreview_Bottom.sprite = GameManager.Instance.ImageHolder.Transparent;
+        TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -0.0f));
+        TilePreview_Top.sprite = GameManager.Instance.ImageHolder.Transparent;
+        TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
+        TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
+        TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
+      }
+      else if(_islast)
+      {
+        TilePreview_Bottom.sprite = LastDestination.ButtonScript.BottomImage.sprite;
+        TilePreview_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * LastDestination.Rotation));
+        TilePreview_Top.sprite = LastDestination.ButtonScript.TopImage.sprite;
+        TilePreview_ETC.sprite = LastDestination.ButtonScript.ETCImage.sprite;
+        TilePreview_Landmark.sprite = LastDestination.ButtonScript.LandmarkImage.sprite;
+  
+        TileInfoText.text = TileInfoDescription;
+        switch (GameManager.Instance.MyGameData.QuestType)
+        {
+          case QuestType.Cult:
+            string _progresstext = "";
+            switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+            {
+              case 0:
+                if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value);
+                }
+                else _progresstext = "";
+                break;
+              case 1:
+                if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value);
+                }
+                else _progresstext = "";
+                break;
+              case 2:
+                if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value);
+                }
+                else _progresstext = "";
+                break;
+              case 4:
+                if (CheckRitual)
+                {
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value);
+                  UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
+                }
+                else
+                {
+                  _progresstext = "";
+                  UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
+                }
+                break;
+            }
+            TileInfoText.text += _progresstext;
+            break;
+        }
+        }
+      }
    if(updatetext) UpdateSupplyTexts();
     if (Destinations.Count == 0)
     {
@@ -689,7 +753,7 @@ public class UI_map : UI_default
       Vector2 _mintile = GameManager.Instance.MyGameData.MyMapData.TileDatas[0, 0].ButtonScript.Rect.anchoredPosition;
       HolderPos_Max_x = -1.0f*_mintile.x- _size* _length;
       HolderPos_Max_y = -1.0f * _mintile.y - _size * _length;
-      Vector2 _maxtile = GameManager.Instance.MyGameData.MyMapData.TileDatas[ConstValues.MapSize-1, ConstValues.MapSize - 1].ButtonScript.Rect.anchoredPosition;
+      Vector2 _maxtile = GameManager.Instance.MyGameData.MyMapData.TileDatas[GameManager.Instance.Status.MapSize-1, GameManager.Instance.Status.MapSize - 1].ButtonScript.Rect.anchoredPosition;
       HolderPos_Min_x = -1.0f * _maxtile.x + _size * _length;
       HolderPos_Min_y = -1.0f * _maxtile.y + _size * _length;
     }
@@ -714,7 +778,7 @@ public class UI_map : UI_default
     if (PlayerPrefs.GetInt("Tutorial_Map") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Map();
     if (DragDescription.text == "") DragDescription.text = GameManager.Instance.GetTextData("MapDragDescription");
     CameraResetButton.interactable = false;
-    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1))
+    if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary == GameManager.Instance.Status.MadnessEffect_Wild_temporary - 1))
     {
       IsMad = true;
 
@@ -748,7 +812,7 @@ public class UI_map : UI_default
     for(int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
     {
       GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Tile.ButtonScript.DiscomfortOutline.alpha =
-        Mathf.Lerp(0.0f, 1.0f, GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort / ConstValues.MaxDiscomfortForUI);
+        Mathf.Lerp(0.0f, 1.0f, GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort / MaxDiscomfortForUI);
     }
 
     TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
@@ -997,69 +1061,6 @@ public class UI_map : UI_default
     if (Destinations.Contains(selectedtile))
     {
       RemoveDestination(selectedtile,true);
-
-      if (LastDestination == GameManager.Instance.MyGameData.CurrentTile)
-      {
-        TileInfoText.text = GameManager.Instance.GetTextData("CHOOSETILE_MAP");
-      }
-      else
-      {
-        if (IsMad)
-        {
-          TileInfoText.text = GameManager.Instance.GetTextData("Madness_Wild_Description");
-        }
-        else
-        {
-          TileInfoText.text = TileInfoDescription;
-        }
-        switch (GameManager.Instance.MyGameData.QuestType)
-        {
-          case QuestType.Cult:
-            if (!IsMad)
-            {
-              string _progresstext = "";
-              switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-              {
-                case 0:
-                  if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
-                  {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
-                  }
-                  else _progresstext = "";
-                  break;
-                case 1:
-                  if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
-                  {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
-                  }
-                  else _progresstext = "";
-                  break;
-                case 2:
-                  if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
-                  {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
-                  }
-                  else _progresstext = "";
-                  break;
-                case 4:
-                  if (CheckRitual)
-                  {
-                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
-                    UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
-                  }
-                  else
-                  {
-                    _progresstext = "";
-                    UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
-                  }
-                  break;
-
-              }
-              TileInfoText.text += _progresstext;
-            }
-            break;
-        }
-      }
       return;
     }
     //동일한 좌표면 호출되지 않게 이미 거름
@@ -1112,28 +1113,28 @@ public class UI_map : UI_default
               case 0:
                 if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Village)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 1:
                 if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.Town)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 2:
                 if (SelectedTile.TileSettle != null && SelectedTile.TileSettle.SettlementType == SettlementType.City)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), ConstValues.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 4:
                 if (CheckRitual)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), ConstValues.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value);
+                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value);
                   UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
                 }
                 else
@@ -1246,10 +1247,11 @@ public class UI_map : UI_default
     UIManager.Instance.AddUIQueue(movemap());
   }
   public AnimationCurve MoveAnimationCurve = new AnimationCurve();
+  private float CountChangeTime_map = 0.3f;
   private IEnumerator changesupplytext(float _lastsum,float _currentsum,float _lastsupply,float _currentsupply)
   {
     int _sum = (int)_lastsum, _supply = (int)_lastsupply;
-    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_map;
+    float _time = 0.0f, _targettime = CountChangeTime_map;
     while (_time < _targettime)
     {
       _sum=Mathf.FloorToInt(Mathf.Lerp(_lastsum,_currentsum,_time/_targettime));
@@ -1265,12 +1267,13 @@ public class UI_map : UI_default
       + (IsMad ? "?" : "");
     CurrentSupply.text = ((int)_currentsupply).ToString();
   }
+  public float MaxDiscomfortForUI = 25;
   private IEnumerator movemap()
   {
     if (IsMad)
     {
       List<TileData> _availabletiles = new List<TileData>();
-      foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, ConstValues.MadnessEffect_Wild_range))
+      foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, GameManager.Instance.Status.MadnessEffect_Wild_range))
       {
         if (_tile == SelectedTile||
           _tile == GameManager.Instance.MyGameData.CurrentTile||
@@ -1282,7 +1285,7 @@ public class UI_map : UI_default
       if (_availabletiles.Count == 0)
       {
         _availabletiles = new List<TileData>();
-        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, ConstValues.MadnessEffect_Wild_range+1))
+        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(SelectedTile, GameManager.Instance.Status.MadnessEffect_Wild_range+1))
         {
           if (_tile == SelectedTile ||
             _tile == GameManager.Instance.MyGameData.CurrentTile ||
@@ -1528,10 +1531,10 @@ public class UI_map : UI_default
         {
           int _sum = Mathf.CeilToInt(Mathf.Clamp(
             GameManager.Instance.MyGameData.Resources.Count *
-            ConstValues.ResourceGoldValue *
-            (GameManager.Instance.MyGameData.Tendency_Head.Level>0?ConstValues.Tendency_Head_p1:1.0f)*
+            GameManager.Instance.Status.ResourceGoldValue *
+            (GameManager.Instance.MyGameData.Tendency_Head.Level>0?GameManager.Instance.Status.Tendency_Head_p1:1.0f)*
             GameManager.Instance.MyGameData.GetGoldGenModify(true) *
-             Mathf.Clamp(1.0f - _stoptile.TileSettle.Discomfort * ConstValues.DiscomfortGoldValue, 0.0f, 1.0f),
+             Mathf.Clamp(1.0f - _stoptile.TileSettle.Discomfort * GameManager.Instance.Status.DiscomfortGoldValue, 0.0f, 1.0f),
             1.0f, 1000.0f));
           GameManager.Instance.MyGameData.Gold += _sum;
           GameManager.Instance.MyGameData.Resources.Clear();
@@ -1574,7 +1577,7 @@ public class UI_map : UI_default
           GameManager.Instance.MyGameData.Turn++;
 
           GameManager.Instance.MyGameData.CurrentSettlement = null;
-          GameManager.Instance.MyGameData.DownAllDiscomfort(ConstValues.DiscomfortDownValue);
+          GameManager.Instance.MyGameData.DownAllDiscomfort(GameManager.Instance.Status.DiscomfortDownValue);
 
           if (_stoptile.IsEvent)
           {
@@ -1615,7 +1618,7 @@ public class UI_map : UI_default
         TilePreview_ETC.sprite = GameManager.Instance.ImageHolder.Transparent;
         TilePreview_Landmark.sprite = GameManager.Instance.ImageHolder.Transparent;
       }
-      else if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1))
+      else if (GameManager.Instance.MyGameData.Madness_Wild && (GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary == GameManager.Instance.Status.MadnessEffect_Wild_temporary - 1))
       {           //일반->광기
         IsMad = true;
 
@@ -1647,7 +1650,7 @@ public class UI_map : UI_default
       for (int i = 0; i < GameManager.Instance.MyGameData.MyMapData.AllSettles.Count; i++)
       {
         GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Tile.ButtonScript.DiscomfortOutline.alpha =
-          Mathf.Lerp(0.0f, 1.0f, GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort / ConstValues.MaxDiscomfortForUI);
+          Mathf.Lerp(0.0f, 1.0f, GameManager.Instance.MyGameData.MyMapData.AllSettles[i].Discomfort / MaxDiscomfortForUI);
       }
 
       SelectedCostType = StatusTypeEnum.HP;

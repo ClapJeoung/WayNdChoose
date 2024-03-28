@@ -49,7 +49,7 @@ public class HighlightEffects : MonoBehaviour
         case HighlightEffectEnum.Sanity:
         case HighlightEffectEnum.Gold:
         case HighlightEffectEnum.Supply:
-          GetHighlight(info.CallType).IconRect.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+          GetHighlight(info.CallType).IconRect.localScale = Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
           break;
         case HighlightEffectEnum.Skill:
           GetHighlight(info.CallType).SetEffect_Skill(info.Skilltype);
@@ -76,7 +76,7 @@ public class HighlightEffects : MonoBehaviour
       case HighlightEffectEnum.Gold:
       case HighlightEffectEnum.Supply:
       case HighlightEffectEnum.Skill:
-        GetHighlight(type).IconRect.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+        GetHighlight(type).IconRect.localScale = Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
         break;
       default:
         StartCoroutine(UIManager.Instance.ChangeAlpha(GetHighlight(type).Group, 0.0f, EffectTime));
@@ -85,12 +85,12 @@ public class HighlightEffects : MonoBehaviour
   }
   public void Highlight_Skill(SkillTypeEnum skill)
   {
-    GetHighlight(HighlightEffectEnum.Skill).GetIcon_Skill(skill).localScale=Vector3.one * ConstValues.StatusHighlightSize;
+    GetHighlight(HighlightEffectEnum.Skill).GetIcon_Skill(skill).localScale=Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
   }
   public void Highlight_Skill(List<SkillTypeEnum> skills)
   {
     foreach (var _icon in GetHighlight(HighlightEffectEnum.Skill).GetIcon_Skill(skills))
-      _icon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+      _icon.localScale = Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
   }
   /// <summary>
   /// 광기 하이라이트
@@ -120,7 +120,7 @@ public class HighlightHolder
   public CanvasGroup ForceEffect = null;
   public CanvasGroup WildEffect = null;
   public CanvasGroup IntelligenceEffect = null;
-  public void SetEffect()
+ public void SetEffect()
   {
     Group.alpha = 1.0f;
   }
@@ -131,16 +131,16 @@ public class HighlightHolder
       switch (type)
       {
         case SkillTypeEnum.Conversation:
-          ConvIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+          ConvIcon.localScale = Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
           break;
         case SkillTypeEnum.Force:
-          ForceIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+          ForceIcon.localScale = Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
           break;
         case SkillTypeEnum.Wild:
-          WildIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+          WildIcon.localScale = Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
           break;
         case SkillTypeEnum.Intelligence:
-          IntelIcon.localScale = Vector3.one * ConstValues.StatusHighlightSize;
+          IntelIcon.localScale = Vector3.one * GameManager.Instance.Status.StatusHighlightSize;
           break;
       }
     }

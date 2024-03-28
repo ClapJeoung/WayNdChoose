@@ -286,16 +286,16 @@ public class PreviewManager : MonoBehaviour
     switch (_skilltype)
     {
       case SkillTypeEnum.Conversation:
-        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Conversation_Effect"), ConstValues.ConversationEffect_Level, ConstValues.ConversationEffect_Value);
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Conversation_Effect"), GameManager.Instance.Status.ConversationEffect_Level, GameManager.Instance.Status.ConversationEffect_Value);
         break;
       case SkillTypeEnum.Force:
-        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Force_Effect"), ConstValues.ForceEffect_Level, ConstValues.ForceEffect_Value);
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Force_Effect"), GameManager.Instance.Status.ForceEffect_Level, GameManager.Instance.Status.ForceEffect_Value);
         break;
       case SkillTypeEnum.Wild:
-        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Wild_Effect"), ConstValues.WildEffect_Level, ConstValues.WildEffect_Value);
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Wild_Effect"), GameManager.Instance.Status.WildEffect_Level, GameManager.Instance.Status.WildEffect_Value);
         break;
       case SkillTypeEnum.Intelligence:
-        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Intelligence_Effect"), ConstValues.IntelEffect_Level, ConstValues.IntelEffect_Value);
+        SkillEffect.text = string.Format(GameManager.Instance.GetTextData("Intelligence_Effect"), GameManager.Instance.Status.IntelEffect_Level, GameManager.Instance.Status.IntelEffect_Value);
         break;
     }
 
@@ -306,7 +306,7 @@ public class PreviewManager : MonoBehaviour
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
-          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Preview"), ConstValues.MadnessEffect_Conversation);
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Conversation_Preview"), GameManager.Instance.Status.MadnessEffect_Conversation);
           _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
@@ -320,7 +320,7 @@ public class PreviewManager : MonoBehaviour
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Force_Preview"),
-            GameManager.Instance.MyGameData.TotalRestCount%ConstValues.MadnessEffect_Force+1, ConstValues.MadnessEffect_Force);
+            GameManager.Instance.MyGameData.TotalRestCount%GameManager.Instance.Status.MadnessEffect_Force+1, GameManager.Instance.Status.MadnessEffect_Force);
           _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
@@ -334,8 +334,8 @@ public class PreviewManager : MonoBehaviour
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
 
           SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Wild_Preview"),
-            GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary+1, ConstValues.MadnessEffect_Wild_temporary,
-            ConstValues.MadnessEffect_Wild_range);
+            GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary+1, GameManager.Instance.Status.MadnessEffect_Wild_temporary,
+            GameManager.Instance.Status.MadnessEffect_Wild_range);
           _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
@@ -347,7 +347,7 @@ public class PreviewManager : MonoBehaviour
         if (GameManager.Instance.MyGameData.Madness_Intelligence == true)
         {
           if (SkillMadnessHolder.activeInHierarchy == false) SkillMadnessHolder.SetActive(true);
-          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Preview"), ConstValues.MadnessEffect_Intelligence);
+          SkillMadnessInfo.text = string.Format(GameManager.Instance.GetTextData("Madness_Intelligence_Preview"), GameManager.Instance.Status.MadnessEffect_Intelligence);
           _leveltext = WNCText.GetMadnessColor(_level);
         }
         else
@@ -425,9 +425,9 @@ public class PreviewManager : MonoBehaviour
 
         if (_progress <= 0)
         {
-          for (int i = 0; i < ConstValues.TendencyProgress_1to2;i++)
+          for (int i = 0; i < GameManager.Instance.Status.TendencyProgress_1to2;i++)
           {
-            if (i < ConstValues.TendencyRegress)
+            if (i < GameManager.Instance.Status.TendencyRegress)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
               TendencyArrows_Right[i].sprite = _emptyarrow;
@@ -440,14 +440,14 @@ public class PreviewManager : MonoBehaviour
         }
         else
         {
-          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+          for (int i = 0; i < GameManager.Instance.Status.TendencyProgress_1to2; i++)
           {
             if (i <= _progress - 1)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
               TendencyArrows_Right[i].sprite = _arrowsprite_right;
             }
-            else if (i < ConstValues.TendencyRegress)
+            else if (i < GameManager.Instance.Status.TendencyRegress)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
               TendencyArrows_Right[i].sprite = _emptyarrow;
@@ -466,7 +466,7 @@ public class PreviewManager : MonoBehaviour
         {
           for(int i = 0; i < 3; i++)
           {
-            if (i < ConstValues.TendencyProgress_1to2)
+            if (i < GameManager.Instance.Status.TendencyProgress_1to2)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _emptyarrow;
@@ -486,7 +486,7 @@ public class PreviewManager : MonoBehaviour
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _arrowsprite_left;
             }
-            else if (i < ConstValues.TendencyProgress_1to2)
+            else if (i < GameManager.Instance.Status.TendencyProgress_1to2)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _emptyarrow;
@@ -504,7 +504,7 @@ public class PreviewManager : MonoBehaviour
         {
           for (int i = 0; i < 3; i++)
           {
-            if (i < ConstValues.TendencyRegress)
+            if (i < GameManager.Instance.Status.TendencyRegress)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
               TendencyArrows_Right[i].sprite = _emptyarrow;
@@ -517,7 +517,7 @@ public class PreviewManager : MonoBehaviour
         }
         else
         {
-          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+          for (int i = 0; i < GameManager.Instance.Status.TendencyProgress_1to2; i++)
           {
             if (i <= _progress - 1)
             {
@@ -526,7 +526,7 @@ public class PreviewManager : MonoBehaviour
             }
             else
             {
-              if (i < ConstValues.TendencyRegress)
+              if (i < GameManager.Instance.Status.TendencyRegress)
               {
                 if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
                 TendencyArrows_Right[i].sprite = _emptyarrow;
@@ -545,7 +545,7 @@ public class PreviewManager : MonoBehaviour
         {
           for (int i = 0; i < 3; i++)
           {
-            if (i < ConstValues.TendencyRegress)
+            if (i < GameManager.Instance.Status.TendencyRegress)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _emptyarrow;
@@ -565,7 +565,7 @@ public class PreviewManager : MonoBehaviour
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _arrowsprite_left;
             }
-            else if (i < ConstValues.TendencyRegress)
+            else if (i < GameManager.Instance.Status.TendencyRegress)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _emptyarrow;
@@ -583,7 +583,7 @@ public class PreviewManager : MonoBehaviour
         {
           for (int i = 0; i < 3; i++)
           {
-            if (i < ConstValues.TendencyProgress_1to2)
+            if (i < GameManager.Instance.Status.TendencyProgress_1to2)
             {
               if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
               TendencyArrows_Right[i].sprite = _emptyarrow;
@@ -596,7 +596,7 @@ public class PreviewManager : MonoBehaviour
         }
         else
         {
-          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+          for (int i = 0; i < GameManager.Instance.Status.TendencyProgress_1to2; i++)
           {
             if (i <= _progress - 1)
             {
@@ -605,7 +605,7 @@ public class PreviewManager : MonoBehaviour
             }
             else
             {
-              if (i < ConstValues.TendencyProgress_1to2)
+              if (i < GameManager.Instance.Status.TendencyProgress_1to2)
               {
                 if (TendencyArrows_Right[i].gameObject.activeInHierarchy == false) TendencyArrows_Right[i].gameObject.SetActive(true);
                 TendencyArrows_Right[i].sprite = _emptyarrow;
@@ -621,9 +621,9 @@ public class PreviewManager : MonoBehaviour
       case 2:
         if (_progress >= 0)
         {
-          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+          for (int i = 0; i < GameManager.Instance.Status.TendencyProgress_1to2; i++)
           {
-            if (i < ConstValues.TendencyRegress)
+            if (i < GameManager.Instance.Status.TendencyRegress)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _emptyarrow;
@@ -636,14 +636,14 @@ public class PreviewManager : MonoBehaviour
         }
         else
         {
-          for (int i = 0; i < ConstValues.TendencyProgress_1to2; i++)
+          for (int i = 0; i < GameManager.Instance.Status.TendencyProgress_1to2; i++)
           {
             if (i <= _progress * -1 - 1)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _arrowsprite_left;
             }
-            else if (i < ConstValues.TendencyRegress)
+            else if (i < GameManager.Instance.Status.TendencyRegress)
             {
               if (TendencyArrows_Left[i].gameObject.activeInHierarchy == false) TendencyArrows_Left[i].gameObject.SetActive(true);
               TendencyArrows_Left[i].sprite = _emptyarrow;
@@ -825,15 +825,15 @@ public class PreviewManager : MonoBehaviour
   {
     string _turn, _description;
 
-    _turn=islong ? (ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value).ToString() : (ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value).ToString();
+    _turn=islong ? (GameManager.Instance.Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value).ToString() : (GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value).ToString();
     if (islong)
     {
-      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value,
-        (int)(ConstValues.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
+      _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), GameManager.Instance.Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value,
+        (int)(GameManager.Instance.Status.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
     }
     else
     {
-      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value);
+      _description =string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value);
     }
 
     ExpSelectEmptyTurn.text = _turn.ToString();
@@ -848,15 +848,15 @@ public class PreviewManager : MonoBehaviour
   public void OpenExpSelectionExistPreview(Experience _origin,Experience _new,bool islong, RectTransform rect)
   {
     /*
-    int _turn = islong ? ConstValues.EXPMaxTurn_long_idle : ConstValues.EXPMaxTurn_short_idle;
+    int _turn = islong ? GameManager.Instance.Status.EXPMaxTurn_long_idle : GameManager.Instance.Status.EXPMaxTurn_short_idle;
     string _description = "";
     if (islong)
     {
-      _description =string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_long_idle, ConstValues.LongTermChangeCost);
+      _description =string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), GameManager.Instance.Status.EXPMaxTurn_long_idle, GameManager.Instance.Status.LongTermChangeCost);
     }
     else
     {
-      _description = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), ConstValues.EXPMaxTurn_short_idle);
+      _description = string.Format(GameManager.Instance.GetTextData("SHORTTERMSAVE_DESCRIPTION"), GameManager.Instance.Status.EXPMaxTurn_short_idle);
     }
 
     string _origineffect = _origin.EffectString;
@@ -908,7 +908,7 @@ public class PreviewManager : MonoBehaviour
   public void OpenDisComfortPanel(RectTransform rect)
   {
     OpenIconAndDescriptionPanel(GameManager.Instance.ImageHolder.DisComfort, 
-     string.Format(GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION"),ConstValues. DiscomfortDownValue,
+     string.Format(GameManager.Instance.GetTextData("DISCOMFORT_DESECRIPTION"),GameManager.Instance.Status. DiscomfortDownValue,
      GameManager.Instance.MyGameData.GetDiscomfortValue(GameManager.Instance.MyGameData.CurrentSettlement.Discomfort)),
       DiscomfortPivot, false, rect);
   }

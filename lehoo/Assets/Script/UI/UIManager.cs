@@ -141,10 +141,11 @@ public class UIManager : MonoBehaviour
   /// <param name="current"></param>
   /// <param name="target"></param>
   /// <returns></returns>
+  private float CountChangeTime_status = 0.5f;
   public IEnumerator ChangeCount(TextMeshProUGUI tmp, float current,float target)
   {
     int _count = (int)current;
-    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
+    float _time = 0.0f, _targettime = CountChangeTime_status;
     while (_time < _targettime)
     {
       _count = Mathf.FloorToInt(Mathf.Lerp(current, target, _time / _targettime));
@@ -166,7 +167,7 @@ public class UIManager : MonoBehaviour
   public IEnumerator ChangeCount(TextMeshProUGUI tmp, float current, float target,Experience exp)
   {
     int _count = (int)current;
-    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
+    float _time = 0.0f, _targettime = CountChangeTime_status;
     while (_time < _targettime)
     {
       _count = Mathf.FloorToInt(Mathf.Lerp(current, target, _time / _targettime));
@@ -211,7 +212,7 @@ public class UIManager : MonoBehaviour
   public IEnumerator ChangeCount(TextMeshProUGUI tmp, float current, float target, Func<int, string> _coloraction)
   {
     int _count = (int)current;
-    float _time = 0.0f, _targettime = ConstValues.CountChangeTime_status;
+    float _time = 0.0f, _targettime = CountChangeTime_status;
     while (_time < _targettime)
     {
       _count = Mathf.FloorToInt(Mathf.Lerp(current, target, _time / _targettime));
@@ -222,6 +223,7 @@ public class UIManager : MonoBehaviour
     }
     tmp.text = _coloraction != null ? _coloraction((int)target) : ((int)target).ToString();
   }
+  public  int StatusIconSize_min = 25, StatusIconSize_max = 75;
   [SerializeField] private RectTransform HPUIRect = null;
   [SerializeField] private TextMeshProUGUI HPText = null;
   private int lasthp = -1;
@@ -248,7 +250,7 @@ public class UIManager : MonoBehaviour
       }
     }
 
-    HPIcon.rectTransform.sizeDelta = Vector2.one * Mathf.Lerp( ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.HP / 100.0f);
+    HPIcon.rectTransform.sizeDelta = Vector2.one * Mathf.Lerp( StatusIconSize_min, StatusIconSize_max, GameManager.Instance.MyGameData.HP / 100.0f);
     StartCoroutine(ChangeCount(HPText, _last,GameManager.Instance.MyGameData.HP));
   //  Debug.Log("체력 수치 업데이트");
 
@@ -286,7 +288,7 @@ public class UIManager : MonoBehaviour
       }
     }
 
-    SanityIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max, GameManager.Instance.MyGameData.Sanity / 100.0f);
+    SanityIconRect.sizeDelta = Vector2.one * Mathf.Lerp(StatusIconSize_min, StatusIconSize_max, GameManager.Instance.MyGameData.Sanity / 100.0f);
     StartCoroutine(ChangeCount(SanityText, _last, GameManager.Instance.MyGameData.Sanity,
       GameManager.Instance.MyGameData.Sanity>100?WNCText.GetMaxSanityColor:null));
 
@@ -320,6 +322,7 @@ public class UIManager : MonoBehaviour
     StartCoroutine(ChangeCount(GoldText, _last, GameManager.Instance.MyGameData.Gold));
     lastgold = GameManager.Instance.MyGameData.Gold;
   }
+  public int SupplyIconMinCount = -8, SupplyIconMaxCount = 30;
   [SerializeField] private RectTransform SupplyUIRect = null;
   [SerializeField] private Image Supply_Icon = null;
   [SerializeField] private TextMeshProUGUI SupplyText = null;
@@ -348,8 +351,8 @@ public class UIManager : MonoBehaviour
     Supply_Icon.sprite = GameManager.Instance.MyGameData.Supply >0 ? GameManager.Instance.ImageHolder.Supply_Enable : GameManager.Instance.ImageHolder.Supply_Lack;
     if (lastsupply == 0 && GameManager.Instance.MyGameData.Supply == 0) return;
 
-    MovepointIconRect.sizeDelta = Vector2.one * Mathf.Lerp(ConstValues.StatusIconSize_min, ConstValues.StatusIconSize_max,
-      (GameManager.Instance.MyGameData.Supply - ConstValues.SupplyIconMinCount) / (float)(ConstValues.SupplyIconMaxCount-ConstValues.SupplyIconMinCount));
+    MovepointIconRect.sizeDelta = Vector2.one * Mathf.Lerp(StatusIconSize_min, StatusIconSize_max,
+      (GameManager.Instance.MyGameData.Supply - SupplyIconMinCount) / (float)(SupplyIconMaxCount-SupplyIconMinCount));
     StartCoroutine(ChangeCount(SupplyText, _last, GameManager.Instance.MyGameData.Supply));
 
     lastsupply = GameManager.Instance.MyGameData.Supply;
@@ -380,17 +383,17 @@ public class UIManager : MonoBehaviour
   public void SetForceMadCount()
   {
     ForceMadCountText.text =
-      GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force == ConstValues.MadnessEffect_Force - 1 ?
-      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force + 1).ToString() + "/" + ConstValues.MadnessEffect_Force.ToString()) :
-      ((GameManager.Instance.MyGameData.TotalRestCount % ConstValues.MadnessEffect_Force + 1).ToString() + "/" + ConstValues.MadnessEffect_Force.ToString());
+      GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force == GameManager.Instance.Status.MadnessEffect_Force - 1 ?
+      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Force.ToString()) :
+      ((GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Force.ToString());
     StartCoroutine(madcounttext(ForceMadCountText.rectTransform));
   }
   public void SetWildMadCount()
   {
     WildMadCountText.text =
-      GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary == ConstValues.MadnessEffect_Wild_temporary - 1 ?
-      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString()) :
-      ((GameManager.Instance.MyGameData.TotalMoveCount % ConstValues.MadnessEffect_Wild_temporary + 1).ToString() + "/" + ConstValues.MadnessEffect_Wild_temporary.ToString());
+      GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary == GameManager.Instance.Status.MadnessEffect_Wild_temporary - 1 ?
+      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Wild_temporary.ToString()) :
+      ((GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Wild_temporary.ToString());
     StartCoroutine(madcounttext(WildMadCountText.rectTransform));
   }
   private IEnumerator madcounttext(RectTransform rect)
@@ -493,7 +496,7 @@ public class UIManager : MonoBehaviour
     float _time = 0.0f, _targettime = SkillIconGainTime;
     while (_time < _targettime)
     {
-      _targetrect.localScale=Vector3.one*Mathf.Lerp(1.0f,ConstValues.StatusHighlightSize,SkillIconGainCurve.Evaluate(_time/ _targettime));
+      _targetrect.localScale=Vector3.one*Mathf.Lerp(1.0f,GameManager.Instance.Status.StatusHighlightSize,SkillIconGainCurve.Evaluate(_time/ _targettime));
       _time += Time.deltaTime;
       yield return null;
     }

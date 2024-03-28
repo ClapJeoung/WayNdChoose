@@ -526,13 +526,13 @@ public class EventHolder
       EventData _event = _targetevents[i];
       switch(_event.EventType)
       {
-        case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal;break;
-        case EventTypeEnum.Follow: _count += _event.FollowType==FollowTypeEnum.Event?ConstValues.EventPer_Follow_Ev:ConstValues.EventPer_Follow_Ex;break;
-        case EventTypeEnum.Cult: _count += ConstValues.EventPer_Quest;break;
+        case EventTypeEnum.Default: _count += GameManager.Instance.Status.EventPer_Normal;break;
+        case EventTypeEnum.Follow: _count += _event.FollowType==FollowTypeEnum.Event?GameManager.Instance.Status.EventPer_Follow_Ev:GameManager.Instance.Status.EventPer_Follow_Ex;break;
+        case EventTypeEnum.Cult: _count += GameManager.Instance.Status.EventPer_Quest;break;
       }
 
-      if (envirs.Contains(_event.EnvironmentType)) _count *= ConstValues.EventPer_Envir;
-      else _count *= ConstValues.EventPer_NoEnvir;
+      if (envirs.Contains(_event.EnvironmentType)) _count *= GameManager.Instance.Status.EventPer_Envir;
+      else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
 
       for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);
     }
@@ -734,16 +734,16 @@ public class EventHolder
       EventData _event = _targetevents[i];
       switch (_event.EventType)
       {
-        case EventTypeEnum.Default: _count += ConstValues.EventPer_Normal; break;
-        case EventTypeEnum.Follow: _count += _event.FollowType == FollowTypeEnum.Event ? ConstValues.EventPer_Follow_Ev : ConstValues.EventPer_Follow_Ex; break;
-        case EventTypeEnum.Cult: _count += ConstValues.EventPer_Quest; break;
+        case EventTypeEnum.Default: _count += GameManager.Instance.Status.EventPer_Normal; break;
+        case EventTypeEnum.Follow: _count += _event.FollowType == FollowTypeEnum.Event ? GameManager.Instance.Status.EventPer_Follow_Ev : GameManager.Instance.Status.EventPer_Follow_Ex; break;
+        case EventTypeEnum.Cult: _count += GameManager.Instance.Status.EventPer_Quest; break;
       }
 
-      if (envirs.Contains(_event.EnvironmentType)) _count *= ConstValues.EventPer_Envir;
-      else _count *= ConstValues.EventPer_NoEnvir;
+      if (envirs.Contains(_event.EnvironmentType)) _count *= GameManager.Instance.Status.EventPer_Envir;
+      else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
 
-      if (_event.Sector == sectortype) _count *= ConstValues.EventPer_Sector;
-      else _count *= ConstValues.EventPer_NoSector;
+      if (_event.Sector == sectortype) _count *= GameManager.Instance.Status.EventPer_Sector;
+      else _count *= GameManager.Instance.Status.EventPer_NoSector;
 
 
       for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);

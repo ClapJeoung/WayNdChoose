@@ -16,6 +16,7 @@ public class MouseScript : MonoBehaviour
   public float MapMoveDegree = 30.0f;
   public Experience DragExpTarget = null;
   private TileData SelectingTile = null;
+  Vector2 ClickPosition= Vector2.zero;
   private void Update()
   {
     if (Input.GetMouseButtonDown(0))
@@ -60,6 +61,8 @@ public class MouseScript : MonoBehaviour
             TileData _tile = GameManager.Instance.MyGameData.MyMapData.TileDatas[
               int.Parse(_coordinate.Split(',')[0]), int.Parse(_coordinate.Split(',')[1])];
             SelectingTile = !_tile.Interactable || _tile.Fogstate != 2 ? null : _tile;
+
+            ClickPosition = Input.mousePosition;
           }
         }
       }
@@ -99,6 +102,7 @@ public class MouseScript : MonoBehaviour
       if (MouseState == MouseStateEnum.DragExp)
       {
         MouseState = MouseStateEnum.Idle;
+        UIManager.Instance.MapUI.IsDraggingMap = false;
       }
       if (GameManager.Instance.IsPlaying && GameManager.Instance.MyGameData.CurrentEventSequence == EventSequence.Progress&& CheckObjTag("ExpIcon"))
       {
@@ -129,6 +133,7 @@ public class MouseScript : MonoBehaviour
       //Set the Pointer Event Position to that of the game object
       MyPointerEventData.position = Input.mousePosition;
 
+     // Debug.Log($"°Å¸® : {(ClickPosition - (Vector2)Input.mousePosition).magnitude}");
       //Create a list of Raycast Results
       List<RaycastResult> results = new List<RaycastResult>();
 

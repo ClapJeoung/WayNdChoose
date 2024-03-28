@@ -16,9 +16,12 @@ public class TileObjScript : MonoBehaviour
   public PreviewInteractive Preview = null;
   public CanvasGroup DiscomfortOutline = null;
   public CanvasGroup FogGroup = null;
+  private float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.4f;
+  private float FogAlphaChangeTime = 0.4f;
+  private float FogScaleChangeTime = 0.6f;
   public void Clicked()
   {
-    if (UIManager.Instance.IsWorking) return;
+    if (UIManager.Instance.IsWorking||MapUI.IsDraggingMap) return;
 
     MapUI.SelectTile(TileData);
   }
@@ -30,12 +33,12 @@ public class TileObjScript : MonoBehaviour
   private IEnumerator setreveal()
   {
     float _time = 0.0f;
-    float _startalpha = FogGroup.alpha, _endalpha = ConstValues.FogAlpha_reveal;
+    float _startalpha = FogGroup.alpha, _endalpha = FogAlpha_reveal;
     Vector3 _startscale = FogGroup.transform.localScale, _endscale = Vector3.zero;
-    while(_time < ConstValues.FogScaleChangeTime)
+    while(_time < FogScaleChangeTime)
     {
-      if(_time<=ConstValues.FogAlphaChangeTime) FogGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, _time / ConstValues.FogAlphaChangeTime);
-      FogGroup.transform.localScale = Vector3.Lerp(_startscale, _endscale,_time / ConstValues.FogScaleChangeTime);
+      if(_time<=FogAlphaChangeTime) FogGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, _time / FogAlphaChangeTime);
+      FogGroup.transform.localScale = Vector3.Lerp(_startscale, _endscale,_time / FogScaleChangeTime);
 
       _time += Time.deltaTime; yield return null;
     }
@@ -51,12 +54,12 @@ public class TileObjScript : MonoBehaviour
   private IEnumerator setvisible()
   {
     float _time = 0.0f;
-    float _startalpha = FogGroup.alpha, _endalpha = ConstValues.FogAlpha_visible;
+    float _startalpha = FogGroup.alpha, _endalpha = FogAlpha_visible;
     Vector3 _startscale = FogGroup.transform.localScale, _endscale = Vector3.one;
-    while (_time < ConstValues.FogScaleChangeTime)
+    while (_time < FogScaleChangeTime)
     {
-      FogGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, (_time / ConstValues.FogScaleChangeTime));
-      FogGroup.transform.localScale = Vector3.Lerp(_startscale, _endscale, _time / ConstValues.FogScaleChangeTime);
+      FogGroup.alpha = Mathf.Lerp(_startalpha, _endalpha, (_time / FogScaleChangeTime));
+      FogGroup.transform.localScale = Vector3.Lerp(_startscale, _endscale, _time / FogScaleChangeTime);
 
       _time += Time.deltaTime; yield return null;
     }

@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     yield return StartCoroutine(textdataupdate());
     yield return StartCoroutine(expdataupdate());
     yield return StartCoroutine(eventdataupdate());
+    yield return StartCoroutine(statusupdate());
   }
   private void EventDataUpdate()
   {
@@ -167,6 +168,18 @@ public class GameManager : MonoBehaviour
 
     yield return null;
   }
+  private IEnumerator statusupdate()
+  {
+    UnityWebRequest _sheet_status = UnityWebRequest.Get(SeetURL_Status);
+    yield return _sheet_status.SendWebRequest();
+    string[] _textrow = _sheet_status.downloadHandler.text.Split('\n');
+
+    Status = new StatusData(_textrow);
+
+    print("스탯 업데이트 완료");
+
+    yield return null;
+  }
 
   private static GameManager instance;
   public static GameManager Instance { get { return instance; } }
@@ -182,6 +195,8 @@ public class GameManager : MonoBehaviour
   public ProgressData ProgressData = null;
   public const string ProgressDataName = "PlayerProgressData.json";
   [HideInInspector] public ProgressData MyProgressData = new ProgressData();
+  public StatusData Status = new StatusData();
+  public const string StatusDataName = "WNCStatusData.json";
   public void AddEnding(string id)
   {
     if (ProgressData.EndingLists.Contains(id)) return;
@@ -193,10 +208,10 @@ public class GameManager : MonoBehaviour
 
   public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
 
-  private const string SeetURL_Event = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=0";
-  private const string SeetURL_Exp = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=634251844";
-  private const string SeetURL_Text = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=1628546529";
-  private const string SeetURL_Selection = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/edit#gid=2014251167";
+  private const string SeetURL_Event  = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=0";
+  private const string SeetURL_Exp    = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=634251844";
+  private const string SeetURL_Text   = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=1628546529";
+  private const string SeetURL_Status = "https://docs.google.com/spreadsheets/d/1fbo8PVBwDS7RGBJwD-By54Hvk3Gtb-rXqh9HxIGtZn0/export?format=tsv&gid=2005081766";
   [SerializeField] private string SheetURL_SelectionScript;
   public IEnumerator ConnectSelectionData_get(string eventid)
   {
@@ -615,21 +630,21 @@ public class GameManager : MonoBehaviour
   public void AddExp_Long(Experience exp,bool sanityloss)
   {
     UIManager.Instance.SetInfoPanel(string.Format(GetTextData("GainExp"), exp.Name));
-    if (sanityloss) MyGameData.Sanity -= (int)(ConstValues.LongTermChangeCost * MyGameData.GetSanityLossModify(true, 0));
+    if (sanityloss) MyGameData.Sanity -= (int)(Status.LongTermChangeCost * MyGameData.GetSanityLossModify(true, 0));
 
-    exp.Duration = ConstValues.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value;
+    exp.Duration = Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / Status.IntelEffect_Level * Status.IntelEffect_Value;
     MyGameData.LongExp = exp;
 
     if (MyGameData.Madness_Intelligence)
     {
       if (MyGameData.ShortExp_A != null)
       {
-        MyGameData.ShortExp_A.Duration -= ConstValues.MadnessEffect_Intelligence;
+        MyGameData.ShortExp_A.Duration -= Status.MadnessEffect_Intelligence;
         UIManager.Instance.UpdateExpMad(1);
       }
       if (MyGameData.ShortExp_B != null)
       {
-        MyGameData.ShortExp_B.Duration -= ConstValues.MadnessEffect_Intelligence;
+        MyGameData.ShortExp_B.Duration -= Status.MadnessEffect_Intelligence;
         UIManager.Instance.UpdateExpMad(2);
       }
 
@@ -648,7 +663,7 @@ public class GameManager : MonoBehaviour
   public void AddExp_Short(Experience exp,bool index)
   {
     UIManager.Instance.SetInfoPanel(string.Format(GetTextData("GainExp"), exp.Name));
-    exp.Duration = ConstValues.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / ConstValues.IntelEffect_Level * ConstValues.IntelEffect_Value;
+    exp.Duration = Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / Status.IntelEffect_Level * Status.IntelEffect_Value;
     if (index == true)
     {
       MyGameData.ShortExp_A = exp;
@@ -657,12 +672,12 @@ public class GameManager : MonoBehaviour
       {
         if (MyGameData.LongExp != null)
         {
-          MyGameData.LongExp.Duration -= ConstValues.MadnessEffect_Intelligence;
+          MyGameData.LongExp.Duration -= Status.MadnessEffect_Intelligence;
           UIManager.Instance.UpdateExpMad(0);
         }
         if (MyGameData.ShortExp_B != null)
         {
-          MyGameData.ShortExp_B.Duration -= ConstValues.MadnessEffect_Intelligence;
+          MyGameData.ShortExp_B.Duration -= Status.MadnessEffect_Intelligence;
           UIManager.Instance.UpdateExpMad(2);
         }
 
@@ -678,12 +693,12 @@ public class GameManager : MonoBehaviour
       {
         if (MyGameData.LongExp != null)
         {
-          MyGameData.LongExp.Duration -= ConstValues.MadnessEffect_Intelligence;
+          MyGameData.LongExp.Duration -= Status.MadnessEffect_Intelligence;
           UIManager.Instance.UpdateExpMad(0);
         }
         if (MyGameData.ShortExp_A != null)
         {
-          MyGameData.ShortExp_A.Duration -= ConstValues.MadnessEffect_Intelligence;
+          MyGameData.ShortExp_A.Duration -= Status.MadnessEffect_Intelligence;
           UIManager.Instance.UpdateExpMad(1);
         }
 

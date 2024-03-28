@@ -34,12 +34,12 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   [SerializeField] private Outline Sabbat_Effect = null;
   public void SetSabbatFail()
   {
-    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetDiscomfortColor(ConstValues.Quest_Cult_Sabbat_PenaltyDiscomfort));
+    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetDiscomfortColor(GameManager.Instance.Status.Quest_Cult_Sabbat_PenaltyDiscomfort));
     UIManager.Instance.SetInfoPanel(_failtext);
   }
   public void SetRitualFail()
   {
-    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetSupplyColor(ConstValues.Quest_Cult_Ritual_PenaltySupply));
+    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetSupplyColor(GameManager.Instance.Status.Quest_Cult_Ritual_PenaltySupply));
     UIManager.Instance.SetInfoPanel(_failtext);
   }
   [Space(5)]
@@ -75,7 +75,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
           StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
           StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
         }
-        _progressvalue = ConstValues.Quest_Cult_Progress_Village+ GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
+        _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Village+ GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
         break;
       case 1:
         if (DefaultGroup.alpha == 0.0f)
@@ -84,7 +84,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
           StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
         }
 
-          _progressvalue = ConstValues.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
+          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
         if (LastPhase != 1)
         {
           if (LastPhase != -1) StartCoroutine(CloseGroup(Village_Group, 0.0f));
@@ -98,7 +98,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
           StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
         }
 
-          _progressvalue = ConstValues.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
+          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
 
         if (LastPhase != 2)
         {
@@ -113,7 +113,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
           StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
         }
 
-          _progressvalue = ConstValues.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
+          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
         if (LastPhase != 3)
         {
           Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector,true);
@@ -131,7 +131,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
           StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
         }
 
-          _progressvalue = ConstValues.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/ConstValues.ConversationEffect_Level*ConstValues.ConversationEffect_Value;
+          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
         if (LastPhase != 4)
         {
           if (LastPhase != -1) StartCoroutine(CloseGroup(Sabbat_Group, 0.0f));

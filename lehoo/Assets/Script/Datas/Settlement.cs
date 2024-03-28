@@ -437,18 +437,18 @@ public class MapData
             break;
         }
 
-        List<Vector2Int> _enablerange = GetAroundCoor(GameManager.Instance.MyGameData.CurrentTile.Coordinate, ConstValues.WorldEventRange_max);
-        List<Vector2Int> _minrangetiles = GetAroundCoor(GameManager.Instance.MyGameData.CurrentTile.Coordinate, ConstValues.WorldEventRange_min);
+        List<Vector2Int> _enablerange = GetAroundCoor(GameManager.Instance.MyGameData.CurrentTile.Coordinate, GameManager.Instance.Status.WorldEventRange_max);
+        List<Vector2Int> _minrangetiles = GetAroundCoor(GameManager.Instance.MyGameData.CurrentTile.Coordinate, GameManager.Instance.Status.WorldEventRange_min);
         foreach (var _removetile in _minrangetiles)
           _enablerange.Remove(_removetile);
 
         _neweventtiles.Add(GetRandomEventTile(_culttarget));
 
-        if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_1_Cult)
-          _worldeventcount = ConstValues.WorldEventCount_0;
-        else if (GameManager.Instance.MyGameData.Quest_Cult_Progress < ConstValues.WorldEventPhase_2_Cult)
-          _worldeventcount = ConstValues.WorldEventCount_1;
-        else _worldeventcount = ConstValues.WorldEventCount_2;
+        if (GameManager.Instance.MyGameData.Quest_Cult_Progress < GameManager.Instance.Status.WorldEventPhase_1_Cult)
+          _worldeventcount = GameManager.Instance.Status.WorldEventCount_0;
+        else if (GameManager.Instance.MyGameData.Quest_Cult_Progress < GameManager.Instance.Status.WorldEventPhase_2_Cult)
+          _worldeventcount = GameManager.Instance.Status.WorldEventCount_1;
+        else _worldeventcount = GameManager.Instance.Status.WorldEventCount_2;
 
         if (_worldeventcount == 0)
         {
@@ -487,7 +487,7 @@ public class MapData
           if (targetcentertile.HexGrid.GetDistance(GameManager.Instance.MyGameData.CurrentTile) < 3)
           { //목표 중심이 플레이어랑 가까운 위치에 있을 때(3칸이내)
             //탐색 범위를 4칸으로 늘리고 다시
-            List<TileData> _targetaround = GetAroundTile(targetcentertile, ConstValues.CultEventRange_Target);
+            List<TileData> _targetaround = GetAroundTile(targetcentertile, GameManager.Instance.Status.CultEventRange_Target);
             _targetaround.Remove(targetcentertile);
             _targetaround.Remove(GameManager.Instance.MyGameData.CurrentTile);
             foreach (var _tile in _targetaround)
@@ -711,8 +711,8 @@ public class MapData
 
     if (_temp.x < 0) _temp.x = 0;
     if(_temp.y < 0) _temp.y = 0;
-    if (_temp.x >= ConstValues.MapSize) _temp.x = ConstValues.MapSize - 1;
-    if(_temp.y>=ConstValues.MapSize)_temp.y=ConstValues.MapSize - 1;
+    if (_temp.x >= GameManager.Instance.Status.MapSize) _temp.x = GameManager.Instance.Status.MapSize - 1;
+    if(_temp.y>=GameManager.Instance.Status.MapSize)_temp.y=GameManager.Instance.Status.MapSize - 1;
     return _temp;
   }
   public Vector2Int GetNextCoor(TileData tile, HexDir dir,bool limitgrid)
@@ -800,7 +800,7 @@ public class MapData
       foreach (var _dir in _offset)
         _temp = GetNextCoor(_temp, _dir, true);
 
-      if (_temp.x < 0|| _temp.y < 0|| _temp.x >= ConstValues.MapSize|| _temp.y >= ConstValues.MapSize) continue;
+      if (_temp.x < 0|| _temp.y < 0|| _temp.x >= GameManager.Instance.Status.MapSize|| _temp.y >= GameManager.Instance.Status.MapSize) continue;
 
       _coors.Add(_temp);
     }
@@ -837,7 +837,7 @@ public class MapData
         _temp = _coordinate;
         foreach (var _dir in _dirs) _temp = GetNextCoor(_temp, _dir, true);
 
-        if (_temp.x < 0 || _temp.y < 0 || _temp.x >= ConstValues.MapSize || _temp.y >= ConstValues.MapSize) continue;
+        if (_temp.x < 0 || _temp.y < 0 || _temp.x >= GameManager.Instance.Status.MapSize || _temp.y >= GameManager.Instance.Status.MapSize) continue;
 
         if (!_result.Contains(_temp)) _result.Add(_temp);
       }
@@ -900,7 +900,7 @@ public class MapData
       TileData _next = GetNextTile(_lines[_lines.Count - 1], dir);
       if (_lines.Count > 2 && 
         ((_next.BottomEnvir==BottomEnvirType.Sea)||
-        _next.Coordinate.x==0||_next.Coordinate.y==0||_next.Coordinate.x==ConstValues.MapSize-1|| _next.Coordinate.y == ConstValues.MapSize - 1)) break;
+        _next.Coordinate.x==0||_next.Coordinate.y==0||_next.Coordinate.x==GameManager.Instance.Status.MapSize-1|| _next.Coordinate.y == GameManager.Instance.Status.MapSize - 1)) break;
 
       _lines.Add(_next);
     }
@@ -911,7 +911,7 @@ public class MapData
   {
     get
     {
-      return TileDatas[ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1, ConstValues.MapSize / 2 + ConstValues.MapSize % 2-1];
+      return TileDatas[GameManager.Instance.Status.MapSize / 2 + GameManager.Instance.Status.MapSize % 2-1, GameManager.Instance.Status.MapSize / 2 + GameManager.Instance.Status.MapSize % 2-1];
     }
   }
   public TileInfoData GetTileData(Vector2 _tilepos)
