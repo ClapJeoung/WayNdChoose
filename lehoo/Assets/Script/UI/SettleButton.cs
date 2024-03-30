@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SettleButton : ReturnButton
 {
-  public Vector2 TopPos = Vector2.zero;
-  public UI_dialogue DialogueUI = null;
+  [SerializeField] private Vector2 TopPos = Vector2.zero;
+  [SerializeField] private UI_dialogue DialogueUI = null;
   public override void Clicked()
   {
     base.Clicked();

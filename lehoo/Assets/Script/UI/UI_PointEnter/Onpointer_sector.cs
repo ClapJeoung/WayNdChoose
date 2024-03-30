@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 public class Onpointer_sector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-  public SectorTypeEnum MySector = SectorTypeEnum.NULL;
-  public UI_dialogue SettlementUI = null;
+  [SerializeField] private SectorTypeEnum MySector = SectorTypeEnum.NULL;
+  [SerializeField] private UI_dialogue SettlementUI = null;
   public void OnPointerEnter(PointerEventData eventData)
   {
     SettlementUI.OnPointerSector(MySector);

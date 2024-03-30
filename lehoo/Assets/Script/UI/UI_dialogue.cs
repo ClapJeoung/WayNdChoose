@@ -1145,7 +1145,9 @@ public class UI_dialogue : UI_default
     {
       GetOppositeSelection(_selection).DeActive();
 
-      if (CurrentEvent.EventLine != "" && GameManager.Instance.MyGameData.CurrentEventLine == CurrentEvent.EventLine && _selection.MySelectionData.StopEvent)
+      if (CurrentEvent.EventLine != "" &&
+        GameManager.Instance.MyGameData.CurrentEventLine == CurrentEvent.EventLine &&
+        _selection.MySelectionData.StopEvent)
         GameManager.Instance.MyGameData.CurrentEventLine = "";
 
       StartCoroutine(GameManager.Instance.ConnectSelectionData_set(CurrentEvent.ID, _selection.IsLeft ? 0 : 1));
@@ -1304,12 +1306,12 @@ public class UI_dialogue : UI_default
 
     if (_issuccess) //성공하면 성공
     {
-      Debug.Log("성공함");
+      //Debug.Log("이벤트 성공함");
       StartCoroutine(SetSuccess(CurrentEvent.SelectionDatas[_selection.Index].SuccessData,_selection.MyTendencyType,_selection.IsLeft));
     }
     else            //실패하면 실패
     {
-      Debug.Log("실패함");
+      //Debug.Log("아밴투 실패함");
       StartCoroutine(SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailData, _selection.MyTendencyType, _selection.IsLeft));
     }
     _selection.DeActive();
@@ -1772,9 +1774,9 @@ public class UI_dialogue : UI_default
   [Space(20)]
   [Header("정착지")]
   #region 정착지
-  public GameObject SettlementObjectHolder = null;
+  [SerializeField] private GameObject SettlementObjectHolder = null;
   public Image MadenssEffect = null;
-  private float CountChangeTime_settlement = 1.2f;
+  [SerializeField] private float CountChangeTime_settlement = 1.2f;
   [SerializeField] private RectTransform MapbuttonPos_Settlemtn = null;
   [SerializeField] private TextMeshProUGUI DiscomfortDescriptionText = null;
   [SerializeField] private UnityEngine.UI.Image SettlementIcon = null;
@@ -1802,10 +1804,10 @@ public class UI_dialogue : UI_default
   private Settlement CurrentSettlement{ get { return GameManager.Instance.MyGameData.CurrentSettlement; } }
   private SectorTypeEnum SelectedSector = SectorTypeEnum.NULL;
   private bool IsMad = false;
-  public GameObject QuitAskObject = null;
-  public TextMeshProUGUI QuitAskText = null;
-  public TextMeshProUGUI QuitText_Yes = null;
-  public TextMeshProUGUI QuitText_No = null;
+  [SerializeField] private GameObject QuitAskObject = null;
+  [SerializeField] private TextMeshProUGUI QuitAskText = null;
+  [SerializeField] private TextMeshProUGUI QuitText_Yes = null;
+  [SerializeField] private TextMeshProUGUI QuitText_No = null;
   public void OpenQuitAsk() => QuitAskObject.SetActive(true);
   public void QuitAskClick_Yes() 
   { 
@@ -2138,7 +2140,11 @@ public class UI_dialogue : UI_default
       GameManager.Instance.GameOver();
       yield break;
     }
-    if (GameManager.Instance.MyGameData.FirstRest) GameManager.Instance.MyGameData.MyMapData.SetResourceTiles();
+    if (GameManager.Instance.MyGameData.FirstRest)
+    {
+      GameManager.Instance.MyGameData.MyMapData.SetResourceTiles();
+      GameManager.Instance.MyGameData.MyMapData.SetCampingTiles();
+    }
     GameManager.Instance.MyGameData.FirstRest = false;
 
     if (GameManager.Instance.MyGameData.Madness_Force)
@@ -2194,7 +2200,7 @@ public class UI_dialogue : UI_default
 
     UIManager.Instance.AudioManager.PlaySFX(14);
 
-    EventManager.Instance.SetSettlementEvent(SelectedSector);
+    GameManager.Instance.EventHolder.SetSettlementEvent(SelectedSector);
 
   }
   public AnimationCurve DiscomfortAnimationCurve = new AnimationCurve();

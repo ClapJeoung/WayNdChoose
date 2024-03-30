@@ -856,6 +856,7 @@ MonoBehaviour:
   Resource_Stone_Icon: {fileID: 21300000, guid: e3402bd5b3d504647a4eab974e04d05e, type: 3}
   Resource_Stone_Tile: {fileID: 21300000, guid: 6e44acfbc3ba19842b46275f96ffc228, type: 3}
   Resource_Chest: {fileID: 21300000, guid: 53b6429f35df0e3419e549faf14a9647, type: 3}
+  CampingTile: {fileID: 21300000, guid: 401c6fbd660e088488252f2489c4d323, type: 3}
   IconBackground_normal: {fileID: 21300000, guid: 9716a1c0b95964a4a80c1177f2d3e910, type: 3}
   IconBackground_status: {fileID: 21300000, guid: 082461aaf9a52ab47bf54e43c3e184e9, type: 3}
   QuestIcon_Cult: {fileID: 21300000, guid: c94eefcacec954c4b85530c631592644, type: 3}

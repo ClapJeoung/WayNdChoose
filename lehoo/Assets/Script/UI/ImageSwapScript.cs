@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 public class ImageSwapScript : MonoBehaviour
 {
-  public Image Image_A = null;
-  public CanvasGroup Group_A = null;
-  public Image Image_B = null;
-  public CanvasGroup Group_B = null;
-  public bool Index = true;
+  [SerializeField] private Image Image_A = null;
+  [SerializeField] private CanvasGroup Group_A = null;
+  [SerializeField] private Image Image_B = null;
+  [SerializeField] private CanvasGroup Group_B = null;
+  [SerializeField] private bool Index = true;
   private float ChangeTime = 0.8f;
   private Image CurrentImage { get { return Index == true? Image_A : Image_B; } }
   private Image NextImage { get { return Index==true?Image_B : Image_A; } }
   private CanvasGroup CurrentGroup { get { return Index==true?Group_A : Group_B; } }
   private CanvasGroup NextGroup { get { return Index==true?Group_B : Group_A; } }
-  public bool Sound = true;
+  [SerializeField] private bool Sound = true;
   public void Next(Sprite illust)
   {
     StopAllCoroutines();

@@ -25,50 +25,6 @@ public class EventHolder
     return null;
   }
 
-  private EventData defaultevent_outer = null;
-  private EventData defaultevent_settlement = null;
-  public EventData DefaultEvent_Outer
-  {
-    get
-    {
-      if (defaultevent_outer == null)
-      {
-        EventJsonData _json = new EventJsonData();
-        _json.ID = "Event_NoMoreEventOuter";
-        _json.PlaceInfo = "0@0@0";
-        _json.Selection_Type = "1";
-        _json.Selection_Target = "2@3";
-        _json.Selection_Info = "2@1,3";
-        _json.Failure_Penalty = "1@1";
-        _json.Failure_Penalty_info = "1@2";
-        _json.Reward_Target = "3@0";
-        _json.Reward_Info = "Exp_Test@0";
-        defaultevent_outer = ReturnEventDataDefault(_json);
-      }
-      return defaultevent_outer;
-    }
-  }
-  public EventData DefaultEvent_Settlement
-  {
-    get
-    {
-      if (defaultevent_settlement == null)
-      {
-        EventJsonData _json = new EventJsonData();
-        _json.ID = "Event_NoMoreEventSettlement";
-        _json.PlaceInfo = "4@0@0";
-        _json.Selection_Type = "2";
-        _json.Selection_Target = "0@1";
-        _json.Selection_Info = "1@2";
-        _json.Failure_Penalty = "0@1";
-        _json.Failure_Penalty_info = "0@0";
-        _json.Reward_Target = "2@2";
-        _json.Reward_Info = "0@0";
-        defaultevent_settlement = ReturnEventDataDefault(_json);
-      }
-      return defaultevent_settlement;
-    }
-  }
   public Quest GetQuest(QuestType type)
   {
     switch (type)
@@ -77,7 +33,7 @@ public class EventHolder
     }
     return null;
   }
-  public EventData ReturnEventDataDefault(EventJsonData _data) 
+  private EventData ReturnEventDataDefault(EventJsonData _data) 
   {
     try
     {
@@ -756,6 +712,64 @@ public class EventHolder
     Debug.Log("여기까지 올 리가 없는디");
     return null;
   }
+  /// <summary>
+  /// 정착지에서 장소를 선택해 이벤트 실행
+  /// </summary>
+  /// <param name="place"></param>
+  public void SetSettlementEvent(SectorTypeEnum place)
+  {
+    if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "" && GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "WRONG ID!")
+    {
+      EventData _customevent = GameManager.Instance.EventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
+      if (_customevent.AppearSpace != EventAppearType.Outer)
+      {
+        if (_customevent != null)
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "";
+          GameManager.Instance.SetEvent(_customevent);
+          return;
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "WRONG ID!";
+        }
+      }
+    }
+
+    TileInfoData _tiledta = GameManager.Instance.MyGameData.CurrentSettlement.TileInfoData;
+    EventData _event = GameManager.Instance.EventHolder.ReturnSectorEvent(_tiledta.Settlement.SettlementType, place, _tiledta.EnvirList); ;
+    GameManager.Instance.SetEvent(_event);
+  }
+
+  /// <summary>
+  /// 야외 타일에서 이벤트 실행
+  /// </summary>
+  /// <param name="_tiledata"></param>
+  public void SetOutsideEvent(TileInfoData _tiledata)
+  {
+    if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "" && GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "WRONG ID!")
+    {
+      EventData _customevent = GameManager.Instance.EventHolder.IsEventExist(GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID);
+      if (_customevent.AppearSpace == EventAppearType.Outer)
+      {
+        if (_customevent != null)
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "";
+          GameManager.Instance.SetEvent(_customevent);
+          return;
+        }
+        else
+        {
+          GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID = "WRONG ID!";
+        }
+      }
+    }
+
+    EventData _event = ReturnOutsideEvent(_tiledata.EnvirList);
+
+    GameManager.Instance.SetEvent(_event);
+  }
+
 }
 public class TileInfoData
 {
@@ -925,7 +939,6 @@ public class SelectionData
   public SuccessData SuccessData = null;
   public FailData FailData = null;
 }    
-
 public class FailData
 {
   private EventData MyEvent = null;

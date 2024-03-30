@@ -139,7 +139,7 @@ MonoBehaviour:
   MyGroup: {fileID: 9174390757389823611}
   DefaultPos: {x: -260, y: 463}
   Alphatime: 0.5
-  WaitTime: 4
+  WaitTime: 6
   IsClosing: 0
 --- !u!114 &2856237176993688359
 MonoBehaviour:

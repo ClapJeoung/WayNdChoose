@@ -5,17 +5,18 @@ using UnityEngine.EventSystems;
 
 public class Onpointer_tileoutline : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-  public UI_map MyMapUI = null;
-  public TileData MyTile = null;
+  [SerializeField] private UI_map MyMapUI = null;
+  [SerializeField] private TileData MyTile = null;
+  public void Setup(UI_map map,TileData tile) { MyMapUI = map; MyTile = tile; }
   public void OnPointerEnter(PointerEventData eventData)
   {
-    if (!MyTile.Interactable||MyTile.Fogstate!=2) return;
+    if (!MyTile.Interactable) return;
     MyMapUI.PointerEnterTile(MyTile);
   }
 
   public void OnPointerExit(PointerEventData eventData)
   {
-    if (!MyTile.Interactable || MyTile.Fogstate != 2) return;
+    if (!MyTile.Interactable ) return;
     MyMapUI.ExitTile();
   }
 }

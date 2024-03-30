@@ -8,7 +8,7 @@ using System;
 public class UI_QuestWolf : UI_default
 {
   [Space(10)]
-  public bool Skip = false;
+  [SerializeField] private bool Skip = false;
   [SerializeField] private float UIMoveInTime = 0.7f;
   [SerializeField] private float FadeInTime = 1.0f;
   [SerializeField] private float FadeOutTime = 0.4f;  //이미지,텍스트 투명도
@@ -28,7 +28,7 @@ public class UI_QuestWolf : UI_default
   [SerializeField] private ImageSwapScript Illust = null;
   [SerializeField] private TextMeshProUGUI Prologue_Description = null;
   [SerializeField] private Scrollbar PrologueScrollbar = null;
-  public AnimationCurve ScrollbarCurve = new AnimationCurve();
+  [SerializeField] private AnimationCurve ScrollbarCurve = new AnimationCurve();
   [SerializeField] private CanvasGroup Prologue_TendencyGroup = null;
   [SerializeField] private Button Prologue_Button_Left = null;
   [SerializeField] private TextMeshProUGUI Prologue_ButtonText_Left = null;

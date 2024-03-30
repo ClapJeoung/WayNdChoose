@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 public class Onpointer_restbuttons : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
-  public UI_dialogue SettlementUI = null;
-  public StatusTypeEnum MyStatusType = StatusTypeEnum.HP;
+  [SerializeField] private UI_dialogue SettlementUI = null;
+  [SerializeField] private StatusTypeEnum MyStatusType = StatusTypeEnum.HP;
 
   public void OnPointerEnter(PointerEventData data)
   {

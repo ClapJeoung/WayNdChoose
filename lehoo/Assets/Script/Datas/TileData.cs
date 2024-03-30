@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Security.Cryptography;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 public enum BottomEnvirType
@@ -12,12 +11,11 @@ public enum BottomEnvirType
 public enum TopEnvirType {NULL, Forest,Mountain,Highland }
 public enum LandmarkType { Outer,Village,Town,City,Ritual}
 public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
+public enum TileTypeEnum { Normal,Landmark,Event,Resource,Camping}
 
 [System.Serializable]
 public class TileData
 {
-  public bool IsEvent = false;
-  public bool IsResource = false;
   public int ResourceType
   {
     get
@@ -42,6 +40,7 @@ public class TileData
     }
   }
   public int Rotation = 0;
+  public TileTypeEnum TileType = TileTypeEnum.Normal;
   public BottomEnvirType BottomEnvir = BottomEnvirType.NULL;
   public TopEnvirType TopEnvir = TopEnvirType.NULL;
   public LandmarkType Landmark = LandmarkType.Outer;

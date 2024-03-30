@@ -40,9 +40,9 @@ public class UIManager : MonoBehaviour
   public AnimationCurve CharacterMoveCurve = null;
   [Space(10)]
   public Transform MyCanvas = null;
-  public CanvasGroup CenterGroup = null;
-  public CanvasGroup CurtainGroup = null;
-  public TextMeshProUGUI CurtainText = null;
+  [SerializeField] private CanvasGroup CenterGroup = null;
+  [SerializeField] private CanvasGroup CurtainGroup = null;
+  [SerializeField] private TextMeshProUGUI CurtainText = null;
   public UI_Main MainUi = null;
   public UI_dialogue DialogueUI = null;
   public UI_RewardExp ExpRewardUI = null;

@@ -102,14 +102,11 @@ public class maptext : MonoBehaviour
 
       List<TileData> _around = new List<TileData>();
       int _count = 0;
-      for (int i = 3; i < GameManager.Instance.Status.MapSize; i++)
+      int _genspace = GameManager.Instance.Status.ResourceGenSpace;
+      for (int i = _genspace; i < GameManager.Instance.Status.MapSize; i+= _genspace)
       {
-        if (i % 3 != 0) continue;
-
-        for(int j=3;j< GameManager.Instance.Status.MapSize; j++)
+        for(int j= _genspace; j< GameManager.Instance.Status.MapSize; j+=_genspace)
         {
-          if(j%3 != 0) continue;
-
           _around = _map.GetAroundTile(_map.TileDatas[j, i],1);
           _count = 0;
           foreach(var _tile in _around)
@@ -121,8 +118,27 @@ public class maptext : MonoBehaviour
       }
 
       _map.SetResourceTiles();
+
+      _around.Clear();
+      _count = 0;
+      _genspace = (int)(GameManager.Instance.Status.ResourceGenSpace * 1.5f);
+      for (int i = _genspace; i < GameManager.Instance.Status.MapSize; i += _genspace)
+      {
+        for (int j = _genspace; j < GameManager.Instance.Status.MapSize; j += _genspace)
+        {
+          _around = _map.GetAroundTile(_map.TileDatas[j, i], 1);
+          _count = 0;
+          foreach (var _tile in _around)
+          {
+            if (_tile.BottomEnvir != BottomEnvirType.Sea) _count++;
+          }
+          if (_count > 4) _map.CampingGenTiles.Add(_map.TileDatas[j, i]);
+        }
+      }
+      _map.SetCampingTiles();
+
       break;
-    }
+    } 
   }
   /// <summary>
   /// range 범위만큼의 타일 개수(range 최소 0)
@@ -712,6 +728,7 @@ public class maptext : MonoBehaviour
       _NewMapData.TileDatas[_citytile.Coordinate.x, _citytile.Coordinate.y].TileSettle = City[_index];
       _NewMapData.TileDatas[_citytile.Coordinate.x, _citytile.Coordinate.y].Landmark = LandmarkType.City;
       City[_index].Tile = _citytile;
+      _citytile.TileType = TileTypeEnum.Landmark;
       _settlementcompeleteeindex++;
 
       bool cityCheck(TileData tile)
@@ -760,6 +777,7 @@ public class maptext : MonoBehaviour
       _NewMapData.TileDatas[_towntile.Coordinate.x, _towntile.Coordinate.y].TileSettle = Town[_index];
       _NewMapData.Tile(_towntile.Coordinate).Landmark = LandmarkType.Town;
       Town[_index].Tile = _towntile;
+      _towntile.TileType = TileTypeEnum.Landmark;
       _settlementcompeleteeindex++;
 
       bool towncheck(TileData tile)
@@ -814,6 +832,7 @@ public class maptext : MonoBehaviour
       _NewMapData.TileDatas[_villagetile.Coordinate.x, _villagetile.Coordinate.y].TileSettle = Villages[_index];
       _NewMapData.Tile(_villagetile.Coordinate).Landmark = LandmarkType.Village;
       Villages[_index].Tile = _villagetile;
+      _villagetile.TileType = TileTypeEnum.Landmark;
       _settlementcompeleteeindex++;
     }
 
@@ -982,7 +1001,7 @@ public class maptext : MonoBehaviour
         _fogrect.transform.localScale = Vector3.one;
         _fogrect.anchoredPosition3D = new Vector3(_fogrect.anchoredPosition3D.x, _fogrect.anchoredPosition3D.y, 0.0f);
         Image _fogimage = _fogtile.GetComponent<Image>();
-        _fogimage.raycastTarget = false;
+        _fogimage.raycastTarget = true;
         _fogimage.sprite = MyTiles.Fog;
         _tilescript.FogGroup = _fogtile.GetComponent<CanvasGroup>();
         _tilescript.FogGroup.alpha = _currenttile.Fogstate == 0 ? 1.0f : _currenttile.Fogstate == 1 ? FogAlpha_visible : 0.0f;
@@ -991,8 +1010,7 @@ public class maptext : MonoBehaviour
         {
           Onpointer_tileoutline _outline = _bottomtile.AddComponent<Onpointer_tileoutline>();
           _outline.enabled = _currenttile.Fogstate == 2;
-          _outline.MyMapUI = MapUIScript;
-          _outline.MyTile = GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate);
+          _outline.Setup(MapUIScript, GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate));
           _tilescript.OnPointer = _outline;
 
           string _topname = $"{j},{i} {GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate).TopEnvir}";
@@ -1034,22 +1052,22 @@ public class maptext : MonoBehaviour
           _eventrect.anchoredPosition3D = new Vector3(_eventrect.anchoredPosition3D.x, _eventrect.anchoredPosition3D.y, 0.0f);
           Image _etcimage = _eventmark.GetComponent<Image>();
           _etcimage.raycastTarget = false;
-          _etcimage.sprite = _currenttile.IsEvent ? GameManager.Instance.ImageHolder.UnknownEvent :
-            _currenttile.IsResource ? GameManager.Instance.ImageHolder.GetResourceSprite(_currenttile, false) :
+          _etcimage.sprite = _currenttile.TileType==TileTypeEnum.Event ? GameManager.Instance.ImageHolder.UnknownEvent :
+            _currenttile.TileType==TileTypeEnum.Resource ? GameManager.Instance.ImageHolder.GetResourceSprite(_currenttile, false) :
             GameManager.Instance.ImageHolder.Transparent;
           _tilescript.ETCImage = _etcimage;
 
-          GameObject _previewpos_bottom = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
-          _previewpos_bottom.transform.localScale = Vector3.zero;
-          _previewpos_bottom.transform.SetParent(_bottomtile.transform);
-          _previewpos_bottom.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, -_cellsize.y / 2.0f);
-          GameObject _previewpos_top = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
-          _previewpos_top.transform.localScale = Vector3.zero;
-          _previewpos_top.transform.SetParent(_bottomtile.transform);
-          _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
-
           if (_currenttile.TileSettle != null)
           {
+            GameObject _previewpos_bottom = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+            _previewpos_bottom.transform.localScale = Vector3.zero;
+            _previewpos_bottom.transform.SetParent(_bottomtile.transform);
+            _previewpos_bottom.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, -_cellsize.y / 2.0f);
+            GameObject _previewpos_top = new GameObject("_posholder", new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer) });
+            _previewpos_top.transform.localScale = Vector3.zero;
+            _previewpos_top.transform.SetParent(_bottomtile.transform);
+            _previewpos_top.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, _cellsize.y / 2.0f);
+
             PreviewInteractive _tilepreview = _tilescript.Rect.transform.AddComponent<PreviewInteractive>();
             _tilepreview.PanelType = PreviewPanelType.TileInfo;
             _tilepreview.MyTileData = _currenttile;
@@ -1170,6 +1188,8 @@ public class maptext : MonoBehaviour
       _cityoutline.transform.localScale = Vector3.one;
       _city.Tile.ButtonScript.DiscomfortOutline = _cityoutlinegroup;
     }
+
+    Resources.UnloadUnusedAssets();
     yield return null;
   }
 

@@ -11,22 +11,20 @@ Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSa
 CultSidePanel,TileInfo,TurnInfo,EndingPreview,ChatList}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
-    public PreviewPanelType PanelType=PreviewPanelType.Turn;
+  public PreviewPanelType PanelType=PreviewPanelType.Turn;
   public RectTransform OtherRect = null;
   public RectTransform OtherRect_other = null;
   [Space(15)]
-    public TendencyTypeEnum MyTendency = TendencyTypeEnum.None;
+  public TendencyTypeEnum MyTendency = TendencyTypeEnum.None;
   public TendencyTypeEnum MySelectionTendency= TendencyTypeEnum.None;
   public bool MySelectionTendencyDir = false;
-  public SkillTypeEnum Myskill = SkillTypeEnum.Conversation;
-  public int RewardValue = 0;
-  public int ExpIndex = 0;
-  public Experience MyEXP = null;
-  public SectorTypeEnum MyPlaceType = SectorTypeEnum.NULL;
-  public EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
+  [SerializeField] private SkillTypeEnum Myskill = SkillTypeEnum.Conversation;
+  [SerializeField] private int ExpIndex = 0;
+  [SerializeField] private Experience MyEXP = null;
+  [SerializeField] private EnvironmentType MyEnvironmentType = EnvironmentType.NULL;
   public TileData MyTileData = null;
-  public bool IsCultSidePanel = false;
-  public Button ExpButton = null;
+  [SerializeField] private bool IsCultSidePanel = false;
+  [SerializeField] private Button ExpButton = null;
   public string EndingID = "";
     public void OnPointerEnter(PointerEventData eventData)
     {

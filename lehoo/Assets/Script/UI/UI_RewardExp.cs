@@ -23,11 +23,11 @@ public class UI_RewardExp : UI_default
   [SerializeField] private GameObject ExpQuitButton = null;
   [SerializeField] private TextMeshProUGUI ExpDescription = null;
 
-  public bool AskedForChange = false;
-  public GameObject ChangeAskObject = null;
-  public TextMeshProUGUI ChangeAskText = null;
-  public TextMeshProUGUI ChangeText_Yes = null;
-  public TextMeshProUGUI ChangeText_No = null;
+  [SerializeField] private bool AskedForChange = false;
+  [SerializeField] private GameObject ChangeAskObject = null;
+  [SerializeField] private TextMeshProUGUI ChangeAskText = null;
+  [SerializeField] private TextMeshProUGUI ChangeText_Yes = null;
+  [SerializeField] private TextMeshProUGUI ChangeText_No = null;
   public Experience CurrentExp = null;
   public void OpenUI_RewardExp(Experience rewardexp)
   {

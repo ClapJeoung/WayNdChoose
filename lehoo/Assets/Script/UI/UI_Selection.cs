@@ -6,26 +6,26 @@ using TMPro;
 
 public class UI_Selection : MonoBehaviour
 {
-  public CanvasGroup MyGroup = null;
-  public Image MyImage = null;
-//  public GameObject TendencyIconObj = null;
-//  public Image TendencyIcon = null;
- // private int LayoutSizeTop_NoTendency = 15;
- // private int LayoutSizeTop_Tendency = -35;
-  public VerticalLayoutGroup LayoutGroup = null;
-  public Vector2 LeftPos= Vector2.zero;
-  public Vector2 RightPos= Vector2.zero;
+  [SerializeField] private CanvasGroup MyGroup = null;
+  [SerializeField] private Image MyImage = null;
+  //  public GameObject TendencyIconObj = null;
+  //  public Image TendencyIcon = null;
+  // private int LayoutSizeTop_NoTendency = 15;
+  // private int LayoutSizeTop_Tendency = -35;
+  [SerializeField] private VerticalLayoutGroup LayoutGroup = null;
+  [SerializeField] private Vector2 LeftPos= Vector2.zero;
+  [SerializeField] private Vector2 RightPos= Vector2.zero;
   [SerializeField] private UI_dialogue MyUIDialogue = null;
   [SerializeField] private Button MyButton = null;
   [SerializeField] private TextMeshProUGUI MyDescription = null;
-  public GameObject PayHolder = null;
+  [SerializeField] private GameObject PayHolder = null;
   public Image PayIcon = null;
   public TextMeshProUGUI PayInfo = null;
-  public GameObject CheckHolder = null;
-  public GameObject OverTendencyHolder = null;
+  [SerializeField] private GameObject CheckHolder = null;
+  [SerializeField] private GameObject OverTendencyHolder = null;
   public Image OverTendencyIcon = null;
-  public Image SkillIcon_A = null;
-  public Image SkillIcon_B = null;
+  [SerializeField] private Image SkillIcon_A = null;
+  [SerializeField] private Image SkillIcon_B = null;
   public TextMeshProUGUI SkillInfo_left_10 = null;
   public TextMeshProUGUI SkillInfo_left_1 = null;
   public TextMeshProUGUI SkillInfo_left_center = null;
@@ -34,20 +34,20 @@ public class UI_Selection : MonoBehaviour
   public TextMeshProUGUI SkillInfo_right_center = null;
   [SerializeField] private PreviewInteractive MyPreviewInteractive = null;
   [SerializeField] private PreviewInteractive ChatPreviewInteractive = null;
-  public Onpointer_highlight HighlightEffect = null;
+  [SerializeField] private Onpointer_highlight HighlightEffect = null;
   public TendencyTypeEnum MyTendencyType = TendencyTypeEnum.None;
   public bool IsLeft = true;
-  public GameObject TendencyHolder = null;
-  public Image NextTendencyIcon = null;
-  public List<Image> TendencyProgressArrows= new List<Image>();
-  public List<CanvasGroup> TendencyProgressArrows_inside=new List<CanvasGroup>();
+  [SerializeField] private GameObject TendencyHolder = null;
+  [SerializeField] private Image NextTendencyIcon = null;
+  [SerializeField] private List<Image> TendencyProgressArrows= new List<Image>();
+  [SerializeField] private List<CanvasGroup> TendencyProgressArrows_inside=new List<CanvasGroup>();
   public bool IsOverTendency = false;
   [SerializeField] private RectTransform TopRect = null;
   [SerializeField] private GameObject ChatPanelPrefab = null;
   [SerializeField] private GameObject ChatCount_Obj = null;
   [SerializeField] private RectTransform ChatCount_Pos = null;
   [SerializeField] private TextMeshProUGUI ChatCount_Text = null;
-  public int ChatCount = 0;
+  [SerializeField] private int ChatCount = 0;
   private float ChatPanelWaitTime = 0.1f;
   public void AddChatCount(string nickname, StreamingTypeEnum type)
   {

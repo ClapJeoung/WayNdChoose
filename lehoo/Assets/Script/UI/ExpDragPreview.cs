@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class ExpDragPreview : MonoBehaviour
 {
-  public Image Illust = null;
-  public List<CanvasGroup> EffectGroups= new List<CanvasGroup>();
-  public RectTransform MyRect = null;
+  [SerializeField] private Image Illust = null;
+  [SerializeField] private List<CanvasGroup> EffectGroups= new List<CanvasGroup>();
+  [SerializeField] private RectTransform MyRect = null;
 
   public void Setup(Experience exp)
   {

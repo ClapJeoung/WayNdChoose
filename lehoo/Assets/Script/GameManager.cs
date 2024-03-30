@@ -118,6 +118,7 @@ public class GameManager : MonoBehaviour
       _json.Reward_Info= _data[9];
 
       _json.EndingID = _data[10];
+      _json.EventLine = _data[11];
       EventJsonDataList.Add(_json);
     }
     print("이벤트 데이터 업데이트 완료");
@@ -256,18 +257,34 @@ public class GameManager : MonoBehaviour
   private IEnumerator ConvertSheetDatas()
   {
     if (EventHolder.Quest_Cult == null) EventHolder.Quest_Cult = new QuestHolder_Cult("Cult", QuestType.Cult);
-    foreach (var _data in EventJsonDataList)
+    try
     {
-      string _eventinfo = _data.EventInfo.Split('@')[0];
-      if (_eventinfo == null || _eventinfo == "0"||_eventinfo=="") EventHolder.ConvertData_Normal(_data);
-      else if (_eventinfo == "1") EventHolder.ConvertData_Follow(_data);
-      else EventHolder.ConvertData_Quest(_data);
+      foreach (var _data in EventJsonDataList)
+      {
+        string _eventinfo = _data.EventInfo.Split('@')[0];
+        if (_eventinfo == null || _eventinfo == "0" || _eventinfo == "") EventHolder.ConvertData_Normal(_data);
+        else if (_eventinfo == "1") EventHolder.ConvertData_Follow(_data);
+        else EventHolder.ConvertData_Quest(_data);
+      }
+      Debug.Log("이벤트 변환 완료");
+    }
+    catch(Exception e)
+    {
+      Debug.Log($"이벤트 변환하다가 먼가 튕김\n{e}");
     }
 
-    foreach (var _data in ExpJsonDataList)
+    try
     {
-      Experience _exp = _data.ReturnEXPClass();
-      ExpDic.Add(_data.ID, _exp);
+      foreach (var _data in ExpJsonDataList)
+      {
+        Experience _exp = _data.ReturnEXPClass();
+        ExpDic.Add(_data.ID, _exp);
+      }
+      Debug.Log("경험 변환 완료");
+    }
+    catch(Exception e)
+    {
+      Debug.Log($"경험 변환하다가 먼가 튕김\n{e}");
     }
 
     yield return null;
@@ -718,7 +735,9 @@ public class GameManager : MonoBehaviour
     {
       MyGameData.CurrentEventLine = eventdata.EventLine;
     }
-    else if (MyGameData.CurrentEventLine !=""&& MyGameData.CurrentEventLine == eventdata.EventLine && eventdata.EndingID != "")
+    else if (MyGameData.CurrentEventLine !=""&&
+      MyGameData.CurrentEventLine == eventdata.EventLine &&
+      eventdata.EndingID != "")
       MyGameData.CurrentEventLine = "";
     StartCoroutine(ConnectSelectionData_get(eventdata.ID));
 

@@ -7,8 +7,6 @@ using TMPro;
 using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEngine.WSA;
-using Mono.Cecil;
 
 //public enum RangeEnum { Low,Middle,High}
 public class RouteData
@@ -217,53 +215,74 @@ public class UI_map : UI_default
     get
     {
       string _str = "";
-      if (LastDestination.TileSettle != null)
+      switch (LastDestination.TileType)
       {
-        if (GameManager.Instance.MyGameData.Resources.Count == 0) _str = GameManager.Instance.GetTextData("MoveDescription_Settlement_noresource");
-        else
-        {
-          int _sum= Mathf.CeilToInt(Mathf.Clamp(
-            GameManager.Instance.MyGameData.Resources.Count *
-            GameManager.Instance.Status.ResourceGoldValue *
-            (GameManager.Instance.MyGameData.Tendency_Head.Level > 0 ? GameManager.Instance.Status.Tendency_Head_p1 : 1.0f) *
-            GameManager.Instance.MyGameData.GetGoldGenModify(true) *
-            Mathf.Clamp(1.0f - LastDestination.TileSettle.Discomfort * GameManager.Instance.Status.DiscomfortGoldValue,0.0f,1.0f),
-            1.0f, 1000.0f));
+        case TileTypeEnum.Normal:
+          switch (LastDestination.ResourceType)
+          {
+            case 0: return GameManager.Instance.GetTextData("MoveDescription_Land_Idle").Split('@')[Random.Range(0, 3)];
+            case 1: return GameManager.Instance.GetTextData("MoveDescription_Forest_Idle").Split('@')[Random.Range(0, 3)];
+            case 2: return GameManager.Instance.GetTextData("MoveDescription_River_Idle").Split('@')[Random.Range(0, 3)];
+            case 3: return GameManager.Instance.GetTextData("MoveDescription_Swamp_Idle").Split('@')[Random.Range(0, 3)];
+            case 4: return GameManager.Instance.GetTextData("MoveDescription_Mountain_Idle").Split('@')[Random.Range(0, 3)];
+          }
+          break;
+        case TileTypeEnum.Landmark:
+          if (LastDestination.TileSettle != null)
+          {
+            if (GameManager.Instance.MyGameData.Resources.Count == 0) _str = GameManager.Instance.GetTextData("MoveDescription_Settlement_noresource");
+            else
+            {
+              int _sum = Mathf.CeilToInt(Mathf.Clamp(
+                GameManager.Instance.MyGameData.Resources.Count *
+                GameManager.Instance.Status.ResourceGoldValue *
+                (GameManager.Instance.MyGameData.Tendency_Head.Level > 0 ? GameManager.Instance.Status.Tendency_Head_p1 : 1.0f) *
+                GameManager.Instance.MyGameData.GetGoldGenModify(true) *
+                Mathf.Clamp(1.0f - LastDestination.TileSettle.Discomfort * GameManager.Instance.Status.DiscomfortGoldValue, 0.0f, 1.0f),
+                1.0f, 1000.0f));
 
-          if (LastDestination.TileSettle.Discomfort == 0)
-            _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource"),
-              GameManager.Instance.MyGameData.Resources.Count, _sum);
+              if (LastDestination.TileSettle.Discomfort == 0)
+                _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource"),
+                  GameManager.Instance.MyGameData.Resources.Count, _sum);
               else if (LastDestination.TileSettle.Discomfort > 0)
-            _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource_discomfort"),
-              GameManager.Instance.MyGameData.Resources.Count, _sum,
-              LastDestination.TileSettle.Discomfort,
-              Mathf.Clamp(GameManager.Instance.Status.DiscomfortGoldValue*LastDestination.TileSettle.Discomfort*100,0,100));
-        }
+                _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Settlement_resource_discomfort"),
+                  GameManager.Instance.MyGameData.Resources.Count, _sum,
+                  LastDestination.TileSettle.Discomfort,
+                  Mathf.Clamp(GameManager.Instance.Status.DiscomfortGoldValue * LastDestination.TileSettle.Discomfort * 100, 0, 100));
+            }
+          }
+          else
+          {
+            switch (LastDestination.ResourceType)
+            {
+              case 0: return GameManager.Instance.GetTextData("MoveDescription_Land_Idle").Split('@')[Random.Range(0, 3)];
+              case 1: return GameManager.Instance.GetTextData("MoveDescription_Forest_Idle").Split('@')[Random.Range(0, 3)];
+              case 2: return GameManager.Instance.GetTextData("MoveDescription_River_Idle").Split('@')[Random.Range(0, 3)];
+              case 3: return GameManager.Instance.GetTextData("MoveDescription_Swamp_Idle").Split('@')[Random.Range(0, 3)];
+              case 4: return GameManager.Instance.GetTextData("MoveDescription_Mountain_Idle").Split('@')[Random.Range(0, 3)];
+            }
+          }
+          break;
+        case TileTypeEnum.Event:
+          _str = GameManager.Instance.GetTextData("MoveDescription_Event");
+          if (GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
+            _str += GameManager.Instance.GetTextData("MoveDescription_Event_resource");
+          break;
+        case TileTypeEnum.Resource:
+          switch (LastDestination.ResourceType)
+          {
+            case 0: return GameManager.Instance.GetTextData("MoveDescription_Land_Resource");
+            case 1: return GameManager.Instance.GetTextData("MoveDescription_Forest_Resource");
+            case 2: return GameManager.Instance.GetTextData("MoveDescription_River_Resource");
+            case 3: return GameManager.Instance.GetTextData("MoveDescription_Swamp_Resource");
+            case 4: return GameManager.Instance.GetTextData("MoveDescription_Mountain_Resource");
+          }
+          break;
+        case TileTypeEnum.Camping:
+          _str = string.Format(GameManager.Instance.GetTextData("MoveDescription_Camping"),
+            GameManager.Instance.Status.CampingSanity, GameManager.Instance.Status.CampingResource);
+          break;
       }
-      else if (LastDestination.IsEvent)
-      {
-        _str = GameManager.Instance.GetTextData("MoveDescription_Event");
-        if (GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
-          _str += GameManager.Instance.GetTextData("MoveDescription_Event_resource");
-      }
-      else if (LastDestination.IsResource)
-        switch (LastDestination.ResourceType)
-        {
-          case 0: return GameManager.Instance.GetTextData("MoveDescription_Land_Resource");
-          case 1: return GameManager.Instance.GetTextData("MoveDescription_Forest_Resource");
-          case 2: return GameManager.Instance.GetTextData("MoveDescription_River_Resource");
-          case 3: return GameManager.Instance.GetTextData("MoveDescription_Swamp_Resource");
-          case 4: return GameManager.Instance.GetTextData("MoveDescription_Mountain_Resource");
-        }
-      else
-        switch (LastDestination.ResourceType)
-        {
-          case 0: return GameManager.Instance.GetTextData("MoveDescription_Land_Idle").Split('@')[Random.Range(0,3)];
-          case 1: return GameManager.Instance.GetTextData("MoveDescription_Forest_Idle").Split('@')[Random.Range(0, 3)];
-          case 2: return GameManager.Instance.GetTextData("MoveDescription_River_Idle").Split('@')[Random.Range(0, 3)];
-          case 3: return GameManager.Instance.GetTextData("MoveDescription_Swamp_Idle").Split('@')[Random.Range(0, 3)];
-          case 4: return GameManager.Instance.GetTextData("MoveDescription_Mountain_Idle").Split('@')[Random.Range(0, 3)];
-        }
       return _str;
     }
   }
@@ -435,7 +454,7 @@ public class UI_map : UI_default
     SanityButton_Highlight.RemoveAllCall();
     SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
     if (GameManager.Instance.MyGameData.Supply > 0) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
-    if (LastDestination.TileSettle == null&&!LastDestination.IsEvent) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    if (LastDestination.TileSettle == null&&LastDestination.TileType!=TileTypeEnum.Event) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
 
     GoldButtonPreview.enabled = GameManager.Instance.MyGameData.Gold >= PayValues_Gold[0].Gold;
     GoldButton_Highlight.RemoveAllCall();
@@ -670,7 +689,7 @@ public class UI_map : UI_default
     SanityButton_Highlight.RemoveAllCall();
     SanityButton_Highlight.SetInfo(HighlightEffectEnum.Sanity);
     if (GameManager.Instance.MyGameData.Supply > 0) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Supply);
-    if (LastDestination.TileSettle == null&&!LastDestination.IsEvent) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
+    if (LastDestination.TileSettle == null&&LastDestination.TileType!=TileTypeEnum.Event) SanityButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
 
     GoldButton_Highlight.RemoveAllCall();
     GoldButton_Highlight.SetInfo(HighlightEffectEnum.Gold);
@@ -1373,10 +1392,10 @@ public class UI_map : UI_default
 
         if(AllTiles[_currentindex-1].Landmark == LandmarkType.Ritual)
           UIManager.Instance.CultUI.AddProgress(4, null);
-        if (AllTiles[_currentindex - 1].IsResource)
+        if (AllTiles[_currentindex - 1].TileType==TileTypeEnum.Resource)
         {
-          StartCoroutine(deactiveetctile(AllTiles[_currentindex - 1].ButtonScript.ETCImage, AllTiles[_currentindex - 1].IsEvent));
-          int _resourcetype = AllTiles[_currentindex - 1].ResourceType;
+          GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(AllTiles[_currentindex - 1]);
+          AllTiles[_currentindex - 1].TileType = TileTypeEnum.Normal;
           int _resourcecount = 0;
           switch (AllTiles[_currentindex - 1].ResourceType)
           {
@@ -1386,14 +1405,10 @@ public class UI_map : UI_default
           }
           for (int i = 0; i < _resourcecount; i++)
           {
-            GameManager.Instance.MyGameData.Resources.Add(_resourcetype);
-            GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
-            _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
-            UIManager.Instance.AudioManager.PlaySFX(33);
-            yield return new WaitForSeconds(0.15f);
+            GameManager.Instance.MyGameData.Resources.Add(AllTiles[_currentindex - 1].ResourceType);
           }
-          GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(AllTiles[_currentindex - 1]);
-          AllTiles[_currentindex - 1].IsResource = false;
+
+          StartCoroutine(resourcegain(_currentindex, _resourcecount));
         }
 
         List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(AllTiles[_currentindex - 1], GameManager.Instance.MyGameData.ViewRange);
@@ -1457,9 +1472,9 @@ public class UI_map : UI_default
         PayValues_Sanity[PayValues_Sanity.Count - 1].Gold : PayValues_Gold[PayValues_Gold.Count - 1].Gold;
 
       StartCoroutine(changesupplytext((float)_lastsum, (float)_currentsum, (float)_lastsupply, (float)_currentsupply));
-      if (_stoptile.IsResource)
+      if (_stoptile.TileType==TileTypeEnum.Resource)
       {
-        StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, _stoptile.IsEvent));
+        StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, false));
         int _resourcetype = _stoptile.ResourceType;
         int _resourcecount = 0;
         switch (_stoptile.ResourceType)
@@ -1477,7 +1492,7 @@ public class UI_map : UI_default
           yield return new WaitForSeconds(0.15f);
         }
         GameManager.Instance.MyGameData.MyMapData.ResourceTiles.Remove(_stoptile);
-        _stoptile.IsResource = false;
+        _stoptile.TileType = TileTypeEnum.Resource;
       }
 
 
@@ -1501,10 +1516,10 @@ public class UI_map : UI_default
       UIManager.Instance.SetWildMadCount();
     }
 
-    if (_stoptile.IsEvent)
+    if (_stoptile.TileType==TileTypeEnum.Event)
     {
-      StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, _stoptile.IsEvent));
-      if (_stoptile.IsEvent && GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
+      StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, true));
+      if (GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
       {
         for (int i = 0; i < 2; i++)
         {
@@ -1540,9 +1555,22 @@ public class UI_map : UI_default
           GameManager.Instance.MyGameData.Resources.Clear();
         }
       }
+     }
+    else if (_stoptile.TileType == TileTypeEnum.Camping)
+    {
+      GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.CampingSanity;
+      if (GameManager.Instance.MyGameData.Resources.Count > 0)
+      {
+        GameManager.Instance.MyGameData.Supply += GameManager.Instance.Status.CampingResource;
+        GameManager.Instance.MyGameData.Resources.RemoveAt(GameManager.Instance.MyGameData.Resources.Count - 1);
+        Destroy(ResourceHolder.GetChild(ResourceHolder.childCount-1).gameObject);
+        UIManager.Instance.AudioManager.PlaySFX(33);
       }
+      StartCoroutine(deactiveetctile(_stoptile.ButtonScript.ETCImage, false));
+      GameManager.Instance.MyGameData.MyMapData.CampingTiles.Remove(_stoptile);
+    }
 
-      if (_stoptile.TileSettle != null || _stoptile.IsEvent)
+    if (_stoptile.TileType==TileTypeEnum.Event||_stoptile.TileSettle!=null)
     { //닫기
       yield return new WaitForSeconds(0.5f);
 
@@ -1579,9 +1607,9 @@ public class UI_map : UI_default
           GameManager.Instance.MyGameData.CurrentSettlement = null;
           GameManager.Instance.MyGameData.DownAllDiscomfort(GameManager.Instance.Status.DiscomfortDownValue);
 
-          if (_stoptile.IsEvent)
+          if (_stoptile.TileType==TileTypeEnum.Event)
           {
-            EventManager.Instance.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(_stoptile.Coordinate));
+            GameManager.Instance.EventHolder.SetOutsideEvent(GameManager.Instance.MyGameData.MyMapData.GetTileData(_stoptile.Coordinate));
           }
           GameManager.Instance.MyGameData.MyMapData.SetEventTiles();
 
@@ -1795,6 +1823,18 @@ public class UI_map : UI_default
 
     if (MadnessIcon.enabled) MadnessIcon.enabled = false;
     //Debug.Log("이동 코루틴이 끝난 레후~");
+  }
+  private IEnumerator resourcegain(int index, int resourcecount)
+  {
+    StartCoroutine(deactiveetctile(AllTiles[index - 1].ButtonScript.ETCImage, false));
+    int _resourcetype = AllTiles[index - 1].ResourceType;
+    for (int i = 0; i < resourcecount; i++)
+    {
+      GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);
+      _icon.GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
+      UIManager.Instance.AudioManager.PlaySFX(33);
+      yield return new WaitForSeconds(0.15f);
+    }
   }
   public void SetPlayerPos(Vector2 coordinate)
   {

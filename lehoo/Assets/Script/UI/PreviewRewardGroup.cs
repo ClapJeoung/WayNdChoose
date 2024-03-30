@@ -6,17 +6,17 @@ using UnityEngine.UI;
 
 public class PreviewRewardGroup : MonoBehaviour
 {
-  public GameObject RewardObj = null;
-  public TextMeshProUGUI RewardText = null;
-  public Image RewardIcon = null;
-  public GameObject ExpEffectObj = null;
-  public GameObject ExpEffect_Conv = null;
-  public GameObject ExpEffect_Forc = null;
-  public GameObject ExpEffect_Wild = null;
-  public GameObject ExpEffect_Intel = null;
-  public GameObject ExpEffect_HP = null;
-  public GameObject ExpEffect_Sanity = null;
-  public GameObject ExpEffect_Gold = null;
+  [SerializeField] private GameObject RewardObj = null;
+  [SerializeField] private TextMeshProUGUI RewardText = null;
+  [SerializeField] private Image RewardIcon = null;
+  [SerializeField] private GameObject ExpEffectObj = null;
+  [SerializeField] private GameObject ExpEffect_Conv = null;
+  [SerializeField] private GameObject ExpEffect_Forc = null;
+  [SerializeField] private GameObject ExpEffect_Wild = null;
+  [SerializeField] private GameObject ExpEffect_Intel = null;
+  [SerializeField] private GameObject ExpEffect_HP = null;
+  [SerializeField] private GameObject ExpEffect_Sanity = null;
+  [SerializeField] private GameObject ExpEffect_Gold = null;
   private void SetExpEffectIcon(List<EffectType> effects)
   {
     if (effects.Contains(EffectType.Conversation))

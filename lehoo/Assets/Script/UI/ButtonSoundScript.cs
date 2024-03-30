@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 public class ButtonSoundScript :MonoBehaviour, IPointerEnterHandler,IPointerClickHandler
 {
-  public AudioClip EnterSound = null;
-  public AudioClip ClickSound = null;
+  [SerializeField] private AudioClip EnterSound = null;
+  [SerializeField] private AudioClip ClickSound = null;
   public void OnPointerEnter(PointerEventData eventData)
   {
     if (EnterSound == null) return;

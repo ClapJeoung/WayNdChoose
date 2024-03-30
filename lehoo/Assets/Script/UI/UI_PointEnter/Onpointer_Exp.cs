@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 public class Onpointer_Exp : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
-  public UI_RewardExp UpperUI = null;
-  public int Index = 0;
+  [SerializeField] private UI_RewardExp UpperUI = null;
+  [SerializeField] private int Index = 0;
 
   public void OnPointerEnter(PointerEventData eventData)
   {

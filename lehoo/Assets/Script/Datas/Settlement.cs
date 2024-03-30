@@ -127,7 +127,11 @@ public class MapData
       _origintiles.Add(_temptile);
       if (i<_originhexdir.Count-1&& _temptile.RequireSupply > 1) _isminimun = false;
     }
-    if (_isminimun) { Debug.Log("이미 최소 경로인 레후~"); return endtile.HexGrid.GetDirectRoute(starttile); }
+    if (_isminimun) 
+    { 
+      //Debug.Log("이미 최소 경로인 레후~"); 
+      return endtile.HexGrid.GetDirectRoute(starttile); 
+    }
 
     int _hexdirdif = 0;
     int[] _altersum = new int[2];
@@ -307,7 +311,7 @@ public class MapData
   {
     foreach (var _eventtile in EventTiles)
     {
-      _eventtile.IsEvent = false;
+      _eventtile.TileType = TileTypeEnum.Normal;
       _eventtile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.Transparent;
     }
 
@@ -475,7 +479,7 @@ public class MapData
         foreach (var _tile in _neweventtiles)
         {
           EventTiles.Add(_tile);
-          _tile.IsEvent = true;
+          _tile.TileType = TileTypeEnum.Event;
           _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.UnknownEvent;
         }
         break;
@@ -494,13 +498,11 @@ public class MapData
             {
               if (!_enablerange.Contains(_tile.Coordinate) 
                 ||!_tile.Interactable
-                || _tile.TileSettle != null
-                || _tile.Landmark != LandmarkType.Outer 
+                || _tile.TileType!=TileTypeEnum.Normal
                 || EventTiles.Contains(_tile) 
                 || _tile.Fogstate != 2
                 || _tile == GameManager.Instance.MyGameData.CurrentTile
-                || _neweventtiles.Contains(_tile)
-                || _tile.IsResource) continue;
+                || _neweventtiles.Contains(_tile)) continue;
 
               bool _isoverlap = false;
               foreach (var _preeventtile in _neweventtiles)
@@ -533,13 +535,11 @@ public class MapData
             {
               if (!_enablerange.Contains(_tile.Coordinate) 
                 || !_tile.Interactable 
-                || _tile.TileSettle != null
-                || _tile.Landmark != LandmarkType.Outer
+                || _tile.TileType!=TileTypeEnum.Normal
                 || EventTiles.Contains(_tile) 
                 || _tile.Fogstate != 2
                 || _tile==GameManager.Instance.MyGameData.CurrentTile
-                ||_neweventtiles.Contains(_tile)
-                ||_tile.IsResource) continue;
+                ||_neweventtiles.Contains(_tile)) continue;
 
               bool _isoverlap = false;
               foreach (var _preeventtile in _neweventtiles)
@@ -615,7 +615,7 @@ public class MapData
       {
         _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.Transparent;
       }
-      _tile.IsResource = false;
+      _tile.TileType = TileTypeEnum.Normal;
     }
 
     ResourceTiles.Clear();
@@ -629,9 +629,8 @@ public class MapData
       _enabletiles.Clear();
       foreach (var _tile in _aroundtiles)
       {
-        if (_tile.TileSettle != null) continue;
-        if(_tile.IsEvent) continue;
-        if(_tile.BottomEnvir!=BottomEnvirType.Land) continue;
+        if (_tile.TileType!=TileTypeEnum.Normal) continue;
+        if(!_tile.Interactable) continue;
         if (ResourceTiles.Contains(_tile)) continue;
         _enabletiles.Add(_tile);
       }
@@ -640,8 +639,47 @@ public class MapData
       {
         TileData _tile = _enabletiles[Random.Range(0,_enabletiles.Count)];
         ResourceTiles.Add(_tile);
-        _tile.IsResource = true;
+        _tile.TileType = TileTypeEnum.Resource;
         if (GameManager.Instance.IsPlaying) _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.GetResourceSprite(_tile, false);
+      }
+
+    }
+  }
+  public void SetCampingTiles()
+  {
+    foreach (var _tile in CampingTiles)
+    {
+      if (GameManager.Instance.IsPlaying)
+      {
+        _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.Transparent;
+      }
+      _tile.TileType = TileTypeEnum.Normal;
+    }
+
+    CampingTiles.Clear();
+
+    List<TileData> _aroundtiles = new List<TileData>();
+    List<TileData> _enabletiles = new List<TileData>();
+
+    foreach (var _gentile in CampingGenTiles)
+    {
+      _aroundtiles = GetAroundTile(_gentile, 1);
+      _enabletiles.Clear();
+      foreach (var _tile in _aroundtiles)
+      {
+        if (_tile.Fogstate != 2) continue;
+        if (_tile.TileType != TileTypeEnum.Normal) continue;
+        if (!_tile.Interactable) continue;
+        if (CampingTiles.Contains(_tile)) continue;
+        _enabletiles.Add(_tile);
+      }
+
+      if (_enabletiles.Count > 0)
+      {
+        TileData _tile = _enabletiles[Random.Range(0, _enabletiles.Count)];
+        CampingTiles.Add(_tile);
+        _tile.TileType = TileTypeEnum.Camping;
+        if (GameManager.Instance.IsPlaying) _tile.ButtonScript.ETCImage.sprite = GameManager.Instance.ImageHolder.CampingTile;
       }
 
     }
@@ -950,9 +988,11 @@ public class MapData
   }//월드 기준 타일 1개 좌표 하나 받아서 그 주위 2칸의 산 바다, 나머지 1타일
 
   public List<TileData> EventTiles = new List<TileData>();
+  public List<TileData> ResourceGenTiles = new List<TileData>();
   public List<TileData> ResourceTiles=new List<TileData>();
+  public List<TileData> CampingGenTiles = new List<TileData>();
+  public List<TileData> CampingTiles=new List<TileData>();
   public TileData[,] TileDatas;
-  public List<TileData> ResourceGenTiles=new List<TileData>();
   public List<Settlement> Villages = new List<Settlement>();
   public List<Settlement> Towns = new List<Settlement>();
   public List<Settlement> Citys = new List<Settlement>();

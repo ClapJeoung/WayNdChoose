@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public class IllustMoveScript : MonoBehaviour
 {
   private RectTransform MyRect = null;
-   private float Moverange = 10.0f;
+  private float Moverange = 10.0f;
   private float MinTime = 5.0f, MaxTime = 8.0f;
-  int CurrentDir = 0;
+  private int CurrentDir = 0;
   [SerializeField] private AnimationCurve MoveCurve = null;
   private Vector2 GetNexPos(int targetdir)
   {

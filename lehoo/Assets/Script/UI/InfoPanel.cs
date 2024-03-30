@@ -6,14 +6,14 @@ using TMPro;
 
 public class InfoPanel : MonoBehaviour
 {
-  public RectTransform MyRect = null;
-  public TextMeshProUGUI MyTMP = null;
-  public CanvasGroup MyGroup = null;
-  public Vector2 DefaultPos = new Vector2(-260.0f, 463.0f);
+  [SerializeField] private RectTransform MyRect = null;
+  [SerializeField] private TextMeshProUGUI MyTMP = null;
+  [SerializeField] private CanvasGroup MyGroup = null;
+  [SerializeField] private Vector2 DefaultPos = new Vector2(-260.0f, 463.0f);
   private Vector2 OriginPos = Vector2.zero;
-  public float Alphatime = 0.5f;
-  public float WaitTime = 1.0f;
-  public bool IsClosing = false;
+  [SerializeField] private float Alphatime = 0.5f;
+  [SerializeField] private float WaitTime = 1.0f;
+  private bool IsClosing = false;
 
   public void Setup(string str)
   {

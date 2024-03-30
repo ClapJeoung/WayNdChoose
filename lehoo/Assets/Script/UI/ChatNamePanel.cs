@@ -6,15 +6,15 @@ using TMPro;
 
 public class ChatNamePanel : MonoBehaviour
 {
-  public float MoveLength_min = 0.0f;
-  public float MoveLength_max = 0.0f;
-  public float MoveTime = 1.2f;
-  public AnimationCurve MoveCurve = null;
-  public AnimationCurve AlphaCurve = null;
-  public RectTransform MyRect = null;
-  public CanvasGroup MyGroup = null;
-  public TextMeshProUGUI MyText = null;
-  public bool IsStart = false;
+  [SerializeField] private float MoveLength_min = 0.0f;
+  [SerializeField] private float MoveLength_max = 0.0f;
+  [SerializeField] private float MoveTime = 1.2f;
+  [SerializeField] private AnimationCurve MoveCurve = null;
+  [SerializeField] private AnimationCurve AlphaCurve = null;
+  [SerializeField] private RectTransform MyRect = null;
+  [SerializeField] private CanvasGroup MyGroup = null;
+  [SerializeField] private TextMeshProUGUI MyText = null;
+  [SerializeField] private bool IsStart = false;
 
   public void Setup(string chatname, RectTransform obj)
   {

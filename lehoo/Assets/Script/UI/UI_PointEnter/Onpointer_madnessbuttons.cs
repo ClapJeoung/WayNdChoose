@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 public class Onpointer_madnessbuttons : MonoBehaviour,IPointerEnterHandler
 {
-  public UI_Mad MadnessUI = null;
-  public int Index = 0;
+  [SerializeField] private UI_Mad MadnessUI = null;
+  [SerializeField] private int Index = 0;
     public void OnPointerEnter(PointerEventData data)
   {
     if (!MadnessUI.IsOpen) return;

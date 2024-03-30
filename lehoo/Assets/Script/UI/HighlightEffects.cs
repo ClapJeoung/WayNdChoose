@@ -8,7 +8,7 @@ public enum HighlightEffectEnum { HP, Sanity, Gold, Supply,Skill, Madness, Exp,R
 
 public class HighlightEffects : MonoBehaviour
 {
-  public float EffectTime = 2.5f;
+  [SerializeField] private float EffectTime = 2.5f;
   [SerializeField] private List<HighlightHolder> HighlightList = new List<HighlightHolder>();
   private HighlightHolder GetHighlight(HighlightEffectEnum effect)
   {
@@ -108,18 +108,18 @@ public class HighlightEffects : MonoBehaviour
 [System.Serializable]
 public class HighlightHolder
 {
-  public HighlightEffectEnum Type;
+  [SerializeField] private HighlightEffectEnum Type;
   public RectTransform IconRect = null;
   public CanvasGroup Group = null;
-  public TextMeshProUGUI Text = null;
-  public RectTransform ConvIcon = null;
-  public RectTransform ForceIcon = null;
-  public RectTransform WildIcon = null;
-  public RectTransform IntelIcon = null;
-  public CanvasGroup ConversationEffect = null;
-  public CanvasGroup ForceEffect = null;
-  public CanvasGroup WildEffect = null;
-  public CanvasGroup IntelligenceEffect = null;
+  [SerializeField] private TextMeshProUGUI Text = null;
+  [SerializeField] private RectTransform ConvIcon = null;
+  [SerializeField] private RectTransform ForceIcon = null;
+  [SerializeField] private RectTransform WildIcon = null;
+  [SerializeField] private RectTransform IntelIcon = null;
+  [SerializeField] private CanvasGroup ConversationEffect = null;
+  [SerializeField] private CanvasGroup ForceEffect = null;
+  [SerializeField] private CanvasGroup WildEffect = null;
+  [SerializeField] private CanvasGroup IntelligenceEffect = null;
  public void SetEffect()
   {
     Group.alpha = 1.0f;

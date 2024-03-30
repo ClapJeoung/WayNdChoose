@@ -428,6 +428,7 @@ public class UI_Main : UI_default
   }
   public void QuitGame()
   {
+    Debug.Log("메인화면에서 버튼 눌러서 종료하기");
     Application.Quit();
   }
 }

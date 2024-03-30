@@ -5,11 +5,11 @@ using UnityEngine.UI;
 public class PlaceIconScript : MonoBehaviour
 {
   public SectorTypeEnum MyType = SectorTypeEnum.Residence;
-  public Image MyImage = null;
-  public Image SabbatImage = null;
-  public Color IdleColor= Color.white;
-  public Color SelectedColor= Color.white;
-  public Color BlockedColor= Color.white;
+  [SerializeField] private Image MyImage = null;
+  [SerializeField] private Image SabbatImage = null;
+  [SerializeField] private Color IdleColor= Color.white;
+  [SerializeField] private Color SelectedColor= Color.white;
+  [SerializeField] private Color BlockedColor= Color.white;
   public void OpenIcon()
   {
     switch (GameManager.Instance.MyGameData.QuestType)

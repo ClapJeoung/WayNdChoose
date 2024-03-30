@@ -180,9 +180,11 @@ public class StatusData
     LongTermChangeCost = int.Parse(textrow[139].Split("\t")[1]);
 
     GoldSanityPayAmplifiedValue = float.Parse(textrow[140].Split("\t")[1]);
-
+    ResourceGenSpace= int.Parse(textrow[141].Split("\t")[1]);
+    CampingSanity = int.Parse(textrow[142].Split("\t")[1]);
+    CampingResource = int.Parse(textrow[143].Split("\t")[1]);
   }
-public  int ConversationEffect_Level=1,
+  public  int ConversationEffect_Level=1,
     ConversationEffect_Value = 1;
   public  int ForceEffect_Level = 1,
     ForceEffect_Value = 1;
@@ -327,11 +329,14 @@ public  int ConversationEffect_Level=1,
   public  int LongTermChangeCost = 15;
 
   public  float GoldSanityPayAmplifiedValue = 1.2f;
+
+  public int ResourceGenSpace = 0;
+  public int CampingSanity = 10;
+  public int CampingResource = 0;
 }
 public class GameData    //게임 진행도 데이터
 {
   public bool IsDead = false;
-
   #region #지도,정착지 관련#
   public MapData MyMapData = null;
   public Vector2 Coordinate = Vector2.zero;
@@ -1113,8 +1118,6 @@ public class GameData    //게임 진행도 데이터
   /// <param name="jsondata"></param>
   public GameData(GameJsonData jsondata)
   {
-    IsDead = jsondata.IsDead;
-
     MyMapData = new MapData();
     MyMapData.TileDatas = new TileData[GameManager.Instance.Status.MapSize, GameManager.Instance.Status.MapSize];
     int _index = 0;
@@ -1133,8 +1136,7 @@ public class GameData    //게임 진행도 데이터
         _tiledata.TopEnvirSprite = (TileSpriteType)jsondata.Tiledata_TopEnvirSprite[_index];
         _tiledata.BottomEnvirSprite = (TileSpriteType)jsondata.Tiledata_BottomEnvirSprite[_index];
         _tiledata.Fogstate = jsondata.Tiledata_Fogstate[_index];
-        _tiledata.IsEvent = jsondata.Tiledata_IsEvent[_index];
-        _tiledata.IsResource = jsondata.Tiledata_IsResource[_index];
+        _tiledata.TileType = (TileTypeEnum)jsondata.Tiledata_Tiletype[_index];
 
         MyMapData.TileDatas[j, i] = _tiledata;
       }
@@ -1198,6 +1200,11 @@ public class GameData    //게임 진행도 데이터
       MyMapData.ResourceGenTiles.Add(MyMapData.Tile(_coordinate));
     foreach (var _coordinate in jsondata.ResourceTiles)
       MyMapData.ResourceTiles.Add(MyMapData.Tile(_coordinate));
+    foreach (var _coordinate in jsondata.CampingGenTiles)
+      MyMapData.CampingGenTiles.Add(MyMapData.Tile(_coordinate));
+    foreach (var _coordinate in jsondata.CampingTiles)
+      MyMapData.CampingTiles.Add(MyMapData.Tile(_coordinate));
+
     TotalMoveCount = jsondata.TotalMoveCount;
     TotalRestCount = jsondata.TotalRestCount;
     Year = jsondata.Year;
@@ -1318,37 +1325,7 @@ public class Skill
       return UnityEngine.Mathf.Clamp(LevelByDefault + LevelByTendency + LevelByMadness, 0,100);
     }
   }
-  /*
-  public int LevelByExp
-  {
-    get
-    {
-      return GameManager.Instance.MyGameData.GetEffectModifyCount_Exp(MySkillType);
-    }
-  }//경험 레벨
-  public int LevelByMadness
-  {
-    get
-    {
-      switch (MySkillType)
-      {
-        case SkillType.Conversation:if (GameManager.Instance.MyGameData.Madness_Conversation == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
-          break;
-        case SkillType.Force:
-          if (GameManager.Instance.MyGameData.Madness_Force == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
-          break;
-        case SkillType.Wild:
-          if (GameManager.Instance.MyGameData.Madness_Wild == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
-          break;
-        case SkillType.Intelligence:
-          if (GameManager.Instance.MyGameData.Madness_Intelligence == true) return GameManager.Instance.Status.MadnessSkillLevelValue;
-          break;
-      }
-      return 0;
-    }
-  }
-*/
-  public int LevelByTendency
+  private int LevelByTendency
   {
     get
     {
@@ -1372,13 +1349,6 @@ public enum TendencyTypeEnum {None, Body,Head}
 public class Tendency
 {
   public TendencyTypeEnum Type;
-  public Sprite Illust
-  {
-    get
-    {
-      return null;
-    }
-  }
   public Sprite CurrentIcon
   {
     get
@@ -1523,27 +1493,6 @@ public class Tendency
       return GameManager.Instance.GetTextData(Type, level, 0);
     }
   }
-  public string Icon
-  {
-    get
-    {
-      return GameManager.Instance.GetTextData(Type, level, 3);
-    }
-  }
-  public string Description
-  {
-    get
-    {
-      return GameManager.Instance.GetTextData(Type, level, 1);
-    }
-  }
-  public string SubDescription
-  {
-    get
-    {
-      return GameManager.Instance.GetTextData(Type, level,2);
-    }
-  }
   public int Progress = 0;
   /// <summary>
   /// treu:음수     true:양수
@@ -1613,10 +1562,11 @@ public class Tendency
 public class GameJsonData
 {
   public bool IsDead = false;
-
   public List<Vector2Int> EventTiles=new List<Vector2Int>();
   public List<Vector2Int> ResourceGenTiles=new List<Vector2Int>();
   public List<Vector2Int> ResourceTiles=new List<Vector2Int>();
+  public List<Vector2Int> CampingGenTiles = new List<Vector2Int>();
+  public List<Vector2Int> CampingTiles=new List<Vector2Int>();
 
   public List<int> Tiledata_Rotation = new List<int>();
   public List<int> Tiledata_BottomEnvir = new List<int>();
@@ -1625,8 +1575,7 @@ public class GameJsonData
   public List<int> Tiledata_BottomEnvirSprite = new List<int>();
   public List<int> Tiledata_TopEnvirSprite = new List<int>();
   public List<int> Tiledata_Fogstate = new List<int>();
-  public List<bool> Tiledata_IsEvent=new List<bool>();
-  public List<bool> Tiledata_IsResource=new List<bool>();
+  public List<int> Tiledata_Tiletype=new List<int>();
 
   public List<int> Village_Id = new List<int>();
   public List<int> Village_Discomfort = new List<int>();
@@ -1718,6 +1667,10 @@ public class GameJsonData
       ResourceGenTiles.Add(_gentile.Coordinate);
     foreach (var _resourcetile in data.MyMapData.ResourceTiles)
       ResourceTiles.Add(_resourcetile.Coordinate);
+    foreach (var _gentile in data.MyMapData.CampingGenTiles)
+      CampingGenTiles.Add(_gentile.Coordinate);
+    foreach (var _Campingtile in data.MyMapData.CampingTiles)
+      CampingTiles.Add(_Campingtile.Coordinate);
 
     foreach (var _tile in data.MyMapData.TileDatas)
     {
@@ -1728,8 +1681,7 @@ public class GameJsonData
       Tiledata_BottomEnvirSprite.Add((int)_tile.BottomEnvirSprite);
       Tiledata_TopEnvirSprite.Add((int)_tile.TopEnvirSprite);
       Tiledata_Fogstate.Add(_tile.Fogstate);
-      Tiledata_IsEvent.Add(_tile.IsEvent);
-      Tiledata_IsResource.Add(_tile.IsResource);
+      Tiledata_Tiletype.Add((int)_tile.TileType);
     }
 
     foreach (var _village in data.MyMapData.Villages)

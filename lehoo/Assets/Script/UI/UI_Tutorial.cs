@@ -9,12 +9,12 @@ using UnityEngine.Video;
 public class UI_Tutorial : MonoBehaviour
 {
   #region ∆©≈‰_¡¯«‡µµ
-  public CanvasGroup Tutorial_Cult = null;
-  public TextMeshProUGUI Cult_Hello = null;
-  public VideoPlayer Cult_Video_0 = null;
-  public TextMeshProUGUI Cult_Progress_0 = null;
-  public VideoPlayer Cult_Video_1 = null;
-  public TextMeshProUGUI Cult_Progress_1 = null;
+  [SerializeField] private CanvasGroup Tutorial_Cult = null;
+  [SerializeField] private TextMeshProUGUI Cult_Hello = null;
+  [SerializeField] private VideoPlayer Cult_Video_0 = null;
+  [SerializeField] private TextMeshProUGUI Cult_Progress_0 = null;
+  [SerializeField] private VideoPlayer Cult_Video_1 = null;
+  [SerializeField] private TextMeshProUGUI Cult_Progress_1 = null;
 
   public void OpenTutorial_Cult()
   {
@@ -36,19 +36,19 @@ public class UI_Tutorial : MonoBehaviour
   #endregion
   #region ∆©≈‰_¡ˆµµ
   [Space(10)]
-  public CanvasGroup Tutorial_Map = null;
-  public TextMeshProUGUI Map_Hello = null;
-  public CanvasGroup Map_Move_Group = null;
-  public Button Map_Move_Button = null;
-  public TextMeshProUGUI Map_Move_ButtonText = null;
-  public VideoPlayer Map_Move_Video = null;
-  public TextMeshProUGUI Map_Move_Text = null;
-  public CanvasGroup Map_Resource_Group = null;
-  public Button Map_Resource_Button = null;
-  public TextMeshProUGUI Map_Resource_ButtonText = null;
-  public VideoPlayer Map_Resource_Video_0 = null;
-  public VideoPlayer Map_Resource_Video_1 = null;
-  public TextMeshProUGUI Map_Resource_Text = null;
+  [SerializeField] private CanvasGroup Tutorial_Map = null;
+  [SerializeField] private TextMeshProUGUI Map_Hello = null;
+  [SerializeField] private CanvasGroup Map_Move_Group = null;
+  [SerializeField] private Button Map_Move_Button = null;
+  [SerializeField] private TextMeshProUGUI Map_Move_ButtonText = null;
+  [SerializeField] private VideoPlayer Map_Move_Video = null;
+  [SerializeField] private TextMeshProUGUI Map_Move_Text = null;
+  [SerializeField] private CanvasGroup Map_Resource_Group = null;
+  [SerializeField] private Button Map_Resource_Button = null;
+  [SerializeField] private TextMeshProUGUI Map_Resource_ButtonText = null;
+  [SerializeField] private VideoPlayer Map_Resource_Video_0 = null;
+  [SerializeField] private VideoPlayer Map_Resource_Video_1 = null;
+  [SerializeField] private TextMeshProUGUI Map_Resource_Text = null;
   public void OpenTutorial_Map()
   {
     var _text = GameManager.Instance.GetTextData("Tutorial_Map").Split('@');
@@ -111,18 +111,18 @@ public class UI_Tutorial : MonoBehaviour
   }
   #endregion
   [Space(10)]
-  public CanvasGroup Tutorial_Event = null;
-  public TextMeshProUGUI Event_Hello = null;
-  public CanvasGroup Event_Selection_Group = null;
-  public Button Event_Selection_Button = null;
-  public TextMeshProUGUI Event_Selection_ButtonText = null;
-  public VideoPlayer Event_Selection_Video = null;
-  public TextMeshProUGUI Event_Selection_Text = null;
-  public CanvasGroup Event_Exp_Group = null;
-  public Button Event_Exp_Button = null;
-  public TextMeshProUGUI Event_Exp_ButtonText = null;
-  public VideoPlayer Event_Exp_Video = null;
-  public TextMeshProUGUI Event_Exp_Text = null;
+  [SerializeField] private CanvasGroup Tutorial_Event = null;
+  [SerializeField] private TextMeshProUGUI Event_Hello = null;
+  [SerializeField] private CanvasGroup Event_Selection_Group = null;
+  [SerializeField] private Button Event_Selection_Button = null;
+  [SerializeField] private TextMeshProUGUI Event_Selection_ButtonText = null;
+  [SerializeField] private VideoPlayer Event_Selection_Video = null;
+  [SerializeField] private TextMeshProUGUI Event_Selection_Text = null;
+  [SerializeField] private CanvasGroup Event_Exp_Group = null;
+  [SerializeField] private Button Event_Exp_Button = null;
+  [SerializeField] private TextMeshProUGUI Event_Exp_ButtonText = null;
+  [SerializeField] private VideoPlayer Event_Exp_Video = null;
+  [SerializeField] private TextMeshProUGUI Event_Exp_Text = null;
   public void OpenTutorial_Event()
   {
     var _text = GameManager.Instance.GetTextData("Tutorial_Event").Split('@');

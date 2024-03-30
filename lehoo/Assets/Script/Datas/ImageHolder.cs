@@ -561,6 +561,7 @@ public class ImageHolder : ScriptableObject
     }
     return null;
   }
+  public Sprite CampingTile = null;
   /*
              public Sprite GetSkillIllust(SkillTypeEnum _type)
              {
@@ -766,7 +767,7 @@ public class EndingDatas
   public Sprite PreviewIcon = null;
   public string Preview_Name { get { return GameManager.Instance.GetTextData(ID + "_preview_name"); } }
   public string Preview_Opened { get { return GameManager.Instance.GetTextData(ID + "_preview_opened"); } }
-  public string Preview_Closed { get { return GameManager.Instance.GetTextData(ID + "_preview_closed"); } }
+ // public string Preview_Closed { get { return GameManager.Instance.GetTextData(ID + "_preview_closed"); } }
 
   public List<Sprite> Illusts;
   public string Refuse_Name

@@ -10,10 +10,10 @@ public class ReturnButton : MonoBehaviour
   /// 0: аб->©Л     1: аб<-©Л
   /// </summary>
   public UI_default CurrentUI = null;
-  public RectTransform MyRect = null;
-  public CanvasGroup MyGroup = null;
-  public TextMeshProUGUI MyText = null;
-  public bool IsMapButton = false;
+  [SerializeField] private RectTransform MyRect = null;
+  [SerializeField] private CanvasGroup MyGroup = null;
+  [SerializeField] private TextMeshProUGUI MyText = null;
+  [SerializeField] private bool IsMapButton = false;
   public virtual void Clicked()
   {
     if (UIManager.Instance.IsWorking) return;

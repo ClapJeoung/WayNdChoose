@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 public class Onpointer_mapcostbutton : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
-  public UI_map MapUI = null;
-  public StatusTypeEnum MyStatusType = StatusTypeEnum.HP;
+  [SerializeField] private UI_map MapUI = null;
+  [SerializeField] private StatusTypeEnum MyStatusType = StatusTypeEnum.HP;
     public void OnPointerEnter(PointerEventData data)
   {
     if (UIManager.Instance.IsWorking) return;
