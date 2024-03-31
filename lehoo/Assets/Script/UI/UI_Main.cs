@@ -10,20 +10,6 @@ using System.Linq;
 
 public class UI_Main : UI_default
 {
-  public CanvasGroup IllustGroup = null;
-  public ImageSwapScript Illust = null;
-  public static float ImageChangeTime = 6.0f;
-  private WaitForSeconds ImageSwapWait = new WaitForSeconds(ImageChangeTime);
-  private Sprite CurrentIllust = null;
-  private IEnumerator showimage()
-  {
-    while (true)
-    {
-      Illust.Next(GameManager.Instance.ImageHolder.GetRandomMainIllust(CurrentIllust), ImageChangeTime);
-      CurrentIllust = GameManager.Instance.ImageHolder.GetRandomMainIllust(CurrentIllust);
-      yield return ImageSwapWait;
-    }
-  }
   [SerializeField] private CanvasGroup LogoGroup = null;
   [SerializeField] private Button LoadGameButton = null;
   [SerializeField] private TextMeshProUGUI LoadGameText = null;
@@ -41,9 +27,8 @@ public class UI_Main : UI_default
     else if(MusicLicensePanel.activeInHierarchy == false) MusicLicensePanel.SetActive(true);
   }
   [SerializeField] private GameObject MusicLicensePanel = null;
-  [SerializeField] private CanvasGroup EndingGroup = null;
-  [SerializeField] private TextMeshProUGUI EndingText = null;
-  [SerializeField] private List<PreviewInteractive> EndingPreviews = null;
+  [SerializeField] private UI_Main_Illusts IllustsScript = null;
+  [SerializeField] private CanvasGroup IllustsGroup = null;
   [Space(10)]
   [SerializeField] private TextMeshProUGUI Quest_0_Text = null;
   [SerializeField] private CanvasGroup QuestIllustGroup = null;
@@ -163,9 +148,9 @@ public class UI_Main : UI_default
   }
   public void SetupMain()
   {
+    IllustsScript.Setup();
     ChzzConnectText.text = GameManager.Instance.GetTextData("Connect");
     TwitchConnectText.text = GameManager.Instance.GetTextData("Connect");
-    EndingText.text = GameManager.Instance.GetTextData("EndingList");
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");
     LoadGameText.text = GameManager.Instance.GetTextData("LOADGAME");
     QuitText.text = GameManager.Instance.GetTextData("QUITGAME");
@@ -217,24 +202,6 @@ public class UI_Main : UI_default
       LoadGameButton.gameObject.SetActive(false);
       LoadInfoText.text = "";
     }
-    StartCoroutine(showimage());
-
-    for(int i=0;i< GameManager.Instance.ImageHolder.EndingList.Count; i++)
-    {
-      EndingDatas _ending = GameManager.Instance.ImageHolder.EndingList[i];
-      EndingPreviews[i].EndingID = _ending.ID;
-
-      if (GameManager.Instance.ProgressData.EndingLists.Contains(_ending.ID))
-      {
-        EndingPreviews[i].transform.GetChild(0).GetComponent<Image>().sprite = _ending.PreviewIcon;
-      }
-      else
-      {
-        EndingPreviews[i].transform.GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.ImageHolder.UnknownExpRewardIcon;
-        EndingPreviews[i].transform.GetComponent<CanvasGroup>().alpha = 0.4f;
-      }
-    }
-
     UIManager.Instance.AddUIQueue(openmain());
   }//메인 화면 텍스트 세팅
   public void StartGameDirect()
@@ -336,8 +303,7 @@ public class UI_Main : UI_default
   {
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 1.0f, MainUIOpenTime));
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 1.0f, MainUIOpenTime));
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("mainillust").Rect, GetPanelRect("mainillust").OutisdePos, GetPanelRect("mainillust").InsidePos, MainUIOpenTime, true));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustsGroup, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("zzz").Rect, GetPanelRect("zzz").OutisdePos, GetPanelRect("zzz").InsidePos, MainUIOpenTime, true));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("twitch").Rect, GetPanelRect("twitch").OutisdePos, GetPanelRect("twitch").InsidePos, MainUIOpenTime, true));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("discord").Rect, GetPanelRect("discord").OutisdePos, GetPanelRect("discord").InsidePos, MainUIOpenTime, true));
@@ -361,7 +327,6 @@ public class UI_Main : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(TutorialButtonGroup, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(MusicLicenseButton, 1.0f, MainUIOpenTime));
     StartCoroutine(UIManager.Instance.ChangeAlpha(LanguageGroup,1.0f, MainUIOpenTime));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 1.0f, MainUIOpenTime ));
     yield return  StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").OutisdePos, GetPanelRect("loadgame").InsidePos, MainUIOpenTime, true));
   }
   private IEnumerator closemain()
@@ -371,9 +336,9 @@ public class UI_Main : UI_default
     if (TwitchPanel.activeSelf) TwitchPanel.SetActive(false);
     DiscordButton.interactable = false;
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(EndingGroup, 0.0f, MainUICloseTime));
-    EndingGroup.interactable = false;
-    EndingGroup.blocksRaycasts = false;
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IllustsGroup, 0.0f, MainUICloseTime));
+    IllustsGroup.interactable = false;
+    IllustsGroup.blocksRaycasts = false;
     StartCoroutine(UIManager.Instance.ChangeAlpha(LogoGroup, 0.0f, MainUICloseTime));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("loadgame").Rect, GetPanelRect("loadgame").InsidePos, GetPanelRect("loadgame").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
@@ -392,9 +357,9 @@ public class UI_Main : UI_default
     yield return LittleWait;
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("zzz").Rect, GetPanelRect("zzz").InsidePos, GetPanelRect("zzz").OutisdePos, MainUICloseTime, false));
     StartCoroutine(UIManager.Instance.moverect(GetPanelRect("twitch").Rect, GetPanelRect("twitch").InsidePos, GetPanelRect("twitch").OutisdePos, MainUICloseTime, false));
-    StartCoroutine(UIManager.Instance.moverect(GetPanelRect("discord").Rect, GetPanelRect("discord").InsidePos, GetPanelRect("discord").OutisdePos, MainUICloseTime, false));
+    yield return StartCoroutine(UIManager.Instance.moverect(GetPanelRect("discord").Rect, GetPanelRect("discord").InsidePos, GetPanelRect("discord").OutisdePos, MainUICloseTime, false));
     yield return LittleWait;
-    yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IllustGroup, 0.0f, MainUICloseTime));
+    gameObject.SetActive(false);
   }
   private IEnumerator openscenario()
   {

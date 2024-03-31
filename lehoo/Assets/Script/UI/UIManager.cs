@@ -1696,7 +1696,7 @@ public class UIManager : MonoBehaviour
   }
   public void OpenEnding(EndingDatas data)
   {
-    GameManager.Instance.AddEnding(data.ID);
+    GameManager.Instance.AddEndingProgress(data.ID);
     StopAllCoroutines();
     GameManager.Instance.DeleteSaveData();
     AudioManager.StopWalking();

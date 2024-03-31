@@ -439,14 +439,14 @@ public class ImageHolder : ScriptableObject
           _state.highlightedSprite = SelectionButtonImage_BodyM_Enter;
           _state.pressedSprite = SelectionButtonImage_BodyM_Clicked;
           _state.selectedSprite = SelectionButtonImage_BodyM_Idle;
-          _state.disabledSprite = SelectionButtonImage_BodyM_Disable;
+          _state.disabledSprite = SelectionButtonImage_BodyM_Clicked;
         }
         else
         {
           _state.highlightedSprite = SelectionButtonImage_BodyP_Enter;
           _state.pressedSprite = SelectionButtonImage_BodyP_Clicked;
           _state.selectedSprite = SelectionButtonImage_BodyP_Idle;
-          _state.disabledSprite = SelectionButtonImage_BodyP_Disable;
+          _state.disabledSprite = SelectionButtonImage_BodyP_Clicked;
         }
         break;
       case TendencyTypeEnum.Head:
@@ -455,14 +455,14 @@ public class ImageHolder : ScriptableObject
           _state.highlightedSprite = SelectionButtonImage_HeadM_Enter;
           _state.pressedSprite = SelectionButtonImage_HeadM_Clicked;
           _state.selectedSprite = SelectionButtonImage_HeadM_Idle;
-          _state.disabledSprite = SelectionButtonImage_HeadM_Disable;
+          _state.disabledSprite = SelectionButtonImage_HeadM_Clicked;
         }
         else
         {
           _state.highlightedSprite = SelectionButtonImage_HeadP_Enter;
           _state.pressedSprite = SelectionButtonImage_HeadP_Clicked;
           _state.selectedSprite = SelectionButtonImage_HeadP_Idle;
-          _state.disabledSprite = SelectionButtonImage_HeadP_Disable;
+          _state.disabledSprite = SelectionButtonImage_HeadP_Clicked;
         }
         break;
       default:
@@ -470,12 +470,13 @@ public class ImageHolder : ScriptableObject
           _state.highlightedSprite = SelectionButtonImage_None_Enter;
           _state.pressedSprite = SelectionButtonImage_None_Clicked;
           _state.selectedSprite = SelectionButtonImage_None_Idle;
-          _state.disabledSprite = SelectionButtonImage_None_Disable;
+          _state.disabledSprite = SelectionButtonImage_None_Clicked;
         }
         break;
     }
     return _state;
   }
+
   [Space(10)]
   public Sprite[] NullEnvirIllust=new Sprite[0];
   public Sprite[] RiverEnvirIllust=null;
@@ -615,7 +616,7 @@ public class ImageHolder : ScriptableObject
     return _targetsprite;
   }//성채 이름에 해당하는 일러스트 가져오기 */
 
-  public List<EventIllustHolder> GetEventIllusts(string originid,string typeid,int length)
+  public EventIllustHolder[] GetEventIllusts(string originid,string typeid,int length)
     {
     List<Sprite> _illusts = new List<Sprite>();
     foreach (Sprite _spr in EventIllust)
@@ -626,20 +627,21 @@ public class ImageHolder : ScriptableObject
         _illusts.Add(_spr);
       }
     }
-    List<EventIllustHolder> _holders= new List<EventIllustHolder>();
-    if (length > 1)
+    EventIllustHolder[] _holders = new EventIllustHolder[length];
+    string[] _typearray = null;
+    for (int i = 0; i < length; i++)
     {
-      string[] _typearray = null;
-      for (int i = 0; i < length; i++)
+      if(i==0) _holders[0] = new EventIllustHolder(_illusts);
+      else
       {
         List<Sprite> _listtemp = new List<Sprite>();
         foreach (Sprite _spr in _illusts)
         {
           _typearray = _spr.name.Split('_')[2].Split('@');  //3번째 문자열(Beginning0,RSuccess2,LSuccess1 이런거) 에서 타입 글자확인+숫자확인
-          foreach(string _type in _typearray)
+          foreach (string _type in _typearray)
           {
-            if (_type.Contains(typeid) && _type.Contains(i.ToString())) 
-            { 
+            if (_type.Contains(typeid) && _type.Contains(i.ToString()))
+            {
               _listtemp.Add(_spr);
               break;
             }
@@ -647,14 +649,9 @@ public class ImageHolder : ScriptableObject
           }
 
         }
-        _holders.Add(new EventIllustHolder(_listtemp));
+        _holders[i]=new EventIllustHolder(_listtemp);
       }
     }
-    else
-    {
-      _holders.Add(new EventIllustHolder(_illusts));
-    }
-
     return _holders;
   }//이벤트 시작 일러스트
   public Sprite GetEXPIllust(string _illustid)
@@ -705,6 +702,18 @@ public class EventIllustHolder
   private Sprite SummerIllust = null;
   private Sprite AutumnIllust = null;
   private Sprite WinterIllust = null;
+  public Sprite GetSeasonIllust(int index)
+  {
+    switch (index)
+    {
+      case 0:return SpringIllust;
+      case 1:return SummerIllust;
+      case 2:return AutumnIllust;
+      case 3:return WinterIllust;
+      default:return null;
+    }
+  }
+  public bool IsSeason { get { return SpringIllust != null; } }
   public EventIllustHolder(List<Sprite> illusts)
   {
     if (illusts.Count == 0)
@@ -735,24 +744,22 @@ public class EventIllustHolder
   {
     get
     {
-      Sprite _target = null;
-      switch (GameManager.Instance.MyGameData.Turn)
+      if (IsSeason)
       {
-        case 0:
-          if (SpringIllust != null) _target= SpringIllust;
-          break;
-        case 1:
-          if (SummerIllust != null) _target = SummerIllust;
-          break;
-        case 2:
-          if (AutumnIllust != null) _target = AutumnIllust;
-          break;
-        case 3:
-          if (WinterIllust != null) _target = WinterIllust;
-          break;
+        switch (GameManager.Instance.MyGameData.Turn)
+        {
+          case 0:
+            return SpringIllust;
+          case 1:
+            return SummerIllust;
+          case 2:
+            return AutumnIllust;
+          case 3:
+            return WinterIllust;
+          default: return GameManager.Instance.ImageHolder.DefaultIllust;
+        }
       }
-      if (_target == null) _target = IdleIllust;
-      return _target;
+      else return IdleIllust;
     }
   }
 }
@@ -769,7 +776,7 @@ public class EndingDatas
   public string Preview_Opened { get { return GameManager.Instance.GetTextData(ID + "_preview_opened"); } }
  // public string Preview_Closed { get { return GameManager.Instance.GetTextData(ID + "_preview_closed"); } }
 
-  public List<Sprite> Illusts;
+  public Sprite[] Illusts;
   public string Refuse_Name
   {
     get { return GameManager.Instance.GetTextData(ID + "_Refuse_Name"); }

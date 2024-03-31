@@ -10,12 +10,18 @@ public class ImageSwapScript : MonoBehaviour
   [SerializeField] private Image Image_B = null;
   [SerializeField] private CanvasGroup Group_B = null;
   [SerializeField] private bool Index = true;
-  private float ChangeTime = 0.8f;
-  private Image CurrentImage { get { return Index == true? Image_A : Image_B; } }
+  [SerializeField] private float ChangeTime = 0.8f;
   private Image NextImage { get { return Index==true?Image_B : Image_A; } }
   private CanvasGroup CurrentGroup { get { return Index==true?Group_A : Group_B; } }
   private CanvasGroup NextGroup { get { return Index==true?Group_B : Group_A; } }
   [SerializeField] private bool Sound = true;
+  public void SetTransparent()
+  {
+    Image_A.sprite = GameManager.Instance.ImageHolder.Transparent;
+    Group_A.alpha = 0.0f;
+    Image_B.sprite = GameManager.Instance.ImageHolder.Transparent;
+    Group_B.alpha = 0.0f;
+  }
   public void Next(Sprite illust)
   {
     StopAllCoroutines();

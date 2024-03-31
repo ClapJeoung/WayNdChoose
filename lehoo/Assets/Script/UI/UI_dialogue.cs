@@ -766,7 +766,7 @@ public class UI_dialogue : UI_default
 
     NameText.text = CurrentEvent.Name;
     DescriptionText.text = "";
-    for (int i = 0; i < CurrentEvent.BeginningDescriptions.Count; i++)
+    for (int i = 0; i < CurrentEvent.BeginningDescriptions.Length; i++)
     {
       for(int j = 0; j < CurrentEvent.BeginningDescriptions[i].Split('$').Length; j++)
       {
@@ -819,12 +819,12 @@ public class UI_dialogue : UI_default
     yield return null;
   }
   [Space(15)]
-  private List<EventIllustHolder> EventIllustHolderes = null;
-  private List<string> EventDescriptions = null;
-  public int EventPhaseIndex_max { get { return EventDescriptions!=null? EventDescriptions.Count : 0; } }
+  private EventIllustHolder[] EventIllustHolderes = null;
+  private string[] EventDescriptions = null;
+  public int EventPhaseIndex_max { get { return EventDescriptions!=null? EventDescriptions.Length : 0; } }
   public int EventPhaseIndex = 0;
-  private List<string> CurrentDescription { get { return EventDescriptions[EventPhaseIndex].Split('$').ToList(); } }
-  private int PhrIndex_max { get { return CurrentDescription != null ? CurrentDescription.Count : 0; } }
+  private string[] CurrentDescription { get { return EventDescriptions[EventPhaseIndex].Split('$'); } }
+  private int PhrIndex_max { get { return CurrentDescription != null ? CurrentDescription.Length : 0; } }
   private int PhrIndex = -1;
   private bool IsBeginning = false;
   public bool IsSelecting = false;
@@ -1307,11 +1307,13 @@ public class UI_dialogue : UI_default
     if (_issuccess) //성공하면 성공
     {
       //Debug.Log("이벤트 성공함");
+      GameManager.Instance.AddEventProgress(CurrentEvent.ID, _selection.IsLeft, 2);
       StartCoroutine(SetSuccess(CurrentEvent.SelectionDatas[_selection.Index].SuccessData,_selection.MyTendencyType,_selection.IsLeft));
     }
     else            //실패하면 실패
     {
       //Debug.Log("아밴투 실패함");
+      GameManager.Instance.AddEventProgress(CurrentEvent.ID, _selection.IsLeft, 1);
       StartCoroutine(SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailData, _selection.MyTendencyType, _selection.IsLeft));
     }
     _selection.DeActive();

@@ -63,11 +63,12 @@ public class EventHolder
                   Data.SelectionDatas[0].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info);
                   break;
                 case SelectionTargetType.Check_Single: //기술(단일)
-                  Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info));
+                  Data.SelectionDatas[0].SelectionCheckSkill = new SkillTypeEnum[1] { (SkillTypeEnum)int.Parse(_data.Selection_Info) };
                   break;
                 case SelectionTargetType.Check_Multy: //기술(복수)
+                  Data.SelectionDatas[0].SelectionCheckSkill = new SkillTypeEnum[2];
                   string[] _temp = _data.Selection_Info.Split(',');
-                  for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[i]));
+                  for (int i = 0; i < _temp.Length; i++) Data.SelectionDatas[0].SelectionCheckSkill[i]=(SkillTypeEnum)int.Parse(_temp[i]);
                   break;
               }
               if (Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
@@ -121,11 +122,12 @@ public class EventHolder
                   Data.SelectionDatas[i].SelectionPayTarget = (StatusTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]);
                   break;
                 case SelectionTargetType.Check_Single: //기술(단일)
-                  Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]));
+                  Data.SelectionDatas[i].SelectionCheckSkill=new SkillTypeEnum[1] { (SkillTypeEnum)int.Parse(_data.Selection_Info.Split('@')[i]) };
                   break;
                 case SelectionTargetType.Check_Multy: //기술(복수)
+                  Data.SelectionDatas[i].SelectionCheckSkill = new SkillTypeEnum[2];
                   string[] _temp = _data.Selection_Info.Split('@')[i].Split(',');
-                  for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill.Add((SkillTypeEnum)int.Parse(_temp[j]));
+                  for (int j = 0; j < _temp.Length; j++) Data.SelectionDatas[i].SelectionCheckSkill[i]=(SkillTypeEnum)int.Parse(_temp[j]);
                   break;
               }
 
@@ -176,6 +178,7 @@ public class EventHolder
   public void ConvertData_Follow(EventJsonData _data)
   {
     EventData Data = ReturnEventDataDefault(_data);
+    if (Data == null) Debug.Log(_data.ID);
     Data.EventType = EventTypeEnum.Follow;
 
     string[] _followdatas = _data.EventInfo.Split('@');
@@ -668,7 +671,7 @@ public class EventHolder
                   break;
                 }
               break;
-            case FollowTypeEnum.Exp://테마 연계일 경우 현재 테마의 레벨이 기준 이상인지 확인
+            case FollowTypeEnum.Exp:
               if ((GameManager.Instance.MyGameData.LongExp != null && GameManager.Instance.MyGameData.LongExp.ID == _event.FollowID)
                 || (GameManager.Instance.MyGameData.ShortExp_A != null && GameManager.Instance.MyGameData.ShortExp_A.ID == _event.FollowID)
                 || (GameManager.Instance.MyGameData.ShortExp_B != null && GameManager.Instance.MyGameData.ShortExp_B.ID == _event.FollowID))
@@ -817,7 +820,7 @@ public class EventData
   {
     get
     {
-      return BeginningDescriptions.Count;
+      return BeginningDescriptions.Length;
     }
   }
   public string Name
@@ -828,25 +831,26 @@ public class EventData
       return WNCText.GetSeasonText(_str);
     }
   }
-  public List<EventIllustHolder> BeginningIllusts
+  public EventIllustHolder[] BeginningIllusts
   {
     get
     {
      return  GameManager.Instance.ImageHolder.GetEventIllusts(ID,"Beginning",BeginningLength );
     }
   }
-  private List<string> beginningdescriptions=new List<string>();
-  public List<string> BeginningDescriptions
+  private string[] beginningdescriptions = null;
+  public string[] BeginningDescriptions
   {
     get
     {
-      if (beginningdescriptions.Count == 0)
+      if (beginningdescriptions == null)
       {
         string _str = GameManager.Instance.GetTextData(ID + "_Descriptions");
-        List<string> _temp = _str.Split('@').ToList();
-        for (int i = 0; i < _temp.Count; i++)
+        string[] _temp = _str.Split('@');
+        beginningdescriptions = new string[_temp.Length ];
+        for (int i = 0; i < _temp.Length; i++)
         {
-          beginningdescriptions.Add(WNCText.GetSeasonText(_temp[i]));
+          beginningdescriptions[i]=WNCText.GetSeasonText(_temp[i]);
         }
       }
       return beginningdescriptions;
@@ -925,15 +929,10 @@ public class SelectionData
   {
     get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting").Split('@')[Index]); }
   }
-/*  public string SubDescription
-  {
-    get { return WNCText.GetSeasonText(GameManager.Instance.GetTextData(ID + "_Selecting_Subdescriptions").Split('@')[Index]); }
-  }
-*/
   public SelectionTargetType ThisSelectionType = SelectionTargetType.Pay;
 
   public StatusTypeEnum SelectionPayTarget = StatusTypeEnum.HP;                       //Pay일때 사용
-  public List<SkillTypeEnum> SelectionCheckSkill = new List<SkillTypeEnum>();         //Check_Single,Check_Multy일때 사용
+  public SkillTypeEnum[] SelectionCheckSkill = null;         //Check_Single,Check_Multy일때 사용
 
 
   public SuccessData SuccessData = null;
@@ -958,27 +957,28 @@ public class FailData
   }
   private string OriginID { get { return MyEvent.ID; } }
   private string TypeID { get { return  (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Fail"; } }
-  private List<string> descriptions=new List<string>();
-  public List<string> Descriptions
+  private string[] descriptions = null;
+  public string[] Descriptions
   {
     get
     {
-      if (descriptions.Count == 0)
+      if (descriptions == null)
       {
-        List<string> _temp = GameManager.Instance.GetTextData(OriginID+"_"+TypeID+"_Descriptions").Split('@').ToList();
-        for (int i = 0; i < _temp.Count; i++)
+        string[] _temp = GameManager.Instance.GetTextData(OriginID + "_" + TypeID + "_Descriptions").Split('@');
+        descriptions = new string[_temp.Length];
+        for (int i = 0; i < _temp.Length; i++)
         {
-          descriptions.Add(WNCText.GetSeasonText(_temp[i]));
+          descriptions[i]=WNCText.GetSeasonText(_temp[i]);
         }
       }
       return descriptions;
     }
   }
-  public List<EventIllustHolder> Illusts
+  public EventIllustHolder[] Illusts
   {
     get
     {
-      return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID, TypeID, Descriptions.Count);
+      return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID, TypeID, Descriptions.Length);
     }
   }
   public PenaltyTarget Penelty_target;
@@ -1008,27 +1008,28 @@ public class SuccessData
   }
   private string OriginID { get { return MyEvent.ID; } }
   private string TypeID { get { return  (Tendencytype == TendencyTypeEnum.None ? "" : Index == 0 ? "L" : "R") + "Success"; } }
-  private List<string> descriptions= new List<string>();
-  public List<string> Descriptions
+  private string[] descriptions = null;
+  public string[] Descriptions
   {
     get
     {
-      if (descriptions.Count == 0)
+      if (descriptions==null)
       {
-        List<string> _temp = GameManager.Instance.GetTextData(OriginID + "_" + TypeID + "_Descriptions").Split('@').ToList();
-        for (int i = 0; i < _temp.Count; i++)
+        string[]_temp = GameManager.Instance.GetTextData(OriginID + "_" + TypeID + "_Descriptions").Split('@');
+        descriptions = new string[_temp.Length];
+        for (int i = 0; i < _temp.Length; i++)
         {
-          descriptions.Add(WNCText.GetSeasonText(_temp[i]));
+          descriptions[i]=WNCText.GetSeasonText(_temp[i]);
         }
       }
       return descriptions;
     }
   }
-  public List<EventIllustHolder> Illusts
+  public EventIllustHolder[] Illusts
   {
     get
     {
-      return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID,TypeID, Descriptions.Count);
+      return GameManager.Instance.ImageHolder.GetEventIllusts(OriginID,TypeID, Descriptions.Length);
     }
   }
   public RewardTypeEnum Reward_Type;
@@ -1045,7 +1046,7 @@ public class Quest
   public string OriginID="";
   public string QuestName { get { return GameManager.Instance.GetTextData(OriginID + "_Name_Text"); } }
   public string QuestDescription { get { return GameManager.Instance.GetTextData(OriginID + "_PreDescription_Text"); } }
-    public Sprite QuestIllust { get { return GameManager.Instance.ImageHolder.Quest_Cult_MainIllust; } }
+  public Sprite QuestIllust { get { return GameManager.Instance.ImageHolder.Quest_Cult_MainIllust; } }
   public QuestType Type = QuestType.Cult;
   public Quest(string id,QuestType type)
   {

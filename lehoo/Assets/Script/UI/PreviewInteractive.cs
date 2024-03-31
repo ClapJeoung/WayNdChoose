@@ -245,7 +245,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_text,OtherRect,new Vector2(-0.05f,1.05f));        break;
       case PreviewPanelType.EndingPreview:
         if (!GameManager.Instance.ProgressData.EndingLists.Contains(EndingID))
-          UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData(EndingID + "_preview_closed"), OtherRect,new Vector2(0.5f,-0.05f));
+          UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData(EndingID + "_preview_closed"), OtherRect,new Vector2(0.5f,1.05f));
         else
         {
           EndingDatas _ending = GameManager.Instance.ImageHolder.GetEndingData(EndingID);

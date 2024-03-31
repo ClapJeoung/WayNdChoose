@@ -16,6 +16,53 @@ using UnityEngine.XR;
 public class ProgressData
 {
   public List<string> EndingLists = new List<string>();
+  public Dictionary<string, EventProgress> EventList = new Dictionary<string, EventProgress>();
+  public struct EventProgress
+  {
+    public int LSuccess, RSuccess;
+    public EventProgress(int LSuccess, int RSuccess)
+    {
+      this.LSuccess = LSuccess;
+      this.RSuccess = RSuccess;
+    }
+    public void SetValue(bool dir,int value)
+    {
+      if (dir)
+      {
+        if (LSuccess < value) LSuccess = value;
+      }
+      else
+      {
+        if(RSuccess< value) RSuccess = value;
+      }
+    }
+  }
+  public ProgressData() { }
+  public ProgressData(ProgressDataJosn jsondata)
+  {
+    foreach (var _ending in jsondata.EndingLists) EndingLists.Add(_ending);
+    for(int i = 0; i < jsondata.EventID.Count; i++)
+    {
+      EventList.Add(jsondata.EventID[i],new EventProgress(jsondata.Event_L[i], jsondata.Event_R[i]));
+    }
+  }
+}
+public class ProgressDataJosn
+{
+  public List<string> EndingLists=new List<string>();
+  public List<string> EventID=new List<string>();
+  public List<int> Event_L=new List<int>();
+  public List<int> Event_R=new List<int>();
+  public ProgressDataJosn(ProgressData data)
+  {
+    foreach(var _ending in data.EndingLists) EndingLists.Add(_ending);
+    foreach(var _event in data.EventList)
+    {
+      EventID.Add(_event.Key);
+      Event_L.Add(_event.Value.LSuccess);
+      Event_R.Add(_event.Value.RSuccess);
+    }
+  }
 }
 public enum StreamingTypeEnum { Chzz,Twitch}
 public class GameManager : MonoBehaviour
@@ -81,7 +128,7 @@ public class GameManager : MonoBehaviour
     }
     if (System.IO.File.Exists(Application.persistentDataPath + "/" + ProgressDataName))
     {
-      ProgressData = JsonUtility.FromJson<ProgressData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + ProgressDataName));
+      ProgressData = new ProgressData(JsonUtility.FromJson<ProgressDataJosn>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + ProgressDataName)));
     }
     else ProgressData = new ProgressData();
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
@@ -195,15 +242,25 @@ public class GameManager : MonoBehaviour
   public const string GameDataName = "WNCGameData.json";
   public ProgressData ProgressData = null;
   public const string ProgressDataName = "PlayerProgressData.json";
-  [HideInInspector] public ProgressData MyProgressData = new ProgressData();
   public StatusData Status = new StatusData();
   public const string StatusDataName = "WNCStatusData.json";
-  public void AddEnding(string id)
+  public void AddEndingProgress(string id)
   {
     if (ProgressData.EndingLists.Contains(id)) return;
 
     ProgressData.EndingLists.Add(id);
-    string _json = JsonUtility.ToJson(ProgressData);
+    string _json = JsonUtility.ToJson(new ProgressDataJosn(ProgressData));
+    System.IO.File.WriteAllText(Application.persistentDataPath + "/" + ProgressDataName, _json);
+  }
+  public void AddEventProgress(string id,bool dir,int value)
+  {
+    if (ProgressData.EventList.ContainsKey(id))
+    {
+      ProgressData.EventList[id].SetValue(dir, value);
+    }
+    else ProgressData.EventList.Add(id,new ProgressData.EventProgress(dir?value:0,dir?0:value));
+
+    string _json = JsonUtility.ToJson(new ProgressDataJosn(ProgressData));
     System.IO.File.WriteAllText(Application.persistentDataPath + "/" + ProgressDataName, _json);
   }
 
@@ -742,7 +799,7 @@ public class GameManager : MonoBehaviour
     StartCoroutine(ConnectSelectionData_get(eventdata.ID));
 
     UIManager.Instance.OpenDialogue_Event(false);
-
+    AddEventProgress(eventdata.ID, true, 0);
     SaveData();
   }
   public void AddTendencyCount(TendencyTypeEnum _tendencytype,int index)

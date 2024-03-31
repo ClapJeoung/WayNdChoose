@@ -15,11 +15,10 @@ public class UI_Ending : UI_default
   [SerializeField] private CanvasGroup QuitButtonGroup = null;
   [SerializeField] private TextMeshProUGUI QuitButtonText = null;
 
-  private List<Sprite> Illusts=new List<Sprite>();
+  private Sprite[] Illusts=new Sprite[0];
   private List<string> Descriptions=new List<string>();
   private string LastButtonText = "";
   private int CurrentIndex = 0;
-  private int Length { get {  return Illusts.Count; } }
 
   public bool IsDead = false;
   public void OpenUI_Dead(Sprite illust,string description)
@@ -73,7 +72,7 @@ public class UI_Ending : UI_default
   {
     CurrentIndex++;
 
-    if (CurrentIndex == Illusts.Count - 1)
+    if (CurrentIndex == Illusts.Length - 1)
     {
       StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
     }
@@ -89,7 +88,7 @@ public class UI_Ending : UI_default
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform.parent.transform as RectTransform);
     yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollbar));
 
-    if (CurrentIndex == Illusts.Count - 1)
+    if (CurrentIndex == Illusts.Length - 1)
     {
       StartCoroutine(UIManager.Instance.ChangeAlpha(QuitButtonGroup, 1.0f, 0.5f));
     }
