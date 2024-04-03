@@ -53,17 +53,6 @@ public class UI_map : UI_default
 
   [SerializeField] private Image Outline_Selecting = null;
   [SerializeField] private List<Image> Outlines = new List<Image>();
-  private List<Image> CurrentOutlines
-  {
-    get
-    {
-      List<Image> _temp=new List<Image>();
-      foreach (var _routedata in Routes)
-        foreach (var _outline in _routedata.Outlines)
-          _temp.Add(_outline);
-      return _temp;
-    }
-  }
   private Image GetEnableOutline
   {
     get

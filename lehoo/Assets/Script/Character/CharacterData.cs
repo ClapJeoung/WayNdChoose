@@ -183,8 +183,12 @@ public class StatusData
     ResourceGenSpace= int.Parse(textrow[141].Split("\t")[1]);
     CampingSanity = int.Parse(textrow[142].Split("\t")[1]);
     CampingResource = int.Parse(textrow[143].Split("\t")[1]);
+
+    EventPer_met = int.Parse(textrow[144].Split("\t")[1]);
+    EventPer_unmet = int.Parse(textrow[145].Split("\t")[1]);
+
   }
-  public  int ConversationEffect_Level=1,
+public  int ConversationEffect_Level=1,
     ConversationEffect_Value = 1;
   public  int ForceEffect_Level = 1,
     ForceEffect_Value = 1;
@@ -333,6 +337,9 @@ public class StatusData
   public int ResourceGenSpace = 0;
   public int CampingSanity = 10;
   public int CampingResource = 0;
+
+  public int EventPer_met = 0;
+  public int EventPer_unmet = 0;
 }
 public class GameData    //게임 진행도 데이터
 {

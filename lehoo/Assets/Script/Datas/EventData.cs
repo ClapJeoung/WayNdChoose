@@ -492,6 +492,8 @@ public class EventHolder
 
       if (envirs.Contains(_event.EnvironmentType)) _count *= GameManager.Instance.Status.EventPer_Envir;
       else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
+      _count *= (GameManager.Instance.ProgressData.EventList.ContainsKey(_event.ID) ?
+  GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
 
       for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);
     }
@@ -700,6 +702,8 @@ public class EventHolder
 
       if (envirs.Contains(_event.EnvironmentType)) _count *= GameManager.Instance.Status.EventPer_Envir;
       else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
+      _count *= (GameManager.Instance.ProgressData.EventList.ContainsKey(_event.ID) ?
+GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
 
       if (_event.Sector == sectortype) _count *= GameManager.Instance.Status.EventPer_Sector;
       else _count *= GameManager.Instance.Status.EventPer_NoSector;

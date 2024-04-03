@@ -631,7 +631,7 @@ public class ImageHolder : ScriptableObject
     string[] _typearray = null;
     for (int i = 0; i < length; i++)
     {
-      if(i==0) _holders[0] = new EventIllustHolder(_illusts);
+      if(length==1) _holders[0] = new EventIllustHolder(_illusts);
       else
       {
         List<Sprite> _listtemp = new List<Sprite>();

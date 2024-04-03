@@ -1,0 +1,8 @@
+﻿{
+	"Env": "live",
+	"AppKey": "f2205f85410e9fcd5ca719ff80fc46868b85965b23afff5df25a884a14b31ff6",
+	"AppSecret": "f3335bea6b171d682b7c1c90ebae1a61267120beb4c03147c9ebae76595e86e2febc5e18be525960b44a9b9130e41f07",
+	"GameId": "WAYNDCHOICE_IND",
+	"LogLevel": 4,
+	"LogPath": ""
+}
