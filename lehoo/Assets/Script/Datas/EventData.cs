@@ -478,9 +478,10 @@ public class EventHolder
 
     List<EventData> _targetevents = _ableevents.Count > 0 ? _ableevents : _disableevents;
 
-    List<string> _eventlist= new List<string>();
+    List<int> _eventlist= new List<int>();
     for(int i = 0; i < _targetevents.Count; i++)
     {
+      int _index = i;
       int _count = 0;
       EventData _event = _targetevents[i];
       switch(_event.EventType)
@@ -495,13 +496,11 @@ public class EventHolder
       _count *= (GameManager.Instance.ProgressData.EventList.ContainsKey(_event.ID) ?
   GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
 
-      for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);
+      for (int j = 0; j < _count; j++) _eventlist.Add(_index);
     }
 
 
-    string _resultid = _eventlist[UnityEngine.Random.Range(0, _eventlist.Count)];
-    foreach (EventData _event in _targetevents)
-      if (_event.ID == _resultid) return _event;
+    return _targetevents[_eventlist[UnityEngine.Random.Range(0, _eventlist.Count)]];
 
     Debug.Log("여기까지 올 리가 없는디");
     return null;
@@ -688,9 +687,10 @@ public class EventHolder
 
     List<EventData> _targetevents = _ableevents.Count > 0 ? _ableevents : _disableevents;
     
-    List<string> _eventlist = new List<string>();
+    List<int> _eventlist = new List<int>();
     for (int i = 0; i < _targetevents.Count; i++)
     {
+      int _index = i;
       int _count = 0;
       EventData _event = _targetevents[i];
       switch (_event.EventType)
@@ -709,12 +709,10 @@ GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPe
       else _count *= GameManager.Instance.Status.EventPer_NoSector;
 
 
-      for (int j = 0; j < _count; j++) _eventlist.Add(_event.ID);
+      for (int j = 0; j < _count; j++) _eventlist.Add(_index);
     }
 
-    string _resultid = _eventlist[UnityEngine.Random.Range(0, _eventlist.Count)];
-    foreach (EventData _event in _targetevents)
-      if (_event.ID == _resultid) return _event;
+    return _targetevents[_eventlist[UnityEngine.Random.Range(0, _eventlist.Count)]];
 
     Debug.Log("여기까지 올 리가 없는디");
     return null;

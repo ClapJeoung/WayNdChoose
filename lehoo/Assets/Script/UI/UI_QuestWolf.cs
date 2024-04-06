@@ -99,8 +99,12 @@ public class UI_QuestWolf : UI_default
     if (Skip)
     {
       CurrentPrologueIndex = 7;
-      GameManager.Instance.MyGameData.Tendency_Head.Level = 1;
-      GameManager.Instance.MyGameData.Tendency_Body.Level = -1;
+      GameManager.Instance.MyGameData.Tendency_Head.Level = UnityEngine.Random.Range(0,2)==0?-1:1;
+      GameManager.Instance.MyGameData.Tendency_Body.Level = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+
+     if(GameManager.Instance.MyGameData.Tendency_Body.Level==-1) GameManager.Instance.AddExp_Long(GameManager.Instance.ExpDic[GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? "EX_00" : "EX_01"], false);
+     else GameManager.Instance.AddExp_Long(GameManager.Instance.ExpDic[GameManager.Instance.MyGameData.Tendency_Head.Level == -1 ? "EX_10" : "EX_11"], false);
+
       UIManager.Instance.AddUIQueue(next());
       return;
     }

@@ -65,6 +65,11 @@ public class UI_Main_Illusts : MonoBehaviour
   private EventIllustHolder[] SelectedIllusts = null;
   public void SelectEvent(string id)
   {
+    if (SelectedEvent == GameManager.Instance.EventHolder.GetEvent(id)) return;
+
+    for (int i = 0; i < EventButton_Progress.Length; i++)
+      EventButton_Progress[i].interactable = i!=0;
+
     EventIllust.Next(GameManager.Instance.ImageHolder.Transparent);
     SelectedEvent = GameManager.Instance.EventHolder.GetEvent(id);
     SelectEventName.text = SelectedEvent.Name;
@@ -237,11 +242,11 @@ public class UI_Main_Illusts : MonoBehaviour
             setup(SelectedEvent.SelectionDatas[0].SuccessData.Illusts);
             break;
           case SelectionTypeEnum.Head:
-            //이거 없음
+            setup(SelectedEvent.SelectionDatas[0].SuccessData.Illusts);
             break;
         }
         break;
-      case 2:
+      case 2: 
         switch (SelectedEvent.Selection_type)
         {
           case SelectionTypeEnum.Single:
@@ -251,7 +256,7 @@ public class UI_Main_Illusts : MonoBehaviour
             setup(SelectedEvent.SelectionDatas[0].FailData.Illusts);
             break;
           case SelectionTypeEnum.Head:
-            //이거 없음
+            setup(SelectedEvent.SelectionDatas[0].FailData.Illusts);
             break;
         }
         break;
@@ -262,7 +267,7 @@ public class UI_Main_Illusts : MonoBehaviour
             //이거 없음
             break;
           case SelectionTypeEnum.Body:
-            //이거 없음
+            setup(SelectedEvent.SelectionDatas[1].SuccessData.Illusts);
             break;
           case SelectionTypeEnum.Head:
             setup(SelectedEvent.SelectionDatas[1].SuccessData.Illusts);
@@ -276,7 +281,7 @@ public class UI_Main_Illusts : MonoBehaviour
             //이거 없음
             break;
           case SelectionTypeEnum.Body:
-            //이거 없음
+            setup(SelectedEvent.SelectionDatas[1].FailData.Illusts);
             break;
           case SelectionTypeEnum.Head:
             setup(SelectedEvent.SelectionDatas[1].FailData.Illusts);

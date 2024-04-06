@@ -862,8 +862,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b964759620d342e4e9897d8686a26291, type: 3}
   - {fileID: 21300000, guid: c5a4653c0063eb44cad9e6a3c265caca, type: 3}
   - {fileID: 21300000, guid: f17ff66ffc7c085419f7109817133c94, type: 3}
-  UnknownTile: {fileID: 21300000, guid: 0aec4c86b64a1934fb9753d42109d046, type: 3}
-  UnknownEvent: {fileID: 21300000, guid: 4d6b5eb97c39bda4e9337b6bef6a9d70, type: 3}
+  UnknownTile: {fileID: 21300000, guid: 4d6b5eb97c39bda4e9337b6bef6a9d70, type: 3}
+  EventTile: {fileID: 21300000, guid: beaa30bc91d2b484180133b0c9f291de, type: 3}
   RiverTile: {fileID: 21300000, guid: 653f61813b5b16246a89f5c01b935084, type: 3}
   ForestTile: {fileID: 21300000, guid: e318e4d647fca0c429dcfc97ae08605f, type: 3}
   HighlandTile: {fileID: 21300000, guid: 5c9c053e5b9c19645bce9b8fb4d53ae7, type: 3}

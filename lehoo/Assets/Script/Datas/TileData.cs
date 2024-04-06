@@ -11,7 +11,7 @@ public enum BottomEnvirType
 public enum TopEnvirType {NULL, Forest,Mountain,Highland }
 public enum LandmarkType { Outer,Village,Town,City,Ritual}
 public enum HexDir { TopRight,Right,BottomRight,BottomLeft,Left,TopLeft}
-public enum TileTypeEnum { Normal,Landmark,Event,Resource,Camping}
+public enum TileTypeEnum { Normal,Landmark}
 
 [System.Serializable]
 public class TileData
@@ -70,13 +70,25 @@ public class TileData
     if (Fogstate == value) return;
 
     Fogstate = value;
-    if (value == 2) { ButtonScript.SetReveal(); 
-      if(BottomEnvir!=BottomEnvirType.Sea)
-      ButtonScript.Rect.GetComponent<Onpointer_tileoutline>().enabled = true;
+    if (value == 2)
+    {
+      ButtonScript.SetReveal();
+      if (BottomEnvir != BottomEnvirType.Sea)
+        ButtonScript.Rect.GetComponent<Onpointer_tileoutline>().enabled = true;
       if (TileSettle != null)
         ButtonScript.Preview.enabled = true;
+
+      ButtonScript.BottomImage.enabled = true;
+      if (ButtonScript.TopImage != null) ButtonScript.TopImage.enabled = true;
+      if (ButtonScript.LandmarkImage != null) ButtonScript.LandmarkImage.enabled = true;
     }
-    else if (value == 1) ButtonScript.SetVisible();
+    else if (value == 1)
+    {
+      ButtonScript.SetVisible();
+      ButtonScript.BottomImage.enabled = true;
+      if (ButtonScript.TopImage != null) ButtonScript.TopImage.enabled = true;
+      if (ButtonScript.LandmarkImage != null) ButtonScript.LandmarkImage.enabled = true;
+    }
   }
 
   public Settlement TileSettle = null;

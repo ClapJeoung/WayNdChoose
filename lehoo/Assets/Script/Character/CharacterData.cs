@@ -187,6 +187,13 @@ public class StatusData
     EventPer_met = int.Parse(textrow[144].Split("\t")[1]);
     EventPer_unmet = int.Parse(textrow[145].Split("\t")[1]);
 
+    RestoreSanity_campingarrival = int.Parse(textrow[146].Split("\t")[1]);
+    Restoresanity_setlementarrival = int.Parse(textrow[147].Split("\t")[1]);
+
+    TileDefaultPer_Resource = int.Parse(textrow[148].Split("\t")[1]);
+    TileDefaultPer_Event = int.Parse(textrow[149].Split("\t")[1]);
+    TileDefaultPer_Camping = int.Parse(textrow[150].Split("\t")[1]);
+    TilePer_Modify= int.Parse(textrow[151].Split("\t")[1]);
   }
 public  int ConversationEffect_Level=1,
     ConversationEffect_Value = 1;
@@ -340,12 +347,21 @@ public  int ConversationEffect_Level=1,
 
   public int EventPer_met = 0;
   public int EventPer_unmet = 0;
+
+  public int RestoreSanity_campingarrival = 0;
+  public int Restoresanity_setlementarrival = 0;
+
+  public int TileDefaultPer_Resource = 0;
+  public int TileDefaultPer_Event = 0;
+  public int TileDefaultPer_Camping = 0;
+  public int TilePer_Modify = 0;
 }
 public class GameData    //게임 진행도 데이터
 {
   public bool IsDead = false;
   #region #지도,정착지 관련#
   public MapData MyMapData = null;
+  public int LastTilePerType = -1;
   public Vector2 Coordinate = Vector2.zero;
   public TileData CurrentTile { get { return MyMapData.Tile(Coordinate); } }
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보]
@@ -1118,6 +1134,8 @@ public class GameData    //게임 진행도 데이터
     Skill_Force = new Skill(SkillTypeEnum.Force, GameManager.Instance.Status.StartSkillLevel);
     Skill_Wild= new Skill(SkillTypeEnum.Wild, GameManager.Instance.Status.StartSkillLevel);
     Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence, GameManager.Instance.Status.StartSkillLevel);
+
+    LastTilePerType = -1;
   }
   /// <summary>
   /// 불러오기
@@ -1127,6 +1145,9 @@ public class GameData    //게임 진행도 데이터
   {
     MyMapData = new MapData();
     MyMapData.TileDatas = new TileData[GameManager.Instance.Status.MapSize, GameManager.Instance.Status.MapSize];
+
+    LastTilePerType = jsondata.LastTilePerType;
+
     int _index = 0;
     //[j,i]
     for(int i = 0; i < GameManager.Instance.Status.MapSize; i++)
@@ -1200,17 +1221,6 @@ public class GameData    //게임 진행도 데이터
     Coordinate = jsondata.Coordinate;
     CurrentSettlement = MyMapData.Tile(Coordinate).TileSettle;
     FirstRest = jsondata.FirstRest;
-
-    foreach(var _coordinate in jsondata.EventTiles)
-      MyMapData.EventTiles.Add(MyMapData.Tile(_coordinate));
-    foreach(var _coordinate in jsondata.ResourceGenTiles)
-      MyMapData.ResourceGenTiles.Add(MyMapData.Tile(_coordinate));
-    foreach (var _coordinate in jsondata.ResourceTiles)
-      MyMapData.ResourceTiles.Add(MyMapData.Tile(_coordinate));
-    foreach (var _coordinate in jsondata.CampingGenTiles)
-      MyMapData.CampingGenTiles.Add(MyMapData.Tile(_coordinate));
-    foreach (var _coordinate in jsondata.CampingTiles)
-      MyMapData.CampingTiles.Add(MyMapData.Tile(_coordinate));
 
     TotalMoveCount = jsondata.TotalMoveCount;
     TotalRestCount = jsondata.TotalRestCount;
@@ -1480,11 +1490,11 @@ public class Tendency
               break;
             case 1:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-               GameManager.Instance.Status.Tendency_Head_p1*100-100);
+               GameManager.Instance.Status.Tendency_Head_p1*100);
               break;
             case 2:
               _result = string.Format(GameManager.Instance.GetTextData("Tendency_Head_P1_Description"),
-              GameManager.Instance.Status.Tendency_Head_p1 * 100 - 100) +"<br><br>"+
+              GameManager.Instance.Status.Tendency_Head_p1 * 100) +"<br><br>"+
               GameManager.Instance.GetTextData("Tendency_Head_P2_Description");
               break;
           }
@@ -1569,11 +1579,7 @@ public class Tendency
 public class GameJsonData
 {
   public bool IsDead = false;
-  public List<Vector2Int> EventTiles=new List<Vector2Int>();
-  public List<Vector2Int> ResourceGenTiles=new List<Vector2Int>();
-  public List<Vector2Int> ResourceTiles=new List<Vector2Int>();
-  public List<Vector2Int> CampingGenTiles = new List<Vector2Int>();
-  public List<Vector2Int> CampingTiles=new List<Vector2Int>();
+  public int LastTilePerType=-1;
 
   public List<int> Tiledata_Rotation = new List<int>();
   public List<int> Tiledata_BottomEnvir = new List<int>();
@@ -1668,16 +1674,7 @@ public class GameJsonData
   {
     IsDead = data.IsDead;
 
-    foreach (var _eventtile in data.MyMapData.EventTiles)
-      EventTiles.Add(_eventtile.Coordinate);
-    foreach (var _gentile in data.MyMapData.ResourceGenTiles)
-      ResourceGenTiles.Add(_gentile.Coordinate);
-    foreach (var _resourcetile in data.MyMapData.ResourceTiles)
-      ResourceTiles.Add(_resourcetile.Coordinate);
-    foreach (var _gentile in data.MyMapData.CampingGenTiles)
-      CampingGenTiles.Add(_gentile.Coordinate);
-    foreach (var _Campingtile in data.MyMapData.CampingTiles)
-      CampingTiles.Add(_Campingtile.Coordinate);
+    LastTilePerType = data.LastTilePerType;
 
     foreach (var _tile in data.MyMapData.TileDatas)
     {

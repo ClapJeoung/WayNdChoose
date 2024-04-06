@@ -2144,8 +2144,6 @@ public class UI_dialogue : UI_default
     }
     if (GameManager.Instance.MyGameData.FirstRest)
     {
-      GameManager.Instance.MyGameData.MyMapData.SetResourceTiles();
-      GameManager.Instance.MyGameData.MyMapData.SetCampingTiles();
     }
     GameManager.Instance.MyGameData.FirstRest = false;
 

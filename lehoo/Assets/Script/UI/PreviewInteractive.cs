@@ -127,7 +127,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.MoveCostSanity:
         string _sanitycosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Santiy"),
-          WNCText.GetSanityColor(UIManager.Instance.MapUI.MoveCost_Sanity)+(UIManager.Instance.MapUI.IsMad?WNCText.GetMadnessColor("?"):""));
+          WNCText.GetSanityColor(UIManager.Instance.MapUI.MoveCost_Sanity)+(UIManager.Instance.MapUI.IsMad(UIManager.Instance.MapUI.Destinations.Count)?WNCText.GetMadnessColor("?"):""));
         if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
           _sanitycosttext += string.Format(string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),
             UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply,
@@ -142,11 +142,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         int _requiregold = UIManager.Instance.MapUI.MoveCost_Gold;
         string _goldcosttext = "";
         if (GameManager.Instance.MyGameData.Gold >= _requiregold)
-          _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_full"), WNCText.GetGoldColor(_requiregold) + (UIManager.Instance.MapUI.IsMad ? WNCText.GetMadnessColor("?") : ""));
+          _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_full"), WNCText.GetGoldColor(_requiregold) + (UIManager.Instance.MapUI.IsMad(UIManager.Instance.MapUI.Destinations.Count) ? WNCText.GetMadnessColor("?") : ""));
         else
           _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_lack"),
             WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold),
-           WNCText.GetSanityColor(_defaultvalue - GameManager.Instance.MyGameData.Gold * 2)) + (UIManager.Instance.MapUI.IsMad ? WNCText.GetMadnessColor("?") : "");
+           WNCText.GetSanityColor(_defaultvalue - GameManager.Instance.MyGameData.Gold * 2)) + (UIManager.Instance.MapUI.IsMad(UIManager.Instance.MapUI.Destinations.Count) ? WNCText.GetMadnessColor("?") : "");
 
         if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
           _goldcosttext += string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),

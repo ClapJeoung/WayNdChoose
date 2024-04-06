@@ -386,7 +386,17 @@ public class UIManager : MonoBehaviour
       GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force == GameManager.Instance.Status.MadnessEffect_Force - 1 ?
       WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Force.ToString()) :
       ((GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Force.ToString());
-    StartCoroutine(madcounttext(ForceMadCountText.rectTransform));
+    if (madcoroutine_force == null)
+    {
+      madcoroutine_force = madcounttext(ForceMadCountText.rectTransform);
+      StartCoroutine(madcoroutine_force);
+    }
+    else
+    {
+      StopCoroutine(madcoroutine_force);
+      madcoroutine_force = madcounttext(ForceMadCountText.rectTransform);
+      StartCoroutine(madcoroutine_force);
+    }
   }
   public void SetWildMadCount()
   {
@@ -394,8 +404,20 @@ public class UIManager : MonoBehaviour
       GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary == GameManager.Instance.Status.MadnessEffect_Wild_temporary - 1 ?
       WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Wild_temporary.ToString()) :
       ((GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Wild_temporary.ToString());
-    StartCoroutine(madcounttext(WildMadCountText.rectTransform));
+    if (madcoroutine_wild == null)
+    {
+      madcoroutine_wild = madcounttext(WildMadCountText.rectTransform);
+      StartCoroutine(madcoroutine_wild);
+    }
+    else
+    {
+      StopCoroutine(madcoroutine_wild);
+      madcoroutine_wild = madcounttext(WildMadCountText.rectTransform);
+      StartCoroutine(madcoroutine_wild);
+    }
   }
+  private IEnumerator madcoroutine_force = null;
+  private IEnumerator madcoroutine_wild = null;
   private IEnumerator madcounttext(RectTransform rect)
   {
     float _time = 0.0f, _targettime = MadCountOpenTime;
@@ -415,7 +437,7 @@ public class UIManager : MonoBehaviour
     rect.localScale = Vector3.zero;
   }
   private List<int> ActiveIconIndexList= new List<int>();
-  [SerializeField] private RectTransform CultSidepanelOpenpos = null;
+//  [SerializeField] private RectTransform CultSidepanelOpenpos = null;
   /// <summary>
   /// Ã¼,Á¤,°ñ
   /// </summary>
@@ -1626,6 +1648,7 @@ public class UIManager : MonoBehaviour
 
   [SerializeField] private Transform InfoPanelHolder = null;
   [SerializeField] private GameObject InfoPanelPrefab = null;
+  [HideInInspector] public float InfoLength = 0.0f;
   public void SetInfoPanel(string text)
   {
     Instantiate(InfoPanelPrefab,InfoPanelHolder).GetComponent<InfoPanel>().Setup(text);

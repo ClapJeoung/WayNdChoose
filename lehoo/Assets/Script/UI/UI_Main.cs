@@ -53,8 +53,9 @@ public class UI_Main : UI_default
   [SerializeField] private Button DiscordButton = null;
   public void OpenDiscord()
   {
-    Application.OpenURL("https://discord.gg/fruH7Ycu");
+    Application.OpenURL("https://discord.gg/PJGUS4bVYV");
   }
+  [SerializeField] private TextMeshProUGUI DiscordLanguageText = null;
   public void ChzzButtonClick()
   {
     if (TwitchPanel.activeSelf) TwitchPanel.SetActive(false);
@@ -149,6 +150,7 @@ public class UI_Main : UI_default
   public void SetupMain()
   {
     IllustsScript.Setup();
+    DiscordLanguageText.text = GameManager.Instance.GetTextData("AboutTranslate");
     ChzzConnectText.text = GameManager.Instance.GetTextData("Connect");
     TwitchConnectText.text = GameManager.Instance.GetTextData("Connect");
     NewGameText.text = GameManager.Instance.GetTextData("NEWGAME");

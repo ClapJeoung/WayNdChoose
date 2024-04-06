@@ -17,13 +17,10 @@ public class maptext : MonoBehaviour
   [Space(10)]
   [SerializeField] private Transform TileHolder_bottomenvir = null;
   [SerializeField] private Transform TileHolder_topenvir = null;
-  [SerializeField] private Transform TileHolder_EventMark = null;
   [SerializeField] private Transform TileHolder_landmark = null;
   [SerializeField] private Transform TileHolder_Fog = null;
   [SerializeField] private Sprite Villagesprite, Townsprite, Citysprite;
-  private float FogAlpha_reveal = 0.0f, FogAlpha_visible = 0.4f;
-  private float FogAlphaChangeTime = 0.4f;
-  private float FogScaleChangeTime = 0.6f;
+  private float FogAlpha_visible = 0.4f;
 
   private void Start()
     {
@@ -99,43 +96,6 @@ public class maptext : MonoBehaviour
       }
       Debug.Log($"{_index}¹øÂ° ¸Ê ¼º°ø\n");
       GameManager.Instance.MyGameData.MyMapData = _map;
-
-      List<TileData> _around = new List<TileData>();
-      int _count = 0;
-      int _genspace = GameManager.Instance.Status.ResourceGenSpace;
-      for (int i = _genspace; i < GameManager.Instance.Status.MapSize; i+= _genspace)
-      {
-        for(int j= _genspace; j< GameManager.Instance.Status.MapSize; j+=_genspace)
-        {
-          _around = _map.GetAroundTile(_map.TileDatas[j, i],1);
-          _count = 0;
-          foreach(var _tile in _around)
-          {
-            if (_tile.BottomEnvir != BottomEnvirType.Sea) _count++;
-          }
-          if (_count > 4) _map.ResourceGenTiles.Add(_map.TileDatas[j,i]);
-        }
-      }
-
-      _map.SetResourceTiles();
-
-      _around.Clear();
-      _count = 0;
-      _genspace = (int)(GameManager.Instance.Status.ResourceGenSpace * 1.5f);
-      for (int i = _genspace; i < GameManager.Instance.Status.MapSize; i += _genspace)
-      {
-        for (int j = _genspace; j < GameManager.Instance.Status.MapSize; j += _genspace)
-        {
-          _around = _map.GetAroundTile(_map.TileDatas[j, i], 1);
-          _count = 0;
-          foreach (var _tile in _around)
-          {
-            if (_tile.BottomEnvir != BottomEnvirType.Sea) _count++;
-          }
-          if (_count > 4) _map.CampingGenTiles.Add(_map.TileDatas[j, i]);
-        }
-      }
-      _map.SetCampingTiles();
 
       break;
     } 
@@ -652,7 +612,7 @@ public class maptext : MonoBehaviour
     
     
     List<TileData> _landtiles = _NewMapData.GetEnvirTiles
-      (new List<BottomEnvirType> { BottomEnvirType.Land, BottomEnvirType.River, BottomEnvirType.RiverBeach },
+      (new List<BottomEnvirType> { BottomEnvirType.Land },
       new List<TopEnvirType> { TopEnvirType.Mountain }, 1);
     List<TileData> _temp = new List<TileData>();
     foreach (var _land in _landtiles) if (!_land.Interactable) _temp.Add(_land);
@@ -983,6 +943,7 @@ public class maptext : MonoBehaviour
         _bottomimage.transform.rotation = Quaternion.Euler(new Vector3(0, 0, -60.0f * _rotate));
         _bottomimage.sprite = _bottomspr;
         _bottomimage.raycastTarget = false;
+        _bottomimage.enabled = _currenttile.Fogstate >0;
         _tilescript.BottomImage = _bottomimage;
 
         RectTransform _bottomimagerect = _bottomimageobj.GetComponent<RectTransform>();
@@ -1009,7 +970,7 @@ public class maptext : MonoBehaviour
         if (_currenttile.BottomEnvir != BottomEnvirType.Sea)
         {
           Onpointer_tileoutline _outline = _bottomtile.AddComponent<Onpointer_tileoutline>();
-          _outline.enabled = _currenttile.Fogstate == 2;
+          _outline.enabled = _currenttile.Fogstate >0;
           _outline.Setup(MapUIScript, GameManager.Instance.MyGameData.MyMapData.Tile(_coordinate));
           _tilescript.OnPointer = _outline;
 
@@ -1025,6 +986,7 @@ public class maptext : MonoBehaviour
           Image _topimage = _toptile.GetComponent<Image>();
           _topimage.raycastTarget = false;
           _topimage.sprite = _topespr;
+          _topimage.enabled = _currenttile.Fogstate >0;
           _tilescript.TopImage = _topimage;
 
 
@@ -1040,22 +1002,8 @@ public class maptext : MonoBehaviour
           Image _landmarkimage = _landmarktile.GetComponent<Image>();
           _landmarkimage.raycastTarget = false;
           _landmarkimage.sprite = _landmarkspr;
+          _landmarkimage.enabled= _currenttile.Fogstate >0;
           _tilescript.LandmarkImage = _landmarkimage;
-
-          string _eventname = $"{j},{i} EventMark";
-          GameObject _eventmark = new GameObject(_eventname, new System.Type[] { typeof(RectTransform), typeof(CanvasRenderer), typeof(Image) });
-          _eventmark.transform.SetParent(TileHolder_EventMark);
-          RectTransform _eventrect = _eventmark.GetComponent<RectTransform>();
-          _eventrect.sizeDelta = _cellsize;
-          _eventrect.position = new Vector3(_pos.x, _pos.y, _eventrect.position.z);
-          _eventrect.transform.localScale = Vector3.one;
-          _eventrect.anchoredPosition3D = new Vector3(_eventrect.anchoredPosition3D.x, _eventrect.anchoredPosition3D.y, 0.0f);
-          Image _etcimage = _eventmark.GetComponent<Image>();
-          _etcimage.raycastTarget = false;
-          _etcimage.sprite = _currenttile.TileType==TileTypeEnum.Event ? GameManager.Instance.ImageHolder.UnknownEvent :
-            _currenttile.TileType==TileTypeEnum.Resource ? GameManager.Instance.ImageHolder.GetResourceSprite(_currenttile, false) :
-            GameManager.Instance.ImageHolder.Transparent;
-          _tilescript.ETCImage = _etcimage;
 
           if (_currenttile.TileSettle != null)
           {
@@ -1071,7 +1019,7 @@ public class maptext : MonoBehaviour
             PreviewInteractive _tilepreview = _tilescript.Rect.transform.AddComponent<PreviewInteractive>();
             _tilepreview.PanelType = PreviewPanelType.TileInfo;
             _tilepreview.MyTileData = _currenttile;
-            _tilepreview.enabled = _currenttile.Fogstate == 2;
+            _tilepreview.enabled = _currenttile.Fogstate >0;
             _tilescript.Preview = _tilepreview;
             _tilepreview.OtherRect = _previewpos_bottom.GetComponent<RectTransform>();
             _tilepreview.OtherRect_other = _previewpos_top.GetComponent<RectTransform>();

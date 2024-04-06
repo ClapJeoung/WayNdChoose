@@ -13,30 +13,31 @@ using Lexone.UnityTwitchChat;
 using OpenCvSharp;
 using UnityEngine.XR;
 
+public class EventProgress
+{
+  public int LSuccess, RSuccess;
+  public EventProgress(int LSuccess, int RSuccess)
+  {
+    this.LSuccess = LSuccess;
+    this.RSuccess = RSuccess;
+  }
+  public void SetValue(bool dir, int value)
+  {
+    if (dir)
+    {
+      if (LSuccess < value) LSuccess = value;
+    }
+    else
+    {
+      if (RSuccess < value) RSuccess = value;
+    }
+  }
+}
+
 public class ProgressData
 {
   public List<string> EndingLists = new List<string>();
   public Dictionary<string, EventProgress> EventList = new Dictionary<string, EventProgress>();
-  public struct EventProgress
-  {
-    public int LSuccess, RSuccess;
-    public EventProgress(int LSuccess, int RSuccess)
-    {
-      this.LSuccess = LSuccess;
-      this.RSuccess = RSuccess;
-    }
-    public void SetValue(bool dir,int value)
-    {
-      if (dir)
-      {
-        if (LSuccess < value) LSuccess = value;
-      }
-      else
-      {
-        if(RSuccess< value) RSuccess = value;
-      }
-    }
-  }
   public ProgressData() { }
   public ProgressData(ProgressDataJosn jsondata)
   {
@@ -258,7 +259,7 @@ public class GameManager : MonoBehaviour
     {
       ProgressData.EventList[id].SetValue(dir, value);
     }
-    else ProgressData.EventList.Add(id,new ProgressData.EventProgress(dir?value:0,dir?0:value));
+    else ProgressData.EventList.Add(id,new EventProgress(dir?value:0,dir?0:value));
 
     string _json = JsonUtility.ToJson(new ProgressDataJosn(ProgressData));
     System.IO.File.WriteAllText(Application.persistentDataPath + "/" + ProgressDataName, _json);
@@ -849,6 +850,10 @@ public class GameManager : MonoBehaviour
   private void Update()
   {
 #if UNITY_EDITOR
+    if (Input.GetKeyDown(KeyCode.Tab))
+    {
+      UIManager.Instance.SetInfoPanel("·¹ÈÄ");
+    }
    // if (Input.GetKeyDown(KeyCode.Backspace))
    // {
    //      MyGameData = new GameData(QuestType.Cult);
@@ -946,7 +951,6 @@ public class GameManager : MonoBehaviour
       case QuestType.Cult: UIManager.Instance.CultUI.OpenUI_Prologue((QuestHolder_Cult)MyGameData.CurrentQuestData); break;
     }
 
-    MyGameData.MyMapData.SetEventTiles();
     UIManager.Instance.UpdateAllUI();
 
     yield return StartCoroutine(UIManager.Instance.opengamescene());
