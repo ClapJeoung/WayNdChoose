@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum HighlightEffectEnum { HP, Sanity, Gold, Supply,Skill, Madness, Exp,Rational,Physical,Mental,Material}
+public enum HighlightEffectEnum { HP, Sanity, Gold, Supply,Skill, Madness, Exp,Rational,Physical,Mental,Material,SkillProgress}
 
 public class HighlightEffects : MonoBehaviour
 {
@@ -36,6 +36,8 @@ public class HighlightEffects : MonoBehaviour
         return HighlightList[9];
       case HighlightEffectEnum.Material:
         return HighlightList[10];
+      case HighlightEffectEnum.SkillProgress:
+        return HighlightList[11];
     }
     return null;
   }
@@ -53,6 +55,9 @@ public class HighlightEffects : MonoBehaviour
           break;
         case HighlightEffectEnum.Skill:
           GetHighlight(info.CallType).SetEffect_Skill(info.Skilltype);
+          break;
+        case HighlightEffectEnum.SkillProgress:
+          GetHighlight(info.CallType).SetEffect();
           break;
         default:
           GetHighlight(info.CallType).SetEffect();

@@ -115,25 +115,25 @@ public class UI_Mad : UI_default
         GameManager.Instance.MyGameData.Madness_Conversation = true;
         GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.MadnessHPLoss_Skill;
         GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.MadnessSanityGen_Skill;
-        UIManager.Instance.UpdateSkillLevel();
+        UIManager.Instance.SkillUI.UpdateSkillLevel();
         break;
       case 1:
         GameManager.Instance.MyGameData.Madness_Force = true;
         GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.MadnessHPLoss_Skill;
         GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.MadnessSanityGen_Skill;
-        UIManager.Instance.UpdateSkillLevel();
+        UIManager.Instance.SkillUI.UpdateSkillLevel();
         break;
       case 2:
         GameManager.Instance.MyGameData.Madness_Wild = true;
         GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.MadnessHPLoss_Skill;
         GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.MadnessSanityGen_Skill;
-        UIManager.Instance.UpdateSkillLevel();
+        UIManager.Instance.SkillUI.UpdateSkillLevel();
         break;
       case 3:
         GameManager.Instance.MyGameData.Madness_Intelligence = true;
         GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.MadnessHPLoss_Skill;
         GameManager.Instance.MyGameData.Sanity += GameManager.Instance.MyGameData.MadnessSanityGen_Skill;
-        UIManager.Instance.UpdateSkillLevel();
+        UIManager.Instance.SkillUI.UpdateSkillLevel();
         break;
 
         case 4:

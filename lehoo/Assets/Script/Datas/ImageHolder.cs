@@ -694,6 +694,8 @@ public class ImageHolder : ScriptableObject
   }
   public List<Sprite> Cult_Sabbat = new List<Sprite>();
   public List<Sprite> Cult_Ritual = new List<Sprite>();
+  public Sprite SkillProgress_Empty = null;
+  public Sprite SkillProgress_Full = null;
 }
 public class EventIllustHolder
 {

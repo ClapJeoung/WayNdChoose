@@ -728,7 +728,7 @@ public class GameManager : MonoBehaviour
     }
 
     UIManager.Instance.UpdateExpPanel();
-    UIManager.Instance.UpdateSkillLevel();
+    UIManager.Instance.SkillUI.UpdateSkillLevel();
   }
   /// <summary>
   /// 0:A 1:B
@@ -783,7 +783,7 @@ public class GameManager : MonoBehaviour
     }
 
     UIManager.Instance.UpdateExpPanel();
-    UIManager.Instance.UpdateSkillLevel();
+    UIManager.Instance.SkillUI.UpdateSkillLevel();
   }
   public void SetEvent(EventData eventdata)
   {

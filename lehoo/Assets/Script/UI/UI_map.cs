@@ -1518,7 +1518,7 @@ public class UI_map : UI_default
         if (GameManager.Instance.MyGameData.Madness_Wild)
         {
           GameManager.Instance.MyGameData.TotalMoveCount++;
-          UIManager.Instance.SetWildMadCount();
+          UIManager.Instance.SkillUI.SetWildMadCount();
         }
         if (Destinations.Contains(AllTiles[_currentindex - 1]))
         {
@@ -1578,7 +1578,7 @@ public class UI_map : UI_default
               }
 
               UIManager.Instance.SetInfoPanel(_info);
-              yield return StartCoroutine(resourcegain(_currentindex, _resourcecount));
+              yield return StartCoroutine(resourcegain(_resourceindex, _resourcecount));
 
               GameManager.Instance.MyGameData.Turn++;
               GameManager.Instance.MyGameData.CurrentSettlement = null;
@@ -1605,9 +1605,9 @@ public class UI_map : UI_default
               if (GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
               {
                 int _resourcecount = 2;
-                int _resourceindex = AllTiles[_currentindex - 1].ResourceType;
+                int _resourceindex = 5;
 
-                yield return StartCoroutine(resourcegain(_currentindex, _resourcecount));
+                yield return StartCoroutine(resourcegain(_resourceindex, _resourcecount));
               }
 
               yield return new WaitForSeconds(0.5f);
@@ -1764,7 +1764,7 @@ public class UI_map : UI_default
         if (GameManager.Instance.MyGameData.Madness_Wild)
         {
           GameManager.Instance.MyGameData.TotalMoveCount++;
-          UIManager.Instance.SetWildMadCount();
+          UIManager.Instance.SkillUI.SetWildMadCount();
         }
         UIManager.Instance.AudioManager.StopWalking();
 
@@ -1816,7 +1816,7 @@ public class UI_map : UI_default
           }
 
           UIManager.Instance.SetInfoPanel(_info);
-          yield return StartCoroutine(resourcegain(_currentindex, _resourcecount));
+          yield return StartCoroutine(resourcegain(_resourceindex, _resourcecount));
 
           GameManager.Instance.MyGameData.Turn++;
           GameManager.Instance.MyGameData.CurrentSettlement = null;
@@ -1831,9 +1831,9 @@ public class UI_map : UI_default
           if (GameManager.Instance.MyGameData.Tendency_Head.Level > 1)
           {
             int _resourcecount = 2;
-            int _resourceindex = AllTiles[_currentindex - 1].ResourceType;
+            int _resourceindex = 5;
 
-            yield return StartCoroutine(resourcegain(_currentindex, _resourcecount));
+            yield return StartCoroutine(resourcegain(_resourceindex, _resourcecount));
           }
 
           yield return new WaitForSeconds(0.5f);
@@ -2185,10 +2185,9 @@ public class UI_map : UI_default
     ResetPreview();
     TileInfoText.text =Destinations.Count==0? GameManager.Instance.GetTextData("CHOOSETILE_MAP"):TileInfoDescription(Destinations[Destinations.Count-1]);
   }
-  private IEnumerator resourcegain(int index, int resourcecount)
+  private IEnumerator resourcegain(int resourceindex, int resourcecount)
   {
-    int _resourcetype = AllTiles[index-1].ResourceType;
-    Sprite _spr = GameManager.Instance.ImageHolder.GetResourceSprite(_resourcetype, true);
+    Sprite _spr = GameManager.Instance.ImageHolder.GetResourceSprite(resourceindex, true);
     for (int i = 0; i < resourcecount; i++)
     {
       GameObject _icon = Instantiate(ResourceIconPrefab, ResourceHolder);

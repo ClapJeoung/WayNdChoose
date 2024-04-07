@@ -133,7 +133,7 @@ public class PreviewRewardGroup : MonoBehaviour
           case RewardTypeEnum.Skill:
             if (!RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(true);
             if (ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(false);
-            _rewardicon = GameManager.Instance.ImageHolder.GetSkillIcon(_success.Reward_SkillType, false);
+            _rewardicon = GameManager.Instance.ImageHolder.SkillProgress_Full;
             RewardIcon.sprite = _rewardicon;
             break;
         }

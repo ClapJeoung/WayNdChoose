@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: TextMeshPro/Sprite
   m_Shader: {fileID: 4800000, guid: cf81c85f95fe47e1a27f6ae460cf182c, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -17,6 +19,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -822,6 +825,12 @@ MonoBehaviour:
     m_Scale: 1
     m_Name: StatusTextImages_123
     m_HashCode: 1471763186
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 124
+    m_Scale: 1
+    m_Name: StatusTextImages_124
+    m_HashCode: 1471763189
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -2803,9 +2812,25 @@ MonoBehaviour:
       m_Y: 1331
       m_Width: 102
       m_Height: 102
-    m_Scale: 1
+    m_Scale: 1.2
     m_AtlasIndex: 0
     m_ClassDefinitionType: 0
     sprite: {fileID: 963219701, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
+  - m_Index: 124
+    m_Metrics:
+      m_Width: 200
+      m_Height: 200
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 174
+      m_HorizontalAdvance: 215
+    m_GlyphRect:
+      m_X: 409
+      m_Y: 1331
+      m_Width: 102
+      m_Height: 102
+    m_Scale: 1.2
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: 1364316617, guid: fb137bc6ce6b7d84a91dbaf8e50336f1, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []

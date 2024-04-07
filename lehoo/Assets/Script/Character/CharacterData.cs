@@ -194,6 +194,8 @@ public class StatusData
     TileDefaultPer_Event = int.Parse(textrow[149].Split("\t")[1]);
     TileDefaultPer_Camping = int.Parse(textrow[150].Split("\t")[1]);
     TilePer_Modify= int.Parse(textrow[151].Split("\t")[1]);
+
+    SkillProgress_Max = int.Parse(textrow[152].Split("\t")[1]);
   }
 public  int ConversationEffect_Level=1,
     ConversationEffect_Value = 1;
@@ -355,6 +357,8 @@ public  int ConversationEffect_Level=1,
   public int TileDefaultPer_Event = 0;
   public int TileDefaultPer_Camping = 0;
   public int TilePer_Modify = 0;
+
+  public int SkillProgress_Max = 0;
 }
 public class GameData    //게임 진행도 데이터
 {
@@ -456,7 +460,7 @@ public class GameData    //게임 진행도 데이터
                   UIManager.Instance.HighlightManager.Highlight_Madness( SkillTypeEnum.Conversation);
                   UIManager.Instance.AudioManager.PlaySFX(34, "madness");
                   UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.MadnessActive,
-                    UIManager.Instance.ConversationIconRect);
+                    UIManager.Instance.SkillUI.ConversationIconRect);
                   break;
               }
             }
@@ -748,6 +752,31 @@ public class GameData    //게임 진행도 데이터
   #endregion
 
   #region #기술#
+  private int skillprogress = 0;
+  public int SkillProgress
+  {
+    get { return skillprogress; }
+    set
+    {
+      skillprogress = value;
+      UIManager.Instance.SkillUI.SetProgres();
+    }
+  }
+  public int SkillLevelupCount = 0;
+  public int SkillProgressRequire
+  {
+    get 
+    {
+      int _sum = 0;
+      for(int i=1;i< GameManager.Instance.Status.SkillProgress_Max; i++)
+      {
+        _sum += i;
+        if (SkillLevelupCount < _sum) return i;
+      }
+      return GameManager.Instance.Status.SkillProgress_Max;
+    }
+  }
+
   public Skill Skill_Conversation=new Skill(SkillTypeEnum.Conversation), 
     Skill_Force = new Skill(SkillTypeEnum.Force), 
     Skill_Wild = new Skill(SkillTypeEnum.Wild), 
@@ -793,7 +822,7 @@ public class GameData    //게임 진행도 데이터
     else if(ShortExp_B== _exp) ShortExp_B = null;
 
     UIManager.Instance.UpdateExpPanel();
-    UIManager.Instance.UpdateSkillLevel();
+    UIManager.Instance.SkillUI.UpdateSkillLevel();
   }
   #endregion
 
@@ -1218,6 +1247,9 @@ public class GameData    //게임 진행도 데이터
       MyMapData.Citys.Add(_city);
     }
 
+    skillprogress = jsondata.skillprogress;
+    SkillLevelupCount = jsondata.SkillLevelupCount;
+
     Coordinate = jsondata.Coordinate;
     CurrentSettlement = MyMapData.Tile(Coordinate).TileSettle;
     FirstRest = jsondata.FirstRest;
@@ -1333,7 +1365,7 @@ public class Skill
   private int levelbydefault = 0;
   public int LevelByDefault
   {
-    get { return levelbydefault; } set {  levelbydefault = value; UIManager.Instance.UpdateSkillLevel(); }
+    get { return levelbydefault; } set {  levelbydefault = value; UIManager.Instance.SkillUI.UpdateSkillLevel(); }
   }
   public int Level
   {
@@ -1564,7 +1596,7 @@ public class Tendency
       if (GameManager.Instance.MyGameData != null)
       {
         UIManager.Instance.UpdateTendencyIcon();
-        UIManager.Instance.UpdateSkillLevel();
+        UIManager.Instance.SkillUI.UpdateSkillLevel();
       }
     }
   }
@@ -1578,6 +1610,10 @@ public class Tendency
 }
 public class GameJsonData
 {
+  public int skillprogress = 0;
+  public int SkillLevelupCount = 0;
+
+
   public bool IsDead = false;
   public int LastTilePerType=-1;
 
@@ -1672,6 +1708,9 @@ public class GameJsonData
 
   public GameJsonData(GameData data)
   {
+    skillprogress = data.SkillProgress;
+    SkillLevelupCount = data.SkillLevelupCount;
+
     IsDead = data.IsDead;
 
     LastTilePerType = data.LastTilePerType;

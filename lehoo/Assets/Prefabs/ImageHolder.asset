@@ -920,3 +920,5 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b369b97f10ae38540846728ec7fc8d1e, type: 3}
   - {fileID: 21300000, guid: 3dabd754fa8530a4787a2a468a9efd0e, type: 3}
   - {fileID: 21300000, guid: 12b55e941b72dfd44b7a54b127f19780, type: 3}
+  SkillProgress_Empty: {fileID: 21300000, guid: ff6c470213178454f98336b96f5ae77f, type: 3}
+  SkillProgress_Full: {fileID: 21300000, guid: fe5be61c1d5d47d4ba07ec93f34b6636, type: 3}

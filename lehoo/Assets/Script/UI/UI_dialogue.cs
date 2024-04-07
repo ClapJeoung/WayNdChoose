@@ -1557,9 +1557,9 @@ public class UI_dialogue : UI_default
         if (!ExpEffectObj.activeInHierarchy) ExpEffectObj.SetActive(true);
         break;
       case RewardTypeEnum.Skill:
-        _icon = GameManager.Instance.ImageHolder.GetSkillIcon(CurrentSuccessData.Reward_SkillType, false);
-        _description = $"{GameManager.Instance.GetTextData(CurrentSuccessData.Reward_SkillType, 0)} +1";
-        Reward_Highlight.SetInfo(new List<SkillTypeEnum> { CurrentSuccessData.Reward_SkillType });
+        _icon = GameManager.Instance.ImageHolder.SkillProgress_Full;
+        _description = GameManager.Instance.GetTextData("SkillProgress") + "+ 1";
+        Reward_Highlight.SetInfo(HighlightEffectEnum.SkillProgress);
         RewardIcon.sprite = _icon;
      
         if (!RewardIcon.gameObject.activeInHierarchy) RewardIcon.gameObject.SetActive(true);
@@ -1722,10 +1722,8 @@ public class UI_dialogue : UI_default
             break;
           case RewardTypeEnum.Skill:
             RemainReward = false;
-            GameManager.Instance.MyGameData.GetSkill(CurrentSuccessData.Reward_SkillType).LevelByDefault++;
+            GameManager.Instance.MyGameData.SkillProgress++;
             UIManager.Instance.AudioManager.PlaySFX(19);
-
-            StartCoroutine(UIManager.Instance.SetIconEffect(CurrentSuccessData.Reward_SkillType));
             break;
         }
 
@@ -2150,7 +2148,7 @@ public class UI_dialogue : UI_default
     if (GameManager.Instance.MyGameData.Madness_Force)
     {
       GameManager.Instance.MyGameData.TotalRestCount++;
-      UIManager.Instance.SetForceMadCount();
+      UIManager.Instance.SkillUI.SetForceMadCount();
     }
 
     int _discomfortvalue = DiscomfortValue;

@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
   public HighlightEffects HighlightManager = null;
   public ExpDragPreview ExpDragPreview = null;
   public MouseScript Mouse = null;
+  public UI_Skill SkillUI = null;
   public bool IsWorking = false;
   public PreviewManager PreviewManager = null;
   [SerializeField] private ImageSwapScript EnvirBackground = null;
@@ -368,162 +369,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform SanityIconRect = null;
   [SerializeField] private RectTransform GoldIconRect = null;
   [SerializeField] private RectTransform MovepointIconRect = null;
-  [SerializeField] private AnimationCurve SkillIconGainCurve = new AnimationCurve();
-  [SerializeField] private float SkillIconGainTime = 0.6f;
-  public RectTransform ConversationIconRect = null;
-  [SerializeField] private RectTransform ForceIconRect = null;
-  [SerializeField] private RectTransform WildIconRect = null;
-  [SerializeField] private RectTransform IntelligenceIconRect = null;
-  [SerializeField] private TextMeshProUGUI ForceMadCountText = null;
-  [SerializeField] private TextMeshProUGUI WildMadCountText = null;
-  [SerializeField] private float MadCountOpenTime = 0.5f;
-  [SerializeField] private float MadCountWaitTime= 1.5f;
-  [SerializeField] private float MadCountCloseTime = 0.5f;
-  [SerializeField] private AnimationCurve MadCountAnimationCurve = null;
-  public void SetForceMadCount()
-  {
-    ForceMadCountText.text =
-      GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force == GameManager.Instance.Status.MadnessEffect_Force - 1 ?
-      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Force.ToString()) :
-      ((GameManager.Instance.MyGameData.TotalRestCount % GameManager.Instance.Status.MadnessEffect_Force + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Force.ToString());
-    if (madcoroutine_force == null)
-    {
-      madcoroutine_force = madcounttext(ForceMadCountText.rectTransform);
-      StartCoroutine(madcoroutine_force);
-    }
-    else
-    {
-      StopCoroutine(madcoroutine_force);
-      madcoroutine_force = madcounttext(ForceMadCountText.rectTransform);
-      StartCoroutine(madcoroutine_force);
-    }
-  }
-  public void SetWildMadCount()
-  {
-    WildMadCountText.text =
-      GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary == GameManager.Instance.Status.MadnessEffect_Wild_temporary - 1 ?
-      WNCText.GetMadnessColor((GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Wild_temporary.ToString()) :
-      ((GameManager.Instance.MyGameData.TotalMoveCount % GameManager.Instance.Status.MadnessEffect_Wild_temporary + 1).ToString() + "/" + GameManager.Instance.Status.MadnessEffect_Wild_temporary.ToString());
-    if (madcoroutine_wild == null)
-    {
-      madcoroutine_wild = madcounttext(WildMadCountText.rectTransform);
-      StartCoroutine(madcoroutine_wild);
-    }
-    else
-    {
-      StopCoroutine(madcoroutine_wild);
-      madcoroutine_wild = madcounttext(WildMadCountText.rectTransform);
-      StartCoroutine(madcoroutine_wild);
-    }
-  }
-  private IEnumerator madcoroutine_force = null;
-  private IEnumerator madcoroutine_wild = null;
-  private IEnumerator madcounttext(RectTransform rect)
-  {
-    float _time = 0.0f, _targettime = MadCountOpenTime;
-    while (_time < _targettime)
-    {
-      rect.localScale = Vector3.one * MadCountAnimationCurve.Evaluate(_time / _targettime);
-      _time += Time.deltaTime; yield return null;
-    }
-    rect.localScale = Vector3.one;
-    yield return new WaitForSeconds(MadCountWaitTime);
-    _time = 0.0f; _targettime = MadCountCloseTime;
-    while (_time < _targettime)
-    {
-      rect.localScale = Vector3.one *(1.0f- MadCountAnimationCurve.Evaluate(_time / _targettime));
-      _time += Time.deltaTime; yield return null;
-    }
-    rect.localScale = Vector3.zero;
-  }
   private List<int> ActiveIconIndexList= new List<int>();
-//  [SerializeField] private RectTransform CultSidepanelOpenpos = null;
-  /// <summary>
-  /// Ã¼,Á¤,°ñ
-  /// </summary>
-  /// <param name="type"></param>
-  /// <param name="rect"></param>
-  /// <param name="isusing"></param>
-  public IEnumerator SetIconEffect(bool isusing,StatusTypeEnum status,RectTransform rect)
-  {
-    Vector2 _startpos=Vector2.zero, _endpos=Vector2.zero;
-    Sprite _icon = null;
-    switch(status)
-    {
-      case StatusTypeEnum.HP: 
-        _icon = isusing ? GameManager.Instance.ImageHolder.HPDecreaseIcon : GameManager.Instance.ImageHolder.HPIcon;
-        _startpos = isusing ? HPIcon.rectTransform.position : rect.position;
-        _endpos=isusing?rect.position : HPIcon.rectTransform.position;
-        break;
-      case StatusTypeEnum.Sanity:
-        _icon = isusing ? GameManager.Instance.ImageHolder.SanityDecreaseIcon : GameManager.Instance.ImageHolder.SanityIcon;
-        _startpos = isusing ? SanityIconRect.position : rect.position;
-        _endpos = isusing ? rect.position : SanityIconRect.position;
-        break;
-      case StatusTypeEnum.Gold:
-        _icon = isusing ? GameManager.Instance.ImageHolder.GoldDecreaseIcon : GameManager.Instance.ImageHolder.GoldIcon;
-        _startpos = isusing ? GoldIconRect.position : rect.position;
-        _endpos = isusing ? rect.position : GoldIconRect.position;
-        break;
-    }
-    int _index = 0;
-    RectTransform _iconrect = null;
-    for(int i=0;i<IconRectList.Count;i++)
-    {
-      _index = i;
-      if (ActiveIconIndexList.Contains(i)) continue;
-
-      _iconrect = IconRectList[_index];
-      _iconrect.GetComponent<Image>().sprite = _icon;
-      _iconrect.localScale = Vector3.one;
-      ActiveIconIndexList.Add(_index);
-      break;
-    }
-    
-    float _time = 0.0f;
-    AnimationCurve _curve = isusing ? IconUsingCurve : IconGainCurve;
-    float _targettime = isusing ? IconMoveTime_using : IconMoveTime_gain;
-    while (_time < _targettime)
-    {
-
-      _iconrect.position = Vector3.Lerp(_startpos, _endpos, _curve.Evaluate(_time / _targettime));
-      _iconrect.anchoredPosition3D = new Vector3(_iconrect.anchoredPosition3D.x, _iconrect.anchoredPosition3D.y, 0.0f);
-      if(isusing)_iconrect.localScale=Vector3.one*(1.0f-IconUsingScaleCurve.Evaluate(_time/ _targettime));
-
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    _iconrect.anchoredPosition = Vector2.one * 3000.0f;
-    ActiveIconIndexList.Remove(_index);
-  }
-  
-  public IEnumerator SetIconEffect(SkillTypeEnum skilltype)
-  {
-    RectTransform _targetrect = null;
-    switch (skilltype)
-    {
-      case SkillTypeEnum.Conversation:
-        _targetrect = ConversationIconRect;
-        break;
-      case SkillTypeEnum.Force:
-        _targetrect = ForceIconRect;
-        break;
-      case SkillTypeEnum.Wild:
-        _targetrect = WildIconRect;
-        break;
-      case SkillTypeEnum.Intelligence:
-        _targetrect = IntelligenceIconRect;
-        break;
-    }
-    float _time = 0.0f, _targettime = SkillIconGainTime;
-    while (_time < _targettime)
-    {
-      _targetrect.localScale=Vector3.one*Mathf.Lerp(1.0f,GameManager.Instance.Status.StatusHighlightSize,SkillIconGainCurve.Evaluate(_time/ _targettime));
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    _targetrect.localScale = Vector3.one;
-  }
   /// <summary>
   /// ¼ºÇâ
   /// </summary>
@@ -806,80 +652,6 @@ public class UIManager : MonoBehaviour
     Destroy(_prefab);
   }
   [Space(5)]
-  private int conversationlevel = -1;
-  private int forcelevel = -1;
-  private int wildlevel = -1;
-  private int intelligencelevel = -1;
-  [SerializeField] private TextMeshProUGUI ConversationLevel = null;
-  [SerializeField] private TextMeshProUGUI ForceLevel = null;
-  [SerializeField] private TextMeshProUGUI WildLevel = null;
-  [SerializeField] private TextMeshProUGUI IntelligenceLevel = null;
-  [SerializeField] private CanvasGroup ConversationEffectGroup = null;
-  [SerializeField] private CanvasGroup ForceEffectGroup = null;
-  [SerializeField] private CanvasGroup WildEffectGroup = null;
-  [SerializeField] private CanvasGroup IntelligenceEffectGroup = null;
-  [SerializeField] private Color MadnessColor = new Color();
-  [SerializeField] private Color IdleColor = Color.white;
-  public void UpdateSkillLevel()
-  {
-    ConversationLevel.text = GameManager.Instance.MyGameData.Madness_Conversation ?
-      WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Conversation.Level) :
-      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Conversation.Level);
-    ConversationIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Conversation ?
-      MadnessColor : IdleColor;
-
-    if (conversationlevel != -1)
-    {
-      if (conversationlevel != GameManager.Instance.MyGameData.Skill_Conversation.Level)
-      {
-        StartCoroutine(ChangeAlpha(ConversationEffectGroup, 0.0f, ExpGainTime));
-        conversationlevel = GameManager.Instance.MyGameData.Skill_Conversation.Level;
-      }
-    }
-
-    ForceLevel.text = GameManager.Instance.MyGameData.Madness_Force ?
-      WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Force.Level) :
-      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Force.Level);
-    ForceIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Force ?
-   MadnessColor : IdleColor;
-    if (forcelevel != -1)
-    {
-      if (forcelevel != GameManager.Instance.MyGameData.Skill_Force.Level)
-      {
-        StartCoroutine(ChangeAlpha(ForceEffectGroup, 0.0f, ExpGainTime));
-        forcelevel = GameManager.Instance.MyGameData.Skill_Force.Level;
-      }
-    }
-
-    WildLevel.text = GameManager.Instance.MyGameData.Madness_Wild ?
-      WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Wild.Level) :
-      WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Wild.Level);
-    WildIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Wild ?
-    MadnessColor : IdleColor;
-    if (wildlevel != -1)
-    {
-      if (wildlevel != GameManager.Instance.MyGameData.Skill_Wild.Level)
-      {
-        StartCoroutine(ChangeAlpha(WildEffectGroup, 0.0f, ExpGainTime));
-        wildlevel = GameManager.Instance.MyGameData.Skill_Wild.Level;
-      }
-    }
-
-    IntelligenceLevel.text = GameManager.Instance.MyGameData.Madness_Intelligence ?
-     WNCText.GetMadnessColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level) :
-     WNCText.UIIdleColor(GameManager.Instance.MyGameData.Skill_Intelligence.Level);
-    IntelligenceIconRect.transform.GetComponent<Image>().color = GameManager.Instance.MyGameData.Madness_Intelligence ?
-    MadnessColor : IdleColor;
-    if (intelligencelevel != -1)
-    {
-      if (intelligencelevel != GameManager.Instance.MyGameData.Skill_Intelligence.Level)
-      {
-        StartCoroutine(ChangeAlpha(IntelligenceEffectGroup, 0.0f, ExpGainTime));
-        intelligencelevel = GameManager.Instance.MyGameData.Skill_Intelligence.Level;
-      }
-    }
-  }
-
   [Space(5)]
   [SerializeField] private RectTransform TendencyBodyRect = null;
   [SerializeField] private Image TendencyBodyIcon = null;
@@ -1494,7 +1266,8 @@ public class UIManager : MonoBehaviour
     UpdateSupplyText(12);
     UpdateExpPanel();
     UpdateTendencyIcon();
-    UpdateSkillLevel();
+    SkillUI.UpdateSkillLevel();
+    SkillUI.SetProgres();
     switch (GameManager.Instance.MyGameData.QuestType)
     {
       case QuestType.Cult:
@@ -1506,7 +1279,7 @@ public class UIManager : MonoBehaviour
   private void Update()
   {
 #if UNITY_EDITOR
-    if (Input.GetKeyDown(KeyCode.F10))
+    if (Input.GetKeyDown(KeyCode.Home))
     {
       if(DebugUI.gameObject.activeInHierarchy==true)DebugUI.gameObject.SetActive(false);
       else

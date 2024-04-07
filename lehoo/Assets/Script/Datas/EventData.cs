@@ -90,7 +90,6 @@ public class EventHolder
               {
                 case RewardTypeEnum.Experience: Data.SelectionDatas[0].SuccessData.Reward_EXPID = _data.Reward_Info; break;
                 case RewardTypeEnum.Status: Data.SelectionDatas[0].SuccessData.Reward_StatusType = (StatusTypeEnum)int.Parse(_data.Reward_Info); break;
-                case RewardTypeEnum.Skill: Data.SelectionDatas[0].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info); break;
               }
             }
 
@@ -151,7 +150,6 @@ public class EventHolder
               {
                 case RewardTypeEnum.Experience: Data.SelectionDatas[i].SuccessData.Reward_EXPID = _data.Reward_Info.Split('@')[i]; break;
                 case RewardTypeEnum.Status: Data.SelectionDatas[i].SuccessData.Reward_StatusType = (StatusTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
-                case RewardTypeEnum.Skill: Data.SelectionDatas[i].SuccessData.Reward_SkillType = (SkillTypeEnum)int.Parse(_data.Reward_Info.Split('@')[i]); break;
               }
 
             }
@@ -1037,7 +1035,6 @@ public class SuccessData
   public RewardTypeEnum Reward_Type;
 
   public StatusTypeEnum Reward_StatusType;
-  public SkillTypeEnum Reward_SkillType;
   public string Reward_EXPID;
 }
 

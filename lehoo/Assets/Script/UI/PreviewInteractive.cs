@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel,TileInfo,TurnInfo,EndingPreview,ChatList}
+CultSidePanel,TileInfo,TurnInfo,EndingPreview,ChatList,SkillProgress}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
   public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -254,6 +254,14 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.ChatList:
         UIManager.Instance.PreviewManager.OpenChatListPanel(OtherRect, MySelectionTendency,MySelectionTendencyDir);
+        break;
+      case PreviewPanelType.SkillProgress:
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
+          GameManager.Instance.MyGameData.SkillProgress >= GameManager.Instance.MyGameData.SkillProgressRequire ?
+          GameManager.Instance.GetTextData("SkillProgress_Preview_full") :
+          string.Format(GameManager.Instance.GetTextData("SkillProgress_Preview_less"),
+          GameManager.Instance.MyGameData.SkillProgressRequire - GameManager.Instance.MyGameData.SkillProgress),
+          OtherRect, new Vector2(1.05f, 0.5f));
         break;
     }
   }
