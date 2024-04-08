@@ -1723,7 +1723,9 @@ public class UI_dialogue : UI_default
           case RewardTypeEnum.Skill:
             RemainReward = false;
             GameManager.Instance.MyGameData.SkillProgress++;
-            UIManager.Instance.AudioManager.PlaySFX(19);
+            if(GameManager.Instance.MyGameData.SkillProgress<GameManager.Instance.MyGameData.SkillProgressRequire)
+              UIManager.Instance.AudioManager.PlaySFX(19);
+            else UIManager.Instance.AudioManager.PlaySFX(39);
             break;
         }
 

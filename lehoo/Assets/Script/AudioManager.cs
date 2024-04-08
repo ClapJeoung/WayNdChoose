@@ -25,7 +25,7 @@ HPLoss,
   SanityGen,
   SanityLoss,
 GoldGen,
-SkillGain,
+SkillProgressGain,
   ExpGain,
   ExpLoss,
 TendencyChange,
@@ -39,7 +39,13 @@ Hungry,
 Movement,
 PaysanimationSFX,
 CheckAnimationSFX,
-ResourceGain
+ResourceGain,
+MadnessUse,
+SkillGain,
+  TileOpen,
+  MadInfoClose,
+  MadnessSelect,
+  SkillProgressFull
 }
 public class AudioManager : MonoBehaviour
 {
@@ -70,6 +76,7 @@ public class AudioManager : MonoBehaviour
   [SerializeField] private List<AudioClip> SFXs = new List<AudioClip>();
   [SerializeField] private List<AudioClip> WalkingSFXs= new List<AudioClip>();
   [SerializeField] private List<AudioClip> ResourceUseSFXs= new List<AudioClip>();
+  [SerializeField] private List<AudioClip> TileOpenSFXs = new List<AudioClip>();
   private List<AudioClip> PlayedList = new List<AudioClip>();
   [SerializeField] private UI_Menu Menu = null;
   public void PlayBGM()
@@ -164,6 +171,7 @@ public class AudioManager : MonoBehaviour
       break;
     }
   }
+  public void PlaySFX_TileOpen()=> PlaySFX(TileOpenSFXs[Random.Range(0, TileOpenSFXs.Count)]);
   public void StopSFX(int index)
   {
     AudioClip _clip = SFXs[index];
@@ -249,7 +257,7 @@ public class AudioManager : MonoBehaviour
   }
   private IEnumerator playwalking()
   {
-    yield return new WaitForSeconds(0.5f);
+    yield return new WaitForSeconds(0.1f);
     Walking = true;
     foreach (var audio in SFXAudios)
     {
@@ -258,21 +266,27 @@ public class AudioManager : MonoBehaviour
       CurrentWalkingChanel=audio;
       break;
     }
-    if (CurrentWalkingChanel == null) yield break;
+    if (CurrentWalkingChanel == null)
+    {
+      yield return null;
+      yield break;
+    }
     AudioClip _clip= WalkingSFXs[Random.Range(0, WalkingSFXs.Count)];
     CurrentWalkingChanel.Channel = "walking";
     CurrentWalkingChanel.Audio.clip= _clip;
     CurrentWalkingChanel.Audio.Play();
-    while (true)
+    while (Walking)
     {
-      if (!Walking) break;
       yield return new WaitUntil(() => { return !CurrentWalkingChanel.Audio.isPlaying; });
       _clip = WalkingSFXs[Random.Range(0, WalkingSFXs.Count)];
       CurrentWalkingChanel.Audio.clip = _clip;
       CurrentWalkingChanel.Audio.Play();
+      if (!Walking) break;
       yield return new WaitForSeconds(0.25f);
+      if (!Walking) break;
       yield return null;
     }
+    yield return null;
   }
   public void StopWalking()
   {
@@ -283,6 +297,7 @@ public class AudioManager : MonoBehaviour
       CurrentWalkingChanel.Audio.Stop();
       CurrentWalkingChanel.Channel = "";
       CurrentWalkingChanel = null;
+      WalkingCoroiutine = null;
     }
   }
   int LastResourceIndex = -1;

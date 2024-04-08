@@ -118,6 +118,17 @@ public class GameManager : MonoBehaviour
       GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
       try
       {
+        if (GameSaveData.Version[0] != Application.version[0] || GameSaveData.Version[2] != Application.version[2])
+        {
+          DeleteSaveData();
+        }
+      }
+      catch (Exception e)
+      {
+        DeleteSaveData();
+      }
+      try
+      {
         MyGameData = new GameData(GameSaveData);
         if (!GameSaveData.CurrentEventSequence) StartCoroutine(ConnectSelectionData_get(GameSaveData.CurrentEventID));
       }

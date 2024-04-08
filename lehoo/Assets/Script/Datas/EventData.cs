@@ -132,7 +132,7 @@ public class EventHolder
 
               if (Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Single) ||
                 Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Check_Multy) ||
-                                Data.SelectionDatas[0].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[0].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
+                Data.SelectionDatas[i].ThisSelectionType.Equals(SelectionTargetType.Pay) && Data.SelectionDatas[i].SelectionPayTarget.Equals(StatusTypeEnum.Gold))
 
               {
                 Data.SelectionDatas[i].FailData = new FailData(Data, tendencytype, i);

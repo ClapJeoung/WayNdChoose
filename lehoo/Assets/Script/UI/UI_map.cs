@@ -1527,8 +1527,6 @@ public class UI_map : UI_default
           }
           else 
           {
-            UIManager.Instance.AudioManager.StopWalking();
-
             TileData _destination = Destinations[_destinationindex];
             int _per_resource = GameManager.Instance.Status.TileDefaultPer_Resource;
             int _per_event = GameManager.Instance.Status.TileDefaultPer_Event;
@@ -2212,6 +2210,7 @@ public class UI_map : UI_default
   [SerializeField] private float TileChangeMoveTerm = 0.5f;
   private IEnumerator deactiveetctile(Image img,Sprite changesprite)
   {
+    UIManager.Instance.AudioManager.StopWalking();
     RectTransform _iconrect = img.rectTransform;
     RectTransform _previewrect = TilePreview_Mark.rectTransform;
     float _time = 0.0f;
@@ -2226,7 +2225,7 @@ public class UI_map : UI_default
     _previewrect.localScale = Vector3.zero;
     img.sprite = changesprite;
     TilePreview_Mark.GetComponent<Image>().sprite = changesprite;
-
+    UIManager.Instance.AudioManager.PlaySFX_TileOpen();
     if (TileChangeTime_wait > 0.0f) yield return new WaitForSeconds(TileChangeTime_wait);
 
     _time = 0.0f;

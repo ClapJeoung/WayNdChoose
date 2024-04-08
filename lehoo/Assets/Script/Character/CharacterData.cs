@@ -1610,6 +1610,7 @@ public class Tendency
 }
 public class GameJsonData
 {
+  public string Version = "";
   public int skillprogress = 0;
   public int SkillLevelupCount = 0;
 
@@ -1708,6 +1709,8 @@ public class GameJsonData
 
   public GameJsonData(GameData data)
   {
+    Version = Application.version;
+
     skillprogress = data.SkillProgress;
     SkillLevelupCount = data.SkillLevelupCount;
 

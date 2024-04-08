@@ -212,10 +212,10 @@ public class UI_Skill : MonoBehaviour
         break;
     }
 
-    StartCoroutine(UIManager.Instance.ChangeAlpha(ConvLevelUp, 0.0f, 0.3f));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(ForceLevelUp, 0.0f, 0.3f));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(WildLevelUp, 0.0f, 0.3f));
-    StartCoroutine(UIManager.Instance.ChangeAlpha(IntelLevelUp, 0.0f, 0.3f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(ConvLevelUp, 0.0f, 0.1f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(ForceLevelUp, 0.0f, 0.1f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(WildLevelUp, 0.0f, 0.1f));
+    StartCoroutine(UIManager.Instance.ChangeAlpha(IntelLevelUp, 0.0f, 0.1f));
 
     int _sum = 0;
     int _minusvalue = -1;
