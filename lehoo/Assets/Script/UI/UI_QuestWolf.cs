@@ -294,28 +294,31 @@ public class UI_QuestWolf : UI_default
         {
           case SettlementType.Village:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
-            GameManager.Instance.MyGameData.Cult_CoolTime =
+            GameManager.Instance.MyGameData.SkillProgress+=GameManager.Instance.Status.Quest_Cult_Village_Bonus;
+           /* GameManager.Instance.MyGameData.Cult_CoolTime =
               (int)( 
               ((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile,GameManager.Instance.MyGameData.MyMapData.Towns)+
-              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns) )/2)/ GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Town;
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns) )/2)/ GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Town;*/
             UIManager.Instance.MapUI.DoHighlight = true;
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
-              UIManager.Instance.SidePanelCultUI.VillageIconEffect.transform as RectTransform);
+              UIManager.Instance.SidePanelCultUI.TargetIconRect);
             break;
           case SettlementType.Town:
             GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
-            GameManager.Instance.MyGameData.Cult_CoolTime =
+            GameManager.Instance.MyGameData.SkillProgress += GameManager.Instance.Status.Quest_Cult_Town_Bonus;
+            /*GameManager.Instance.MyGameData.Cult_CoolTime =
              (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys) +
-              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_City;
+              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_City;*/
             UIManager.Instance.MapUI.DoHighlight = true;
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
-       UIManager.Instance.SidePanelCultUI.TownIconEffect.transform as RectTransform);
+       UIManager.Instance.SidePanelCultUI.TargetIconRect);
             break;
           case SettlementType.City:
             GameManager.Instance.MyGameData.SetSabbat();
             GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
+            GameManager.Instance.MyGameData.SkillProgress += GameManager.Instance.Status.Quest_Cult_Village_Bonus; 
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
-    UIManager.Instance.SidePanelCultUI.CityIconEffect.transform as RectTransform);
+    UIManager.Instance.SidePanelCultUI.TargetIconRect);
             break;
         }
         _eventtype = 2;

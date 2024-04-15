@@ -355,7 +355,7 @@ public class UI_dialogue : UI_default
           if (ExpUsageDic_L[exp] < exp.Duration -1) ExpUsageDic_L[exp]++;
           else
           {
-            UIManager.Instance.ExpUsingWarning(exp);
+            UIManager.Instance.ExpUI.ExpUsingWarning(exp);
             return;
           }
         }
@@ -368,7 +368,7 @@ public class UI_dialogue : UI_default
           }
           else
           {
-            UIManager.Instance.ExpUsingWarning(exp);
+            UIManager.Instance.ExpUI.ExpUsingWarning(exp);
             return;
           }
         }
@@ -380,7 +380,7 @@ public class UI_dialogue : UI_default
           }
           else
           {
-            UIManager.Instance.ExpUsingWarning(exp);
+            UIManager.Instance.ExpUI.ExpUsingWarning(exp);
             return;
           }
         }
@@ -443,7 +443,7 @@ public class UI_dialogue : UI_default
           if (ExpUsageDic_R[exp] < exp.Duration -1) ExpUsageDic_R[exp]++;
           else
           {
-            UIManager.Instance.ExpUsingWarning(exp);
+            UIManager.Instance.ExpUI.ExpUsingWarning(exp);
             return;
           }
         }
@@ -456,7 +456,7 @@ public class UI_dialogue : UI_default
           }
           else
           {
-            UIManager.Instance.ExpUsingWarning(exp);
+            UIManager.Instance.ExpUI.ExpUsingWarning(exp);
             return;
           }
         }
@@ -468,7 +468,7 @@ public class UI_dialogue : UI_default
           }
           else
           {
-            UIManager.Instance.ExpUsingWarning(exp);
+            UIManager.Instance.ExpUI.ExpUsingWarning(exp);
             return;
           }
         }
@@ -485,7 +485,7 @@ public class UI_dialogue : UI_default
         Selection_A.UpdateValues();
         Selection_B.UpdateValues();
       }
-      UIManager.Instance.UpdateExpUse();
+      UIManager.Instance.ExpUI.UpdateExpUse();
     }
 
   }
@@ -506,7 +506,7 @@ public class UI_dialogue : UI_default
         Selection_B.UpdateValues();
       }
 
-      UIManager.Instance.UpdateExpUse();
+      UIManager.Instance.ExpUI.UpdateExpUse();
  }
     else if (ExpUsageDic_R.ContainsKey(exp))
     {
@@ -523,7 +523,7 @@ public class UI_dialogue : UI_default
         Selection_B.UpdateValues();
       }
 
-      UIManager.Instance.UpdateExpUse();
+      UIManager.Instance.ExpUI.UpdateExpUse();
  }
   }
   public GameObject RewardAskObject = null;
@@ -934,7 +934,7 @@ public class UI_dialogue : UI_default
             if ((GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect) && CurrentEvent.Selection_type != SelectionTypeEnum.Single)
               TurnOnChatButton();
 
-              UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
+              UIManager.Instance.ExpUI.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             break;
           case 3:   //처음 열고 선택
@@ -944,7 +944,7 @@ public class UI_dialogue : UI_default
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
             IsSelecting = true;
-            UIManager.Instance.SetExpUse(CurrentEvent.SelectionDatas.ToList());
+            UIManager.Instance.ExpUI.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             break;
         }
@@ -1023,7 +1023,7 @@ public class UI_dialogue : UI_default
         {
           case 0:   //선택 누르고 내용
             if (NextButtonGroup.alpha == 0.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 1.0f, FadeTime));
-            UIManager.Instance.SetExpUnuse();
+            UIManager.Instance.ExpUI.SetExpUnuse();
 
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
             SetNextButtonActive();
@@ -1069,7 +1069,7 @@ public class UI_dialogue : UI_default
             break;
           case 3:   //선택 눌러서 보상
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
-            UIManager.Instance.SetExpUnuse();
+            UIManager.Instance.ExpUI.SetExpUnuse();
 
             if (CurrentEvent.Selection_type != SelectionTypeEnum.Single
               && Application.internetReachability != NetworkReachability.NotReachable
@@ -1133,6 +1133,45 @@ public class UI_dialogue : UI_default
   /// <param name="_selection"></param>
   public void SelectSelection(UI_Selection _selection)
   {
+    switch (_selection.MyTendencyType)
+    {
+      case TendencyTypeEnum.None:
+        break;
+      case TendencyTypeEnum.Body:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+        {
+          case -2:
+            if (_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_2;
+            break;
+          case -1:
+            if (_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_1; 
+            break;
+          case 1:
+            if (!_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_1;
+            break;
+          case 2:
+            if (!_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_2;
+            break;
+        }
+        break;
+      case TendencyTypeEnum.Head:
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        {
+          case -2:
+            if (_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_2;
+            break;
+          case -1:
+            if (_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_1;
+            break;
+          case 1:
+            if (!_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_1;
+            break;
+          case 2:
+            if (!_selection.IsLeft) GameManager.Instance.MyGameData.Sanity += GameManager.Instance.Status.TendencySanity_2;
+            break;
+        }
+        break;
+    }
     if ((GameManager.Instance.IsChzzConnect|| GameManager.Instance.IsTwitchConnect)&& CurrentEvent.Selection_type != SelectionTypeEnum.Single)
     {
       Selection_A.StopAllChat();
@@ -1161,8 +1200,8 @@ public class UI_dialogue : UI_default
       SelectDir = _selection.IsLeft;
     }
     //다른거 사라지게 만들고
-    UIManager.Instance.UseExp(_selection.IsLeft);
-    UIManager.Instance.UpdateExpButton(false);
+    UIManager.Instance.ExpUI.UseExp(_selection.IsLeft);
+    UIManager.Instance.ExpUI.UpdateExpButton(false);
     UIManager.Instance.AddUIQueue(selectionanimation(_selection));
     //성공, 실패 검사 실행 
   }
@@ -1660,7 +1699,7 @@ public class UI_dialogue : UI_default
     CurrentSuccessData = null;
     CurrentFailData = null;
     
-    UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
+   // UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
 
 
     if (RewardButtonGroup.alpha==1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(RewardButtonGroup, 0.0f, 0.3f));
@@ -1722,7 +1761,7 @@ public class UI_dialogue : UI_default
             break;
           case RewardTypeEnum.Skill:
             RemainReward = false;
-            GameManager.Instance.MyGameData.SkillProgress++;
+            GameManager.Instance.MyGameData.SkillProgress++; 
             if(GameManager.Instance.MyGameData.SkillProgress<GameManager.Instance.MyGameData.SkillProgressRequire)
               UIManager.Instance.AudioManager.PlaySFX(19);
             else UIManager.Instance.AudioManager.PlaySFX(39);
@@ -1994,8 +2033,10 @@ public class UI_dialogue : UI_default
         break;
       case true:
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
-        GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value);
+        GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value
+        , GameManager.Instance.Status.Quest_Cult_Sabbat_Supply);
         SectorEffect.text = _effect + _sabbatdescription;
+        SupplyValue += GameManager.Instance.Status.Quest_Cult_Sabbat_Supply;
         break;
     }
   }
@@ -2081,13 +2122,14 @@ public class UI_dialogue : UI_default
     {
       case false:
         SectorEffect.text = _effect;
-        UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
+       // UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
         break;
       case true:
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
-        GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value);
+        GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
+        GameManager.Instance.Status.Quest_Cult_Sabbat_Supply);
         SectorEffect.text = _effect + _sabbatdescription;
-        UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
+      //  UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
         break;
     }
     if (RestButtonHolder.gameObject.activeInHierarchy == false)
@@ -2167,7 +2209,7 @@ public class UI_dialogue : UI_default
         }
         break;
     }
-
+    _discomfortvalue = Mathf.Clamp(_discomfortvalue, 0, 100);
     float _restvalue = GameManager.Instance.MyGameData.GetDiscomfortValue(CurrentSettlement.Discomfort) * 100;
     switch (statustype)
     {

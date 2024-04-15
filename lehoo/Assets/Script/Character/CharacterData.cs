@@ -70,8 +70,8 @@ public class StatusData
     Quest_Cult_Progress_Ritual = int.Parse(textrow[42].Split("\t")[1]);
     Qeust_Cult_EventProgress_Clear = float.Parse(textrow[43].Split("\t")[1]);
     Quest_Cult_EventProgress_Fail = float.Parse(textrow[44].Split("\t")[1]);
-    Quest_Cult_Sabbat_PenaltyDiscomfort = int.Parse(textrow[45].Split("\t")[1]);
-    Quest_Cult_Ritual_PenaltySupply = int.Parse(textrow[46].Split("\t")[1]);
+    Quest_Cult_Sabbat_Supply = int.Parse(textrow[45].Split("\t")[1]);
+    Quest_Cult_Ritual_Resource = int.Parse(textrow[46].Split("\t")[1]);
     Quest_Cult_SupplyAsSanity = int.Parse(textrow[47].Split("\t")[1]);
     Quest_Cult_CoolTime_Village = int.Parse(textrow[48].Split("\t")[1]);
     Quest_Cult_CoolTime_Town = int.Parse(textrow[49].Split("\t")[1]);
@@ -190,13 +190,33 @@ public class StatusData
     RestoreSanity_campingarrival = int.Parse(textrow[146].Split("\t")[1]);
     Restoresanity_setlementarrival = int.Parse(textrow[147].Split("\t")[1]);
 
-    TileDefaultPer_Resource = int.Parse(textrow[148].Split("\t")[1]);
-    TileDefaultPer_Event = int.Parse(textrow[149].Split("\t")[1]);
-    TileDefaultPer_Camping = int.Parse(textrow[150].Split("\t")[1]);
+    TilePer_Resource_Default = int.Parse(textrow[148].Split("\t")[1]);
+    TilePer_Event_Default = int.Parse(textrow[149].Split("\t")[1]);
+    TilePer_Camping_Default = int.Parse(textrow[150].Split("\t")[1]);
     TilePer_Modify= int.Parse(textrow[151].Split("\t")[1]);
 
     SkillProgress_Max = int.Parse(textrow[152].Split("\t")[1]);
-  }
+
+    TendencySanity_1 = int.Parse(textrow[153].Split("\t")[1]);
+    TendencySanity_2 = int.Parse(textrow[154].Split("\t")[1]);
+
+    ResourceCount_Land = int.Parse(textrow[155].Split("\t")[1]);
+    ResourceCount_River = int.Parse(textrow[156].Split("\t")[1]);
+    ResourceCount_Forest = int.Parse(textrow[157].Split("\t")[1]);
+    ResourceCount_Mountain = int.Parse(textrow[158].Split("\t")[1]);
+
+    Quest_Cult_Village_Bonus = int.Parse(textrow[159].Split("\t")[1]);
+    Quest_Cult_Town_Bonus = int.Parse(textrow[160].Split("\t")[1]);
+    Quest_Cult_City_Bonus = int.Parse(textrow[161].Split("\t")[1]);
+
+    TilePer_Event_Value =  int.Parse(textrow[162].Split("\t")[1]);
+    TilePer_Resource_Value = int.Parse(textrow[163].Split("\t")[1]);
+    TilePer_Camp_Value = int.Parse(textrow[164].Split("\t")[1]);
+    Camping_Min = int.Parse(textrow[165].Split("\t")[1]);
+    Camping_Max = int.Parse(textrow[166].Split("\t")[1]);
+    Camping_Value  =  int.Parse(textrow[167].Split("\t")[1]);
+}
+  
 public  int ConversationEffect_Level=1,
     ConversationEffect_Value = 1;
   public  int ForceEffect_Level = 1,
@@ -244,8 +264,8 @@ public  int ConversationEffect_Level=1,
     Quest_Cult_Progress_Ritual = 7;
   public  float Qeust_Cult_EventProgress_Clear = 2.5f;
   public  float Quest_Cult_EventProgress_Fail = 1.5f;
-  public  int Quest_Cult_Sabbat_PenaltyDiscomfort = 4,
-    Quest_Cult_Ritual_PenaltySupply = 3;
+  public  int Quest_Cult_Sabbat_Supply = 4,
+    Quest_Cult_Ritual_Resource = 3;
   public  int Quest_Cult_SupplyAsSanity = 7;
   public  int Quest_Cult_CoolTime_Village =8;
   public  int Quest_Cult_CoolTime_Town = 8;
@@ -353,19 +373,37 @@ public  int ConversationEffect_Level=1,
   public int RestoreSanity_campingarrival = 0;
   public int Restoresanity_setlementarrival = 0;
 
-  public int TileDefaultPer_Resource = 0;
-  public int TileDefaultPer_Event = 0;
-  public int TileDefaultPer_Camping = 0;
+  public int TilePer_Resource_Default = 0;
+  public int TilePer_Event_Default = 0;
+  public int TilePer_Camping_Default = 0;
   public int TilePer_Modify = 0;
 
   public int SkillProgress_Max = 0;
+
+  public int TendencySanity_1 = 0;
+  public int TendencySanity_2 = 0;
+
+  public int ResourceCount_Land = 0;
+  public int ResourceCount_River = 0;
+  public int ResourceCount_Forest = 0;
+  public int ResourceCount_Mountain = 0;
+
+  public int Quest_Cult_Village_Bonus = 0;
+  public int Quest_Cult_Town_Bonus = 0;
+  public int Quest_Cult_City_Bonus = 0;
+
+  public int TilePer_Event_Value = 0;
+  public int TilePer_Resource_Value = 0;
+  public int TilePer_Camp_Value = 0;
+  public int Camping_Min = 0;
+  public int Camping_Max = 0;
+  public int Camping_Value = 0;
 }
 public class GameData    //게임 진행도 데이터
 {
   public bool IsDead = false;
   #region #지도,정착지 관련#
   public MapData MyMapData = null;
-  public int LastTilePerType = -1;
   public Vector2 Coordinate = Vector2.zero;
   public TileData CurrentTile { get { return MyMapData.Tile(Coordinate); } }
   public Settlement CurrentSettlement = null;//현재 위치한 정착지 정보]
@@ -404,7 +442,7 @@ public class GameData    //게임 진행도 데이터
                 ShortExp_A .Duration + _addvalue > GameManager.Instance.Status.EXPMaxTurn_short_idle+GameManager.Instance.MyGameData.Skill_Intelligence.Level/GameManager.Instance.Status.IntelEffect_Level*GameManager.Instance.Status.IntelEffect_Value  ? GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value : ShortExp_A .Duration + _addvalue;
         if (ShortExp_B != null) ShortExp_B.Duration =
                 ShortExp_B.Duration + _addvalue > GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value ? GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value : ShortExp_B.Duration + _addvalue;
-        UIManager.Instance.UpdateExpPanel();
+        UIManager.Instance.ExpUI.UpdateExpPanel();
         break;
       case SectorTypeEnum.NULL:
         break;
@@ -481,11 +519,12 @@ public class GameData    //게임 진행도 데이터
         if (ShortExp_B != null) ShortExp_B.Duration -= _expvalue;
 
 
-        UIManager.Instance.UpdateExpPanel();
+        UIManager.Instance.ExpUI.UpdateExpPanel();
 
         switch (QuestType)
         {
           case QuestType.Cult:
+            /*
             Cult_CoolTime--;
             if (Cult_CoolTime <= 0)
             {
@@ -520,6 +559,7 @@ public class GameData    //게임 진행도 데이터
               }
             }
             UIManager.Instance.SidePanelCultUI.UpdateUI();
+            */
             break;
         }
       }
@@ -693,7 +733,7 @@ public class GameData    //게임 진행도 데이터
       hp = value;
       if (hp > 100) hp = 100;
       if (hp <= 0) { hp = 0; GameManager.Instance.GameOver(); }
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateHPText(_last);
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.StatusUI.UpdateHPText(_last);
     }
   }
   private int sanity = 0;
@@ -706,7 +746,7 @@ public class GameData    //게임 진행도 데이터
       int _last = sanity;
       if (sanity > 100) sanity = value > sanity ? sanity : value < 0 ? 0 : value; 
       else sanity = Mathf.Clamp(value, 0, 100);
-      UIManager.Instance.UpdateSanityText(_last);
+      UIManager.Instance.StatusUI.UpdateSanityText(_last);
 
       if (value<=0)
       {
@@ -718,9 +758,9 @@ public class GameData    //게임 진행도 데이터
   {
     int _last = sanity;
     sanity = value;
-    UIManager.Instance.UpdateSanityText(_last);
+    UIManager.Instance.StatusUI.UpdateSanityText(_last);
   }
-  public List<int> Resources= new List<int>();
+  public Stack<int> Resources= new Stack<int>();
   private int gold = 0;
   public int Gold
   {
@@ -729,7 +769,7 @@ public class GameData    //게임 진행도 데이터
     {
       int _last = gold;
       gold = value < 0 ? 0 : value;
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateGoldText(_last);
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.StatusUI.UpdateGoldText(_last);
     }
   }
 
@@ -741,7 +781,7 @@ public class GameData    //게임 진행도 데이터
     {
       int _last = supply;
       supply = value < 0 ? 0 : value;
-      if (GameManager.Instance.MyGameData != null) UIManager.Instance.UpdateSupplyText(_last);
+      if (GameManager.Instance.MyGameData != null) UIManager.Instance.StatusUI.UpdateSupplyText(_last);
     }
   }
 
@@ -821,7 +861,7 @@ public class GameData    //게임 진행도 데이터
     else if(ShortExp_A== _exp) ShortExp_A = null;
     else if(ShortExp_B== _exp) ShortExp_B = null;
 
-    UIManager.Instance.UpdateExpPanel();
+    UIManager.Instance.ExpUI.UpdateExpPanel();
     UIManager.Instance.SkillUI.UpdateSkillLevel();
   }
   #endregion
@@ -985,15 +1025,15 @@ public class GameData    //게임 진행도 데이터
       {
         case 0: 
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
-          Cult_CoolTime = (int)(_village / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
+       //   Cult_CoolTime = (int)(_village / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case 1:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Temple : SectorTypeEnum.Marketplace;
-          Cult_CoolTime=(int)(_town/ GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
+        //  Cult_CoolTime=(int)(_town/ GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case 2:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
-          Cult_CoolTime = (int)(_city / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
+        //  Cult_CoolTime = (int)(_city / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
       }
     }
@@ -1003,15 +1043,15 @@ public class GameData    //게임 진행도 데이터
       {
         case SettlementType.Village:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Marketplace : SectorTypeEnum.Library;
-          Cult_CoolTime = (int)( (_town>_city?_city:_town) / GameManager.Instance.Status.Quest_Cult_LengthValue)+GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
+        //  Cult_CoolTime = (int)( (_town>_city?_city:_town) / GameManager.Instance.Status.Quest_Cult_LengthValue)+GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.Town:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Library;
-          Cult_CoolTime = (int)((Cult_SabbatSector== SectorTypeEnum.Residence?_village:_city) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
+        //  Cult_CoolTime = (int)((Cult_SabbatSector== SectorTypeEnum.Residence?_village:_city) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
         case SettlementType.City:
           Cult_SabbatSector = UnityEngine.Random.Range(0, 2) == 0 ? SectorTypeEnum.Residence : SectorTypeEnum.Temple;
-          Cult_CoolTime = (int)((_village>_town?_town:_village) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
+        //  Cult_CoolTime = (int)((_village>_town?_town:_village) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Sabbat;
           break;
       }
     }
@@ -1028,33 +1068,49 @@ public class GameData    //게임 진행도 데이터
   public void SetRitual()
   {
     UIManager.Instance.MapUI.DoHighlight = true;
+    if (Cult_SabbatSector != SectorTypeEnum.NULL) Cult_SabbatSector = SectorTypeEnum.NULL;
     Quest_Cult_Phase = 4;
-    List<TileData> _tiles = MyMapData.GetAroundTile(CurrentTile, 6);
-    List<TileData> _closetiles = MyMapData.GetAroundTile(CurrentTile, 3);
-    if(_tiles.Contains(CurrentTile))_tiles.Remove(CurrentTile);
-    List<int> _tileasindex= new List<int>();
-    for(int i=0;i<_tiles.Count;i++)
+
+    List<HexDir> _route = MyMapData.CenterTile.HexGrid.GetDirectRoute(CurrentTile.HexGrid);
+    TileData _center = MyMapData.CenterTile;
+    foreach (var _dir in _route) _center = MyMapData.GetNextTile(_center, _dir);
+
+    List<TileData> _aroundtiles= new List<TileData>();
+    List<TileData> _tilepool= new List<TileData>();
+    foreach(var _dir in _route)
     {
-      if (_closetiles.Contains(_tiles[i])) continue;
-      if (!_tiles[i].Interactable) continue;
-      if (_tiles[i].TileSettle != null) continue;
-
-
-      for(int j = 0; j < _tiles[i].RequireSupply; j++)
+      _tilepool.Clear();
+      _aroundtiles = MyMapData.GetAroundTile(_center, 1);
+      foreach (var _tile in _aroundtiles) if (_tile.BottomEnvir != BottomEnvirType.Sea&&_tile.Fogstate < 2) _tilepool.Add(_tile);
+      if (_tilepool.Count > 0)
       {
-        _tileasindex.Add(i);
+        Cult_RitualTile = _tilepool[UnityEngine.Random.Range(0, _tilepool.Count - 1)];
+        Cult_RitualTile.Landmark = LandmarkType.Ritual;
+        Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
+                  UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
+        return;
+      }
+      else
+      {
+        _center = MyMapData.GetNextTile(_center, _dir);
       }
     }
-    Cult_RitualTile = _tiles[_tileasindex[UnityEngine.Random.Range(0, _tileasindex.Count)]];
-       Cult_RitualTile.Landmark = LandmarkType.Ritual;
+    //여기까지 무사히 왔으면 쭉 오면서 쓸만한 타일이 하나도 없었다는 것
+    _aroundtiles = MyMapData.GetAroundTile(_center, GameManager.Instance.Status.LandRadius/3);
+    int _addcount = 0;
+    List<int> _randomindex= new List<int>();
+    for (int i = 0; i < _aroundtiles.Count; i++)
+    {
+      if (_aroundtiles[i].BottomEnvir == BottomEnvirType.Sea) continue;
+      _addcount = _aroundtiles[i].Fogstate == 0 ? 4 : _aroundtiles[i].Fogstate == 1 ? 2 : 1;
+      for (int j = 0; j < _addcount; j++) _randomindex.Add(i);
+    }
+    Cult_RitualTile = _aroundtiles[_randomindex[UnityEngine.Random.Range(0, _randomindex.Count - 1)]];
+    Cult_RitualTile.Landmark = LandmarkType.Ritual;
     Cult_RitualTile.ButtonScript.LandmarkImage.sprite =
               UIManager.Instance.MapUI.MapCreater.MyTiles.GetTile(GameManager.Instance.MyGameData.Cult_RitualTile.landmarkSprite);
-
-    Cult_CoolTime = (int)((Cult_RitualTile.HexGrid.GetDistance(CurrentTile)/ GameManager.Instance.Status.Quest_Cult_LengthValue)+GameManager.Instance.Status.Quest_Cult_CoolTime_Ritual);
-
-    if (Cult_SabbatSector != SectorTypeEnum.NULL) Cult_SabbatSector = SectorTypeEnum.NULL;
   }
-  public int Cult_CoolTime = 0;
+  // public int Cult_CoolTime = 0;
 
   public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
   public List<int> Cult_Progress_RitualEventIndex = new List<int>();
@@ -1156,15 +1212,13 @@ public class GameData    //게임 진행도 데이터
     sanity = 100;
     gold = GameManager.Instance.Status.StartGold ;
     QuestType=questtype;
-    Cult_CoolTime = GameManager.Instance.Status.Quest_Cult_CoolTime_Village;
+    //Cult_CoolTime = GameManager.Instance.Status.Quest_Cult_CoolTime_Village;
     Tendency_Body = new Tendency(TendencyTypeEnum.Body);
     Tendency_Head = new Tendency(TendencyTypeEnum.Head);
     Skill_Conversation = new Skill(SkillTypeEnum.Conversation,GameManager.Instance.Status.StartSkillLevel);
     Skill_Force = new Skill(SkillTypeEnum.Force, GameManager.Instance.Status.StartSkillLevel);
     Skill_Wild= new Skill(SkillTypeEnum.Wild, GameManager.Instance.Status.StartSkillLevel);
     Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence, GameManager.Instance.Status.StartSkillLevel);
-
-    LastTilePerType = -1;
   }
   /// <summary>
   /// 불러오기
@@ -1174,8 +1228,6 @@ public class GameData    //게임 진행도 데이터
   {
     MyMapData = new MapData();
     MyMapData.TileDatas = new TileData[GameManager.Instance.Status.MapSize, GameManager.Instance.Status.MapSize];
-
-    LastTilePerType = jsondata.LastTilePerType;
 
     int _index = 0;
     //[j,i]
@@ -1260,7 +1312,8 @@ public class GameData    //게임 진행도 데이터
     turn = jsondata.Turn;
     hp = jsondata.HP;
     sanity = jsondata.Sanity;
-    Resources=jsondata.Resources;
+    for(int i=jsondata.Resources.Count-1;i>-1;i--)
+      Resources.Push(jsondata.Resources[i]);
     gold = jsondata.Gold;
     supply= jsondata.Movepoint;
 
@@ -1319,7 +1372,7 @@ public class GameData    //게임 진행도 데이터
         Quest_Cult_Phase = jsondata.Cult_Phase;
         Cult_SabbatSector = (SectorTypeEnum)jsondata.Cult_SabbatSector;
         Cult_RitualTile = jsondata.Cult_RitualTile==Vector2Int.zero?null:  MyMapData.Tile(jsondata.Cult_RitualTile);
-        Cult_CoolTime = jsondata.Cult_CoolTime;
+       // Cult_CoolTime = jsondata.Cult_CoolTime;
         Cult_Progress_SabbatEventIndex = jsondata.Cult_Progress_SabbatEventIndex;
         Cult_Progress_RitualEventIndex = jsondata.Cult_Progress_RitualEventIndex;
         break;
@@ -1595,7 +1648,7 @@ public class Tendency
       Progress = 0;
       if (GameManager.Instance.MyGameData != null)
       {
-        UIManager.Instance.UpdateTendencyIcon();
+        UIManager.Instance.TendencyUI.UpdateTendencyIcon();
         UIManager.Instance.SkillUI.UpdateSkillLevel();
       }
     }
@@ -1616,7 +1669,6 @@ public class GameJsonData
 
 
   public bool IsDead = false;
-  public int LastTilePerType=-1;
 
   public List<int> Tiledata_Rotation = new List<int>();
   public List<int> Tiledata_BottomEnvir = new List<int>();
@@ -1703,7 +1755,7 @@ public class GameJsonData
   public float Cult_Progress = 0;
   public int Cult_SabbatSector = 0;
   public Vector2Int Cult_RitualTile = new Vector2Int();
-  public int Cult_CoolTime = 0;
+ // public int Cult_CoolTime = 0;
   public List<int> Cult_Progress_SabbatEventIndex = new List<int>();
   public List<int> Cult_Progress_RitualEventIndex = new List<int>();
 
@@ -1715,8 +1767,6 @@ public class GameJsonData
     SkillLevelupCount = data.SkillLevelupCount;
 
     IsDead = data.IsDead;
-
-    LastTilePerType = data.LastTilePerType;
 
     foreach (var _tile in data.MyMapData.TileDatas)
     {
@@ -1773,7 +1823,7 @@ public class GameJsonData
     Turn = data.Turn;
     HP = data.HP;
     Sanity = data.Sanity;
-    Resources = data.Resources;
+    Resources = data.Resources.ToList();
     Gold = data.Gold;
     Movepoint = data.Supply;
 
@@ -1828,7 +1878,7 @@ public class GameJsonData
         Cult_Phase = data.Quest_Cult_Phase;
         Cult_SabbatSector = (int)data.Cult_SabbatSector;
         Cult_RitualTile = data.Cult_RitualTile != null ? data.Cult_RitualTile.Coordinate : Vector2Int.zero;
-        Cult_CoolTime = data.Cult_CoolTime;
+      //  Cult_CoolTime = data.Cult_CoolTime;
         Cult_Progress_SabbatEventIndex = data.Cult_Progress_SabbatEventIndex;
         Cult_Progress_RitualEventIndex = data.Cult_Progress_RitualEventIndex;
 

@@ -726,19 +726,19 @@ public class GameManager : MonoBehaviour
       if (MyGameData.ShortExp_A != null)
       {
         MyGameData.ShortExp_A.Duration -= Status.MadnessEffect_Intelligence;
-        UIManager.Instance.UpdateExpMad(1);
+        UIManager.Instance.ExpUI.UpdateExpMad(1);
       }
       if (MyGameData.ShortExp_B != null)
       {
         MyGameData.ShortExp_B.Duration -= Status.MadnessEffect_Intelligence;
-        UIManager.Instance.UpdateExpMad(2);
+        UIManager.Instance.ExpUI.UpdateExpMad(2);
       }
 
       UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
       UIManager.Instance.AudioManager.PlaySFX(34, "madness");
     }
 
-    UIManager.Instance.UpdateExpPanel();
+    UIManager.Instance.ExpUI.UpdateExpPanel();
     UIManager.Instance.SkillUI.UpdateSkillLevel();
   }
   /// <summary>
@@ -759,12 +759,12 @@ public class GameManager : MonoBehaviour
         if (MyGameData.LongExp != null)
         {
           MyGameData.LongExp.Duration -= Status.MadnessEffect_Intelligence;
-          UIManager.Instance.UpdateExpMad(0);
+          UIManager.Instance.ExpUI.UpdateExpMad(0);
         }
         if (MyGameData.ShortExp_B != null)
         {
           MyGameData.ShortExp_B.Duration -= Status.MadnessEffect_Intelligence;
-          UIManager.Instance.UpdateExpMad(2);
+          UIManager.Instance.ExpUI.UpdateExpMad(2);
         }
 
         UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
@@ -780,12 +780,12 @@ public class GameManager : MonoBehaviour
         if (MyGameData.LongExp != null)
         {
           MyGameData.LongExp.Duration -= Status.MadnessEffect_Intelligence;
-          UIManager.Instance.UpdateExpMad(0);
+          UIManager.Instance.ExpUI.UpdateExpMad(0);
         }
         if (MyGameData.ShortExp_A != null)
         {
           MyGameData.ShortExp_A.Duration -= Status.MadnessEffect_Intelligence;
-          UIManager.Instance.UpdateExpMad(1);
+          UIManager.Instance.ExpUI.UpdateExpMad(1);
         }
 
         UIManager.Instance.HighlightManager.Highlight_Madness(SkillTypeEnum.Intelligence);
@@ -793,7 +793,7 @@ public class GameManager : MonoBehaviour
       }
     }
 
-    UIManager.Instance.UpdateExpPanel();
+    UIManager.Instance.ExpUI.UpdateExpPanel();
     UIManager.Instance.SkillUI.UpdateSkillLevel();
   }
   public void SetEvent(EventData eventdata)

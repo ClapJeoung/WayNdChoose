@@ -3,50 +3,53 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Text;
 
 public class SidePanel_Quest_Cult : MonoBehaviour
 {
   [SerializeField] private Slider ProgressSlider = null;
   public CanvasGroup SliderGroup = null;
   public CanvasGroup DefaultGroup = null;
-  [SerializeField] private TextMeshProUGUI TurnText = null;
-  [SerializeField] private float TurnTitleMoveTime = 1.5f;
-  [SerializeField] private AnimationCurve TurnTileAnimationCurve = new AnimationCurve();
-  [SerializeField] private RectTransform TurnTitleRect = null;
+//  [SerializeField] private TextMeshProUGUI TurnText = null;
+//  [SerializeField] private float TurnTitleMoveTime = 1.5f;
+//  [SerializeField] private AnimationCurve TurnTileAnimationCurve = new AnimationCurve();
+//  [SerializeField] private RectTransform TurnTitleRect = null;
   [SerializeField] private TextMeshProUGUI ValueText = null;
-  public Vector2 IconHidePos = new Vector2(-250.0f, 0.0f);
-  public Vector2 IconOpenPos = new Vector2(-90.0f, 0.0f);
-  public float OpenTime = 1.0f;
-  public float CloseTime = 0.8f;
-  public float WaitTime = 0.3f;
+  [SerializeField] private TextMeshProUGUI BonusText = null;
+  [SerializeField] private Vector2 IconHidePos = new Vector2(-145.0f, 0.0f);
+  [SerializeField] private Vector2 IconOpenPos = new Vector2(0.0f, 0.0f);
+  [SerializeField] private float OpenTime = 0.8f;
+  [SerializeField] private float CloseTime = 0.6f;
+  [SerializeField] private float WaitTime = 0.3f;
+  public RectTransform TargetIconRect = null;
   [Space(20)]
   public CanvasGroup Village_Group = null;
-  public CanvasGroup VillageIconEffect = null;
+ // public CanvasGroup VillageIconEffect = null;
   [Space(5)]
   public CanvasGroup Town_Group = null;
-  public CanvasGroup TownIconEffect = null;
+ // public CanvasGroup TownIconEffect = null;
   [Space(5)]
   public CanvasGroup City_Group = null;
-  public CanvasGroup CityIconEffect = null;
+  //public CanvasGroup CityIconEffect = null;
   [Space(5)]
   public CanvasGroup Sabbat_Group = null;
   [SerializeField] private Image Sabbat_SectorIcon = null;
-  [SerializeField] private Outline Sabbat_Effect = null;
+  //[SerializeField] private Outline Sabbat_Effect = null;
   public void SetSabbatFail()
   {
-    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetDiscomfortColor(GameManager.Instance.Status.Quest_Cult_Sabbat_PenaltyDiscomfort));
+    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetDiscomfortColor(GameManager.Instance.Status.Quest_Cult_Sabbat_Supply));
     UIManager.Instance.SetInfoPanel(_failtext);
   }
   public void SetRitualFail()
   {
-    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetSupplyColor(GameManager.Instance.Status.Quest_Cult_Ritual_PenaltySupply));
+    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"));
     UIManager.Instance.SetInfoPanel(_failtext);
   }
   [Space(5)]
   public CanvasGroup Ritual_Group = null;
   public Image Ritual_Bottom = null;
   [SerializeField] private Image Ritual_Top = null;
-  [SerializeField] private Outline Ritual_Effect = null;
+//  [SerializeField] private Outline Ritual_Effect = null;
   private IEnumerator OpenGroup(CanvasGroup group,float waittime)
   {
     if(waittime>0)yield return new WaitForSeconds(waittime);
@@ -59,7 +62,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   }
   private int LastPhase = -1;
   private float LastProgress = -1;
-  private int LastTurn = -1;
+ // private int LastTurn = -1;
   public void UpdateUI()
   {
     int _progressvalue = 0;
@@ -147,14 +150,37 @@ public class SidePanel_Quest_Cult : MonoBehaviour
 
     LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
     ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_ProgressValue"), _progressvalue);
-    TurnText.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    {
+      case 0: 
+        BonusText.text = "<sprite=124> +" + GameManager.Instance.Status.Quest_Cult_Village_Bonus;
+        break;
+      case 1:
+        BonusText.text = "<sprite=124> +" + GameManager.Instance.Status.Quest_Cult_Town_Bonus;
+        break;
+      case 2:
+        BonusText.text = "<sprite=124> +" + GameManager.Instance.Status.Quest_Cult_City_Bonus;
+        break;
+      case 3:
+        StringBuilder _sabbatstr= new StringBuilder();
+        for (int i = 0; i < GameManager.Instance.Status.Quest_Cult_Sabbat_Supply; i++) _sabbatstr.Append("<sprite=100>");
+        BonusText.text= _sabbatstr.ToString();
+        break;
+      case 4:
+        StringBuilder _ritualstr = new StringBuilder();
+        for (int i = 0; i < GameManager.Instance.Status.Quest_Cult_Ritual_Resource; i++) _ritualstr.Append("<sprite=121>");
+        BonusText.text = _ritualstr.ToString();
+        break;
+    }
+
+ /*  TurnText.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
     if (LastTurn != -1 && LastTurn != GameManager.Instance.MyGameData.Cult_CoolTime)
     {
       StartCoroutine(spinturntitle());
     }
-    LastTurn = GameManager.Instance.MyGameData.Cult_CoolTime;
+    LastTurn = GameManager.Instance.MyGameData.Cult_CoolTime;*/
   }
-  private IEnumerator spinturntitle()
+/*  private IEnumerator spinturntitle()
   {
     float _time = 0.0f;
     float _rotatevalue = (LastTurn - GameManager.Instance.MyGameData.Cult_CoolTime) * 360.0f;
@@ -166,7 +192,8 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     }
     TurnTitleRect.rotation = Quaternion.Euler(Vector3.zero);
     yield return null;
-  }
+   
+  }*/
   public void UpdateProgressValue()
   {
     if (LastProgress != GameManager.Instance.MyGameData.Quest_Cult_Progress)
@@ -193,7 +220,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     }
   }
 
-  public void SetSabbatEffect(bool enable)
+ /* public void SetSabbatEffect(bool enable)
   {
     if(Sabbat_Effect.enabled!=enable) Sabbat_Effect.enabled= enable;
   }
@@ -216,4 +243,5 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         break;
     }
   }
+ */
 }

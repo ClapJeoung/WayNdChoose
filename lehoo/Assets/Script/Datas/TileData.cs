@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 public enum BottomEnvirType
@@ -16,19 +17,77 @@ public enum TileTypeEnum { Normal,Landmark}
 [System.Serializable]
 public class TileData
 {
+  private int resourcetype = -1;
+  /// <summary>
+  /// 자원 타입(0~5)
+  /// </summary>
   public int ResourceType
   {
     get
     {
-      int _id = 0;
-      if (TopEnvir == TopEnvirType.Mountain) _id = 4;
-      else if ((BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) && TopEnvir == TopEnvirType.Forest) _id = 3;
-      else if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) _id = 2;
-      else if (TopEnvir == TopEnvirType.Forest) _id = 1;
-      else _id = 0;
-      return _id;
+      if (resourcetype == -1)
+      {
+        if (TopEnvir == TopEnvirType.Mountain) resourcetype = 4;
+        else if ((BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) && TopEnvir == TopEnvirType.Forest) resourcetype = 3;
+        else if (BottomEnvir == BottomEnvirType.River || BottomEnvir == BottomEnvirType.RiverBeach) resourcetype = 2;
+        else if (TopEnvir == TopEnvirType.Forest) resourcetype = 1;
+        else resourcetype = 0;
+      }
+      return resourcetype;
     }
   }
+  private int resourcecount = -1;
+  /// <summary>
+  /// 자원 개수
+  /// </summary>
+  public int ResourceCount
+  {
+    get
+    {
+      if(resourcecount == -1)
+      {
+        switch (ResourceType)
+        {
+          case 0:resourcecount = GameManager.Instance.Status.ResourceCount_Land;break;
+          case 1: resourcecount = GameManager.Instance.Status.ResourceCount_Forest; break;
+          case 2: resourcecount = GameManager.Instance.Status.ResourceCount_River; break;
+          case 3: resourcecount = GameManager.Instance.Status.ResourceCount_Land; break;
+          case 4: resourcecount = GameManager.Instance.Status.ResourceCount_Mountain; break;
+        }
+      }
+      return resourcecount;
+    }
+  }
+  private string resourcetext = "";
+  /// <summary>
+  /// 자원 텍스트 <sprite=123>...
+  /// </summary>
+  public string ResourceText
+  {
+    get
+    {
+      if (resourcetext == "")
+      {
+        string _text = "";
+        switch (ResourceType)
+        {
+          case 0:_text = "<sprite=116>";break;
+          case 1: _text = "<sprite=117>"; break;
+          case 2: _text = "<sprite=118>"; break;
+          case 3: _text = "<sprite=119>"; break;
+          case 4: _text = "<sprite=120>"; break;
+        }
+        StringBuilder _sb= new StringBuilder();
+        for(int i=0;i<ResourceCount;i++)
+        {
+          _sb.Append(_text);
+        }
+        resourcetext = _sb.ToString();
+      }
+      return resourcetext;
+    }
+  }
+
   public Vector2Int Coordinate = Vector2Int.zero;
   private HexGrid hexgrid = null;
   public HexGrid HexGrid

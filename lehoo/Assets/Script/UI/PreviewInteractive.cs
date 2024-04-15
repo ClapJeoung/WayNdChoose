@@ -127,7 +127,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         break;
       case PreviewPanelType.MoveCostSanity:
         string _sanitycosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Santiy"),
-          WNCText.GetSanityColor(UIManager.Instance.MapUI.MoveCost_Sanity)+(UIManager.Instance.MapUI.IsMad(UIManager.Instance.MapUI.Destinations.Count)?WNCText.GetMadnessColor("?"):""));
+          WNCText.GetSanityColor(UIManager.Instance.MapUI.MoveCost_Sanity)+(UIManager.Instance.MapUI.IsMad?WNCText.GetMadnessColor("?"):""));
         if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
           _sanitycosttext += string.Format(string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),
             UIManager.Instance.MapUI.TotalSupplyCost - GameManager.Instance.MyGameData.Supply,
@@ -142,11 +142,11 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
         int _requiregold = UIManager.Instance.MapUI.MoveCost_Gold;
         string _goldcosttext = "";
         if (GameManager.Instance.MyGameData.Gold >= _requiregold)
-          _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_full"), WNCText.GetGoldColor(_requiregold) + (UIManager.Instance.MapUI.IsMad(UIManager.Instance.MapUI.Destinations.Count) ? WNCText.GetMadnessColor("?") : ""));
+          _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_full"), WNCText.GetGoldColor(_requiregold) + (UIManager.Instance.MapUI.IsMad ? WNCText.GetMadnessColor("?") : ""));
         else
           _goldcosttext = string.Format(GameManager.Instance.GetTextData("MoveCost_Gold_lack"),
             WNCText.GetGoldColor(GameManager.Instance.MyGameData.Gold),
-           WNCText.GetSanityColor(_defaultvalue - GameManager.Instance.MyGameData.Gold * 2)) + (UIManager.Instance.MapUI.IsMad(UIManager.Instance.MapUI.Destinations.Count) ? WNCText.GetMadnessColor("?") : "");
+           WNCText.GetSanityColor(_defaultvalue - GameManager.Instance.MyGameData.Gold * 2)) + (UIManager.Instance.MapUI.IsMad ? WNCText.GetMadnessColor("?") : "");
 
         if (UIManager.Instance.MapUI.TotalSupplyCost > GameManager.Instance.MyGameData.Supply)
           _goldcosttext += string.Format(GameManager.Instance.GetTextData("MoveCost_Penalty"),
@@ -182,26 +182,31 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           case 0:
             _sametext = GameManager.Instance.GetTextData("Village");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-              _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_Village+GameManager.Instance.MyGameData.Skill_Conversation.Level, GameManager.Instance.MyGameData.Cult_CoolTime);
+              _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_Village+ GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value,
+              GameManager.Instance.Status.Quest_Cult_Village_Bonus);
             break;
           case 1:
             _sametext = GameManager.Instance.GetTextData("Town");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-             _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value, GameManager.Instance.MyGameData.Cult_CoolTime);
+             _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
+             GameManager.Instance.Status.Quest_Cult_Town_Bonus);
             break;
           case 2:
             _sametext = GameManager.Instance.GetTextData("City");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-            _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value, GameManager.Instance.MyGameData.Cult_CoolTime);
+            _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
+            GameManager.Instance.Status.Quest_Cult_City_Bonus);
             break;
           case 3:
             _sametext = GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector,0);
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Sabbat"),
-           _sametext, _sametext,GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value, GameManager.Instance.MyGameData.Cult_CoolTime,GameManager.Instance.Status.Quest_Cult_Sabbat_PenaltyDiscomfort);
+           _sametext, _sametext,GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
+           GameManager.Instance.Status.Quest_Cult_Sabbat_Supply);
             break;
           case 4:
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Ritual"),
-            GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value, GameManager.Instance.MyGameData.Cult_CoolTime,GameManager.Instance.Status.Quest_Cult_Ritual_PenaltySupply);
+            GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
+            GameManager.Instance.Status.Quest_Cult_Ritual_Resource);
             break;
         }
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,OtherRect==null?transform as RectTransform : OtherRect, IsCultSidePanel ? new Vector2(1.05f, 0.5f) : new Vector2(0.5f, 1.05f));

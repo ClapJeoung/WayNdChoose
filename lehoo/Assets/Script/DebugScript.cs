@@ -63,7 +63,7 @@ public class DebugScript : MonoBehaviour
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {
       Cult_Phase.text = GameManager.Instance.MyGameData.Quest_Cult_Phase.ToString();
-      Cult_Cooltime.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
+    //  Cult_Cooltime.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
       Cult_Progress.text = GameManager.Instance.MyGameData.Quest_Cult_Progress.ToString();
     }
 
@@ -137,7 +137,7 @@ public class DebugScript : MonoBehaviour
         GameManager.Instance.MyGameData.ShortExp_B.Duration = EXP_Short_1_Turn.text != "" ? int.Parse(EXP_Short_1_Turn.text) : GameManager.Instance.Status.EXPMaxTurn_short_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value;
       }
     }
-    UIManager.Instance.UpdateExpPanel();
+    UIManager.Instance.ExpUI.UpdateExpPanel();
 
     if (GameManager.Instance.MyGameData.QuestType == QuestType.Cult)
     {

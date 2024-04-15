@@ -57,13 +57,14 @@ public class PreviewManager : MonoBehaviour
   //[SerializeField] private TextMeshProUGUI SelectionNoneText = null;
   // [SerializeField] private PreviewSelectionTendency SelectionNoneTendency = null;
   [SerializeField] private PreviewRewardGroup SelectionNoneReward = null;
+  [SerializeField] private TextMeshProUGUI SelectionNoneTendencyBonusText = null;
   [Space(10)]
   [SerializeField] private GameObject SelectionPayPanel = null;
   [SerializeField] private Image SelectionPayBackground = null;
-//  [SerializeField] private Image PayIcon = null;
- // [SerializeField] private TextMeshProUGUI PayInfo = null;
-//  [SerializeField] private TextMeshProUGUI PayRequireValue = null;
- // [SerializeField] private GameObject PayNoGoldHolder = null;
+  //  [SerializeField] private Image PayIcon = null;
+  // [SerializeField] private TextMeshProUGUI PayInfo = null;
+  //  [SerializeField] private TextMeshProUGUI PayRequireValue = null;
+  // [SerializeField] private GameObject PayNoGoldHolder = null;
   [SerializeField] private TextMeshProUGUI PayNoGold_Text = null;
   // [SerializeField] private TextMeshProUGUI PayNoGold_PercentText = null;
   //[SerializeField] private TextMeshProUGUI PayNoGold_PercentValue = null;
@@ -71,7 +72,8 @@ public class PreviewManager : MonoBehaviour
   // [SerializeField] private TextMeshProUGUI PaySubDescription = null;
   [SerializeField] private PreviewRewardGroup SelectionPayReward = null;
   // [SerializeField] private PreviewSelectionTendency SelectionPayTendendcy = null;
-  [Space(10)]
+    [SerializeField] private TextMeshProUGUI SelectionPayTendencyBonusText = null;
+[Space(10)]
   [SerializeField] private GameObject SelectionCheckPanel = null;
   [SerializeField] private Image SelectionCheckBackground = null;
  // [SerializeField] private Image[] SelectionCheckIcons = null;
@@ -80,6 +82,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_text = null;
   [SerializeField] private TextMeshProUGUI SelectionCheckPercent_int = null;
   [SerializeField] private PreviewRewardGroup SelectionCheckReward = null;
+  [SerializeField] private TextMeshProUGUI SelectionCheckTendencyBonusText = null;
   //  [SerializeField] private TextMeshProUGUI SelectionCheckDescription = null;
   // [SerializeField] private PreviewSelectionTendency SelectionCheckTendendcy = null;
   [Space(10)]
@@ -92,6 +95,7 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private TextMeshProUGUI SelectionOverTendencyText = null;
   [SerializeField] private TextMeshProUGUI SelectionOverTendencySuccessText = null;
   [SerializeField] private TextMeshProUGUI SelectionOverTendencyFailText = null;
+  [SerializeField] private TextMeshProUGUI SelectionOverTendencyBonusText = null;
   [Space(10)]
   [SerializeField] private GameObject ExpSelectEmptyPanel = null;
   [SerializeField] private Image ExpSelectEmptyIllust = null;
@@ -395,18 +399,57 @@ public class PreviewManager : MonoBehaviour
     Tendency _targettendency = null;
     Sprite _arrowsprite_left = null, _arrowsprite_right = null;
     Sprite _emptyarrow = GameManager.Instance.ImageHolder.Arrow_Empty;
-  //  Sprite _disablearrow = GameManager.Instance.ImageHolder.Arrow_White;
+    string _selectionname = "";
+    int _bonusvalue = 0;
  switch (_type)
     {
       case TendencyTypeEnum.Head:
         _targettendency = GameManager.Instance.MyGameData.Tendency_Head;
         _arrowsprite_left = GameManager.Instance.ImageHolder.Arrow_Active_mental;
         _arrowsprite_right = GameManager.Instance.ImageHolder.Arrow_Active_material;
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        {
+          case -2:
+            _selectionname = GameManager.Instance.GetTextData("Selection_mental");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_2;
+            break;
+          case -1:
+            _selectionname = GameManager.Instance.GetTextData("Selection_mental");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_1;
+            break;
+          case 1:
+            _selectionname = GameManager.Instance.GetTextData("Selection_material");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_1;
+            break;
+          case 2:
+            _selectionname = GameManager.Instance.GetTextData("Selection_material");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_2;
+            break;
+        }
         break;
       case TendencyTypeEnum.Body:
         _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
         _arrowsprite_left = GameManager.Instance.ImageHolder.Arrow_Active_rational;
         _arrowsprite_right = GameManager.Instance.ImageHolder.Arrow_Active_physical;
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        {
+          case -2:
+            _selectionname = GameManager.Instance.GetTextData("Selection_logic");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_2;
+            break;
+          case -1:
+            _selectionname = GameManager.Instance.GetTextData("Selection_logic");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_1;
+            break;
+          case 1:
+            _selectionname = GameManager.Instance.GetTextData("Selection_physical");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_1;
+            break;
+          case 2:
+            _selectionname = GameManager.Instance.GetTextData("Selection_physical");
+            _bonusvalue = GameManager.Instance.Status.TendencySanity_2;
+            break;
+        }
         break;
     }
     string _targetselectionname = _targettendency.Type == TendencyTypeEnum.Body ?
@@ -663,7 +706,8 @@ public class PreviewManager : MonoBehaviour
 
     string _name = _targettendency.Name;
     string _description = WNCText.SetSize(EffectFontSize, _targettendency.GetTendencyEffectString) + "<br><br>"+
-    string.Format(GameManager.Instance.GetTextData("TendencyPenalty"), _targetselectionname, _targetpenaltynames);
+    string.Format(GameManager.Instance.GetTextData("TendencyPenalty"), _targetselectionname, _targetpenaltynames)+"<br><br>"+
+    string.Format(GameManager.Instance.GetTextData("TendencyBonusDescription"),_selectionname,_bonusvalue) ;
   //    "<br><br>" + WNCText.SetSize(SubdescriptionSize, WNCText.GetSubdescriptionColor(_targettendency.SubDescription));
 
     TendencyName.text = _name;
@@ -678,6 +722,129 @@ public class PreviewManager : MonoBehaviour
     if (SelectionNoneReward.Setup(_selection) == false) return;
 
     SelectionNoneBackground.sprite = GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
+
+    switch (tendencytype)
+    {
+      case TendencyTypeEnum.None:
+        if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+        break;
+      case TendencyTypeEnum.Body:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionNoneTendencyBonusText.rectTransform);
+        break;
+      case TendencyTypeEnum.Head:
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionNoneTendencyBonusText.gameObject.activeSelf) SelectionNoneTendencyBonusText.gameObject.SetActive(true);
+              SelectionNoneTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionNoneTendencyBonusText.rectTransform);
+        break;
+    }
 
     LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionNoneBackground.rectTransform);
     
@@ -739,6 +906,129 @@ public class PreviewManager : MonoBehaviour
         break;//골드라면 지불,기본값,보정치,최종값을 받아오고 보정치가 존재한다면 텍스트에 삽입, 최종값이 보유값을 넘는다면 실패 확률 확인
     }
 
+    switch (tendencytype)
+    {
+      case TendencyTypeEnum.None:
+        if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+        break;
+      case TendencyTypeEnum.Body:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionPayTendencyBonusText.rectTransform);
+        break;
+      case TendencyTypeEnum.Head:
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionPayTendencyBonusText.gameObject.activeSelf) SelectionPayTendencyBonusText.gameObject.SetActive(true);
+              SelectionPayTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionPayTendencyBonusText.rectTransform);
+        break;
+    }
+
     LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionPayBackground.rectTransform);
 
     OpenPreviewPanel(SelectionPayPanel, toprect);
@@ -776,6 +1066,129 @@ public class PreviewManager : MonoBehaviour
     SelectionCheckPercent_text.text = _percentage_text;
     SelectionCheckPercent_int.text = _percentage_int;
 
+    switch (tendencytype)
+    {
+      case TendencyTypeEnum.None:
+        if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+        break;
+      case TendencyTypeEnum.Body:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionCheckTendencyBonusText.rectTransform);
+        break;
+      case TendencyTypeEnum.Head:
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionCheckTendencyBonusText.gameObject.activeSelf) SelectionCheckTendencyBonusText.gameObject.SetActive(true);
+              SelectionCheckTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionCheckTendencyBonusText.rectTransform);
+        break;
+    }
+
     LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionCheckBackground.rectTransform);
 
     OpenPreviewPanel(SelectionCheckPanel, toprect);
@@ -806,6 +1219,129 @@ public class PreviewManager : MonoBehaviour
     SelectionOverTendencyBackground.sprite= GameManager.Instance.ImageHolder.SelectionBackground(tendencytype, dir);
     SelectionOverTendencyText.text = GameManager.Instance.GetTextData("OverTendencySelectionInfo");
     CurrentPreview = SelectionOverTendencyPanel.GetComponent<RectTransform>();
+
+    switch (tendencytype)
+    {
+      case TendencyTypeEnum.None:
+        if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+        break;
+      case TendencyTypeEnum.Body:
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("logicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("physicalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionOverTendencyBonusText.rectTransform);
+        break;
+      case TendencyTypeEnum.Head:
+        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        {
+          case -2:
+            if (dir == true)
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            else
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case -1:
+            if (dir == true)
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("mentalchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            else
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            break;
+          case 1:
+            if (dir == true)
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_1);
+            }
+            break;
+          case 2:
+            if (dir == true)
+            {
+              if (SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(false);
+            }
+            else
+            {
+              if (!SelectionOverTendencyBonusText.gameObject.activeSelf) SelectionOverTendencyBonusText.gameObject.SetActive(true);
+              SelectionOverTendencyBonusText.text = string.Format(GameManager.Instance.GetTextData("TendnecySelectBonus"),
+                GameManager.Instance.GetTextData("materialchoice"),
+                GameManager.Instance.Status.TendencySanity_2);
+            }
+            break;
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionOverTendencyBonusText.rectTransform);
+        break;
+    }
 
     LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionOverTendencyText.transform.parent.transform as RectTransform);
     LayoutRebuilder.ForceRebuildLayoutImmediate(SelectionOverTendencyBackground.rectTransform);

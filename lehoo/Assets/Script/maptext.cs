@@ -97,6 +97,7 @@ public class maptext : MonoBehaviour
       Debug.Log($"{_index}번째 맵 성공\n");
       GameManager.Instance.MyGameData.MyMapData = _map;
 
+
       break;
     } 
   }

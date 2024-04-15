@@ -2747,6 +2747,48 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: StatusTextImages_125
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 2600
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be3e1b2c651fdeb4389c25fc224f41cf
+      internalID: -515183473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StatusTextImages_126
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 2600
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8143b8c84c996c14ba5f3412f63474f2
+      internalID: 1285013708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -2803,7 +2845,10 @@ TextureImporter:
       StatusTextImages_136: -2041291738
       StatusTextImages_137: 264703075
       StatusTextImages_138: -1007291878
+      StatusTextImages_139: 115970594
       StatusTextImages_14: 830329846
+      StatusTextImages_140: 1769368499
+      StatusTextImages_141: -1898492113
       StatusTextImages_15: -237304368
       StatusTextImages_16: 628938144
       StatusTextImages_17: 902524600

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Text;
 
 public class UI_Mad : UI_default
 {
@@ -238,10 +239,16 @@ public class UI_Mad : UI_default
                  WNCText.GetMaxSanityColor(GameManager.Instance.MyGameData.MadnessSanityGen_HP));
         break;
       case 5:
-        _description=GameManager.Instance.GetTextData("Madness_Skills")
+        StringBuilder _skills= new StringBuilder();
+        if (!GameManager.Instance.MyGameData.Madness_Conversation) _skills.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 2));
+        if (!GameManager.Instance.MyGameData.Madness_Force) _skills.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Force, 2));
+        if (!GameManager.Instance.MyGameData.Madness_Wild) _skills.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 2));
+        if (!GameManager.Instance.MyGameData.Madness_Intelligence) _skills.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 2));
+
+        _description =GameManager.Instance.GetTextData("Madness_Skills")
            + string.Format(GameManager.Instance.GetTextData("Madness_Result"),
            string.Format(GameManager.Instance.GetTextData("Madness_Skillvalue"),
-           GameManager.Instance.GetTextData("RandomSkill"),
+           string.Format(GameManager.Instance.GetTextData("RandomSkill"),_skills.ToString()),
            GameManager.Instance.Status.MadnessSkillLevel), GameManager.Instance.MyGameData.MadnessHPLoss_Skill, GameManager.Instance.MyGameData.MadnessSanityGen_Skill);
         break;
     }

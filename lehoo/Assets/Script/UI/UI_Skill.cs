@@ -36,7 +36,6 @@ public class UI_Skill : MonoBehaviour
   [SerializeField] private float MadCountCloseTime = 0.5f;
   [SerializeField] private AnimationCurve MadCountAnimationCurve = null;
   [SerializeField] private float LevelUpSize = 1.35f;
-  [SerializeField] private AnimationCurve LevelUpCurve= null;
   [SerializeField] private float LevelUpTime = 0.7f;
   public void SetForceMadCount()
   {
@@ -109,6 +108,10 @@ public class UI_Skill : MonoBehaviour
   private IEnumerator levelupcoroutine = null;
   [SerializeField] private float LevelUpBlinkTime = 0.6f;
   private bool IsLevelup = false;
+  [SerializeField] private float ProgressExpandSize = 1.7f;
+  [SerializeField] private float ProgressExpandTime = 1.2f;
+  [SerializeField] private float ProgressExpandWaitTime = 0.05f;
+  [SerializeField] private float ProgressExpandTerm = 0.3f;
 
   private void Start()
   {
@@ -127,6 +130,8 @@ public class UI_Skill : MonoBehaviour
           {
             ProgressIcons[i].GetComponent<CanvasGroup>().alpha = 1.0f;
             ProgressIcons[i].sprite = GameManager.Instance.ImageHolder.SkillProgress_Full;
+
+            if(i!=GameManager.Instance.MyGameData.SkillProgressRequire-1) StartCoroutine(UIManager.Instance.ExpandRect(ProgressIcons[i].rectTransform, ProgressExpandSize, ProgressExpandTime));
           }
         }
         else
@@ -155,6 +160,7 @@ public class UI_Skill : MonoBehaviour
       {
         levelupcoroutine = Blink();
         StartCoroutine(levelupcoroutine);
+        StartCoroutine(EnableLevelup());
       }
       else
       {
@@ -163,10 +169,10 @@ public class UI_Skill : MonoBehaviour
 
       if (ConvLevelUp.alpha==0.0f)
       {
-        StartCoroutine(UIManager.Instance.ChangeAlpha(ConvLevelUp,1.0f,0.3f));
-        StartCoroutine(UIManager.Instance.ChangeAlpha(ForceLevelUp, 1.0f, 0.3f));
-        StartCoroutine(UIManager.Instance.ChangeAlpha(WildLevelUp, 1.0f, 0.3f));
-        StartCoroutine(UIManager.Instance.ChangeAlpha(IntelLevelUp, 1.0f, 0.3f));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(ConvLevelUp,1.0f,0.1f));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(ForceLevelUp, 1.0f, 0.1f));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(WildLevelUp, 1.0f, 0.1f));
+        StartCoroutine(UIManager.Instance.ChangeAlpha(IntelLevelUp, 1.0f, 0.1f));
       }
     }
   }
@@ -188,6 +194,29 @@ public class UI_Skill : MonoBehaviour
     }
     LevelUpEffect.alpha = 0.0f;
   }
+  private IEnumerator EnableLevelup()
+  {
+    foreach(var _icon in ProgressIcons)
+    {
+      if (_icon.gameObject.activeSelf)
+      {
+        StartCoroutine(expandprogressicon(_icon.rectTransform));
+        yield return new WaitForSeconds(ProgressExpandTerm);
+      }
+      yield return null;
+    }
+
+  }
+  private IEnumerator expandprogressicon(RectTransform rect)
+  {
+    WaitForSeconds _wait = new WaitForSeconds(ProgressExpandWaitTime);
+    while (IsLevelup)
+    {
+      yield return StartCoroutine(UIManager.Instance.ExpandRect(rect, ProgressExpandSize, ProgressExpandTime));
+      yield return _wait;
+    }
+    yield return null;
+  }
   public void LevelUp(int index)
   {
     if (!IsLevelup) return;
@@ -196,19 +225,19 @@ public class UI_Skill : MonoBehaviour
     {
       case 0:
         GameManager.Instance.MyGameData.Skill_Conversation.LevelByDefault++;
-        StartCoroutine(levelupicon(ConversationIconRect));
+        StartCoroutine(UIManager.Instance.ExpandRect(ConversationIconRect, LevelUpSize,LevelUpTime));
         break;
       case 1: 
         GameManager.Instance.MyGameData.Skill_Force.LevelByDefault++;
-        StartCoroutine(levelupicon(ForceIconRect));
+        StartCoroutine(UIManager.Instance.ExpandRect(ForceIconRect, LevelUpSize, LevelUpTime));
         break;
       case 2: 
         GameManager.Instance.MyGameData.Skill_Wild.LevelByDefault++;
-        StartCoroutine(levelupicon(WildIconRect));
+        StartCoroutine(UIManager.Instance.ExpandRect(WildIconRect, LevelUpSize, LevelUpTime));
         break;
       case 3: 
         GameManager.Instance.MyGameData.Skill_Intelligence.LevelByDefault++;
-        StartCoroutine(levelupicon(IntelligenceIconRect));
+        StartCoroutine(UIManager.Instance.ExpandRect(IntelligenceIconRect, LevelUpSize, LevelUpTime));
         break;
     }
 
@@ -232,18 +261,7 @@ public class UI_Skill : MonoBehaviour
 
     GameManager.Instance.MyGameData.SkillLevelupCount++;
     GameManager.Instance.MyGameData.SkillProgress -= _minusvalue;
-  }
-  private IEnumerator levelupicon(Transform icon)
-  {
-    float _time=0.0f;
-    Vector3 _targetsize = Vector3.one * LevelUpSize;
-    while (_time < LevelUpTime)
-    {
-      icon.localScale=Vector3.Lerp(Vector3.one, _targetsize, LevelUpCurve.Evaluate(_time/LevelUpTime));
-      _time += Time.deltaTime;
-      yield return null;
-    }
-    icon.localScale = Vector3.one;
+    levelupcoroutine = null;
   }
   public void UpdateSkillLevel()
   {
