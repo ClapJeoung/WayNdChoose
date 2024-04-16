@@ -56,6 +56,7 @@ public class UI_dialogue : UI_default
   [SerializeField] private GameObject ExpEffect_Gold = null;
   [SerializeField] private TextMeshProUGUI RewardDescription = null;
   [SerializeField] private UI_RewardExp RewardExpUI = null;
+  [SerializeField] private UI_Tendency TendencyUI = null;
   [SerializeField] private RectTransform MapbuttonPos_Event = null;
   [SerializeField] private CanvasGroup EndingButtonGroup = null;
   [SerializeField] private TextMeshProUGUI EndingButtonText = null;
@@ -550,7 +551,8 @@ public class UI_dialogue : UI_default
   {
     get { return GameManager.Instance.MyGameData.CurrentEvent; }
   }
-  public int SelectionCount_A = -1, SelectionCount_B = -1;
+  private bool SelectDataLoadingFinished = false;
+  private int SelectionCount_A = -1, SelectionCount_B = -1;
   private UI_Selection GetOppositeSelection(UI_Selection _selection)
   {
     if (_selection == Selection_A) return Selection_B;
@@ -599,6 +601,7 @@ public class UI_dialogue : UI_default
       RewardText_Yes.text = GameManager.Instance.GetTextData("YES");
       RewardText_No.text = GameManager.Instance.GetTextData("NO");
     }
+    SelectDataLoadingFinished = false;
     SelectionCount_A = -1;SelectionCount_B = -1;
     RewardAskText.text = string.Format(GameManager.Instance.GetTextData("NOREWARD"),
       GameManager.Instance.MyGameData.CurrentSettlement == null ? GameManager.Instance.GetTextData("Map") : GameManager.Instance.GetTextData("Settlement"));
@@ -1037,14 +1040,9 @@ public class UI_dialogue : UI_default
           case 2:   //다음 버튼 눌러서 보상
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
-            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single 
-              && Application.internetReachability!=NetworkReachability.NotReachable
-              &&SelectionCount_A>-1&&SelectionCount_B>-1 )
+            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single&&SelectDataLoadingFinished )
             {
-              DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
-   (int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B)*100));
-              LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
-
+              SetSelectDataText();
             }
               if (CurrentSuccessData != null && CurrentEvent.EndingID != "")
             {
@@ -1071,14 +1069,9 @@ public class UI_dialogue : UI_default
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
             UIManager.Instance.ExpUI.SetExpUnuse();
 
-            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single
-              && Application.internetReachability != NetworkReachability.NotReachable
-              && SelectionCount_A > -1 && SelectionCount_B > -1)
+            if (CurrentEvent.Selection_type != SelectionTypeEnum.Single&&SelectDataLoadingFinished)
             {
-              DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
-   (int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B) * 100));
-              LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
-
+              SetSelectDataText();
             }
               if (CurrentSuccessData != null && CurrentEvent.EndingID != "")
             {
@@ -1108,6 +1101,24 @@ public class UI_dialogue : UI_default
       PhrIndex=-1;
     }
   }
+  public void UpdateSelectData(int left,int right)
+  {
+    SelectionCount_A = left;
+    SelectionCount_B = right;
+    SelectDataLoadingFinished = true;
+    if (!IsBeginning && PhrIndex == PhrIndex_max - 1 && EventPhaseIndex == EventPhaseIndex_max - 1)
+    {
+      SetSelectDataText();
+      if(DescriptionScrollBar.value>0)
+        StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
+    }
+  }
+  private void SetSelectDataText()
+  {
+    DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
+(int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B) * 100));
+    LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
+  }
   public void RefuseEnding()
   {
     if (UIManager.Instance.IsWorking) return;
@@ -1133,6 +1144,7 @@ public class UI_dialogue : UI_default
   /// <param name="_selection"></param>
   public void SelectSelection(UI_Selection _selection)
   {
+    TendencyUI.StopWhatever();
     switch (_selection.MyTendencyType)
     {
       case TendencyTypeEnum.None:

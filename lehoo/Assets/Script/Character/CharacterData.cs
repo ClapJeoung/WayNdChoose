@@ -209,13 +209,19 @@ public class StatusData
     Quest_Cult_Town_Bonus = int.Parse(textrow[160].Split("\t")[1]);
     Quest_Cult_City_Bonus = int.Parse(textrow[161].Split("\t")[1]);
 
-    TilePer_Event_Value =  int.Parse(textrow[162].Split("\t")[1]);
-    TilePer_Resource_Value = int.Parse(textrow[163].Split("\t")[1]);
+    TilePer_Event_Value =  float.Parse(textrow[162].Split("\t")[1]);
+    TilePer_Resource_Value = float.Parse(textrow[163].Split("\t")[1]);
     TilePer_Camp_Value = int.Parse(textrow[164].Split("\t")[1]);
     Camping_Min = int.Parse(textrow[165].Split("\t")[1]);
     Camping_Max = int.Parse(textrow[166].Split("\t")[1]);
     Camping_Value  =  int.Parse(textrow[167].Split("\t")[1]);
-}
+
+    EventPer_EndingStart= int.Parse(textrow[168].Split("\t")[1]);
+
+    TilePer_Event_Modify = int.Parse(textrow[169].Split("\t")[1]);
+    TilePer_Resource_Modify = int.Parse(textrow[170].Split("\t")[1]);
+    TilePer_Camp_Modify = int.Parse(textrow[171].Split("\t")[1]);
+  }
   
 public  int ConversationEffect_Level=1,
     ConversationEffect_Value = 1;
@@ -392,12 +398,18 @@ public  int ConversationEffect_Level=1,
   public int Quest_Cult_Town_Bonus = 0;
   public int Quest_Cult_City_Bonus = 0;
 
-  public int TilePer_Event_Value = 0;
-  public int TilePer_Resource_Value = 0;
+  public float TilePer_Event_Value = 0;
+  public float TilePer_Resource_Value = 0;
   public int TilePer_Camp_Value = 0;
   public int Camping_Min = 0;
   public int Camping_Max = 0;
   public int Camping_Value = 0;
+
+  public int EventPer_EndingStart = 0;
+
+  public int TilePer_Event_Modify = 0;
+  public int TilePer_Resource_Modify = 0;
+  public int TilePer_Camp_Modify = 0;
 }
 public class GameData    //게임 진행도 데이터
 {

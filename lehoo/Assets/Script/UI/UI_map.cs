@@ -56,8 +56,11 @@ public class UI_map : UI_default
   {
     get
     {
-      foreach(Image img in Outlines)
-        if(!img.enabled)return img;
+      foreach (Image img in Outlines)
+        if (!img.enabled)
+        {
+          return img;
+        }
 
      GameObject _newoutline=Instantiate(OutlinePrefab, Outlines[0].transform.parent);
       Outlines.Add(_newoutline.transform.GetComponent<Image>());
@@ -244,15 +247,18 @@ public class UI_map : UI_default
   }
   private int TilePer_Event
   { 
-    get { return GameManager.Instance.Status.TilePer_Event_Default + AllTiles.Count * GameManager.Instance.Status.TilePer_Event_Value; }
+    get { return GameManager.Instance.Status.TilePer_Event_Default +
+        Mathf.FloorToInt(Mathf.Pow(AllTiles.Count + GameManager.Instance.Status.TilePer_Event_Modify, GameManager.Instance.Status.TilePer_Event_Value)); }
   }
   private int TilePer_Resource 
   { 
-    get { return GameManager.Instance.Status.TilePer_Resource_Default + AllTiles.Count * GameManager.Instance.Status.TilePer_Resource_Value; } 
+    get { return GameManager.Instance.Status.TilePer_Resource_Default +
+        Mathf.FloorToInt(Mathf.Pow(AllTiles.Count + GameManager.Instance.Status.TilePer_Resource_Modify, GameManager.Instance.Status.TilePer_Resource_Value));
+    }
   }
   private int TilePer_Camping 
   { 
-    get { return GameManager.Instance.Status.TilePer_Camping_Default + AllTiles.Count * GameManager.Instance.Status.TilePer_Camp_Value;} 
+    get { return GameManager.Instance.Status.TilePer_Camping_Default;} 
   }
   private float CampingRestoreValue
   {
@@ -505,17 +511,17 @@ public class UI_map : UI_default
         _fixroute.Arrows.Add(_arrow);
       }
     }
+
     if (CurrentLastOutline != null)
     {
       CurrentLastOutline.enabled = false;
       CurrentLastOutline = null;
-
-      if (Destinations.Count > 0)
-      {
-        Image _enableoutline = GetEnableOutline;
-        SetOutline(_enableoutline, LastDestination.ButtonScript.Rect);
-        CurrentLastOutline = _enableoutline;
-      }
+    }
+    if (Destinations.Count > 0)
+    {
+      Image _enableoutline = GetEnableOutline;
+      SetOutline(_enableoutline, LastDestination.ButtonScript.Rect);
+      CurrentLastOutline = _enableoutline;
     }
 
 

@@ -45,7 +45,7 @@ public class UI_Mad : UI_default
   [SerializeField] private float SkillWaitTime = 1.0f;
   [SerializeField] private float SkillDoneWaitTime = 1.5f;
   [SerializeField] private float SelectSize = 1.35f;
-  private int[] Per = new int[4] { 0, 0, 0, 0 };
+  private int[] Per = new int[4] { -1, -1, -1, -1 };
   private int Sum = 0;
   private int Max = 0;
   private void Start()
@@ -88,6 +88,8 @@ public class UI_Mad : UI_default
     Sum = 0;
     for (int i = 0; i < 4; i++)
     {
+      Per[i] = -1;
+
       switch (i)
       {
         case 0:
@@ -108,7 +110,7 @@ public class UI_Mad : UI_default
           break;
       }
       if (_mad) continue;
-      if(_skill.Level> Max) Max = _skill.Level+1;
+      if(_skill.Level> Max-1) Max = _skill.Level+1;
     }
     for (int i = 0; i < 4; i++)
     {
@@ -157,7 +159,7 @@ public class UI_Mad : UI_default
       }
       if (_mad) 
       {
-        Per[i] = 0;
+        Per[i] = -1;
         continue;
       }
       Per[i] = Mathf.FloorToInt((float)((Max - _skill.Level)/(float)Sum)*100.0f);
@@ -178,10 +180,10 @@ public class UI_Mad : UI_default
     }
     Button_HP.interactable = true;
 
-    ConvPercent.text = Per[0] == 0 ? "" : $"{Per[0]}%";
-    ForcePercent.text = Per[1] == 0 ? "" : $"{Per[1]}%";
-    WildPercent.text = Per[2] == 0 ? "" : $"{Per[2]}%";
-    IntelPercent.text = Per[3] == 0 ? "" : $"{Per[3]}%";
+    ConvPercent.text = Per[0] == -1 ? "" : $"{Per[0]}%";
+    ForcePercent.text = Per[1] == -1 ? "" : $"{Per[1]}%";
+    WildPercent.text = Per[2] == -1 ? "" : $"{Per[2]}%";
+    IntelPercent.text = Per[3] == -1 ? "" : $"{Per[3]}%";
 
     Illust.sprite = GameManager.Instance.ImageHolder.Transparent;
     Description.text = GameManager.Instance.GetTextData("EnterMadness_Description");

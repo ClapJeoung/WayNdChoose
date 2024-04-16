@@ -73,4 +73,60 @@ public class UI_Tendency : MonoBehaviour
 
     titlerect.anchoredPosition = _targetpos_title;
   }
+  [Space(10)]
+  [SerializeField] private float SpinningSpeed = 720.0f;
+  private bool IsSpinning = false;
+  [SerializeField] private float RollingSpeed = 480.0f;
+  private bool IsRolling = false;
+
+  public void StopWhatever()
+  {
+    IsSpinning = false;
+    IsRolling = false;
+  }
+  public void StartSpinning(TendencyTypeEnum tendency)
+  {
+    if (IsSpinning) return;
+    StartCoroutine(KeepSpin(tendency==TendencyTypeEnum.Head?TendencyHeadIcon.rectTransform:TendencyBodyIcon.rectTransform));
+  }
+  public void StopSpinning()
+  {
+    IsSpinning = false;
+  }
+  private IEnumerator KeepSpin(RectTransform rect)
+  {
+    Vector3 _rot = Vector3.zero;
+    IsSpinning = true;
+    while (IsSpinning)
+    {
+      _rot += Vector3.up * SpinningSpeed * Time.deltaTime;
+      rect.rotation=Quaternion.Euler(_rot);
+      yield return null;
+    }
+    rect.rotation = Quaternion.Euler(Vector3.zero);
+    yield return null;
+  }
+  public void StartRolling(TendencyTypeEnum tendency, int dir)
+  {
+    if (IsRolling) return;
+    StartCoroutine(KeepRoll(tendency == TendencyTypeEnum.Head ? TendencyHeadIcon.rectTransform : TendencyBodyIcon.rectTransform, dir*-1));
+  }
+  public void StopRolling()
+  {
+    IsRolling = false;
+  }
+  private IEnumerator KeepRoll(RectTransform rect,int dir)
+  {
+    Vector3 _rot = Vector3.zero;
+    IsRolling = true;
+    while (IsRolling)
+    {
+      _rot += Vector3.forward * RollingSpeed * Time.deltaTime*dir;
+      rect.rotation = Quaternion.Euler(_rot);
+      yield return null;
+    }
+    rect.rotation = Quaternion.Euler(Vector3.zero);
+    yield return null;
+  }
+
 }

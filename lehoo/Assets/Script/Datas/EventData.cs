@@ -101,6 +101,7 @@ public class EventHolder
             maketendencydata(TendencyTypeEnum.Head);
             break;
         }
+        Data.EndingStart = _data.EndingStart!=""?int.Parse(_data.EndingStart):0;
         void maketendencydata(TendencyTypeEnum tendencytype)
         {
           Data.SelectionDatas = new SelectionData[2];
@@ -158,7 +159,7 @@ public class EventHolder
         }
       }
 
-      Data.EventLine = _data.EventLine.Split('@')[0];
+      Data.EventLine = _data.EventLine.Split('@')[0]!=""? _data.EventLine.Split('@')[0]:"";
       return Data;
     }
     catch (System.Exception e)
@@ -371,8 +372,8 @@ public class EventHolder
     foreach (var _event in AllEvent)
     {
       if (_event.AppearSpace!=EventAppearType.Outer) continue;
-      if (GameManager.Instance.MyGameData.CurrentEventLine != "" &&
-        GameManager.Instance.MyGameData.CurrentEventLine != _event.EventLine!) continue;
+      if (_event.EventLine!=""&&GameManager.Instance.MyGameData.CurrentEventLine!=""
+        &&_event.EventLine!=GameManager.Instance.MyGameData.CurrentEventLine ) continue;
       if (_event.EnvironmentType != EnvironmentType.NULL)
       {
         switch (_event.EnvironmentType)
@@ -476,8 +477,9 @@ public class EventHolder
 
     List<EventData> _targetevents = _ableevents.Count > 0 ? _ableevents : _disableevents;
 
-    List<int> _eventlist= new List<int>();
-    for(int i = 0; i < _targetevents.Count; i++)
+    List<int> _indexvalues= new List<int>();
+    int _totalcount = 0;
+    for (int i = 0; i < _targetevents.Count; i++)
     {
       int _index = i;
       int _count = 0;
@@ -493,12 +495,33 @@ public class EventHolder
       else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
       _count *= (GameManager.Instance.ProgressData.EventList.ContainsKey(_event.ID) ?
   GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
+      switch (_event.EndingStart)
+      {
+        case 0:
+          break;
+        case 1:
+          _count *= GameManager.Instance.Status.EventPer_EndingStart;
+          break;
+      }
 
-      for (int j = 0; j < _count; j++) _eventlist.Add(_index);
+      _indexvalues.Add(_count);
+      _totalcount += _count;
     }
 
+    int _targetindex = 0;
+    int _randomindex = UnityEngine.Random.Range(0, _totalcount);
+    int _sum = 0;
+    for(int i = 0; i < _indexvalues.Count; i++)
+    {
+      _sum += _indexvalues[i];
+      if (_randomindex < _sum)
+      {
+        _targetindex = i;
+        break;
+      }
+    }
 
-    return _targetevents[_eventlist[UnityEngine.Random.Range(0, _eventlist.Count)]];
+    return _targetevents[_targetindex];
 
     Debug.Log("여기까지 올 리가 없는디");
     return null;
@@ -562,8 +585,8 @@ public class EventHolder
     foreach (var _event in AllEvent)
     {
       if (GameManager.Instance.MyGameData.IsAbleEvent(_event.ID)==false) continue;
-      if (GameManager.Instance.MyGameData.CurrentEventLine != "" &&
-   GameManager.Instance.MyGameData.CurrentEventLine != _event.EventLine!) continue;
+      if (_event.EventLine != "" && GameManager.Instance.MyGameData.CurrentEventLine != ""
+        && _event.EventLine != GameManager.Instance.MyGameData.CurrentEventLine) continue;
       if (_event.RightSpace(settletype, _event.Sector) == false) continue;
       if (_event.EnvironmentType != EnvironmentType.NULL)
       {
@@ -684,8 +707,9 @@ public class EventHolder
 
 
     List<EventData> _targetevents = _ableevents.Count > 0 ? _ableevents : _disableevents;
-    
-    List<int> _eventlist = new List<int>();
+
+    List<int> _indexvalues = new List<int>();
+    int _totalcount = 0;
     for (int i = 0; i < _targetevents.Count; i++)
     {
       int _index = i;
@@ -701,16 +725,34 @@ public class EventHolder
       if (envirs.Contains(_event.EnvironmentType)) _count *= GameManager.Instance.Status.EventPer_Envir;
       else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
       _count *= (GameManager.Instance.ProgressData.EventList.ContainsKey(_event.ID) ?
-GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
+  GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
+      switch (_event.EndingStart)
+      {
+        case 0:
+          break;
+        case 1:
+          _count *= GameManager.Instance.Status.EventPer_EndingStart;
+          break;
+      }
 
-      if (_event.Sector == sectortype) _count *= GameManager.Instance.Status.EventPer_Sector;
-      else _count *= GameManager.Instance.Status.EventPer_NoSector;
-
-
-      for (int j = 0; j < _count; j++) _eventlist.Add(_index);
+      _indexvalues.Add(_count);
+      _totalcount += _count;
     }
 
-    return _targetevents[_eventlist[UnityEngine.Random.Range(0, _eventlist.Count)]];
+    int _targetindex = 0;
+    int _randomindex = UnityEngine.Random.Range(0, _totalcount);
+    int _sum = 0;
+    for (int i = 0; i < _indexvalues.Count; i++)
+    {
+      _sum += _indexvalues[i];
+      if (_randomindex < _sum)
+      {
+        _targetindex = i;
+        break;
+      }
+    }
+
+    return _targetevents[_targetindex];
 
     Debug.Log("여기까지 올 리가 없는디");
     return null;
@@ -899,6 +941,8 @@ public class EventData
 
   public SelectionTypeEnum Selection_type;
   public SelectionData[] SelectionDatas;
+
+  public int EndingStart = 0;
 }
 public class SelectionData
 {
@@ -1171,6 +1215,8 @@ public class EventJsonData
 
   public string EndingID = "";
   public string EventLine = "";
+
+  public string EndingStart = "";
 }
 
 

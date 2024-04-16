@@ -7,8 +7,11 @@ using TMPro;
 public class UI_Status : MonoBehaviour
 {
   [SerializeField] private RectTransform StatusRect = null;
+  [SerializeField] private float GainExpandSize = 1.4f;
   [SerializeField] private float StatusTextMovetime_gain = 0.5f;
   [SerializeField] private float StatusTextMovetime_loss = 0.6f;
+  [SerializeField] private float StatusGainExpandTime = 0.4f;
+  [SerializeField] private float StatusLossShakeTime = 0.4f;
   [SerializeField] private Vector3 StatusTextEffectPos_gain_top = new Vector3(0.0f, 50.0f);
   [SerializeField] private Vector3 StatusTextEffectPos_gain_bottom = new Vector3(0.0f, 30.0f);
   [SerializeField] private Vector3 StatusTextEffectPos_loss_top = new Vector3(0.0f, -30.0f);
@@ -58,6 +61,13 @@ public class UI_Status : MonoBehaviour
         }
         else
         {
+          if (HPShakeCoroutine == null)
+          {
+            if (!IsShaking[0])
+            {
+              StartCoroutine(shake(HPIcon.rectTransform, StatusLossShakeTime,0));
+            }
+          }
           UIManager.Instance.AudioManager.PlaySFX(15, "status");
         }
       }
@@ -92,8 +102,8 @@ public class UI_Status : MonoBehaviour
       }
     }
   }
-  [SerializeField] private int ShakeCount = 15;
-  [SerializeField] private float ShakeRange = 10.0f;
+  [SerializeField] private int ShakeCount = 16;
+  [SerializeField] private float ShakeRange = 8.0f;
   private Vector2 HPOriginPos= Vector2.zero;
   private IEnumerator HPShakeCoroutine = null;
   private IEnumerator shakehp()
@@ -127,10 +137,15 @@ public class UI_Status : MonoBehaviour
       {
         if (lastsanity < GameManager.Instance.MyGameData.Sanity)
         {
+          StartCoroutine(UIManager.Instance.ExpandRect(SanityIconRect, GainExpandSize, StatusGainExpandTime));
           UIManager.Instance.AudioManager.PlaySFX(16, "status");
         }
         else
         {
+          if (!IsShaking[1])
+          {
+            StartCoroutine(shake(SanityIconRect, StatusLossShakeTime,1));
+          }
           UIManager.Instance.AudioManager.PlaySFX(17, "status");
         }
       }
@@ -160,10 +175,15 @@ public class UI_Status : MonoBehaviour
       {
         if (lastgold < GameManager.Instance.MyGameData.Gold)
         {
+          StartCoroutine(UIManager.Instance.ExpandRect(GoldIconRect, GainExpandSize, StatusGainExpandTime));
           UIManager.Instance.AudioManager.PlaySFX(18, "status");
         }
         else
         {
+          if (!IsShaking[2])
+          {
+            StartCoroutine(shake(GoldIconRect, StatusLossShakeTime,2));
+          }
         }
       }
     }
@@ -190,9 +210,14 @@ public class UI_Status : MonoBehaviour
       {
         if (lastsupply < GameManager.Instance.MyGameData.Supply)
         {
+          StartCoroutine(UIManager.Instance.ExpandRect(Supply_Icon.rectTransform, GainExpandSize, StatusGainExpandTime));
         }
         else
         {
+          if (!IsShaking[3])
+          {
+            StartCoroutine(shake(Supply_Icon.rectTransform, StatusLossShakeTime,3));
+          }
         }
       }
     }
@@ -206,4 +231,27 @@ public class UI_Status : MonoBehaviour
 
     lastsupply = GameManager.Instance.MyGameData.Supply;
   }
+  private bool[] IsShaking = new bool[4] { false, false, false, false };
+
+  private IEnumerator shake(RectTransform rect,float targettime,int statustype)
+  {
+    IsShaking[statustype] = true;
+    float _delay = 1.0f / (float)ShakeCount;
+    WaitForSeconds _wait = new WaitForSeconds(1.0f / (float)ShakeCount);
+    float _time = 0.0f;
+    Vector2 _originpos= rect.anchoredPosition;
+    Vector2 _modiffy = Vector2.zero;
+    while (_time< targettime)
+    {
+      _modiffy.x = Random.Range(-ShakeRange, ShakeRange);
+      _modiffy.y = Random.Range(-ShakeRange, ShakeRange);
+      rect.anchoredPosition = _originpos + _modiffy;
+      _time+= _delay;
+      yield return _wait;
+    }
+    rect.anchoredPosition= _originpos;
+    IsShaking[statustype] = false;
+    yield return null;
+  }
+
 }

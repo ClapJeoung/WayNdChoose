@@ -297,8 +297,7 @@ public class GameManager : MonoBehaviour
       yield return _www.SendWebRequest();
 
       string _text = _www.downloadHandler.text;
-      UIManager.Instance.DialogueUI.SelectionCount_A = int.Parse(_text.Split(',')[0]);
-      UIManager.Instance.DialogueUI.SelectionCount_B = int.Parse(_text.Split(',')[1]);
+      UIManager.Instance.DialogueUI.UpdateSelectData(int.Parse(_text.Split(',')[0]), int.Parse(_text.Split(',')[1]));
 
       _www.Dispose();
       Debug.Log("선택지 결과 불러오기 완료");
