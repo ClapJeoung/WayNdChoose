@@ -1106,7 +1106,7 @@ public class UI_dialogue : UI_default
     SelectionCount_A = left;
     SelectionCount_B = right;
     SelectDataLoadingFinished = true;
-    if (!IsBeginning && PhrIndex == PhrIndex_max - 1 && EventPhaseIndex == EventPhaseIndex_max - 1)
+    if (CurrentDialogueType==DialogueTypeEnum.Event&& !IsBeginning && PhrIndex == PhrIndex_max - 1 && EventPhaseIndex == EventPhaseIndex_max - 1)
     {
       SetSelectDataText();
       if(DescriptionScrollBar.value>0)
@@ -1994,7 +1994,9 @@ public class UI_dialogue : UI_default
   {
     if (IsSelectSector == true) return;
 
-    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector == sector;
+    QuestSectorInfo =
+      GameManager.Instance.MyGameData.Cult_SabbatSector == SelectedSector &&
+      CurrentSettlement.Discomfort <= GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort;
 
     SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector,false);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
@@ -2042,15 +2044,17 @@ public class UI_dialogue : UI_default
     {
       case false:
         SectorEffect.text = _effect;
+        if (GameManager.Instance.MyGameData.Cult_SabbatSector == sector &&
+    CurrentSettlement.Discomfort > GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort)
+          _sabbatdescription = GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect_Disable");
         break;
       case true:
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
         GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value
-        , GameManager.Instance.Status.Quest_Cult_Sabbat_Supply);
-        SectorEffect.text = _effect + _sabbatdescription;
-        SupplyValue += GameManager.Instance.Status.Quest_Cult_Sabbat_Supply;
+        , GameManager.Instance.Status.Quest_Cult_Sabbat_Bonus);
         break;
     }
+    SectorEffect.text = _effect + _sabbatdescription;
   }
   public void OutPointerSector()
   {
@@ -2086,7 +2090,9 @@ public class UI_dialogue : UI_default
 
     Illust.Next(GameManager.Instance.ImageHolder.GetSectorIllust(CurrentSettlement.SettlementType, SelectedSector, GameManager.Instance.MyGameData.Turn));
 
-    QuestSectorInfo = GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector;
+    QuestSectorInfo = 
+      GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector&&
+      CurrentSettlement.Discomfort<=GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort;
 
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector, false);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
@@ -2134,16 +2140,18 @@ public class UI_dialogue : UI_default
     {
       case false:
         SectorEffect.text = _effect;
-       // UIManager.Instance.SidePanelCultUI.SetSabbatEffect(false);
+        if (GameManager.Instance.MyGameData.Cult_SabbatSector == SelectedSector &&
+          CurrentSettlement.Discomfort > GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort)
+          _sabbatdescription = GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect_Disable");
         break;
       case true:
         _sabbatdescription = "<br>" + string.Format(GameManager.Instance.GetTextData("Cult_Progress_Sabbat_Effect"),
         GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
-        GameManager.Instance.Status.Quest_Cult_Sabbat_Supply);
-        SectorEffect.text = _effect + _sabbatdescription;
-      //  UIManager.Instance.SidePanelCultUI.SetSabbatEffect(true);
+        GameManager.Instance.Status.Quest_Cult_Sabbat_Bonus);
         break;
     }
+    SectorEffect.text = _effect + _sabbatdescription;
+
     if (RestButtonHolder.gameObject.activeInHierarchy == false)
     {
       RestButtonHolder.gameObject.SetActive(true);
@@ -2217,6 +2225,7 @@ public class UI_dialogue : UI_default
             break;
           case true:
             UIManager.Instance.CultUI.AddProgress(3,GetSectorIconScript(SelectedSector).transform as RectTransform);
+            GameManager.Instance.MyGameData.SkillProgress += GameManager.Instance.Status.Quest_Cult_Sabbat_Bonus;
             break;
         }
         break;

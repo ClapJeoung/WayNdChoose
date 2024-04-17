@@ -182,31 +182,31 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           case 0:
             _sametext = GameManager.Instance.GetTextData("Village");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-              _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_Village+ GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value,
+              _sametext, GameManager.Instance.MyGameData.GetCultProgress(0),
               GameManager.Instance.Status.Quest_Cult_Village_Bonus);
             break;
           case 1:
             _sametext = GameManager.Instance.GetTextData("Town");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-             _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
+             _sametext, GameManager.Instance.MyGameData.GetCultProgress(1),
              GameManager.Instance.Status.Quest_Cult_Town_Bonus);
             break;
           case 2:
             _sametext = GameManager.Instance.GetTextData("City");
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Settlement"),
-            _sametext, _sametext, GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
+            _sametext, GameManager.Instance.MyGameData.GetCultProgress(2),
             GameManager.Instance.Status.Quest_Cult_City_Bonus);
             break;
           case 3:
             _sametext = GameManager.Instance.GetTextData(GameManager.Instance.MyGameData.Cult_SabbatSector,0);
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Sabbat"),
-           _sametext, _sametext,GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
-           GameManager.Instance.Status.Quest_Cult_Sabbat_Supply);
+           _sametext, GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort,_sametext, GameManager.Instance.MyGameData.GetCultProgress(3)
+           , GameManager.Instance.Status.Quest_Cult_Sabbat_Bonus);
             break;
           case 4:
             _cultinfo += string.Format(GameManager.Instance.GetTextData("Cult_Preview_Ritual"),
-            GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value,
-            GameManager.Instance.Status.Quest_Cult_Ritual_Resource);
+            GameManager.Instance.MyGameData.Cult_Ritual_MinLength, GameManager.Instance.MyGameData.GetCultProgress(4),
+            GameManager.Instance.Status.Quest_Cult_Ritual_Bonus);
             break;
         }
         UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(_cultinfo,OtherRect==null?transform as RectTransform : OtherRect, IsCultSidePanel ? new Vector2(1.05f, 0.5f) : new Vector2(0.5f, 1.05f));

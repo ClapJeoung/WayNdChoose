@@ -226,6 +226,7 @@ public class UI_Skill : MonoBehaviour
       case 0:
         GameManager.Instance.MyGameData.Skill_Conversation.LevelByDefault++;
         StartCoroutine(UIManager.Instance.ExpandRect(ConversationIconRect, LevelUpSize,LevelUpTime));
+        UIManager.Instance.SidePanelCultUI.UpdateProgressText();
         break;
       case 1: 
         GameManager.Instance.MyGameData.Skill_Force.LevelByDefault++;

@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using System.Linq;
 using System.IO;
+using Unity.VisualScripting;
 
 //public enum RangeEnum { Low,Middle,High}
 public class RouteData
@@ -565,21 +566,21 @@ public class UI_map : UI_default
             switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
             {
               case 0:
-                if (LastDestination.TileSettle != null && LastDestination.TileSettle.SettlementType == SettlementType.Village)
+                if (LastDestination.TileSettle != null && LastDestination.TileSettle.Tile==GameManager.Instance.MyGameData.Cult_TargetTile)
                 {
                   _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 1:
-                if (LastDestination.TileSettle != null && LastDestination.TileSettle.SettlementType == SettlementType.Town)
+                if (LastDestination.TileSettle != null && LastDestination.TileSettle.Tile == GameManager.Instance.MyGameData.Cult_TargetTile)
                 {
                   _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"), GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value);
                 }
                 else _progresstext = "";
                 break;
               case 2:
-                if (LastDestination.TileSettle != null && LastDestination.TileSettle.SettlementType == SettlementType.City)
+                if (LastDestination.TileSettle != null && LastDestination.TileSettle.Tile == GameManager.Instance.MyGameData.Cult_TargetTile)
                 {
                   _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Settlement"),
                     GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value
@@ -588,12 +589,18 @@ public class UI_map : UI_default
                 else _progresstext = "";
                 break;
               case 4:
-                if (CheckRitual)
+                if (LastDestination.Landmark == LandmarkType.Ritual)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"),
-                    GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value
-                    , GameManager.Instance.Status.Quest_Cult_Ritual_Resource);
-                //  UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
+                  if (AllTiles.Count >= GameManager.Instance.MyGameData.Cult_Ritual_MinLength)
+                  {
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"),
+                      GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value
+                      , GameManager.Instance.Status.Quest_Cult_Ritual_Bonus);
+                  }
+                  else
+                  {
+                    _progresstext += GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect_Disable");
+                  }
                 }
                 else
                 {
@@ -865,123 +872,65 @@ public class UI_map : UI_default
       switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
       {
         case 0:
-          for (int i = 0; i < VillageIcons.Count; i++)
-          {
-            _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
-            _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
-          }
-          break;
         case 1:
-          for (int i = 0; i < TownIcons.Count; i++)
-          {
-            _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
-            _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
-          }
-          break;
         case 2:
-          for (int i = 0; i < CityIcons.Count; i++)
-          {
-            _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
-            _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
-          }
-          break;
-        case 3:
-          switch (GameManager.Instance.MyGameData.Cult_SabbatSector)
-          {
-            case SectorTypeEnum.Residence:
-              for (int i = 0; i < VillageIcons.Count; i++)
-              {
-                _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
-                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
-              }
-              break;
-            case SectorTypeEnum.Temple:
-              for (int i = 0; i < VillageIcons.Count; i++)
-              {
-                _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
-                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
-              }
-              for (int i = 0; i < TownIcons.Count; i++)
-              {
-                _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
-                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
-              }
-              break;
-            case SectorTypeEnum.Marketplace:
-              for (int i = 0; i < TownIcons.Count; i++)
-              {
-                _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
-                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
-              }
-              for (int i = 0; i < CityIcons.Count; i++)
-              {
-                _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
-                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
-              }
-              break;
-            case SectorTypeEnum.Library:
-              for (int i = 0; i < CityIcons.Count; i++)
-              {
-                _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
-                _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
-              }
-              break;
-          }
-          break;
         case 4:
-          _targettiles.Add(GameManager.Instance.MyGameData.Cult_RitualTile);
-          _highlightlist.Add(GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.rectTransform);
+          _targettiles.Add(GameManager.Instance.MyGameData.Cult_TargetTile);
+          _highlightlist.Add(GameManager.Instance.MyGameData.Cult_TargetTile.ButtonScript.LandmarkImage.rectTransform);
           break;
       }
-      Vector3 _pos = Vector2.zero;
-      float _targettime = 0.0f;
-      TileData _highlighttarget = null;
-      int _max = 0;
-      foreach(var _tile in _targettiles)
+      if (_targettiles.Count > 0)
       {
-        int _length = GameManager.Instance.MyGameData.CurrentTile.HexGrid.GetDistance(_tile);
-        if (_max< _length)
+        Vector3 _pos = Vector2.zero;
+        float _targettime = 0.0f;
+        TileData _highlighttarget = null;
+        int _max = 0;
+        foreach (var _tile in _targettiles)
         {
-          _max = _length;
-          _highlighttarget = _tile;
+          int _length = GameManager.Instance.MyGameData.CurrentTile.HexGrid.GetDistance(_tile);
+          if (_max < _length)
+          {
+            _max = _length;
+            _highlighttarget = _tile;
+          }
         }
-      }
 
-      foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_highlighttarget, 1))
-        if (_tile.Fogstate == 0) _tile.SetFog(1);
-      _time = 0.0f;
-      _pos = Vector2.zero;
-      _startpos = HolderRect.anchoredPosition;
-      _endpos = _highlighttarget.ButtonScript.Rect.anchoredPosition * -1.0f;
-      _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
-      while (_time < _targettime)
-      {
-        _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
-        HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
-        _time += Time.deltaTime;
-        yield return null;
-      }
-      HolderRect.anchoredPosition3D = _endpos;
+        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_highlighttarget, 1))
+          if (_tile.Fogstate == 0) _tile.SetFog(1);
+        _time = 0.0f;
+        _pos = Vector2.zero;
+        _startpos = HolderRect.anchoredPosition;
+        _endpos = _highlighttarget.ButtonScript.Rect.anchoredPosition * -1.0f;
+        _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+        while (_time < _targettime)
+        {
+          _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+          HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+          _time += Time.deltaTime;
+          yield return null;
+        }
+        HolderRect.anchoredPosition3D = _endpos;
 
-      _time = 0.0f;
-      _targettime = DoHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
-      float _highlightscale = DoHighlight ? HighlightSize_First : HighlightSize_Second;
-      yield return StartCoroutine(UIManager.Instance.ExpandRect(_highlighttarget.ButtonScript.LandmarkImage.rectTransform, _highlightscale, _targettime));
+        _time = 0.0f;
+        _targettime = DoHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
+        float _highlightscale = DoHighlight ? HighlightSize_First : HighlightSize_Second;
+        yield return StartCoroutine(UIManager.Instance.ExpandRect(_highlighttarget.ButtonScript.LandmarkImage.rectTransform, _highlightscale, _targettime));
 
-      _time = 0.0f;
-      _pos = Vector2.zero;
-      _startpos = HolderRect.anchoredPosition;
-      _endpos = PlayerRect.anchoredPosition * -1.0f;
-      _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
-      while (_time < _targettime)
-      {
-        _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
-        HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
-        _time += Time.deltaTime;
-        yield return null;
+        _time = 0.0f;
+        _pos = Vector2.zero;
+        _startpos = HolderRect.anchoredPosition;
+        _endpos = PlayerRect.anchoredPosition * -1.0f;
+        _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+        while (_time < _targettime)
+        {
+          _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+          HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+          _time += Time.deltaTime;
+          yield return null;
+        }
+        HolderRect.anchoredPosition3D = _endpos;
+        DoHighlight = false;
       }
-      HolderRect.anchoredPosition3D = _endpos;
-      DoHighlight = false;
     }
 
     DefaultGroup.interactable = true;
@@ -1105,11 +1054,12 @@ public class UI_map : UI_default
                 else _progresstext = "";
                 break;
               case 4:
-                if (CheckRitual)
+                if (LastDestination.Landmark==LandmarkType.Ritual)
                 {
-                  _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value
-                    , GameManager.Instance.Status.Quest_Cult_Ritual_Resource);
-               //   UIManager.Instance.SidePanelCultUI.SetRitualEffect(true);
+                  if (AllTiles.Count >= GameManager.Instance.MyGameData.Cult_Ritual_MinLength)
+                    _progresstext += string.Format(GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect"), GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level / GameManager.Instance.Status.ConversationEffect_Level * GameManager.Instance.Status.ConversationEffect_Value
+                    , GameManager.Instance.Status.Quest_Cult_Ritual_Bonus);
+                  else _progresstext = GameManager.Instance.GetTextData("Cult_Progress_Ritual_Effect_Disable");
                 }
                 else
                 {
@@ -1157,14 +1107,6 @@ public class UI_map : UI_default
 
     UIManager.Instance.PreviewManager.ClosePreview();
     UIManager.Instance.PreviewManager.OpenTileInfoPreveiew(selectedtile, selectedtile.ButtonScript.Rect);
-  }
-  private bool CheckRitual
-  {
-    get
-    {  
-      if (LastDestination.Landmark == LandmarkType.Ritual) return true;
-      return false;
-    }
   }
   private int MadnessTileIndex = -1;
   public void EnterPointerStatus(StatusTypeEnum type)
@@ -1490,12 +1432,6 @@ public class UI_map : UI_default
       {
         CurrentArrows[_currentindex - 1].enabled = false;
 
-        if (AllTiles[_currentindex - 1].Landmark == LandmarkType.Ritual)
-        {
-          UIManager.Instance.CultUI.AddProgress(4, null);
-          StartCoroutine(resourcegain(5,GameManager.Instance.Status.Quest_Cult_Ritual_Resource));
-        }
-
         List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(AllTiles[_currentindex - 1], GameManager.Instance.MyGameData.ViewRange);
         foreach (var _tile in _newarounds)
         {
@@ -1544,8 +1480,11 @@ public class UI_map : UI_default
     if (_time >= _movetime)
     {
       _currentsum -= AllSupplys[AllSupplys.Count-1];
-      if (_stoptile.Landmark == LandmarkType.Ritual)
+      if (_stoptile.Landmark == LandmarkType.Ritual&&AllTiles.Count>=GameManager.Instance.MyGameData.Cult_Ritual_MinLength)
+      {
         UIManager.Instance.CultUI.AddProgress(4, null);
+        GameManager.Instance.MyGameData.SkillProgress += GameManager.Instance.Status.Quest_Cult_Ritual_Bonus;
+      }
       CurrentArrows[_currentindex].enabled = false;
 
       List<TileData> _newarounds = GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_stoptile, GameManager.Instance.MyGameData.ViewRange);
@@ -1869,8 +1808,8 @@ public class UI_map : UI_default
             }
             break;
           case 4:
-            _targettiles.Add(GameManager.Instance.MyGameData.Cult_RitualTile);
-            _highlightlist.Add(GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.LandmarkImage.rectTransform);
+            _targettiles.Add(GameManager.Instance.MyGameData.Cult_TargetTile);
+            _highlightlist.Add(GameManager.Instance.MyGameData.Cult_TargetTile.ButtonScript.LandmarkImage.rectTransform);
             break;
         }
         Vector3 _pos = Vector2.zero;

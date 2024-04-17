@@ -219,8 +219,9 @@ public class UI_QuestWolf : UI_default
       if (PlayerPrefs.GetInt("Tutorial_Cult") == 0) UIManager.Instance.TutorialUI.OpenTutorial_Cult();
       MoveRectForButton(0);
       UIManager.Instance.MapButton.SetCurrentUI(this,MapbuttonPos,0.0f);
-      StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.4f));
-      StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.SliderGroup, 1.0f, 0.4f));
+      UIManager.Instance.SidePanelCultUI.UpdateUI();
+      //StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.4f));
+      //StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.SliderGroup, 1.0f, 0.4f));
     }
 
   }
@@ -281,11 +282,11 @@ public class UI_QuestWolf : UI_default
     {
       case 0:
         GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Qeust_Cult_EventProgress_Clear;
-        UIManager.Instance.SidePanelCultUI.UpdateProgressValue();
+        UIManager.Instance.SidePanelCultUI.UpdateProgressSlider();
         break;
       case 1:
         GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_EventProgress_Fail;
-        UIManager.Instance.SidePanelCultUI.UpdateProgressValue();
+        UIManager.Instance.SidePanelCultUI.UpdateProgressSlider();
         break;
       case 2:
         GameManager.Instance.MyGameData.Quest_Cult_Phase++;
@@ -293,29 +294,24 @@ public class UI_QuestWolf : UI_default
         switch (GameManager.Instance.MyGameData.CurrentSettlement.SettlementType)
         {
           case SettlementType.Village:
-            GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_Village + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
+            GameManager.Instance.MyGameData.SetCult_Settlement(SettlementType.Town);
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.GetCultProgress(0);
             GameManager.Instance.MyGameData.SkillProgress+=GameManager.Instance.Status.Quest_Cult_Village_Bonus;
-           /* GameManager.Instance.MyGameData.Cult_CoolTime =
-              (int)( 
-              ((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile,GameManager.Instance.MyGameData.MyMapData.Towns)+
-              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Towns) )/2)/ GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_Town;*/
             UIManager.Instance.MapUI.DoHighlight = true;
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
               UIManager.Instance.SidePanelCultUI.TargetIconRect);
             break;
           case SettlementType.Town:
-            GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
+            GameManager.Instance.MyGameData.SetCult_Settlement(SettlementType.City);
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.GetCultProgress(1);
             GameManager.Instance.MyGameData.SkillProgress += GameManager.Instance.Status.Quest_Cult_Town_Bonus;
-            /*GameManager.Instance.MyGameData.Cult_CoolTime =
-             (int)(((MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys) +
-              MapData.GetMinLength(GameManager.Instance.MyGameData.CurrentTile, GameManager.Instance.MyGameData.MyMapData.Citys)) / 2) / GameManager.Instance.Status.Quest_Cult_LengthValue) + GameManager.Instance.Status.Quest_Cult_CoolTime_City;*/
             UIManager.Instance.MapUI.DoHighlight = true;
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
        UIManager.Instance.SidePanelCultUI.TargetIconRect);
             break;
           case SettlementType.City:
-            GameManager.Instance.MyGameData.SetSabbat();
-            GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
+            GameManager.Instance.MyGameData.SetCult_Sabbat();
+            GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.GetCultProgress(2);
             GameManager.Instance.MyGameData.SkillProgress += GameManager.Instance.Status.Quest_Cult_Village_Bonus; 
             UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
     UIManager.Instance.SidePanelCultUI.TargetIconRect);
@@ -325,15 +321,15 @@ public class UI_QuestWolf : UI_default
         break;
       case 3:
         UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult, sectorrect);
-        GameManager.Instance.MyGameData.SetRitual();
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
+        GameManager.Instance.MyGameData.SetCult_Ritual();
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.GetCultProgress(3);
         _eventtype = 3;
         break;
       case 4:
         UIManager.Instance.CultEventProgressIconMove(GameManager.Instance.ImageHolder.QuestIcon_Cult,
-        GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.Rect);
-        GameManager.Instance.MyGameData.SetSabbat();
-        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
+        GameManager.Instance.MyGameData.Cult_TargetTile.ButtonScript.Rect);
+        GameManager.Instance.MyGameData.SetCult_Sabbat();
+        GameManager.Instance.MyGameData.Quest_Cult_Progress += GameManager.Instance.MyGameData.GetCultProgress(4);
         _eventtype = 4;
         break;
       default:

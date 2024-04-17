@@ -10,149 +10,57 @@ public class SidePanel_Quest_Cult : MonoBehaviour
   [SerializeField] private Slider ProgressSlider = null;
   public CanvasGroup SliderGroup = null;
   public CanvasGroup DefaultGroup = null;
-//  [SerializeField] private TextMeshProUGUI TurnText = null;
-//  [SerializeField] private float TurnTitleMoveTime = 1.5f;
-//  [SerializeField] private AnimationCurve TurnTileAnimationCurve = new AnimationCurve();
-//  [SerializeField] private RectTransform TurnTitleRect = null;
   [SerializeField] private TextMeshProUGUI ValueText = null;
   [SerializeField] private TextMeshProUGUI BonusText = null;
-  [SerializeField] private Vector2 IconHidePos = new Vector2(-145.0f, 0.0f);
-  [SerializeField] private Vector2 IconOpenPos = new Vector2(0.0f, 0.0f);
-  [SerializeField] private float OpenTime = 0.8f;
-  [SerializeField] private float CloseTime = 0.6f;
-  [SerializeField] private float WaitTime = 0.3f;
   public RectTransform TargetIconRect = null;
   [Space(20)]
-  public CanvasGroup Village_Group = null;
- // public CanvasGroup VillageIconEffect = null;
+  [SerializeField] private CanvasGroup IconGroup = null;
+  [SerializeField] private GameObject TileHolder = null;
+  [SerializeField] private Image Center_Bottom = null;
+  [SerializeField] private Image Center_Top = null;
+  [SerializeField] private Image Center_Landmark = null;
+  [SerializeField] private Image[] Around_Bottom = new Image[6];
+  [SerializeField] private Image[] Around_Top = new Image[6];
+  [SerializeField] private Image[] Around_Landmark = new Image[6];
+  [SerializeField] private float TileChangeTime_Close = 0.8f;
+  [SerializeField] private float TileChangeTime_Wait = 0.3f;
+  [SerializeField] private float TileChangeTime_Open = 0.6f;
+  [Space(10)]
+  [SerializeField] private RectTransform InfoRect = null;
+  private Vector2 InfoOpenSize = new Vector2(182.4f, 151.4f);
+  private Vector2 InfoCloseSize = new Vector2(19.4f, 151.4f);
+  [SerializeField] private AnimationCurve InfoOpenCurve = null;
+  [SerializeField] private AnimationCurve InfoCloseCurve = null;
   [Space(5)]
-  public CanvasGroup Town_Group = null;
- // public CanvasGroup TownIconEffect = null;
-  [Space(5)]
-  public CanvasGroup City_Group = null;
-  //public CanvasGroup CityIconEffect = null;
-  [Space(5)]
-  public CanvasGroup Sabbat_Group = null;
+  [SerializeField] private GameObject SabbatHolder = null;
+  [SerializeField] private GameObject SabbatInfo_Obj = null;
   [SerializeField] private Image Sabbat_SectorIcon = null;
-  //[SerializeField] private Outline Sabbat_Effect = null;
-  public void SetSabbatFail()
-  {
-    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"), WNCText.GetDiscomfortColor(GameManager.Instance.Status.Quest_Cult_Sabbat_Supply));
-    UIManager.Instance.SetInfoPanel(_failtext);
-  }
-  public void SetRitualFail()
-  {
-    string _failtext = string.Format(GameManager.Instance.GetTextData("Cult_Sabbat_Fail"));
-    UIManager.Instance.SetInfoPanel(_failtext);
-  }
+  [SerializeField] private TextMeshProUGUI Sabbat_Count = null;
   [Space(5)]
-  public CanvasGroup Ritual_Group = null;
-  public Image Ritual_Bottom = null;
-  [SerializeField] private Image Ritual_Top = null;
-//  [SerializeField] private Outline Ritual_Effect = null;
-  private IEnumerator OpenGroup(CanvasGroup group,float waittime)
+  [SerializeField] private GameObject RitualInfo_Obj = null;
+  [SerializeField] private TextMeshProUGUI Ritual_Count = null;
+  public void UpdateCountText()
   {
-    if(waittime>0)yield return new WaitForSeconds(waittime);
-    StartCoroutine(UIManager.Instance.moverect(group.transform as RectTransform, IconHidePos, IconOpenPos, OpenTime, UIManager.Instance.UIPanelOpenCurve));
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    {
+      case 3:
+        Sabbat_Count.text = GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort.ToString();
+        break;
+      case 4:
+        Ritual_Count.text = GameManager.Instance.MyGameData.Cult_Ritual_MinLength.ToString();
+        break;
+    }
   }
-  private IEnumerator CloseGroup(CanvasGroup group, float waittime)
+  public void UpdateProgressText()
   {
-    if (waittime > 0) yield return new WaitForSeconds(waittime);
-    StartCoroutine(UIManager.Instance.moverect(group.transform as RectTransform, IconOpenPos, IconHidePos, CloseTime, UIManager.Instance.UIPanelCLoseCurve));
+    ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_ProgressValue"), 
+      GameManager.Instance.MyGameData.GetCultProgress(GameManager.Instance.MyGameData.Quest_Cult_Phase));
   }
-  private int LastPhase = -1;
-  private float LastProgress = -1;
- // private int LastTurn = -1;
-  public void UpdateUI()
+  private void UpdateBonusText()
   {
-    int _progressvalue = 0;
     switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
     {
       case 0:
-        if (LastPhase != 0)
-        {
-          StartCoroutine(OpenGroup(Village_Group, 0.0f));
-        }
-        if (GameManager.Instance.MyGameData.Tendency_Body.Level != 0 && DefaultGroup.alpha == 0.0f)
-        {
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
-        }
-        _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Village+ GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
-        break;
-      case 1:
-        if (DefaultGroup.alpha == 0.0f)
-        {
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
-        }
-
-          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Town + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
-        if (LastPhase != 1)
-        {
-          if (LastPhase != -1) StartCoroutine(CloseGroup(Village_Group, 0.0f));
-          StartCoroutine(OpenGroup(Town_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f)); ;
-        }
-        break;
-      case 2:
-        if (DefaultGroup.alpha == 0.0f)
-        {
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
-        }
-
-          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_City + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
-
-        if (LastPhase != 2)
-        {
-          if (LastPhase != -1) StartCoroutine(CloseGroup(Town_Group, 0.0f));
-          StartCoroutine(OpenGroup(City_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f));
-        }
-        break;
-      case 3:
-        if (DefaultGroup.alpha == 0.0f)
-        {
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
-        }
-
-          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Sabbat + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
-        if (LastPhase != 3)
-        {
-          Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector,true);
-
-          if (LastPhase == 2) StartCoroutine(CloseGroup(City_Group, 0.0f));
-          else if (LastPhase == 4) StartCoroutine(CloseGroup(Ritual_Group, 0.0f));
-
-          StartCoroutine(OpenGroup(Sabbat_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f));
-        }
-        break;
-      case 4:
-        if (DefaultGroup.alpha == 0.0f)
-        {
-          StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 0.5f));
-          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
-        }
-
-          _progressvalue = GameManager.Instance.Status.Quest_Cult_Progress_Ritual + GameManager.Instance.MyGameData.Skill_Conversation.Level/GameManager.Instance.Status.ConversationEffect_Level*GameManager.Instance.Status.ConversationEffect_Value;
-        if (LastPhase != 4)
-        {
-          if (LastPhase != -1) StartCoroutine(CloseGroup(Sabbat_Group, 0.0f));
-
-          Ritual_Bottom.sprite = GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.BottomImage.sprite;
-          Ritual_Bottom.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * GameManager.Instance.MyGameData.Cult_RitualTile.Rotation));
-          Ritual_Top.sprite = GameManager.Instance.MyGameData.Cult_RitualTile.ButtonScript.TopImage.sprite;
-
-          StartCoroutine(OpenGroup(Ritual_Group, LastPhase != -1 ? CloseTime + WaitTime : 0.0f));
-        }
-        break;
-    }
-
-    LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
-    ValueText.text = string.Format(GameManager.Instance.GetTextData("Cult_Sidepanel_ProgressValue"), _progressvalue);
-    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
-    {
-      case 0: 
         BonusText.text = "<sprite=124> +" + GameManager.Instance.Status.Quest_Cult_Village_Bonus;
         break;
       case 1:
@@ -162,39 +70,206 @@ public class SidePanel_Quest_Cult : MonoBehaviour
         BonusText.text = "<sprite=124> +" + GameManager.Instance.Status.Quest_Cult_City_Bonus;
         break;
       case 3:
-        StringBuilder _sabbatstr= new StringBuilder();
-        for (int i = 0; i < GameManager.Instance.Status.Quest_Cult_Sabbat_Supply; i++) _sabbatstr.Append("<sprite=100>");
-        BonusText.text= _sabbatstr.ToString();
+        BonusText.text = "<sprite=124> +" + GameManager.Instance.Status.Quest_Cult_Sabbat_Bonus;
         break;
       case 4:
-        StringBuilder _ritualstr = new StringBuilder();
-        for (int i = 0; i < GameManager.Instance.Status.Quest_Cult_Ritual_Resource; i++) _ritualstr.Append("<sprite=121>");
-        BonusText.text = _ritualstr.ToString();
+        BonusText.text = "<sprite=124> +" + GameManager.Instance.Status.Quest_Cult_Ritual_Bonus;
+        break;
+    }
+  }
+  private void UpdateTileImage()
+  {
+    if (!TileHolder.activeSelf) TileHolder.SetActive(true);
+    if (SabbatHolder.activeSelf) SabbatHolder.SetActive(false);
+    TileData _targettile = GameManager.Instance.MyGameData.Cult_TargetTile;
+    Center_Bottom.sprite = _targettile.ButtonScript.BottomImage.sprite;
+    Center_Top.sprite = _targettile.ButtonScript.TopImage.sprite;
+    Center_Landmark.sprite = _targettile.ButtonScript.LandmarkImage.sprite;
+
+    TileData _nexttile = null;
+    for (int i = 0; i < 6; i++)
+    {
+      _nexttile = GameManager.Instance.MyGameData.MyMapData.GetNextTile(_targettile, (HexDir)i);
+      Around_Bottom[i].sprite = _nexttile.ButtonScript.BottomImage.sprite;
+      Around_Top[i].sprite = _nexttile.ButtonScript.TopImage.sprite;
+      Around_Landmark[i].sprite = _nexttile.ButtonScript.LandmarkImage.sprite;
+    }
+  }
+  private void UpdateSettlementInfo()
+  {
+    if (SabbatInfo_Obj.activeSelf) SabbatInfo_Obj.SetActive(false);
+    if (RitualInfo_Obj.activeSelf) RitualInfo_Obj.SetActive(false);
+    UpdateProgressSlider();
+    UpdateBonusText();
+  }
+  private void UpdateSabbatInfo()
+  {
+    if (!SabbatInfo_Obj.activeSelf) SabbatInfo_Obj.SetActive(true);
+    if (RitualInfo_Obj.activeSelf) RitualInfo_Obj.SetActive(false);
+    UpdateCountText();
+    UpdateProgressSlider();
+    UpdateBonusText();
+  }
+  private void UpdateRitualInfo()
+  {
+    if (SabbatInfo_Obj.activeSelf) SabbatInfo_Obj.SetActive(false);
+    if (!RitualInfo_Obj.activeSelf) RitualInfo_Obj.SetActive(true);
+    UpdateCountText();
+    UpdateProgressSlider();
+    UpdateBonusText();
+  }
+  private void UpdateSabbatIcon()
+  {
+    if (TileHolder.activeSelf) TileHolder.SetActive(false);
+    if (!SabbatHolder.activeSelf) SabbatHolder.SetActive(true);
+    Sabbat_SectorIcon.sprite = GameManager.Instance.ImageHolder.GetSectorIcon(GameManager.Instance.MyGameData.Cult_SabbatSector, true);
+  }
+
+  private int LastPhase = -1;
+  private float LastProgress = -1;
+  public void UpdateUI()
+  {
+    if (GameManager.Instance.MyGameData.Tendency_Body.Level == 0) return;
+    StartCoroutine(updateui());
+  }
+  private IEnumerator updateui()
+  {
+    switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
+    {
+      case 0:
+        if (LastPhase != 0)
+        {
+          UpdateSettlementInfo();
+          UpdateTileImage();
+          StartCoroutine(openinfo());
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 1.0f, TileChangeTime_Open));
+        }
+        if (!DefaultGroup.interactable)
+        {
+          DefaultGroup.interactable = true;
+          DefaultGroup.blocksRaycasts = true;
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
+        break;
+      case 1:
+        if (!DefaultGroup.interactable)
+        {
+          DefaultGroup.interactable = true;
+          DefaultGroup.blocksRaycasts = true;
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
+
+        if (LastPhase != 1)
+        {
+          if (LastPhase != -1)
+          {
+            StartCoroutine(closeinfo());
+            yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 0.0f, TileChangeTime_Close));
+            yield return new WaitForSeconds(TileChangeTime_Wait);
+          }
+          UpdateSettlementInfo();
+          UpdateTileImage();
+          StartCoroutine(openinfo());
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 1.0f, TileChangeTime_Open));
+        }
+        break;
+      case 2:
+        if (!DefaultGroup.interactable)
+        {
+          DefaultGroup.interactable = true;
+          DefaultGroup.blocksRaycasts = true;
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
+
+        if (LastPhase != 2)
+        {
+          if (LastPhase != -1)
+          {
+            StartCoroutine(closeinfo());
+            yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 0.0f, TileChangeTime_Close));
+            yield return new WaitForSeconds(TileChangeTime_Wait);
+          }
+          UpdateSettlementInfo();
+          UpdateTileImage();
+          StartCoroutine(openinfo());
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 1.0f, TileChangeTime_Open));
+        }
+        break;
+      case 3:
+        if (!DefaultGroup.interactable)
+        {
+          DefaultGroup.interactable = true;
+          DefaultGroup.blocksRaycasts = true;
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
+
+        if (LastPhase != 3)
+        {
+          if (LastPhase != -1)
+          {
+            StartCoroutine(closeinfo());
+            yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 0.0f, TileChangeTime_Close));
+            yield return new WaitForSeconds(TileChangeTime_Wait);
+          }
+          UpdateSabbatInfo();
+          UpdateSabbatIcon();
+          StartCoroutine(openinfo());
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 1.0f, TileChangeTime_Open));
+        }
+        break;
+      case 4:
+        if (!DefaultGroup.interactable)
+        {
+          DefaultGroup.interactable = true;
+          DefaultGroup.blocksRaycasts = true;
+          StartCoroutine(UIManager.Instance.ChangeAlpha(SliderGroup, 1.0f, 0.5f));
+        }
+
+        if (LastPhase != 4)
+        {
+          if (LastPhase != -1)
+          {
+            StartCoroutine(closeinfo());
+            yield return StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 0.0f, TileChangeTime_Close));
+            yield return new WaitForSeconds(TileChangeTime_Wait);
+          }
+          UpdateRitualInfo();
+          UpdateTileImage();
+          StartCoroutine(openinfo());
+          StartCoroutine(UIManager.Instance.ChangeAlpha(IconGroup, 1.0f, TileChangeTime_Open));
+        }
         break;
     }
 
- /*  TurnText.text = GameManager.Instance.MyGameData.Cult_CoolTime.ToString();
-    if (LastTurn != -1 && LastTurn != GameManager.Instance.MyGameData.Cult_CoolTime)
-    {
-      StartCoroutine(spinturntitle());
-    }
-    LastTurn = GameManager.Instance.MyGameData.Cult_CoolTime;*/
+    LastPhase = GameManager.Instance.MyGameData.Quest_Cult_Phase;
+    UpdateProgressText();
+
   }
-/*  private IEnumerator spinturntitle()
+  private IEnumerator openinfo()
   {
     float _time = 0.0f;
-    float _rotatevalue = (LastTurn - GameManager.Instance.MyGameData.Cult_CoolTime) * 360.0f;
-    float _endtime = _rotatevalue == 360.0f ? TurnTitleMoveTime : Mathf.Abs(1.0f * (LastTurn - GameManager.Instance.MyGameData.Cult_CoolTime));
-    while (_time < _endtime)
+    while (_time < TileChangeTime_Open)
     {
-      TurnTitleRect.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Mathf.Lerp(0.0f, _rotatevalue, TurnTileAnimationCurve.Evaluate(_time / TurnTitleMoveTime))));
-      _time += Time.deltaTime; yield return null;
+      InfoRect.sizeDelta=Vector2.Lerp(InfoCloseSize,InfoOpenSize,InfoOpenCurve.Evaluate(_time/TileChangeTime_Open));
+      _time += Time.deltaTime;
+      yield return null;
     }
-    TurnTitleRect.rotation = Quaternion.Euler(Vector3.zero);
+    InfoRect.sizeDelta = InfoOpenSize;
     yield return null;
-   
-  }*/
-  public void UpdateProgressValue()
+  }
+  private IEnumerator closeinfo()
+  {
+    float _time = 0.0f;
+    while (_time < TileChangeTime_Close)
+    {
+      InfoRect.sizeDelta = Vector2.Lerp(InfoOpenSize, InfoCloseSize, InfoCloseCurve.Evaluate(_time / TileChangeTime_Close));
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    InfoRect.sizeDelta = InfoCloseSize;
+    yield return null;
+  }
+  public void UpdateProgressSlider()
   {
     if (LastProgress != GameManager.Instance.MyGameData.Quest_Cult_Progress)
     {

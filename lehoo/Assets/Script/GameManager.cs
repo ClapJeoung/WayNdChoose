@@ -1064,6 +1064,7 @@ public class GameManager : MonoBehaviour
 
     foreach (var _tile in MyGameData.MyMapData.GetAroundTile(MyGameData.CurrentTile, MyGameData.ViewRange))
       _tile.Fogstate = 2;
+    MyGameData.SetCult_Settlement(SettlementType.Village);
 
     yield return StartCoroutine(_map.MakeTilemap());
     UIManager.Instance.UpdateMap_SetPlayerPos();
@@ -1081,13 +1082,13 @@ public class GameManager : MonoBehaviour
         switch (MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            if(targetsettlement.SettlementType==SettlementType.Village) UIManager.Instance.CultUI.AddProgress(2, null);
+            if(targetsettlement.Tile==MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
             break;
           case 1:
-            if (targetsettlement.SettlementType == SettlementType.Town) UIManager.Instance.CultUI.AddProgress(2, null);
+            if (targetsettlement.Tile == MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
             break;
           case 2:
-            if (targetsettlement.SettlementType == SettlementType.City) UIManager.Instance.CultUI.AddProgress(2, null);
+            if (targetsettlement.Tile == MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
             break;
         }
         break;

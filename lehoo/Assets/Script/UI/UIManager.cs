@@ -279,7 +279,7 @@ public class UIManager : MonoBehaviour
     _targetrect.anchoredPosition = Vector2.one * 3000.0f;
     ActiveIconIndexList.Remove(_index);
 
-    SidePanelCultUI.UpdateProgressValue();
+    SidePanelCultUI.UpdateProgressSlider();
   }
 
   public void UpdateAllUI()
@@ -298,7 +298,7 @@ public class UIManager : MonoBehaviour
     {
       case QuestType.Cult:
         SidePanelCultUI.UpdateUI();
-        SidePanelCultUI.UpdateProgressValue();
+        SidePanelCultUI.UpdateProgressSlider();
         break;
     }
   }
