@@ -25,9 +25,44 @@ public class StovePCSDKManager : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(transform.gameObject);
-    }
 
-    private void OnDestroy()
+    StovePCResult sdkResult = StovePCResult.NoError;
+
+    StovePCConfig config = new StovePCConfig
+    {
+      Env = this.Env,
+      AppKey = this.AppKey,
+      AppSecret = this.AppSecret,
+      GameId = this.GameId,
+      LogLevel = this.LogLevel,
+      LogPath = this.LogPath
+    };
+
+    this.callback = new StovePCCallback
+    {
+      OnError = new StovePCErrorDelegate(this.OnError),
+      OnInitializationComplete = new StovePCInitializationCompleteDelegate(this.OnInitializationComplete),
+      OnToken = new StovePCTokenDelegate(this.OnToken),
+      OnUser = new StovePCUserDelegate(this.OnUser)
+    };
+
+    sdkResult = StovePC.Initialize(config, callback);
+    WriteLog("Initialize", sdkResult);
+
+    sdkResult = StovePC.GetUser();
+    WriteLog("UserInfo", sdkResult);
+
+    sdkResult = StovePC.GetToken();
+    WriteLog("TokenInfo", sdkResult);
+  }
+#if UNITY_EDITOR
+  private void Update()
+  {
+    if (Input.GetKeyDown(KeyCode.PageUp))
+      ButtonGetUser_Click();
+  }
+#endif
+  private void OnDestroy()
     {
         if (runcallbackCoroutine != null)
         {
@@ -36,6 +71,7 @@ public class StovePCSDKManager : MonoBehaviour
         }
 
         StovePC.Uninitialize();
+    Debug.Log("스토브가 종료되는레후?");
     }
 
     #region Event Handlers
@@ -114,7 +150,7 @@ public class StovePCSDKManager : MonoBehaviour
 
         Debug.Log(msg + Environment.NewLine);
 
-        AppendUILog(msg);
+      //  AppendUILog(msg);
     }
     private void WriteLog(string log)
     {
@@ -144,6 +180,8 @@ public class StovePCSDKManager : MonoBehaviour
     #region SDK Callback Methods
     private void OnError(StovePCError error)
     {
+    Debug.Log("뭔가 실패한 레뺫!");
+
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("OnError");
         sb.AppendFormat(" - error.FunctionType : {0}" + Environment.NewLine, error.FunctionType.ToString());
@@ -152,6 +190,8 @@ public class StovePCSDKManager : MonoBehaviour
         sb.AppendFormat(" - error.ExternalError : {0}", error.ExternalError.ToString());
 
         WriteLog(sb.ToString());
+
+    Application.Quit();
     }
     #endregion
 
@@ -159,7 +199,7 @@ public class StovePCSDKManager : MonoBehaviour
     #region SDK Initialization
     public void ButtonInitialize_Click()
     {
-        StovePCResult sdkResult = StovePCResult.NoError;
+    StovePCResult sdkResult = StovePCResult.NoError;
 
     StovePCConfig config = new StovePCConfig
     {
@@ -185,12 +225,7 @@ public class StovePCSDKManager : MonoBehaviour
 
     private void OnInitializationComplete()
     {
-        StringBuilder sb = new StringBuilder();
-
-    sb.AppendLine("OnInitializationComplete");
-    sb.AppendFormat(" - nothing");
-
-    WriteLog(sb.ToString());
+    Debug.Log("스토브 로그인에 성공한 레후~");
     }
     #endregion
 
@@ -214,18 +249,23 @@ public class StovePCSDKManager : MonoBehaviour
     {
         StovePCResult sdkResult = StovePCResult.NoError;
 
-        // Todo: Write your code here.
+    // Todo: Write your code here.
+    sdkResult = StovePC.GetUser();
 
-        WriteLog("GetUser", sdkResult);
+    WriteLog("GetUser", sdkResult);
     }
 
     private void OnUser(StovePCUser user)
     {
+    Debug.Log("유저 정보를 불러와보는 레후~");
         StringBuilder sb = new StringBuilder();
 
-        // Todo: Write your code here.
+    sb.AppendLine("OnUser");
+    sb.AppendFormat(" - user.MemberNo : {0}" + Environment.NewLine, user.MemberNo.ToString());
+    sb.AppendFormat(" - user.Nickname : {0}" + Environment.NewLine, user.Nickname);
+    sb.AppendFormat(" - user.GameUserId : {0}", user.GameUserId);
 
-        WriteLog(sb.ToString());
+    WriteLog(sb.ToString());
     }
     #endregion
 
@@ -244,9 +284,11 @@ public class StovePCSDKManager : MonoBehaviour
     {
         StringBuilder sb = new StringBuilder();
 
-        // Todo: Write your code here.
+    // Todo: Write your code here.
+    sb.AppendLine("OnToken");
+    sb.AppendFormat(" - token.AccessToken : {0}", token.AccessToken);
 
-        WriteLog(sb.ToString());
+    WriteLog(sb.ToString());
     }
     #endregion
 }

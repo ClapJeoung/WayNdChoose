@@ -101,7 +101,7 @@ public class EventHolder
             maketendencydata(TendencyTypeEnum.Head);
             break;
         }
-        Data.EndingStart = _data.EndingStart!=""?int.Parse(_data.EndingStart):0;
+        Data.ActiveModify = _data.ActiveModify;
         void maketendencydata(TendencyTypeEnum tendencytype)
         {
           Data.SelectionDatas = new SelectionData[2];
@@ -249,7 +249,7 @@ public class EventHolder
             GameManager.Instance.MyGameData.SuccessEvent_None.Add(eventdata.ID);
             break;
           case 1:
-            GameManager.Instance.MyGameData.SuccessEvent_Rational.Add(eventdata.ID);
+            GameManager.Instance.MyGameData.SuccessEvent_Logical.Add(eventdata.ID);
             break;
           case 2:
             GameManager.Instance.MyGameData.SuccessEvent_Physical.Add(eventdata.ID);
@@ -271,7 +271,7 @@ public class EventHolder
             GameManager.Instance.MyGameData.FailEvent_None.Add(eventdata.ID);
             break;
           case 1:
-            GameManager.Instance.MyGameData.FailEvent_Rational.Add(eventdata.ID);
+            GameManager.Instance.MyGameData.FailEvent_Logical.Add(eventdata.ID);
             break;
           case 2:
             GameManager.Instance.MyGameData.FailEvent_Physical.Add(eventdata.ID);
@@ -296,7 +296,7 @@ public class EventHolder
             GameManager.Instance.MyGameData.SuccessEvent_None.Add(eventdata.ID);
             break;
           case 1:
-            GameManager.Instance.MyGameData.SuccessEvent_Rational.Add(eventdata.ID);
+            GameManager.Instance.MyGameData.SuccessEvent_Logical.Add(eventdata.ID);
             break;
           case 2:
             GameManager.Instance.MyGameData.SuccessEvent_Physical.Add(eventdata.ID);
@@ -318,7 +318,7 @@ public class EventHolder
             GameManager.Instance.MyGameData.FailEvent_None.Add(eventdata.ID);
             break;
           case 1:
-            GameManager.Instance.MyGameData.FailEvent_Rational.Add(eventdata.ID);
+            GameManager.Instance.MyGameData.FailEvent_Logical.Add(eventdata.ID);
             break;
           case 2:
             GameManager.Instance.MyGameData.FailEvent_Physical.Add(eventdata.ID);
@@ -408,7 +408,7 @@ public class EventHolder
                   {
                     case 0:
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
                       break;
                     case 1:
@@ -423,7 +423,7 @@ public class EventHolder
                   {
                     case 0:
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
                       break;
                     case 1:
@@ -438,10 +438,10 @@ public class EventHolder
                   {
                     case 0:
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
                       break;
                     case 1:
@@ -495,14 +495,32 @@ public class EventHolder
       else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
       _count *= (GameManager.Instance.ProgressData.EventList.ContainsKey(_event.ID) ?
   GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
-      switch (_event.EndingStart)
+      bool _endingper = false;
+      switch (_event.ActiveModify)
       {
         case 0:
           break;
         case 1:
-          _count *= GameManager.Instance.Status.EventPer_EndingStart;
+          _endingper = true;
+          break;
+        case 2:
+          _endingper =
+            GameManager.Instance.MyGameData.Madness_Conversation ||
+            GameManager.Instance.MyGameData.Madness_Force ||
+            GameManager.Instance.MyGameData.Madness_Wild ||
+            GameManager.Instance.MyGameData.Madness_Intelligence;
+          break;
+        case 3:
+          _endingper = GameManager.Instance.MyGameData.Madness_HP;
+          break;
+        case 4:
+          _endingper = GameManager.Instance.MyGameData.Tendency_Head.Level == 2;
+          break;
+        case 5:
+          _endingper = GameManager.Instance.MyGameData.Tendency_Body.Level == -2;
           break;
       }
+      if(_endingper) _count *= GameManager.Instance.Status.EventPer_EndingStart;
 
       _indexvalues.Add(_count);
       _totalcount += _count;
@@ -638,7 +656,7 @@ public class EventHolder
                   {
                     case 0:
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
                       break;
                     case 1:
@@ -653,7 +671,7 @@ public class EventHolder
                   {
                     case 0:
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
                       break;
                     case 1:
@@ -668,10 +686,10 @@ public class EventHolder
                   {
                     case 0:
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.SuccessEvent_Mental);
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_None);
-                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Rational);
+                      _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Logical);
                       _checktarget.Add(GameManager.Instance.MyGameData.FailEvent_Mental);
                       break;
                     case 1:
@@ -726,15 +744,32 @@ public class EventHolder
       else _count *= GameManager.Instance.Status.EventPer_NoEnvir;
       _count *= (GameManager.Instance.ProgressData.EventList.ContainsKey(_event.ID) ?
   GameManager.Instance.Status.EventPer_unmet : GameManager.Instance.Status.EventPer_met);
-      switch (_event.EndingStart)
+      bool _endingper = false;
+      switch (_event.ActiveModify)
       {
         case 0:
           break;
         case 1:
-          _count *= GameManager.Instance.Status.EventPer_EndingStart;
+          _endingper = true;
+          break;
+        case 2:
+          _endingper =
+            GameManager.Instance.MyGameData.Madness_Conversation ||
+            GameManager.Instance.MyGameData.Madness_Force ||
+            GameManager.Instance.MyGameData.Madness_Wild ||
+            GameManager.Instance.MyGameData.Madness_Intelligence;
+          break;
+        case 3:
+          _endingper = GameManager.Instance.MyGameData.Madness_HP;
+          break;
+        case 4:
+          _endingper = GameManager.Instance.MyGameData.Tendency_Head.Level == 2;
+          break;
+        case 5:
+          _endingper = GameManager.Instance.MyGameData.Tendency_Body.Level == -2;
           break;
       }
-
+      if (_endingper) _count *= GameManager.Instance.Status.EventPer_EndingStart;
       _indexvalues.Add(_count);
       _totalcount += _count;
     }
@@ -942,7 +977,7 @@ public class EventData
   public SelectionTypeEnum Selection_type;
   public SelectionData[] SelectionDatas;
 
-  public int EndingStart = 0;
+  public int ActiveModify = 0;
 }
 public class SelectionData
 {
@@ -1216,7 +1251,7 @@ public class EventJsonData
   public string EndingID = "";
   public string EventLine = "";
 
-  public string EndingStart = "";
+  public int ActiveModify = 0;
 }
 
 

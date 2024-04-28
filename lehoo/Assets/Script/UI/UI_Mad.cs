@@ -361,6 +361,7 @@ public class UI_Mad : UI_default
     DefaultGroup.blocksRaycasts = false;
 
     GameManager.Instance.MyGameData.HP -= GameManager.Instance.MyGameData.MadnessHPLoss_HP;
+    GameManager.Instance.MyGameData.Madness_HP = true;
     GameManager.Instance.MyGameData.SetSanityOver100(GameManager.Instance.MyGameData.MadnessSanityGen_HP);
     StartCoroutine(changealpha(false));
   }

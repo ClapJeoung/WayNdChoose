@@ -20,8 +20,8 @@ public class ImageHolder : ScriptableObject
     return _spr;
   }
   [Space(10)]
-  public List<EndingDatas> EndingList = new List<EndingDatas>();//엔딩 일러스트
-  public EndingDatas GetEndingData(string id)
+  public List<EndingData> EndingList = new List<EndingData>();//엔딩 일러스트
+  public EndingData GetEndingData(string id)
   {
     foreach (var _temp in EndingList)
       if (_temp.ID == id) return _temp;
@@ -271,6 +271,25 @@ public class ImageHolder : ScriptableObject
   public Sprite SkillIcon_Force_w = null;
   public Sprite SkillIcon_Wild_w = null;
   public Sprite SkillIcon_Intelligence_w = null;
+  public Sprite SkillIcon_Conversation_empty=null;
+  public Sprite SkillIcon_Force_empty=null;
+  public Sprite SkillIcon_Wild_empty=null;
+  public Sprite SkillIcon_Intelligence_empty=null;
+  public Sprite GetEmptySkill(SkillTypeEnum skillType)
+  {
+    switch (skillType)
+    {
+      case SkillTypeEnum.Conversation:
+        return SkillIcon_Conversation_empty;
+      case SkillTypeEnum.Force:
+        return SkillIcon_Force_empty;
+      case SkillTypeEnum.Wild:
+        return SkillIcon_Wild_empty;
+      case SkillTypeEnum.Intelligence:
+        return SkillIcon_Intelligence_empty;
+    }
+    return null;
+  }
   /// <summary>
   /// 0흑 1백
   /// </summary>
@@ -395,15 +414,15 @@ public class ImageHolder : ScriptableObject
   public Sprite SelectionBackground_physical = null;
   public Sprite SelectionBackground_mental = null;
   public Sprite SelectionBackground_material = null;
-  public Sprite SelectionBackground(TendencyTypeEnum tendencytype, bool dir)
+  public Sprite SelectionBackground(TendencyTypeEnum tendencytype, bool isleft)
   {
     switch (tendencytype)
     {
       case TendencyTypeEnum.Body:
-        if (dir.Equals(true)) return SelectionBackground_rational;
+        if (isleft.Equals(true)) return SelectionBackground_rational;
         else return SelectionBackground_physical;
       case TendencyTypeEnum.Head:
-        if (dir.Equals(true)) return SelectionBackground_mental;
+        if (isleft.Equals(true)) return SelectionBackground_mental;
         else return SelectionBackground_material;
       default: return SelectionBackground_none;
     }
@@ -766,8 +785,9 @@ public class EventIllustHolder
   }
 }
 [System.Serializable]
-public class EndingDatas
+public class EndingData
 {
+  public int Index = 0;
   public string ID = "";
   public string SelectName { get
     {
@@ -798,5 +818,9 @@ public class EndingDatas
   public string LastWord
   {
     get { return GameManager.Instance.GetTextData(ID + "_LastWord"); }
+  }
+  public string EndingWord
+  {
+    get { return GameManager.Instance.GetTextData(ID + "_EndingWord"); }
   }
 }

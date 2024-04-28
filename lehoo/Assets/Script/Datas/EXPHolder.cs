@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public enum EffectType {
@@ -33,6 +34,33 @@ public class Experience
       if (Effects.Contains(EffectType.Wild)) _count++;
       if (Effects.Contains(EffectType.Intelligence)) _count++;
       return _count;
+    }
+  }
+  public string ActiveIcons
+  {
+    get
+    {
+      StringBuilder _str = new StringBuilder();
+      if (Effects.Contains(EffectType.Conversation)) _str.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Conversation, 2));
+      if (Effects.Contains(EffectType.Force)) _str.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Force, 2));
+      if (Effects.Contains(EffectType.Wild)) _str.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Wild, 2));
+      if (Effects.Contains(EffectType.Intelligence)) _str.Append(GameManager.Instance.GetTextData(SkillTypeEnum.Intelligence, 2));
+      return _str.ToString();
+    }
+  }
+  public int StudyPercent
+  {
+    get
+    {
+      switch (ActiveCount)
+      {
+        case 0:return 0;
+        case 1:return GameManager.Instance.Status.ExpStudyPer_1;
+        case 2: return GameManager.Instance.Status.ExpStudyPer_2;
+        case 3: return GameManager.Instance.Status.ExpStudyPer_3;
+        case 4: return GameManager.Instance.Status.ExpStudyPer_4;
+      }
+      return 0;
     }
   }
   private int _duration = 0;

@@ -82,6 +82,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     if (!TileHolder.activeSelf) TileHolder.SetActive(true);
     if (SabbatHolder.activeSelf) SabbatHolder.SetActive(false);
     TileData _targettile = GameManager.Instance.MyGameData.Cult_TargetTile;
+    Center_Bottom.rectTransform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * _targettile.Rotation));
     Center_Bottom.sprite = _targettile.ButtonScript.BottomImage.sprite;
     Center_Top.sprite = _targettile.ButtonScript.TopImage.sprite;
     Center_Landmark.sprite = _targettile.ButtonScript.LandmarkImage.sprite;
@@ -90,6 +91,7 @@ public class SidePanel_Quest_Cult : MonoBehaviour
     for (int i = 0; i < 6; i++)
     {
       _nexttile = GameManager.Instance.MyGameData.MyMapData.GetNextTile(_targettile, (HexDir)i);
+      Around_Bottom[i].rectTransform.rotation= Quaternion.Euler(new Vector3(0.0f, 0.0f, -60.0f * _nexttile.Rotation));
       Around_Bottom[i].sprite = _nexttile.ButtonScript.BottomImage.sprite;
       Around_Top[i].sprite = _nexttile.ButtonScript.TopImage.sprite;
       Around_Landmark[i].sprite = _nexttile.ButtonScript.LandmarkImage.sprite;

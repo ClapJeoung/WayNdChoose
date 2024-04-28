@@ -209,9 +209,9 @@ public class StatusData
     Quest_Cult_Town_Bonus = int.Parse(textrow[160].Split("\t")[1]);
     Quest_Cult_City_Bonus = int.Parse(textrow[161].Split("\t")[1]);
 
-    TilePer_Event_Value =  float.Parse(textrow[162].Split("\t")[1]);
-    TilePer_Resource_Value = float.Parse(textrow[163].Split("\t")[1]);
-    TilePer_Camp_Value = int.Parse(textrow[164].Split("\t")[1]);
+    TilePer_Event_Pow =  float.Parse(textrow[162].Split("\t")[1]);
+    TilePer_Resource_Pow = float.Parse(textrow[163].Split("\t")[1]);
+    TilePer_Camp_Pow = int.Parse(textrow[164].Split("\t")[1]);
     Camping_Min = int.Parse(textrow[165].Split("\t")[1]);
     Camping_Max = int.Parse(textrow[166].Split("\t")[1]);
     Camping_Value  =  int.Parse(textrow[167].Split("\t")[1]);
@@ -224,7 +224,37 @@ public class StatusData
 
     Quest_Cult_Sabbat_Bonus = int.Parse(textrow[172].Split("\t")[1]);
    Quest_Cult_Ritual_Bonus= int.Parse(textrow[173].Split("\t")[1]); ;
-}
+
+    ExpEraseSanity= int.Parse(textrow[174].Split("\t")[1]); ;
+    ExpStudySanity = int.Parse(textrow[175].Split("\t")[1]); ;
+    ExpStudyPer_1 = int.Parse(textrow[176].Split("\t")[1]); ;
+    ExpStudyPer_2 = int.Parse(textrow[177].Split("\t")[1]); ;
+    ExpStudyPer_3 = int.Parse(textrow[178].Split("\t")[1]); ;
+    ExpStudyPer_4 = int.Parse(textrow[179].Split("\t")[1]); ;
+    ExpStudyReward= int.Parse(textrow[180].Split("\t")[1]); ;
+
+    Discomfort_Village = int.Parse(textrow[181].Split("\t")[1]);
+    Discomfort_Town = int.Parse(textrow[182].Split("\t")[1]);
+    Discomfort_City = int.Parse(textrow[183].Split("\t")[1]);
+    Supply_Village = int.Parse(textrow[184].Split("\t")[1]);
+    Supply_Town = int.Parse(textrow[185].Split("\t")[1]);
+    Supply_City = int.Parse(textrow[186].Split("\t")[1]);
+
+    Residence_Village = int.Parse(textrow[187].Split("\t")[1]);
+    Temple_Village = int.Parse(textrow[188].Split("\t")[1]);
+    Temple_Town = int.Parse(textrow[189].Split("\t")[1]);
+    Market_Town = int.Parse(textrow[190].Split("\t")[1]);
+    Market_City = int.Parse(textrow[191].Split("\t")[1]);
+    Library_City = int.Parse(textrow[192].Split("\t")[1]);
+
+    RitualLength_Max= int.Parse(textrow[193].Split("\t")[1]);
+
+    TilePer_Event_mul = float.Parse(textrow[194].Split("\t")[1]);
+    TilePer_Resource_mul = float.Parse(textrow[195].Split("\t")[1]);
+    TilePer_Camping_mul = float.Parse(textrow[196].Split("\t")[1]);
+
+    ExpUsingDecrease=int.Parse(textrow[197].Split("\t")[1]);
+  }
   
 public  int ConversationEffect_Level=1,
     ConversationEffect_Value = 1;
@@ -363,10 +393,10 @@ public  int ConversationEffect_Level=1,
   public  int TendencyRegress = 2;
 
   public  int DiscomfortDownValue = 1;
-  public  int SectorEffect_residence_discomfort = 4;
-    public  int SectorEffect_marketSector = 20;
-    public  int SectorEffect_temple = 4;
-  public  int SectorEffect_Library = 4;
+  public  int SectorEffect_residence_discomfort = 4;  //변경완료
+    public  int SectorEffect_marketSector = 20;       //변경완료
+    public  int SectorEffect_temple = 4;              //변경완료
+  public  int SectorEffect_Library = 4;               //변경완료
 
   public  int LongTermChangeCost = 15;
 
@@ -401,9 +431,9 @@ public  int ConversationEffect_Level=1,
   public int Quest_Cult_Town_Bonus = 0;
   public int Quest_Cult_City_Bonus = 0;
 
-  public float TilePer_Event_Value = 0;
-  public float TilePer_Resource_Value = 0;
-  public int TilePer_Camp_Value = 0;
+  public float TilePer_Event_Pow = 0;
+  public float TilePer_Resource_Pow = 0;
+  public int TilePer_Camp_Pow = 0;
   public int Camping_Min = 0;
   public int Camping_Max = 0;
   public int Camping_Value = 0;
@@ -416,6 +446,36 @@ public  int ConversationEffect_Level=1,
 
   public int Quest_Cult_Sabbat_Bonus = 0;
   public int Quest_Cult_Ritual_Bonus = 0;
+
+  public int ExpEraseSanity = 0;
+  public int ExpStudySanity = 0;
+  public int ExpStudyPer_1 = 0;
+  public int ExpStudyPer_2 = 0;
+  public int ExpStudyPer_3 = 0;
+  public int ExpStudyPer_4 = 0;
+  public int ExpStudyReward = 0;
+
+  public int Discomfort_Village = 0;
+public int Discomfort_Town = 0;
+  public int Discomfort_City = 0;
+  public int Supply_Village = 0;
+  public int Supply_Town = 0;
+  public int Supply_City = 0;
+
+  public int Residence_Village = 0;
+public int Temple_Village = 0;
+  public int Temple_Town = 0;
+  public int Market_Town = 0;
+  public int Market_City = 0;
+  public int Library_City = 0;
+
+  public int RitualLength_Max = 0;
+
+  public float TilePer_Event_mul = 0.0f;
+  public float TilePer_Resource_mul = 0.0f;
+  public float TilePer_Camping_mul = 0.0f;
+
+  public int ExpUsingDecrease = 0;
 }
 public class GameData    //게임 진행도 데이터
 {
@@ -444,14 +504,16 @@ public class GameData    //게임 진행도 데이터
         break;//거주지 - 휴식 시 불쾌 1 적게 증가
 
       case SectorTypeEnum.Temple:
-        DownAllDiscomfort(GameManager.Instance.Status.SectorEffect_temple);
+        DownAllDiscomfort(CurrentSettlement.SettlementType==SettlementType.Village?
+          GameManager.Instance.Status.Temple_Village:
+          GameManager.Instance.Status.Temple_Town);
         break;//사원- 모든 불쾌 2 감소
 
       case SectorTypeEnum.Marketplace:
         break;//시장- 휴식 비용 감소
 
       case SectorTypeEnum.Library:
-        int _addvalue = GameManager.Instance.Status.SectorEffect_Library;
+        int _addvalue = GameManager.Instance.Status.Library_City;
 
         if(LongExp!=null)
         LongExp.Duration = LongExp.Duration + _addvalue > GameManager.Instance.Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value ? GameManager.Instance.Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value : LongExp.Duration + _addvalue;
@@ -808,6 +870,7 @@ public class GameData    //게임 진행도 데이터
   public bool Madness_Force = false;
   public bool Madness_Wild = false;
   public bool Madness_Intelligence = false;
+  public bool Madness_HP = false;
   #endregion
 
   #region #기술#
@@ -821,6 +884,7 @@ public class GameData    //게임 진행도 데이터
       UIManager.Instance.SkillUI.SetProgres();
     }
   }
+  public bool[] ExpProgress = new bool[4];
   public int SkillLevelupCount = 0;
   public int SkillProgressRequire
   {
@@ -853,7 +917,9 @@ public class GameData    //게임 진행도 데이터
   #endregion
   #region #성향#
   public Tendency Tendency_Body = new Tendency(TendencyTypeEnum.Body);//(-)이성-육체(+)
+  public int StartTedencydir_Body = 0;
   public Tendency Tendency_Head = new Tendency(TendencyTypeEnum.Head);//(-)정신-물질(+)
+  public int StartTedencydir_Head = 0;
   public int GetTendencyLevel(TendencyTypeEnum _type)
   {
     switch (_type)
@@ -917,7 +983,7 @@ public class GameData    //게임 진행도 데이터
                 {
                   case 0:
                     _checktarget.Add(SuccessEvent_None);
-                    _checktarget.Add(SuccessEvent_Rational);
+                    _checktarget.Add(SuccessEvent_Logical);
                     _checktarget.Add(SuccessEvent_Mental);
                     break;
                   case 1:
@@ -932,7 +998,7 @@ public class GameData    //게임 진행도 데이터
                 {
                   case 0:
                     _checktarget.Add(FailEvent_None);
-                    _checktarget.Add(FailEvent_Rational);
+                    _checktarget.Add(FailEvent_Logical);
                     _checktarget.Add(FailEvent_Mental);
                     break;
                   case 1:
@@ -947,10 +1013,10 @@ public class GameData    //게임 진행도 데이터
                 {
                   case 0:
                     _checktarget.Add(SuccessEvent_None);
-                    _checktarget.Add(SuccessEvent_Rational);
+                    _checktarget.Add(SuccessEvent_Logical);
                     _checktarget.Add(SuccessEvent_Mental);
                     _checktarget.Add(FailEvent_None);
-                    _checktarget.Add(FailEvent_Rational);
+                    _checktarget.Add(FailEvent_Logical);
                     _checktarget.Add(FailEvent_Mental);
                     break;
                   case 1:
@@ -982,14 +1048,14 @@ public class GameData    //게임 진행도 데이터
   }
 
   public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
-  public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Logical = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_All=new List<string>();
 
   public List<string> FailEvent_None = new List<string>();//단일,성향,경험,기술 선택지 실패한 이벤트(일반,연계)
-  public List<string> FailEvent_Rational = new List<string>();//이성 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Logical = new List<string>();//이성 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Physical = new List<string>();  //육체 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Mental = new List<string>(); //정신 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
@@ -1003,7 +1069,7 @@ public class GameData    //게임 진행도 데이터
     get { return GameManager.Instance.EventHolder.GetQuest(QuestType); }
   }
   /// <summary>
-  /// 0(촌락) -> 1(마을) -> 2(도시) -> 3(의식) <-> 4(집회)
+  /// 0(촌락) -> 1(마을) -> 2(도시) -> 3(집회) <-> 4(의식)
   /// </summary>
   public int Quest_Cult_Phase = 0;
   private float quest_cult_progress =0;
@@ -1012,7 +1078,10 @@ public class GameData    //게임 진행도 데이터
     get { return quest_cult_progress; }
     set 
     {
-      if (value >= 100&&!UIManager.Instance.EndingUI.IsDead) UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.EndingList[0]);
+      if (value >= 100 && !UIManager.Instance.EndingUI.IsDead)
+      {
+        UIManager.Instance.OpenEnding(GameManager.Instance.ImageHolder.EndingList[0]);
+      }
 
       quest_cult_progress = value < 0 ? 0 : value;
 
@@ -1146,7 +1215,7 @@ public class GameData    //게임 진행도 데이터
     }
 
   }
-  public int Cult_Ritual_MinLength { get { return Year - 1; } }
+  public int Cult_Ritual_MinLength { get { return Mathf.Clamp(Year - 1,0,GameManager.Instance.Status.RitualLength_Max); } }
   public void SetCult_Ritual()
   {
     UIManager.Instance.MapUI.DoHighlight = true;
@@ -1301,6 +1370,9 @@ public class GameData    //게임 진행도 데이터
     Skill_Force = new Skill(SkillTypeEnum.Force, GameManager.Instance.Status.StartSkillLevel);
     Skill_Wild= new Skill(SkillTypeEnum.Wild, GameManager.Instance.Status.StartSkillLevel);
     Skill_Intelligence=new Skill(SkillTypeEnum.Intelligence, GameManager.Instance.Status.StartSkillLevel);
+
+    for (int i = 0; i < ExpProgress.Length; i++)
+      ExpProgress[i] = false;
   }
   /// <summary>
   /// 불러오기
@@ -1308,6 +1380,11 @@ public class GameData    //게임 진행도 데이터
   /// <param name="jsondata"></param>
   public GameData(GameJsonData jsondata)
   {
+    ExpProgress = jsondata.ExpProgress;
+
+    StartTedencydir_Head = jsondata.StartDir_Head;
+    StartTedencydir_Body= jsondata.StartDir_Body;
+
     MyMapData = new MapData();
     MyMapData.TileDatas = new TileData[GameManager.Instance.Status.MapSize, GameManager.Instance.Status.MapSize];
 
@@ -1403,6 +1480,7 @@ public class GameData    //게임 진행도 데이터
     Madness_Force = jsondata.Madness_Force;
     Madness_Wild = jsondata.Madness_Wild;
     Madness_Intelligence = jsondata.Madness_Intelligence;
+    Madness_HP= jsondata.Madness_HP;
 
     Skill_Conversation = new Skill(SkillTypeEnum.Conversation, jsondata.Conversation_Level);
     Skill_Force = new Skill(SkillTypeEnum.Force, jsondata.Force_Level);
@@ -1433,14 +1511,14 @@ public class GameData    //게임 진행도 데이터
     CurrentEventLine= jsondata.CurrentEventLine;
 
     SuccessEvent_None = jsondata.SuccessEvent_None;
-    SuccessEvent_Rational = jsondata.SuccessEvent_Rational;
+    SuccessEvent_Logical = jsondata.SuccessEvent_Logical;
     SuccessEvent_Physical= jsondata.SuccessEvent_Physical;
     SuccessEvent_Mental= jsondata.SuccessEvent_Mental;
     SuccessEvent_Material= jsondata.SuccessEvent_Material;
     SuccessEvent_All= jsondata.SuccessEvent_All;
 
     FailEvent_None = jsondata.FailEvent_None;
-    FailEvent_Rational = jsondata.FailEvent_Rational;
+    FailEvent_Logical = jsondata.FailEvent_Logical;
     FailEvent_Physical = jsondata.FailEvent_Physical;
     FailEvent_Mental = jsondata.FailEvent_Mental;
     FailEvent_Material = jsondata.FailEvent_Material;
@@ -1714,13 +1792,40 @@ public class Tendency
         if (Progress == GameManager.Instance.Status.TendencyRegress * -1) Level = 1;
         break;
     }
-
   }
   private int level = 0;
   public int Level
   {
     get { return level; }
     set {
+      if (GameManager.Instance.MyGameData != null)
+      {
+        if (value > 0)
+        {
+          switch (Type)
+          {
+            case TendencyTypeEnum.Body:
+              if (GameManager.Instance.MyGameData.StartTedencydir_Body < 0) GameManager.Instance.MyGameData.StartTedencydir_Body = 0;
+              break;
+            case TendencyTypeEnum.Head:
+              if (GameManager.Instance.MyGameData.StartTedencydir_Head < 0) GameManager.Instance.MyGameData.StartTedencydir_Head = 0;
+              break;
+          }
+        }
+        else if (value < 0)
+        {
+          switch (Type)
+          {
+            case TendencyTypeEnum.Body:
+              if (GameManager.Instance.MyGameData.StartTedencydir_Body > 0) GameManager.Instance.MyGameData.StartTedencydir_Body = 0;
+              break;
+            case TendencyTypeEnum.Head:
+              if (GameManager.Instance.MyGameData.StartTedencydir_Head > 0) GameManager.Instance.MyGameData.StartTedencydir_Head = 0;
+              break;
+          }
+        }
+      }
+
       if(GameManager.Instance.MyGameData!=null&& level != value)
       {
         UIManager.Instance.SetInfoPanel(
@@ -1745,6 +1850,11 @@ public class Tendency
 }
 public class GameJsonData
 {
+  public bool[] ExpProgress = new bool[4];
+
+  public int StartDir_Body = 0;
+  public int StartDir_Head = 0;
+
   public string Version = "";
   public int skillprogress = 0;
   public int SkillLevelupCount = 0;
@@ -1802,6 +1912,7 @@ public class GameJsonData
   public bool Madness_Force = false;
   public bool Madness_Wild = false;
   public bool Madness_Intelligence = false;
+  public bool Madness_HP = false;
 
   public int Conversation_Level = 0;
   public int Force_Level = 0;
@@ -1819,14 +1930,14 @@ public class GameJsonData
   public string CurrentEventLine = "";
 
   public List<string> SuccessEvent_None = new List<string>();//단일,성향,경험,기술 선택지 클리어한 이벤트(일반,연계)
-  public List<string> SuccessEvent_Rational = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
+  public List<string> SuccessEvent_Logical = new List<string>();//이성 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Physical = new List<string>();  //육체 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Mental = new List<string>(); //정신 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_Material = new List<string>();//물질 선택지 클리어한 이벤트(일반,연계)
   public List<string> SuccessEvent_All = new List<string>();
 
   public List<string> FailEvent_None = new List<string>();//단일,성향,경험,기술 선택지 실패한 이벤트(일반,연계)
-  public List<string> FailEvent_Rational = new List<string>();//이성 선택지 실패한 이벤트(일반,연계)
+  public List<string> FailEvent_Logical = new List<string>();//이성 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Physical = new List<string>();  //육체 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Mental = new List<string>(); //정신 선택지 실패한 이벤트(일반,연계)
   public List<string> FailEvent_Material = new List<string>();//물질 선택지 실패한 이벤트(일반,연계)
@@ -1843,7 +1954,12 @@ public class GameJsonData
 
   public GameJsonData(GameData data)
   {
+    ExpProgress = data.ExpProgress;
+
     Version = Application.version;
+
+    StartDir_Body = data.StartTedencydir_Body;
+    StartDir_Head = data.StartTedencydir_Head;
 
     skillprogress = data.SkillProgress;
     SkillLevelupCount = data.SkillLevelupCount;
@@ -1913,6 +2029,7 @@ public class GameJsonData
     Madness_Force = data.Madness_Force;
     Madness_Wild = data.Madness_Wild;
     Madness_Intelligence = data.Madness_Intelligence;
+    Madness_HP= data.Madness_HP;
 
     Conversation_Level = data.Skill_Conversation.LevelByDefault;
     Force_Level = data.Skill_Force.LevelByDefault;
@@ -1937,14 +2054,14 @@ public class GameJsonData
     CurrentEventLine = data.CurrentEventLine;
 
     SuccessEvent_None = data.SuccessEvent_None;
-    SuccessEvent_Rational = data.SuccessEvent_Rational;
+    SuccessEvent_Logical = data.SuccessEvent_Logical;
     SuccessEvent_Physical = data.SuccessEvent_Physical;
     SuccessEvent_Mental = data.SuccessEvent_Mental;
     SuccessEvent_Material = data.SuccessEvent_Material;
     SuccessEvent_All = data.SuccessEvent_All;
 
     FailEvent_None = data.FailEvent_None;
-    FailEvent_Rational = data.FailEvent_Rational;
+    FailEvent_Logical = data.FailEvent_Logical;
     FailEvent_Physical = data.FailEvent_Physical;
     FailEvent_Mental = data.FailEvent_Mental;
     FailEvent_Material = data.FailEvent_Material;

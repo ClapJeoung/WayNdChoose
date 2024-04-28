@@ -41,7 +41,7 @@ public class UI_Menu : UI_default
   }
   public void Click()
   {
-
+    if (IsWorking) return;
     if (IsOpen)
     {
       StartCoroutine(closeui());
@@ -59,7 +59,7 @@ public class UI_Menu : UI_default
   public void SetSFMMixer()
   {
     UIManager.Instance.AudioManager.AudioMixer.SetFloat("SFX", SFXSlider.value < -40 ? -80 : SFXSlider.value);
-    PlayerPrefs.SetFloat("SFXVolume", BGMSlider.value);
+    PlayerPrefs.SetFloat("SFXVolume", SFXSlider.value);
   }
   private IEnumerator openui()
   {
@@ -100,6 +100,8 @@ private IEnumerator closeui()
   }
   public void QuitGame()
   {
-    UIManager.Instance.ResetGame("",false);
+    if (IsWorking) return;
+
+    StartCoroutine(UIManager.Instance.CloseGameAsDead());
   }
 }

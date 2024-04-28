@@ -11,6 +11,38 @@ public class Settlement
 {
   public int Index = -1;
   public int Discomfort = 0;
+  public int RestDiscomfort 
+  { 
+    get
+    {
+      switch (SettlementType)
+      {
+        case SettlementType.Village:
+          return GameManager.Instance.Status.Discomfort_Village;
+        case SettlementType.Town:
+          return GameManager.Instance.Status.Discomfort_Town;
+        case SettlementType.City:
+          return GameManager.Instance.Status.Discomfort_City;
+      }
+      return 0;
+    }
+  }
+  public int RestSupply
+  {
+    get
+    {
+      switch (SettlementType)
+      {
+        case SettlementType.Village:
+          return GameManager.Instance.Status.Supply_Village;
+        case SettlementType.Town:
+          return GameManager.Instance.Status.Supply_Town;
+        case SettlementType.City:
+          return GameManager.Instance.Status.Supply_City;
+      }
+      return 0;
+    }
+  }
   public bool IsForest = false;//ÁÖº¯ 1Ä­¿¡ ½£ ¿©ºÎ
   public bool IsRiver = false;//ÁÖº¯ 1Ä­¿¡ °­ ¿©ºÎ
   public bool IsHighland = false;  //ÁÖº¯ 1Ä­¿¡ ¾ð´ö ¿©ºÎ

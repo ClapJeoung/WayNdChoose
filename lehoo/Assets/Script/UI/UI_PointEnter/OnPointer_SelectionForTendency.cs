@@ -43,10 +43,10 @@ public class OnPointer_SelectionForTendency : MonoBehaviour, IPointerEnterHandle
           if (_checktendency.Progress == (GameManager.Instance.Status.TendencyRegress - 1)) effecttype = 2;
           break;
         case -1:
-          if (_checktendency.Progress == (GameManager.Instance.Status.TendencyProgress_1to2 - 1)) effecttype = 2;
+          if (_checktendency.Progress == (GameManager.Instance.Status.TendencyRegress - 1)) effecttype = 2;
           break;
         case 1:
-          if (_checktendency.Progress == (GameManager.Instance.Status.TendencyRegress - 1)) effecttype = 2;
+          if (_checktendency.Progress == (GameManager.Instance.Status.TendencyProgress_1to2 - 1)) effecttype = 2;
           else effecttype = 1;
           break;
         case 2:

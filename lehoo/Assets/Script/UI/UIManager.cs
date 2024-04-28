@@ -21,19 +21,14 @@ public class UIManager : MonoBehaviour
     {
       instance = this;
     }
-    StartCoroutine(ChangeAlpha(CurtainGroup, 0.0f, 2.5f));
+    StartCoroutine(CurtainUI.OpenGame());
   }
-  public void ResetGame(string text,bool isending)
+  public IEnumerator CloseGameAsDead()
   {
-    AudioManager.SetoffBGM();
     IsWorking = true;
-    CurtainText.text=text;
-    StartCoroutine(resetgame(isending));
-  }
-  private IEnumerator resetgame(bool isending)
-  {
-    yield return StartCoroutine(ChangeAlpha(CurtainGroup, 1.0f, 1.2f));
-    if(isending) yield return new WaitForSeconds(3.0f);
+    AudioManager.SetoffBGM();
+    yield return StartCoroutine(CurtainUI.CloseGame_Fail());
+    yield return new WaitForSeconds(1.5f);
     UnityEngine.SceneManagement.SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
   public AnimationCurve UIPanelOpenCurve = null;
@@ -55,8 +50,7 @@ public class UIManager : MonoBehaviour
   [Space(10)]
   public Transform MyCanvas = null;
   [SerializeField] private CanvasGroup CenterGroup = null;
-  [SerializeField] private CanvasGroup CurtainGroup = null;
-  [SerializeField] private TextMeshProUGUI CurtainText = null;
+  public UI_Curtain CurtainUI = null;
   public UI_Main MainUi = null;
   public UI_dialogue DialogueUI = null;
   public UI_RewardExp ExpRewardUI = null;
@@ -510,23 +504,41 @@ public class UIManager : MonoBehaviour
   private IEnumerator opendead(Sprite illsut,string description)
   {
     AudioManager.StopWalking();
-    GameManager.Instance.DeleteSaveData();
     EndingUI.IsDead = true;
 
     yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
     EndingUI.OpenUI_Dead(illsut,description);
   }
-  public void OpenEnding(EndingDatas data)
+  public void OpenEnding(EndingData data)
   {
     GameManager.Instance.AddEndingProgress(data.ID);
     StopAllCoroutines();
-    GameManager.Instance.DeleteSaveData();
     AudioManager.StopWalking();
     UIAnimationQueue.Clear();
     IsWorking = false;
     StartCoroutine(openending(data));
+
+    if (!GameManager.Instance.MyGameData.Madness_Conversation &&
+      !GameManager.Instance.MyGameData.Madness_Force &&
+      !GameManager.Instance.MyGameData.Madness_Wild &&
+      !GameManager.Instance.MyGameData.Madness_Intelligence)
+      GameManager.Instance.SetAchievement("ACH_NOMAD");
+    else if (GameManager.Instance.MyGameData.Madness_Conversation &&
+      GameManager.Instance.MyGameData.Madness_Force &&
+      GameManager.Instance.MyGameData.Madness_Wild &&
+      GameManager.Instance.MyGameData.Madness_Intelligence)
+      GameManager.Instance.SetAchievement("ACH_MAD");
+    if (GameManager.Instance.MyGameData.StartTedencydir_Body < 0)
+      GameManager.Instance.SetAchievement("ACH_RATIONAL");
+    if (GameManager.Instance.MyGameData.StartTedencydir_Body > 0)
+      GameManager.Instance.SetAchievement("ACH_Physical");
+    if (GameManager.Instance.MyGameData.StartTedencydir_Head < 0)
+      GameManager.Instance.SetAchievement("ACH_Mental");
+    if (GameManager.Instance.MyGameData.StartTedencydir_Head > 0)
+      GameManager.Instance.SetAchievement("ACH_Material");
+
   }
-  private IEnumerator openending(EndingDatas data)
+  private IEnumerator openending(EndingData data)
   {
    yield return StartCoroutine(ChangeAlpha(CenterGroup, 0.0f, 3.0f));
     EndingUI.OpenUI_Ending(data);

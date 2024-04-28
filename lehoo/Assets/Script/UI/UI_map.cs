@@ -7,6 +7,7 @@ using TMPro;
 using System.Linq;
 using System.IO;
 using Unity.VisualScripting;
+using UnityEditor;
 
 //public enum RangeEnum { Low,Middle,High}
 public class RouteData
@@ -248,13 +249,24 @@ public class UI_map : UI_default
   }
   private int TilePer_Event
   { 
-    get { return GameManager.Instance.Status.TilePer_Event_Default +
-        Mathf.FloorToInt(Mathf.Pow(AllTiles.Count + GameManager.Instance.Status.TilePer_Event_Modify, GameManager.Instance.Status.TilePer_Event_Value)); }
+    get 
+    {
+      if (GameManager.Instance.MyGameData.DEBUG_NEXTEVENTID != "") return 1000;
+
+      int _value= GameManager.Instance.Status.TilePer_Event_Default +
+        Mathf.FloorToInt(Mathf.Pow(AllTiles.Count*GameManager.Instance.Status.TilePer_Event_mul + GameManager.Instance.Status.TilePer_Event_Modify, GameManager.Instance.Status.TilePer_Event_Pow));
+      if (_value < 1) return 1;
+      return _value;
+    }  
   }
   private int TilePer_Resource 
   { 
-    get { return GameManager.Instance.Status.TilePer_Resource_Default +
-        Mathf.FloorToInt(Mathf.Pow(AllTiles.Count + GameManager.Instance.Status.TilePer_Resource_Modify, GameManager.Instance.Status.TilePer_Resource_Value));
+    get 
+    { 
+      int _value= GameManager.Instance.Status.TilePer_Resource_Default +
+        Mathf.FloorToInt(Mathf.Pow(AllTiles.Count * GameManager.Instance.Status.TilePer_Resource_mul + GameManager.Instance.Status.TilePer_Resource_Modify, GameManager.Instance.Status.TilePer_Resource_Pow));
+      if (_value < 1) return 1;
+      return _value;
     }
   }
   private int TilePer_Camping 
@@ -264,18 +276,20 @@ public class UI_map : UI_default
   private float CampingRestoreValue
   {
     get {
-      return Mathf.Clamp(GameManager.Instance.Status.TilePer_Camping_Default + AllTiles.Count * GameManager.Instance.Status.Camping_Value,
+      return Mathf.Clamp(GameManager.Instance.Status.Camping_Min + AllTiles.Count * GameManager.Instance.Status.Camping_Value,
           GameManager.Instance.Status.Camping_Min, GameManager.Instance.Status.Camping_Max) / 100.0f;
     }
   }
   [SerializeField] private TextMeshProUGUI RequireSupply = null;
   [SerializeField] private TextMeshProUGUI CurrentSupply = null;
-  [SerializeField] private CanvasGroup MovecostButtonGroup = null;
+  [SerializeField] private GameObject SanityButtonObj = null;
   [SerializeField] private Onpointer_highlight SanityButton_Highlight = null;
   [SerializeField] private CanvasGroup SanitybuttonGroup = null;
+  [SerializeField] private GameObject GoldButtonObj = null;
   [SerializeField] private PreviewInteractive GoldButtonPreview = null;
   [SerializeField] private Onpointer_highlight GoldButton_Highlight = null;
   [SerializeField] private CanvasGroup GoldbuttonGroup = null;
+  [SerializeField] private GameObject SettlementButtonObj = null;
   [SerializeField] private Image MadnessIcon = null;
   public StatusTypeEnum SelectedCostType = StatusTypeEnum.HP;
   [SerializeField] private CanvasGroup MadnessEffect = null;
@@ -617,9 +631,9 @@ public class UI_map : UI_default
    if(updatetext) UpdateSupplyTexts();
     if (Destinations.Count == 0)
     {
-      MovecostButtonGroup.alpha = 0.0f;
-      MovecostButtonGroup.interactable = false;
-      MovecostButtonGroup.blocksRaycasts = false;
+      SanityButtonObj.SetActive(false);
+      GoldButtonObj.SetActive(false);
+      if (GameManager.Instance.MyGameData.CurrentSettlement != null) SettlementButtonObj.SetActive(true);
     }
     else
     {
@@ -800,6 +814,14 @@ public class UI_map : UI_default
       ResetPreview();
     }
     if (MadnessIcon.enabled) MadnessIcon.enabled = false;
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null)
+    {
+      if (!SettlementButtonObj.activeSelf) SettlementButtonObj.SetActive(false);
+    }
+    else
+    {
+      if (SettlementButtonObj.activeSelf) SettlementButtonObj.SetActive(false);
+    }
 
     ResetRoute();
 
@@ -814,9 +836,9 @@ public class UI_map : UI_default
     TileInfoText.text =IsMad?GameManager.Instance.GetTextData("Madness_Wild_Description"): GameManager.Instance.GetTextData("CHOOSETILE_MAP");
     CurrentSupply.text=GameManager.Instance.MyGameData.Supply.ToString();
     UpdateSupplyTexts();
-    MovecostButtonGroup.alpha = 0.0f;
-    MovecostButtonGroup.interactable = false;
-    MovecostButtonGroup.blocksRaycasts = false;
+    SanityButtonObj.SetActive(false);
+    GoldButtonObj.SetActive(false);
+    if (GameManager.Instance.MyGameData.CurrentSettlement != null) SettlementButtonObj.SetActive(true);
 
     SelectedCostType = StatusTypeEnum.HP;
 
@@ -992,7 +1014,7 @@ public class UI_map : UI_default
     if (Destinations.Contains(selectedtile))
     {
       RemoveDestination(selectedtile,true);
-
+      SetPreview(LastDestination);
       return;
     }
     //동일한 좌표면 호출되지 않게 이미 거름
@@ -1000,7 +1022,7 @@ public class UI_map : UI_default
 
 
     AddDestination(selectedtile);
-
+    SetPreview(LastDestination);
     UIManager.Instance.AudioManager.PlaySFX(5);
 
     SelectedTile = LastDestination;
@@ -1087,9 +1109,10 @@ public class UI_map : UI_default
         break;
     }
 
-    MovecostButtonGroup.alpha = 1.0f;
-    MovecostButtonGroup.interactable = true;
-    MovecostButtonGroup.blocksRaycasts = true;
+    if(!SanityButtonObj.activeSelf) SanityButtonObj.SetActive(true);
+    if(!GoldButtonObj.activeSelf) GoldButtonObj.SetActive(true);
+    if(SettlementButtonObj.activeSelf) SettlementButtonObj.SetActive(false);
+
 
     SelectedCostType = StatusTypeEnum.HP;
 
@@ -1373,7 +1396,6 @@ public class UI_map : UI_default
     {
       ChangeNextDestination();
     }
-    SetPreview(Destinations[0]);
 
     if (IsMoved)
     {
@@ -1621,7 +1643,7 @@ public class UI_map : UI_default
           GameManager.Instance.MyGameData.CurrentSettlement = null;
           GameManager.Instance.MyGameData.DownAllDiscomfort(GameManager.Instance.Status.DiscomfortDownValue);
 
-          UIManager.Instance.SetInfoPanel(string.Format(GameManager.Instance.GetTextData("Info_Camping"), SpentSanity));
+          UIManager.Instance.SetInfoPanel(string.Format(GameManager.Instance.GetTextData("Info_Camping"), Mathf.FloorToInt(SpentSanity * CampingRestoreValue)));
           SpentSanity = 0;
         }
         _destinationindex++;
@@ -1636,8 +1658,10 @@ public class UI_map : UI_default
     HolderRect.anchoredPosition = PlayerRect.anchoredPosition * -1.0f;
 
     GameManager.Instance.MyGameData.Coordinate = _stoptile.Coordinate;
-    MovecostButtonGroup.alpha = 0.0f;
-    MovecostButtonGroup.interactable = false;
+    if(SanityButtonObj.activeSelf) SanityButtonObj.SetActive(false);
+    if(GoldButtonObj.activeSelf) GoldButtonObj.SetActive(false);
+    if(SettlementButtonObj.activeSelf) SettlementButtonObj.SetActive(false);
+
     #endregion
 
     if (_stoptile.TileSettle != null)
@@ -1670,8 +1694,6 @@ public class UI_map : UI_default
 
       UIManager.Instance.AudioManager.PlaySFX(4);
 
-    //  UIManager.Instance.SidePanelCultUI.SetRitualEffect(false);
-
       DefaultRect.pivot = Left_Pivot;
       DefaultRect.anchoredPosition = Left_InsidePos;
       PanelLastHolder.anchorMin = Left_Anchor;
@@ -1693,7 +1715,7 @@ public class UI_map : UI_default
       yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, Left_InsidePos, Left_OutsidePos, UIOpenTime_Move, UIManager.Instance.UIPanelCLoseCurve));
 
       GameManager.Instance.MyGameData.FirstRest = true;
-      GameManager.Instance.EnterSettlement(_stoptile.TileSettle);
+      GameManager.Instance.EnterSettlement(_stoptile.TileSettle,true);
 
       GameManager.Instance.MyGameData.Turn++;
       GameManager.Instance.SaveData();
@@ -1736,131 +1758,70 @@ public class UI_map : UI_default
 
       if (DoHighlight)
       {
-        DefaultGroup.interactable = false;
-        DefaultGroup.blocksRaycasts = false;
-
         List<RectTransform> _highlightlist = new List<RectTransform>();
         List<TileData> _targettiles = new List<TileData>();
         switch (GameManager.Instance.MyGameData.Quest_Cult_Phase)
         {
           case 0:
-            for (int i = 0; i < VillageIcons.Count; i++)
-            {
-              _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
-              _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
-            }
-            break;
           case 1:
-            for (int i = 0; i < TownIcons.Count; i++)
-            {
-              _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
-              _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
-            }
-            break;
           case 2:
-            for (int i = 0; i < CityIcons.Count; i++)
-            {
-              _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
-              _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
-            }
-            break;
-          case 3:
-            switch (GameManager.Instance.MyGameData.Cult_SabbatSector)
-            {
-              case SectorTypeEnum.Residence:
-                for (int i = 0; i < VillageIcons.Count; i++)
-                {
-                  _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
-                  _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
-                }
-                break;
-              case SectorTypeEnum.Temple:
-                for (int i = 0; i < VillageIcons.Count; i++)
-                {
-                  _highlightlist.Add(VillageIcons[i].GetComponent<RectTransform>());
-                  _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Villages[i].Tile);
-                }
-                for (int i = 0; i < TownIcons.Count; i++)
-                {
-                  _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
-                  _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
-                }
-                break;
-              case SectorTypeEnum.Marketplace:
-                for (int i = 0; i < TownIcons.Count; i++)
-                {
-                  _highlightlist.Add(TownIcons[i].GetComponent<RectTransform>());
-                  _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Towns[i].Tile);
-                }
-                for (int i = 0; i < CityIcons.Count; i++)
-                {
-                  _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
-                  _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
-                }
-                break;
-              case SectorTypeEnum.Library:
-                for (int i = 0; i < CityIcons.Count; i++)
-                {
-                  _highlightlist.Add(CityIcons[i].GetComponent<RectTransform>());
-                  _targettiles.Add(GameManager.Instance.MyGameData.MyMapData.Citys[i].Tile);
-                }
-                break;
-            }
-            break;
           case 4:
             _targettiles.Add(GameManager.Instance.MyGameData.Cult_TargetTile);
             _highlightlist.Add(GameManager.Instance.MyGameData.Cult_TargetTile.ButtonScript.LandmarkImage.rectTransform);
             break;
         }
-        Vector3 _pos = Vector2.zero;
-        float _targettime = 0.0f;
-        TileData _highlighttarget = null;
-        int _min = 100;
-        foreach (var _tile in _targettiles)
+        if (_targettiles.Count > 0)
         {
-          int _newmin = GameManager.Instance.MyGameData.CurrentTile.HexGrid.GetDistance(_tile);
-          if (_newmin < _min)
+          Vector3 _pos = Vector2.zero;
+          float _targettime = 0.0f;
+          TileData _highlighttarget = null;
+          int _max = 0;
+          foreach (var _tile in _targettiles)
           {
-            _min = _newmin;
-            _highlighttarget = _tile;
+            int _length = GameManager.Instance.MyGameData.CurrentTile.HexGrid.GetDistance(_tile);
+            if (_max < _length)
+            {
+              _max = _length;
+              _highlighttarget = _tile;
+            }
           }
-        }
 
-        foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_highlighttarget, 1))
-          if (_tile.Fogstate == 0) _tile.SetFog(1);
-        _time = 0.0f;
-        _pos = Vector2.zero;
-        Vector3 _startpos = HolderRect.anchoredPosition;
-        Vector3 _endpos = _endpos = _highlighttarget.ButtonScript.Rect.anchoredPosition * -1.0f;
-        _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
-        while (_time < _targettime)
-        {
-          _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
-          HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
-          _time += Time.deltaTime;
-          yield return null;
-        }
-        HolderRect.anchoredPosition3D = _endpos;
+          foreach (var _tile in GameManager.Instance.MyGameData.MyMapData.GetAroundTile(_highlighttarget, 1))
+            if (_tile.Fogstate == 0) _tile.SetFog(1);
+          _time = 0.0f;
+          _pos = Vector2.zero;
+          Vector3 _startpos = HolderRect.anchoredPosition;
+          Vector3 _endpos = _highlighttarget.ButtonScript.Rect.anchoredPosition * -1.0f;
+          _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+          while (_time < _targettime)
+          {
+            _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+            HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+            _time += Time.deltaTime;
+            yield return null;
+          }
+          HolderRect.anchoredPosition3D = _endpos;
 
-        _time = 0.0f;
-        _targettime = DoHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
-        float _highlightscale = DoHighlight ? HighlightSize_First : HighlightSize_Second;
-        yield return StartCoroutine(UIManager.Instance.ExpandRect(_highlighttarget.ButtonScript.LandmarkImage.rectTransform, _highlightscale, _targettime));
+          _time = 0.0f;
+          _targettime = DoHighlight ? HighlightSizeTime_First : HighlightSizeTime_Else;
+          float _highlightscale = DoHighlight ? HighlightSize_First : HighlightSize_Second;
+          yield return StartCoroutine(UIManager.Instance.ExpandRect(_highlighttarget.ButtonScript.LandmarkImage.rectTransform, _highlightscale, _targettime));
 
-        _time = 0.0f;
-        _pos = Vector2.zero;
-        _startpos = HolderRect.anchoredPosition;
-        _endpos = PlayerRect.anchoredPosition * -1.0f;
-        _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
-        while (_time < _targettime)
-        {
-          _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
-          HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
-          _time += Time.deltaTime;
-          yield return null;
+          _time = 0.0f;
+          _pos = Vector2.zero;
+          _startpos = HolderRect.anchoredPosition;
+          _endpos = PlayerRect.anchoredPosition * -1.0f;
+          _targettime = DoHighlight ? HighlightMovetime_First : HighlightMovetime_Else;
+          while (_time < _targettime)
+          {
+            _pos = Vector3.Lerp(_startpos, _endpos, SettlementAnimationCurve.Evaluate(_time / _targettime));
+            HolderRect.anchoredPosition3D = new Vector3(_pos.x, _pos.y, 0.0f);
+            _time += Time.deltaTime;
+            yield return null;
+          }
+          HolderRect.anchoredPosition3D = _endpos;
+          DoHighlight = false;
         }
-        HolderRect.anchoredPosition3D = _endpos;
-        DoHighlight = false;
       }
       DefaultGroup.interactable = true;
       DefaultGroup.blocksRaycasts = true;
@@ -1871,6 +1832,39 @@ public class UI_map : UI_default
   }
   private bool IsMadActive = false;
   private IEnumerator madeffectcoroutin = null;
+  public void SettlementButtonClick()
+  {
+    if (UIManager.Instance.IsWorking) return;
+    StartCoroutine(returntosettlement());
+  }
+  private IEnumerator returntosettlement()
+  {
+    UIManager.Instance.AudioManager.PlaySFX(4);
+
+    DefaultRect.pivot = Left_Pivot;
+    DefaultRect.anchoredPosition = Left_InsidePos;
+    PanelLastHolder.anchorMin = Left_Anchor;
+    PanelLastHolder.anchorMax = Left_Anchor;
+    PanelLastHolder.anchoredPosition = Left_LastHolderPos;
+
+    float _time = 0.0f;
+    Vector2 _rect = DefaultRect.rect.size;
+    while (_time < UICloseTime_Fold)
+    {
+      _rect = Vector2.Lerp(OpenSize, CloseSize, CloseFoldCurve.Evaluate(_time / UICloseTime_Fold));
+      DefaultRect.sizeDelta = _rect;
+
+      _time += Time.deltaTime;
+      yield return null;
+    }
+    DefaultRect.sizeDelta = CloseSize;
+    yield return new WaitForSeconds(0.2f);
+    yield return StartCoroutine(UIManager.Instance.moverect(DefaultRect, Left_InsidePos, Left_OutsidePos, UIOpenTime_Move, UIManager.Instance.UIPanelCLoseCurve));
+
+    GameManager.Instance.EnterSettlement(GameManager.Instance.MyGameData.CurrentSettlement,false);
+
+    IsOpen = false;
+  }
   private void ActiveMad()
   {
     IsMadActive = true;

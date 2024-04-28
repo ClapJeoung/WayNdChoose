@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using System.Text;
 
 public class UI_Main_Illusts : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class UI_Main_Illusts : MonoBehaviour
   [SerializeField] private GameObject EndingArrowHolder = null;
   [SerializeField] private GameObject EndingIllust_Previewbutton = null;
   [SerializeField] private GameObject EndingIllust_Nextbutton = null;
-  private EndingDatas SelectedEnding = null;
+  private EndingData SelectedEnding = null;
   public void SelectEnding(int index)
   {
     if (SelectedEnding == GameManager.Instance.ImageHolder.EndingList[index]) return;
@@ -344,13 +345,21 @@ public class UI_Main_Illusts : MonoBehaviour
     if (SelectedIllusts.Length - 1 == CurrentIndex) EventIllust_Nextbutton.interactable = false;
   }
   #endregion
+  #region ±â·Ï
+  [Space(20)]
+  [SerializeField] private Button FinishInfoButton = null;
+  [SerializeField] private TextMeshProUGUI FinishInfoButton_text = null;
+  [SerializeField] private CanvasGroup FinishInfoGroup = null;
+  [SerializeField] private Color MadColor = new Color();
+  [SerializeField] private List<GameObject> FinishObjs = null;
+  #endregion
   public void Setup()
   {
     EndingPanelButton.interactable = false;
     EndingPanelButton_text.text = GameManager.Instance.GetTextData("EndingList");
     for (int i = 0; i < GameManager.Instance.ImageHolder.EndingList.Count; i++)
     {
-      EndingDatas _ending = GameManager.Instance.ImageHolder.EndingList[i];
+      EndingData _ending = GameManager.Instance.ImageHolder.EndingList[i];
       EndingPreviews[i].EndingID = _ending.ID;
 
       if (GameManager.Instance.ProgressData.EndingLists.Contains(_ending.ID))
@@ -364,6 +373,7 @@ public class UI_Main_Illusts : MonoBehaviour
       }
     }
 
+    EventPanelButton.interactable = true;
     EventPanelButton_text.text = GameManager.Instance.GetTextData("EventList");
     EventButton_Progress[0].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = GameManager.Instance.GetTextData("EventProgress_Beginning");
     for(int i = 0; i < EventButton_Name.Length; i++)
@@ -381,38 +391,146 @@ public class UI_Main_Illusts : MonoBehaviour
         EventButton_Name[i].GetComponent<Button>().interactable = false;
       }
     }
+
+    FinishInfoButton.interactable = GameManager.Instance.ProgressData.FinishDatas.Count>0;
+    FinishInfoButton_text.text = GameManager.Instance.GetTextData("FinishInfoList");
+    int _finishcount = GameManager.Instance.ProgressData.FinishDatas.Count;
+    StringBuilder _finishstr= new StringBuilder();
+    string[] _finishstrs = GameManager.Instance.GetTextData("FinishInfo").Split('@');
+    for (int i = 0; i < FinishObjs.Count; i++)
+    {
+      if (i < _finishcount)
+      {
+        FinishData _data = GameManager.Instance.ProgressData.FinishDatas.Dequeue();
+        Image _icon = FinishObjs[i].transform.GetChild(0).GetChild(0).GetComponent<Image>();
+        switch (_data.Type)
+        {
+          case 0:
+            _icon.sprite = GameManager.Instance.ImageHolder.HPBroken;
+            break;
+          case 1:
+            _icon.sprite = GameManager.Instance.ImageHolder.GetSkillIcon(SkillTypeEnum.Conversation, false);
+            _icon.color = MadColor;
+            break;
+          case 2:
+            _icon.sprite = GameManager.Instance.ImageHolder.GetSkillIcon(SkillTypeEnum.Force, false);
+            _icon.color = MadColor;
+            break;
+          case 3:
+            _icon.sprite = GameManager.Instance.ImageHolder.GetSkillIcon(SkillTypeEnum.Wild, false);
+            _icon.color = MadColor;
+            break;
+          case 4:
+            _icon.sprite = GameManager.Instance.ImageHolder.GetSkillIcon(SkillTypeEnum.Intelligence, false);
+            _icon.color = MadColor;
+            break;
+          case 5:
+            _icon.sprite = GameManager.Instance.ImageHolder.MadnessActive;
+            break;
+          case 6:
+            _icon.sprite = GameManager.Instance.ImageHolder.EndingList[0].PreviewIcon; break;
+          case 7:
+            _icon.sprite = GameManager.Instance.ImageHolder.EndingList[1].PreviewIcon; break;
+          case 8:
+            _icon.sprite = GameManager.Instance.ImageHolder.EndingList[2].PreviewIcon; break;
+          case 9:
+            _icon.sprite = GameManager.Instance.ImageHolder.EndingList[3].PreviewIcon; break;
+          case 10:
+            _icon.sprite = GameManager.Instance.ImageHolder.EndingList[4].PreviewIcon; break;
+          case 11:
+            _icon.sprite = GameManager.Instance.ImageHolder.EndingList[5].PreviewIcon; break;
+          case 12:
+            _icon.sprite = GameManager.Instance.ImageHolder.EndingList[6].PreviewIcon; break;
+        }
+
+        _finishstr.Append(string.Format(GameManager.Instance.GetTextData("FinishInfo_year"), _data.Year));
+        _finishstr.Append(_finishstrs[_data.Type]);
+        FinishObjs[i].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text=_finishstr.ToString();
+
+        if (_data.Head_Left == -1)
+        {
+          FinishObjs[i].transform.GetChild(2).gameObject.SetActive(false);
+        }
+        else
+        {
+          FinishObjs[i].transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = _data.Body_Left.ToString();
+          FinishObjs[i].transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = _data.Body_Right.ToString();
+          FinishObjs[i].transform.GetChild(2).GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = _data.Head_Left.ToString();
+          FinishObjs[i].transform.GetChild(2).GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = _data.Head_Right.ToString();
+        }
+        _finishstr.Length = 0;
+        GameManager.Instance.ProgressData.AddFinishData(_data);
+      }
+      else
+      {
+        FinishObjs[i].SetActive(false);
+      }
+    }
   }
   public void Select_Ending()
   {
+    EndingPanelButton.interactable = false;
     EndingGroup.alpha = 1.0f;
     EndingGroup.interactable = true;
     EndingGroup.blocksRaycasts = true;
-    EndingPanelButton.interactable = false;
+
+    EventPanelButton.interactable = true;
     EventGroup.alpha = 0.0f;
     EventGroup.interactable = false;
     EventGroup.blocksRaycasts = false;
-    EventPanelButton.interactable = true;
-
     EventIllust.StopAllCoroutines();
     EndingIllust.SetTransparent();
     EndingIllustObj.SetActive(false);
     EndingArrowHolder.SetActive(false);
     SelectedEnding = null;
+
+    FinishInfoButton.interactable = GameManager.Instance.ProgressData.FinishDatas.Count > 0;
+    FinishInfoGroup.alpha = 0.0f;
+    FinishInfoGroup.interactable = false;
+    FinishInfoGroup.blocksRaycasts = false;
   }
   public void Select_Event()
   {
+    EndingPanelButton.interactable = true;
     EndingGroup.alpha = 0.0f;
     EndingGroup.interactable = false;
     EndingGroup.blocksRaycasts = false;
-    EndingPanelButton.interactable = true;
+
+    EventPanelButton.interactable = false;
     EventGroup.alpha = 1.0f;
     EventGroup.interactable = true;
     EventGroup.blocksRaycasts = true;
-    EventPanelButton.interactable = false;
     if (EventProgressHolder.activeSelf) EventProgressHolder.SetActive(false);
-
     EventIllust.SetTransparent();
     EndingIllust.StopAllCoroutines();
     SelectedEvent = null;
+
+    FinishInfoButton.interactable = GameManager.Instance.ProgressData.FinishDatas.Count > 0;
+    FinishInfoGroup.alpha = 0.0f;
+    FinishInfoGroup.interactable = false;
+    FinishInfoGroup.blocksRaycasts = false;
+  }
+  public void Select_Log()
+  {
+    if (GameManager.Instance.ProgressData.FinishDatas.Count == 0) return;
+    EndingPanelButton.interactable = true;
+    EndingGroup.alpha = 0.0f;
+    EndingGroup.interactable = false;
+    EndingGroup.blocksRaycasts = false;
+
+    EventPanelButton.interactable = true;
+    EventGroup.alpha = 0.0f;
+    EventGroup.interactable = false;
+    EventGroup.blocksRaycasts = false;
+    EventIllust.StopAllCoroutines();
+    EndingIllust.SetTransparent();
+    EndingIllustObj.SetActive(false);
+    EndingArrowHolder.SetActive(false);
+    SelectedEnding = null;
+
+    FinishInfoButton.interactable = false;
+    FinishInfoGroup.alpha = 1.0f;
+    FinishInfoGroup.interactable = true;
+    FinishInfoGroup.blocksRaycasts = true;
   }
 }

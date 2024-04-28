@@ -220,6 +220,8 @@ public class UI_QuestWolf : UI_default
       MoveRectForButton(0);
       UIManager.Instance.MapButton.SetCurrentUI(this,MapbuttonPos,0.0f);
       UIManager.Instance.SidePanelCultUI.UpdateUI();
+      GameManager.Instance.MyGameData.StartTedencydir_Body = GameManager.Instance.MyGameData.Tendency_Body.Level > 0 ? 1 : -1;
+      GameManager.Instance.MyGameData.StartTedencydir_Head = GameManager.Instance.MyGameData.Tendency_Head.Level > 0 ? 1 : -1;
       //StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.DefaultGroup, 1.0f, 0.4f));
       //StartCoroutine(UIManager.Instance.ChangeAlpha(UIManager.Instance.SidePanelCultUI.SliderGroup, 1.0f, 0.4f));
     }

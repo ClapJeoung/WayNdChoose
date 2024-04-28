@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Newtonsoft.Json;
 
 public class UI_Selection : MonoBehaviour
 {
@@ -49,6 +50,7 @@ public class UI_Selection : MonoBehaviour
   [SerializeField] private TextMeshProUGUI ChatCount_Text = null;
   [SerializeField] private int ChatCount = 0;
   private float ChatPanelWaitTime = 0.1f;
+  [SerializeField] private UI_Selection OtherSelection = null;
   public void AddChatCount(string nickname, StreamingTypeEnum type)
   {
     string _chatname = (type == StreamingTypeEnum.Chzz ? "<sprite=122> " : "<sprite=123> ") + nickname;
@@ -427,16 +429,23 @@ public class UI_Selection : MonoBehaviour
 
           _requirevalue = GameManager.Instance.MyGameData.CheckSkillMultyValue; 
           _currentvalue = MyUIDialogue.GetRequireValue(IsLeft);
-          if (skillcountcoroutine == null)
+          if (!gameObject.activeSelf)
           {
-            skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_left_center, _currentvalue, _requirevalue, WNCText.PercentageColor);
-            StartCoroutine(skillcountcoroutine);
+            SkillInfo_left_center.text= WNCText.PercentageColor(Mathf.FloorToInt(_currentvalue).ToString(), _currentvalue / _requirevalue);
           }
           else
           {
-            StopCoroutine(skillcountcoroutine);
-            skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_left_center, _currentvalue, _requirevalue, WNCText.PercentageColor);
-            StartCoroutine(skillcountcoroutine);
+            if (skillcountcoroutine == null)
+            {
+              skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_left_center, _currentvalue, _requirevalue, WNCText.PercentageColor);
+              StartCoroutine(skillcountcoroutine);
+            }
+            else
+            {
+              StopCoroutine(skillcountcoroutine);
+              skillcountcoroutine = UIManager.Instance.ChangeCount(SkillInfo_left_center, _currentvalue, _requirevalue, WNCText.PercentageColor);
+              StartCoroutine(skillcountcoroutine);
+            }
           }
           //          SkillInfo_require.text = WNCText.PercentageColor(_requirevalue.ToString(), (float)_requirevalue / (float)_currentvalue);
           SkillInfo_right_center.text = _requirevalue.ToString();
@@ -474,12 +483,14 @@ public class UI_Selection : MonoBehaviour
     if (UIManager.Instance.IsWorking) return;
 
     StopAllCoroutines();
-    foreach(var _group in TendencyProgressArrows_inside)
+    OtherSelection.StopAllCoroutines();
+    foreach (var _group in TendencyProgressArrows_inside)
     {
       _group.alpha = 0.0f;
     }
     UIManager.Instance.AddUIQueue(select());
   }
+
   private IEnumerator select()
   {
     MyGroup.interactable = false;

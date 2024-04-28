@@ -522,7 +522,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 84276e6b38a149e418a6b4aed7fd2e96, type: 3}
   - {fileID: 21300000, guid: 0d1061875a98f564ab322dbcc95d7128, type: 3}
   EndingList:
-  - ID: CultEnding
+  - Index: 0
+    ID: CultEnding
     PreviewIcon: {fileID: 21300000, guid: 374abe3ae2114e54287dad23bc8f818c, type: 3}
     Illusts:
     - {fileID: 21300000, guid: f3adcc1aa05804148a4445670c0687ef, type: 3}
@@ -533,20 +534,23 @@ MonoBehaviour:
     - {fileID: 21300000, guid: f2987305ce04442478b4fcf48cfdeecc, type: 3}
     - {fileID: 21300000, guid: f2b0be6328d418744a82ad32821ed9b6, type: 3}
     RefuseIllust: {fileID: 0}
-  - ID: Ascendent
+  - Index: 1
+    ID: Ascendent
     PreviewIcon: {fileID: 21300000, guid: 77b4b9916784ded46aac20aae25818eb, type: 3}
     Illusts:
     - {fileID: 21300000, guid: 6328f47b9d53602448c34eacb4e68969, type: 3}
     - {fileID: 21300000, guid: 3f873b1bdaf623147aa9d5e8db281644, type: 3}
     - {fileID: 21300000, guid: 1c1c286278e256941a6da1a9d9399d03, type: 3}
     RefuseIllust: {fileID: 21300000, guid: 05f63f3523f70c24ba20e149d9f7a9ef, type: 3}
-  - ID: Jungal
+  - Index: 2
+    ID: Jungal
     PreviewIcon: {fileID: 21300000, guid: 673d35740b9817141b1e3e56c9077614, type: 3}
     Illusts:
     - {fileID: 21300000, guid: 2ad0a599fbef35d488f480a107fd1785, type: 3}
     - {fileID: 21300000, guid: 061e94129c7309349828085e6765f203, type: 3}
     RefuseIllust: {fileID: 21300000, guid: 276ad3790f3b96b448ef489de661394e, type: 3}
-  - ID: Mushroom
+  - Index: 3
+    ID: Mushroom
     PreviewIcon: {fileID: 21300000, guid: 2c9ac730a45985b4e92b8210e83ea747, type: 3}
     Illusts:
     - {fileID: 21300000, guid: d102d03f4e9d47b438c93c4b02320d83, type: 3}
@@ -554,21 +558,24 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 32b5f009a37a7a749b07ab0e76652b48, type: 3}
     - {fileID: 21300000, guid: 15baf96ede354a94fb7e90bd3f67e1ad, type: 3}
     RefuseIllust: {fileID: 21300000, guid: 83ac8dbeecdc1b84587dc68f210ab28e, type: 3}
-  - ID: Grandma
+  - Index: 4
+    ID: Grandma
     PreviewIcon: {fileID: 21300000, guid: 030070a2fc658a848b4c9d58ff6cbeb0, type: 3}
     Illusts:
     - {fileID: 21300000, guid: cfe2a6823c896c14b8d1fc74019b7bb2, type: 3}
     - {fileID: 21300000, guid: 16cb60a23437cc14393af108a8ff2b1a, type: 3}
     - {fileID: 21300000, guid: dc942c75b2908c446863e4257436d2ed, type: 3}
     RefuseIllust: {fileID: 21300000, guid: 66b97c187aaf48f409c7184d0b931cfe, type: 3}
-  - ID: MetaCookie
+  - Index: 5
+    ID: MetaCookie
     PreviewIcon: {fileID: 21300000, guid: 64484bdce7474ce4ba51eb6ba782e92a, type: 3}
     Illusts:
     - {fileID: 21300000, guid: b26f72889a3accb469a1e199e8dc5fdd, type: 3}
     - {fileID: 21300000, guid: 854cd189a94b4f74fac2cc53b88882e6, type: 3}
     - {fileID: 21300000, guid: 8a63b316d61fa204881851694abf3489, type: 3}
     RefuseIllust: {fileID: 21300000, guid: 5e7a2aed08c6fcd4985331bb6e45a1e4, type: 3}
-  - ID: Escape
+  - Index: 6
+    ID: Escape
     PreviewIcon: {fileID: 21300000, guid: a97e008033796374bbd77fc3cbbb24e9, type: 3}
     Illusts:
     - {fileID: 21300000, guid: 98e7d59c9d61dd2489a5ffcf415cfd56, type: 3}
@@ -747,6 +754,10 @@ MonoBehaviour:
   SkillIcon_Force_w: {fileID: 21300000, guid: a6c6025bb56840c4aa49efb919f654db, type: 3}
   SkillIcon_Wild_w: {fileID: 21300000, guid: a68439f4dc29cc248817106ccf7c64c5, type: 3}
   SkillIcon_Intelligence_w: {fileID: 21300000, guid: 6803d618801df4249a1cd12feaa3da23, type: 3}
+  SkillIcon_Conversation_empty: {fileID: 21300000, guid: fecb67a62057eaf4d88547f81dc972e7, type: 3}
+  SkillIcon_Force_empty: {fileID: 21300000, guid: 900aed7e79e8e9542b0364ed567c3cb2, type: 3}
+  SkillIcon_Wild_empty: {fileID: 21300000, guid: aacdd3bfdd462a449b0fd27255d82b79, type: 3}
+  SkillIcon_Intelligence_empty: {fileID: 21300000, guid: b98cb6514e742f64093d57e44008925a, type: 3}
   MadnessIluusts:
   - {fileID: 21300000, guid: 8c9b3c060a1f11846aaa3419b4d4bc02, type: 3}
   - {fileID: 21300000, guid: 617d55d57dc936a47964a2b8ce22c1c6, type: 3}

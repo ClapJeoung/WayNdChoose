@@ -117,7 +117,7 @@ public class AudioManager : MonoBehaviour
   private IEnumerator setvolume(AudioSource source,float startvolume, float targetvolume)
   {
     source.volume = startvolume;
-    float _time = 0.0f, _targettime = 2.0f;
+    float _time = 0.0f, _targettime = 1.5f;
 
     while (_time < _targettime)
     {

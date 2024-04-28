@@ -11,7 +11,8 @@ using Steamworks;
 using System.Text;
 using Lexone.UnityTwitchChat;
 using OpenCvSharp;
-using UnityEngine.XR;
+using Stove.PCSDK.NET;
+using UnityEditor;
 
 public class EventProgress
 {
@@ -33,11 +34,56 @@ public class EventProgress
     }
   }
 }
+public class FinishData
+{
+  public int Year = 0;
+  //0:생죽음  1:화술     2:무력 3:자연 4:지성
+  //5:광기    6:컬트     7:승천 8:실성 9:버섯
+  //10:할매   11:메타    12:탈출
+  public int Type=0;
+  public int Body_Left = -1;
+  public int Body_Right = -1;
+  public int Head_Left= -1;
+  public int Head_Right= -1;
+  public FinishData() { }
+  public FinishData(int year,int type)
+  {
+    Year = year;
+    Type = type;
+  }
+  public FinishData(int year, int type,int bodyleft,int bodyright,int headleft,int headright)
+  {
+    Year = year;
+    Type = type;
+    Body_Left = bodyleft;
+    Body_Right = bodyright;
+    Head_Left = headleft;
+    Head_Right = headright;
+  }
+
+  public FinishData(string data)
+  {
+    string[] _data = data.Split('@');
+    Year=int.Parse(_data[0]);
+    Type= int.Parse(_data[1]);
+    Body_Left= int.Parse(_data[2]);
+    Body_Right= int.Parse(_data[3]);
+    Head_Left= int.Parse(_data[4]);
+    Head_Right= int.Parse(_data[5]);
+  }
+}
 
 public class ProgressData
 {
   public List<string> EndingLists = new List<string>();
   public Dictionary<string, EventProgress> EventList = new Dictionary<string, EventProgress>();
+  private int MaxDataCount = 10;
+  public Queue<FinishData> FinishDatas = new Queue<FinishData>();
+  public void AddFinishData(FinishData data)
+  {
+    if (FinishDatas.Count >= MaxDataCount) FinishDatas.Dequeue();
+    FinishDatas.Enqueue(data);
+  }
   public ProgressData() { }
   public ProgressData(ProgressDataJosn jsondata)
   {
@@ -46,6 +92,7 @@ public class ProgressData
     {
       EventList.Add(jsondata.EventID[i],new EventProgress(jsondata.Event_L[i], jsondata.Event_R[i]));
     }
+    foreach(var _data in jsondata.EndingInfos) AddFinishData(new FinishData(_data));
   }
 }
 public class ProgressDataJosn
@@ -54,6 +101,7 @@ public class ProgressDataJosn
   public List<string> EventID=new List<string>();
   public List<int> Event_L=new List<int>();
   public List<int> Event_R=new List<int>();
+  public List<string> EndingInfos=new List<string>();
   public ProgressDataJosn(ProgressData data)
   {
     foreach(var _ending in data.EndingLists) EndingLists.Add(_ending);
@@ -63,11 +111,30 @@ public class ProgressDataJosn
       Event_L.Add(_event.Value.LSuccess);
       Event_R.Add(_event.Value.RSuccess);
     }
+    StringBuilder _stb=new StringBuilder();
+    foreach(var _info in data.FinishDatas)
+    {
+      _stb.Append(_info.Year);
+      _stb.Append('@');
+      _stb.Append(_info.Type);
+      _stb.Append('@');
+      _stb.Append(_info.Body_Left);
+      _stb.Append('@');
+      _stb.Append(_info.Body_Right);
+      _stb.Append('@');
+      _stb.Append(_info.Head_Left);
+      _stb.Append('@');
+      _stb.Append(_info.Head_Right);
+      _stb.Append('@');
+      EndingInfos.Add(_stb.ToString());
+      _stb.Length = 0;
+    }
   }
 }
 public enum StreamingTypeEnum { Chzz,Twitch}
 public class GameManager : MonoBehaviour
 {
+  public bool IsSteam = true;
   [ContextMenu("텍스트 체크")]
   public void TextCheck()
   {
@@ -118,7 +185,9 @@ public class GameManager : MonoBehaviour
       GameSaveData = JsonUtility.FromJson<GameJsonData>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + GameDataName));
       try
       {
-        if (GameSaveData.Version[0] != Application.version[0] || GameSaveData.Version[2] != Application.version[2])
+        if (GameSaveData.Version[0] != Application.version[0] 
+          || GameSaveData.Version[2] != Application.version[2]||
+          GameSaveData.Cult_Progress>=100)
         {
           DeleteSaveData();
         }
@@ -141,6 +210,18 @@ public class GameManager : MonoBehaviour
     if (System.IO.File.Exists(Application.persistentDataPath + "/" + ProgressDataName))
     {
       ProgressData = new ProgressData(JsonUtility.FromJson<ProgressDataJosn>(System.IO.File.ReadAllText(Application.persistentDataPath + "/" + ProgressDataName)));
+
+      if(ProgressData.EndingLists.Contains("Ascendent")) SetAchievement("ACH_BREAD");
+      if (ProgressData.EndingLists.Contains("Mushroom")) SetAchievement("ACH_MUSHROOM");
+      if (ProgressData.EndingLists.Contains("CultEnding")) SetAchievement("ACH_CULT");
+      if (ProgressData.EndingLists.Contains("MetaCookie")) SetAchievement("ACH_METACOOKIE");
+      if (ProgressData.EndingLists.Contains("Grandma")) SetAchievement("ACH_GRANDMA");
+      if (ProgressData.EndingLists.Contains("Jungal")) SetAchievement("ACH_JUNG");
+      if (ProgressData.EndingLists.Contains("Escape")) SetAchievement("ACH_ALIEN");
+      if (ProgressData.EndingLists.Contains("Ascendent")) SetAchievement("ACH_BREAD");
+
+      if (ProgressData.EventList.Count == EventJsonDataList.Count)
+        SetAchievement("ACH_EVENT");
     }
     else ProgressData = new ProgressData();
     //저장된 플레이어 데이터가 있으면 데이터 불러오기
@@ -178,6 +259,14 @@ public class GameManager : MonoBehaviour
 
       _json.EndingID = _data[10];
       _json.EventLine = _data[11];
+
+      int _modify = 0;
+      if (int.TryParse(_data[12], out _modify))
+      {
+        _json.ActiveModify = _modify;
+      }
+      else
+        _json.ActiveModify = 0;
       EventJsonDataList.Add(_json);
     }
     print("이벤트 데이터 업데이트 완료");
@@ -258,9 +347,36 @@ public class GameManager : MonoBehaviour
   public const string StatusDataName = "WNCStatusData.json";
   public void AddEndingProgress(string id)
   {
+    switch (id)
+    {
+      case "Ascendent":
+        SetAchievement("ACH_BREAD");
+        break;
+      case "Mushroom":
+        SetAchievement("ACH_MUSHROOM");
+        break;
+      case "CultEnding":
+        SetAchievement("ACH_CULT");
+        break;
+      case "MetaCookie":
+        SetAchievement("ACH_METACOOKIE");
+        break;
+      case "Grandma":
+        SetAchievement("ACH_GRANDMA");
+        break;
+      case "Jungal":
+        SetAchievement("ACH_JUNG");
+        break;
+      case "Escape":
+        SetAchievement("ACH_ALIEN");
+        break;
+    }
     if (ProgressData.EndingLists.Contains(id)) return;
 
     ProgressData.EndingLists.Add(id);
+  }
+  public void SaveProgressData()
+  {
     string _json = JsonUtility.ToJson(new ProgressDataJosn(ProgressData));
     System.IO.File.WriteAllText(Application.persistentDataPath + "/" + ProgressDataName, _json);
   }
@@ -272,8 +388,10 @@ public class GameManager : MonoBehaviour
     }
     else ProgressData.EventList.Add(id,new EventProgress(dir?value:0,dir?0:value));
 
-    string _json = JsonUtility.ToJson(new ProgressDataJosn(ProgressData));
-    System.IO.File.WriteAllText(Application.persistentDataPath + "/" + ProgressDataName, _json);
+    if(ProgressData.EventList.Count==EventJsonDataList.Count)
+      SetAchievement("ACH_EVENT");
+
+    SaveProgressData();
   }
 
   public ImageHolder ImageHolder = null;             //이벤트,경험,특성,정착지 일러스트 홀더
@@ -715,7 +833,7 @@ public class GameManager : MonoBehaviour
   public void AddExp_Long(Experience exp,bool sanityloss)
   {
     UIManager.Instance.SetInfoPanel(string.Format(GetTextData("GainExp"), exp.Name));
-    if (sanityloss) MyGameData.Sanity -= (int)(Status.LongTermChangeCost * MyGameData.GetSanityLossModify(true, 0));
+    if (sanityloss) MyGameData.Sanity -= Mathf.FloorToInt((Status.LongTermChangeCost * MyGameData.GetSanityLossModify(true, 0)));
 
     exp.Duration = Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / Status.IntelEffect_Level * Status.IntelEffect_Value;
     MyGameData.LongExp = exp;
@@ -845,7 +963,7 @@ public class GameManager : MonoBehaviour
       DontDestroyOnLoad(gameObject);
       //  DebugAllEvents();
     }
-    else { Destroy(this); }
+    else { Destroy(gameObject); return; }
 
   }
   private void OnApplicationQuit()
@@ -860,10 +978,6 @@ public class GameManager : MonoBehaviour
   private void Update()
   {
 #if UNITY_EDITOR
-    if (Input.GetKeyDown(KeyCode.Tab))
-    {
-      UIManager.Instance.SetInfoPanel("레후");
-    }
    // if (Input.GetKeyDown(KeyCode.Backspace))
    // {
    //      MyGameData = new GameData(QuestType.Cult);
@@ -887,6 +1001,35 @@ public class GameManager : MonoBehaviour
       UIManager.Instance.SetInfoPanel("레후");
 #endif
   }
+  public void SetAchievement(string id)
+  {
+    if (IsSteam&&SteamManager.Initialized)
+    {
+      try
+      {
+        Debug.Log("업적추가: " + id);
+        SteamUserStats.SetAchievement(id);
+
+        SteamUserStats.StoreStats();
+      }
+      catch(Exception e)
+      {
+        UIManager.Instance.SetInfoPanel(GameManager.instance.GetTextData("SteamError"));
+        Debug.Log(e);
+      }
+    }
+    else if(!IsSteam&& StovePC.GetInitializationState() == StovePCInitializationState.Complete)
+    {
+      try
+      {
+        StovePCResult result = StovePC.SetStat(id, 1);
+      }
+      catch (Exception e)
+      {
+        UIManager.Instance.SetInfoPanel(GameManager.instance.GetTextData("StoveError"));
+      }
+    }
+  }
   public void GameOver()
   {
     Sprite _illust = null;
@@ -898,6 +1041,7 @@ public class GameManager : MonoBehaviour
     {
       _illust = ImageHolder.GameOver_Idle;
       _description = GetTextData("GameOver_Normal");
+      ProgressData.AddFinishData(new FinishData(MyGameData.Year, 0));
     }
     else if(MyGameData.Madness_Conversation==true&&
       MyGameData.Madness_Force== true &&
@@ -906,6 +1050,7 @@ public class GameManager : MonoBehaviour
     {
       _illust = ImageHolder.GameOver_Madness;
       _description = GetTextData("GameOver_Mad");
+      ProgressData.AddFinishData(new FinishData(MyGameData.Year, 5));
     }
     else
     {
@@ -919,29 +1064,35 @@ public class GameManager : MonoBehaviour
         case 0:
           _illust = ImageHolder.GameOver_Conversation;
           _description = GetTextData("GameOver_Conversation");
+          ProgressData.AddFinishData(new FinishData(MyGameData.Year, 1));
           break;
         case 1:
           _illust = ImageHolder.GameOver_Force;
           _description = GetTextData("GameOver_Force");
+          ProgressData.AddFinishData(new FinishData(MyGameData.Year, 2));
           break;
         case 2:
           _illust = ImageHolder.GameOver_Wild;
           _description = GetTextData("GameOver_Wild");
+          ProgressData.AddFinishData(new FinishData(MyGameData.Year, 3));
           break;
         case 3:
           _illust = ImageHolder.GameOver_Intelligence;
           _description = GetTextData("GameOver_Intelligence");
+          ProgressData.AddFinishData(new FinishData(MyGameData.Year, 4));
           break;
       }
     }
     DeleteSaveData();
     UIManager.Instance.OpenDead(_illust, _description);
+    SaveProgressData();
   }
   public void DeleteSaveData()
   {
-    if(System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName)) System.IO.File.Delete(Application.persistentDataPath + "/" + GameDataName);
+    if(System.IO.File.Exists(Application.persistentDataPath + "/" + GameDataName))
+      System.IO.File.Delete(Application.persistentDataPath + "/" + GameDataName);
   }
-  public void SubEnding(EndingDatas endingdata)
+  public void SubEnding(EndingData endingdata)
   {
     UIManager.Instance.OpenEnding(endingdata);
   }
@@ -1000,7 +1151,7 @@ public class GameManager : MonoBehaviour
       {
         bool _issuccess = false;
         bool _isleft = false;
-        if (MyGameData.SuccessEvent_Rational.Contains(_eventid) || MyGameData.SuccessEvent_Mental.Contains(_eventid) || MyGameData.SuccessEvent_None.Contains(_eventid))
+        if (MyGameData.SuccessEvent_Logical.Contains(_eventid) || MyGameData.SuccessEvent_Mental.Contains(_eventid) || MyGameData.SuccessEvent_None.Contains(_eventid))
         {
           _issuccess = true;
           _isleft = true;
@@ -1010,7 +1161,7 @@ public class GameManager : MonoBehaviour
           _issuccess = true;
           _isleft = false;
         }
-        else if (MyGameData.FailEvent_Rational.Contains(_eventid) || MyGameData.FailEvent_Mental.Contains(_eventid) || MyGameData.FailEvent_None.Contains(_eventid))
+        else if (MyGameData.FailEvent_Logical.Contains(_eventid) || MyGameData.FailEvent_Mental.Contains(_eventid) || MyGameData.FailEvent_None.Contains(_eventid))
         {
           _issuccess = false;
           _isleft = true;
@@ -1070,28 +1221,31 @@ public class GameManager : MonoBehaviour
     UIManager.Instance.UpdateMap_SetPlayerPos();
     yield return null;
   }
-  public void EnterSettlement(Settlement targetsettlement)
+  public void EnterSettlement(Settlement targetsettlement,bool ismoving)
   {
-    if (MyGameData.Supply < 0) MyGameData.Supply = 0;
-    MyGameData.CurrentEvent = null;
-    MyGameData.CurrentSettlement=targetsettlement;
-
-    switch (MyGameData.QuestType)
+    if (ismoving)
     {
-      case QuestType.Cult:
-        switch (MyGameData.Quest_Cult_Phase)
-        {
-          case 0:
-            if(targetsettlement.Tile==MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
-            break;
-          case 1:
-            if (targetsettlement.Tile == MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
-            break;
-          case 2:
-            if (targetsettlement.Tile == MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
-            break;
-        }
-        break;
+      if (MyGameData.Supply < 0) MyGameData.Supply = 0;
+      MyGameData.CurrentEvent = null;
+      MyGameData.CurrentSettlement = targetsettlement;
+
+      switch (MyGameData.QuestType)
+      {
+        case QuestType.Cult:
+          switch (MyGameData.Quest_Cult_Phase)
+          {
+            case 0:
+              if (targetsettlement.Tile == MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
+              break;
+            case 1:
+              if (targetsettlement.Tile == MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
+              break;
+            case 2:
+              if (targetsettlement.Tile == MyGameData.Cult_TargetTile) UIManager.Instance.CultUI.AddProgress(2, null);
+              break;
+          }
+          break;
+      }
     }
     UIManager.Instance.AddUIQueue(UIManager.Instance.DialogueUI.openui_settlement(false));
   }

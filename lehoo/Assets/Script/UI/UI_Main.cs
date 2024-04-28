@@ -7,6 +7,7 @@ using System.IO;
 using System.Numerics;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using UnityEngine.Video;
 
 public class UI_Main : UI_default
 {
@@ -71,12 +72,13 @@ public class UI_Main : UI_default
         ChzzConnectState.text = GameManager.Instance.GetTextData("NoConnect");
         ChzzChanel.text = null;
       }
-
       ChzzPanel.SetActive(true);
+      ChzzPreviewViedeo.Play();
     }
     else
     {
       ChzzPanel.SetActive(false);
+      ChzzPreviewViedeo.Stop();
     }
   }
   public void SetChzzConnecting() { ChzzConnectState.text = GameManager.Instance.GetTextData("Connecting"); }
@@ -89,6 +91,7 @@ public class UI_Main : UI_default
   [SerializeField] private TextMeshProUGUI ChzzConnectText = null;
   [SerializeField] private TMP_InputField ChzzChanel = null;
   [SerializeField] private TextMeshProUGUI ChzzConnectState = null;
+  [SerializeField] private VideoPlayer ChzzPreviewViedeo = null;
   public void ConnectChzz()
   {
     string _id = ChzzChanel.text;
@@ -102,9 +105,13 @@ public class UI_Main : UI_default
   [SerializeField] private TMP_InputField Twitch_NickName = null;
   [SerializeField] private TMP_InputField Twitch_Channel = null;
   [SerializeField] private TextMeshProUGUI TwitchConnectState = null;
+  [SerializeField] private VideoPlayer TwitchPreviewViedeo = null;
   public void ClickTwitchButton()
   {
-    if (ChzzPanel.activeInHierarchy) ChzzPanel.SetActive(false);
+    if (ChzzPanel.activeInHierarchy)
+    {
+      ChzzPanel.SetActive(false);
+    }
     if (!TwitchPanel.activeSelf)
     {
       if (GameManager.Instance.IsChzzConnect)
@@ -123,10 +130,12 @@ public class UI_Main : UI_default
       }
 
       TwitchPanel.SetActive(true);
+      TwitchPreviewViedeo.Play();
     }
     else
     {
       TwitchPanel.SetActive(false);
+      TwitchPreviewViedeo.Stop();
     }
   }
   public void SetTwitchConnecting() { TwitchConnectState.text = GameManager.Instance.GetTextData("Connecting"); }

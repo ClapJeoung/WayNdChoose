@@ -21,8 +21,11 @@ public class UI_Ending : UI_default
   private int CurrentIndex = 0;
 
   public bool IsDead = false;
+  private bool lehu = false;
+  private EndingData CurrentEndingData = null;
   public void OpenUI_Dead(Sprite illust,string description)
   {
+    GameManager.Instance.DeleteSaveData();
     NextButtonGroup.alpha = 0.0f;
     NextButtonGroup.interactable = false;
     UIManager.Instance.PreviewManager.ClosePreview();
@@ -36,9 +39,11 @@ public class UI_Ending : UI_default
     StartCoroutine(UIManager.Instance.ChangeAlpha(DefaultGroup, 1.0f, 2.0f));
   }
 
-  public void OpenUI_Ending(EndingDatas endingdata)
+  public void OpenUI_Ending(EndingData endingdata)
   {
+    GameManager.Instance.DeleteSaveData();
     UIManager.Instance.PreviewManager.ClosePreview();
+    CurrentEndingData = endingdata;
 
     Illusts = endingdata.Illusts; 
     Descriptions = endingdata.Descriptions; 
@@ -60,7 +65,12 @@ public class UI_Ending : UI_default
   }
   public void QuitGame()
   {
-    UIManager.Instance.ResetGame(IsDead?"":GameManager.Instance.GetTextData("ThanksForPlaying"), true);
+    if (lehu) return;
+    lehu = false;
+    if (IsDead)
+      StartCoroutine(UIManager.Instance.CloseGameAsDead());
+    else
+      StartCoroutine(UIManager.Instance.CurtainUI.OpenEndingDescription(CurrentEndingData));
   }
   public void Next()
   {
@@ -81,7 +91,6 @@ public class UI_Ending : UI_default
       NextButtonGroup.interactable = false;
     }
     Illust.Next(Illusts[CurrentIndex], NextTime);
-    yield return new WaitForSeconds(NextTime);
     
     Description.text +="<br><br>"+ Descriptions[CurrentIndex];
     LayoutRebuilder.ForceRebuildLayoutImmediate(Description.transform as RectTransform);

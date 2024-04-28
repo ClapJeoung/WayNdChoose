@@ -63,6 +63,8 @@ public class UI_dialogue : UI_default
   [SerializeField] private CanvasGroup EndingRefuseGroup = null;
   [SerializeField] private TextMeshProUGUI EndingRefuseText = null;
   [SerializeField] private CanvasGroup SelectionGroup = null;
+  [SerializeField] private CanvasGroup ChatCountGroup_left = null;
+  [SerializeField] private CanvasGroup ChatCountGroup_right = null;
   public struct ChatData
   {
     public string Nickname;
@@ -94,6 +96,22 @@ public class UI_dialogue : UI_default
   }
   [SerializeField] private GameObject ChatCommandPanel = null;
   [SerializeField] private TextMeshProUGUI ChatCommandPanelText = null;
+  [SerializeField] private CanvasGroup ChatCommand_CommandGroup = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_LeftDescription = null;
+  [SerializeField] private Image ChatCommandPanel_LeftCommandImage = null;
+  [SerializeField] private TMP_InputField ChatCommandPanel_LeftInput = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_LeftCommandPreview = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_LeftInputText = null;
+  [Space(5)]
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_RightDescription = null;
+  [SerializeField] private Image ChatCommandPanel_RightCommandImage = null;
+  [SerializeField] private TMP_InputField ChatCommandPanel_RightInput = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_RightCommandPreview = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_RightInputText = null;
+  [Space(5)]
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_CommandChanging = null;
+  [SerializeField] private TextMeshProUGUI ChatCommandPanel_NoForSingle = null;
+  private bool CommandEditable = false;
   public void ClickChatButton()
   {
     if (ChatCommandPanel.activeSelf) TurnOffChatPanel();
@@ -107,13 +125,110 @@ public class UI_dialogue : UI_default
     }
     if (ChatCommandPanelText.text == "")
     {
-      ChatCommandPanelText.text = GameManager.Instance.GetTextData("ChatCommand_Description");
-      LayoutRebuilder.ForceRebuildLayoutImmediate(ChatCommandPanelText.transform as RectTransform);
+      ChatCommandPanelText.text = GameManager.Instance.GetTextData("ChatCommand_Name");
+      ChatCommandPanel_LeftDescription.text = GameManager.Instance.GetTextData("ChatCommand_left");
+      ChatCommandPanel_RightDescription.text = GameManager.Instance.GetTextData("ChatCommand_right");
+      ChatCommandPanel_NoForSingle.text = GameManager.Instance.GetTextData("ChatCommand_NoforSingle");
     }
+    
+
+    if (CurrentEvent.Selection_type == SelectionTypeEnum.Single)
+    {
+      if (ChatCommand_CommandGroup.alpha == 1.0f)
+      {
+        ChatCommand_CommandGroup.alpha = 0.0f;
+        ChatCommand_CommandGroup.interactable = false;
+        ChatCommand_CommandGroup.blocksRaycasts = false;
+        ChatCommandPanel_NoForSingle.gameObject.SetActive(true);
+      }
+    }
+    else
+    {
+      ChatCommandPanel_LeftCommandImage.sprite =
+        CurrentEvent.Selection_type == SelectionTypeEnum.Body ?
+        GameManager.Instance.ImageHolder.SelectionButtonImage_BodyM_Idle :
+        GameManager.Instance.ImageHolder.SelectionButtonImage_HeadM_Idle;
+      ChatCommandPanel_RightCommandImage.sprite =
+  CurrentEvent.Selection_type == SelectionTypeEnum.Body ?
+  GameManager.Instance.ImageHolder.SelectionButtonImage_BodyP_Idle :
+  GameManager.Instance.ImageHolder.SelectionButtonImage_HeadP_Idle;
+
+
+      ChatCommandPanel_LeftCommandPreview.text = ChatCommand_Left;
+      ChatCommandPanel_LeftInput.text = "";
+      ChatCommandPanel_RightCommandPreview.text = ChatCommand_right;
+      ChatCommandPanel_RightInput.text = "";
+      ChatCommandPanel_CommandChanging.text = GameManager.Instance.GetTextData("ChatCommand_SettingDescription");
+      if (ChatCommand_CommandGroup.alpha == 0.0f)
+      {
+        ChatCommand_CommandGroup.alpha = 1.0f;
+        ChatCommand_CommandGroup.interactable = true;
+        ChatCommand_CommandGroup.blocksRaycasts = true;
+        ChatCommandPanel_NoForSingle.gameObject.SetActive(false);
+      }
+      CommandEditable = true;
+    }
+  }
+  public void EditCommand_Left(string nothing)
+  {
+    if (!CommandEditable) return;
+    string _newstr = ChatCommandPanel_LeftInputText.text;
+    _newstr=_newstr.Remove(_newstr.Length - 1, 1);
+
+    if (_newstr == ChatCommand_Left || _newstr.Length < 1)
+    {
+      ChatCommandPanel_LeftInputText.text = ChatCommand_Left;
+      return;
+    }
+    if (_newstr == ChatCommand_right)
+    {
+      ChatCommandPanel_CommandChanging.text = GameManager.Instance.GetTextData("ChatCommand_SettingDescription_same");
+      return;
+    }
+    string str = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+    System.Text.RegularExpressions.Regex rex = new System.Text.RegularExpressions.Regex(str);
+    if (rex.IsMatch(_newstr))
+    {
+      ChatCommandPanel_CommandChanging.text = GameManager.Instance.GetTextData("ChatCommand_SettingDescription_fail");
+      return;
+    }
+
+    ChatCommand_Left = _newstr;
+    ChatCommandPanel_CommandChanging.text = 
+      string.Format(GameManager.Instance.GetTextData("ChatCommand_SettingDescription_done"),
+      GameManager.Instance.GetTextData("ChatCommand_left"), ChatCommand_Left);
+    ChatCommandPanel_LeftCommandPreview.text = _newstr;
+  }
+  public void EditCommand_Right(string nothing)
+  {
+    if (!CommandEditable) return;
+    string _newstr = ChatCommandPanel_RightInputText.text;
+    _newstr = _newstr.Remove(_newstr.Length - 1, 1);
+
+    if (_newstr == ChatCommand_right || _newstr.Length < 1) return;
+    if (_newstr == ChatCommand_Left)
+    {
+      ChatCommandPanel_CommandChanging.text = GameManager.Instance.GetTextData("ChatCommand_SettingDescription_same");
+      return;
+    }
+    string str = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+    System.Text.RegularExpressions.Regex rex = new System.Text.RegularExpressions.Regex(str);
+    if (rex.IsMatch(_newstr))
+    {
+      ChatCommandPanel_CommandChanging.text = GameManager.Instance.GetTextData("ChatCommand_SettingDescription_fail");
+      return;
+    }
+
+    ChatCommand_right = _newstr;
+    ChatCommandPanel_CommandChanging.text =
+      string.Format(GameManager.Instance.GetTextData("ChatCommand_SettingDescription_done"),
+      GameManager.Instance.GetTextData("ChatCommand_Right"), ChatCommand_right);
+    ChatCommandPanel_RightCommandPreview.text = _newstr;
   }
   private void TurnOffChatPanel()
   {
     if (ChatCommandPanel.activeSelf) ChatCommandPanel.SetActive(false);
+    CommandEditable = false;
   }
   [SerializeField] private UI_Selection Selection_A = null;
   
@@ -291,7 +406,8 @@ public class UI_dialogue : UI_default
     foreach(var _data in dic)
     {
       if (_data.Key.Effects.Contains(targettype)) _count +=
-          targettype==EffectType.Conversation||targettype==EffectType.Force||targettype==EffectType.Intelligence||targettype==EffectType.Wild? _data.Value*GameManager.Instance.Status.ExpSkillLevel: _data.Value;
+          targettype==EffectType.Conversation||targettype==EffectType.Force||targettype==EffectType.Intelligence||targettype==EffectType.Wild?
+          _data.Value*GameManager.Instance.Status.ExpSkillLevel: _data.Value;
     }
     return _count;
   }
@@ -353,7 +469,7 @@ public class UI_dialogue : UI_default
       {
         if (ExpUsageDic_L.ContainsKey(exp))
         {
-          if (ExpUsageDic_L[exp] < exp.Duration -1) ExpUsageDic_L[exp]++;
+          if (ExpUsageDic_L[exp]* GameManager.Instance.Status.ExpUsingDecrease < exp.Duration - GameManager.Instance.Status.ExpUsingDecrease) ExpUsageDic_L[exp]++;
           else
           {
             UIManager.Instance.ExpUI.ExpUsingWarning(exp);
@@ -362,7 +478,7 @@ public class UI_dialogue : UI_default
         }
         else if (ExpUsageDic_R.ContainsKey(exp))
         {
-          if (exp.Duration > 1)
+          if (exp.Duration > GameManager.Instance.Status.ExpUsingDecrease)
           {
             ExpUsageDic_R.Remove(exp);
             ExpUsageDic_L.Add(exp, 1);
@@ -375,7 +491,7 @@ public class UI_dialogue : UI_default
         }
         else
         {
-          if (exp.Duration > 1)
+          if (exp.Duration > GameManager.Instance.Status.ExpUsingDecrease)
           {
             ExpUsageDic_L.Add(exp, 1);
           }
@@ -441,7 +557,7 @@ public class UI_dialogue : UI_default
       {
         if (ExpUsageDic_R.ContainsKey(exp))
         {
-          if (ExpUsageDic_R[exp] < exp.Duration -1) ExpUsageDic_R[exp]++;
+          if (ExpUsageDic_R[exp]* GameManager.Instance.Status.ExpUsingDecrease < exp.Duration - GameManager.Instance.Status.ExpUsingDecrease) ExpUsageDic_R[exp]++;
           else
           {
             UIManager.Instance.ExpUI.ExpUsingWarning(exp);
@@ -450,7 +566,7 @@ public class UI_dialogue : UI_default
         }
         else if (ExpUsageDic_L.ContainsKey(exp))
         {
-          if (exp.Duration > 1)
+          if (exp.Duration > GameManager.Instance.Status.ExpUsingDecrease)
           {
             ExpUsageDic_L.Remove(exp);
             ExpUsageDic_R.Add(exp, 1);
@@ -463,7 +579,7 @@ public class UI_dialogue : UI_default
         }
         else
         {
-          if (exp.Duration > 1)
+          if (exp.Duration > GameManager.Instance.Status.ExpUsingDecrease)
           {
             ExpUsageDic_R.Add(exp, 1);
           }
@@ -558,38 +674,40 @@ public class UI_dialogue : UI_default
     if (_selection == Selection_A) return Selection_B;
     return Selection_A;
   }
-  public bool EnableSameChatID = false;
+  [SerializeField] bool EnableSameChatID = false;
+  public string ChatCommand_Left = "choice_l";
+  public string ChatCommand_right = "choice_r";
   public void GetChat(string IDhash,string nickname,string message,StreamingTypeEnum streamingtype)
   {
     if (!IsSelecting) return;
-    if (!EnableSameChatID&&ChatIDList_L.ContainsKey(IDhash)|| ChatIDList_R.ContainsKey(IDhash)) return;
+    if (!EnableSameChatID&&(ChatIDList_L.ContainsKey(IDhash)|| ChatIDList_R.ContainsKey(IDhash))) return;
     if (CurrentEvent.Selection_type == SelectionTypeEnum.Single) return;
-    if (message.Contains("choice_l", System.StringComparison.InvariantCultureIgnoreCase))
+    if (message.Contains(ChatCommand_Left, System.StringComparison.InvariantCultureIgnoreCase))
     {
       Selection_A.AddChatCount(nickname, streamingtype);
-      if (ChatIDList_L.ContainsKey(IDhash)) ChatIDList_L.Add(IDhash,new ChatData(nickname,streamingtype));
+      if (!ChatIDList_L.ContainsKey(IDhash)) ChatIDList_L.Add(IDhash,new ChatData(nickname,streamingtype));
     }
-    else if (message.Contains("choice_r", System.StringComparison.InvariantCultureIgnoreCase))
+    else if (message.Contains(ChatCommand_right, System.StringComparison.InvariantCultureIgnoreCase))
     {
       Selection_B.AddChatCount(nickname, streamingtype);
-      if (ChatIDList_R.ContainsKey(IDhash)) ChatIDList_R.Add(IDhash, new ChatData(nickname, streamingtype));
+      if (!ChatIDList_R.ContainsKey(IDhash)) ChatIDList_R.Add(IDhash, new ChatData(nickname, streamingtype));
     }
   }
   
   public void GetChat(Chatter chatter)
   {
     if (!IsSelecting) return;
-    if (!EnableSameChatID && ChatIDList_L.ContainsKey(chatter.tags.userId) || ChatIDList_R.ContainsKey(chatter.tags.userId)) return;
+    if (!EnableSameChatID && (ChatIDList_L.ContainsKey(chatter.tags.userId) || ChatIDList_R.ContainsKey(chatter.tags.userId))) return;
     if (CurrentEvent.Selection_type == SelectionTypeEnum.Single) return;
-    if (chatter.message.Contains("choice_l", System.StringComparison.InvariantCultureIgnoreCase))
+    if (chatter.message.Contains(ChatCommand_Left, System.StringComparison.InvariantCultureIgnoreCase))
     {
       Selection_A.AddChatCount(chatter.tags.displayName, StreamingTypeEnum.Twitch);
-      if(ChatIDList_L.ContainsKey(chatter.tags.channelId)) ChatIDList_L.Add(chatter.tags.userId, new ChatData(chatter.tags.displayName, StreamingTypeEnum.Twitch));
+      if(!ChatIDList_L.ContainsKey(chatter.tags.channelId)) ChatIDList_L.Add(chatter.tags.userId, new ChatData(chatter.tags.displayName, StreamingTypeEnum.Twitch));
     }
-    else if (chatter.message.Contains("choice_r", System.StringComparison.InvariantCultureIgnoreCase))
+    else if (chatter.message.Contains(ChatCommand_right, System.StringComparison.InvariantCultureIgnoreCase))
     {
       Selection_B.AddChatCount(chatter.tags.displayName, StreamingTypeEnum.Twitch);
-      if (ChatIDList_R.ContainsKey(chatter.tags.channelId)) ChatIDList_R.Add(chatter.tags.userId, new ChatData(chatter.tags.displayName, StreamingTypeEnum.Twitch));
+      if (!ChatIDList_R.ContainsKey(chatter.tags.channelId)) ChatIDList_R.Add(chatter.tags.userId, new ChatData(chatter.tags.displayName, StreamingTypeEnum.Twitch));
     }
   }
   private bool SelectDir = true;
@@ -933,6 +1051,11 @@ public class UI_dialogue : UI_default
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
+            if (GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect)
+            {
+              StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_left, 1.0f, FadeTime));
+              StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_right, 1.0f, FadeTime));
+            }
             IsSelecting = true;
             if ((GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect) && CurrentEvent.Selection_type != SelectionTypeEnum.Single)
               TurnOnChatButton();
@@ -946,6 +1069,11 @@ public class UI_dialogue : UI_default
               TurnOnChatButton();
 
             StartCoroutine(UIManager.Instance.ChangeAlpha(SelectionGroup, 1.0f, FadeTime));
+            if (GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect)
+            {
+              StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_left, 1.0f, FadeTime));
+              StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_right, 1.0f, FadeTime));
+            }
             IsSelecting = true;
             UIManager.Instance.ExpUI.SetExpUse(CurrentEvent.SelectionDatas.ToList());
             yield return StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
@@ -1064,6 +1192,7 @@ public class UI_dialogue : UI_default
               if (CurrentSuccessData != null) SetRewardButton();
               OpenReturnButton();
             }
+            IsEventDone = true;
             break;
           case 3:   //선택 눌러서 보상
             if (NextButtonGroup.alpha == 1.0f) StartCoroutine(UIManager.Instance.ChangeAlpha(NextButtonGroup, 0.0f, 0.5f));
@@ -1093,6 +1222,8 @@ public class UI_dialogue : UI_default
               if (CurrentSuccessData != null) SetRewardButton();
               OpenReturnButton();
             }
+            IsEventDone = true;
+
             break;
         }
       }
@@ -1101,20 +1232,26 @@ public class UI_dialogue : UI_default
       PhrIndex=-1;
     }
   }
+  private bool IsEventDone = false;
   public void UpdateSelectData(int left,int right)
   {
     SelectionCount_A = left;
     SelectionCount_B = right;
     SelectDataLoadingFinished = true;
-    if (CurrentDialogueType==DialogueTypeEnum.Event&& !IsBeginning && PhrIndex == PhrIndex_max - 1 && EventPhaseIndex == EventPhaseIndex_max - 1)
+    if (CurrentDialogueType == DialogueTypeEnum.Event&&
+      CurrentEvent != null&&
+      CurrentEvent.Selection_type!=SelectionTypeEnum.Single&&
+      !IsBeginning &&
+      IsEventDone
+      )
     {
       SetSelectDataText();
-      if(DescriptionScrollBar.value>0)
         StartCoroutine(UIManager.Instance.updatescrollbar(DescriptionScrollBar));
     }
   }
   private void SetSelectDataText()
   {
+    if (SelectionCount_A == -1 || SelectionCount_B == -1) return;
     DescriptionText.text += string.Format(GameManager.Instance.GetTextData("SelectionPercent"),
 (int)((float)(SelectDir ? SelectionCount_A : SelectionCount_B) / (float)(SelectionCount_A + SelectionCount_B) * 100));
     LayoutRebuilder.ForceRebuildLayoutImmediate(DescriptionText.transform.parent.transform as RectTransform);
@@ -1184,15 +1321,19 @@ public class UI_dialogue : UI_default
         }
         break;
     }
-    if ((GameManager.Instance.IsChzzConnect|| GameManager.Instance.IsTwitchConnect)&& CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+    if ((GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect) && CurrentEvent.Selection_type != SelectionTypeEnum.Single)
     {
       Selection_A.StopAllChat();
       Selection_B.StopAllChat();
 
       TurnOffChatButton();
       TurnOffChatPanel();
+      if (_selection.IsLeft)
+        StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_right, 0.0f, FadeTime));
+      else
+        StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_left, 0.0f, FadeTime));
     }
-    if (_selection.MyTendencyType != TendencyTypeEnum.None)
+      if (_selection.MyTendencyType != TendencyTypeEnum.None)
     {
       GetOppositeSelection(_selection).DeActive();
 
@@ -1232,7 +1373,7 @@ public class UI_dialogue : UI_default
         _issuccess = true;
         if (_selection.IsOverTendency)
         {
-          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f,true));
         }
         UIManager.Instance.AudioManager.PlaySFX(25);
         break;
@@ -1242,7 +1383,7 @@ public class UI_dialogue : UI_default
         {
           if (_selection.IsOverTendency)
           {
-            yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+            yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f,true));
           }
           else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
@@ -1254,7 +1395,7 @@ public class UI_dialogue : UI_default
         {
           if (_selection.IsOverTendency)
           {
-            yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+            yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f,true));
           }
           else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
@@ -1270,7 +1411,7 @@ public class UI_dialogue : UI_default
           {
             if (_selection.IsOverTendency)
             {
-              yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+              yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f,true));
             }
             else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
@@ -1286,7 +1427,7 @@ public class UI_dialogue : UI_default
 
               if (_selection.IsOverTendency)
               {
-                yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f));
+                yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, 1.0f,true));
               }
               else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, 0, _selection.PayInfo));
 
@@ -1300,7 +1441,7 @@ public class UI_dialogue : UI_default
             {
               if (_selection.IsOverTendency)
               {
-                yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, (float)(_currentvalue - GameManager.Instance.MyGameData.Gold)/_currentvalue));
+                yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, (float)(_currentvalue - GameManager.Instance.MyGameData.Gold)/_currentvalue,true));
               }
               else yield return StartCoroutine(payanimation(_selection.PayIcon, _currentvalue, _currentvalue - GameManager.Instance.MyGameData.Gold, _selection.PayInfo));
 
@@ -1327,7 +1468,7 @@ public class UI_dialogue : UI_default
 
         if (_selection.IsOverTendency)
         {
-          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f),false));
         }
         else yield return StartCoroutine(skillcheckanimation(_selection,_requirepercent, _currentpercent));
        
@@ -1348,7 +1489,7 @@ public class UI_dialogue : UI_default
         }
         if (_selection.IsOverTendency)
         {
-          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f)));
+          yield return StartCoroutine(unknownanimation(_selection.OverTendencyIcon, Mathf.Clamp(_currentpercent / (float)_requirepercent, 0.0f, 1.0f),false));
         }
         else yield return StartCoroutine(skillcheckanimation(_selection, _requirepercent, _currentpercent));
         yield return new WaitForSeconds(0.5f);
@@ -1368,8 +1509,14 @@ public class UI_dialogue : UI_default
       StartCoroutine(SetFail(CurrentEvent.SelectionDatas[_selection.Index].FailData, _selection.MyTendencyType, _selection.IsLeft));
     }
     _selection.DeActive();
-
-    yield return null;
+    if ((GameManager.Instance.IsChzzConnect || GameManager.Instance.IsTwitchConnect) && CurrentEvent.Selection_type != SelectionTypeEnum.Single)
+    {
+      if (_selection.IsLeft)
+        StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_left, 0.0f, 0.6f));
+      else
+        StartCoroutine(UIManager.Instance.ChangeAlpha(ChatCountGroup_right, 0.0f, 0.6f));
+    }
+      yield return null;
   }//선택한 선택지 성공 여부를 계산하고 애니메이션을 실행시키는 코루틴
   //이 코루틴에서 SetSuccess 아니면 SetFail로 바로 넘어감
   [SerializeField] private float SelectionEffectTime_check = 3.5f;
@@ -1461,7 +1608,7 @@ public class UI_dialogue : UI_default
     else UIManager.Instance.AudioManager.PlaySFX(26);
     yield return new WaitForSeconds(0.5f);
   }
-  private IEnumerator unknownanimation(Image image,float value)
+  private IEnumerator unknownanimation(Image image,float value,bool skipsfx)
   {
     float _time = 0.0f;
     float _stoptime = SelectionEffectTime_check *value;
@@ -1473,8 +1620,19 @@ public class UI_dialogue : UI_default
       yield return null;
     }
     UIManager.Instance.AudioManager.StopSFX("payanimation");
-    if (value == 1.0f) image.fillAmount = 0.0f;
-    yield return new WaitForSeconds(0.25f);
+    if (!skipsfx)
+    {
+      if (value == 1.0f)
+      {
+        image.fillAmount = 0.0f;
+        UIManager.Instance.AudioManager.PlaySFX(25);
+      }
+      else
+      {
+        UIManager.Instance.AudioManager.PlaySFX(26);
+      }
+    }
+    yield return new WaitForSeconds(0.5f);
   }
   private SuccessData CurrentSuccessData = null;
   public bool RemainReward = false;
@@ -1499,7 +1657,7 @@ public class UI_dialogue : UI_default
     yield return null;
     //연계 이벤트고, 엔딩 설정이 돼 있는 상태에서 성공할 경우 엔딩 다이어로그 전개
   }//성공할 경우 보상 탭을 세팅하고 텍스트를 성공 설명으로 교체, 퀘스트 이벤트일 경우 진행도 ++
-  public EndingDatas CurrentEndingData = null;
+  public EndingData CurrentEndingData = null;
   private void SetRewardButton()
   {
     if (CurrentSuccessData.Reward_Type == RewardTypeEnum.None) return;
@@ -1703,6 +1861,9 @@ public class UI_dialogue : UI_default
   }
   private IEnumerator closeui_all(bool dir)
   {
+    SelectionCount_A = -1; SelectionCount_B = -1;
+    IsEventDone = false;
+    EventDescriptions = null;
     CurrentDialogueType = DialogueTypeEnum.None;
 
     DefaultGroup.interactable = false;
@@ -1995,47 +2156,63 @@ public class UI_dialogue : UI_default
     if (IsSelectSector == true) return;
 
     QuestSectorInfo =
+      GameManager.Instance.MyGameData.Quest_Cult_Phase==3&&
       GameManager.Instance.MyGameData.Cult_SabbatSector == SelectedSector &&
       CurrentSettlement.Discomfort <= GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort;
 
     SelectSectorIcon.sprite =IsMad?GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(sector,false);
     SectorName.text = GameManager.Instance.GetTextData(sector, 0);
     string _effect = GameManager.Instance.GetTextData(sector, 3);
-    int _discomfort_default = GameManager.Instance.Status.Rest_Discomfort;
+    int _discomfort_default = CurrentSettlement.RestDiscomfort;
     switch (sector)
     {
       case SectorTypeEnum.Residence:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect,
-          WNCText.PositiveColor(GameManager.Instance.Status.SectorEffect_residence_discomfort.ToString()));
+          WNCText.PositiveColor(GameManager.Instance.Status.Residence_Village.ToString()));
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue=IsMad? _discomfort_default : (_discomfort_default - GameManager.Instance.Status.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - GameManager.Instance.Status.SectorEffect_residence_discomfort) : 0;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply+GameManager.Instance.MyGameData.Skill_Force.Level/GameManager.Instance.Status.ForceEffect_Level*GameManager.Instance.Status.ForceEffect_Value;
+        DiscomfortValue = _discomfort_default;
+        SupplyValue = CurrentSettlement.RestSupply 
+          +GameManager.Instance.MyGameData.Skill_Force.Level/GameManager.Instance.Status.ForceEffect_Level*GameManager.Instance.Status.ForceEffect_Value
+          +GameManager.Instance.Status.Residence_Village;
         break;
       case SectorTypeEnum.Temple:
-        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.SectorEffect_temple);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : 
+          string.Format(_effect, CurrentSettlement.SettlementType == SettlementType.Village ?
+          GameManager.Instance.Status.Temple_Village :
+          GameManager.Instance.Status.Temple_Town);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
+        SupplyValue = CurrentSettlement.RestSupply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
         break;
       case SectorTypeEnum.Marketplace:
-        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.SectorEffect_marketSector);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : 
+          string.Format(_effect, 
+          CurrentSettlement.SettlementType==SettlementType.Town?
+          GameManager.Instance.Status.Market_Town:
+          GameManager.Instance.Status.Market_City);
 
-        GoldCost =IsMad? GameManager.Instance.MyGameData.RestCost_Gold: Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - GameManager.Instance.Status.SectorEffect_marketSector / 100.0f));
-        SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - GameManager.Instance.Status.SectorEffect_marketSector / 100.0f));
+        GoldCost =IsMad? GameManager.Instance.MyGameData.RestCost_Gold: Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - 
+          (CurrentSettlement.SettlementType == SettlementType.Town ?
+          GameManager.Instance.Status.Market_Town :
+          GameManager.Instance.Status.Market_City) / 100.0f));
+        SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - 
+          (CurrentSettlement.SettlementType == SettlementType.Town ?
+          GameManager.Instance.Status.Market_Town :
+          GameManager.Instance.Status.Market_City) / 100.0f));
         DiscomfortValue = _discomfort_default;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
+        SupplyValue = CurrentSettlement.RestSupply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
         break;
       case SectorTypeEnum.Library:
-        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.SectorEffect_Library);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.Library_City);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
+        SupplyValue = CurrentSettlement.RestSupply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
         break;
     }
 
@@ -2090,48 +2267,59 @@ public class UI_dialogue : UI_default
 
     Illust.Next(GameManager.Instance.ImageHolder.GetSectorIllust(CurrentSettlement.SettlementType, SelectedSector, GameManager.Instance.MyGameData.Turn));
 
-    QuestSectorInfo = 
+    QuestSectorInfo =
+      GameManager.Instance.MyGameData.Quest_Cult_Phase == 3 && 
       GameManager.Instance.MyGameData.Cult_SabbatSector==SelectedSector&&
       CurrentSettlement.Discomfort<=GameManager.Instance.MyGameData.Cult_Sabbat_MinDiscomfort;
 
     SelectSectorIcon.sprite = IsMad ? GameManager.Instance.ImageHolder.MadnessActive: GameManager.Instance.ImageHolder.GetSectorIcon(SelectedSector, false);
     SectorName.text = GameManager.Instance.GetTextData(SelectedSector, 0);
     string _effect = GameManager.Instance.GetTextData(SelectedSector, 3);
-    int _discomfort_default = GameManager.Instance.Status.Rest_Discomfort;
+    int _discomfort_default = CurrentSettlement.RestDiscomfort;
     switch (SelectedSector)
     {
       case SectorTypeEnum.Residence:
         _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect,
-          WNCText.PositiveColor(GameManager.Instance.Status.SectorEffect_residence_discomfort.ToString()));
+          WNCText.PositiveColor(GameManager.Instance.Status.Residence_Village.ToString()));
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
-        DiscomfortValue = IsMad ? _discomfort_default : (_discomfort_default - GameManager.Instance.Status.SectorEffect_residence_discomfort) > 0 ? (_discomfort_default - GameManager.Instance.Status.SectorEffect_residence_discomfort) : 0;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
+        DiscomfortValue = _discomfort_default;
+        SupplyValue = CurrentSettlement.RestSupply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value
+          + GameManager.Instance.Status.Residence_Village;
         break;
       case SectorTypeEnum.Temple:
-        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.SectorEffect_temple);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect,
+          CurrentSettlement.SettlementType == SettlementType.Village ?
+          GameManager.Instance.Status.Temple_Village :
+          GameManager.Instance.Status.Temple_Town);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
+        SupplyValue = CurrentSettlement.RestSupply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
         break;
       case SectorTypeEnum.Marketplace:
-        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.SectorEffect_marketSector);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, CurrentSettlement.SettlementType == SettlementType.Town ?
+          GameManager.Instance.Status.Market_Town :
+          GameManager.Instance.Status.Market_City);
 
-        GoldCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Gold : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - GameManager.Instance.Status.SectorEffect_marketSector / 100.0f));
-        SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - GameManager.Instance.Status.SectorEffect_marketSector / 100.0f));
+        GoldCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Gold : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Gold * (1.0f - (CurrentSettlement.SettlementType == SettlementType.Town ?
+          GameManager.Instance.Status.Market_Town :
+          GameManager.Instance.Status.Market_City) / 100.0f));
+        SanityCost = IsMad ? GameManager.Instance.MyGameData.RestCost_Sanity : Mathf.FloorToInt(GameManager.Instance.MyGameData.RestCost_Sanity * (1.0f - (CurrentSettlement.SettlementType == SettlementType.Town ?
+          GameManager.Instance.Status.Market_Town :
+          GameManager.Instance.Status.Market_City) / 100.0f));
         DiscomfortValue = _discomfort_default;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
+        SupplyValue = CurrentSettlement.RestSupply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
         break;
       case SectorTypeEnum.Library:
-        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.SectorEffect_Library);
+        _effect = IsMad ? GameManager.Instance.GetTextData("Madness_Force_Description") : string.Format(_effect, GameManager.Instance.Status.Library_City);
 
         GoldCost = GameManager.Instance.MyGameData.RestCost_Gold;
         SanityCost = GameManager.Instance.MyGameData.RestCost_Sanity;
         DiscomfortValue = _discomfort_default;
-        SupplyValue = GameManager.Instance.Status.Rest_Supply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
+        SupplyValue = CurrentSettlement.RestSupply + GameManager.Instance.MyGameData.Skill_Force.Level / GameManager.Instance.Status.ForceEffect_Level * GameManager.Instance.Status.ForceEffect_Value;
         break;
     }
 

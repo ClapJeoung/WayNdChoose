@@ -131,6 +131,12 @@ public class PreviewManager : MonoBehaviour
   [SerializeField] private GameObject ChatListPanel = null;
   [SerializeField] private Image ChatListPanelBackground = null;
   [SerializeField] private TextMeshProUGUI ChatListText = null;
+  [Space(10)]
+  [SerializeField] private GameObject EndingEventPanel = null;
+  [SerializeField] private TextMeshProUGUI EndingEvent_Left_name = null;
+  [SerializeField] private TextMeshProUGUI EndingEvent_Left_list = null;
+  [SerializeField] private TextMeshProUGUI EndingEvent_Right_name = null;
+  [SerializeField] private TextMeshProUGUI EndingEvent_Right_list = null;
   /*
   [Space(10)]
   [SerializeField] private GameObject CultPreviewPanel = null;
@@ -431,7 +437,7 @@ public class PreviewManager : MonoBehaviour
         _targettendency = GameManager.Instance.MyGameData.Tendency_Body;
         _arrowsprite_left = GameManager.Instance.ImageHolder.Arrow_Active_rational;
         _arrowsprite_right = GameManager.Instance.ImageHolder.Arrow_Active_physical;
-        switch (GameManager.Instance.MyGameData.Tendency_Head.Level)
+        switch (GameManager.Instance.MyGameData.Tendency_Body.Level)
         {
           case -2:
             _selectionname = GameManager.Instance.GetTextData("Selection_logic");
@@ -1365,7 +1371,7 @@ public class PreviewManager : MonoBehaviour
     if (islong)
     {
       _description = string.Format(GameManager.Instance.GetTextData("LONGTERMSAVE_DESCRIPTION"), GameManager.Instance.Status.EXPMaxTurn_long_idle + GameManager.Instance.MyGameData.Skill_Intelligence.Level / GameManager.Instance.Status.IntelEffect_Level * GameManager.Instance.Status.IntelEffect_Value,
-        (int)(GameManager.Instance.Status.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
+        Mathf.FloorToInt(GameManager.Instance.Status.LongTermChangeCost * GameManager.Instance.MyGameData.GetSanityLossModify(true,0)));
     }
     else
     {
@@ -1551,6 +1557,20 @@ public class PreviewManager : MonoBehaviour
     LayoutRebuilder.ForceRebuildLayoutImmediate(ChatListText.transform as RectTransform);
 
     OpenPreviewPanel(ChatListPanel,rect);
+  }
+  public void OpenEndingEventPanel(RectTransform rect, Sprite background,string success,string fail)
+  {
+    if (EndingEvent_Left_name.text == "") EndingEvent_Left_name.text = GameManager.Instance.GetTextData("Fail");
+    if (EndingEvent_Right_name.text == "") EndingEvent_Right_name.text = GameManager.Instance.GetTextData("Success");
+    EndingEvent_Left_list.text = fail;
+    EndingEvent_Right_list.text = success;
+    EndingEventPanel.GetComponent<Image>().sprite = background;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(EndingEvent_Left_list.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(EndingEvent_Right_list.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(EndingEvent_Left_list.transform.parent.transform as RectTransform);
+    LayoutRebuilder.ForceRebuildLayoutImmediate(EndingEvent_Left_list.transform.parent.transform.parent.transform as RectTransform);
+
+    OpenPreviewPanel(EndingEventPanel, rect);
   }
   private Vector2 Newpos = Vector2.zero;
   public void Update()

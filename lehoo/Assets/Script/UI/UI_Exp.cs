@@ -222,7 +222,7 @@ public class UI_Exp : MonoBehaviour
     }
     group.alpha = 0.0f;
     _rect.anchoredPosition = _startpos;
-    exp.Duration -= duration;
+    exp.Duration -= duration*GameManager.Instance.Status.ExpUsingDecrease;
   }
   public void UpdateExpButton(bool isactive)
   {
@@ -431,7 +431,7 @@ public class UI_Exp : MonoBehaviour
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(ExpUse_Long_Group, 1.0f, 0.2f));
         }
-        ExpUse_Long_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_L[_long]).ToString();
+        ExpUse_Long_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_L[_long]* GameManager.Instance.Status.ExpUsingDecrease).ToString();
       }
       else if (UIManager.Instance.DialogueUI.ExpUsageDic_R.ContainsKey(_long))
       {
@@ -444,7 +444,7 @@ public class UI_Exp : MonoBehaviour
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(ExpUse_Long_Group, 1.0f, 0.2f));
         }
-        ExpUse_Long_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_R[_long]).ToString();
+        ExpUse_Long_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_R[_long]* GameManager.Instance.Status.ExpUsingDecrease).ToString();
       }
       else
       {
@@ -478,7 +478,7 @@ public class UI_Exp : MonoBehaviour
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(ExpUse_Short_A_Group, 1.0f, 0.2f));
         }
-        ExpUse_Short_A_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_L[_Short]).ToString();
+        ExpUse_Short_A_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_L[_Short]* GameManager.Instance.Status.ExpUsingDecrease).ToString();
       }
       else if (UIManager.Instance.DialogueUI.ExpUsageDic_R.ContainsKey(_Short))
       {
@@ -491,7 +491,7 @@ public class UI_Exp : MonoBehaviour
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(ExpUse_Short_A_Group, 1.0f, 0.2f));
         }
-        ExpUse_Short_A_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_R[_Short]).ToString();
+        ExpUse_Short_A_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_R[_Short]* GameManager.Instance.Status.ExpUsingDecrease).ToString();
       }
       else
       {
@@ -524,7 +524,7 @@ public class UI_Exp : MonoBehaviour
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(ExpUse_Short_B_Group, 1.0f, 0.2f));
         }
-        ExpUse_Short_B_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_L[_Short]).ToString();
+        ExpUse_Short_B_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_L[_Short]* GameManager.Instance.Status.ExpUsingDecrease).ToString();
       }
       else if (UIManager.Instance.DialogueUI.ExpUsageDic_R.ContainsKey(_Short))
       {
@@ -537,7 +537,7 @@ public class UI_Exp : MonoBehaviour
         {
           StartCoroutine(UIManager.Instance.ChangeAlpha(ExpUse_Short_B_Group, 1.0f, 0.2f));
         }
-        ExpUse_Short_B_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_R[_Short]).ToString();
+        ExpUse_Short_B_text.text = ((int)-1.0f * UIManager.Instance.DialogueUI.ExpUsageDic_R[_Short]* GameManager.Instance.Status.ExpUsingDecrease).ToString();
       }
       else
       {

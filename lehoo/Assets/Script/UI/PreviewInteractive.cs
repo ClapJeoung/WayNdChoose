@@ -1,3 +1,4 @@
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 public enum PreviewPanelType { Turn,HP,Sanity,Gold,Map,Quest,Trait,Theme,Skill,EXP_long,EXP_short,Tendency,Selection,
   RewardHP,RewardSanity,RewardGold,RewardTrait,RewardTheme,RewardSkill,RewardExp,RewardSkillSelect,RewardExpSelect_long,RewardExpSelect_short,Discomfort,
 Place,Environment,MadnessAccept,MadnessRefuse,MoveCostSanity,MoveCostGold,RestSanity,RestGold,CultPanel_Sabbat,CultPanel_Ritual,MovePoint,MoveCostGoldNogold,
-CultSidePanel,TileInfo,TurnInfo,EndingPreview,ChatList,SkillProgress}
+CultSidePanel,TileInfo,TurnInfo,EndingPreview,ChatList,SkillProgress,SettlementReturn,EndingEvents}
 public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
   public PreviewPanelType PanelType=PreviewPanelType.Turn;
@@ -253,7 +254,7 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(GameManager.Instance.GetTextData(EndingID + "_preview_closed"), OtherRect,new Vector2(0.5f,1.05f));
         else
         {
-          EndingDatas _ending = GameManager.Instance.ImageHolder.GetEndingData(EndingID);
+          EndingData _ending = GameManager.Instance.ImageHolder.GetEndingData(EndingID);
           UIManager.Instance.PreviewManager.OpenEndingPreviewPanel(OtherRect, _ending.PreviewIcon, _ending.Preview_Name, _ending.Preview_Opened);
         }
         break;
@@ -267,6 +268,44 @@ public class PreviewInteractive :MonoBehaviour, IPointerEnterHandler,IPointerExi
           string.Format(GameManager.Instance.GetTextData("SkillProgress_Preview_less"),
           GameManager.Instance.MyGameData.SkillProgressRequire - GameManager.Instance.MyGameData.SkillProgress),
           OtherRect, new Vector2(1.05f, 0.5f));
+        break;
+      case PreviewPanelType.SettlementReturn:
+        string[] _strs = GameManager.Instance.GetTextData("ReturntoSettlement_add").Split('@');
+        UIManager.Instance.PreviewManager.OpenJustDescriptionPreview(
+          GameManager.Instance.GetTextData("ReturntoSettlement_default") + _strs[Random.Range(0, _strs.Length)], OtherRect, new Vector2(0.5f, -0.05f));
+        break;
+      case PreviewPanelType.EndingEvents:
+        string _success = "", _fail = "";
+        switch (MyTendency)
+        {
+          case TendencyTypeEnum.Body:
+            if (MySelectionTendencyDir)
+            {
+              _success = UIManager.Instance.CurtainUI.Success_Logical;
+              _fail = UIManager.Instance.CurtainUI.Fail_Logical;
+            }
+            else
+            {
+              _success = UIManager.Instance.CurtainUI.Success_Physical;
+              _fail = UIManager.Instance.CurtainUI.Fail_Physical;
+            }
+            break;
+          case TendencyTypeEnum.Head:
+            if (MySelectionTendencyDir)
+            {
+              _success = UIManager.Instance.CurtainUI.Success_Mental;
+              _fail = UIManager.Instance.CurtainUI.Fail_Mental;
+            }
+            else
+            {
+              _success = UIManager.Instance.CurtainUI.Success_Material;
+              _fail = UIManager.Instance.CurtainUI.Fail_Material;
+            }
+            break;
+        }
+        if (_success == "" && _fail == "") return;
+        Sprite _background = GameManager.Instance.ImageHolder.SelectionBackground(MyTendency, MySelectionTendencyDir);
+        UIManager.Instance.PreviewManager.OpenEndingEventPanel(OtherRect, _background, _success, _fail);
         break;
     }
   }
